@@ -1,257 +1,326 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import { Button } from "$lib/components/ui/button";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui";
-  import { Input } from "$lib/components/ui";
-  import { Label } from "$lib/components/ui";
-  import { Tooltip } from "$lib/components/ui";
-  import { loginSchema } from "$lib/schemas";
-  import { superForm } from "sveltekit-superforms";
-  import { zodClient } from "sveltekit-superforms/adapters";
-  import type { PageData } from "./$types";
-  export let data: PageData;
-  const { form, errors, constraints, submitting } = superForm(data.form, {
-    validators: zodClient(loginSchema),
-  });
+  import { goto } from '$app/navigation';
+  import { user } from '$lib/stores/user';
+  
+  let email = 'admin@legal-ai.local';
+  let password = '';
+  let loading = false;
+  let error = '';
 
-  // Demo user credentials
-  const demoUsers = [
-    { email: "admin@example.com", password: "admin123", role: "admin" },
-    { email: "user@example.com", password: "user123", role: "user" },
-  ];
+  async function handleLogin() {
+    if (!email || !password) {
+      error = 'Please fill in all fields';
+      return;
+    }
 
-  function fillDemoCredentials(userType: "admin" | "user") {
-    const demoUser = demoUsers.find((u) => u.role === userType);
-    if (demoUser) {
-      $form.email = demoUser.email;
-      $form.password = demoUser.password;
-}
-}
+    loading = true;
+    error = '';
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user data
+        user.set(data.user);
+        // Redirect to dashboard
+        goto('/dashboard');
+      } else {
+        error = data.message || 'Login failed';
+      }
+    } catch (err) {
+      error = 'Network error. Please try again.';
+      console.error('Login error:', err);
+    } finally {
+      loading = false;
+    }
+  }
+
+  // Demo login for testing
+  function demoLogin() {
+    user.set({
+      id: '1',
+      email: 'admin@legal-ai.local',
+      name: 'System Administrator',
+      role: 'admin'
+    });
+    goto('/dashboard');
+  }
 </script>
 
 <svelte:head>
-  <title>Legal Case Management - Login</title>
-  <meta
-    name="description"
-    content="Sign in to your Legal Case Management account"
-  />
+  <title>Admin Login - Legal Case Management</title>
 </svelte:head>
 
-<main class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-            <path
-              d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z"
-            />
-          </svg>
-        </div>
-        <div>
-          <h1>Welcome Back</h1>
-          <p class="container mx-auto px-4">Sign in to continue</p>
-        </div>
-      </div>
-
-      <p class="container mx-auto px-4">
-        Access your legal case management dashboard, review ongoing cases, and
-        manage evidence with our secure and comprehensive platform.
-      </p>
-
-      <div class="container mx-auto px-4">
-        <h3>Demo Accounts</h3>
-        <p>Try the application with these demo credentials:</p>
-        <div class="container mx-auto px-4">
-          <button
-            type="button"
-            class="container mx-auto px-4"
-            on:click={() => fillDemoCredentials("admin")}
-          >
-            Admin Demo
-          </button>
-          <button
-            type="button"
-            class="container mx-auto px-4"
-            on:click={() => fillDemoCredentials("user")}
-          >
-            User Demo
-          </button>
-        </div>
-      </div>
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">⚖️</div>
+      <h1>Legal Case Management</h1>
+      <p>Administrator Login</p>
     </div>
 
-    <div class="container mx-auto px-4">
-      <article>
-        <header>
-          <h2>Sign In</h2>
-        </header>
+    <form on:submit|preventDefault={handleLogin} class="login-form">
+      {#if error}
+        <div class="error-message">
+          {error}
+        </div>
+      {/if}
 
-        <Card class="container mx-auto px-4">
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form method="POST" use:enhance>
-              <div class="container mx-auto px-4">
-                <Label for_="email">Email</Label>
-                <Input
-                  type="email"
-                  name="email"
-                  id="email"
-                  bind:value={$form.email}
-                  {...$constraints.email}
-                />
-                {#if $errors.email}
-                  <p class="container mx-auto px-4">{$errors.email}</p>
-                {/if}
-              </div>
-              <div class="container mx-auto px-4">
-                <Label for_="password">Password</Label>
-                <Input
-                  type="password"
-                  name="password"
-                  id="password"
-                  bind:value={$form.password}
-                  {...$constraints.password}
-                />
-                {#if $errors.password}
-                  <p class="container mx-auto px-4">{$errors.password}</p>
-                {/if}
-              </div>
-              <Button type="submit" class="container mx-auto px-4" disabled={$submitting}>
-                {#if $submitting}
-                  Logging in...
-                {:else}
-                  Log In
-                {/if}
-              </Button>
-              <Tooltip
-                content="Demo: admin@example.com / admin123 or user@example.com / user123"
-              >
-                <span
-                  class="container mx-auto px-4"
-                  >Need demo credentials?</span
-                >
-              </Tooltip>
-            </form>
-          </CardContent>
-        </Card>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          bind:value={email}
+          placeholder="admin@legal-ai.local"
+          required
+          class="form-input"
+        />
+      </div>
 
-        {#if import.meta.env.DEV}
-          <form method="POST" action="?/devLogin" style="margin-bottom: 1rem;">
-            <button type="submit" class="container mx-auto px-4">Log in as Demo User</button
-            >
-          </form>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          bind:value={password}
+          placeholder="Enter your password"
+          required
+          class="form-input"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={loading}
+        class="login-button"
+      >
+        {#if loading}
+          <div class="spinner"></div>
+          Signing in...
+        {:else}
+          Sign In
         {/if}
+      </button>
+    </form>
 
-        <footer>
-          <p>Don't have an account? <a href="/register">Create one here</a></p>
-          <p><a href="/forgot-password">Forgot your password?</a></p>
-        </footer>
-      </article>
+    <div class="login-footer">
+      <div class="divider">
+        <span>or</span>
+      </div>
+      
+      <button
+        type="button"
+        on:click={demoLogin}
+        class="demo-button"
+      >
+        🚀 Demo Login (No Authentication)
+      </button>
+
+      <p class="login-links">
+        <a href="/">← Back to Home</a>
+        <a href="/register">Create Account</a>
+      </p>
     </div>
   </div>
-</main>
+</div>
 
 <style>
-  /* @unocss-include */
-  .auth-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    min-height: 80vh;
+  .login-container {
+    min-height: 100vh;
+    display: flex;
     align-items: center;
-    padding: 2rem 0;
-}
-  .auth-info {
+    justify-content: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     padding: 2rem;
-}
-  .auth-header {
+  }
+
+  .login-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .logo {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .login-header p {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .login-button {
+    width: 100%;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-  .brand-icon {
-    color: var(--harvard-crimson);
-    flex-shrink: 0;
-}
-  .auth-header h1 {
-    font-size: 2.5rem;
-    margin: 0;
-    line-height: 1.2;
-}
-  .auth-subtitle {
-    color: var(--text-muted);
-    margin: 0;
-    font-size: 1.1rem;
-}
-  .auth-description {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-    color: var(--text-muted);
-}
-  .demo-section {
-    background: var(--bg-secondary);
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--card-border-color);
-}
-  .demo-section h3 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-}
-  .demo-section p {
-    margin-bottom: 1rem;
-    color: var(--text-muted);
-}
-  .demo-buttons {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-  .demo-buttons button {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .login-button:hover:not(:disabled) {
+    background: #2563eb;
+  }
+
+  .login-button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .login-footer {
+    margin-top: 2rem;
+  }
+
+  .divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+
+  .divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e5e7eb;
+  }
+
+  .divider span {
+    background: white;
+    color: #6b7280;
+    padding: 0 1rem;
     font-size: 0.875rem;
-    padding: 0.5rem 1rem;
-}
-  .auth-form {
-    padding: 1rem;
-}
-  .auth-form article {
-    margin: 0;
-    max-width: 400px;
-}
-  .auth-form h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-  .auth-form footer {
-    text-align: center;
-}
-  .auth-form footer p {
-    margin: 0.5rem 0;
-}
-  @media (max-width: 768px) {
-    .auth-layout {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-}
-    .auth-info {
+  }
+
+  .demo-button {
+    width: 100%;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+  }
+
+  .demo-button:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+  }
+
+  .login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+
+  .login-links a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .login-links a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .login-container {
       padding: 1rem;
-      text-align: center;
-}
-    .auth-header {
-      justify-content: center;
-}
-    .auth-header h1 {
-      font-size: 2rem;
-}
-}
+    }
+    
+    .login-card {
+      padding: 1.5rem;
+    }
+  }
 </style>

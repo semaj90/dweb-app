@@ -8,7 +8,7 @@ export default defineConfig({
  out: './drizzle',
  dialect: 'postgresql',
  dbCredentials: {
- url: env.DATABASE_URL || 'postgresql://detective:secure_password@localhost:5433/detective_evidence_db'
+ url: env.DATABASE_URL || 'postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3'
  },
  verbose: true,
  strict: true,

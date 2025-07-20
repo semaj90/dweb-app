@@ -10,6 +10,7 @@
   import { onMount } from "svelte";
   import "uno.css";
   import "../app.css";
+  import "../lib/styles/nier-design-system.css";
   import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
   import Settings from '$lib/components/Settings.svelte';
   import KeyboardShortcuts from '$lib/components/keyboard/KeyboardShortcuts.svelte';

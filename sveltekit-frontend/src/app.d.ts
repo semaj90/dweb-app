@@ -1,18 +1,15 @@
-declare global {
-	namespace App {
-		interface Error {
-			message: string;
-			code?: string;
-		}
-		interface Locals {
-			user?: {
-				id: string;
-				email: string;
-			};
-		}
-		interface PageData {}
-		interface Platform {}
-	}
+// TypeScript declaration for Svelte components
+declare module "*.svelte" {
+  import type { ComponentType, SvelteComponent } from "svelte";
+  const component: ComponentType<SvelteComponent>;
+  export default component;
 }
 
-export {};
+// Enhanced form component types
+declare module "$lib/components/forms/EnhancedCaseForm.svelte" {
+  import type { SvelteComponent } from "svelte";
+  export default class EnhancedCaseForm extends SvelteComponent<{
+    case_?: any;
+    user: any;
+  }> {}
+}

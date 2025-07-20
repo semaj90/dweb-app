@@ -1,1376 +1,372 @@
 <script lang="ts">
-  import OnboardingOverlay from "$lib/components/onboarding/OnboardingOverlay.svelte";
-  import { Button } from "$lib/components/ui/button";
-  import Tooltip from "$lib/components/ui/Tooltip.svelte";
-  import { notifications } from "$lib/stores/notification";
-  import {
-    Activity,
-    AlertTriangle,
-    BarChart3,
-    CheckCircle,
-    Clock,
-    Database,
-    Download,
-    Eye,
-    FileText,
-    HelpCircle,
-    Plus,
-    RefreshCw,
-    Search,
-    Settings,
-    Shield,
-    TrendingUp,
-    Upload,
-    Users,
-    Zap,
-  } from "lucide-svelte";
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
+  import { user } from '$lib/stores/user';
+  import { goto } from '$app/navigation';
 
-  import type { PageData } from "./$types";
-  // ... other imports ...
-  export let data: PageData;
-  // Use recentCases and recentCriminals from server load
-  const { recentCases, recentCriminals } = data;
-
-  // Dashboard state
-  let showOnboarding = false;
-  let isRefreshing = false;
-  let lastUpdated = new Date();
-
-  // System stats
-  let systemStats = {
-    cases: { total: 0, active: 0, closed: 0, trend: 0 },
-    evidence: { total: 0, verified: 0, pending: 0, trend: 0 },
-    users: { total: 0, active: 0, trend: 0 },
-    alerts: { critical: 0, warning: 0, info: 0 },
+  // Mock data for demonstration
+  let stats = {
+    totalCases: 24,
+    activeCases: 12,
+    evidenceFiles: 156,
+    recentActivity: 8
   };
 
-  // Hash verification stats
-  let hashStats: {
-    total: number;
-    successful: number;
-    failed: number;
-    recent: any[];
-  } = {
-    total: 0,
-    successful: 0,
-    failed: 0,
-    recent: [],
-  };
-
-  // Performance metrics
-  let performanceStats = {
-    systemHealth: 95,
-    databaseStatus: "healthy",
-    apiResponseTime: 120,
-    uptime: "99.9%",
-    storageUsed: 65,
-  };
-
-  let loadingStats = true;
-  let loadingSystem = true;
-
-  // Onboarding steps
-  const onboardingSteps = [
-    {
-      id: "welcome",
-      title: "Welcome to Detective Mode",
-      description:
-        "This dashboard gives you an overview of all your cases, evidence, and system status.",
-      position: "center" as const,
-      type: "info" as const,
-    },
-    {
-      id: "recent-cases",
-      title: "Recent Cases",
-      description:
-        "View and access your most recently created or updated cases here.",
-      targetSelector: ".dashboard-block:nth-child(3)",
-      position: "top" as const,
-      type: "info" as const,
-    },
-    {
-      id: "evidence-integrity",
-      title: "Evidence Integrity",
-      description:
-        "Monitor the integrity of your evidence files with hash verification.",
-      targetSelector: ".dashboard-block:nth-child(1)",
-      position: "bottom" as const,
-      type: "info" as const,
-    },
-    {
-      id: "quick-actions",
-      title: "Quick Actions",
-      description:
-        "Use these buttons to quickly create new cases or access important features.",
-      targetSelector: ".quick-actions",
-      position: "bottom" as const,
-      type: "action" as const,
-    },
-    {
-      id: "complete",
-      title: "You're All Set!",
-      description:
-        "You now know the basics of your dashboard. Explore the features and start managing your cases!",
-      position: "center" as const,
-      type: "success" as const,
-    },
+  let recentCases = [
+    { id: 1, title: 'Fraud Investigation #2024-001', status: 'active', lastUpdate: '2 hours ago' },
+    { id: 2, title: 'Identity Theft Case #2024-002', status: 'pending', lastUpdate: '1 day ago' },
+    { id: 3, title: 'Corporate Embezzlement #2024-003', status: 'closed', lastUpdate: '3 days ago' }
   ];
 
-  onMount(async () => {
-    await Promise.all([
-      loadHashStats(),
-      loadSystemStats(),
-      loadPerformanceStats(),
-    ]);
-
-    // Check if user needs onboarding
-    const hasSeenOnboarding = localStorage.getItem("dashboard-onboarding-seen");
-    if (!hasSeenOnboarding) {
-      showOnboarding = true;}
+  onMount(() => {
+    // Check if user is logged in
+    if (!$user) {
+      goto('/login');
+    }
   });
-
-  async function loadHashStats() {
-    try {
-      const response = await fetch("/api/evidence/hash/history?limit=5");
-      if (response.ok) {
-        const data = await response.json();
-        hashStats = {
-          total: data.stats.total,
-          successful: data.stats.successful,
-          failed: data.stats.failed,
-          recent: data.verifications.slice(0, 5),
-        };}
-    } catch (err) {
-      console.error("Error loading hash verification stats:", err);
-    } finally {
-      loadingStats = false;}}
-  async function loadSystemStats() {
-    try {
-      // Mock system stats - replace with actual API calls
-      systemStats = {
-        cases: {
-          total: recentCases?.length || 0,
-          active: recentCases?.filter((c) => c.status === "Active").length || 0,
-          closed: recentCases?.filter((c) => c.status === "Closed").length || 0,
-          trend: 12,
-        },
-        evidence: {
-          total: hashStats.total,
-          verified: hashStats.successful,
-          pending: hashStats.total - hashStats.successful,
-          trend: 8,
-        },
-        users: {
-          total: recentCriminals?.length || 0,
-          active:
-            recentCriminals?.filter((p) => p.status === "Active").length || 0,
-          trend: 5,
-        },
-        alerts: { critical: 2, warning: 5, info: 12 },
-      };
-    } catch (err) {
-      console.error("Error loading system stats:", err);
-    } finally {
-      loadingSystem = false;}}
-  async function loadPerformanceStats() {
-    try {
-      // Mock performance stats - replace with actual monitoring
-      performanceStats = {
-        systemHealth: Math.floor(Math.random() * 10) + 90,
-        databaseStatus: Math.random() > 0.1 ? "healthy" : "warning",
-        apiResponseTime: Math.floor(Math.random() * 100) + 80,
-        uptime: "99.9%",
-        storageUsed: Math.floor(Math.random() * 30) + 60,
-      };
-    } catch (err) {
-      console.error("Error loading performance stats:", err);}}
-  async function refreshDashboard() {
-    isRefreshing = true;
-    loadingStats = true;
-    loadingSystem = true;
-
-    await Promise.all([
-      loadHashStats(),
-      loadSystemStats(),
-      loadPerformanceStats(),
-    ]);
-
-    lastUpdated = new Date();
-    isRefreshing = false;
-
-    notifications.add({
-      type: "success",
-      title: "Dashboard Refreshed",
-      message: "All data has been updated",
-    });}
-  function handleOnboardingComplete() {
-    localStorage.setItem("dashboard-onboarding-seen", "true");
-    notifications.add({
-      type: "success",
-      title: "Welcome Complete!",
-      message: "You can access this tour anytime from the help menu.",
-    });}
-  function startOnboardingTour() {
-    showOnboarding = true;}
-  function getHealthColor(health: number) {
-    if (health >= 90) return "text-green-600";
-    if (health >= 70) return "text-yellow-600";
-    return "text-red-600";}
-  function getStatusColor(status: string) {
-    switch (status) {
-      case "healthy":
-        return "text-green-600";
-      case "warning":
-        return "text-yellow-600";
-      case "error":
-        return "text-red-600";
-      default:
-        return "text-gray-600";}}
 </script>
 
-<section class="container mx-auto px-4" role="main" aria-label="Dashboard">
-  <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h1>Detective Mode Dashboard</h1>
-      <p class="container mx-auto px-4">
-        Welcome to your command center. Monitor cases, evidence, and system
-        health.
-      </p>
+<svelte:head>
+  <title>Dashboard - Legal Case Management</title>
+</svelte:head>
+
+<div class="dashboard-container">
+  {#if $user}
+    <div class="dashboard-header">
+      <h1>Welcome back, {$user.name || $user.email}</h1>
+      <p>Here's what's happening with your cases today.</p>
     </div>
 
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Tooltip content="Create new case">
-          <a href="/cases/new" class="container mx-auto px-4">
-            <Button>
-              <Plus class="container mx-auto px-4" />
-              New Case
-            </Button>
-          </a></Tooltip
-        >
-
-        <Tooltip content="Upload evidence">
-          <a href="/evidence" class="container mx-auto px-4">
-            <Button variant="secondary">
-              <Upload class="container mx-auto px-4" />
-              Evidence
-            </Button>
-          </a></Tooltip
-        >
-
-        <Tooltip content="Search records">
-          <a href="/search" class="container mx-auto px-4">
-            <Button variant="secondary">
-              <Search class="container mx-auto px-4" />
-              Search
-            </Button>
-          </a></Tooltip
-        >
-      </div>
-
-      <div class="container mx-auto px-4">
-        <Tooltip content="Start onboarding tour">
-          <Button
-            variant="ghost"
-            size="sm"
-            on:click={() => startOnboardingTour()}
-            aria-label="Start help tour"
-          >
-            <HelpCircle class="container mx-auto px-4" />
-          </Button>
-        </Tooltip>
-
-        <Tooltip content="Dashboard settings">
-          <a href="/settings" class="container mx-auto px-4">
-            <Button variant="ghost" size="sm" aria-label="Dashboard settings">
-              <Settings class="container mx-auto px-4" />
-            </Button>
-          </a>
-        </Tooltip>
-
-        <Tooltip content="Refresh dashboard">
-          <Button
-            variant="ghost"
-            size="sm"
-            on:click={() => refreshDashboard()}
-            disabled={isRefreshing}
-            aria-label="Refresh dashboard data"
-          >
-            <span class:animate-spin={isRefreshing}>
-              <RefreshCw class="container mx-auto px-4" />
-            </span>
-          </Button>
-        </Tooltip>
-      </div>
-    </div>
-  </div>
-
-  <!-- Last updated indicator -->
-  <div class="container mx-auto px-4">
-    <Clock class="container mx-auto px-4" />
-    Last updated: {lastUpdated.toLocaleTimeString()}
-  </div>
-
-  <!-- Key Metrics Row -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Activity class="container mx-auto px-4" />
-        <span>Active Cases</span>
-      </div>
-      <div class="container mx-auto px-4">{systemStats.cases.active}</div>
-      <div class="container mx-auto px-4">
-        <TrendingUp class="container mx-auto px-4" />
-        +{systemStats.cases.trend}% this month
-      </div>
-    </div>
-
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Shield class="container mx-auto px-4" />
-        <span>Evidence Verified</span>
-      </div>
-      <div class="container mx-auto px-4">{hashStats.successful}</div>
-      <div class="container mx-auto px-4">
-        {Math.round((hashStats.successful / hashStats.total) * 100) || 0}%
-        success rate
-      </div>
-    </div>
-
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Users class="container mx-auto px-4" />
-        <span>Active Persons</span>
-      </div>
-      <div class="container mx-auto px-4">{systemStats.users.active}</div>
-      <div class="container mx-auto px-4">
-        {systemStats.users.total} total
-      </div>
-    </div>
-
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <AlertTriangle class="container mx-auto px-4" />
-        <span>Alerts</span>
-      </div>
-      <div class="container mx-auto px-4">
-        {systemStats.alerts.critical + systemStats.alerts.warning}
-      </div>
-      <div class="container mx-auto px-4">
-        {systemStats.alerts.critical} critical, {systemStats.alerts.warning} warnings
-      </div>
-    </div>
-  </div>
-
-  <!-- System Health Panel -->
-  <div class="container mx-auto px-4">
-    <h2>System Health</h2>
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Database class="container mx-auto px-4" />
-          Database
-        </div>
-        <div
-          class="container mx-auto px-4"
-        >
-          {performanceStats.databaseStatus}
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📁</div>
+        <div class="stat-content">
+          <h3>{stats.totalCases}</h3>
+          <p>Total Cases</p>
         </div>
       </div>
-
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Zap class="container mx-auto px-4" />
-          Performance
-        </div>
-        <div
-          class="container mx-auto px-4"
-        >
-          {performanceStats.systemHealth}%
+      
+      <div class="stat-card active">
+        <div class="stat-icon">🔄</div>
+        <div class="stat-content">
+          <h3>{stats.activeCases}</h3>
+          <p>Active Cases</p>
         </div>
       </div>
-
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Clock class="container mx-auto px-4" />
-          Response Time
-        </div>
-        <div class="container mx-auto px-4">
-          {performanceStats.apiResponseTime}ms
+      
+      <div class="stat-card">
+        <div class="stat-icon">🔍</div>
+        <div class="stat-content">
+          <h3>{stats.evidenceFiles}</h3>
+          <p>Evidence Files</p>
         </div>
       </div>
-
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Activity class="container mx-auto px-4" />
-          Uptime
-        </div>
-        <div class="container mx-auto px-4">
-          {performanceStats.uptime}
+      
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <h3>{stats.recentActivity}</h3>
+          <p>Recent Updates</p>
         </div>
       </div>
     </div>
 
-    <!-- Storage usage -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <span>Storage Usage</span>
-        <span>{performanceStats.storageUsed}%</span>
-      </div>
-      <div class="container mx-auto px-4">
-        <div
-          class="container mx-auto px-4"
-          style="width: {performanceStats.storageUsed}%"
-          class:warning={performanceStats.storageUsed > 80}
-          class:critical={performanceStats.storageUsed > 90}
-        ></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Security Monitoring Section -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h2>
-        <Shield class="container mx-auto px-4" />
-        Security Monitoring
-      </h2>
-      <a href="/security" class="container mx-auto px-4">
-        <Button variant="ghost" size="sm" aria-label="View security dashboard">
-          <Eye class="container mx-auto px-4" />
-        </Button>
-      </a>
-    </div>
-
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <AlertTriangle class="container mx-auto px-4" />
-        </div>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">Critical Alerts</span>
-          <span class="container mx-auto px-4">{systemStats.alerts.critical}</span>
-        </div>
-      </div>
-
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Clock class="container mx-auto px-4" />
-        </div>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">Recent Events</span>
-          <span class="container mx-auto px-4">12</span>
-        </div>
-      </div>
-
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Users class="container mx-auto px-4" />
-        </div>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">Active Sessions</span>
-          <span class="container mx-auto px-4">3</span>
-        </div>
-      </div>
-
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <CheckCircle class="container mx-auto px-4" />
-        </div>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">System Status</span>
-          <span class="container mx-auto px-4">Secure</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="container mx-auto px-4">
-      <a href="/security" class="container mx-auto px-4">
-        <Button size="sm">
-          <Shield class="container mx-auto px-4" />
-          View Security Dashboard
-        </Button>
-      </a>
-    </div>
-  </div>
-
-  <div class="container mx-auto px-4">
-    <!-- Evidence Integrity Stats -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2>
-          <Shield class="container mx-auto px-4" />
-          Evidence Integrity
-        </h2>
-        <a href="/evidence/hash" class="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="View all hash verifications"
-          >
-            <Eye class="container mx-auto px-4" />
-          </Button>
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="action-grid">
+        <a href="/cases/new" class="action-card">
+          <div class="action-icon">➕</div>
+          <h3>New Case</h3>
+          <p>Create a new legal case</p>
+        </a>
+        
+        <a href="/evidence" class="action-card">
+          <div class="action-icon">📤</div>
+          <h3>Upload Evidence</h3>
+          <p>Add evidence to existing cases</p>
+        </a>
+        
+        <a href="/search" class="action-card">
+          <div class="action-icon">🔍</div>
+          <h3>Search Cases</h3>
+          <p>Find cases and evidence</p>
+        </a>
+        
+        <a href="/reports" class="action-card">
+          <div class="action-icon">📈</div>
+          <h3>Generate Report</h3>
+          <p>Create case reports</p>
         </a>
       </div>
-
-      {#if loadingStats}
-        <div class="container mx-auto px-4">
-          <RefreshCw class="container mx-auto px-4" />
-          Loading...
-        </div>
-      {:else}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{hashStats.total}</div>
-            <div class="container mx-auto px-4">Total Verifications</div>
-          </div>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{hashStats.successful}</div>
-            <div class="container mx-auto px-4">Successful</div>
-          </div>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{hashStats.failed}</div>
-            <div class="container mx-auto px-4">Failed</div>
-          </div>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              {hashStats.total > 0
-                ? Math.round((hashStats.successful / hashStats.total) * 100)
-                : 0}%
-            </div>
-            <div class="container mx-auto px-4">Success Rate</div>
-          </div>
-        </div>
-        <div class="container mx-auto px-4">
-          <a href="/evidence/hash">
-            <Button variant="outline" size="sm">
-              View Hash Verification →
-            </Button>
-          </a>
-        </div>
-      {/if}
-    </div>
-
-    <!-- Recent Hash Verifications -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2>
-          <CheckCircle class="container mx-auto px-4" />
-          Recent Verifications
-        </h2>
-        <a href="/api/evidence/hash/history" class="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Download verification history"
-          >
-            <Download class="container mx-auto px-4" />
-          </Button>
-        </a>
-      </div>
-
-      {#if loadingStats}
-        <div class="container mx-auto px-4">
-          <RefreshCw class="container mx-auto px-4" />
-          Loading...
-        </div>
-      {:else if hashStats.recent.length > 0}
-        <ul class="container mx-auto px-4" role="list">
-          {#each hashStats.recent as verification}
-            <li class="container mx-auto px-4" role="listitem">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4"
-                  >{verification.evidenceTitle ||
-                    verification.fileName ||
-                    "Unknown"}</span
-                >
-                <span
-                  class="container mx-auto px-4"
-                  class:success={verification.result}
-                  class:failed={!verification.result}
-                  aria-label={verification.result
-                    ? "Verification successful"
-                    : "Verification failed"}
-                >
-                  {verification.result ? "✅" : "❌"}
-                </span>
-              </div>
-              <div class="container mx-auto px-4">
-                <code class="container mx-auto px-4"
-                  >{verification.verifiedHash.substring(0, 8)}...</code
-                >
-                <span class="container mx-auto px-4">
-                  {new Date(verification.verifiedAt).toLocaleDateString()}
-                </span>
-              </div>
-            </li>
-          {/each}
-        </ul>
-        <div class="container mx-auto px-4">
-          <a href="/api/evidence/hash/history">
-            <Button variant="ghost" size="sm">View All History →</Button>
-          </a>
-        </div>
-      {:else}
-        <div class="container mx-auto px-4">
-          <AlertTriangle class="container mx-auto px-4" />
-          <p>No hash verifications yet.</p>
-          <div class="container mx-auto px-4">
-            <a href="/evidence/hash">
-              <Button size="sm">Start Verifying →</Button>
-            </a>
-          </div>
-        </div>
-      {/if}
     </div>
 
     <!-- Recent Cases -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2>
-          <FileText class="container mx-auto px-4" />
-          Recent Cases
-        </h2>
-        <a href="/cases" class="container mx-auto px-4">
-          <Button variant="ghost" size="sm" aria-label="View all cases">
-            <Eye class="container mx-auto px-4" />
-          </Button>
-        </a>
-      </div>
-
-      {#if recentCases && recentCases.length > 0}
-        <ul class="container mx-auto px-4" role="list">
-          {#each recentCases as c}
-            <li class="container mx-auto px-4" role="listitem">
-              <div class="container mx-auto px-4">
-                <strong class="container mx-auto px-4">{c.title}</strong>
-                <span class="container mx-auto px-4"
-                  >{c.status}</span
-                >
-              </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">{c.caseNumber}</span>
-                <span class="container mx-auto px-4">
-                  {c.createdAt
-                    ? new Date(c.createdAt).toLocaleDateString()
-                    : "Unknown"}
-                </span>
-              </div>
-              {#if c.description}
-                <div class="container mx-auto px-4">{c.description}</div>
-              {/if}
-              <div class="container mx-auto px-4">
-                <a href="/cases/{c.id}">
-                  <Button variant="ghost" size="sm">View Case →</Button>
-                </a>
-              </div>
-            </li>
-          {/each}
-        </ul>
-        <div class="container mx-auto px-4">
-          <a href="/cases">
-            <Button variant="outline" size="sm">View All Cases →</Button>
-          </a>
-        </div>
-      {:else}
-        <div class="container mx-auto px-4">
-          <FileText class="container mx-auto px-4" />
-          <p>No recent cases found.</p>
-          <div class="container mx-auto px-4">
-            <a href="/cases/new">
-              <Button size="sm">Create First Case →</Button>
-            </a>
+    <div class="recent-section">
+      <h2>Recent Cases</h2>
+      <div class="cases-list">
+        {#each recentCases as case}
+          <div class="case-item">
+            <div class="case-info">
+              <h3>{case.title}</h3>
+              <p>Last updated: {case.lastUpdate}</p>
+            </div>
+            <div class="case-status status-{case.status}">
+              {case.status}
+            </div>
           </div>
-        </div>
-      {/if}
+        {/each}
+      </div>
+      
+      <a href="/cases" class="view-all-btn">View All Cases →</a>
     </div>
-
-    <!-- Recent Persons of Interest -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2>
-          <Users class="container mx-auto px-4" />
-          Recent Persons of Interest
-        </h2>
-        <a href="/criminals" class="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="View all persons of interest"
-          >
-            <Eye class="container mx-auto px-4" />
-          </Button>
-        </a>
-      </div>
-
-      {#if recentCriminals && recentCriminals.length > 0}
-        <ul class="container mx-auto px-4" role="list">
-          {#each recentCriminals as p}
-            <li class="container mx-auto px-4" role="listitem">
-              <div class="container mx-auto px-4">
-                <strong class="container mx-auto px-4">{p.firstName} {p.lastName}</strong>
-                <span class="container mx-auto px-4"
-                  >{p.status}</span
-                >
-              </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">
-                  Added: {p.createdAt
-                    ? new Date(p.createdAt).toLocaleDateString()
-                    : "Unknown"}
-                </span>
-              </div>
-              {#if Array.isArray(p.aliases) && p.aliases.length > 0}
-                <div class="container mx-auto px-4">
-                  Aliases: {p.aliases.join(", ")}
-                </div>
-              {/if}
-              <div class="container mx-auto px-4">
-                <a href="/criminals/{p.id}">
-                  <Button variant="ghost" size="sm">View Profile →</Button>
-                </a>
-              </div>
-            </li>
-          {/each}
-        </ul>
-        <div class="container mx-auto px-4">
-          <a href="/criminals">
-            <Button variant="outline" size="sm">View All Persons →</Button>
-          </a>
-        </div>
-      {:else}
-        <div class="container mx-auto px-4">
-          <Users class="container mx-auto px-4" />
-          <p>No recent persons of interest found.</p>
-          <div class="container mx-auto px-4">
-            <a href="/criminals/new">
-              <Button size="sm">Add Person →</Button>
-            </a>
-          </div>
-        </div>
-      {/if}
+  {:else}
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading dashboard...</p>
     </div>
-
-    <!-- Analytics Panel -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2>
-          <BarChart3 class="container mx-auto px-4" />
-          Analytics Overview
-        </h2>
-        <a href="/analytics" class="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="View detailed analytics"
-          >
-            <Eye class="container mx-auto px-4" />
-          </Button>
-        </a>
-      </div>
-
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">Cases This Month</div>
-          <div class="container mx-auto px-4">{systemStats.cases.active}</div>
-          <div class="container mx-auto px-4">
-            +{systemStats.cases.trend}%
-          </div>
-        </div>
-
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">Evidence Processed</div>
-          <div class="container mx-auto px-4">{hashStats.total}</div>
-          <div class="container mx-auto px-4">
-            +{systemStats.evidence.trend}%
-          </div>
-        </div>
-
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">Resolution Rate</div>
-          <div class="container mx-auto px-4">
-            {Math.round(
-              (systemStats.cases.closed / (systemStats.cases.total || 1)) * 100
-            )}%
-          </div>
-          <div class="container mx-auto px-4">vs last month</div>
-        </div>
-      </div>
-
-      <div class="container mx-auto px-4">
-        <a href="/analytics">
-          <Button variant="outline" size="sm">View Detailed Reports →</Button>
-        </a>
-      </div>
-    </div>
-
-    <!-- Quick Access Panel -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2>
-          <Zap class="container mx-auto px-4" />
-          Quick Access
-        </h2>
-      </div>
-
-      <div class="container mx-auto px-4">
-        <a href="/cases/new" class="container mx-auto px-4">
-          <Button>
-            <Plus class="container mx-auto px-4" />
-            <span>New Case</span>
-          </Button>
-        </a>
-
-        <a href="/evidence" class="container mx-auto px-4">
-          <Button variant="secondary">
-            <Upload class="container mx-auto px-4" />
-            <span>Upload Evidence</span>
-          </Button>
-        </a>
-
-        <a href="/search" class="container mx-auto px-4">
-          <Button variant="secondary">
-            <Search class="container mx-auto px-4" />
-            <span>Search Records</span>
-          </Button>
-        </a>
-
-        <a href="/reports" class="container mx-auto px-4">
-          <Button variant="secondary">
-            <FileText class="container mx-auto px-4" />
-            <span>Generate Report</span>
-          </Button>
-        </a>
-
-        <a href="/analytics" class="container mx-auto px-4">
-          <Button variant="secondary">
-            <BarChart3 class="container mx-auto px-4" />
-            <span>Analytics</span>
-          </Button>
-        </a>
-
-        <a href="/settings" class="container mx-auto px-4">
-          <Button variant="secondary">
-            <Settings class="container mx-auto px-4" />
-            <span>Settings</span>
-          </Button>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Onboarding Overlay -->
-<OnboardingOverlay
-  bind:open={showOnboarding}
-  steps={onboardingSteps}
-  autoProgress={false}
-  allowSkip={true}
-  on:complete={handleOnboardingComplete}
-/>
+  {/if}
+</div>
 
 <style>
-  /* @unocss-include */
-  .dashboard.container {
-    max-width: 1400px;
+  .dashboard-container {
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 1.5rem;}
-  /* Dashboard Header */
+    padding: 2rem;
+  }
+
   .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: 2rem;
-    gap: 2rem;}
-  .header-title h1 {
+  }
+
+  .dashboard-header h1 {
     font-size: 2rem;
     font-weight: 700;
-    color: #111827;
-    margin: 0 0 0.5rem 0;}
-  .subtitle {
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboard-header p {
     color: #6b7280;
-    margin: 0;
-    font-size: 1rem;}
-  .header-actions {
-    display: flex;
-    gap: 1rem;
-    align-items: center;}
-  .quick-actions {
-    display: flex;
-    gap: 0.75rem;}
-  .dashboard-controls {
-    display: flex;
-    gap: 0.5rem;
-    padding-left: 1rem;
-    border-left: 1px solid #e5e7eb;}
-  .last-updated {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-bottom: 2rem;}
-  /* Metrics Grid */
-  .metrics-grid {
+    font-size: 1rem;
+  }
+
+  .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 2rem;}
-  .metric-card {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: all 0.2s ease;}
-  .metric-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);}
-  .metric-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    color: #64748b;
-    font-size: 0.875rem;
-    font-weight: 500;}
-  .metric-value {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 0.5rem;}
-  .metric-value.critical {
-    color: #dc2626;}
-  .metric-trend {
-    font-size: 0.875rem;
-    color: #64748b;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;}
-  .metric-trend.positive {
-    color: #059669;}
-  /* System Health Panel */
-  .system-health-panel {
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
     background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
     padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);}
-  .system-health-panel h2 {
-    font-size: 1.125rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-card.active {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+  }
+
+  .stat-content h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-content p {
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+
+  .quick-actions {
+    margin-bottom: 3rem;
+  }
+
+  .quick-actions h2 {
+    font-size: 1.5rem;
     font-weight: 600;
-    color: #111827;
-    margin: 0 0 1.5rem 0;}
-  .health-metrics {
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .action-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
-    margin-bottom: 1.5rem;}
-  .health-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    background: #f9fafb;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;}
-  .health-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: #6b7280;}
-  .health-value {
-    font-weight: 600;
-    font-size: 0.875rem;}
-  .storage-usage {
-    margin-top: 1rem;}
-  .storage-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 0.5rem;}
-  .storage-bar {
-    height: 8px;
-    background: #e5e7eb;
-    border-radius: 4px;
-    overflow: hidden;}
-  .storage-fill {
-    height: 100%;
-    background: #3b82f6;
-    transition: width 0.3s ease;}
-  .storage-fill.warning {
-    background: #f59e0b;}
-  .storage-fill.critical {
-    background: #ef4444;}
-  /* Security Monitoring Section */
-  .security-monitoring-section {
+  }
+
+  .action-card {
     background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
     padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);}
-  .security-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;}
-  .security-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;}
-  .security-metric {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem;
-    background: #f9fafb;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;}
-  .security-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 9999px;}
-  .security-icon.critical {
-    background: #fee2e2;
-    color: #dc2626;}
-  .security-icon.warning {
-    background: #fffbeb;
-    color: #f59e0b;}
-  .security-icon.info {
-    background: #e0f2fe;
-    color: #0ea5e9;}
-  .security-icon.success {
-    background: #f0fdf4;
-    color: #15803d;}
-  .security-content {
-    flex: 1;}
-  .security-label {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-bottom: 0.25rem;}
-  .security-value {
-    font-weight: 600;
-    font-size: 1rem;
-    color: #111827;}
-  /* Dashboard Sections */
-  .dashboard-sections {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1.5rem;}
-  .dashboard-block {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    padding: 1.5rem;
+    border-radius: 0.75rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;}
-  .dashboard-block:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);}
-  .block-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;}
-  .block-header h2 {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .action-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .action-card h3 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: #111827;
-    margin: 0;}
-  /* Stats Grid */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;}
-  .stat {
-    text-align: center;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.02);
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.05);}
-  .stat-value {
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .action-card p {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .recent-section h2 {
     font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;}
-  .stat-label {
-    font-size: 0.8rem;
-    opacity: 0.7;
-    font-weight: 500;}
-  .text-success {
-    color: #10b981;}
-  .text-warning {
-    color: #f59e0b;}
-  /* Verification list */
-  .verification-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;}
-  .verification-item {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);}
-  .verification-item:last-child {
-    border-bottom: none;}
-  .verification-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.25rem;}
-  .evidence-name {
-    font-weight: 500;
-    font-size: 0.9rem;}
-  .verification-badge.success {
-    color: #10b981;}
-  .verification-badge.failed {
-    color: #ef4444;}
-  .verification-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    opacity: 0.7;}
-  .hash-short {
-    font-family: monospace;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 0.1rem 0.3rem;
-    border-radius: 0.25rem;}
-  /* Security Monitoring Section */
-  .security-monitoring-section {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .cases-list {
     background: white;
     border-radius: 0.75rem;
-    border: 1px solid #e5e7eb;
-    padding: 1.5rem;
-    margin-bottom: 2rem;}
-  .security-header {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .case-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;}
-  .security-header h2 {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.25rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .case-item:last-child {
+    border-bottom: none;
+  }
+
+  .case-info h3 {
+    font-size: 1rem;
     font-weight: 600;
-    color: #111827;
-    margin: 0;}
-  .security-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1rem;}
-  .security-metric {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: #f9fafb;
-    border-radius: 0.5rem;
-    border: 1px solid #e5e7eb;}
-  .security-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.5rem;
-    flex-shrink: 0;}
-  .security-icon.critical {
-    background: #fef2f2;
-    color: #dc2626;}
-  .security-icon.warning {
-    background: #fffbeb;
-    color: #d97706;}
-  .security-icon.info {
-    background: #eff6ff;
-    color: #2563eb;}
-  .security-icon.success {
-    background: #f0fdf4;
-    color: #16a34a;}
-  .security-content {
-    display: flex;
-    flex-direction: column;
-    flex: 1;}
-  .security-label {
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+
+  .case-info p {
     font-size: 0.875rem;
     color: #6b7280;
-    margin-bottom: 0.25rem;}
-  .security-value {
-    font-size: 1.125rem;
+  }
+
+  .case-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #111827;}
-  .security-actions {
-    display: flex;
-    justify-content: center;
-    padding-top: 1rem;
-    border-top: 1px solid #e5e7eb;}
-  /* Dark mode support for security section */
-  @media (prefers-color-scheme: dark) {
-    .security-monitoring-section {
-      background: #1f2937;
-      border-color: #374151;}
-    .security-header h2 {
-      color: #f9fafb;}
-    .security-metric {
-      background: #111827;
-      border-color: #374151;}
-    .security-label {
-      color: #9ca3af;}
-    .security-value {
-      color: #f9fafb;}
-    .security-actions {
-      border-color: #374151;}}
-  /* Buttons */
-  .btn {
+    text-transform: uppercase;
+  }
+
+  .status-active {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .status-pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .status-closed {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .view-all-btn {
     display: inline-flex;
     align-items: center;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    text-decoration: none;
-    font-size: 0.875rem;
+    color: #3b82f6;
     font-weight: 500;
-    transition: all 0.2s;}
-  .btn-sm {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.8rem;}
-  .btn-outline {
-    border: 1px solid #d1d5db;
-    color: #374151;
-    background: transparent;}
-  .btn-outline:hover {
-    background: #f9fafb;}
-  .btn-ghost {
-    color: #6b7280;
-    background: transparent;}
-  .btn-ghost:hover {
-    background: rgba(0, 0, 0, 0.05);}
-  .btn-primary {
-    background: #3b82f6;
-    color: white;}
-  .btn-primary:hover {
-    background: #2563eb;}
-  .loading-spinner {
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .view-all-btn:hover {
+    color: #1d4ed8;
+  }
+
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
     text-align: center;
-    padding: 2rem;
-    opacity: 0.6;}
-  .mt-3 {
-    margin-top: 0.75rem;}
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .analytics-panel {
-      grid-column: span 1;}
-    .analytics-grid {
-      grid-template-columns: repeat(2, 1fr);}
-    .quick-access-grid {
-      grid-template-columns: repeat(2, 1fr);}}
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   @media (max-width: 768px) {
-    .dashboard.container {
-      padding: 1rem;}
-    .dashboard-header {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1rem;}
-    .header-actions {
-      flex-direction: column;
-      gap: 1rem;}
-    .dashboard-controls {
-      padding-left: 0;
-      border-left: none;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 1rem;
-      justify-content: space-between;}
-    .metrics-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;}
-    .health-metrics {
-      grid-template-columns: 1fr;}
-    .dashboard-sections {
-      grid-template-columns: 1fr;}
+    .dashboard-container {
+      padding: 1rem;
+    }
+    
     .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .action-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;}
-    .analytics-grid {
-      grid-template-columns: 1fr;}
-    .quick-access-grid {
-      grid-template-columns: repeat(2, 1fr);}}
+    }
+  }
+
   @media (max-width: 480px) {
-    .metrics-grid {
-      grid-template-columns: 1fr;}
-    .quick-actions {
+    .action-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .case-item {
       flex-direction: column;
-      width: 100%;}
-    .quick-access-grid {
-      grid-template-columns: 1fr;}}
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .dashboard.container {
-      background: #0f172a;
-      color: #f1f5f9;}
-    .dashboard-block,
-    .system-health-panel {
-      background: #1e293b;
-      border-color: #334155;}
-    .metric-card {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      border-color: #475569;}
-    .header-title h1 {
-      color: #f1f5f9;}
-    .block-header h2 {
-      color: #f1f5f9;}
-    .case-title,
-    .person-name {
-      color: #f1f5f9;}
-    .health-item,
-    .stat,
-    .analytics-item {
-      background: #334155;
-      border-color: #475569;}}
-  /* High contrast mode */
-  @media (prefers-contrast: high) {
-    .dashboard-block,
-    .metric-card,
-    .system-health-panel {
-      border-width: 2px;}
-    .verification-item,
-    .case-item,
-    .person-item {
-      border-bottom-width: 2px;}}
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .metric-card:hover,
-    .dashboard-block:hover {
-      transform: none;}
-    .storage-fill,
-    .btn {
-      transition: none !important;}}
-  /* Focus indicators */
-  .btn:focus,
-  .dashboard-block:focus-within {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;}
-  /* Print styles */
-  @media print {
-    .dashboard-controls,
-    .header-actions,
-    .case-actions,
-    .person-actions {
-      display: none;}
-    .dashboard-sections {
-      grid-template-columns: 1fr;}
-    .dashboard-block {
-      break-inside: avoid;
-      box-shadow: none;
-      border: 1px solid #000;}}
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
 </style>

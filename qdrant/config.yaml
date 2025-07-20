@@ -1,0 +1,114 @@
+# Qdrant Configuration for Legal AI Vector Database
+# Optimized for legal document similarity search and evidence analysis
+
+service:
+  host: 0.0.0.0
+  http_port: 6333
+  grpc_port: 6334
+  enable_cors: true
+  max_request_size_mb: 128
+  max_workers: 8
+
+storage:
+  # Storage path
+  storage_path: /qdrant/storage
+  
+  # Performance settings
+  optimizers:
+    # Memory mapping threshold for large collections
+    memmap_threshold_kb: 1048576
+    
+    # Indexing settings optimized for legal documents
+    indexing_threshold_kb: 20000
+    
+    # Flush threshold for write operations
+    flush_interval_sec: 30
+    
+    # Max optimization threads
+    max_optimization_threads: 4
+  
+  performance:
+    # Search performance
+    max_search_threads: 8
+    search_timeout_ms: 30000
+    
+    # Write performance
+    max_write_batch_size: 1000
+    write_timeout_ms: 10000
+
+# Logging configuration
+log_level: "INFO"
+
+# Telemetry (disable for privacy in legal environment)
+telemetry_disabled: true
+
+# Cluster configuration (for future scaling)
+cluster:
+  enabled: false
+
+# Legal AI specific collections auto-configuration
+collections:
+  legal_documents:
+    # Vector size for embeddings (adjust based on your model)
+    vector_size: 384
+    distance: "Cosine"
+    
+    # Optimizations for legal document search
+    hnsw_config:
+      m: 16
+      ef_construct: 200
+      full_scan_threshold: 10000
+      max_indexing_threads: 4
+    
+    # Payload indexing for legal metadata
+    payload_indexing:
+      - field_name: "case_id"
+        field_type: "keyword"
+      - field_name: "document_type"
+        field_type: "keyword"
+      - field_name: "date_created"
+        field_type: "datetime"
+      - field_name: "legal_category"
+        field_type: "keyword"
+      - field_name: "priority_level"
+        field_type: "integer"
+
+  evidence_embeddings:
+    vector_size: 384
+    distance: "Cosine"
+    
+    hnsw_config:
+      m: 32
+      ef_construct: 400
+      full_scan_threshold: 5000
+      max_indexing_threads: 2
+    
+    payload_indexing:
+      - field_name: "evidence_type"
+        field_type: "keyword"
+      - field_name: "case_id"
+        field_type: "keyword"
+      - field_name: "relevance_score"
+        field_type: "float"
+      - field_name: "date_collected"
+        field_type: "datetime"
+
+  case_summaries:
+    vector_size: 384
+    distance: "Cosine"
+    
+    hnsw_config:
+      m: 24
+      ef_construct: 300
+      full_scan_threshold: 20000
+      max_indexing_threads: 2
+    
+    payload_indexing:
+      - field_name: "case_status"
+        field_type: "keyword"
+      - field_name: "jurisdiction"
+        field_type: "keyword"
+      - field_name: "case_type"
+        field_type: "keyword"
+      - field_name: "filing_date"
+        field_type: "datetime"

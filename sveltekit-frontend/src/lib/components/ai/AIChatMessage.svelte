@@ -172,7 +172,7 @@
         </button>
 
         {#if isSourcesExpanded}
-          <div class="container mx-auto px-4" transition:slide={{ duration: 200 ">
+          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
             {#each message.sources as source (source.id)}
               <div class="container mx-auto px-4">
                 <div class="container mx-auto px-4">
@@ -215,7 +215,7 @@
         </button>
 
         {#if isMetadataExpanded}
-          <div class="container mx-auto px-4" transition:slide={{ duration: 200 ">
+          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
             <div class="container mx-auto px-4">
               <span class="container mx-auto px-4">Model:</span>
               <span class="container mx-auto px-4">{message.metadata.model}</span>

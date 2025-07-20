@@ -1,9 +1,7 @@
-import type { User } from '$lib/types/user';
-
 <script lang="ts">
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
-  import { Button } from "$lib/components/ui/button";
+  import Button from "$lib/components/ui/button/Button.svelte";
   import { notifications } from "$lib/stores/notification";
   import { FocusManager } from "$lib/utils/accessibility";
   import {

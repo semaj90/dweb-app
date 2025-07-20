@@ -1,22 +1,19 @@
 // Database connection and schema exports
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as vectorSchema from "../database/vector-schema-simple";
-import * as schema from "./unified-schema";
+// Import the main schema (includes vector support)
+import * as schema from "../db/schema";
 
 // Database type helper - exported first to avoid temporal dead zone
 export const isPostgreSQL = true;
 
-// Combine all schemas
-export const fullSchema = {
-  ...schema,
-  ...vectorSchema,
-};
+// Use the main schema
+export const fullSchema = schema;
 
 // Create the connection
 const connectionString =
   process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
+  "postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3";
 
 // For query purposes
 const queryClient = postgres(connectionString);
@@ -27,8 +24,7 @@ const migrationClient = postgres(connectionString, { max: 1 });
 export const migrationDb = drizzle(migrationClient);
 
 // Export all schemas and types
-export * from "../database/vector-schema-simple";
-export * from "./unified-schema";
+export * from "../db/schema";
 
 // Helper function to test database connection
 export async function testConnection() {
