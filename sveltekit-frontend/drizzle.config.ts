@@ -1,20 +1,20 @@
-import * as dotenv from "dotenv";
-import type { Config } from "drizzle-kit";
+import { defineConfig } from 'drizzle-kit';
+import { loadEnv } from 'vite';
 
-dotenv.config({ path: "./.env" });
+const env = loadEnv('', process.cwd(), '');
 
-export default {
-  schema: [
-    "./src/lib/server/db/unified-schema.ts",
-    "./src/lib/server/database/vector-schema-simple.ts",
-  ],
-  out: "./drizzle",
-  dialect: "postgresql", // Changed from driver: 'pg' to dialect: 'postgresql'
-  dbCredentials: {
-    url:
-      process.env.DATABASE_URL ||
-      "postgresql://postgres:postgres@localhost:5432/prosecutor_db",
-  },
-  verbose: true,
-  strict: true,
-} satisfies Config;
+export default defineConfig({
+ schema: './src/lib/db/schema.ts',
+ out: './drizzle',
+ dialect: 'postgresql',
+ dbCredentials: {
+ url: env.DATABASE_URL || 'postgresql://detective:secure_password@localhost:5433/detective_evidence_db'
+ },
+ verbose: true,
+ strict: true,
+ migrations: {
+ prefix: 'timestamp',
+ table: '__drizzle_migrations__',
+ schema: 'public'
+ }
+});

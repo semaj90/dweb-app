@@ -28,10 +28,9 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.user = {
       id: user.id,
       email: user.email,
-      name: user.name || user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      avatarUrl: user.avatarUrl,
+      firstName: user.firstName ?? "",
+      lastName: user.lastName ?? "",
+      avatarUrl: user.avatarUrl ?? "",
       role:
         (user.role as "prosecutor" | "investigator" | "admin" | "user") ||
         "user",
@@ -50,5 +49,15 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.user = null;
   }
   event.locals.session = session;
+
+  // Ensure proper typing for the session
+  if (session) {
+    event.locals.session = {
+      id: session.id,
+      userId: session.userId,
+      expiresAt: session.expiresAt,
+      fresh: session.fresh || false
+    };
+  }
   return resolve(event);
 };

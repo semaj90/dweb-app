@@ -14,16 +14,19 @@
 
   function handleSidebarMouseEnter() {
     sidebarHovered = true;
-    showSidebar.set(true);}
+    showSidebar.set(true);
+}
   function handleSidebarMouseLeave() {
     sidebarHovered = false;
     setTimeout(() => {
       if (!sidebarHovered) showSidebar.set(false);
-    }, 300);}
+    }, 300);
+}
   function handleEvidenceDrop(evd: any) {
     // Forward to CanvasEditor (could push to a store or call a method)
     // For now, just log
-    console.log("Dropped on canvas:", evd);}
+    console.log("Dropped on canvas:", evd);
+}
 </script>
 
 <section class="container mx-auto px-4">
@@ -37,7 +40,8 @@
       on:keydown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          handleSidebarMouseEnter();}
+          handleSidebarMouseEnter();
+}
       "
     >
       <div
@@ -54,7 +58,8 @@
         on:mouseleave={handleSidebarMouseLeave}
         on:keydown={(e) => {
           if (e.key === "Escape") {
-            handleSidebarMouseLeave();}
+            handleSidebarMouseLeave();
+}
         "
       >
         <EvidencePanel {caseId} onEvidenceDrop={handleEvidenceDrop} />
@@ -96,7 +101,8 @@
   /* @unocss-include */
   .case-layout {
     margin-top: 2rem;
-    margin-bottom: 2rem;}
+    margin-bottom: 2rem;
+}
   .canvas-stretch-container {
     position: relative;
     width: 100%;
@@ -106,25 +112,31 @@
     flex-direction: column;
     background: var(--pico-background, #fff);
     border-radius: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);}
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
   .sidebar-trigger {
     left: 0;
     top: 50%;
-    transform: translateY(-50%);}
+    transform: translateY(-50%);
+}
   .sidebar-tab {
     --uno: bg-primary text-white rounded-r px-2 py-4 shadow
-      hover: bg-primary-600 transition;}
+      hover: bg-primary-600 transition;
+}
   .sidebar-panel {
     --uno: bg-background-alt shadow-lg w-64 h-full fixed left-0 top-0 z-30 flex
       flex-col;
-    animation: slideInSidebar 0.3s;}
+    animation: slideInSidebar 0.3s;
+}
   @keyframes slideInSidebar {
     from {
       transform: translateX(-100%);
-      opacity: 0;}
+      opacity: 0;
+}
     to {
       transform: translateX(0);
-      opacity: 1;}}
+      opacity: 1;
+}}
   .ai-fab {
     position: absolute;
     right: 2rem;
@@ -136,9 +148,11 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;}
+    justify-content: center;
+}
   .infinite-scroll-list {
     flex: 1;
     overflow-y: auto;
-    margin-top: 1rem;}
+    margin-top: 1rem;
+}
 </style>
