@@ -1,0 +1,380 @@
+// Qdrant vector database integration for evidence tagging and metadata
+import { QdrantClient } from "@qdrant/js-client-rest";
+import VectorService from "./vector-service";
+
+interface QdrantPoint {
+  id: string;
+  vector: number[];
+  payload: {
+    content: string;
+    type: "evidence" | "case" | "chat" | "precedent";
+    caseId?: string;
+    evidenceId?: string;
+    tags: string[];
+    metadata: Record<string, any>;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+interface SearchResult {
+  id: string;
+  score: number;
+  payload: QdrantPoint["payload"];
+}
+interface EvidenceTag {
+  name: string;
+  category: "type" | "relevance" | "source" | "legal" | "custom";
+  confidence: number;
+  reason?: string;
+}
+class QdrantService {
+  private client: QdrantClient;
+  private collectionName = "legal_vectors";
+  private isInitialized = false;
+
+  constructor() {
+    // Initialize Qdrant client with Docker Compose settings
+    this.client = new QdrantClient({
+      host: process.env.QDRANT_HOST || "localhost",
+      port: parseInt(process.env.QDRANT_PORT || "6333"),
+      apiKey: process.env.QDRANT_API_KEY, // Optional for local development
+    });
+  }
+  async initialize(): Promise<void> {
+    if (this.isInitialized) return;
+
+    try {
+      // Check if collection exists
+      const collections = await this.client.getCollections();
+      const collectionExists = collections.collections?.some(
+        (col) => col.name === this.collectionName,
+      );
+
+      if (!collectionExists) {
+        // Create collection with appropriate vector configuration
+        await this.client.createCollection(this.collectionName, {
+          vectors: {
+            size: 1536, // OpenAI embedding dimension (adjust for your model)
+            distance: "Cosine",
+          },
+          optimizers_config: {
+            default_segment_number: 2,
+          },
+          replication_factor: 1,
+        });
+
+        // Create indexes for better search performance
+        await this.client.createPayloadIndex(this.collectionName, {
+          field_name: "type",
+          field_schema: "keyword",
+        });
+
+        await this.client.createPayloadIndex(this.collectionName, {
+          field_name: "caseId",
+          field_schema: "keyword",
+        });
+
+        await this.client.createPayloadIndex(this.collectionName, {
+          field_name: "tags",
+          field_schema: "keyword",
+        });
+
+        console.log(`Created Qdrant collection: ${this.collectionName}`);
+      }
+      this.isInitialized = true;
+    } catch (error) {
+      console.error("Failed to initialize Qdrant:", error);
+      throw error;
+    }
+  }
+  async storeEvidence(
+    evidenceId: string,
+    content: string,
+    metadata: {
+      caseId?: string;
+      type: string;
+      tags?: string[];
+      [key: string]: any;
+    },
+  ): Promise<string> {
+    await this.initialize();
+
+    // Generate embedding using vector service
+    const embedding = await VectorService.generateEmbedding(content, {
+      model: "ollama",
+    });
+
+    // Auto-generate tags if not provided
+    const autoTags =
+      metadata.tags || (await this.generateTags(content, metadata.type));
+
+    const point: QdrantPoint = {
+      id: evidenceId,
+      vector: embedding,
+      payload: {
+        content,
+        type: "evidence",
+        caseId: metadata.caseId,
+        evidenceId,
+        tags: autoTags,
+        metadata,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    };
+
+    await this.client.upsert(this.collectionName, {
+      wait: true,
+      points: [point],
+    });
+
+    // Also store in pgvector for redundancy and complex queries
+    await VectorService.storeEvidenceVector({
+      evidenceId,
+      caseId: metadata.caseId,
+      content,
+      embedding,
+      vectorType: metadata.type,
+      metadata: {
+        ...metadata,
+        tags: autoTags,
+        qdrantId: evidenceId,
+      },
+    });
+
+    return evidenceId;
+  }
+  async searchSimilarEvidence(
+    query: string,
+    options: {
+      caseId?: string;
+      limit?: number;
+      threshold?: number;
+      evidenceTypes?: string[];
+      tags?: string[];
+    } = {},
+  ): Promise<SearchResult[]> {
+    await this.initialize();
+
+    const {
+      caseId,
+      limit = 10,
+      threshold = 0.7,
+      evidenceTypes = [],
+      tags = [],
+    } = options;
+
+    // Generate query embedding
+    const queryEmbedding = await VectorService.generateEmbedding(query, {
+      model: "ollama",
+    });
+
+    // Build filter conditions
+    const filter: any = {
+      must: [{ key: "type", match: { value: "evidence" } }],
+    };
+
+    if (caseId) {
+      filter.must.push({ key: "caseId", match: { value: caseId } });
+    }
+    if (evidenceTypes.length > 0) {
+      filter.must.push({
+        key: "metadata.type",
+        match: { any: evidenceTypes },
+      });
+    }
+    if (tags.length > 0) {
+      filter.must.push({
+        key: "tags",
+        match: { any: tags },
+      });
+    }
+    const searchResult = await this.client.search(this.collectionName, {
+      vector: queryEmbedding,
+      limit,
+      score_threshold: threshold,
+      filter,
+      with_payload: true,
+    });
+
+    return searchResult.map((result) => ({
+      id: result.id as string,
+      score: result.score || 0,
+      payload: result.payload as QdrantPoint["payload"],
+    }));
+  }
+  async updateEvidenceTags(
+    evidenceId: string,
+    newTags: string[],
+    metadata?: Record<string, any>,
+  ): Promise<void> {
+    await this.initialize();
+
+    const updatePayload: any = {
+      tags: newTags,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (metadata) {
+      updatePayload.metadata = metadata;
+    }
+    await this.client.setPayload(this.collectionName, {
+      payload: updatePayload,
+      points: [evidenceId],
+    });
+
+    // Also update pgvector record
+    await VectorService.updateEvidenceMetadata(evidenceId, {
+      tags: newTags,
+      ...metadata,
+    });
+  }
+  async generateTags(content: string, evidenceType: string): Promise<string[]> {
+    try {
+      const { ollamaService } = await import(
+        "../../../lib/services/ollama-service.js"
+      );
+
+      const tagPrompt = `
+Analyze this ${evidenceType} evidence and generate relevant legal tags:
+
+CONTENT:
+${content.substring(0, 1000)} ${content.length > 1000 ? "..." : ""}
+
+Generate 5-8 specific, relevant tags for legal case management. Focus on:
+- Evidence type and characteristics
+- Legal relevance and implications
+- Procedural considerations
+- Content categories
+
+Return only a JSON array of strings, no other text:
+["tag1", "tag2", "tag3", ...]`;
+
+      const response = await ollamaService.generate(tagPrompt, {
+        temperature: 0.3,
+      });
+
+      if (response) {
+        try {
+          const tags = JSON.parse(response);
+          if (Array.isArray(tags)) {
+            return [...new Set([evidenceType, ...tags])]; // Include type and dedupe
+          }
+        } catch (parseError) {
+          console.error("Failed to parse generated tags:", parseError);
+        }
+      }
+      // Fallback to basic tags
+      return [evidenceType, "unprocessed", "requires-review"];
+    } catch (error) {
+      console.error("Tag generation error:", error);
+      return [evidenceType, "auto-tag-failed"];
+    }
+  }
+  async getEvidenceAnalytics(caseId?: string): Promise<{
+    totalEvidence: number;
+    evidenceByType: Record<string, number>;
+    topTags: Array<{ tag: string; count: number }>;
+    recentActivity: Array<{ id: string; content: string; timestamp: string }>;
+  }> {
+    await this.initialize();
+
+    const filter: any = {
+      must: [{ key: "type", match: { value: "evidence" } }],
+    };
+
+    if (caseId) {
+      filter.must.push({ key: "caseId", match: { value: caseId } });
+    }
+    // Get all evidence points with filter
+    const scrollResult = await this.client.scroll(this.collectionName, {
+      filter,
+      limit: 1000,
+      with_payload: true,
+    });
+
+    const evidencePoints = scrollResult.points || [];
+
+    // Calculate analytics
+    const totalEvidence = evidencePoints.length;
+    const evidenceByType: Record<string, number> = {};
+    const tagCounts: Record<string, number> = {};
+
+    evidencePoints.forEach((point) => {
+      const payload = point.payload as QdrantPoint["payload"];
+
+      // Count by evidence type
+      const type = payload.metadata?.type || "unknown";
+      evidenceByType[type] = (evidenceByType[type] || 0) + 1;
+
+      // Count tags
+      payload.tags.forEach((tag) => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      });
+    });
+
+    // Get top tags
+    const topTags = Object.entries(tagCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10)
+      .map(([tag, count]) => ({ tag, count }));
+
+    // Get recent activity
+    const recentActivity = evidencePoints
+      .sort((a, b) => {
+        const aTime = a.payload?.updatedAt
+          ? new Date(a.payload.updatedAt as string).getTime()
+          : 0;
+        const bTime = b.payload?.updatedAt
+          ? new Date(b.payload.updatedAt as string).getTime()
+          : 0;
+        return bTime - aTime;
+      })
+      .slice(0, 5)
+      .map((point) => ({
+        id: point.id as string,
+        content:
+          (point.payload?.content as string)?.substring(0, 100) + "..." || "",
+        timestamp: (point.payload?.updatedAt as string) || "",
+      }));
+
+    return {
+      totalEvidence,
+      evidenceByType,
+      topTags,
+      recentActivity,
+    };
+  }
+  async deleteEvidence(evidenceId: string): Promise<void> {
+    await this.initialize();
+
+    await this.client.delete(this.collectionName, {
+      points: [evidenceId],
+    });
+
+    // Also delete from pgvector
+    await VectorService.deleteEvidenceVector(evidenceId);
+  }
+  async exportCaseEvidence(caseId: string): Promise<QdrantPoint[]> {
+    await this.initialize();
+
+    const scrollResult = await this.client.scroll(this.collectionName, {
+      filter: {
+        must: [
+          { key: "type", match: { value: "evidence" } },
+          { key: "caseId", match: { value: caseId } },
+        ],
+      },
+      limit: 1000,
+      with_payload: true,
+      with_vector: true,
+    });
+
+    return (scrollResult.points || []).map((point) => ({
+      id: point.id as string,
+      vector: point.vector as number[],
+      payload: point.payload as QdrantPoint["payload"],
+    }));
+  }
+}
+export const qdrantService = new QdrantService();

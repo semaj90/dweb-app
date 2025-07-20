@@ -1,0 +1,145 @@
+{
+  // Performance optimizations - disable built-in validation in favor of ESLint
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
+
+  // CSS validation and linting
+  "css.validate": true,
+  "css.lint.unknownAtRules": "ignore",
+  "scss.validate": true,
+  "scss.lint.unknownAtRules": "ignore",
+  "less.validate": true,
+  "less.lint.unknownAtRules": "ignore",
+
+  // TailwindCSS configuration
+  "tailwindCSS.includeLanguages": {
+    "svelte": "html"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["class:([^=]+)={([^}]+)}", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["classList.add\\(([^)]*)\\)", "\"([^\"]*)\""],
+    ["classList.remove\\(([^)]*)\\)", "\"([^\"]*)\""],
+    ["classList.toggle\\(([^)]*)\\)", "\"([^\"]*)\""],
+    ["classList.replace\\(([^)]*)\\)", "\"([^\"]*)\""]
+  ],
+
+  // UnoCSS configuration
+  "unocss.root": ["./uno.config.ts", "./unocss.config.ts"],
+
+  // File associations
+  "files.associations": {
+    "*.svelte": "svelte"
+  },
+
+  // Emmet configuration
+  "emmet.includeLanguages": {
+    "svelte": "html"
+  },
+
+  // TypeScript preferences
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // Svelte configuration
+  "svelte.enable-ts-plugin": true,
+
+  // Editor configuration
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "svelte.svelte-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Language-specific formatting
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // CSS custom data
+  "css.customData": [".vscode/css-custom-data.json"],
+
+  // Additional performance optimizations
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.next": true,
+    "**/.nuxt": true,
+    "**/dist": true,
+    "**/build": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/dist": true,
+    "**/build": true
+  },
+
+  // PowerShell specific settings for SvelteKit development
+  "[powershell]": {
+    "editor.wordWrap": "on",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "files.encoding": "utf8bom"
+  },
+
+  // GitHub Copilot settings optimized for SvelteKit development
+  "github.copilot.enable": {
+    "*": true,
+    "svelte": true,
+    "typescript": true,
+    "javascript": true,
+    "css": true,
+    "scss": true,
+    "html": true,
+    "json": true,
+    "markdown": true,
+    "plaintext": false,
+    "scminput": false
+  },
+  "github.copilot.advanced": {
+    "listCount": 10,
+    "inlineSuggestEnable": true
+  },
+  "github.copilot.chat.localeOverride": "en",
+  "github.copilot.editor.enableAutoCompletions": true,
+
+  // Enhanced IntelliSense for SvelteKit
+  "editor.inlineSuggest.enabled": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggestSelection": "first",
+  "editor.tabCompletion": "on",
+
+  // PowerShell terminal reminder
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Write-Host 'SvelteKit Development Environment' -ForegroundColor Green; Write-Host 'Remember: Use semicolons (;) not && for PowerShell commands' -ForegroundColor Yellow"
+      ]
+    }
+  }
+}

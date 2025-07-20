@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Legal System Browser Test</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-section {
+        background: #f5f5f5;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+      .test-result {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #testResults {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Legal System Browser Test</h1>
+    <p>
+      This page tests the legal case management system features in the browser.
+    </p>
+
+    <div class="test-section">
+      <h2>Authentication Tests</h2>
+      <button onclick="testLogin()">Test Login</button>
+      <button onclick="testLogout()">Test Logout</button>
+      <button onclick="checkAuthStatus()">Check Auth Status</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Profile Tests</h2>
+      <button onclick="testProfileView()">View Profile</button>
+      <button onclick="testAvatarUpload()">Test Avatar Upload</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Case Management Tests</h2>
+      <button onclick="testCreateCase()">Create Test Case</button>
+      <button onclick="testViewCases()">View Cases</button>
+      <button onclick="testCreateReport()">Create Test Report</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Advanced Features</h2>
+      <button onclick="testCitationPoints()">Test Citation Points</button>
+      <button onclick="testInteractiveCanvas()">Test Interactive Canvas</button>
+      <button onclick="testPDFExport()">Test PDF Export</button>
+    </div>
+
+    <div id="testResults"></div>
+
+    <script>
+      const BASE_URL = "http://localhost:5174";
+      let currentUser = null;
+
+      function addResult(message, isSuccess = true) {
+        const resultsDiv = document.getElementById("testResults");
+        const resultDiv = document.createElement("div");
+        resultDiv.className = `test-result ${isSuccess ? "success" : "error"}`;
+        resultDiv.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+        resultsDiv.appendChild(resultDiv);
+        resultsDiv.scrollTop = resultsDiv.scrollHeight;
+      }
+
+      async function testLogin() {
+        try {
+          const response = await fetch(`${BASE_URL}/api/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: "legal.test@courthouse.gov",
+              password: "SecurePassword123!",
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            addResult(`✅ Login successful! User: ${data.user.name}`);
+          } else {
+            const error = await response.json();
+            addResult(`❌ Login failed: ${error.error}`, false);
+          }
+        } catch (error) {
+          addResult(`❌ Login error: ${error.message}`, false);
+        }
+      }
+
+      async function testLogout() {
+        try {
+          const response = await fetch(`${BASE_URL}/api/auth/logout`, {
+            method: "POST",
+          });
+
+          if (response.ok) {
+            currentUser = null;
+            addResult("✅ Logout successful!");
+          } else {
+            addResult("❌ Logout failed", false);
+          }
+        } catch (error) {
+          addResult(`❌ Logout error: ${error.message}`, false);
+        }
+      }
+
+      async function checkAuthStatus() {
+        try {
+          const response = await fetch(`${BASE_URL}/api/user/profile`);
+
+          if (response.ok) {
+            const data = await response.json();
+            addResult(`✅ User authenticated: ${data.name} (${data.email})`);
+          } else {
+            addResult("❌ User not authenticated", false);
+          }
+        } catch (error) {
+          addResult(`❌ Auth check error: ${error.message}`, false);
+        }
+      }
+
+      async function testProfileView() {
+        try {
+          window.open(`${BASE_URL}/profile`, "_blank");
+          addResult("✅ Profile page opened in new tab");
+        } catch (error) {
+          addResult(`❌ Profile view error: ${error.message}`, false);
+        }
+      }
+
+      async function testAvatarUpload() {
+        try {
+          // Create a simple test image
+          const canvas = document.createElement("canvas");
+          canvas.width = 100;
+          canvas.height = 100;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#4A90E2";
+          ctx.fillRect(0, 0, 100, 100);
+          ctx.fillStyle = "white";
+          ctx.font = "20px Arial";
+          ctx.fillText("TEST", 25, 55);
+
+          canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            formData.append("avatar", blob, "test-avatar.png");
+
+            const response = await fetch(`${BASE_URL}/api/user/avatar/upload`, {
+              method: "POST",
+              body: formData,
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              addResult(`✅ Avatar upload successful! URL: ${data.avatarUrl}`);
+            } else {
+              const error = await response.json();
+              addResult(`❌ Avatar upload failed: ${error.error}`, false);
+            }
+          }, "image/png");
+        } catch (error) {
+          addResult(`❌ Avatar upload error: ${error.message}`, false);
+        }
+      }
+
+      async function testCreateCase() {
+        try {
+          const caseData = {
+            title: "Browser Test Case",
+            description: "A test case created from the browser",
+            caseNumber: `BT-${Date.now()}`,
+            caseType: "criminal",
+            status: "active",
+            priority: "medium",
+            jurisdiction: "Test Court",
+            defendants: ["John Browser Test"],
+            charges: ["Test Charge"],
+            courtDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0],
+          };
+
+          const response = await fetch(`${BASE_URL}/api/cases`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(caseData),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            addResult(`✅ Case created successfully! ID: ${data.id}`);
+          } else {
+            const error = await response.json();
+            addResult(`❌ Case creation failed: ${error.error}`, false);
+          }
+        } catch (error) {
+          addResult(`❌ Case creation error: ${error.message}`, false);
+        }
+      }
+
+      async function testViewCases() {
+        try {
+          window.open(`${BASE_URL}/cases`, "_blank");
+          addResult("✅ Cases page opened in new tab");
+        } catch (error) {
+          addResult(`❌ Cases view error: ${error.message}`, false);
+        }
+      }
+
+      async function testCreateReport() {
+        try {
+          const reportData = {
+            title: "Browser Test Report",
+            content:
+              "<h1>Test Report</h1><p>This is a test report created from the browser.</p>",
+            summary: "Browser test report summary",
+            reportType: "investigation",
+            status: "draft",
+          };
+
+          const response = await fetch(`${BASE_URL}/api/reports`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(reportData),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            addResult(`✅ Report created successfully! ID: ${data.id}`);
+          } else {
+            const error = await response.json();
+            addResult(`❌ Report creation failed: ${error.error}`, false);
+          }
+        } catch (error) {
+          addResult(`❌ Report creation error: ${error.message}`, false);
+        }
+      }
+
+      async function testCitationPoints() {
+        addResult(
+          "ℹ️ Citation points require a report ID - create a report first",
+        );
+      }
+
+      async function testInteractiveCanvas() {
+        addResult(
+          "ℹ️ Canvas features require a report ID - create a report first",
+        );
+      }
+
+      async function testPDFExport() {
+        addResult("ℹ️ PDF export requires a report ID - create a report first");
+      }
+
+      // Run initial auth check on page load
+      window.addEventListener("load", () => {
+        addResult(
+          "🚀 Browser test page loaded - click buttons to test features",
+        );
+      });
+    </script>
+  </body>
+</html>

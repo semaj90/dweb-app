@@ -1,0 +1,98 @@
+import { evidence } from "$lib/server/db/schema-postgres";
+import type { RequestHandler } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
+import { db } from "$lib/server/db/index";
+
+// GET specific evidence by ID
+export const GET: RequestHandler = async ({ params }) => {
+  try {
+    const evidenceId = params.evidenceId;
+
+    if (!evidenceId) {
+      return json({ error: "Evidence ID is required" }, { status: 400 });
+    }
+    const result = await db
+      .select()
+      .from(evidence)
+      .where(eq(evidence.id, evidenceId))
+      .limit(1);
+
+    if (result.length === 0) {
+      return json({ error: "Evidence not found" }, { status: 404 });
+    }
+    return json({ evidence: result[0] });
+  } catch (error) {
+    console.error("Error fetching evidence:", error);
+    return json({ error: "Internal server error" }, { status: 500 });
+  }
+};
+
+// PATCH update evidence
+export const PATCH: RequestHandler = async ({ params, request }) => {
+  try {
+    const evidenceId = params.evidenceId;
+
+    if (!evidenceId) {
+      return json({ error: "Evidence ID is required" }, { status: 400 });
+    }
+    const updateData = await request.json();
+
+    // Remove undefined values and prepare update object
+    const updateFields: any = {};
+    if (updateData.title !== undefined) updateFields.title = updateData.title;
+    if (updateData.description !== undefined)
+      updateFields.description = updateData.description;
+    if (updateData.tags !== undefined) updateFields.tags = updateData.tags;
+    if (updateData.aiAnalysis !== undefined)
+      updateFields.aiAnalysis = updateData.aiAnalysis;
+    if (updateData.metadata !== undefined)
+      updateFields.metadata = updateData.metadata;
+
+    // Always update the updatedAt timestamp
+    updateFields.updatedAt = new Date();
+
+    const result = await db
+      .update(evidence)
+      .set(updateFields)
+      .where(eq(evidence.id, evidenceId))
+      .returning();
+
+    if (result.length === 0) {
+      return json({ error: "Evidence not found" }, { status: 404 });
+    }
+    return json({
+      evidence: result[0],
+      message: "Evidence updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating evidence:", error);
+    return json({ error: "Internal server error" }, { status: 500 });
+  }
+};
+
+// DELETE evidence
+export const DELETE: RequestHandler = async ({ params }) => {
+  try {
+    const evidenceId = params.evidenceId;
+
+    if (!evidenceId) {
+      return json({ error: "Evidence ID is required" }, { status: 400 });
+    }
+    const result = await db
+      .delete(evidence)
+      .where(eq(evidence.id, evidenceId))
+      .returning();
+
+    if (result.length === 0) {
+      return json({ error: "Evidence not found" }, { status: 404 });
+    }
+    return json({
+      message: "Evidence deleted successfully",
+      evidence: result[0],
+    });
+  } catch (error) {
+    console.error("Error deleting evidence:", error);
+    return json({ error: "Internal server error" }, { status: 500 });
+  }
+};

@@ -1,0 +1,102 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+            - next
+        paths-ignore:
+            - ".changeset/**"
+            - README.md
+            - ".vscode/**"
+            - CHANGELOG.md
+    pull_request:
+        paths-ignore:
+            - ".changeset/**"
+            - README.md
+            - ".vscode/**"
+            - CHANGELOG.md
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
+    cancel-in-progress: true
+
+jobs:
+    Check:
+        name: Run svelte-check
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Run svelte-check
+              run: pnpm check
+
+    Lint:
+        runs-on: macos-latest
+        name: Lint
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - run: pnpm lint
+
+    Test-Utils:
+        runs-on: macos-latest
+        name: Test Utils
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - run: pnpm test:utils
+
+    Test:
+        name: Test - ${{ matrix.browser }}
+        runs-on: macos-latest
+        strategy:
+            matrix:
+                browser: [chromium, firefox, webkit]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Install Playwright browser
+              run: pnpm dlx playwright install ${{ matrix.browser }}
+
+            - name: Build packages
+              run: pnpm build:packages
+
+            - name: Run browser tests
+              run: |
+                  if [ "${{ matrix.browser }}" = "firefox" ]; then
+                    rm -rf tests/node_modules/.vite && pnpm test:browser --browser ${{ matrix.browser }} --no-file-parallelism
+                  else
+                    rm -rf tests/node_modules/.vite && pnpm test:browser --browser ${{ matrix.browser }}
+                  fi

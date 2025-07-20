@@ -1,0 +1,302 @@
+{
+  "timestamp": "2025-07-15T00:09:38.104Z",
+  "summary": {
+    "passed": 57,
+    "warnings": 0,
+    "failed": 0,
+    "total": 58,
+    "successRate": 98.3
+  },
+  "tests": [
+    {
+      "name": "Core file: src/routes/api/analyze/+server.ts",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: src/lib/components/ai/ThinkingStyleToggle.svelte",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: src/lib/ai/thinking-processor.ts",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: scripts/setup-thinking-ai.js",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: scripts/test-thinking-analysis.js",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: scripts/process-docs.js",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: scripts/fetch-docs.js",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: LAUNCH-ENHANCED-LEGAL-AI.bat",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Core file: launch-enhanced-legal-ai.ps1",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "package.json readable",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: thinking:setup",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: thinking:test",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: docs:process",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: docs:fetch",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: db:push",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: db:migrate",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: db:seed",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: vector:init",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: vector:sync",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: ai:test",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: system:health",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "NPM script: dev",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: jsdom",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: sharp",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: tesseract.js",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: mammoth",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: ollama",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: drizzle-orm",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: svelte",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Dependency: @sveltejs/kit",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Route: src/routes/evidence",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Route: src/routes/interactive-canvas",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Route: src/routes/ai-assistant",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Route: src/routes/cases",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Route: src/routes/api/analyze",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Route: src/routes/api/ai/chat",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Route: src/routes/api/search",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "ThinkingStyleToggle: Event system",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "ThinkingStyleToggle: Premium support",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "ThinkingStyleToggle: Toggle handler",
+      "status": "warning",
+      "message": "Toggle event handler missing"
+    },
+    {
+      "name": "Analyze API: POST handler",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Analyze API: Thinking style support",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Analyze API: Ollama integration",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Analyze API: Database integration",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Thinking Processor: Class definition",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Thinking Processor: Document analysis",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Thinking Processor: Evidence analysis",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Thinking Processor: Response parsing",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Database: SQLite file",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Database: Drizzle directory",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Database: Drizzle config",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Environment: .env.development",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Environment: .env.production",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Environment: .env.example",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "PowerShell launcher: Parameters",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Batch launcher: File exists",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Documentation: ENHANCED-LEGAL-AI-README.md",
+      "status": "passed",
+      "message": ""
+    },
+    {
+      "name": "Documentation: HTML-ATTRIBUTE-FIX-README.md",
+      "status": "passed",
+      "message": ""
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+import { evidence } from "$lib/server/db/schema-postgres";
+import type { RequestHandler } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
+import { randomUUID } from "crypto";
+import { existsSync, createReadStream } from "fs";
+import { mkdir, writeFile, readFile } from "fs/promises";
+import path from "path";
+import { db } from "$lib/server/db/index";
+
+// Optional sharp import for image processing
+let sharp: any = null;
+try {
+  sharp = require("sharp");
+} catch (e) {
+  console.warn("Sharp not available - image processing disabled");
+}
+// Ensure upload directory exists
+const UPLOAD_DIR = "./uploads";
+const THUMBNAILS_DIR = "./uploads/thumbnails";
+
+async function ensureDirectories() {
+  if (!existsSync(UPLOAD_DIR)) {
+    await mkdir(UPLOAD_DIR, { recursive: true });
+  }
+  if (!existsSync(THUMBNAILS_DIR)) {
+    await mkdir(THUMBNAILS_DIR, { recursive: true });
+  }
+}
+// Generate thumbnails for different media types
+async function generateThumbnail(
+  filePath: string,
+  fileName: string,
+  mimeType: string,
+): Promise<string | null> {
+  try {
+    const fileExtension = path.extname(fileName).toLowerCase();
+    const thumbnailName = `thumb_${randomUUID()}${fileExtension}`;
+    const thumbnailPath = path.join(THUMBNAILS_DIR, thumbnailName);
+
+    if (mimeType.startsWith("image/")) {
+      // Generate image thumbnail
+      await sharp(filePath)
+        .resize(200, 200, {
+          fit: "cover",
+          position: "center",
+        })
+        .jpeg({ quality: 80 })
+        .toFile(thumbnailPath.replace(fileExtension, ".jpg"));
+
+      return thumbnailName.replace(fileExtension, ".jpg");
+    } else if (mimeType.startsWith("video/")) {
+      // For videos, we'd use ffmpeg to extract a frame
+      // For now, return a generic video icon
+      return "video-icon.png";
+    } else if (mimeType === "application/pdf") {
+      // For PDFs, we'd use pdf2pic or similar
+      // For now, return a generic PDF icon
+      return "pdf-icon.png";
+    } else {
+      // Generic file icon
+      return "file-icon.png";
+    }
+  } catch (error) {
+    console.error("Thumbnail generation failed:", error);
+    return null;
+  }
+}
+// Get file type category for UI rendering
+function getFileTypeCategory(mimeType: string): string {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  if (mimeType === "application/pdf") return "document";
+  if (mimeType.includes("text") || mimeType.includes("document"))
+    return "document";
+  return "file";
+}
+export const POST: RequestHandler = async ({ request }) => {
+  try {
+    await ensureDirectories();
+
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
+    const caseId = formData.get("caseId") as string;
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const evidenceType = (formData.get("evidenceType") as string) || "physical";
+
+    if (!file || !caseId) {
+      return json({ error: "File and caseId are required" }, { status: 400 });
+    }
+    // Validate file size (50MB limit)
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    if (file.size > MAX_FILE_SIZE) {
+      return json({ error: "File size exceeds 50MB limit" }, { status: 400 });
+    }
+    // Generate unique filename
+    const fileId = randomUUID();
+    const fileExtension = path.extname(file.name);
+    const fileName = `${fileId}${fileExtension}`;
+    const filePath = path.join(UPLOAD_DIR, fileName);
+
+    // Save file to disk
+    const buffer = await file.arrayBuffer();
+    await writeFile(filePath, new Uint8Array(buffer));
+
+    // Generate thumbnail
+    const thumbnailName = await generateThumbnail(
+      filePath,
+      fileName,
+      file.type,
+    );
+
+    // Get file category
+    const fileCategory = getFileTypeCategory(file.type);
+
+    // Save evidence record to database
+    const evidenceRecord = {
+      id: randomUUID(),
+      caseId,
+      title: title || file.name,
+      description,
+      evidenceType,
+      fileName: file.name,
+      filePath: fileName, // Store relative path
+      fileSize: file.size,
+      mimeType: file.type,
+      fileCategory,
+      thumbnailPath: thumbnailName,
+      metadata: {
+        originalName: file.name,
+        uploadedAt: new Date().toISOString(),
+        fileId,
+        checksums: {
+          // Could add MD5/SHA256 here for integrity
+        },
+      },
+      chainOfCustody: [],
+      tags: [],
+      aiAnalysis: null,
+      canvasPosition: null,
+      isActive: true,
+      uploadedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const [newEvidence] = await db
+      .insert(evidence)
+      .values(evidenceRecord)
+      .returning();
+
+    return json({
+      success: true,
+      evidence: newEvidence,
+      message: "File uploaded successfully",
+    });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return json(
+      {
+        error: "Failed to upload file",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
+  }
+};
+
+// GET endpoint to serve uploaded files
+export const GET: RequestHandler = async ({ url }) => {
+  try {
+    const filePath = url.searchParams.get("file");
+    const thumbnail = url.searchParams.get("thumbnail");
+
+    if (!filePath) {
+      return new Response("File path required", { status: 400 });
+    }
+    const fullPath = thumbnail
+      ? path.join(THUMBNAILS_DIR, filePath)
+      : path.join(UPLOAD_DIR, filePath);
+
+    if (!existsSync(fullPath)) {
+      return new Response("File not found", { status: 404 });
+    }
+    // Read and serve file
+    const fileContent = await readFile(fullPath);
+    return new Response(fileContent);
+  } catch (error) {
+    console.error("File serve error:", error);
+    return new Response("Failed to serve file", { status: 500 });
+  }
+};

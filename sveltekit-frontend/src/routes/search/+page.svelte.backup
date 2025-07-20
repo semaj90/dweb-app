@@ -1,0 +1,571 @@
+<script lang="ts">
+  import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import { Tooltip } from "$lib/components/ui";
+  import { Button } from "$lib/components/ui/button";
+  import { notifications } from "$lib/stores/notification";
+  import {
+    AlertCircle,
+    ArrowRight,
+    Clock,
+    Database,
+    Eye,
+    FileText,
+    Filter,
+    Loader2,
+    Search,
+    Star,
+    Users,
+  } from "lucide-svelte";
+  import { onMount } from "svelte";
+  
+  interface SearchResult {
+    id: string;
+    type: string;
+    title: string;
+    description?: string;
+    content?: string;
+    url?: string;
+    relevance?: number;
+    score?: number;
+    metadata?: Record<string, unknown>;
+  }
+  
+  interface SearchResults {
+    query: string;
+    results: SearchResult[];
+    total: number;
+    page: number;
+    hasMore: boolean;
+    executionTime?: number;
+    source?: string;
+  }
+
+  // Search state
+  let searchQuery = "";
+  let searchResults: SearchResults | null = null;
+  let isSearching = false;
+  let searchError: string | null = null;
+  let searchHistory: string[] = [];
+
+  // Filters
+  let selectedType = "";
+  let selectedCaseId = "";
+  let threshold = 0.7;
+  let limit = 20;
+  let showAdvancedFilters = false;
+
+  // Recent searches (simulated)
+  let recentSearches = [
+    "contract fraud investigation",
+    "witness testimony evidence",
+    "financial records analysis",
+    "crime scene documentation",
+    "legal precedent research",
+  ];
+
+  // Popular searches (simulated)
+  let popularSearches = [
+    "fraud cases",
+    "evidence analysis",
+    "witness statements",
+    "legal research",
+    "case documentation",
+  ];
+
+  onMount(() => {
+    // Load search query from URL if present
+    const urlQuery = $page.url.searchParams.get("q");
+    if (urlQuery) {
+      searchQuery = urlQuery;
+      performSearch();
+    }
+
+    // Load search history from localStorage
+    if (browser) {
+      const savedHistory = localStorage.getItem("searchHistory");
+      if (savedHistory) {
+        searchHistory = JSON.parse(savedHistory);
+      }
+    }
+  });
+
+  async function performSearch() {
+    if (!searchQuery.trim()) return;
+
+    isSearching = true;
+    searchError = null;
+    searchResults = null;
+
+    try {
+      // Update URL with search query
+      const url = new URL(window.location.href);
+      url.searchParams.set("q", searchQuery);
+      if (selectedType) url.searchParams.set("type", selectedType);
+      if (selectedCaseId) url.searchParams.set("caseId", selectedCaseId);
+      url.searchParams.set("threshold", threshold.toString());
+      url.searchParams.set("limit", limit.toString());
+
+      window.history.replaceState({}, "", url);
+
+      // Perform search
+      const searchParams = new URLSearchParams({
+        q: searchQuery,
+        limit: limit.toString(),
+        threshold: threshold.toString(),
+      });
+
+      if (selectedType) searchParams.set("type", selectedType);
+      if (selectedCaseId) searchParams.set("caseId", selectedCaseId);
+
+      const response = await fetch(`/api/search?${searchParams}`);
+      const result = await response.json();
+
+      if (response.ok) {
+        searchResults = result.data;
+
+        // Add to search history
+        if (!searchHistory.includes(searchQuery)) {
+          searchHistory = [searchQuery, ...searchHistory.slice(0, 9)]; // Keep last 10
+          if (browser) {
+            localStorage.setItem(
+              "searchHistory",
+              JSON.stringify(searchHistory)
+            );
+          }
+        }
+      } else {
+        throw new Error(result.error || "Search failed");
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      searchError = error instanceof Error ? error.message : "Search failed";
+      notifications.add({
+        type: "error",
+        title: "Search Error",
+        message: searchError,
+      });
+    } finally {
+      isSearching = false;
+    }
+  }
+
+  function handleSearchSubmit(e: Event) {
+    e.preventDefault();
+    performSearch();
+  }
+
+  function selectQuickSearch(query: string) {
+    searchQuery = query;
+    performSearch();
+  }
+
+  function clearFilters() {
+    selectedType = "";
+    selectedCaseId = "";
+    threshold = 0.7;
+    limit = 20;
+    showAdvancedFilters = false;
+  }
+
+  function formatScore(score: number): string {
+    return `${(score * 100).toFixed(1)}%`;
+  }
+
+  function getResultIcon(type: string) {
+    switch (type) {
+      case "case":
+        return Database;
+      case "evidence":
+        return FileText;
+      case "participant":
+        return Users;
+      default:
+        return FileText;
+    }
+  }
+
+  function handleResultClick(result: SearchResult) {
+    // Navigate to the appropriate page based on result type
+    switch (result.type) {
+      case "case":
+        goto(`/cases/${result.id}`);
+        break;
+      case "evidence":
+        goto(`/evidence/${result.id}`);
+        break;
+      default:
+        // Handle other types or show details modal
+        break;
+    }
+  }
+</script>
+
+<svelte:head>
+  <title>Search - Legal Case Management</title>
+  <meta
+    name="description"
+    content="Advanced search across cases, evidence, and participant data"
+  />
+</svelte:head>
+
+<div class="mx-auto px-4 max-w-7xl">
+  <!-- Header -->
+  <div
+    class="mx-auto px-4 max-w-7xl"
+  >
+    <h1 class="mx-auto px-4 max-w-7xl">
+      <Search class="mx-auto px-4 max-w-7xl" />
+      Advanced Search
+    </h1>
+    <p class="mx-auto px-4 max-w-7xl">
+      Search across cases, evidence, and participant data using AI-powered
+      semantic search
+    </p>
+  </div>
+
+  <div class="mx-auto px-4 max-w-7xl">
+    <!-- Main Search Panel -->
+    <div class="mx-auto px-4 max-w-7xl">
+      <!-- Search Form -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <form on:submit={handleSearchSubmit} class="mx-auto px-4 max-w-7xl">
+          <!-- Main Search Input -->
+          <div class="mx-auto px-4 max-w-7xl">
+            <Search
+              class="mx-auto px-4 max-w-7xl"
+            />
+            <input
+              type="text"
+              bind:value={searchQuery}
+              placeholder="Search cases, evidence, participants..."
+              class="mx-auto px-4 max-w-7xl"
+              required
+            />
+          </div>
+
+          <!-- Search Actions -->
+          <div class="mx-auto px-4 max-w-7xl">
+            <Button type="submit" disabled={isSearching || !searchQuery.trim()}>
+              {#if isSearching}
+                <Loader2 class="mx-auto px-4 max-w-7xl" />
+                Searching...
+              {:else}
+                <Search class="mx-auto px-4 max-w-7xl" />
+                Search
+              {/if}
+            </Button>
+
+            <Tooltip content="Show/hide advanced search filters">
+              <Button
+                variant="outline"
+                type="button"
+                on:click={() => (showAdvancedFilters = !showAdvancedFilters)}
+              >
+                <Filter class="mx-auto px-4 max-w-7xl" />
+                Filters
+              </Button>
+            </Tooltip>
+
+            {#if selectedType || selectedCaseId || threshold !== 0.7 || limit !== 20}
+              <Tooltip content="Clear all filters">
+                <Button
+                  variant="outline"
+                  type="button"
+                  on:click={() => clearFilters()}
+                >
+                  Clear Filters
+                </Button>
+              </Tooltip>
+            {/if}
+          </div>
+
+          <!-- Advanced Filters -->
+          {#if showAdvancedFilters}
+            <div class="mx-auto px-4 max-w-7xl">
+              <h3 class="mx-auto px-4 max-w-7xl">Advanced Filters</h3>
+
+              <div class="mx-auto px-4 max-w-7xl">
+                <div>
+                  <label
+                    for="type-filter"
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    Content Type
+                  </label>
+                  <select
+                    id="type-filter"
+                    bind:value={selectedType}
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    <option value="">All Types</option>
+                    <option value="case">Cases</option>
+                    <option value="evidence">Evidence</option>
+                    <option value="participant">Participants</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    for="case-filter"
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    Specific Case
+                  </label>
+                  <input
+                    id="case-filter"
+                    type="text"
+                    bind:value={selectedCaseId}
+                    placeholder="Case ID (optional)"
+                    class="mx-auto px-4 max-w-7xl"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    for="threshold-filter"
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    Relevance Threshold
+                  </label>
+                  <select
+                    id="threshold-filter"
+                    bind:value={threshold}
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    <option value={0.5}>50% - Very Broad</option>
+                    <option value={0.6}>60% - Broad</option>
+                    <option value={0.7}>70% - Balanced</option>
+                    <option value={0.8}>80% - Precise</option>
+                    <option value={0.9}>90% - Very Precise</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    for="limit-filter"
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    Max Results
+                  </label>
+                  <select
+                    id="limit-filter"
+                    bind:value={limit}
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    <option value={10}>10 results</option>
+                    <option value={20}>20 results</option>
+                    <option value={50}>50 results</option>
+                    <option value={100}>100 results</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          {/if}
+        </form>
+      </div>
+
+      <!-- Search Error -->
+      {#if searchError}
+        <div class="mx-auto px-4 max-w-7xl">
+          <div class="mx-auto px-4 max-w-7xl">
+            <AlertCircle class="mx-auto px-4 max-w-7xl" />
+            <div>
+              <h3 class="mx-auto px-4 max-w-7xl">Search Error</h3>
+              <p class="mx-auto px-4 max-w-7xl">{searchError}</p>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      <!-- Search Results -->
+      {#if searchResults}
+        <div class="mx-auto px-4 max-w-7xl">
+          <!-- Results Header -->
+          <div class="mx-auto px-4 max-w-7xl">
+            <div class="mx-auto px-4 max-w-7xl">
+              <h2 class="mx-auto px-4 max-w-7xl">
+                Search Results
+              </h2>
+              <div class="mx-auto px-4 max-w-7xl">
+                <span>{searchResults.results.length} results</span>
+                <span>in {searchResults.executionTime}ms</span>
+                <span class="mx-auto px-4 max-w-7xl">via {searchResults.source}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results List -->
+          {#if searchResults.results.length > 0}
+            <div class="mx-auto px-4 max-w-7xl">
+              {#each searchResults.results as result}
+                <div
+                  class="mx-auto px-4 max-w-7xl"
+                  on:click={() => handleResultClick(result)}
+                  on:keydown={(e) =>
+                    e.key === "Enter" && handleResultClick(result)}
+                  role="button"
+                  tabindex={0}
+                >
+                  <div class="mx-auto px-4 max-w-7xl">
+                    <div class="mx-auto px-4 max-w-7xl">
+                      <svelte:component
+                        this={getResultIcon(result.type)}
+                        class="mx-auto px-4 max-w-7xl"
+                      />
+                    </div>
+
+                    <div class="mx-auto px-4 max-w-7xl">
+                      <div class="mx-auto px-4 max-w-7xl">
+                        <h3 class="mx-auto px-4 max-w-7xl">
+                          {result.title || "Untitled"}
+                        </h3>
+                        <div class="mx-auto px-4 max-w-7xl">
+                          <span
+                            class="mx-auto px-4 max-w-7xl"
+                          >
+                            {result.type}
+                          </span>
+                          <span
+                            class="mx-auto px-4 max-w-7xl"
+                          >
+                            {formatScore(result.score ?? 0)} match
+                          </span>
+                        </div>
+                      </div>
+
+                      <p class="mx-auto px-4 max-w-7xl">
+                        {result.content}
+                      </p>
+
+                      {#if result.metadata && Object.keys(result.metadata).length > 0}
+                        <div class="mx-auto px-4 max-w-7xl">
+                          {#each Object.entries(result.metadata) as [key, value]}
+                            {#if value && key !== "type"}
+                              <span
+                                class="mx-auto px-4 max-w-7xl"
+                              >
+                                {key}: {value}
+                              </span>
+                            {/if}
+                          {/each}
+                        </div>
+                      {/if}
+                    </div>
+
+                    <div class="mx-auto px-4 max-w-7xl">
+                      <ArrowRight class="mx-auto px-4 max-w-7xl" />
+                    </div>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          {:else}
+            <div class="mx-auto px-4 max-w-7xl">
+              <Search class="mx-auto px-4 max-w-7xl" />
+              <h3 class="mx-auto px-4 max-w-7xl">
+                No results found
+              </h3>
+              <p class="mx-auto px-4 max-w-7xl">
+                Try adjusting your search terms or filters
+              </p>
+            </div>
+          {/if}
+        </div>
+      {/if}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="mx-auto px-4 max-w-7xl">
+      <!-- Quick Search Suggestions -->
+      {#if !searchResults}
+        <div class="mx-auto px-4 max-w-7xl">
+          <h3 class="mx-auto px-4 max-w-7xl">
+            <Star class="mx-auto px-4 max-w-7xl" />
+            Popular Searches
+          </h3>
+          <div class="mx-auto px-4 max-w-7xl">
+            {#each popularSearches as search}
+              <button
+                type="button"
+                class="mx-auto px-4 max-w-7xl"
+                on:click={() => selectQuickSearch(search)}
+              >
+                {search}
+              </button>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      <!-- Search History -->
+      {#if searchHistory.length > 0}
+        <div class="mx-auto px-4 max-w-7xl">
+          <h3 class="mx-auto px-4 max-w-7xl">
+            <Clock class="mx-auto px-4 max-w-7xl" />
+            Recent Searches
+          </h3>
+          <div class="mx-auto px-4 max-w-7xl">
+            {#each searchHistory.slice(0, 5) as search}
+              <button
+                type="button"
+                class="mx-auto px-4 max-w-7xl"
+                on:click={() => selectQuickSearch(search)}
+              >
+                {search}
+              </button>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      <!-- Search Tips -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <h3 class="mx-auto px-4 max-w-7xl">Search Tips</h3>
+        <ul class="mx-auto px-4 max-w-7xl">
+          <li>• Use natural language queries</li>
+          <li>• Be specific for better results</li>
+          <li>• Try synonyms if no results</li>
+          <li>• Use filters to narrow results</li>
+          <li>• Higher thresholds = more precise</li>
+        </ul>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="mx-auto px-4 max-w-7xl">
+        <h3 class="mx-auto px-4 max-w-7xl">Quick Actions</h3>
+        <div class="mx-auto px-4 max-w-7xl">
+          <a href="/cases" class="mx-auto px-4 max-w-7xl">
+            <Button variant="outline" class="mx-auto px-4 max-w-7xl">
+              <Database class="mx-auto px-4 max-w-7xl" />
+              Browse Cases
+            </Button>
+          </a>
+          <a href="/evidence" class="mx-auto px-4 max-w-7xl">
+            <Button variant="outline" class="mx-auto px-4 max-w-7xl">
+              <FileText class="mx-auto px-4 max-w-7xl" />
+              Browse Evidence
+            </Button>
+          </a>
+          <a href="/ai-assistant" class="mx-auto px-4 max-w-7xl">
+            <Button variant="outline" class="mx-auto px-4 max-w-7xl">
+              <Eye class="mx-auto px-4 max-w-7xl" />
+              AI Assistant
+            </Button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+</style>

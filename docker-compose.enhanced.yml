@@ -1,0 +1,188 @@
+# Docker Compose with GPU Support for Legal AI System
+# Includes: Ollama (GPU), Postgres (pgvector), Qdrant, Redis, SvelteKit
+version: '3.8'
+
+services:
+  # Ollama with GPU acceleration
+  ollama:
+    image: ollama/ollama:latest
+    container_name: legal-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./models:/models:ro  # Mount model directory
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+      - CUDA_VISIBLE_DEVICES=0
+      - OLLAMA_GPU_LAYERS=48
+      - OLLAMA_NUM_PARALLEL=4
+      - OLLAMA_MAX_LOADED_MODELS=2
+    deploy:
+      resources:
+        limits:
+          memory: 12G  # Increased for 6GB+ local model
+          cpus: '4.0'
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - legal-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL with pgvector extension
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: legal-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      - POSTGRES_DB=legal_ai
+      - POSTGRES_USER=legal_user
+      - POSTGRES_PASSWORD=legal_secure_password_2024
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
+    restart: unless-stopped
+    networks:
+      - legal-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U legal_user -d legal_ai"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Qdrant vector database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: legal-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+      - ./qdrant/config:/qdrant/config:ro
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    restart: unless-stopped
+    networks:
+      - legal-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: legal-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass legal_redis_password_2024
+    restart: unless-stopped
+    networks:
+      - legal-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "legal_redis_password_2024", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # SvelteKit Application
+  sveltekit:
+    build:
+      context: ./sveltekit-frontend
+      dockerfile: Dockerfile
+    container_name: legal-sveltekit
+    ports:
+      - "5173:5173"
+      - "4173:4173"
+    volumes:
+      - ./web-app/sveltekit-frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://legal_user:legal_secure_password_2024@postgres:5432/legal_ai
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=gemma3-legal-enhanced
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - REDIS_URL=redis://legal_redis_password_2024@redis:6379
+      - VITE_API_BASE_URL=http://localhost:5173
+      - PUBLIC_OLLAMA_URL=http://localhost:11434
+    depends_on:
+      - postgres
+      - ollama
+      - qdrant
+      - redis
+    restart: unless-stopped
+    networks:
+      - legal-network
+    command: npm run dev -- --host 0.0.0.0
+
+  # Nginx reverse proxy (optional for production)
+  nginx:
+    image: nginx:alpine
+    container_name: legal-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - sveltekit
+    restart: unless-stopped
+    networks:
+      - legal-network
+    profiles:
+      - production
+
+volumes:
+  ollama_data:
+    driver: local
+  postgres_data:
+    driver: local
+  qdrant_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  legal-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Development override (docker-compose.override.yml)
+# Uncomment for development mode
+# ---
+# version: '3.8'
+# services:
+#   sveltekit:
+#     environment:
+#       - NODE_ENV=development
+#       - DEBUG=true
+#     volumes:
+#       - ./web-app/sveltekit-frontend:/app
+#       - /app/node_modules
+#     command: npm run dev -- --host 0.0.0.0 --port 5173
+#
+#   ollama:
+#     environment:
+#       - OLLAMA_DEBUG=true
+#       - OLLAMA_VERBOSE=true

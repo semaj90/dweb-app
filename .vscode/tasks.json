@@ -1,0 +1,133 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🔧 Fix Critical Svelte Errors",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "fix-critical-errors.ps1"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "📚 Setup Documentation System",
+      "type": "shell", 
+      "command": "powershell",
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "setup-docs-system.ps1"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🚀 Run Documentation Integration",
+      "type": "shell",
+      "command": "powershell", 
+      "args": ["-ExecutionPolicy", "Bypass", "-File", "integrate-docs.ps1"],
+      "group": "build",
+      "dependsOn": "📚 Setup Documentation System"
+    },
+    {
+      "label": "🔍 TypeScript Check",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "🎯 Search Accessibility Issues",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Get-ChildItem -Path . -Filter '*.svelte' | Select-String -Pattern '<div[^>]*on:click[^>]*>' | Where-Object { $_.Line -notmatch 'role=\"button\"' }"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🔎 Find TabIndex Issues",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Get-ChildItem -Path . -Filter '*.svelte' | Select-String -Pattern 'tabindex=\"[^\"]*\"'"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "📋 Generate Error Report",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Write-Host '🔍 Scanning for common Svelte issues...' -ForegroundColor Cyan; Get-ChildItem -Path . -Filter '*.svelte' | ForEach-Object { Write-Host \"Checking: $($_.Name)\" -ForegroundColor Yellow; Get-Content $_.FullName | Select-String -Pattern 'tabindex=\"|disabled=\"true\"|readonly=\"false\"|export let \\w+: string' | ForEach-Object { Write-Host \"  Found: $($_.Line.Trim())\" -ForegroundColor Red } }"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🧹 Clean & Rebuild",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "clean"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🏃 Start Development Server",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

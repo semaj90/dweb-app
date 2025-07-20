@@ -1,0 +1,251 @@
+<script lang="ts">
+  import Button from "$lib/components/ui/Button.svelte";
+  import { chatActions } from "$lib/stores/chatStore";
+  import { notifications } from "$lib/stores/notification";
+  import {
+    Bot,
+    Clock,
+    Copy,
+    Heart,
+    MoreVertical,
+    Star,
+    StarOff,
+    ThumbsUp,
+    User,
+  } from "lucide-svelte";
+  import "../chat/chat-message.css";
+
+  export let message: any;
+
+  // Type-safe fallback for message.role
+  $: isUser = message.role === "user" || message.type === "user";
+  $: isAssistant = message.role === "assistant" || message.type === "assistant";
+  $: emotionalTone = message.metadata?.emotionalTone;
+  $: isProactive = message.metadata?.proactive;
+
+  function copyToClipboard() {
+    navigator.clipboard.writeText(message.content);
+    notifications.add({
+      type: "success",
+      title: "Copied",
+      message: "Message copied to clipboard",
+    });
+  }
+
+  function toggleSaved() {
+    chatActions.toggleMessageSaved(message.id);
+  }
+
+  function formatTime(timestamp: Date | string | number): string {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function getEmotionalToneColor(tone: string): string {
+    switch (tone) {
+      case "encouraging":
+        return "text-green-600";
+      case "supportive":
+        return "text-blue-600";
+      case "enthusiastic":
+        return "text-purple-600";
+      case "thoughtful":
+        return "text-indigo-600";
+      case "professional":
+        return "text-gray-600";
+      default:
+        return "text-gray-500";
+    }
+  }
+
+  function getEmotionalToneIcon(tone: string) {
+    switch (tone) {
+      case "encouraging":
+        return ThumbsUp;
+      case "supportive":
+        return Heart;
+      case "enthusiastic":
+        return Star;
+      default:
+        return null;
+    }
+  }
+</script>
+
+<div class="mx-auto px-4 max-w-7xl">
+  <!-- Avatar -->
+  <div class="mx-auto px-4 max-w-7xl">
+    {#if isUser}
+      <div
+        class="mx-auto px-4 max-w-7xl"
+      >
+        <User class="mx-auto px-4 max-w-7xl" />
+      </div>
+    {:else}
+      <div
+        class="mx-auto px-4 max-w-7xl"
+      >
+        <Bot class="mx-auto px-4 max-w-7xl" />
+      </div>
+    {/if}
+  </div>
+
+  <!-- Message Content -->
+  <div class="mx-auto px-4 max-w-7xl">
+    <!-- Message Bubble -->
+    <div class="mx-auto px-4 max-w-7xl">
+      <div
+        class="mx-auto px-4 max-w-7xl"
+      >
+        <!-- Proactive Indicator -->
+        {#if isProactive}
+          <div class="mx-auto px-4 max-w-7xl">
+            <Clock class="mx-auto px-4 max-w-7xl" />
+            <span>Proactive suggestion</span>
+          </div>
+        {/if}
+
+        <!-- Message Text -->
+        <div
+          class="mx-auto px-4 max-w-7xl"
+        >
+          {@html message.content}
+        </div>
+
+        <!-- Emotional Tone Indicator for AI Messages -->
+        {#if isAssistant && emotionalTone && emotionalTone !== "neutral"}
+          {@const ToneIcon = getEmotionalToneIcon(emotionalTone)}
+          <div class="mx-auto px-4 max-w-7xl">
+            {#if ToneIcon}
+              <svelte:component this={ToneIcon} class="mx-auto px-4 max-w-7xl" />
+            {/if}
+            <span class="mx-auto px-4 max-w-7xl">{emotionalTone}</span>
+          </div>
+        {/if}
+      </div>
+
+      <!-- Message Actions -->
+      <div
+        class="mx-auto px-4 max-w-7xl"
+      >
+        <!-- Timestamp -->
+        <span class="mx-auto px-4 max-w-7xl">
+          {formatTime(message.timestamp)}
+        </span>
+
+        <!-- Actions (visible on hover) -->
+        <div
+          class="mx-auto px-4 max-w-7xl"
+        >
+          <!-- Copy -->
+          <Button
+            variant="ghost"
+            size="sm"
+            class="mx-auto px-4 max-w-7xl"
+            on:click={() => copyToClipboard()}
+            title="Copy message"
+          >
+            <Copy class="mx-auto px-4 max-w-7xl" />
+          </Button>
+
+          <!-- Save/Unsave -->
+          <Button
+            variant="ghost"
+            size="sm"
+            class="mx-auto px-4 max-w-7xl"
+            on:click={() => toggleSaved()}
+            title={message.saved ? "Remove from saved" : "Save message"}
+          >
+            {#if message.saved}
+              <Star class="mx-auto px-4 max-w-7xl" />
+            {:else}
+              <StarOff class="mx-auto px-4 max-w-7xl" />
+            {/if}
+          </Button>
+
+          <!-- More Options -->
+          <Button
+            variant="ghost"
+            size="sm"
+            class="mx-auto px-4 max-w-7xl"
+            title="More options"
+          >
+            <MoreVertical class="mx-auto px-4 max-w-7xl" />
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metadata (for AI messages) -->
+    {#if isAssistant && message.metadata}
+      <div class="mx-auto px-4 max-w-7xl">
+        {#if message.metadata.model}
+          <div class="mx-auto px-4 max-w-7xl">
+            <span>Model: {message.metadata.model}</span>
+            {#if message.metadata.latency}
+              <span>• {message.metadata.latency}ms</span>
+            {/if}
+          </div>
+        {/if}
+
+        {#if message.metadata.tokenCount}
+          <div>Tokens: {message.metadata.tokenCount}</div>
+        {/if}
+      </div>
+    {/if}
+  </div>
+</div>
+
+<style>
+  :global(.message-content) {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  :global(.message-content p) {
+    margin-bottom: 0.5rem;
+  }
+
+  :global(.message-content p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.message-content ul, .message-content ol) {
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+  }
+
+  :global(.message-content li) {
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.message-content code) {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: "Courier New", monospace;
+    font-size: 0.875em;
+  }
+
+  :global(.message-content blockquote) {
+    border-left: 3px solid rgba(0, 0, 0, 0.2);
+    padding-left: 1rem;
+    margin: 0.5rem 0;
+    font-style: italic;
+  }
+
+  :global(.message-content h1, .message-content h2, .message-content h3) {
+    font-weight: 600;
+    margin: 0.75rem 0 0.5rem 0;
+  }
+
+  :global(.message-content h1) {
+    font-size: 1.25em;
+  }
+  :global(.message-content h2) {
+    font-size: 1.125em;
+  }
+  :global(.message-content h3) {
+    font-size: 1em;
+  }
+</style>

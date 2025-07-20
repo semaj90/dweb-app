@@ -1,0 +1,38 @@
+{
+  "PowerShell Command Separator": {
+    "prefix": "pwsh-sep",
+    "body": [
+      "# PowerShell command separators:",
+      "# Use semicolon (;) to run commands in sequence:",
+      "# cd path; Get-ChildItem",
+      "# ",
+      "# Use && only in bash/cmd, NOT PowerShell!",
+      "$0"
+    ],
+    "description": "PowerShell command separator reminder"
+  },
+  
+  "PowerShell Sequential Commands": {
+    "prefix": "pwsh-seq",
+    "body": [
+      "${1:command1}; ${2:command2}$0"
+    ],
+    "description": "PowerShell sequential commands with semicolon"
+  },
+  
+  "SvelteKit Check Command": {
+    "prefix": "sveltekit-check",
+    "body": [
+      "cd sveltekit-frontend; npm run check"
+    ],
+    "description": "SvelteKit type checking command"
+  },
+  
+  "PowerShell Navigation and List": {
+    "prefix": "pwsh-nav-list",
+    "body": [
+      "cd ${1:path}; Get-ChildItem$0"
+    ],
+    "description": "Navigate to directory and list contents"
+  }
+}

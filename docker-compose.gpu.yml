@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # Ollama with GPU support
+  ollama:
+    image: ollama/ollama:latest
+    container_name: legal_ai_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./Gemma3-Legal-Enhanced-Modelfile:/app/Modelfile
+      - ./gemma3Q4_K_M:/app/models
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+      - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - legal_ai_network
+
+  # PostgreSQL with pgvector extension
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: legal_ai_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: prosecutor_db
+      POSTGRES_USER: prosecutor
+      POSTGRES_PASSWORD: legal_secure_2024
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - legal_ai_network
+
+  # Qdrant vector database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: legal_ai_qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    networks:
+      - legal_ai_network
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    container_name: legal_ai_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - legal_ai_network
+
+  # SvelteKit application (development)
+  web-app:
+    build:
+      context: ./web-app/sveltekit-frontend
+      dockerfile: Dockerfile.dev
+    container_name: legal_ai_web
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./web-app/sveltekit-frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://prosecutor:legal_secure_2024@postgres:5432/prosecutor_db
+      - QDRANT_URL=http://qdrant:6333
+      - OLLAMA_URL=http://ollama:11434
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - qdrant
+      - redis
+      - ollama
+    networks:
+      - legal_ai_network
+
+volumes:
+  ollama_data:
+    driver: local
+  postgres_data:
+    driver: local
+  qdrant_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  legal_ai_network:
+    driver: bridge

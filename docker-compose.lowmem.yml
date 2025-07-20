@@ -1,0 +1,219 @@
+# Enhanced Legal AI System - Low Memory Docker Configuration
+# Optimized for development with limited resources
+
+version: '3.8'
+
+services:
+  # PostgreSQL with pgvector (memory optimized)
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: legal_ai_postgres_optimized
+    environment:
+      POSTGRES_DB: prosecutor_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # Memory optimized settings
+      POSTGRES_SHARED_BUFFERS: 128MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 512MB
+      POSTGRES_WORK_MEM: 32MB
+      POSTGRES_MAINTENANCE_WORK_MEM: 64MB
+      POSTGRES_MAX_CONNECTIONS: 100
+      POSTGRES_RANDOM_PAGE_COST: 1.1
+      # Enable extensions
+      POSTGRES_EXTENSIONS: vector,uuid-ossp,pg_trgm,btree_gin,hstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-enhanced-schema.sql:/docker-entrypoint-initdb.d/10-init-schema.sql
+      - ./scripts/seed-sample-data.sql:/docker-entrypoint-initdb.d/90-seed-data.sql
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d prosecutor_db"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - legal_ai_network
+
+  # Neo4j for knowledge graphs (memory optimized)
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: legal_ai_neo4j_optimized
+    environment:
+      NEO4J_AUTH: neo4j/prosecutorpassword
+      NEO4J_PLUGINS: '["apoc"]'  # Removed GDS for memory savings
+      NEO4J_apoc_export_file_enabled: true
+      NEO4J_apoc_import_file_enabled: true
+      # Low memory configuration
+      NEO4J_dbms_memory_heap_initial__size: 256m
+      NEO4J_dbms_memory_heap_max__size: 512m
+      NEO4J_dbms_memory_pagecache_size: 256m
+      NEO4J_dbms_tx_log_rotation_retention__policy: "1 days"
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_conf:/conf
+      - neo4j_import:/var/lib/neo4j/import
+      - ./scripts/neo4j-init.cypher:/var/lib/neo4j/import/init.cypher
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "prosecutorpassword", "RETURN 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - legal_ai_network
+
+  # Qdrant for vector search (low memory mode)
+  qdrant:
+    image: qdrant/qdrant:v1.9.0
+    container_name: legal_ai_qdrant_lowmem
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__SERVICE__GRPC_PORT: 6334
+      QDRANT__LOG_LEVEL: WARN  # Reduce logging
+      # Low memory optimizations
+      QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS: 2
+      QDRANT__STORAGE__OPTIMIZERS__INDEXING_THRESHOLD: 5000
+      QDRANT__STORAGE__OPTIMIZERS__FLUSH_INTERVAL_SEC: 30
+      QDRANT__STORAGE__PERFORMANCE__MAX_OPTIMIZATION_THREADS: 1
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:6333/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - legal_ai_network
+
+  # Redis for caching (memory optimized)
+  redis:
+    image: redis:7-alpine
+    container_name: legal_ai_redis_lowmem
+    command: |
+      redis-server 
+      --maxmemory 128mb 
+      --maxmemory-policy allkeys-lru 
+      --appendonly no
+      --save ""
+      --hash-max-ziplist-entries 256
+      --hash-max-ziplist-value 32
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - legal_ai_network
+
+  # Enhanced Ollama with Local Gemma 3 Model (memory limited)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: legal_ai_ollama_lowmem
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      # Mount local Gemma 3 model
+      - ./gemma3Q4_K_M:/models/gemma3
+      - ./scripts/setup-local-gemma3-lowmem.sh:/tmp/setup-models.sh
+    restart: unless-stopped
+    environment:
+      OLLAMA_KEEP_ALIVE: "5m"  # Shorter keep alive
+      OLLAMA_NUM_PARALLEL: "1"  # Reduce parallelism
+      OLLAMA_MAX_LOADED_MODELS: "2"  # Limit loaded models
+      OLLAMA_ORIGINS: "*"
+      OLLAMA_HOST: "0.0.0.0:11434"
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "ollama serve &
+      sleep 20 &&
+      chmod +x /tmp/setup-models.sh &&
+      /tmp/setup-models.sh &&
+      wait"
+    deploy:
+      resources:
+        limits:
+          memory: 10G  # Increased for 6GB+ local model
+          cpus: '2.0'
+    networks:
+      - legal_ai_network
+
+  # PgAdmin for database management (lightweight)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: legal_ai_pgadmin_lite
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@prosecutor.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+      # Reduce logging
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    depends_on:
+      - postgres
+    networks:
+      - legal_ai_network
+
+networks:
+  legal_ai_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_conf:
+  neo4j_import:
+  qdrant_data:
+  redis_data:
+  ollama_data:
+  pgadmin_data:

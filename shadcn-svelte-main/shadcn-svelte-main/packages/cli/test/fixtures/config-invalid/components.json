@@ -1,0 +1,12 @@
+{
+	"tailwind": {
+		"config": "tailwind.config.js",
+		"css": "src/app.css",
+		"baseColor": "zinc"
+	},
+	"alias": {
+		"utils": "$lib/utils",
+		"components": "$lib/components"
+	},
+	"typescript": true
+}

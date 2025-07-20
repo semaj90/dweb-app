@@ -1,0 +1,44 @@
+{
+  "SvelteKit Route Conflict Check": {
+    "prefix": "sk-route-check",
+    "body": [
+      "# Check for SvelteKit route conflicts",
+      "cd sveltekit-frontend; npm run check",
+      "# If conflicts exist, remove duplicate route directories:",
+      "# Remove-Item -Recurse -Force \"src/routes/path/[duplicate]\"$0"
+    ],
+    "description": "SvelteKit route conflict checking commands"
+  },
+  
+  "Clear SvelteKit Cache": {
+    "prefix": "sk-clear-cache",
+    "body": [
+      "Remove-Item -Recurse -Force \".svelte-kit\"; npm run check$0"
+    ],
+    "description": "Clear SvelteKit cache and run check"
+  },
+  
+  "SvelteKit Development Workflow": {
+    "prefix": "sk-dev-workflow",
+    "body": [
+      "# SvelteKit development workflow:",
+      "cd sveltekit-frontend",
+      "npm run check    # Type checking",
+      "npm run dev      # Start dev server",
+      "# npm run build  # Production build$0"
+    ],
+    "description": "Common SvelteKit development commands"
+  },
+  
+  "PowerShell File Operations": {
+    "prefix": "pwsh-file-ops",
+    "body": [
+      "# PowerShell file operations:",
+      "Get-ChildItem           # List directory contents (ls)",
+      "Remove-Item -Force      # Delete file/folder (rm)",
+      "New-Item -ItemType Directory  # Create directory (mkdir)",
+      "Test-Path \"path\"        # Check if path exists$0"
+    ],
+    "description": "Common PowerShell file operations"
+  }
+}

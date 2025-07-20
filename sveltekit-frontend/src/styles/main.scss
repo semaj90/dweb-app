@@ -1,0 +1,436 @@
+// === Legal Report Editor - Main Styles ===
+// This implements our 2-layer styling approach:
+// 1. Foundation Layer: Custom Variables + Base Styles
+// 2. Layout Layer: UnoCSS utilities (handled in components)
+
+// Import our custom variables first
+@import "./variables.scss";
+
+// === Foundation Layer Customizations ===
+
+// Reset and base improvements
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $font-family;
+  line-height: $line-height;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  margin: 0;
+  padding: 0;
+}
+
+// Typography improvements
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $font-family;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.5em;
+  margin-top: 1.5em;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+h1 {
+  font-size: $h1-size;
+}
+h2 {
+  font-size: $h2-size;
+}
+h3 {
+  font-size: $h3-size;
+}
+h4 {
+  font-size: $h4-size;
+}
+h5 {
+  font-size: $h5-size;
+}
+h6 {
+  font-size: $h6-size;
+}
+
+p {
+  margin-bottom: 1em;
+  line-height: $line-height;
+}
+
+// Code styling
+code {
+  font-family: $font-family-mono;
+  background: var(--color-surface);
+  padding: 0.2em 0.4em;
+  border-radius: $border-radius-sm;
+  font-size: 0.875em;
+}
+
+pre {
+  font-family: $font-family-mono;
+  background: var(--color-background-alt);
+  color: var(--color-text);
+  padding: 1em;
+  border-radius: $border-radius;
+  overflow-x: auto;
+
+  code {
+    background: none;
+    padding: 0;
+  }
+}
+
+// Improved form elements
+input,
+textarea,
+select {
+  @include input-base;
+}
+
+button {
+  @include button-base;
+}
+
+// Button variants
+.btn-primary {
+  @include button-primary;
+}
+
+.btn-secondary {
+  @include button-secondary;
+}
+
+// Card components
+.card {
+  @include card;
+  padding: $spacing-xl;
+}
+
+.card-header {
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid var(--pico-border-color);
+  background: var(--pico-card-sectioning-background-color);
+  margin: (-$spacing-xl) (-$spacing-xl) $spacing-lg (-$spacing-xl);
+  border-radius: $border-radius-lg $border-radius-lg 0 0;
+}
+
+.card-footer {
+  padding: $spacing-lg $spacing-xl;
+  border-top: 1px solid var(--pico-border-color);
+  background: var(--pico-card-sectioning-background-color);
+  margin: $spacing-lg (-$spacing-xl) (-$spacing-xl) (-$spacing-xl);
+  border-radius: 0 0 $border-radius-lg $border-radius-lg;
+}
+
+// === Legal Application Specific Styles ===
+
+// Evidence type indicators
+.evidence-type {
+  &.document {
+    color: $evidence-document;
+  }
+  &.image {
+    color: $evidence-image;
+  }
+  &.video {
+    color: $evidence-video;
+  }
+  &.audio {
+    color: $evidence-audio;
+  }
+  &.link {
+    color: $evidence-link;
+  }
+}
+
+// Status indicators
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: $border-radius;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.draft {
+    background: rgba(107, 114, 128, 0.1);
+    color: $status-draft;
+  }
+
+  &.review {
+    background: rgba(245, 158, 11, 0.1);
+    color: $status-review;
+  }
+
+  &.approved {
+    background: rgba(16, 185, 129, 0.1);
+    color: $status-approved;
+  }
+
+  &.rejected {
+    background: rgba(239, 68, 68, 0.1);
+    color: $status-rejected;
+  }
+
+  &.sealed {
+    background: rgba(124, 58, 237, 0.1);
+    color: $status-sealed;
+  }
+}
+
+// Classification indicators
+.classification {
+  &.public {
+    color: $classification-public;
+  }
+  &.confidential {
+    color: $classification-confidential;
+  }
+  &.restricted {
+    color: $classification-restricted;
+  }
+  &.secret {
+    color: $classification-secret;
+  }
+}
+
+// Tag styling
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: var(--pico-primary-background, #eff6ff);
+  color: var(--pico-primary, #3b82f6);
+  border: 1px solid var(--pico-primary-border, #bfdbfe);
+  border-radius: $border-radius;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all $transition-duration $transition-timing-function;
+
+  &:hover {
+    background: var(--pico-primary-hover-background, #dbeafe);
+    transform: translateY(-1px);
+  }
+}
+
+// Scrollbar improvements
+.scrollable {
+  @include scrollbar;
+}
+
+// Focus improvements for accessibility
+.focus-visible {
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+// Loading states
+.loading {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: loading-shimmer 1.5s infinite;
+  }
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+// Utility classes
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// === Responsive Design ===
+
+@include respond-to(sm) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@include respond-to(md) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@include respond-to(lg) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@include respond-to(xl) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+@include respond-to(2xl) {
+  .container {
+    max-width: 1536px;
+  }
+}
+
+// Mobile-first responsive utilities
+@media (max-width: #{$breakpoint-sm - 1px}) {
+  .hidden-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: $breakpoint-md) {
+  .hidden-desktop {
+    display: none !important;
+  }
+}
+
+// === Print Styles ===
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    page-break-after: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+// === Dark Theme Enhancements ===
+[data-theme="dark"] {
+  .card {
+    border-color: var(--pico-border-color);
+  }
+
+  code {
+    background: var(--pico-code-background-color, #374151);
+    color: var(--pico-code-color, #e5e7eb);
+  }
+
+  .loading::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+  }
+}
+
+// === Animation Performance ===
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// === High Contrast Mode ===
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+
+  button,
+  .btn-primary,
+  .btn-secondary {
+    border-width: 2px;
+  }
+
+  .tag {
+    border-width: 2px;
+  }
+}

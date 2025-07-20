@@ -1,0 +1,109 @@
+import { users } from "$lib/server/db/schema-postgres";
+import { fail, redirect } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
+import { db } from "$lib/server/db/index";
+import { hashPassword } from "$lib/server/lucia";
+import type { Actions } from "./$types";
+
+export const actions: Actions = {
+  default: async ({ request }) => {
+    try {
+      const data = await request.formData();
+      const name = data.get("name") as string;
+      const email = data.get("email") as string;
+      const password = data.get("password") as string;
+      const confirmPassword = data.get("confirmPassword") as string;
+      const role = data.get("role") as string;
+      const terms = data.get("terms") as string;
+
+      console.log("[Register Form] Received data:", {
+        name,
+        email,
+        role,
+        terms: !!terms,
+      });
+
+      // Validation
+      if (!name || !email || !password || !confirmPassword || !role) {
+        return fail(400, {
+          error: "All fields are required",
+          name,
+          email,
+          role,
+        });
+      }
+      if (password !== confirmPassword) {
+        return fail(400, {
+          error: "Passwords do not match",
+          name,
+          email,
+          role,
+        });
+      }
+      if (password.length < 8) {
+        return fail(400, {
+          error: "Password must be at least 8 characters long",
+          name,
+          email,
+          role,
+        });
+      }
+      if (!terms) {
+        return fail(400, {
+          error: "You must accept the terms and conditions",
+          name,
+          email,
+          role,
+        });
+      }
+      // Check if user already exists
+      const existingUser = await db
+        .select({
+          id: users.id,
+          email: users.email,
+        })
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      if (existingUser.length > 0) {
+        return fail(400, {
+          error: "An account with this email already exists",
+          name,
+          email: "",
+          role,
+        });
+      }
+      // Hash password
+      const hashedPassword = await hashPassword(password);
+
+      // Create user
+      const [newUser] = await db
+        .insert(users)
+        .values({
+          email,
+          hashedPassword,
+          name,
+          firstName: name.split(" ")[0] || "",
+          lastName: name.split(" ").slice(1).join(" ") || "",
+          role: role as "prosecutor" | "investigator" | "admin" | "analyst",
+        })
+        .returning();
+
+      console.log("[Register Form] User created successfully:", newUser.id);
+
+      // Redirect to login page with success message
+      throw redirect(302, "/login?registered=true");
+    } catch (error) {
+      console.error("[Register Form] Error:", error);
+
+      // If it's a redirect, re-throw it
+      if (error instanceof Response) {
+        throw error;
+      }
+      return fail(500, {
+        error: "An unexpected error occurred. Please try again.",
+      });
+    }
+  },
+};

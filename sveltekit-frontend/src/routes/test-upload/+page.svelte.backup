@@ -1,0 +1,103 @@
+<script lang="ts">
+  import AdvancedFileUpload from "$lib/components/upload/AdvancedFileUpload.svelte";
+
+  let uploadedFiles: any[] = [];
+
+  function handleFilesAdded(event) {
+    console.log("Files added:", event.detail.files);
+  }
+
+  function handleUploadComplete(event) {
+    console.log("Upload complete:", event.detail.files);
+    uploadedFiles = [...uploadedFiles, ...event.detail.files];
+  }
+
+  function handleFileRemoved(event) {
+    console.log("File removed:", event.detail.fileId);
+  }
+</script>
+
+<svelte:head>
+  <title>File Upload Test</title>
+</svelte:head>
+
+<div class="mx-auto px-4 max-w-7xl">
+  <h1>File Upload Test</h1>
+
+  <div class="mx-auto px-4 max-w-7xl">
+    <AdvancedFileUpload
+      multiple={true}
+      accept="*/*"
+      maxFileSize={50 * 1024 * 1024}
+      maxFiles={5}
+      enablePreview={true}
+      enableDragDrop={true}
+      enablePasteUpload={true}
+      autoUpload={false}
+      on:filesAdded={handleFilesAdded}
+      on:uploadComplete={handleUploadComplete}
+      on:fileRemoved={handleFileRemoved}
+    />
+  </div>
+
+  {#if uploadedFiles.length > 0}
+    <div class="mx-auto px-4 max-w-7xl">
+      <h2>Upload Results</h2>
+      <ul>
+        {#each uploadedFiles as file}
+          <li>
+            <strong>{file.name}</strong> - {file.status}
+            {#if file.url}
+              <a href={file.url} target="_blank" rel="noopener noreferrer"
+                >View</a
+              >
+            {/if}
+          </li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .upload-section {
+    margin: 2rem 0;
+  }
+
+  .results {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .results ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .results li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .results li:last-child {
+    border-bottom: none;
+  }
+
+  .results a {
+    margin-left: 1rem;
+    color: #0066cc;
+    text-decoration: none;
+  }
+
+  .results a:hover {
+    text-decoration: underline;
+  }
+</style>

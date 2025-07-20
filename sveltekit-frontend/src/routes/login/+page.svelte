@@ -1,0 +1,257 @@
+<script lang="ts">
+  import { enhance } from "$app/forms";
+  import { Button } from "$lib/components/ui/button";
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui";
+  import { Input } from "$lib/components/ui";
+  import { Label } from "$lib/components/ui";
+  import { Tooltip } from "$lib/components/ui";
+  import { loginSchema } from "$lib/schemas";
+  import { superForm } from "sveltekit-superforms";
+  import { zodClient } from "sveltekit-superforms/adapters";
+  import type { PageData } from "./$types";
+  export let data: PageData;
+  const { form, errors, constraints, submitting } = superForm(data.form, {
+    validators: zodClient(loginSchema),
+  });
+
+  // Demo user credentials
+  const demoUsers = [
+    { email: "admin@example.com", password: "admin123", role: "admin" },
+    { email: "user@example.com", password: "user123", role: "user" },
+  ];
+
+  function fillDemoCredentials(userType: "admin" | "user") {
+    const demoUser = demoUsers.find((u) => u.role === userType);
+    if (demoUser) {
+      $form.email = demoUser.email;
+      $form.password = demoUser.password;
+}
+}
+</script>
+
+<svelte:head>
+  <title>Legal Case Management - Login</title>
+  <meta
+    name="description"
+    content="Sign in to your Legal Case Management account"
+  />
+</svelte:head>
+
+<main class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z"
+            />
+          </svg>
+        </div>
+        <div>
+          <h1>Welcome Back</h1>
+          <p class="container mx-auto px-4">Sign in to continue</p>
+        </div>
+      </div>
+
+      <p class="container mx-auto px-4">
+        Access your legal case management dashboard, review ongoing cases, and
+        manage evidence with our secure and comprehensive platform.
+      </p>
+
+      <div class="container mx-auto px-4">
+        <h3>Demo Accounts</h3>
+        <p>Try the application with these demo credentials:</p>
+        <div class="container mx-auto px-4">
+          <button
+            type="button"
+            class="container mx-auto px-4"
+            on:click={() => fillDemoCredentials("admin")}
+          >
+            Admin Demo
+          </button>
+          <button
+            type="button"
+            class="container mx-auto px-4"
+            on:click={() => fillDemoCredentials("user")}
+          >
+            User Demo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4">
+      <article>
+        <header>
+          <h2>Sign In</h2>
+        </header>
+
+        <Card class="container mx-auto px-4">
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form method="POST" use:enhance>
+              <div class="container mx-auto px-4">
+                <Label for_="email">Email</Label>
+                <Input
+                  type="email"
+                  name="email"
+                  id="email"
+                  bind:value={$form.email}
+                  {...$constraints.email}
+                />
+                {#if $errors.email}
+                  <p class="container mx-auto px-4">{$errors.email}</p>
+                {/if}
+              </div>
+              <div class="container mx-auto px-4">
+                <Label for_="password">Password</Label>
+                <Input
+                  type="password"
+                  name="password"
+                  id="password"
+                  bind:value={$form.password}
+                  {...$constraints.password}
+                />
+                {#if $errors.password}
+                  <p class="container mx-auto px-4">{$errors.password}</p>
+                {/if}
+              </div>
+              <Button type="submit" class="container mx-auto px-4" disabled={$submitting}>
+                {#if $submitting}
+                  Logging in...
+                {:else}
+                  Log In
+                {/if}
+              </Button>
+              <Tooltip
+                content="Demo: admin@example.com / admin123 or user@example.com / user123"
+              >
+                <span
+                  class="container mx-auto px-4"
+                  >Need demo credentials?</span
+                >
+              </Tooltip>
+            </form>
+          </CardContent>
+        </Card>
+
+        {#if import.meta.env.DEV}
+          <form method="POST" action="?/devLogin" style="margin-bottom: 1rem;">
+            <button type="submit" class="container mx-auto px-4">Log in as Demo User</button
+            >
+          </form>
+        {/if}
+
+        <footer>
+          <p>Don't have an account? <a href="/register">Create one here</a></p>
+          <p><a href="/forgot-password">Forgot your password?</a></p>
+        </footer>
+      </article>
+    </div>
+  </div>
+</main>
+
+<style>
+  /* @unocss-include */
+  .auth-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    min-height: 80vh;
+    align-items: center;
+    padding: 2rem 0;
+}
+  .auth-info {
+    padding: 2rem;
+}
+  .auth-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+  .brand-icon {
+    color: var(--harvard-crimson);
+    flex-shrink: 0;
+}
+  .auth-header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    line-height: 1.2;
+}
+  .auth-subtitle {
+    color: var(--text-muted);
+    margin: 0;
+    font-size: 1.1rem;
+}
+  .auth-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: var(--text-muted);
+}
+  .demo-section {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--card-border-color);
+}
+  .demo-section h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+  .demo-section p {
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+  .demo-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+  .demo-buttons button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+  .auth-form {
+    padding: 1rem;
+}
+  .auth-form article {
+    margin: 0;
+    max-width: 400px;
+}
+  .auth-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+  .auth-form footer {
+    text-align: center;
+}
+  .auth-form footer p {
+    margin: 0.5rem 0;
+}
+  @media (max-width: 768px) {
+    .auth-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+}
+    .auth-info {
+      padding: 1rem;
+      text-align: center;
+}
+    .auth-header {
+      justify-content: center;
+}
+    .auth-header h1 {
+      font-size: 2rem;
+}
+}
+</style>

@@ -1,0 +1,201 @@
+<script lang="ts">
+  import TauriAPI from "$lib/tauri";
+  import type { Report } from "$lib/types/index";
+  import { onMount } from "svelte";
+
+  let reports: Report[] = [];
+  let loading = true;
+  let error: string | null = null;
+
+  onMount(async () => {
+    try {
+      reports = await TauriAPI.getReports();
+    } catch (err) {
+      error = "Error loading reports";
+      console.error("Error:", err);
+    } finally {
+      loading = false;
+    }
+  });
+
+  function formatDate(date: Date | string) {
+    if (typeof date === 'string') {
+      return new Date(date).toLocaleDateString();
+    }
+    return date.toLocaleDateString();
+  }
+
+  function getStatusBadgeClass(status: string) {
+    switch (status) {
+      case "published":
+        return "badge-success";
+      case "draft":
+        return "badge-warning";
+      case "archived":
+        return "badge-neutral";
+      default:
+        return "badge-info";
+    }
+  }
+</script>
+
+<svelte:head>
+  <title>Reports - Legal Case Management</title>
+</svelte:head>
+
+<div class="mx-auto px-4 max-w-7xl">
+  <div class="mx-auto px-4 max-w-7xl">
+    <h1 class="mx-auto px-4 max-w-7xl">Reports</h1>
+    <a href="/report-builder" class="mx-auto px-4 max-w-7xl">
+      <svg
+        class="mx-auto px-4 max-w-7xl"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+        />
+      </svg>
+      New Report
+    </a>
+  </div>
+
+  {#if loading}
+    <div class="mx-auto px-4 max-w-7xl">
+      <div class="mx-auto px-4 max-w-7xl"></div>
+      <span class="mx-auto px-4 max-w-7xl">Loading reports...</span>
+    </div>
+  {:else if error}
+    <div class="mx-auto px-4 max-w-7xl">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="mx-auto px-4 max-w-7xl"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>{error}</span>
+    </div>
+  {:else if reports.length === 0}
+    <div class="mx-auto px-4 max-w-7xl">
+      <svg
+        class="mx-auto px-4 max-w-7xl"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+      <h3 class="mx-auto px-4 max-w-7xl">No reports</h3>
+      <p class="mx-auto px-4 max-w-7xl">
+        Get started by creating a new report.
+      </p>
+      <div class="mx-auto px-4 max-w-7xl">
+        <a href="/report-builder" class="mx-auto px-4 max-w-7xl">
+          <svg
+            class="mx-auto px-4 max-w-7xl"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+          New Report
+        </a>
+      </div>
+    </div>
+  {:else}
+    <div class="mx-auto px-4 max-w-7xl">
+      {#each reports as report}
+        <div class="mx-auto px-4 max-w-7xl">
+          <div class="mx-auto px-4 max-w-7xl">
+            <div class="mx-auto px-4 max-w-7xl">
+              <div class="mx-auto px-4 max-w-7xl">
+                <h2 class="mx-auto px-4 max-w-7xl">
+                  <a href="/reports/{report.id}" class="mx-auto px-4 max-w-7xl"
+                    >{report.title}</a
+                  >
+                </h2>
+                <p class="mx-auto px-4 max-w-7xl">{report.summary}</p>
+
+                <div class="mx-auto px-4 max-w-7xl">
+                  <span>Type: {report.reportType}</span>
+                  <span>Created: {formatDate(report.createdAt)}</span>
+                  <span>Words: {report.wordCount || 0}</span>
+                  {#if report.estimatedReadTime}
+                    <span>Read time: {report.estimatedReadTime} min</span>
+                  {/if}
+                </div>
+
+                {#if report.tags && report.tags.length > 0}
+                  <div class="mx-auto px-4 max-w-7xl">
+                    {#each report.tags as tag}
+                      <span class="mx-auto px-4 max-w-7xl">{tag}</span>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+
+              <div class="mx-auto px-4 max-w-7xl">
+                <span class="mx-auto px-4 max-w-7xl"
+                  >{report.status}</span
+                >
+
+                <div class="mx-auto px-4 max-w-7xl">
+                  <button
+                    tabindex={0}
+                    class="mx-auto px-4 max-w-7xl"
+                    aria-label="Actions menu"
+                  >
+                    <svg
+                      class="mx-auto px-4 max-w-7xl"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
+                      />
+                    </svg>
+                  </button>
+                  <ul
+                    class="mx-auto px-4 max-w-7xl"
+                  >
+                    <li><a href="/reports/{report.id}">View</a></li>
+                    <li><a href="/reports/{report.id}/edit">Edit</a></li>
+                    <li>
+                      <a
+                        href="/api/reports/{report.id}/export/pdf"
+                        target="_blank">Export PDF</a
+                      >
+                    </li>
+                    <li><button class="mx-auto px-4 max-w-7xl">Delete</button></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {/each}
+    </div>
+  {/if}
+</div>

@@ -1,0 +1,9 @@
+# List Ollama models to auto-pull on container startup
+llama3
+phi3
+mistral
+nomic-embed-text
+llama3.2
+gemma2:2b
+tinyllama
+# Add more model names as needed
