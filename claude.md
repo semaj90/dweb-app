@@ -1,0 +1,1 @@
+# Claude Context - Ultimate Legal AI SvelteKit 2.16 + Svelte 5 + XState + Fabric.js + UnoCSS + PostgreSQL + Drizzle + LangChain + Ollama Context7 sources: SvelteKit, Tailwind, UnoCSS, Drizzle, XState, Fabric.js Complete legal AI development context.

@@ -5,8 +5,6 @@
   import { Archive, Calendar, CheckCircle, Clock, FileText, User as UserIcon } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-import type { Case } from '$lib/types';
-
   export let caseData: Case
   export let isActive = false;
   export let disabled = false;

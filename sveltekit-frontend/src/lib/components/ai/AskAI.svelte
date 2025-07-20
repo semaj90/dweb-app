@@ -695,7 +695,7 @@
 
       <button
         type="button"
-        on:click={() => askAI()
+        on:click={() => askAI()}
         disabled={!query.trim() || isLoading}
         class="container mx-auto px-4"
         aria-label="Send question to AI"

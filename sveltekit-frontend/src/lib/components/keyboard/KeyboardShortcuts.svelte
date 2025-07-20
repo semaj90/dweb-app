@@ -511,7 +511,7 @@ import type { User } from '$lib/types';
 <!-- Command Palette Overlay -->
 {#if open}
   <div
-    class="container mx-auto px-4"
+    class="command-palette-overlay"
     role="dialog"
     tabindex={0}
     aria-modal="true"
@@ -519,17 +519,17 @@ import type { User } from '$lib/types';
     on:click|self={() => (open = false)}
     on:keydown={(e) => (e.key === "Escape" ? (open = false) : null)}
   >
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2 id="command-palette-title" class="container mx-auto px-4">Command Palette</h2>
-        <div class="container mx-auto px-4">
-          <Command class="container mx-auto px-4" />
+    <div class="command-palette">
+      <div class="command-palette-header">
+        <h2 id="command-palette-title" class="sr-only">Command Palette</h2>
+        <div class="search-container">
+          <Command class="search-icon" />
           <input
             bind:this={commandInput}
             bind:value={searchQuery}
             type="text"
             placeholder="Type a command or search..."
-            class="container mx-auto px-4"
+            class="search-input"
             autocomplete="off"
             spellcheck="false"
             aria-label="Command search"
@@ -538,24 +538,24 @@ import type { User } from '$lib/types';
             variant="ghost"
             size="sm"
             on:click={() => (open = false)}
-            class="container mx-auto px-4"
+            class="close-button"
             aria-label="Close command palette"
           >
-            <X class="container mx-auto px-4" />
+            <X class="w-4 h-4" />
           </Button>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="command-palette-body">
         {#if filteredCommands.length > 0}
           <ul
-            class="container mx-auto px-4"
+            class="command-list"
             role="listbox"
             aria-label="Available commands"
           >
             {#each filteredCommands as command, index}
               <li
-                class="container mx-auto px-4"
+                class="command-item"
                 class:selected={index === selectedIndex}
                 role="option"
                 aria-selected={index === selectedIndex}
@@ -565,30 +565,30 @@ import type { User } from '$lib/types';
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     executeCommand(command);
-}
-                "
+                  }
+                }}
                 on:mouseenter={() => (selectedIndex = index)}
               >
-                <div class="container mx-auto px-4">
-                  <svelte:component this={command.icon} class="container mx-auto px-4" />
+                <div class="command-icon">
+                  <svelte:component this={command.icon} class="w-4 h-4" />
                 </div>
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">{command.title}</div>
-                  <div class="container mx-auto px-4">{command.description}</div>
+                <div class="command-content">
+                  <div class="command-title">{command.title}</div>
+                  <div class="command-description">{command.description}</div>
                 </div>
               </li>
             {/each}
           </ul>
         {:else}
-          <div class="container mx-auto px-4">
-            <Search class="container mx-auto px-4" />
+          <div class="empty-state">
+            <Search class="w-8 h-8" />
             <p>No commands found for "{searchQuery}"</p>
           </div>
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="command-palette-footer">
+        <div class="footer-hint">
           <kbd>↑↓</kbd> to navigate
           <kbd>Enter</kbd> to select
           <kbd>Esc</kbd> to close

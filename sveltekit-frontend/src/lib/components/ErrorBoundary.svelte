@@ -1,6 +1,5 @@
-import type { User } from '$lib/types';
-
 <script lang="ts">
+  import type { User } from '$lib/types';
   import Button from "$lib/components/ui/button";
   import {
     errorHandler,
@@ -36,8 +35,10 @@ import type { User } from '$lib/types';
       if (error && autoHide && error.severity === "info") {
         setTimeout(() => {
           if (currentError === error) {
-            clearError();}
-        }, 5000);}
+            clearError();
+}
+        }, 5000);
+}
     });
 
     return unsubscribe;
@@ -47,7 +48,8 @@ import type { User } from '$lib/types';
     errorHandler.clear();
     currentError = null;
     showDetails = false;
-    retryInProgress = false;}
+    retryInProgress = false;
+}
   async function retryAction() {
     if (!currentError?.canRetry) return;
 
@@ -66,7 +68,8 @@ import type { User } from '$lib/types';
       // If retry fails, show a new error
       errorHandler.handle(error, { context: "retry_failed" });
     } finally {
-      retryInProgress = false;}}
+      retryInProgress = false;
+}}
   function copyErrorDetails() {
     if (!currentError) return;
 
@@ -99,7 +102,8 @@ Timestamp: ${new Date().toISOString()}`;
           title: "Copied",
           message: "Error details copied to clipboard.",
         });
-      });}
+      });
+}
   function getIcon(severity: string) {
     switch (severity) {
       case "critical":
@@ -109,7 +113,8 @@ Timestamp: ${new Date().toISOString()}`;
         return AlertTriangle;
       case "info":
       default:
-        return Info;}}
+        return Info;
+}}
   function getAlertClass(severity: string) {
     switch (severity) {
       case "critical":
@@ -120,7 +125,8 @@ Timestamp: ${new Date().toISOString()}`;
         return "alert-warning border-warning/20 bg-warning/5";
       case "info":
       default:
-        return "alert-info border-info/20 bg-info/5";}}
+        return "alert-info border-info/20 bg-info/5";
+}}
   function getButtonClass(severity: string) {
     switch (severity) {
       case "critical":
@@ -130,7 +136,8 @@ Timestamp: ${new Date().toISOString()}`;
         return "btn-warning";
       case "info":
       default:
-        return "btn-info";}}
+        return "btn-info";
+}}
   // Report error to support (placeholder)
   function reportError() {
     if (!currentError) return;
@@ -142,7 +149,8 @@ Timestamp: ${new Date().toISOString()}`;
       type: "success",
       title: "Error Reported",
       message: "Thank you for reporting this issue. Our team will investigate.",
-    });}
+    });
+}
 </script>
 
 {#if currentError}

@@ -61,5 +61,3 @@ Have a feature request? [Let's discuss](https://github.com/huntabyte/bits-ui/dis
 Built on the shoulders of giants:
 
 - [Melt UI](https://melt-ui.com) - inspired the internal architecture
-- [Radix UI](https://radix-ui.com) - API design inspiration
-- [React Spectrum](https://react-spectrum.adobe.com) - inspiration for the date/time components and excellence in accessibility

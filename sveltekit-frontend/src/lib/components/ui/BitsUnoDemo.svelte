@@ -1,19 +1,19 @@
 <script lang="ts">
   import { createDialog, createPopover, createDropdownMenu, melt } from '@melt-ui/svelte';
   import { fade } from 'svelte/transition';
-  
+
   // Create dialog state
   const {
     elements: { trigger: dialogTrigger, overlay: dialogOverlay, content: dialogContent, title: dialogTitle, description: dialogDescription, close: dialogClose, portalled: dialogPortalled },
     states: { open: dialogOpen }
   } = createDialog();
-  
+
   // Create popover state
   const {
     elements: { trigger: popoverTrigger, content: popoverContent, arrow: popoverArrow },
     states: { open: popoverOpen }
   } = createPopover();
-  
+
   // Create dropdown state
   const {
     elements: { trigger: dropdownTrigger, menu: dropdownMenu, item: dropdownItem, separator: dropdownSeparator },
@@ -33,7 +33,7 @@
 
     <!-- Main Demo Grid -->
     <div class="container mx-auto px-4">
-      
+
       <!-- Dialog Demo -->
       <div class="container mx-auto px-4">
         <h3 class="container mx-auto px-4">
@@ -41,18 +41,18 @@
           Dialog Component
         </h3>
         <p class="container mx-auto px-4">Modal dialogs with UnoCSS styling</p>
-        
-        <button 
+
+        <button
           use:melt={$dialogTrigger}
           class="container mx-auto px-4"
         >
           Open Dialog
         </button>
-        
+
         <div use:melt={$dialogPortalled}>
           {#if $dialogOpen}
             <div use:melt={$dialogOverlay} class="container mx-auto px-4" in:fade={{ duration: 150 }} out:fade={{ duration: 150 }}></div>
-            <div 
+            <div
               use:melt={$dialogContent}
               class="container mx-auto px-4"
               in:fade={{ duration: 150 }}
@@ -64,15 +64,15 @@
               <p use:melt={$dialogDescription} class="container mx-auto px-4">
                 This dialog showcases Melt UI components styled with UnoCSS utility classes for a modern, responsive design.
               </p>
-              
+
               <div class="container mx-auto px-4">
-                <button 
+                <button
                   use:melt={$dialogClose}
                   class="container mx-auto px-4"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   use:melt={$dialogClose}
                   class="container mx-auto px-4"
                 >
@@ -91,20 +91,20 @@
           Popover Component
         </h3>
         <p class="container mx-auto px-4">Context menus and tooltips</p>
-        
-        <button 
+
+        <button
           use:melt={$popoverTrigger}
           class="container mx-auto px-4"
         >
           Show Popover
         </button>
-        
+
         {#if $popoverOpen}
-          <div 
+          <div
             use:melt={$popoverContent}
             class="container mx-auto px-4"
-            in:fade={{ duration: 150 "
-            out:fade={{ duration: 150  "
+            in:fade={{ duration: 150 }}
+            out:fade={{ duration: 150 }}
           >
             <div class="container mx-auto px-4">
               <h4 class="container mx-auto px-4">UnoCSS Features</h4>
@@ -134,17 +134,17 @@
           Dropdown Menu
         </h3>
         <p class="container mx-auto px-4">Navigation and action menus</p>
-        
-        <button 
+
+        <button
           use:melt={$dropdownTrigger}
           class="container mx-auto px-4"
         >
           Open Menu
           <span class="container mx-auto px-4">▼</span>
         </button>
-        
+
         {#if $dropdownOpen}
-          <div 
+          <div
             use:melt={$dropdownMenu}
             class="container mx-auto px-4"
             in:fade={{ duration: 150 "
@@ -173,7 +173,7 @@
       <h3 class="container mx-auto px-4">
         Integration Highlights
       </h3>
-      
+
       <div class="container mx-auto px-4">
         <div>
           <h4 class="container mx-auto px-4">Bits UI Features</h4>
@@ -196,7 +196,7 @@
             </li>
           </ul>
         </div>
-        
+
         <div>
           <h4 class="container mx-auto px-4">UnoCSS Benefits</h4>
           <ul class="container mx-auto px-4">
