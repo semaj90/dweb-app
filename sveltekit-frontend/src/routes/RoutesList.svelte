@@ -46,7 +46,6 @@
     { path: "/ui-demo", label: "UI Demo" }
   ];
 </script>
-</script>
 
 <!-- Add this to your homepage below the hero/feature section -->
 <div class="routes-list">
