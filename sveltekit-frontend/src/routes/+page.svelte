@@ -29,7 +29,7 @@
       <div class="hero-content">
         <h1 class="hero-title">Legal Case Management</h1>
         <p class="hero-subtitle">Professional evidence management and case organization</p>
-        
+
         <div class="action-buttons">
           {#if $user}
             <a href="/dashboard" class="btn btn-primary">
@@ -61,19 +61,16 @@
           <h3>Case Management</h3>
           <p>Organize and track legal cases with comprehensive case files</p>
         </div>
-        
         <div class="feature-card">
           <div class="feature-icon">🔍</div>
           <h3>Evidence Board</h3>
           <p>Visual evidence management with drag-and-drop interface</p>
         </div>
-        
         <div class="feature-card">
           <div class="feature-icon">📊</div>
           <h3>Analytics</h3>
           <p>Track case progress and analyze patterns</p>
         </div>
-        
         <div class="feature-card">
           <div class="feature-icon">🤖</div>
           <h3>AI Assistant</h3>
@@ -81,6 +78,12 @@
         </div>
       </div>
     </div>
+
+    <!-- All Routes List (dynamic) -->
+    <RoutesList />
+<script lang="ts">
+  import RoutesList from "./RoutesList.svelte";
+</script>
   {/if}
 </div>
 
@@ -231,12 +234,12 @@
     .hero-title {
       font-size: 2rem;
     }
-    
+
     .action-buttons {
       flex-direction: column;
       align-items: center;
     }
-    
+
     .btn {
       width: 100%;
       max-width: 200px;

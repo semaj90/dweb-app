@@ -57,9 +57,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       );
     }
     // Apply filters
-    if (filters.length > 0) {
-      query = query.where(and(...filters));
-    }
+    let finalQuery = db.select().from(caseActivities).where(filters.length > 0 ? and(...filters) : undefined);
+
     // Add sorting
     const orderColumn =
       sortBy === "title"
@@ -72,18 +71,16 @@ export const GET: RequestHandler = async ({ locals, url }) => {
               ? caseActivities.priority
               : sortBy === "completedAt"
                 ? caseActivities.completedAt
-                : sortBy === "createdAt"
-                  ? caseActivities.createdAt
-                  : sortBy === "updatedAt"
-                    ? caseActivities.updatedAt
-                    : caseActivities.scheduledFor;
+                : caseActivities.createdAt; // Default to createdAt if updatedAt is not available
 
-    query = query.orderBy(
+    finalQuery = finalQuery.orderBy(
       sortOrder === "asc" ? orderColumn : desc(orderColumn),
     );
 
     // Add pagination
-    query = query.limit(limit).offset(offset);
+    finalQuery = finalQuery.limit(limit).offset(offset);
+
+    const activityResults = await finalQuery;
 
     const activityResults = await query;
 

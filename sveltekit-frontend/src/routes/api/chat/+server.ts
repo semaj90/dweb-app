@@ -234,9 +234,9 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
       role: msg.role as "user" | "assistant",
       content: msg.content,
       timestamp: msg.createdAt,
-      contextUsed: msg.metadata?.contextUsed,
-      suggestions: msg.metadata?.suggestions,
-      actions: msg.metadata?.actions,
+      contextUsed: (msg.metadata as any)?.contextUsed,
+      suggestions: (msg.metadata as any)?.suggestions,
+      actions: (msg.metadata as any)?.actions,
     }));
 
     return json({

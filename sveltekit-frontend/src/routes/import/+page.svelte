@@ -1,4 +1,4 @@
-import type { User } from '$lib/types';
+
 
 <script lang="ts">
   import { browser } from "$app/environment";
@@ -161,6 +161,8 @@ import type { User } from '$lib/types';
       const content = await file.text();
       if (file.type === "application/json" || file.name.endsWith(".json")) {
         filePreview = {
+          name: file.name,
+          size: file.size,
           type: "json",
           data: JSON.parse(content),
           raw: content.substring(0, 500) + (content.length > 500 ? "..." : ""),
@@ -168,12 +170,16 @@ import type { User } from '$lib/types';
       } else if (file.type === "text/csv" || file.name.endsWith(".csv")) {
         const lines = content.split("\n").slice(0, 5);
         filePreview = {
+          name: file.name,
+          size: file.size,
           type: "csv",
           data: lines,
           raw: content.substring(0, 500) + (content.length > 500 ? "..." : ""),
         };
       } else {
         filePreview = {
+          name: file.name,
+          size: file.size,
           type: "xml",
           data: content.substring(0, 500) + (content.length > 500 ? "..." : ""),
           raw: content.substring(0, 500) + (content.length > 500 ? "..." : ""),

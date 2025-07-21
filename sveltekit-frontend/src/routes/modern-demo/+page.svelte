@@ -1,5 +1,5 @@
 <script lang="ts">
-  import EvidenceCard from "$lib/components/evidence/EvidenceCard.svelte";
+  import { EvidenceCard } from "$lib/components/evidence/EvidenceCard.svelte";
   import ExpandGrid from "$lib/components/ui/ExpandGrid.svelte";
   import GoldenLayout from "$lib/components/ui/GoldenLayout.svelte";
   import SmartTextarea from "$lib/components/ui/SmartTextarea.svelte";

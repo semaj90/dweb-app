@@ -12,8 +12,6 @@
 			<div class="modal-body">
 				{#if children}
 					{@render children()}
-				{:else}
-					<slot />
 				{/if}
 			</div>
 		</div>

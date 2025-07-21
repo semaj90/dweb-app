@@ -3,17 +3,18 @@ import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async ({ locals }) => {
   try {
-    const session = await locals.auth?.validate();
+    const session = locals.session;
+    const user = locals.user;
 
     if (!session) {
       return json({ user: null }, { status: 401 });
     }
     return json({
       user: {
-        id: session.user.userId,
-        email: session.user.email,
-        name: session.user.name,
-        role: session.user.role,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
       },
     });
   } catch (error) {

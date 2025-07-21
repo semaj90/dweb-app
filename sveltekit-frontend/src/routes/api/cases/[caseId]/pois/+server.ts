@@ -34,7 +34,6 @@ export const POST: RequestHandler = async ({ request, params }) => {
         caseId,
         name: data.name || "New Person of Interest",
         aliases: data.aliases || [],
-        profileImageUrl: data.profileImageUrl,
         profileData: data.profileData || {
           who: "",
           what: "",

@@ -359,14 +359,14 @@
 {#if showLoginModal}
   <Modal bind:open={showLoginModal}>
     <div slot="title">Welcome Back</div>
-    <AuthForm data={{ formType: "login" }} />
+    <AuthForm data={{ formType: "login" as "login" }} />
   </Modal>
 {/if}
 
 {#if showRegisterModal}
   <Modal bind:open={showRegisterModal}>
     <div slot="title">Create Your Account</div>
-    <AuthForm data={{ formType: "register" }} />
+    <AuthForm data={{ formType: "register" as "register" }} />
   </Modal>
 {/if}
 

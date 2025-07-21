@@ -199,7 +199,7 @@
               <textarea
                 id="case-description"
                 class="container mx-auto px-4"
-                rows={${1"
+                rows="4"
                 placeholder="Provide a detailed description of the case"
                 value={values.description || ""}
                 class:border-red-300={errors.description}

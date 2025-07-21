@@ -81,16 +81,16 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       }
       if (dateRange?.from) {
         evidenceQuery = evidenceQuery.where(
-          sql`${evidence.createdAt} >= ${dateRange.from}`,
+          sql`${evidence.uploadedAt} >= ${dateRange.from}`,
         );
       }
       if (dateRange?.to) {
         evidenceQuery = evidenceQuery.where(
-          sql`${evidence.createdAt} <= ${dateRange.to}`,
+          sql`${evidence.uploadedAt} <= ${dateRange.to}`,
         );
       }
       const evidenceData = await evidenceQuery.orderBy(
-        desc(evidence.createdAt),
+        desc(evidence.uploadedAt),
       );
       exportData.evidence = evidenceData;
     }

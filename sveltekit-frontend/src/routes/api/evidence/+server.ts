@@ -296,24 +296,7 @@ export const PATCH: RequestHandler = async ({ request, url, locals }) => {
   }
 };
 
-// PATCH endpoint to update evidence order for drag-drop persistence
-export const PATCH: RequestHandler = async ({ request, locals }) => {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-    });
-  }
-  const { updates } = await request.json(); // [{id, order}, ...]
-  if (!Array.isArray(updates)) {
-    return new Response(JSON.stringify({ error: "Missing updates array" }), {
-      status: 400,
-    });
-  }
-  for (const { id, order } of updates) {
-    await db.update(evidence).set({ order }).where(eq(evidence.id, id));
-  }
-  return new Response(JSON.stringify({ success: true }), { status: 200 });
-};
+
 
 export const DELETE: RequestHandler = async ({ url, locals }) => {
   try {

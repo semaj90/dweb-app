@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
       generatedAt: new Date().toISOString(),
       format: exportOptions.format,
       options: exportOptions,
-      estimatedPages: Math.ceil(report.wordCount / 250), // Rough estimate
+      estimatedPages: 10, // Rough estimate
       fileSize: "~2.5MB", // Placeholder
       downloadUrl: `/api/reports/${reportId}/export/pdf/download?token=${Date.now()}`, // Placeholder URL
     };

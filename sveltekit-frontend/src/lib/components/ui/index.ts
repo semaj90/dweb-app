@@ -1,11 +1,11 @@
 export { default as Badge } from "./Badge.svelte";
-export { default as BitsUnoDemo } from "./BitsUnoDemo.svelte";
+export * from "./BitsUnoDemo.svelte";
 export { default as Button } from "./Button.svelte";
 export { default as Card } from "./Card.svelte";
 export { default as CardContent } from "./CardContent.svelte";
 export { default as CardFooter } from "./CardFooter.svelte";
 export { default as CardHeader } from "./CardHeader.svelte";
-export { default as CaseForm } from "./CaseForm.svelte";
+export * from "./CaseForm.svelte";
 export { default as CommandMenu } from "./CommandMenu.svelte";
 export { default as CommandPalette } from "./CommandPalette.svelte";
 export { default as ContextMenuContent } from "./ContextMenuContent.svelte";

@@ -136,7 +136,7 @@ async function importCases(
           description: caseData.description || "",
           status: caseData.status,
           priority: caseData.priority || "medium",
-          created_at: caseData.created_at
+          createdAt: caseData.created_at
             ? new Date(caseData.created_at)
             : new Date(),
           updated_at: new Date(),
@@ -190,10 +190,10 @@ async function importEvidence(
           await db
             .update(evidence)
             .set({
-              case_id: evidenceItem.case_id,
-              type: evidenceItem.type,
+              caseId: evidenceItem.case_id,
+              evidenceType: evidenceItem.type,
               description: evidenceItem.description,
-              file_path: evidenceItem.file_path,
+              filePath: evidenceItem.file_path,
               metadata: evidenceItem.metadata,
               updated_at: new Date(),
             })
@@ -210,7 +210,7 @@ async function importEvidence(
           description: evidenceItem.description,
           file_path: evidenceItem.file_path || null,
           metadata: evidenceItem.metadata || {},
-          created_at: evidenceItem.created_at
+          createdAt: evidenceItem.created_at
             ? new Date(evidenceItem.created_at)
             : new Date(),
           updated_at: new Date(),
@@ -260,10 +260,10 @@ async function importParticipants(
           await db
             .update(criminals)
             .set({
-              case_id: participant.case_id,
+              caseId: participant.case_id,
               name: participant.name,
               role: participant.role,
-              contact_info: participant.contact_info,
+              contactInfo: participant.contact_info,
               updated_at: new Date(),
             })
             .where(eq(criminals.id, participant.id));
@@ -278,7 +278,7 @@ async function importParticipants(
           name: participant.name,
           role: participant.role,
           contact_info: participant.contact_info || {},
-          created_at: participant.created_at
+          createdAt: participant.created_at
             ? new Date(participant.created_at)
             : new Date(),
           updated_at: new Date(),

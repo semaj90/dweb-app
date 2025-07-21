@@ -1,4 +1,4 @@
-import type { User } from "$lib/types/user";
+
 
 import {
   canvasStates,
@@ -335,6 +335,7 @@ export interface AIResponse {
 }
 // Gemma3 Configuration types
 export interface Gemma3Config {
+  model: string;
   temperature: number;
   maxTokens: number;
   topP: number;

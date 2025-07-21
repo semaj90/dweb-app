@@ -13,3 +13,30 @@ declare module "$lib/components/forms/EnhancedCaseForm.svelte" {
     user: any;
   }> {}
 }
+
+declare global {
+  namespace App {
+    interface Locals {
+      user: {
+        id: string;
+        email: string;
+        name: string;
+        role: string;
+        firstName?: string;
+        lastName?: string;
+        avatarUrl?: string;
+        emailVerified?: Date;
+        createdAt?: Date;
+        updatedAt?: Date;
+        isActive?: boolean;
+      } | null;
+      session: {
+        id: string;
+        userId: string;
+        expiresAt: Date;
+      } | null;
+    }
+  }
+}
+
+export {};

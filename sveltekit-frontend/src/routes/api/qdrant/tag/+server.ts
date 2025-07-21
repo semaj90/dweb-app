@@ -338,13 +338,13 @@ async function searchDocuments(data: any, userId: string) {
     if (filters.evidenceType?.length) {
       mustConditions.push({
         key: "evidenceType",
-        match: { any: filters.evidenceType },
+        match: { values: filters.evidenceType },
       });
     }
     if (filters.legalRelevance?.length) {
       mustConditions.push({
         key: "legalRelevance",
-        match: { any: filters.legalRelevance },
+        match: { values: filters.legalRelevance },
       });
     }
     if (filters.caseId) {
@@ -356,7 +356,7 @@ async function searchDocuments(data: any, userId: string) {
     if (filters.tags?.length) {
       mustConditions.push({
         key: "tags",
-        match: { any: filters.tags },
+        match: { values: filters.tags },
       });
     }
     // Perform vector search

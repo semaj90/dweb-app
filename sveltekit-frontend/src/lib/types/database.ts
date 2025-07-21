@@ -1,3 +1,4 @@
+import type { User } from "./user";
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 import {

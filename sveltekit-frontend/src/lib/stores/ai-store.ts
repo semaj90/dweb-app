@@ -363,7 +363,7 @@ export const aiStore = {
             conversation.messages[0]?.content.substring(0, 50) + "..." ||
             "Untitled Conversation",
           messages: conversation.messages,
-          timestamp: Date.now(),
+          timestamp: new Date(),
           metadata: {
             messageCount: conversation.messages.length,
             lastModel:
@@ -388,7 +388,7 @@ export const aiStore = {
     if (historyItem) {
       aiConversation.set({
         id: historyItem.id,
-        messages: historyItem.messages,
+        messages: historyItem.messages as any,
         isActive: true,
         lastUpdated: Date.now(),
       });

@@ -1,4 +1,4 @@
-import type { User } from '$lib/types';
+
 
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
@@ -51,7 +51,7 @@ import type { User } from '$lib/types';
     {
       id: "advanced",
       title: "Advanced Features",
-      icon: User,
+      icon: UserIcon,
       description: "Power user features and tips",
     },
     {
@@ -118,7 +118,7 @@ Welcome to the Legal Case Management System! This guide will help you get starte
       type: "interactive",
       duration: "10 min",
       popularity: 4,
-      tags: ["navigation", "interface", "basics"],
+      tags: [],
       lastUpdated: "2024-01-15",
       content: `
 # System Navigation Tour
@@ -134,11 +134,11 @@ The top navigation bar contains links to all major sections:
 - **AI Assistant**: Get AI help
 
 ## Keyboard Shortcuts
-Press \`Ctrl + H\` to see all keyboard shortcuts, including:
-- \`Ctrl + K\`: Quick search
-- \`Ctrl + N\`: New evidence
-- \`Ctrl + S\`: Save current work
-- \`F11\`: Toggle fullscreen
+Press `Ctrl + H` to see all keyboard shortcuts, including:
+- `Ctrl + K`: Quick search
+- `Ctrl + N`: New evidence
+- `Ctrl + S`: Save current work
+- `F11`: Toggle fullscreen
 
 ## User Menu
 Click your profile picture (top right) to access:
@@ -155,7 +155,7 @@ Click your profile picture (top right) to access:
       type: "video",
       duration: "8 min",
       popularity: 5,
-      tags: ["case-management", "tutorial", "video"],
+      tags: [],
       lastUpdated: "2024-01-15",
       content: `
 # Creating Your First Case
@@ -200,6 +200,7 @@ import type { Case } from '$lib/types';
       type: "article",
       duration: "7 min read",
       popularity: 4,
+      tags: [],
       content: `
 # Case Organization Best Practices
 
@@ -242,6 +243,7 @@ Set appropriate priorities:
       type: "article",
       duration: "10 min read",
       popularity: 5,
+      tags: [],
       content: `
 # Evidence Handling Best Practices
 
@@ -283,6 +285,7 @@ Record important details:
       type: "article",
       duration: "8 min read",
       popularity: 4,
+      tags: [],
       content: `
 # Effective AI Prompting Techniques
 
@@ -321,6 +324,7 @@ Build on previous responses:
       type: "article",
       duration: "6 min read",
       popularity: 3,
+      tags: [],
       content: `
 # Common Issues and Solutions
 
@@ -356,7 +360,7 @@ Build on previous responses:
 3. Use broader search terms
 4. Try advanced search options
 			`,
-    },
+    }
   ];
 
   // FAQ items

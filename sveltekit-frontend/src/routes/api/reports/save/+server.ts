@@ -76,12 +76,14 @@ export const GET: RequestHandler = async ({ url }) => {
     if (!caseId) {
       return json({ error: "Case ID is required" }, { status: 400 });
     }
-    let query = db.select().from(aiReports).where(eq(aiReports.caseId, caseId));
+    let query = db.select().from(aiReports);
+    const conditions = [eq(aiReports.caseId, caseId)];
 
     if (reportType) {
-      query = query.where(
-        and(eq(aiReports.caseId, caseId), eq(aiReports.reportType, reportType)),
-      );
+      conditions.push(eq(aiReports.reportType, reportType));
+    }
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
     }
     const reports = await query.orderBy(aiReports.createdAt);
 

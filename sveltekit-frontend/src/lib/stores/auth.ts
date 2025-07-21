@@ -1,4 +1,4 @@
-import type { User } from "$lib/types/user";
+
 
 import { writable, type Writable } from "svelte/store";
 import { setContext, getContext } from "svelte";

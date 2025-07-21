@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from "$lib/components/ui/button";
+  import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher } from "svelte";
   import { createFormStore, type FormOptions } from '$lib/stores/form';
   import { notifications } from '$lib/stores/notification';

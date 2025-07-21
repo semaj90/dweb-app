@@ -41,6 +41,7 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
 export interface UserSession {
   userId: string;
   username: string;
+  name?: string;
   role: string;
   permissions: string[];
   loginTime: number;

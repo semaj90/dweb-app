@@ -33,7 +33,6 @@ export const PUT: RequestHandler = async ({ request, params }) => {
       .set({
         name: data.name,
         aliases: data.aliases,
-        profileImageUrl: data.profileImageUrl,
         profileData: data.profileData,
         posX: data.posX,
         posY: data.posY,

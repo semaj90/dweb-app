@@ -47,12 +47,18 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     }
     // If not in cache, fetch from database
     if (!evidenceData) {
-      let query = db.select().from(evidence).limit(limit).offset(offset);
+      let query = db.select().from(evidence);
+    const conditions = [];
 
-      if (caseId) {
-        query = query.where(eq(evidence.caseId, caseId));
-      }
-      evidenceData = await query.execute();
+    if (caseId) {
+      conditions.push(eq(evidence.caseId, caseId));
+    }
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    query = query.limit(limit).offset(offset);
+
+    evidenceData = await query.execute();
 
       // Cache the result for 5 minutes
       try {

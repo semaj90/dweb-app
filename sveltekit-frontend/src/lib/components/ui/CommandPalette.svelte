@@ -1,6 +1,5 @@
-import type { User } from '$lib/types';
-
 <script lang="ts">
+  import type { User } from '$lib/types';
   import { onMount, createEventDispatcher } from 'svelte';
   import { Search, File, Briefcase, User as UserIcon, Settings, Command } from "lucide-svelte";
   import { cn } from '$lib/utils';

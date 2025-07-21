@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         { status: 400 },
       );
     }
-    const embedding = await generateEmbedding(text, model);
+    const embedding = await generateEmbedding(text, { model });
 
     return json({
       success: true,
@@ -98,7 +98,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
         { status: 400 },
       );
     }
-    const embeddings = await generateBatchEmbeddings(texts, model, batchSize);
+    const embeddings = await generateBatchEmbeddings(texts, { model, batchSize });
 
     return json({
       success: true,

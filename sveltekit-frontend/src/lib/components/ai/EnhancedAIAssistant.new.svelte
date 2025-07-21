@@ -236,8 +236,11 @@ I can provide more specific guidance if you share additional details about your 
         class="container mx-auto px-4"
         role="document"
         on:click|stopPropagation
-        on:keydown={() => {"
-      >
+        on:keydown={(e) => {
+          if (e.key === "Escape") {
+            showCitationDialog = false;
+          }
+        }}
         <div class="container mx-auto px-4">
           <h4 id="citation-dialog-title">
             <Quote class="container mx-auto px-4" /> Legal Citation

@@ -147,8 +147,8 @@
           <div
             use:melt={$dropdownMenu}
             class="container mx-auto px-4"
-            in:fade={{ duration: 150 "
-            out:fade={{ duration: 150  "
+            in:fade={{ duration: 150 }}
+            out:fade={{ duration: 150  }}
           >
             <div use:melt={$dropdownItem} class="container mx-auto px-4">
               <span class="container mx-auto px-4">⚙️</span>

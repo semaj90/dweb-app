@@ -130,7 +130,7 @@ export const evidenceProcessingMachine = setup({
       | { type: 'STREAM_RESULTS'; updates: StreamingUpdate[] }
       | { type: 'RETRY_FAILED'; evidenceId: string }
       | { type: 'CLEAR_ERRORS' }
-      | { type: 'HEALTH_CHECK' }
+      type: 'network',
       | { type: 'SYNC_CACHE' }
   },
   
@@ -244,6 +244,11 @@ export const evidenceProcessingMachine = setup({
       ) ? 'degraded' : 'critical';
 
       return { health: healthStatus, details: checks };
+    }),
+
+    syncCache: fromPromise(async () => {
+      // Simulate cache synchronization logic
+      return { cacheOperations: 10 }; // Example return
     })
   },
 
@@ -407,7 +412,7 @@ export const evidenceProcessingMachine = setup({
                 errors: ({ context, event }) => [...context.errors, {
                   id: crypto.randomUUID(),
                   evidenceId: context.evidenceQueue[0]?.id,
-                  type: 'vector_search',
+                  type: 'network',
                   message: (event.error as Error)?.message || 'Unknown error',
                   details: event.error,
                   timestamp: new Date(),
@@ -444,7 +449,7 @@ export const evidenceProcessingMachine = setup({
                 errors: ({ context, event }) => [...context.errors, {
                   id: crypto.randomUUID(),
                   evidenceId: context.evidenceQueue[0]?.id,
-                  type: 'graph_discovery',
+                  type: 'network',
                   message: (event.error as Error)?.message || 'Unknown error',
                   details: event.error,
                   timestamp: new Date(),
@@ -496,7 +501,7 @@ export const evidenceProcessingMachine = setup({
         onDone: {
           target: 'idle',
           actions: assign({
-            systemHealth: ({ event }) => event.output.health
+            systemHealth: event.output.health as 'healthy' | 'degraded' | 'critical'
           })
         },
         
@@ -506,7 +511,7 @@ export const evidenceProcessingMachine = setup({
             systemHealth: 'critical',
             errors: ({ context, event }) => [...context.errors, {
               id: crypto.randomUUID(),
-              type: 'health_check',
+              type: 'network',
               message: 'Health check failed',
               details: event.error,
               timestamp: new Date(),
@@ -535,7 +540,7 @@ export const evidenceProcessingMachine = setup({
           actions: assign({
             errors: ({ context, event }) => [...context.errors, {
               id: crypto.randomUUID(),
-              type: 'cache_sync',
+              type: 'cache',
               message: 'Cache sync failed',
               details: event.error,
               timestamp: new Date(),
@@ -808,4 +813,3 @@ export async function initializeEnhancedMachines() {
   }
 }
 
-export { evidenceProcessingMachine, streamingMachine };

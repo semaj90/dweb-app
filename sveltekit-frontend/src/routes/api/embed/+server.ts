@@ -75,7 +75,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const userResult = await vectorService.storeUserEmbedding({
+        const userResult = await VectorService.storeUserEmbedding({
           userId: metadata.userId,
           content: text,
           embedding: vector,
@@ -95,7 +95,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const chatResult = await vectorService.storeChatEmbedding({
+        const chatResult = await VectorService.storeChatEmbedding({
           conversationId: metadata.conversationId,
           userId: metadata.userId || "anonymous",
           role: metadata.role || "user",
@@ -116,7 +116,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const evidenceResult = await vectorService.storeEvidenceVector({
+        const evidenceResult = await VectorService.storeEvidenceVector({
           evidenceId: metadata.evidenceId,
           caseId: metadata.caseId,
           content: text,
@@ -137,7 +137,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const caseResult = await vectorService.storeCaseEmbedding({
+        const caseResult = await VectorService.storeCaseEmbedding({
           caseId: metadata.caseId,
           content: text,
           embedding: vector,
@@ -157,7 +157,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         );
     }
     // Find similar content for context
-    const similarityResults = await vectorService.findSimilar(vector, {
+    const similarityResults = await VectorService.findSimilar(vector, {
       limit: 5,
       threshold: 0.7,
       userId: metadata.userId,
@@ -209,7 +209,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     }
     const vector = JSON.parse(queryVector) as number[];
 
-    const similarityResults = await vectorService.findSimilar(vector, {
+    const similarityResults = await VectorService.findSimilar(vector, {
       limit,
       threshold,
       userId,

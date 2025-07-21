@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     const [canvasStateResult] = await db
       .select()
       .from(canvasStates)
-      .where(eq(canvasStates.reportId, reportId))
+      .where(eq(canvasStates.caseId, reportId))
       .limit(1);
 
     if (canvasStateResult) {

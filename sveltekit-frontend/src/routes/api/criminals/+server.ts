@@ -45,9 +45,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       filters.push(eq(criminals.status, status));
     }
     // Apply filters
-    if (filters.length > 0) {
-      query = query.where(and(...filters));
-    }
+    let finalQuery = db.select().from(criminals).where(filters.length > 0 ? and(...filters) : undefined);
+
     // Add sorting
     const orderColumn =
       sortBy === "firstName"
@@ -58,18 +57,16 @@ export const GET: RequestHandler = async ({ locals, url }) => {
             ? criminals.threatLevel
             : sortBy === "status"
               ? criminals.status
-              : sortBy === "createdAt"
-                ? criminals.createdAt
-                : criminals.updatedAt;
+              : criminals.createdAt; // Default to createdAt
 
-    query = query.orderBy(
+    finalQuery = finalQuery.orderBy(
       sortOrder === "asc" ? orderColumn : desc(orderColumn),
     );
 
     // Add pagination
-    query = query.limit(limit).offset(offset);
+    finalQuery = finalQuery.limit(limit).offset(offset);
 
-    const criminalResults = await query;
+    const criminalResults = await finalQuery;
 
     // Get total count for pagination
     let countQuery = db

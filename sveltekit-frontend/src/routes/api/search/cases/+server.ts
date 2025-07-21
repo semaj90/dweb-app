@@ -59,7 +59,7 @@ export const GET: RequestHandler = async ({ url }) => {
         break;
 
       case "semantic":
-        if (isPostgreSQL()) {
+        if (isPostgreSQL) {
           results = await searchCasesSemantic(query, limit + offset, filters);
         } else {
           // Fallback to text search in development
@@ -69,7 +69,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
       case "hybrid":
       default:
-        if (isPostgreSQL()) {
+        if (isPostgreSQL) {
           results = await searchCasesHybrid(query, limit + offset, filters);
         } else {
           // Fallback to text search in development
@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ url }) => {
     await cacheSearchResults(query, `cases_${searchType}`, results, filters);
 
     // Log performance for monitoring
-    if (isPostgreSQL()) {
+    if (isPostgreSQL) {
       await logSearchPerformance(
         "case_search",
         searchType,
@@ -121,7 +121,7 @@ async function searchCasesText(
 ): Promise<any[]> {
   try {
     // Import the appropriate schema based on environment
-    const { cases } = isPostgreSQL()
+    const { cases } = isPostgreSQL
       ? await import("../../../../lib/server/db/unified-schema.js")
       : await import("../../../../lib/server/db/schema-postgres.js");
 
@@ -192,7 +192,29 @@ async function searchCasesSemantic(
     }
     const results = await db
       .select({
-        ...cases,
+        id: cases.id,
+        caseNumber: cases.caseNumber,
+        title: cases.title,
+        name: cases.name,
+        description: cases.description,
+        incidentDate: cases.incidentDate,
+        location: cases.location,
+        priority: cases.priority,
+        status: cases.status,
+        category: cases.category,
+        dangerScore: cases.dangerScore,
+        estimatedValue: cases.estimatedValue,
+        jurisdiction: cases.jurisdiction,
+        leadProsecutor: cases.leadProsecutor,
+        assignedTeam: cases.assignedTeam,
+        tags: cases.tags,
+        aiSummary: cases.aiSummary,
+        aiTags: cases.aiTags,
+        metadata: cases.metadata,
+        createdBy: cases.createdBy,
+        createdAt: cases.createdAt,
+        updatedAt: cases.updatedAt,
+        closedAt: cases.closedAt,
         searchScore: sql<number>`1 - (${cases.titleEmbedding} <=> ${JSON.stringify(embedding)}::vector)`,
       })
       .from(cases)

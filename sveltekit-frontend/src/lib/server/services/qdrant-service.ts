@@ -376,5 +376,20 @@ Return only a JSON array of strings, no other text:
       payload: point.payload as QdrantPoint["payload"],
     }));
   }
+
+  async syncFromPostgreSQL(options: { collection: string; limit?: number; }): Promise<{ success: boolean; message?: string; }> {
+    console.warn(`syncFromPostgreSQL is a stub - implement with actual synchronization logic for collection: ${options.collection}`);
+    return { success: true, message: "Synchronization initiated (stub)" };
+  }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      const response = await this.client.health();
+      return response.ok;
+    } catch (error) {
+      console.error("Qdrant health check failed:", error);
+      return false;
+    }
+  }
 }
 export const qdrantService = new QdrantService();

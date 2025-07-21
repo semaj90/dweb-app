@@ -51,25 +51,24 @@ export async function GET({ url, locals }: RequestEvent) {
         filters.push(eq(canvasStates.isDefault, isTemplate === "true"));
       }
       // Apply filters
-      if (filters.length > 0) {
-        query = query.where(and(...filters));
-      }
+      let finalQuery = db.select().from(canvasStates).where(filters.length > 0 ? and(...filters) : undefined);
+
       // Add sorting
       const orderColumn =
         sortBy === "name"
           ? canvasStates.name
           : sortBy === "version"
             ? canvasStates.version
-            : sortBy === "createdAt"
-              ? canvasStates.createdAt
-              : canvasStates.updatedAt;
+            : canvasStates.createdAt; // Default to createdAt
 
-      query = query.orderBy(
+      finalQuery = finalQuery.orderBy(
         sortOrder === "asc" ? orderColumn : desc(orderColumn),
       );
 
       // Add pagination
-      query = query.limit(limit).offset(offset);
+      finalQuery = finalQuery.limit(limit).offset(offset);
+
+      const canvasStateList = await finalQuery;
 
       const canvasStateList = await query;
 

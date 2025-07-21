@@ -87,8 +87,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       );
     }
     // Get collection information
-    const collections = await qdrant.listCollections();
-    const collectionInfo = await qdrant.getCollectionInfo(collection);
+    const collections = await qdrantService.client.getCollections();
+    const collectionInfo = await qdrantService.client.getCollection(collection);
 
     return json({
       success: true,
@@ -150,7 +150,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
       );
     }
     // Create collection
-    const result = await qdrant.createCollection(name, {
+    const result = await qdrantService.client.createCollection(name, {
       vectorSize,
       distance,
     });
@@ -215,7 +215,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
         { status: 400 },
       );
     }
-    const result = await qdrant.deleteCollection(collection);
+    const result = await qdrantService.client.deleteCollection(collection);
 
     return json({
       success: true,

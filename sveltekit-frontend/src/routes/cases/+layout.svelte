@@ -1,4 +1,4 @@
-import type { Case } from '$lib/types';
+
 
 
 <script lang="ts">

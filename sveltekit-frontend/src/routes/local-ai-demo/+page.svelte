@@ -53,6 +53,8 @@
   
   interface AnalysisResults {
     error?: string;
+    summary?: string;
+    riskAssessment?: string;
     classification?: {
       category: string;
       confidence: number;
@@ -179,7 +181,7 @@
           analysisResults = {
             classification: { category: "document", confidence: 0.8 },
             summary: data.data.answer,
-            keyEntities: ["Legal Document"],
+            keyEntities: ["Legal Document"].map(entity => ({ text: entity, type: "document", confidence: 1.0 })),
             riskAssessment: "Analysis completed using cloud AI",
           };}}
     } catch (error) {
@@ -503,7 +505,7 @@
                       </div>
                     {/if}
 
-                    {#if analysisResults.summary}
+                    {#if analysisResults && analysisResults.summary}
                       <div>
                         <h5 class="container mx-auto px-4">Summary:</h5>
                         <p class="container mx-auto px-4">
@@ -527,7 +529,9 @@
                       </div>
                     {/if}
 
-                    {#if analysisResults.riskAssessment}
+                    {#if analysisResults && analysisResults.riskAssessment}
+                      {#if analysisResults && analysisResults.riskAssessment}
+                      {#if analysisResults && analysisResults.riskAssessment}
                       <div>
                         <h5 class="container mx-auto px-4">
                           Risk Assessment:
@@ -536,6 +540,8 @@
                           {analysisResults.riskAssessment}
                         </p>
                       </div>
+                    {/if}
+                    {/if}
                     {/if}
                   </div>
                 {/if}

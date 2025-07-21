@@ -154,7 +154,7 @@
 
 <div class="container mx-auto px-4" class:fullscreen={isFullscreen}>
 	<!-- Header -->
-	<Header />
+	<NierHeader />
 
 	<!-- Main Content Area -->
 	<div class="container mx-auto px-4" bind:this={mainContainer}>

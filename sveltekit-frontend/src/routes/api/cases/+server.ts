@@ -21,11 +21,11 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     const sortOrder = url.searchParams.get("sortOrder") || "desc";
 
     // Build query with filters
-    let query = db.select().from(cases);
+    const whereConditions = [];
 
     // Add search filter
     if (search) {
-      query = query.where(
+      whereConditions.push(
         or(
           like(cases.title, `%${search}%`),
           like(cases.description, `%${search}%`),
@@ -36,40 +36,18 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     }
     // Add status filter
     if (status) {
-      query = query.where(
-        search
-          ? and(
-              or(
-                like(cases.title, `%${search}%`),
-                like(cases.description, `%${search}%`),
-                like(cases.caseNumber, `%${search}%`),
-                like(cases.location, `%${search}%`),
-              ),
-              eq(cases.status, status),
-            )
-          : eq(cases.status, status),
-      );
+      whereConditions.push(eq(cases.status, status));
     }
     // Add priority filter
     if (priority) {
-      const existingWhere = search || status;
-      query = query.where(
-        existingWhere
-          ? and(
-              search
-                ? or(
-                    like(cases.title, `%${search}%`),
-                    like(cases.description, `%${search}%`),
-                    like(cases.caseNumber, `%${search}%`),
-                    like(cases.location, `%${search}%`),
-                  )
-                : sql`TRUE`,
-              status ? eq(cases.status, status) : sql`TRUE`,
-              eq(cases.priority, priority),
-            )
-          : eq(cases.priority, priority),
-      );
+      whereConditions.push(eq(cases.priority, priority));
     }
+
+    let finalQuery = db.select().from(cases);
+    if (whereConditions.length > 0) {
+      finalQuery = finalQuery.where(and(...whereConditions));
+    }
+
     // Add sorting
     const orderColumn =
       sortBy === "title"
@@ -84,14 +62,14 @@ export const GET: RequestHandler = async ({ locals, url }) => {
                 ? cases.createdAt
                 : cases.updatedAt;
 
-    query = query.orderBy(
+    finalQuery = finalQuery.orderBy(
       sortOrder === "asc" ? orderColumn : desc(orderColumn),
     );
 
     // Add pagination
-    query = query.limit(limit).offset(offset);
+    finalQuery = finalQuery.limit(limit).offset(offset);
 
-    const caseResults = await query;
+    const caseResults = await finalQuery;
 
     // Get total count for pagination
     const totalCountResult = await db

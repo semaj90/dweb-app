@@ -2,9 +2,9 @@
   import HeadlessDemo from "$lib/components/HeadlessDemo.svelte";
   import BitsDemo from "$lib/components/BitsDemo.svelte";
   import { onMount } from 'svelte';
-  
+
   let mounted = false;
-  
+
   onMount(() => {
     mounted = true;
   });
@@ -12,7 +12,7 @@
 
 <svelte:head>
   <title>Headless UI Components Demo - Legal Case Management</title>
-  <meta name="description" content="Demo of PicoCSS, UnoCSS, Melt UI, and Bits UI integration" />
+  <meta name="description" content="Demo of , UnoCSS, Melt UI, and Bits UI integration" />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
@@ -22,13 +22,13 @@
         🏛️ Legal Case Management System
       </h1>
       <p class="text-blue-100 mb-6">
-        Demonstrating PicoCSS + UnoCSS + Melt UI + Bits UI Integration
+        Demonstrating  + UnoCSS + Melt UI + Bits UI Integration
       </p>
-      
+
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="flex items-center gap-2 bg-blue-700 rounded p-3">
           <span class="text-2xl">🎨</span>
-          <span>PicoCSS</span>
+          <span></span>
         </div>
         <div class="flex items-center gap-2 bg-blue-700 rounded p-3">
           <span class="text-2xl">⚡</span>
@@ -45,14 +45,14 @@
       </div>
     </div>
   </header>
-  
+
   {#if mounted}
     <main class="py-8">
       <div class="mx-auto px-4 max-w-7xl space-y-8">
-        
+
         <!-- Styling Examples -->
         <section class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-2xl font-bold mb-4 text-gray-800">📋 PicoCSS + Custom Styling</h2>
+          <h2 class="text-2xl font-bold mb-4 text-gray-800">📋  + Custom Styling</h2>
           <div class="bg-gray-50 rounded p-4">
             <div class="mb-4">
               <h3 class="text-lg font-semibold">Case Information</h3>
@@ -62,7 +62,7 @@
                 <label class="block text-sm font-medium text-gray-700" for="field-1">Case Number</label>
                 <input type="text" class="border rounded px-3 py-2 w-full" value="CAS-2025-001234" readonly id="field-1" />
               </div>
-              
+
               <div class="space-y-2">
                 <label class="block text-sm font-medium text-gray-700" for="field-2">Case Status</label>
                 <select class="border rounded px-3 py-2 w-full" id="field-2">
@@ -71,7 +71,7 @@
                   <option>Closed</option>
                 </select>
               </div>
-              
+
               <div class="space-y-2 md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700" for="field-3">Priority Level</label>
                 <div class="flex gap-2">
@@ -87,7 +87,7 @@
             </div>
           </div>
         </section>
-        
+
         <!-- UnoCSS Utilities -->
         <section class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-2xl font-bold mb-4 text-gray-800">⚡ UnoCSS Utilities</h2>
@@ -104,7 +104,7 @@
                   <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300">Edit</button>
                 </div>
               </div>
-              
+
               <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div class="flex justify-between items-start mb-2">
                   <h4 class="font-semibold text-gray-800">Miller Corp Dispute</h4>
@@ -116,7 +116,7 @@
                   <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300">Edit</button>
                 </div>
               </div>
-              
+
               <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div class="flex justify-between items-start mb-2">
                   <h4 class="font-semibold text-gray-800">Estate Settlement</h4>
@@ -130,7 +130,7 @@
             </div>
           </div>
         </section>
-        
+
         <!-- Melt UI Demo -->
         <section class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-2xl font-bold mb-4 text-gray-800">🧩 Melt UI Headless Components</h2>
@@ -140,7 +140,7 @@
             </div>
           </div>
         </section>
-        
+
         <!-- Bits UI Demo -->
         <section class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-2xl font-bold mb-4 text-gray-800">🔧 Bits UI Components</h2>
@@ -150,7 +150,7 @@
             </div>
           </div>
         </section>
-        
+
         <!-- Alert Examples -->
         <section class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-2xl font-bold mb-4 text-gray-800">🚨 Alert System</h2>
@@ -163,7 +163,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="border-l-4 border-yellow-500 bg-yellow-50 p-4">
               <div class="flex">
                 <div class="ml-3">
@@ -172,7 +172,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="border-l-4 border-red-500 bg-red-50 p-4">
               <div class="flex">
                 <div class="ml-3">
@@ -181,7 +181,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="border-l-4 border-blue-500 bg-blue-50 p-4">
               <div class="flex">
                 <div class="ml-3">
@@ -192,7 +192,7 @@
             </div>
           </div>
         </section>
-        
+
         <!-- File Upload Demo -->
         <section class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-2xl font-bold mb-4 text-gray-800">📎 Evidence Upload</h2>
@@ -209,7 +209,7 @@
                 </p>
               </div>
             </div>
-            
+
             <div class="mt-6">
               <div class="bg-gray-200 rounded-full h-2">
                 <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>

@@ -29,7 +29,7 @@
 
       if (response.ok) {
         // Store user data
-        user.set(data.user);
+        user.setUser(data.user);
         // Redirect to dashboard
         goto('/dashboard');
       } else {
@@ -45,7 +45,7 @@
 
   // Demo login for testing
   function demoLogin() {
-    user.set({
+    user.setUser({
       id: '1',
       email: 'admin@legal-ai.local',
       name: 'System Administrator',

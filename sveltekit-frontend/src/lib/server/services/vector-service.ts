@@ -9,6 +9,9 @@ export interface EmbeddingOptions {
   contentType?: string;
   metadata?: Record<string, any>;
   model?: string;
+  userId?: string;
+  caseId?: string;
+  conversationId?: string;
 }
 export class VectorService {
   /**

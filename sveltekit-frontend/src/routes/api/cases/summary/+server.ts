@@ -93,10 +93,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         .orderBy(desc(caseEmbeddings.createdAt))
         .limit(1);
 
-      if (existingSummary.length > 0 && existingSummary[0].metadata?.summary) {
+      if (existingSummary.length > 0 && (existingSummary[0].metadata as any)?.summary) {
         return json({
           success: true,
-          summary: existingSummary[0].metadata.summary,
+          summary: (existingSummary[0].metadata as any).summary,
         } as CaseSummaryResponse);
       }
     }
@@ -191,7 +191,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
     return json({
       success: true,
-      summary: summaryRecord[0].metadata?.summary,
+      summary: (summaryRecord[0].metadata as any)?.summary,
       analytics,
     } as CaseSummaryResponse);
   } catch (error) {
@@ -218,12 +218,12 @@ async function gatherCaseData(
     const evidence = await db
       .select()
       .from(evidenceVectors)
-      .where(eq(evidenceVectors.caseId, caseId));
+      .innerJoin(evidence, eq(evidenceVectors.evidenceId, evidence.id))
+      .where(eq(evidence.caseId, caseId));
 
     data.evidence = evidence.map((e) => ({
       id: e.evidenceId,
       content: e.content,
-      type: e.vectorType,
       metadata: e.metadata,
       createdAt: e.createdAt,
     }));
@@ -308,7 +308,7 @@ Focus on:
 
 Respond with valid JSON only.`;
 
-  const response = await ollamaService.generateResponse(analysisPrompt, {
+  const response = await ollamaService.generate(analysisPrompt, {
     model: "gemma3-legal",
     maxTokens: 2000,
     temperature: 0.3,
@@ -379,7 +379,8 @@ async function calculateCaseAnalytics(caseId: string) {
   const evidenceCount = await db
     .select({ count: count() })
     .from(evidenceVectors)
-    .where(eq(evidenceVectors.caseId, caseId));
+    .innerJoin(evidence, eq(evidenceVectors.evidenceId, evidence.id))
+    .where(eq(evidence.caseId, caseId));
 
   // Get interaction count (as proxy for documents reviewed)
   const interactionCount = await db

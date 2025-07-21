@@ -1,30 +1,31 @@
+#!/usr/bin/env node
+
+/**
+ * PostgreSQL Connection Verification Script
+ * Tests database connectivity before running the main application
+ */
+
 import postgres from 'postgres';
 
-console.log('🔍 Testing database connection...');
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3';
 
-async function verifyDatabase() {
+async function verifyConnection() {
+  console.log('🔍 Verifying PostgreSQL connection...');
+  console.log('📍 Database URL:', DATABASE_URL.replace(/\/\/.*@/, '//[credentials]@'));
+
+  let client;
+  
   try {
+    // Create connection
+    client = postgres(DATABASE_URL, { max: 1 });
+    
     // Test basic connection
-    const connectionString = process.env.DATABASE_URL || 'postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3';
-    const client = postgres(connectionString);
-    
-    await client`SELECT 1 as test`;
-    console.log('✅ Database connection successful!');
-    
-    // Check pgvector extension
-    const vectorCheck = await client`
-      SELECT EXISTS (
-        SELECT 1 FROM pg_extension WHERE extname = 'vector'
-      ) as has_vector
-    `;
-    
-    if (vectorCheck[0].has_vector) {
-      console.log('✅ pgvector extension: INSTALLED');
-    } else {
-      console.log('⚠️ pgvector extension: NOT FOUND');
-    }
-    
-    // Test schema tables
+    const result = await client`SELECT version() as version, current_database() as database`;
+    console.log('✅ Connection successful!');
+    console.log('📊 PostgreSQL version:', result[0].version.split(' ')[1]);
+    console.log('🗄️ Connected to database:', result[0].database);
+
+    // Check for required tables
     const tables = await client`
       SELECT table_name 
       FROM information_schema.tables 
@@ -32,28 +33,51 @@ async function verifyDatabase() {
       AND table_type = 'BASE TABLE'
       ORDER BY table_name
     `;
-    
-    console.log('📋 Available tables:');
-    if (tables.length === 0) {
-      console.log('  ⚠️ No tables found - run migrations first');
+
+    if (tables.length > 0) {
+      console.log('📋 Existing tables:');
+      tables.forEach(table => console.log(`  ✓ ${table.table_name}`));
     } else {
-      tables.forEach((table, index) => {
-        console.log(`  ${index + 1}. ${table.table_name}`);
-      });
+      console.log('⚠️ No tables found - run setup-database.mjs to create schema');
     }
-    
-    await client.end();
-    console.log('🎯 Database verification complete!');
+
+    // Check pgvector extension
+    const extensions = await client`
+      SELECT extname FROM pg_extension WHERE extname = 'vector'
+    `;
+
+    if (extensions.length > 0) {
+      console.log('🧩 pgvector extension: ✅ Installed');
+    } else {
+      console.log('🧩 pgvector extension: ⚠️ Not installed');
+    }
+
+    console.log('');
+    console.log('🎉 Database verification completed successfully!');
     return true;
-    
+
   } catch (error) {
-    console.log('❌ Database verification failed:', error.message);
-    console.log('🔧 Check:');
-    console.log('  • PostgreSQL is running');
-    console.log('  • DATABASE_URL in .env is correct'); 
-    console.log('  • Database exists and is accessible');
+    console.error('❌ Database connection failed:');
+    console.error('   ', error.message);
+    console.error('');
+    console.error('🔧 Troubleshooting:');
+    console.error('   1. Ensure PostgreSQL is running');
+    console.error('   2. Verify database credentials');
+    console.error('   3. Check if database exists');
+    console.error('   4. See POSTGRESQL-SETUP.md for setup instructions');
     return false;
+
+  } finally {
+    if (client) {
+      await client.end();
+    }
   }
 }
 
-verifyDatabase();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  verifyConnection().then(success => {
+    process.exit(success ? 0 : 1);
+  });
+}
+
+export { verifyConnection };

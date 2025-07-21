@@ -263,7 +263,7 @@
         bind:value={query}
         on:keydown={handleKeyDown}
         {placeholder}
-        rows={${1"
+        rows="4"
         disabled={isLoading}
       ></textarea>
       <button

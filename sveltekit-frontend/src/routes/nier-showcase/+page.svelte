@@ -1,7 +1,7 @@
 <script lang="ts">
   import NierThemeShowcase from '$lib/components/NierThemeShowcase.svelte'
   import NierHeader from '$lib/components/NierHeader.svelte'
-  import CaseCard from '$lib/components/cases/CaseCard.svelte'
+  import { CaseCard } from '$lib/components/cases/CaseCard.svelte'
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
   import { Button } from 'bits-ui'
   
