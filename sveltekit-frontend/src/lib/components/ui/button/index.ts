@@ -1,2 +1,3 @@
-export { Button } from "./Button.svelte";
-export type { ButtonVariant, ButtonSize } from "./Button.svelte";
+import Button from './Button.svelte';
+export default Button;
+export { Button };

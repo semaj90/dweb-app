@@ -1,50 +1,76 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import { writable } from 'svelte/store';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+  import { writable, derived } from 'svelte/store';
   import type { EditableNode, Evidence, CanvasState } from './types';
 
-  // Props
+  // Component props with validation
   export let userId: string;
   export let canvasId: string | null = null;
+  export let readonly = false;
+  export let maxNodes = 100;
 
-  // Stores
+  // Event dispatcher for parent communication
+  const dispatch = createEventDispatcher<{
+    nodeCreated: EditableNode;
+    nodeUpdated: EditableNode;
+    evidenceUploaded: Evidence;
+    error: string;
+  }>();
+
+  // Reactive stores
   const canvas = writable<CanvasState | null>(null);
   const evidence = writable<Evidence[]>([]);
   const selectedNode = writable<EditableNode | null>(null);
-  const isOnline = writable(true);
-  const editingSessions = writable<Map<string, string>>(new Map());
+  const isOnline = writable(false);
 
-  // System state
-  let systemReady = false;
+  // Derived stores
+  const nodeCount = derived(canvas, ($canvas) => $canvas?.nodes.length || 0);
+  const canCreateNode = derived(nodeCount, ($nodeCount) => $nodeCount < maxNodes);
 
-  // WebSocket connection
-  let ws: WebSocket | null = null;
-
-  // Canvas element reference
+  // Component state
+  let mounted = false;
   let canvasElement: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
+  let ws: WebSocket | null = null;
+  let reconnectTimeout: number;
 
-  // Drag and drop state
-  let draggedNode: EditableNode | null = null;
-  let dragOffset = { x: 0, y: 0 };
+  // Lifecycle management
+  onMount(async () => {
+    mounted = true;
+    await initializeCanvas();
+    initializeWebSocket();
+  });
 
-  // Auto-save timeout
-  let autoSaveTimeout: number;
+  onDestroy(() => {
+    cleanup();
+  });
+
+  async function initializeCanvas() {
+    if (!canvasElement) return;
+    
+    ctx = canvasElement.getContext('2d')!;
+    canvas.set({
+      id: canvasId || Date.now().toString(),
+      nodes: [],
+      connections: []
+    });
+    
+    renderCanvas();
+  }
 
   function initializeWebSocket() {
+    if (!mounted) return;
+    
     try {
-      // Use relative WebSocket URL for better deployment compatibility
-      const wsProtocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = typeof window !== 'undefined' ? `${wsProtocol}//${window.location.host}/ws` : 'ws://localhost:8080';
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${location.host}/ws`;
       
       ws = new WebSocket(wsUrl);
       
       ws.onopen = () => {
         console.log('WebSocket connected');
         isOnline.set(true);
-        systemReady = true;
         
-        // Join canvas room if we have a canvas
         if (canvasId) {
           ws?.send(JSON.stringify({
             type: 'JOIN_ROOM',
@@ -55,26 +81,39 @@
       };
 
       ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        handleRealtimeMessage(message);
+        try {
+          const message = JSON.parse(event.data);
+          handleRealtimeMessage(message);
+        } catch (error) {
+          console.error('WebSocket message error:', error);
+        }
       };
 
       ws.onclose = () => {
         console.log('WebSocket disconnected');
         isOnline.set(false);
-        
-        // Attempt to reconnect after 3 seconds
-        setTimeout(initializeWebSocket, 3000);
+        scheduleReconnect();
       };
 
       ws.onerror = (error) => {
         console.error('WebSocket error:', error);
         isOnline.set(false);
+        dispatch('error', 'WebSocket connection failed');
       };
     } catch (error) {
       console.error('Failed to initialize WebSocket:', error);
-      isOnline.set(false);
+      dispatch('error', 'Failed to initialize real-time connection');
     }
+  }
+
+  function scheduleReconnect() {
+    if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    
+    reconnectTimeout = setTimeout(() => {
+      if (mounted) {
+        initializeWebSocket();
+      }
+    }, 3000);
   }
 
   function handleRealtimeMessage(message: any) {
@@ -88,6 +127,7 @@
         });
         renderCanvas();
         break;
+
       case 'NODE_UPDATED':
         canvas.update(c => {
           if (c) {
@@ -103,36 +143,6 @@
     }
   }
 
-  onMount(() => {
-    // Initialize canvas system
-    initializeWebSocket();
-    
-    // Initialize canvas if element exists
-    if (canvasElement) {
-      ctx = canvasElement.getContext('2d')!;
-      renderCanvas();
-    }
-  });
-
-  onDestroy(() => {
-    if (ws) {
-      ws.close();
-    }
-  });
-
-  // Initialize canvas when element is available
-  function initializeCanvas() {
-    if (canvasElement) {
-      ctx = canvasElement.getContext('2d')!;
-      canvas.set({
-        id: canvasId || Date.now().toString(),
-        nodes: [],
-        connections: []
-      });
-      renderCanvas();
-    }
-  }
-
   function renderCanvas() {
     if (!ctx || !canvasElement) return;
     
@@ -140,35 +150,35 @@
     ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
     
     // Get current canvas state
-    const currentCanvas = canvas;
+    const currentCanvas = $canvas;
     if (!currentCanvas) return;
-
-    // Subscribe to canvas state and render
-    currentCanvas.subscribe(canvasState => {
-      if (!canvasState) return;
+    
+    currentCanvas.nodes.forEach(node => {
+      // Node background
+      ctx.fillStyle = node.type === 'evidence' ? '#f0f8ff' : '#f9f9f9';
+      ctx.fillRect(node.x, node.y, node.width, node.height);
       
-      // Render nodes
-      canvasState.nodes.forEach(node => {
-        ctx.fillStyle = '#f0f0f0';
-        ctx.fillRect(node.x, node.y, node.width, node.height);
-        
-        ctx.strokeStyle = '#ccc';
-        ctx.strokeRect(node.x, node.y, node.width, node.height);
-        
-        ctx.fillStyle = '#333';
-        ctx.font = '14px Arial';
-        ctx.fillText(node.content, node.x + 10, node.y + 20);
-      });
+      // Node border
+      ctx.strokeStyle = '#e1e5e9';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(node.x, node.y, node.width, node.height);
+      
+      // Node content
+      ctx.fillStyle = '#2d3748';
+      ctx.font = '14px system-ui, sans-serif';
+      ctx.fillText(node.content, node.x + 12, node.y + 24);
     });
   }
 
   function createNode(x: number, y: number) {
+    if (readonly || !$canCreateNode) return;
+    
     const newNode: EditableNode = {
-      id: Date.now().toString(),
+      id: `node_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       x,
       y,
       width: 200,
-      height: 100,
+      height: 80,
       content: 'New Node',
       type: 'text'
     };
@@ -181,9 +191,10 @@
     });
 
     renderCanvas();
+    dispatch('nodeCreated', newNode);
 
-    // Broadcast to other users
-    if (ws && ws.readyState === WebSocket.OPEN) {
+    // Broadcast to collaborators
+    if (ws?.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify({
         type: 'NODE_CREATED',
         node: newNode,
@@ -193,17 +204,20 @@
   }
 
   function handleCanvasClick(event: MouseEvent) {
+    if (readonly) return;
+    
     const rect = canvasElement.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    // Create new node on double click
-    if (event.detail === 2) {
+    if (event.detail === 2) { // Double click
       createNode(x, y);
     }
   }
 
   async function uploadEvidence(file: File) {
+    if (readonly) return;
+    
     const formData = new FormData();
     formData.append('file', file);
     formData.append('userId', userId);
@@ -214,98 +228,337 @@
         body: formData
       });
 
-      if (response.ok) {
-        const newEvidence: Evidence = await response.json();
-        evidence.update(list => [...list, newEvidence]);
-        console.log('Evidence uploaded:', newEvidence);
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
       }
+
+      const newEvidence: Evidence = await response.json();
+      evidence.update(list => [...list, newEvidence]);
+      dispatch('evidenceUploaded', newEvidence);
+      
     } catch (error) {
       console.error('Upload failed:', error);
+      dispatch('error', `Upload failed: ${error.message}`);
     }
   }
 
   function handleFileDrop(event: DragEvent) {
     event.preventDefault();
+    
     const files = event.dataTransfer?.files;
-    if (files && files.length > 0) {
+    if (files?.length) {
       uploadEvidence(files[0]);
     }
   }
 
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
+    event.dataTransfer!.dropEffect = 'copy';
+  }
+
+  function cleanup() {
+    if (ws) {
+      ws.close();
+      ws = null;
+    }
+    
+    if (reconnectTimeout) {
+      clearTimeout(reconnectTimeout);
+    }
+    
+    mounted = false;
+  }
+
+  function resetCanvas() {
+    if (readonly) return;
+    
+    canvas.set({
+      id: Date.now().toString(),
+      nodes: [],
+      connections: []
+    });
+    
+    renderCanvas();
   }
 </script>
 
-<div class="canvas-container">
+<div class="canvas-container" role="application" aria-label="Interactive Canvas System">
   <div class="toolbar">
-    <button on:click={() => canvas.set({id: Date.now().toString(), nodes: [], connections: []})}>
-      New Canvas
-    </button>
-    <span class="status" class:online={$isOnline}>
-      {$isOnline ? 'Online' : 'Offline'}
-    </span>
+    <div class="toolbar-left">
+      <button 
+        type="button"
+        disabled={readonly}
+        on:click={resetCanvas}
+        aria-label="Create new canvas"
+      >
+        New Canvas
+      </button>
+      
+      <span class="node-counter" aria-live="polite">
+        Nodes: {$nodeCount}/{maxNodes}
+      </span>
+    </div>
+    
+    <div class="toolbar-right">
+      <span 
+        class="status" 
+        class:online={$isOnline}
+        aria-label={$isOnline ? 'Connected' : 'Disconnected'}
+      >
+        {$isOnline ? 'Online' : 'Offline'}
+      </span>
+    </div>
   </div>
 
-  <canvas
-    bind:this={canvasElement}
-    width="800"
-    height="600"
-    on:click={handleCanvasClick}
-    on:drop={handleFileDrop}
-    on:dragover={handleDragOver}
-  ></canvas>
+  <div class="canvas-workspace">
+    <canvas
+      bind:this={canvasElement}
+      width="800"
+      height="600"
+      role="img"
+      aria-label="Interactive canvas for creating and editing nodes"
+      tabindex={readonly ? -1 : 0}
+      on:click={handleCanvasClick}
+      on:drop={handleFileDrop}
+      on:dragover={handleDragOver}
+    ></canvas>
 
-  <div class="evidence-panel">
-    <h3>Evidence</h3>
-    {#each $evidence as item}
-      <div class="evidence-item">
-        <span>{item.filename}</span>
-      </div>
-    {/each}
+    <aside class="evidence-panel" aria-label="Evidence files">
+      <h3>Evidence <span class="count">({$evidence.length})</span></h3>
+      
+      {#each $evidence as item (item.id)}
+        <div class="evidence-item">
+          <span class="filename">{item.filename}</span>
+          <time class="upload-date">{new Date(item.uploadedAt).toLocaleDateString()}</time>
+        </div>
+      {:else}
+        <div class="empty-state">
+          <p>No evidence files yet</p>
+          <p class="hint">Drag and drop files onto the canvas</p>
+        </div>
+      {/each}
+    </aside>
   </div>
 </div>
 
 <style>
   .canvas-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr;
     height: 100vh;
+    background: white;
   }
 
   .toolbar {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    padding: 10px;
-    background: #f5f5f5;
-    border-bottom: 1px solid #ddd;
+    padding: 0.75rem 1rem;
+    background: hsl(220 15% 98%);
+    border-bottom: 1px solid hsl(220 13% 91%);
   }
 
-  .status {
-    color: red;
+  .toolbar-left,
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
-  .status.online {
-    color: green;
+  .node-counter {
+    font-size: 0.875rem;
+    color: hsl(220 9% 46%);
+    font-weight: 500;
+  }
+
+  .canvas-workspace {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    height: 100%;
   }
 
   canvas {
-    border: 1px solid #ccc;
-    flex: 1;
-    cursor: pointer;
+    border-right: 1px solid hsl(220 13% 91%);
+    cursor: crosshair;
+    background: white;
+  }
+
+  canvas:focus-visible {
+    outline: 2px solid hsl(220 100% 50%);
+    outline-offset: -2px;
   }
 
   .evidence-panel {
-    width: 300px;
-    padding: 10px;
-    background: #f9f9f9;
-    border-left: 1px solid #ddd;
+    background: hsl(220 15% 99%);
+    overflow-y: auto;
+  }
+
+  .evidence-panel h3 {
+    margin: 0;
+    padding: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: hsl(220 9% 46%);
+    border-bottom: 1px solid hsl(220 13% 91%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .count {
+    font-weight: 400;
+    opacity: 0.7;
   }
 
   .evidence-item {
-    padding: 5px;
-    border: 1px solid #ddd;
-    margin: 5px 0;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid hsl(220 13% 96%);
+    transition: background-color 0.2s ease;
+  }
+
+  .evidence-item:hover {
+    background: hsl(220 13% 97%);
+  }
+
+  .filename {
+    display: block;
+    font-weight: 500;
+    color: hsl(220 20% 14%);
+    margin-bottom: 0.25rem;
+  }
+
+  .upload-date {
+    font-size: 0.75rem;
+    color: hsl(220 9% 46%);
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: hsl(220 9% 46%);
+  }
+
+  .empty-state p {
+    margin: 0.5rem 0;
+  }
+
+  .hint {
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(0 84% 60%);
+  }
+
+  .status::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    background: currentColor;
+  }
+
+  .status.online {
+    color: hsl(120 61% 50%);
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid hsl(220 13% 91%);
+    border-radius: 6px;
     background: white;
+    color: hsl(220 20% 14%);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  button:hover:not(:disabled) {
+    background: hsl(220 13% 98%);
+    border-color: hsl(220 13% 85%);
+  }
+
+  button:active:not(:disabled) {
+    background: hsl(220 13% 95%);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    .canvas-workspace {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr auto;
+    }
+    
+    .evidence-panel {
+      max-height: 200px;
+      border-right: none;
+      border-top: 1px solid hsl(220 13% 91%);
+    }
+    
+    .toolbar {
+      padding: 0.5rem;
+    }
+    
+    .toolbar-left,
+    .toolbar-right {
+      gap: 0.5rem;
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .canvas-container {
+      background: hsl(220 15% 9%);
+    }
+    
+    .toolbar,
+    .evidence-panel,
+    canvas {
+      background: hsl(220 15% 12%);
+      border-color: hsl(220 15% 20%);
+    }
+    
+    .toolbar {
+      background: hsl(220 15% 10%);
+    }
+    
+    .evidence-panel {
+      background: hsl(220 15% 8%);
+    }
+    
+    button {
+      background: hsl(220 15% 15%);
+      border-color: hsl(220 15% 25%);
+      color: hsl(220 15% 85%);
+    }
+    
+    button:hover:not(:disabled) {
+      background: hsl(220 15% 20%);
+    }
+    
+    .node-counter,
+    .evidence-panel h3,
+    .upload-date,
+    .empty-state {
+      color: hsl(220 15% 65%);
+    }
+    
+    .filename {
+      color: hsl(220 15% 85%);
+    }
   }
 </style>

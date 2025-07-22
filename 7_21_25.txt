@@ -1,0 +1,8 @@
+apply all changes to the latest master fix all .bat best practices, use #context7 sveltekit bits-ui v2, shadcn-svelte, nier.css #memory #file:claude.md #file:copilot.md #codebase #file:SVELTEKIT_XSTATE_BEST_PRACTICES.md #file:dropdown-menu-force-mount-test.svelte keep into account bits-ui v2, .ts barrel store? and use #context7 to find best practices. 
+
+fix docs, find best practices.
+
+
+svelte-check found 584 errors and 1084 warnings in 206 files
+
+206 files try to rank critical errors by reading codebase.

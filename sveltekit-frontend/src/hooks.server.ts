@@ -2,6 +2,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import { eq } from 'drizzle-orm';
+import * as schema from '$lib/server/db/schema';
 
 // Initialize database with error handling
 let db: any;
@@ -9,13 +10,13 @@ let db: any;
 try {
   const dbPath = process.env.DATABASE_URL || './dev.db';
   const sqlite = new Database(dbPath);
-  db = drizzle(sqlite);
+  db = drizzle(sqlite, { schema });
   console.log('✅ Database connected successfully');
 } catch (error) {
   console.error('❌ Database connection failed:', error);
   // Fallback to in-memory database
   const sqlite = new Database(':memory:');
-  db = drizzle(sqlite);
+  db = drizzle(sqlite, { schema });
   console.log('⚠️ Using in-memory database as fallback');
 }
 

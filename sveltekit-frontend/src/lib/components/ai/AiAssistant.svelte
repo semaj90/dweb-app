@@ -20,7 +20,7 @@
   export let caseId: string = '';
 
   // Use the global AI store (XState-based, memoized, streaming-ready)
-  const { state, send } = useAIGlobalStore();
+  const { snapshot, send, actorRef } = useAIGlobalStore();
 
   // Example: Move getSummaryCache() into onMount to avoid SSR issues
   onMount(() => {
@@ -35,57 +35,136 @@
 
   // Save summary to DB
   async function saveSummary() {
-    if (!$state.context.summary || !caseId) return;
+    if (!$snapshot.context.summary || !caseId) return;
     await fetch('/api/summary/save', {
       method: 'POST',
-      body: JSON.stringify({ caseId, summary: $state.context.summary }),
+      body: JSON.stringify({ caseId, summary: $snapshot.context.summary }),
       headers: { 'Content-Type': 'application/json' }
     });
     // Optionally show a notification here
   }
 </script>
 
-<Card>
-  <div class="flex items-center justify-between mb-2">
-    <span class="font-bold text-lg">AI Evidence Summary</span>
-    <Button on:click={handleSummarize} disabled={!user || $state.context.loading} class="uno-bg-blue-600 uno-text-white uno-px-3 uno-py-1 uno-rounded">
-      {!user ? 'Sign in to Summarize' : ($state.context.loading ? 'Summarizing...' : 'Summarize Evidence')}
-    </Button>
-    <Button on:click={saveSummary} disabled={!$state.context.summary || $state.context.loading} class="uno-bg-green-600 uno-text-white uno-px-3 uno-py-1 uno-rounded ml-2">
-      Save Summary
-    </Button>
+<Card class="nier-card p-6">
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="nier-title text-xl font-bold">AI Evidence Summary</h3>
+    <div class="flex gap-2">
+      <Button
+        onclick={handleSummarize}
+        disabled={!user || $snapshot.context.loading}
+        variant="primary"
+        class="nier-button"
+      >
+        {!user ? 'Sign in to Summarize' : ($snapshot.context.loading ? 'Summarizing...' : 'Summarize Evidence')}
+      </Button>
+      <Button
+        onclick={saveSummary}
+        disabled={!$snapshot.context.summary || $snapshot.context.loading}
+        variant="success"
+        class="nier-button"
+      >
+        Save Summary
+      </Button>
+    </div>
   </div>
-  <div class="mt-2 text-gray-700 text-sm">
-    {#if $state.context.loading}
-      <span class="text-gray-400">Summarizing evidence...</span>
-      <!-- Streaming output (if supported) -->
-      {#if $state.context.stream}
-        <pre>{$state.context.stream}</pre>
-      {/if}
-    {:else if $state.context.error}
-      <span class="text-red-500">{$state.context.error}</span>
-    {:else if $state.context.summary}
-      <pre>{$state.context.summary}</pre>
-      <!-- Top 3 evidence sources (if available) -->
-      {#if $state.context.sources && $state.context.sources.length > 0}
-        <div class="mt-2">
-          <span class="font-semibold">Top Evidence Used:</span>
-          <ol class="list-decimal ml-6">
-            {#each $state.context.sources.slice(0, 3) as item, i}
-              <li>{item.title || item.id || `Evidence #${i+1}`}</li>
-            {/each}
-          </ol>
-        </div>
-      {/if}
+
+  <div class="nier-content">
+    {#if $snapshot.context.loading}
+      <div class="nier-loading">
+        <span class="nier-text-muted">Summarizing evidence...</span>
+        <!-- Streaming output (if supported) -->
+        {#if $snapshot.context.stream}
+          <pre class="nier-code mt-2">{$snapshot.context.stream}</pre>
+        {/if}
+      </div>
+    {:else if $snapshot.context.error}
+      <div class="nier-error p-3 rounded">
+        <span class="text-red-600">{$snapshot.context.error}</span>
+      </div>
+    {:else if $snapshot.context.summary}
+      <div class="nier-summary">
+        <pre class="nier-code whitespace-pre-wrap">{$snapshot.context.summary}</pre>
+        <!-- Top 3 evidence sources (if available) -->
+        {#if $snapshot.context.sources && $snapshot.context.sources.length > 0}
+          <div class="nier-sources mt-4 pt-4 border-t border-gray-200">
+            <h4 class="nier-subtitle font-semibold mb-2">Top Evidence Used:</h4>
+            <ol class="nier-list space-y-1">
+              {#each $snapshot.context.sources.slice(0, 3) as item, i}
+                <li class="nier-list-item">
+                  <span class="nier-badge">{i + 1}</span>
+                  {item.title || item.id || `Evidence #${i+1}`}
+                </li>
+              {/each}
+            </ol>
+          </div>
+        {/if}
+      </div>
     {:else}
-      <span class="text-gray-400">No summary yet.</span>
+      <div class="nier-empty">
+        <span class="nier-text-muted">No summary yet.</span>
+      </div>
     {/if}
   </div>
 </Card>
 
 <style>
-  /* @unocss-include */
-  .uno-shadow {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  /* Nier.css inspired styles */
+  :global(.nier-card) {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #000;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  :global(.nier-title) {
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  :global(.nier-button) {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  :global(.nier-button:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  :global(.nier-code) {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+  }
+
+  :global(.nier-error) {
+    background: rgba(255, 0, 0, 0.05);
+    border: 2px solid #ff0000;
+  }
+
+  :global(.nier-badge) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #000;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+  }
+
+  :global(.nier-text-muted) {
+    color: #666;
+    font-style: italic;
+  }
+
+  :global(.nier-list-item) {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
   }
 </style>

@@ -1,0 +1,116 @@
+      <button 
+        class="nier-button nier-button-primary"
+        disabled={readonly}
+        onclick={() => send({ type: 'RESET_CANVAS' })}
+      >
+        New Canvas
+      </button>
+      
+      <div class="flex items-center gap-2">
+        <div 
+          class="w-2 h-2 rounded-full transition-colors"
+          class:bg-green-500={isOnline}
+          class:bg-red-500={!isOnline}
+        ></div>
+        <span class="text-sm text-nier-text-secondary">
+          {isOnline ? 'Online' : 'Offline'}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nier-canvas-workspace">
+    <main class="relative">
+      <canvas
+        bind:this={canvasElement}
+        width="800"
+        height="600"
+        class="w-full h-full border-0 cursor-crosshair bg-nier-bg-primary"
+        role="img"
+        aria-label="Interactive canvas for creating and editing nodes"
+        tabindex={readonly ? -1 : 0}
+        onclick={handleCanvasClick}
+        ondrop={handleFileDrop}
+        ondragover={handleDragOver}
+      ></canvas>
+      
+      {#if !canCreateNode}
+        <div class="absolute top-4 left-4 p-2 bg-nier-bg-secondary border border-nier-border rounded text-sm text-nier-text-muted">
+          Maximum nodes reached ({maxNodes})
+        </div>
+      {/if}
+    </main>
+
+    <aside class="nier-evidence-panel">
+      <div class="p-4 border-b border-nier-border">
+        <h2 class="font-semibold text-nier-text-primary">Evidence</h2>
+        <p class="text-sm text-nier-text-secondary mt-1">
+          {evidence.length} files uploaded
+        </p>
+      </div>
+      
+      <div class="p-4">
+        {#if evidence.length > 0}
+          <div class="space-y-2">
+            {#each evidence as item (item.id)}
+              <div class="nier-card p-3">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <h4 class="font-medium text-nier-text-primary text-sm">
+                      {item.filename}
+                    </h4>
+                    <p class="text-xs text-nier-text-muted mt-1">
+                      {new Date(item.uploadedAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <button 
+                    class="text-nier-text-muted hover:text-nier-text-primary text-xs"
+                    onclick={() => send({ type: 'REMOVE_EVIDENCE', id: item.id })}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {:else}
+          <div class="text-center py-8">
+            <div class="text-nier-text-muted text-sm">
+              <p>No evidence files yet</p>
+              <p class="mt-1 text-xs">Drag and drop files onto the canvas</p>
+            </div>
+          </div>
+        {/if}
+      </div>
+    </aside>
+  </div>
+</div>
+
+<style>
+  /* Import enhanced NieR styles */
+  @import '$lib/styles/nier-enhanced.css';
+  
+  /* Component-specific styles */
+  canvas:focus-visible {
+    outline: 2px solid var(--nier-accent-primary);
+    outline-offset: -2px;
+  }
+  
+  /* Responsive canvas */
+  @media (max-width: 768px) {
+    canvas {
+      height: 400px;
+    }
+  }
+  
+  /* Animation for evidence panel */
+  .nier-evidence-panel {
+    transition: transform 0.3s ease;
+  }
+  
+  /* Drag over effect */
+  canvas[data-drag-over="true"] {
+    background: var(--nier-bg-secondary);
+    border: 2px dashed var(--nier-accent-primary);
+  }
+</style>
