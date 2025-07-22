@@ -1,6 +1,9 @@
 import type { User } from "./user";
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
+import type { Case } from '$lib/types';
+
+
 import {
   cases,
   criminals,
@@ -125,6 +128,7 @@ export interface EvidenceWithMetadata extends Omit<Evidence, "uploadedBy"> {
   uploadedBy?: UserWithProfile; // Replace string ID with full User object
   uploadedById?: string; // Keep the original ID for reference
 
-  case?: Case;
-  additionalTags?: string[]; // Additional tags beyond the required base tags
+
+
+  case?: Case  additionalTags?: string[]; // Additional tags beyond the required base tags
 }

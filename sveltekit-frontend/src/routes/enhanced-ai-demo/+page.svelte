@@ -388,6 +388,7 @@
 </div>
 
 <style>
+  /* @unocss-include */
   /* Custom animations */
   @keyframes shimmer {
     0% { background-position: -1000px 0; }

@@ -1,6 +1,9 @@
 import type { User } from '$lib/types';
 
 
+import type { User } from '$lib/types/user';
+
+
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
@@ -19,6 +22,8 @@ import type { User } from '$lib/types';
   } from "lucide-svelte";
 
     
+
+
 
 
   export let user: User | null = null;

@@ -44,7 +44,7 @@ export interface AIConversationState {
     id: string;
     role: "user" | "assistant" | "system";
     content: string;
-    timestamp: number;
+    timestamp: Date;
     sources?: Array<{
       id: string;
       title: string;
@@ -94,7 +94,8 @@ const DEFAULT_CONVERSATION: AIConversationState = {
 const DEFAULT_SETTINGS: AISettingsState = {
   preferredProvider: "auto",
   gemma3Config: {
-    model: "gemma2:2b",
+    name: "gemma2:2b",
+    temperature: 0.7,
     temperature: 0.7,
     maxTokens: 512,
     topP: 0.9,

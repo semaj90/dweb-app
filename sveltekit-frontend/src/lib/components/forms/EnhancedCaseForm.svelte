@@ -1,3 +1,8 @@
+import type { Case } from '$lib/types';
+
+import type { User } from '$lib/types/user';
+
+
 <!-- Enhanced Case Form with proper schema mapping -->
 <script lang="ts">
   import { notifications } from "$lib/stores/notification";
@@ -5,7 +10,10 @@
   import { createEventDispatcher } from "svelte";
   import type { Case } from "$lib/types/index";
 
-  export let case_: Case | null = null; // Edit mode if provided
+
+  export let case_: Case| null = null; // Edit mode if provided
+
+
   export let user: User;
 
   const dispatch = createEventDispatcher();

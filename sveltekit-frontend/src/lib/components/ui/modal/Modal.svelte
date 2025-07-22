@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	let { open = false, title, children } = $props();
 </script>
 
@@ -19,6 +19,7 @@
 {/if}
 
 <style>
+  /* @unocss-include */
 	.modal-overlay {
 		position: fixed;
 		top: 0;

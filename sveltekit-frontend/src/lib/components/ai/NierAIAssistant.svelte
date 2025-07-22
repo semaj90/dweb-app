@@ -224,7 +224,7 @@
                 class:bg-digital-green/10={selectedMode === mode.id}
                 class:border-digital-green={selectedMode === mode.id}
                 class:border-nier-light-gray={selectedMode !== mode.id}
-                class:dark:border-nier-gray={selectedMode !== mode.id}
+                class:dark:border-nier-gray/30={selectedMode !== mode.id}
               >
                 <div class="flex items-center gap-2 mb-1">
                   <svelte:component 

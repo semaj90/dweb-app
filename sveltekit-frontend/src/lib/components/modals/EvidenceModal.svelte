@@ -73,6 +73,7 @@
 </Dialog.Root>
 
 <style>
+  /* @unocss-include */
   .uno-shadow {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }

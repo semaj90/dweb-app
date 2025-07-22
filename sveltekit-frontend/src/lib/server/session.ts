@@ -1,3 +1,5 @@
+import type { User } from '$lib/types/user';
+
 
 
 import type { RequestEvent } from "@sveltejs/kit";

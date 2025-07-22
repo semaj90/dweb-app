@@ -49,7 +49,7 @@
     </div>
     
     <div class="header-actions">
-      <button class="btn btn-primary">
+      <button class="nier-button-primary">
         ➕ New Case
       </button>
       <button class="btn btn-secondary">
@@ -110,12 +110,13 @@
       <div class="empty-icon">📁</div>
       <h3>No Cases Found</h3>
       <p>Create your first case to get started with case management.</p>
-      <button class="btn btn-primary">Create First Case</button>
+      <button class="nier-button-primary">Create First Case</button>
     </div>
   {/if}
 </div>
 
 <style>
+  /* @unocss-include */
   .cases-container {
     max-width: 1200px;
     margin: 0 auto;

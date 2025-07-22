@@ -1,12 +1,17 @@
 import type { User } from '$lib/types';
 
 
+import type { User } from '$lib/types/user';
+
+
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import SearchInput from "./SearchInput.svelte";
 
   import { FolderOpen, Home, LogOut, MoreVertical, Palette, Settings, Shield, User as UserIcon } from "lucide-svelte";
+
+
 
 
 

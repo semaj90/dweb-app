@@ -42,6 +42,7 @@
 </button>
 
 <style>
+  /* @unocss-include */
   /* UnoCSS/utility classes are applied via class attributes, not @apply. Remove @apply for Svelte 5 compatibility. */
   .loader {
     width: 1rem;

@@ -6,21 +6,40 @@ export default defineConfig({
   plugins: [UnoCSS(), sveltekit()],
 
   define: {
-    // Add any global defines here
+    global: 'globalThis',
   },
 
   server: {
     fs: {
       allow: [".."],
     },
+    host: true,
+    port: 5173,
   },
 
   optimizeDeps: {
-    include: ["lucide-svelte", "@tiptap/core", "@tiptap/starter-kit", "fabric"],
+    include: [
+      "lucide-svelte", 
+      "@tiptap/core", 
+      "@tiptap/starter-kit", 
+      "fabric",
+      "better-sqlite3",
+      "drizzle-orm"
+    ],
+    exclude: ["@auth/sveltekit"]
   },
 
   build: {
     target: "esnext",
     minify: "terser",
+    rollupOptions: {
+      external: (id) => {
+        return id.includes('node:') || id.includes('@node-rs');
+      }
+    }
   },
+
+  ssr: {
+    noExternal: ['@auth/core', '@auth/sveltekit']
+  }
 });

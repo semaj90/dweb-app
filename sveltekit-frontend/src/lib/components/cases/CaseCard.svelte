@@ -1,23 +1,26 @@
-import type { Case } from '$lib/types';
 
 
 <script lang="ts">
   import { createContextMenu, melt } from '@melt-ui/svelte'
   import { fly, scale } from 'svelte/transition'
-  import { 
-    FileText, 
-    Users, 
-    Calendar, 
-    MoreVertical, 
-    Eye, 
-    Edit, 
-    Archive, 
+  import {
+    FileText,
+    Users,
+    Calendar,
+    MoreVertical,
+    Eye,
+    Edit,
+    Archive,
     Trash2,
     AlertTriangle,
     Clock,
     CheckCircle
   } from 'lucide-svelte'
-  
+
+
+
+
+
 
 
   interface CaseData {
@@ -40,7 +43,7 @@ import type { Case } from '$lib/types';
     tags?: string[]
     progress?: number
   }
-  
+
   interface Props {
     case: CaseData
     onView?: (id: string) => void
@@ -48,15 +51,15 @@ import type { Case } from '$lib/types';
     onArchive?: (id: string) => void
     onDelete?: (id: string) => void
   }
-  
-  let { 
-    case: caseData, 
-    onView = () => {}, 
-    onEdit = () => {}, 
-    onArchive = () => {}, 
-    onDelete = () => {} 
+
+  let {
+    case: caseData,
+    onView = () => {},
+    onEdit = () => {},
+    onArchive = () => {},
+    onDelete = () => {}
   }: Props = $props()
-  
+
   // Create context menu
   const {
     elements: { trigger, menu, item, separator },
@@ -64,7 +67,7 @@ import type { Case } from '$lib/types';
   } = createContextMenu({
     forceVisible: true,
   })
-  
+
   // Status configurations
   const statusConfig = {
     active: {
@@ -88,7 +91,7 @@ import type { Case } from '$lib/types';
       label: 'Archived'
     }
   }
-  
+
   // Priority configurations
   const priorityConfig = {
     critical: {
@@ -112,7 +115,7 @@ import type { Case } from '$lib/types';
       color: 'text-digital-green'
     }
   }
-  
+
   // Format date
   const formatDate = (date: Date | string) => {
     const d = new Date(date)
@@ -122,7 +125,7 @@ import type { Case } from '$lib/types';
       day: 'numeric'
     }).format(d)
   }
-  
+
   // Calculate days ago
   const daysAgo = (date: Date | string) => {
     const d = new Date(date)
@@ -132,7 +135,7 @@ import type { Case } from '$lib/types';
     if (diff === 1) return 'Yesterday'
     return `${diff} days ago`
   }
-  
+
   const currentStatus = statusConfig[caseData.status]
   const currentPriority = priorityConfig[caseData.priority]
 </script>
@@ -145,9 +148,9 @@ import type { Case } from '$lib/types';
 >
   <!-- Background Pattern -->
   <div class="absolute inset-0 opacity-5 dark:opacity-10 pointer-events-none">
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="40" height="40" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" stroke="%23000" stroke-width="0.5" opacity="0.3"%3E%3Cpath d="M0 0h40v40H0z"/%3E%3Cpath d="M0 0l40 40M40 0L0 40"/%3E%3C/g%3E%3C/svg%3E')]"></div>
+    <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' stroke=\'%23000\' stroke-width=\'0.5\' opacity=\'0.3\'%3E%3Cpath d=\'M0 0h40v40H0z\'/%3E%3Cpath d=\'M0 0l40 40M40 0L0 40\'/%3E%3C/g%3E%3C/svg%3E');"></div>
   </div>
-  
+
   <!-- Card Content -->
   <div class="relative">
     <!-- Header -->
@@ -161,24 +164,26 @@ import type { Case } from '$lib/types';
             {currentPriority.icon}
           </span>
         </div>
-        
+
         <h3 class="text-lg font-semibold nier-heading line-clamp-1 group-hover:text-harvard-crimson dark:group-hover:text-digital-green nier-transition">
           {caseData.title}
         </h3>
-        
+
         {#if caseData.description}
           <p class="text-sm text-nier-gray dark:text-nier-silver line-clamp-2 mt-1">
             {caseData.description}
           </p>
         {/if}
       </div>
-      
+
       <div class="flex items-center gap-2">
         <span class="{currentStatus.class}">
-          <svelte:component this={currentStatus.icon} class="w-3 h-3 mr-1" />
+          {#key currentStatus.icon}
+            <currentStatus.icon class="w-3 h-3 mr-1" />
+          {/key}
           {currentStatus.label}
         </span>
-        
+
         <button
           class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-nier-white/50 dark:hover:bg-nier-black/50 nier-transition"
           aria-label="More options"
@@ -187,7 +192,7 @@ import type { Case } from '$lib/types';
         </button>
       </div>
     </div>
-    
+
     <!-- Stats Grid -->
     <div class="grid grid-cols-3 gap-4 mb-4">
       <div class="text-center p-3 rounded-lg bg-nier-white/50 dark:bg-nier-black/50">
@@ -199,7 +204,7 @@ import type { Case } from '$lib/types';
         </div>
         <p class="text-xs text-nier-gray dark:text-nier-silver">Documents</p>
       </div>
-      
+
       <div class="text-center p-3 rounded-lg bg-nier-white/50 dark:bg-nier-black/50">
         <div class="flex items-center justify-center gap-1 mb-1">
           <AlertTriangle class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
@@ -209,7 +214,7 @@ import type { Case } from '$lib/types';
         </div>
         <p class="text-xs text-nier-gray dark:text-nier-silver">Evidence</p>
       </div>
-      
+
       <div class="text-center p-3 rounded-lg bg-nier-white/50 dark:bg-nier-black/50">
         <div class="flex items-center justify-center gap-1 mb-1">
           <Users class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
@@ -220,7 +225,7 @@ import type { Case } from '$lib/types';
         <p class="text-xs text-nier-gray dark:text-nier-silver">Witnesses</p>
       </div>
     </div>
-    
+
     <!-- Progress Bar (if applicable) -->
     {#if caseData.progress !== undefined}
       <div class="mb-4">
@@ -229,14 +234,14 @@ import type { Case } from '$lib/types';
           <span class="text-xs font-medium">{caseData.progress}%</span>
         </div>
         <div class="h-2 bg-nier-white/50 dark:bg-nier-black/50 rounded-full overflow-hidden">
-          <div 
+          <div
             class="h-full nier-gradient-digital nier-transition"
             style="width: {caseData.progress}%"
           ></div>
         </div>
       </div>
     {/if}
-    
+
     <!-- Tags -->
     {#if caseData.tags && caseData.tags.length > 0}
       <div class="flex flex-wrap gap-2 mb-4">
@@ -247,7 +252,7 @@ import type { Case } from '$lib/types';
         {/each}
       </div>
     {/if}
-    
+
     <!-- Footer -->
     <div class="flex items-center justify-between pt-4 border-t border-nier-light-gray dark:border-nier-gray/30">
       <div class="flex items-center gap-3">
@@ -272,7 +277,7 @@ import type { Case } from '$lib/types';
           </div>
         {/if}
       </div>
-      
+
       <div class="flex items-center gap-2 text-xs text-nier-gray dark:text-nier-silver">
         <Calendar class="w-3 h-3" />
         <span title={formatDate(caseData.created)}>
@@ -280,7 +285,7 @@ import type { Case } from '$lib/types';
         </span>
       </div>
     </div>
-    
+
     <!-- Action Buttons -->
     <div class="flex gap-2 mt-4">
       <button
@@ -298,7 +303,7 @@ import type { Case } from '$lib/types';
       </button>
     </div>
   </div>
-  
+
   <!-- Digital Effect on Hover -->
   <div class="absolute inset-0 bg-gradient-to-br from-transparent to-digital-green/5 opacity-0 group-hover:opacity-100 pointer-events-none nier-transition"></div>
 </div>
@@ -318,7 +323,7 @@ import type { Case } from '$lib/types';
       <Eye class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
       <span>View Details</span>
     </button>
-    
+
     <button
       use:melt={$item}
       onclick={() => onEdit(caseData.id)}
@@ -327,9 +332,9 @@ import type { Case } from '$lib/types';
       <Edit class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
       <span>Edit Case</span>
     </button>
-    
-    <div use:melt={$separator} class="h-px bg-nier-light-gray dark:bg-nier-gray/30 my-2" />
-    
+
+    <div use:melt={$separator} class="h-px bg-nier-light-gray dark:bg-nier-gray/30 my-2"></div>
+
     <button
       use:melt={$item}
       onclick={() => onArchive(caseData.id)}
@@ -338,7 +343,7 @@ import type { Case } from '$lib/types';
       <Archive class="w-4 h-4" />
       <span>Archive</span>
     </button>
-    
+
     <button
       use:melt={$item}
       onclick={() => onDelete(caseData.id)}
@@ -350,19 +355,21 @@ import type { Case } from '$lib/types';
   </div>
 {/if}
 
-<style>
+<style lang="css">
   /* @unocss-include */
   /* Add smooth line clamp transitions */
   .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

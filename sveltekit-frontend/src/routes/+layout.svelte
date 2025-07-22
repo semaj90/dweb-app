@@ -165,6 +165,11 @@
   // Access user from data prop
   $: currentUser = data.user;
 
+  // --- AI/Global Context Wiring ---
+  import { setContext } from 'svelte';
+  setContext('user', () => currentUser);
+  // --- End AI/Global Context Wiring ---
+
   // Navigation links data
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: "📊" },
@@ -201,9 +206,9 @@
       <!-- Desktop Navigation Links -->
       <div class="nav-links desktop-only" role="menubar">
         {#each navLinks as link}
-          <a 
-            href={link.href} 
-            role="menuitem" 
+          <a
+            href={link.href}
+            role="menuitem"
             class="nav-link"
             aria-label={link.label}
           >
@@ -211,11 +216,11 @@
             <span class="nav-text">{link.label}</span>
           </a>
         {/each}
-        
+
         <!-- Special CRUD Dashboard Link -->
-        <a 
-          href="/crud-dashboard" 
-          role="menuitem" 
+        <a
+          href="/crud-dashboard"
+          role="menuitem"
           class="nav-link special-link"
           aria-label="CRUD Dashboard"
         >
@@ -281,14 +286,14 @@
           </div>
         {:else}
           <div class="auth-buttons">
-            <button 
-              class="btn btn-ghost btn-sm" 
+            <button
+              class="btn btn-ghost btn-sm"
               on:click={() => (showLoginModal = true)}
             >
               Login
             </button>
-            <button 
-              class="btn btn-secondary btn-sm" 
+            <button
+              class="btn btn-secondary btn-sm"
               on:click={() => (showRegisterModal = true)}
             >
               Register
@@ -312,9 +317,9 @@
     {#if mobileMenuOpen}
       <div class="mobile-menu" role="menu">
         {#each navLinks as link}
-          <a 
-            href={link.href} 
-            role="menuitem" 
+          <a
+            href={link.href}
+            role="menuitem"
             class="mobile-link"
             on:click={() => (mobileMenuOpen = false)}
           >
@@ -322,9 +327,9 @@
             <span class="nav-text">{link.label}</span>
           </a>
         {/each}
-        <a 
-          href="/crud-dashboard" 
-          role="menuitem" 
+        <a
+          href="/crud-dashboard"
+          role="menuitem"
           class="mobile-link special-link"
           on:click={() => (mobileMenuOpen = false)}
         >

@@ -57,7 +57,8 @@
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get AI response");}
+        throw new Error("Failed to get AI response");
+}
       const data = await response.json();
 
       const assistantMessage = {
@@ -86,19 +87,24 @@
       };
       messages = [...messages, errorMessage];
     } finally {
-      isLoading = false;}}
+      isLoading = false;
+}}
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      handleSubmit();}}
+      handleSubmit();
+}}
   function showCitation(citation: string) {
     selectedCitation = citation;
-    showCitationDialog = true;}
+    showCitationDialog = true;
+}
   function insertCitation() {
     dispatch("citation", selectedCitation);
-    showCitationDialog = false;}
+    showCitationDialog = false;
+}
   function clearChat() {
-    messages = [];}
+    messages = [];
+}
   function downloadChat() {
     const chatData = {
       caseId,
@@ -114,7 +120,8 @@
     a.href = url;
     a.download = `ai-chat-${caseId || "session"}-${Date.now()}.json`;
     a.click();
-    URL.revokeObjectURL(url);}
+    URL.revokeObjectURL(url);
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -126,7 +133,7 @@
       {#if caseId}
         <span class="container mx-auto px-4">Case: {caseId}</span>
       {/if}
-    </div>
+<!-- End main container -->
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
@@ -280,55 +287,35 @@
 
   <!-- Citation Dialog -->
   {#if showCitationDialog}
-    <div
-      class="container mx-auto px-4"
-      on:click={() => (showCitationDialog = false)}
-      on:keydown={(e) => {
-        if (e.key === "Escape") {
-          showCitationDialog = false;}
-      "
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="citation-modal-title"
-      tabindex={-1}
-    >
-      <div class="container mx-auto px-4" role="document">
-        <div class="container mx-auto px-4">
-          <h4 id="citation-modal-title">
-            <Quote class="container mx-auto px-4" /> Legal Citation
-          </h4>
+    <div class="modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="citation-modal-title" on:keydown={(e) => { if (e.key === 'Escape') showCitationDialog = false; }}>
+      <div class="modal" role="document">
+        <div class="modal-header">
+          <h2 id="citation-modal-title" class="visually-hidden">Legal Citation</h2>
+          <Quote aria-hidden="true" />
+          <span class="sr-only">Legal Citation</span>
         </div>
-
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="modal-body">
+          <div class="citation-box">
             <p>{selectedCitation}</p>
           </div>
-
-          <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
+          <div class="modal-actions">
+            <button class="btn-primary" on:click={() => insertCitation()}>
               Insert Citation
             </button>
-            <button
-              class="container mx-auto px-4"
-              on:click={() => navigator.clipboard.writeText(selectedCitation)}
-            >
+            <button class="btn-secondary" on:click={() => navigator.clipboard.writeText(selectedCitation)}>
               Copy
             </button>
           </div>
         </div>
-
-        <div class="container mx-auto px-4">
-          <button
-            class="container mx-auto px-4"
-            on:click={() => (showCitationDialog = false)}
-          >
+        <div class="modal-footer">
+          <button class="btn-close" on:click={() => (showCitationDialog = false)}>
             Close
           </button>
         </div>
       </div>
     </div>
   {/if}
-</div>
+
 
 <style>
   /* @unocss-include */
@@ -338,125 +325,154 @@
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .ai-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;}
+    border-bottom: 1px solid #e5e7eb;
+}
   .ai-title {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-weight: 600;}
+    font-weight: 600;
+}
   .case-id {
     font-size: 0.875rem;
     color: #6b7280;
     background: #e5e7eb;
     padding: 0.125rem 0.5rem;
-    border-radius: 4px;}
+    border-radius: 4px;
+}
   .ai-actions {
     display: flex;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .action-btn {
     padding: 0.5rem;
     border: none;
     background: transparent;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .action-btn:hover {
-    background: #e5e7eb;}
+    background: #e5e7eb;
+}
   .action-btn:disabled {
     opacity: 0.5;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .settings-panel {
     padding: 1rem;
     background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;}
+    border-bottom: 1px solid #e5e7eb;
+}
   .settings-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;}
+    margin-bottom: 0.5rem;
+}
   .settings-row label {
     min-width: 120px;
     font-size: 0.875rem;
-    font-weight: 500;}
+    font-weight: 500;
+}
   .settings-row select,
   .settings-row input {
     flex: 1;
     padding: 0.25rem 0.5rem;
     border: 1px solid #d1d5db;
     border-radius: 4px;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .chat-messages {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;}
+    gap: 1rem;
+}
   .message {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .message.user {
-    align-items: flex-end;}
+    align-items: flex-end;
+}
   .message.assistant {
-    align-items: flex-start;}
+    align-items: flex-start;
+}
   .message-header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.875rem;
-    color: #6b7280;}
+    color: #6b7280;
+}
   .message-content {
     max-width: 80%;
     padding: 0.75rem;
     border-radius: 8px;
     font-size: 0.875rem;
-    line-height: 1.5;}
+    line-height: 1.5;
+}
   .message.user .message-content {
     background: #3b82f6;
-    color: white;}
+    color: white;
+}
   .message.assistant .message-content {
     background: #f3f4f6;
-    color: #1f2937;}
+    color: #1f2937;
+}
   .message.loading .message-content {
     display: flex;
     align-items: center;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .message-references {
     max-width: 80%;
-    margin-top: 0.5rem;}
+    margin-top: 0.5rem;
+}
   .message-references h4 {
     font-size: 0.875rem;
     font-weight: 600;
-    margin-bottom: 0.25rem;}
+    margin-bottom: 0.25rem;
+}
   .message-references ul {
     list-style: none;
     padding: 0;
-    margin: 0;}
+    margin: 0;
+}
   .message-references li {
-    margin-bottom: 0.25rem;}
+    margin-bottom: 0.25rem;
+}
   .reference-link {
     color: #3b82f6;
     text-decoration: underline;
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .reference-link:hover {
-    color: #2563eb;}
+    color: #2563eb;
+}
   .chat-input {
     padding: 1rem;
-    border-top: 1px solid #e5e7eb;}
+    border-top: 1px solid #e5e7eb;
+}
   .input-wrapper {
     display: flex;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .input-wrapper textarea {
     flex: 1;
     padding: 0.75rem;
@@ -465,11 +481,13 @@
     resize: vertical;
     min-height: 2.5rem;
     font-family: inherit;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .input-wrapper textarea:focus {
     outline: none;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);}
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
   .submit-btn {
     padding: 0.75rem;
     background: #3b82f6;
@@ -477,12 +495,15 @@
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .submit-btn:hover:not(:disabled) {
-    background: #2563eb;}
+    background: #2563eb;
+}
   .submit-btn:disabled {
     opacity: 0.5;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -493,7 +514,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;}
+    z-index: 1000;
+}
   .modal {
     background: white;
     border-radius: 8px;
@@ -501,31 +523,37 @@
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);}
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
   .modal-header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 1rem;
     border-bottom: 1px solid #e5e7eb;
-    font-weight: 600;}
+    font-weight: 600;
+}
   .modal-body {
-    padding: 1rem;}
+    padding: 1rem;
+}
   .citation-box {
     background: #f9fafb;
     border: 1px solid #e5e7eb;
     border-radius: 6px;
     padding: 1rem;
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   .citation-box p {
     margin: 0;
     font-family: monospace;
     font-size: 0.875rem;
-    line-height: 1.5;}
+    line-height: 1.5;
+}
   .modal-actions {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   .btn-primary {
     padding: 0.5rem 1rem;
     background: #3b82f6;
@@ -534,9 +562,11 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.875rem;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .btn-primary:hover {
-    background: #2563eb;}
+    background: #2563eb;
+}
   .btn-secondary {
     padding: 0.5rem 1rem;
     background: #f3f4f6;
@@ -545,14 +575,17 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.875rem;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .btn-secondary:hover {
-    background: #e5e7eb;}
+    background: #e5e7eb;
+}
   .modal-footer {
     display: flex;
     justify-content: flex-end;
     padding: 1rem;
-    border-top: 1px solid #e5e7eb;}
+    border-top: 1px solid #e5e7eb;
+}
   .btn-close {
     padding: 0.5rem 1rem;
     background: #f3f4f6;
@@ -561,7 +594,11 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.875rem;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .btn-close:hover {
-    background: #e5e7eb;}
+    background: #e5e7eb;
+}
 </style>
+</div>
+</div>

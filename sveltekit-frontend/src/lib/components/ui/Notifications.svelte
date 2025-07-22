@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from "$lib/components/ui/button";
+  import { Button } from "$lib/components/ui/button";
   import { quintOut } from "svelte/easing";
   import { fly } from "svelte/transition";
   import { notifications, type Notification } from "../../stores/notification";
@@ -31,7 +31,13 @@
 
   function handleClose(notification: Notification) {
     notifications.remove(notification.id);
-}
+  }
+
+  // Clean up notifications on component destroy (e.g., app shutdown or navigation)
+  import { onDestroy } from 'svelte';
+  onDestroy(() => {
+    notifications.clear && notifications.clear();
+  });
   function handleAction(
     notification: Notification,
     action: NonNullable<Notification["actions"]>[0]
@@ -46,9 +52,9 @@
   {#each $notifications.notifications as notification (notification.id)}
     <div
       class={`
-				relative p-4 rounded-lg border shadow-lg backdrop-blur-sm
-				${colorClasses[notification.type]}
-			`}
+        relative p-4 rounded-lg border shadow-lg backdrop-blur-sm
+        ${colorClasses[notification.type]}
+      `}
       in:fly={{ x: 300, duration: 300, easing: quintOut }}
       out:fly={{ x: 300, duration: 200, easing: quintOut  }}
     >

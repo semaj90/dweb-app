@@ -162,6 +162,7 @@
 />
 
 <style>
+  /* @unocss-include */
 	.avatar-container {
 		position: relative;
 		display: inline-block;

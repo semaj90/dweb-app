@@ -10,7 +10,8 @@
   async function testGemma3() {
     if (!prompt.trim()) {
       error = "Please enter a prompt";
-      return;}
+      return;
+}
     isLoading = true;
     error = "";
     response = "";
@@ -38,18 +39,21 @@
       } else {
         error = data.error;
         if (data.troubleshooting) {
-          error += "\n\nTroubleshooting:\n" + data.troubleshooting.join("\n");}}
+          error += "\n\nTroubleshooting:\n" + data.troubleshooting.join("\n");
+}}
     } catch (err) {
       error = `Network error: ${err instanceof Error ? err.message : "Unknown error"}`;
     } finally {
-      isLoading = false;}}
+      isLoading = false;
+}}
   async function checkStatus() {
     try {
       const res = await fetch("/api/ai/test-gemma3");
       const data = await res.json();
       status = data.status;
     } catch (err) {
-      console.error("Status check failed:", err);}}
+      console.error("Status check failed:", err);
+}}
   onMount(() => {
     checkStatus();
   });
@@ -176,20 +180,22 @@
 </div>
 
 <style>
-  /* @unocss-include */
   .container {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
     font-family:
-      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;}
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
   h1 {
     color: #333;
     border-bottom: 2px solid #007acc;
-    padding-bottom: 0.5rem;}
+    padding-bottom: 0.5rem;
+}
   h2 {
     color: #555;
-    margin-top: 2rem;}
+    margin-top: 2rem;
+}
   .status-section,
   .test-section,
   .info-section {
@@ -197,39 +203,48 @@
     border-radius: 8px;
     padding: 1.5rem;
     margin: 1rem 0;
-    border: 1px solid #e9ecef;}
+    border: 1px solid #e9ecef;
+}
   .status-grid {
     display: grid;
-    gap: 1rem;}
+    gap: 1rem;
+}
   .status-item {
     display: flex;
     gap: 0.5rem;
-    align-items: center;}
+    align-items: center;
+}
   .status-badge {
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-size: 0.875rem;
-    font-weight: 500;}
+    font-weight: 500;
+}
   .status-badge.available {
     background: #d1f2eb;
-    color: #00695c;}
+    color: #00695c;
+}
   .status-badge.unavailable {
     background: #fadbd8;
-    color: #c62828;}
+    color: #c62828;
+}
   .form-group {
-    margin: 1rem 0;}
+    margin: 1rem 0;
+}
   label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: #555;}
+    color: #555;
+}
   textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-family: inherit;
-    resize: vertical;}
+    resize: vertical;
+}
   .test-button {
     background: #007acc;
     color: white;
@@ -238,49 +253,61 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background 0.2s;}
+    transition: background 0.2s;
+}
   .test-button:hover:not(:disabled) {
-    background: #005a9e;}
+    background: #005a9e;
+}
   .test-button:disabled {
     background: #ccc;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .error {
     background: #fadbd8;
     border: 1px solid #f5b7b1;
     border-radius: 4px;
     padding: 1rem;
-    margin: 1rem 0;}
+    margin: 1rem 0;
+}
   .error h3 {
     margin: 0 0 0.5rem 0;
-    color: #c62828;}
+    color: #c62828;
+}
   .error pre {
     margin: 0;
     white-space: pre-wrap;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .response {
     background: #d1f2eb;
     border: 1px solid #a9dfbf;
     border-radius: 4px;
     padding: 1rem;
-    margin: 1rem 0;}
+    margin: 1rem 0;
+}
   .response h3 {
     margin: 0 0 0.5rem 0;
-    color: #00695c;}
+    color: #00695c;
+}
   .response-content {
     background: white;
     padding: 1rem;
     border-radius: 4px;
     white-space: pre-wrap;
-    line-height: 1.5;}
+    line-height: 1.5;
+}
   .info-content ul {
     margin: 0.5rem 0;
-    padding-left: 1.5rem;}
+    padding-left: 1.5rem;
+}
   .info-content li {
-    margin: 0.25rem 0;}
+    margin: 0.25rem 0;
+}
   .info-content code {
     background: #f1f3f4;
     padding: 0.125rem 0.25rem;
     border-radius: 2px;
     font-family: monospace;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
 </style>

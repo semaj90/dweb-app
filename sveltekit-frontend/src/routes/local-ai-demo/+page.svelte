@@ -22,7 +22,8 @@
     embeddings: boolean;
     vectorSearch: boolean;
     tauriLLM: boolean;
-    localModels: LocalModel[];}
+    localModels: LocalModel[];
+}
   let systemStatus: SystemStatus = {
     database: false,
     qdrant: false,
@@ -45,12 +46,13 @@
       type: string;
     }>;
     executionTime?: number;
-    source?: string;}
+    source?: string;
+}
   let testResults: TestResults | null = null;
   let isTestingSearch = false;
   let selectedProvider: "auto" | "local" | "cloud" = "auto";
   let legalAnalysisText = "";
-  
+
   interface AnalysisResults {
     error?: string;
     summary?: string;
@@ -63,7 +65,8 @@
       text: string;
       type: string;
       confidence: number;
-    }>;}
+    }>;
+}
   let analysisResults: AnalysisResults | null = null;
   let isAnalyzing = false;
 
@@ -115,7 +118,8 @@
     } catch (error) {
       console.error("Status check failed:", error);
     } finally {
-      isLoadingStatus = false;}}
+      isLoadingStatus = false;
+}}
   async function testVectorSearch() {
     if (!testQuery.trim()) return;
 
@@ -142,11 +146,13 @@
         testResults = data.data;
       } else {
         const error = await response.json();
-        testResults = { error: error.error };}
+        testResults = { error: error.error };
+}
     } catch (error) {
       testResults = { error: "Network error" };
     } finally {
-      isTestingSearch = false;}}
+      isTestingSearch = false;
+}}
   async function analyzeLegalDocument() {
     if (!legalAnalysisText.trim()) return;
 
@@ -183,27 +189,34 @@
             summary: data.data.answer,
             keyEntities: ["Legal Document"].map(entity => ({ text: entity, type: "document", confidence: 1.0 })),
             riskAssessment: "Analysis completed using cloud AI",
-          };}}
+          };
+}}
     } catch (error) {
       analysisResults = {
         error: error instanceof Error ? error.message : "Unknown error",
       };
     } finally {
-      isAnalyzing = false;}}
+      isAnalyzing = false;
+}}
   async function loadLocalModel(modelId: string) {
     try {
       await tauriLLM.loadModel(modelId);
       await checkSystemStatus(); // Refresh status
     } catch (error) {
-      console.error("Failed to load model:", error);}}
+      console.error("Failed to load model:", error);
+}}
   function handleAIResponse(event: CustomEvent) {
-    console.log("AI Response:", event.detail);}
+    console.log("AI Response:", event.detail);
+}
   function handleReferenceClick(event: CustomEvent) {
-    console.log("Reference clicked:", event.detail);}
+    console.log("Reference clicked:", event.detail);
+}
   function getStatusIcon(status: boolean) {
-    return status ? CheckCircle : AlertTriangle;}
+    return status ? CheckCircle : AlertTriangle;
+}
   function getStatusColor(status: boolean) {
-    return status ? "text-green-600" : "text-red-600";}
+    return status ? "text-green-600" : "text-red-600";
+}
   function getProviderIcon(provider: string) {
     switch (provider) {
       case "local":
@@ -211,7 +224,8 @@
       case "cloud":
         return Cloud;
       default:
-        return Brain;}}
+        return Brain;
+}}
 </script>
 
 <svelte:head>
@@ -530,8 +544,6 @@
                     {/if}
 
                     {#if analysisResults && analysisResults.riskAssessment}
-                      {#if analysisResults && analysisResults.riskAssessment}
-                      {#if analysisResults && analysisResults.riskAssessment}
                       <div>
                         <h5 class="container mx-auto px-4">
                           Risk Assessment:
@@ -540,8 +552,6 @@
                           {analysisResults.riskAssessment}
                         </p>
                       </div>
-                    {/if}
-                    {/if}
                     {/if}
                   </div>
                 {/if}
@@ -711,5 +721,6 @@
     font-family: "Courier New", monospace;
     background: #f5f5f5;
     padding: 2px 4px;
-    border-radius: 3px;}
+    border-radius: 3px;
+}
 </style>

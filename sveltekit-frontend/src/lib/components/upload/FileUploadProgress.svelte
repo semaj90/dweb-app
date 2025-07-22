@@ -15,6 +15,7 @@
 </div>
 
 <style>
+  /* @unocss-include */
   .uno-border {
     border: 1px solid #e5e7eb;
   }

@@ -12,7 +12,7 @@
     fullWidth?: boolean;
   };
 
-  let { variant = 'primary', size = 'md', loading = false, icon, iconPosition = 'left', fullWidth = false, class: className = '', children, ...restProps } = $props<ButtonProps>();
+let { variant = 'primary', size = 'md', loading = false, icon, iconPosition = 'left', fullWidth = false, class: className = '', children, ...restProps } = $props();
   const classes = $derived(() => [
     'nier-btn',
     'btn',
@@ -38,6 +38,7 @@
 </Button.Root>
 
 <style>
+  /* @unocss-include */
   .loader {
     width: 1rem;
     height: 1rem;

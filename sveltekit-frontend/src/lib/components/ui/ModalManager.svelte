@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from "$lib/components/ui/button";
+	import { Button } from "$lib/components/ui/button";
 	import { quintOut } from 'svelte/easing';
 	import { fade, fly } from 'svelte/transition';
 	import { modals } from "../../stores/modal";

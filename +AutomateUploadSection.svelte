@@ -30,12 +30,26 @@
     enableAutoProcessing = false;
   };
 
-  // Dummy data for dropdowns - replace with actual data fetched from API
-  const automationTypeOptions = [
-    { value: 'folder_watch', label: 'Folder Watch' },
-    { value: 'email_attachment', label: 'Email Attachment' },
-    { value: 'api_integration', label: 'API Integration' },
-  ];
+
+  // Fetch automation type options from API (simulated async fetch)
+  import { onMount } from 'svelte';
+  let automationTypeOptions: { value: string; label: string }[] = [];
+  let loadingAutomationTypes = true;
+
+  async function fetchAutomationTypes() {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+    automationTypeOptions = [
+      { value: 'folder_watch', label: 'Folder Watch' },
+      { value: 'email_attachment', label: 'Email Attachment' },
+      { value: 'api_integration', label: 'API Integration' },
+    ];
+    loadingAutomationTypes = false;
+  }
+
+  onMount(() => {
+    fetchAutomationTypes();
+  });
 
   const sourceOptions = [
     { value: 'source1', label: 'Shared Drive A' },
@@ -44,71 +58,26 @@
   ];
 </script>
 
-<div class="card">
-  <div class="card-header">
-    <h3>Automate Upload</h3>
+
+<div class="rounded-xl bg-nier-surface shadow-lg p-8 max-w-lg mx-auto">
+  <div class="border-b border-nier-border pb-4 mb-6">
+    <h3 class="text-xl font-bold nier-text-glow">Automate Upload</h3>
   </div>
-  <div class="card-body">
-    <div class="mb-3">
-      <label for="automationTypeSelect" class="form-label">Automation Type:</label>
-      <Dropdown id="automationTypeSelect" bind:selected={selectedAutomationType} options={automationTypeOptions} />
+  <div class="space-y-6">
+    <div>
+      <label for="automationTypeSelect" class="block font-semibold mb-2 text-nier-white">Automation Type:</label>
+      <Dropdown id="automationTypeSelect" bind:selected={selectedAutomationType} options={automationTypeOptions} class="w-full" />
     </div>
-    <div class="mb-3">
-      <label for="sourceSelect" class="form-label">Source:</label>
-      <Dropdown id="sourceSelect" bind:selected={selectedSource} options={sourceOptions} />
+    <div>
+      <label for="sourceSelect" class="block font-semibold mb-2 text-nier-white">Source:</label>
+      <Dropdown id="sourceSelect" bind:selected={selectedSource} options={sourceOptions} class="w-full" />
     </div>
-    <div class="mb-3 form-check">
+    <div class="flex items-center gap-2">
       <Checkbox id="autoProcessCheckbox" bind:checked={enableAutoProcessing} label="Enable Auto-Processing" />
     </div>
-    <button class="btn btn-primary" on:click={handleSubmit}>Save Automation</button>
+    <button class="btn btn-primary w-full mt-4" on:click={handleSubmit}>
+      Save Automation
+    </button>
   </div>
 </div>
 
-<style>
-  .card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-  }
-
-  .card-header {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .card-header h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    color: #333;
-  }
-
-  .form-label {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    display: block;
-  }
-
-  .form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-
-  .btn-primary {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
-</style>

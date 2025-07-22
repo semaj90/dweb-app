@@ -11,6 +11,7 @@
   } from "lucide-svelte/icons";
   import { createEventDispatcher, onMount } from "svelte";
   import { speakWithCoqui, loadCoquiTTS } from '$lib/services/coquiTTS';
+  import type { Case } from '$lib/types';
 
   export let caseId: string | undefined = undefined;
   export let evidenceIds: string[] = [];
@@ -52,7 +53,12 @@
   let textareaRef: HTMLTextAreaElement;
   let messagesContainer: HTMLDivElement;
 
-  // Advanced options
+  // Advanced options: These settings allow power users to customize the AI's behavior.
+  // - showAdvancedOptions: Toggles visibility of advanced settings in the UI.
+  // - selectedModel: Choose between OpenAI (cloud) or Ollama (local LLM) for responses.
+  // - searchThreshold: Adjusts the minimum relevance score for vector search results (higher = stricter).
+  // - maxResults: Limits the number of context documents retrieved for the AI.
+  // - temperature: Controls randomness/creativity of AI responses (higher = more creative).
   let showAdvancedOptions = false;
   let selectedModel: "openai" | "ollama" = "openai";
   let searchThreshold = 0.7;
@@ -64,6 +70,8 @@
   // Fix SpeechRecognition type for browser
   let recognition: any = null;
   let ttsLoading = false;
+  // Reusable AudioContext for TTS playback
+  let audioContext: AudioContext | null = null;
 
   const dispatch = createEventDispatcher<{
     response: AIResponse;
@@ -71,8 +79,8 @@
     referenceClicked: { id: string; type: string };
   }>();
 
-  // Simple IndexedDB wrapper for conversation storage
-  const getIndexedDBService = () => ({
+  // Simple localStorage wrapper for conversation storage
+  const getLocalStorageService = () => ({
     async getSetting(key: string): Promise<any> {
       if (!browser) return null;
       try {
@@ -130,8 +138,8 @@
   async function loadConversationHistory() {
     try {
       const contextKey = caseId ? `case_${caseId}` : "general";
-      const indexedDBService = getIndexedDBService();
-      const history = await indexedDBService.getSetting(
+      const localStorageService = getLocalStorageService();
+      const history = await localStorageService.getSetting(
         `ai_conversation_${contextKey}`
       );
 
@@ -144,8 +152,8 @@
   async function saveConversationHistory() {
     try {
       const contextKey = caseId ? `case_${caseId}` : "general";
-      const indexedDBService = getIndexedDBService();
-      await indexedDBService.setSetting(
+      const localStorageService = getLocalStorageService();
+      await localStorageService.setSetting(
         `ai_conversation_${contextKey}`,
         conversation
       );
@@ -181,7 +189,6 @@
     if (textareaRef) {
       textareaRef.style.height = "auto";
 }
-    let controller = null;
     try {
       // Simple activity tracking (could be enhanced with analytics)
       console.log("User activity:", {
@@ -209,7 +216,7 @@
       };
       // Use streaming endpoint for Ollama/Gemma3
       const endpoint = selectedModel === "ollama" ? "/api/ai/chat" : "/api/ai/ask";
-      controller = new AbortController();
+      const controller = new AbortController();
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -347,11 +354,13 @@
       const res = await fetch(`/api/tts?text=${encodeURIComponent(text)}`);
       if (res.ok) {
         const audioData = await res.arrayBuffer();
-        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const buffer = await context.decodeAudioData(audioData);
-        const source = context.createBufferSource();
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        const buffer = await audioContext.decodeAudioData(audioData);
+        const source = audioContext.createBufferSource();
         source.buffer = buffer;
-        source.connect(context.destination);
+        source.connect(audioContext.destination);
         source.start(0);
       } else {
         throw new Error('TTS server error');
@@ -384,13 +393,17 @@
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }}
   function generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).substr(2, 9);
 }
-  function formatTimestamp(timestamp: number): string {
-    return new Date(timestamp).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+
+function formatTime(timestamp: number): string {
+  return new Date(timestamp).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
   function getConfidenceColor(confidence: number): string {
     if (confidence >= 0.8) return "text-green-600";
@@ -412,20 +425,19 @@
 
 <div class="container mx-auto px-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Brain class="container mx-auto px-4" />
-        <h3 class="container mx-auto px-4">Ask AI Assistant</h3>
+  <div>
+    <div>
+      <div>
+        <Brain />
+        <h3>Ask AI Assistant</h3>
         {#if caseId}
-          <span class="container mx-auto px-4">• Case Context</span>
+          <span>• Case Context</span>
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
+      <div>
         <button
           type="button"
-          class="container mx-auto px-4"
           on:click={() => (showAdvancedOptions = !showAdvancedOptions)}
         >
           Advanced
@@ -434,7 +446,6 @@
         {#if conversation.length > 0}
           <button
             type="button"
-            class="container mx-auto px-4"
             on:click={() => clearConversation()}
           >
             Clear
@@ -445,18 +456,14 @@
 
     <!-- Advanced Options -->
     {#if showAdvancedOptions}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div>
+        <div>
           <div>
-            <label
-              class="container mx-auto px-4"
-              for="field-1"
-            >
+            <label for="field-1">
               Model
             </label>
             <select
               bind:value={selectedModel}
-              class="container mx-auto px-4"
               id="field-1"
             >
               <option value="openai">OpenAI GPT-3.5</option>
@@ -465,10 +472,7 @@
           </div>
 
           <div>
-            <label
-              class="container mx-auto px-4"
-              for="field-2"
-            >
+            <label for="field-2">
               Search Threshold
             </label>
             <input
@@ -477,19 +481,15 @@
               max="0.9"
               step="0.1"
               bind:value={searchThreshold}
-              class="container mx-auto px-4"
               id="field-2"
             />
-            <span class="container mx-auto px-4">{searchThreshold}</span>
+            <span>{searchThreshold}</span>
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div>
           <div>
-            <label
-              class="container mx-auto px-4"
-              for="field-3"
-            >
+            <label for="field-3">
               Max Results
             </label>
             <input
@@ -497,16 +497,12 @@
               min="5"
               max="50"
               bind:value={maxResults}
-              class="container mx-auto px-4"
               id="field-3"
             />
           </div>
 
           <div>
-            <label
-              class="container mx-auto px-4"
-              for="field-4"
-            >
+            <label for="field-4">
               Temperature
             </label>
             <input
@@ -515,10 +511,9 @@
               max="1.0"
               step="0.1"
               bind:value={temperature}
-              class="container mx-auto px-4"
               id="field-4"
             />
-            <span class="container mx-auto px-4">{temperature}</span>
+            <span>{temperature}</span>
           </div>
         </div>
       </div>
@@ -528,146 +523,118 @@
   <!-- Conversation -->
   <div
     bind:this={messagesContainer}
-    class="container mx-auto px-4"
     style="max-height: {maxHeight};"
     aria-live="polite"
   >
     {#if conversation.length === 0}
-      <div class="container mx-auto px-4">
-        <MessageCircle class="container mx-auto px-4" />
-        <p class="container mx-auto px-4">Start a conversation with the AI assistant</p>
-        <p class="container mx-auto px-4">
+      <div>
+        <MessageCircle />
+        <p>Start a conversation with the AI assistant</p>
+        <p>
           Ask questions about cases, evidence, or legal procedures
         </p>
       </div>
     {:else}
       {#each conversation as message (message.id)}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              {#if message.type === "user"}
-                <div
-                  class="container mx-auto px-4"
-                >
-                  <span class="container mx-auto px-4">U</span>
-                </div>
-              {:else}
-                <div
-                  class="container mx-auto px-4"
-                >
-                  <Brain class="container mx-auto px-4" />
+        <div>
+          {#if message.type === "user"}
+            <div>
+              <span>U</span>
+            </div>
+          {:else}
+            <div>
+              <Brain />
+            </div>
+          {/if}
+
+          <div>
+            <span>
+              {message.type === "user" ? "You" : "AI Assistant"}
+            </span>
+            <span>
+              {#if message.type === "ai" && message.confidence !== undefined}
+                <div class={getConfidenceColor(message.confidence)}>
+                  <svelte:component this={getConfidenceIcon(message.confidence)} />
+                  <span>{Math.round(message.confidence * 100)}%</span>
                 </div>
               {/if}
-            </div>
+            </span>
+          </div>
 
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">
-                  {message.type === "user" ? "You" : "AI Assistant"}
-                </span>
-                <span class="container mx-auto px-4">
-                  {formatTimestamp(message.timestamp)}
-                </span>
-
-                {#if message.type === "ai" && message.confidence !== undefined}
-                  <div class="container mx-auto px-4">
-                    <svelte:component
-                      this={getConfidenceIcon(message.confidence)}
-                      class="container mx-auto px-4"
-                    />
-                    <span
-                      class="container mx-auto px-4"
-                    >
-                      {Math.round(message.confidence * 100)}%
-                    </span>
-                  </div>
+          <div>
+            <p>{message.content}
+              {#if message.type === "ai" && isLoading && conversation[conversation.length-1]?.id === message.id}
+                <span class="blinking-cursor">|</span>
+              {/if}
+            </p>
+            {#if message.type === "ai" && message.content && enableVoiceOutput}
+              <button
+                type="button"
+                aria-label="Listen to AI response"
+                on:click={() => speak(message.content)}
+                disabled={ttsLoading}
+              >
+                {#if ttsLoading}
+                  <Loader2 class="mx-auto px-4 max-w-7xl animate-spin" />
+                  <span>Loading voice...</span>
+                {:else}
+                  🔊 Listen
                 {/if}
-              </div>
+              </button>
+            {/if}
+          </div>
 
-              <div class="container mx-auto px-4">
-                <p class="container mx-auto px-4">{message.content}
-                  {#if message.type === "ai" && isLoading && conversation[conversation.length-1]?.id === message.id}
-                    <span class="blinking-cursor">|</span>
-                  {/if}
-                </p>
-                {#if message.type === "ai" && message.content && enableVoiceOutput}
+          <!-- References -->
+          {#if message.references && message.references.length > 0 && showReferences}
+            <div>
+              <h4>References:</h4>
+              <div>
+                {#each message.references as reference}
                   <button
                     type="button"
-                    class="container mx-auto px-4"
-                    aria-label="Listen to AI response"
-                    on:click={() => speak(message.content)}
-                    disabled={ttsLoading}
+                    on:click={() => handleReferenceClick(reference)}
                   >
-                    {#if ttsLoading}
-                      <Loader2 class="mx-auto px-4 max-w-7xl animate-spin" />
-                      <span>Loading voice...</span>
-                    {:else}
-                      🔊 Listen
-                    {/if}
+                    <span>{reference.type.toUpperCase()}:</span>
+                    {reference.title}
+                    <span>({Math.round(reference.relevanceScore * 100)}%)</span>
                   </button>
-                {/if}
+                {/each}
               </div>
+            </div>
+          {/if}
 
-              <!-- References -->
-              {#if message.references && message.references.length > 0 && showReferences}
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">
-                    References:
-                  </h4>
-                  <div class="container mx-auto px-4">
-                    {#each message.references as reference}
-                      <button
-                        type="button"
-                        class="container mx-auto px-4"
-                        on:click={() => handleReferenceClick(reference)}
-                      >
-                        <span class="container mx-auto px-4"
-                          >{reference.type.toUpperCase()}:</span
-                        >
-                        {reference.title}
-                        <span class="container mx-auto px-4"
-                          >({Math.round(reference.relevanceScore * 100)}%)</span
-                        >
-                      </button>
-                    {/each}
-                  </div>
-                </div>
+          <!-- Metadata -->
+          {#if message.metadata}
+            <div>
+              {#if message.metadata.model}
+                Model: {message.metadata.model}
               {/if}
-
-              <!-- Metadata -->
-              {#if message.metadata}
-                <div class="container mx-auto px-4">
-                  {#if message.metadata.model}
-                    Model: {message.metadata.model}
-                  {/if}
-                  {#if message.metadata.processingTime}
-                    • {message.metadata.processingTime}ms
-                  {/if}
-                  {#if message.metadata.searchResults}
-                    • {message.metadata.searchResults} results
-                  {/if}
-                </div>
+              {#if message.metadata.processingTime}
+                • {message.metadata.processingTime}ms
+              {/if}
+              {#if message.metadata.searchResults}
+                • {message.metadata.searchResults} results
               {/if}
             </div>
-          </div>
+          {/if}
         </div>
       {/each}
     {/if}
   </div>
 
   <!-- Input Area -->
-  <div class="container mx-auto px-4">
+  <div>
     {#if error}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <AlertCircle class="container mx-auto px-4" />
-          <span class="container mx-auto px-4">{error}</span>
+      <div>
+        <div>
+          <AlertCircle />
+          <span>{error}</span>
         </div>
       </div>
     {/if}
 
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div>
+      <div>
         <textarea
           bind:this={textareaRef}
           bind:value={query}
@@ -676,13 +643,11 @@
           {placeholder}
           disabled={isLoading}
           rows={1}
-          class="container mx-auto px-4"
           aria-label="Ask AI input"
         ></textarea>
         {#if enableVoiceInput}
           <button
             type="button"
-            class="container mx-auto px-4"
             class:text-red-500={isListening}
             aria-label={isListening ? "Stop voice input" : "Start voice input"}
             on:click={() => (isListening ? stopVoiceInput() : startVoiceInput())}
@@ -697,7 +662,6 @@
         type="button"
         on:click={() => askAI()}
         disabled={!query.trim() || isLoading}
-        class="container mx-auto px-4"
         aria-label="Send question to AI"
       >
         {#if isLoading}
@@ -710,23 +674,19 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4">
-      Press Enter to send, Shift+Enter for new line
-      {#if caseId}
-import type { Case } from '$lib/types';
-
-        • Context: Case{caseId.slice(0, 8)}
-      {/if}
-      {#if evidenceIds.length > 0}
-        • {evidenceIds.length} evidence item(s)
-      {/if}
-      {#if selectedModel === "ollama"}
-        • Using local LLM
-      {/if}
+    <div>
+          <button
+            type="button"
+            class="container mx-auto px-4 {isListening ? 'text-red-500' : ''}"
+            aria-label={isListening ? "Stop voice input" : "Start voice input"}
+            on:click={() => (isListening ? stopVoiceInput() : startVoiceInput())}
+            disabled={isLoading}
+          >
+            🎤
+          </button>
     </div>
   </div>
 </div>
-
 <style>
   /* @unocss-include */
   .ai-chat-component {

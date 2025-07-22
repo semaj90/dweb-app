@@ -1,11 +1,14 @@
+import type { Case } from '$lib/types';
+
+
 <script lang="ts">
   import { Badge } from "$lib/components/ui/index";
-  import type { Case } from '$lib/types';
+  import type { Case as CaseType } from '$lib/types';
   import { formatDistanceToNow } from "date-fns";
   import { Archive, Calendar, CheckCircle, Clock, FileText, User as UserIcon } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let caseData: Case
+  export let caseData: CaseType;
   export let isActive = false;
   export let disabled = false;
 
@@ -147,5 +150,3 @@
     </div>
   </div>
 </div>
-
-

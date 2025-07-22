@@ -7,7 +7,7 @@
 Loading svelte-check in workspace: c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend
 Getting Svelte diagnostics...
 
-10:23:19 PM [vite-plugin-svelte] WARNING: The following packages have a svelte field in their package.json but no exports condition for svelte.
+10:23:04 PM [vite-plugin-svelte] WARNING: The following packages have a svelte field in their package.json but no exports condition for svelte.
 
 svelte-grid-responsive@1.2.4
 svelte-infinite-scroll@2.0.1
