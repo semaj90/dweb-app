@@ -69,7 +69,8 @@
       text: string;
       source: string;
       type: "case" | "statute" | "regulation";
-    }>;}
+    }>;
+}
   const dispatch = createEventDispatcher<{
     save: { content: string; title: string };
     aiRequest: { query: string; context: string };
@@ -141,14 +142,17 @@
     } catch (err) {
       error = err instanceof Error ? err.message : "AI request failed";
     } finally {
-      isProcessingAI = false;}}
+      isProcessingAI = false;
+}}
   function insertCitation(citation: (typeof citations)[0]) {
     const citationText = `[${citation.source}]`;
     content += citationText;
     citations = [...citations, citation];
-    dispatch("citationAdded", { citation });}
+    dispatch("citationAdded", { citation });
+}
   function saveDocument() {
-    dispatch("save", { content, title });}
+    dispatch("save", { content, title });
+}
   // Enhanced auto-save function with debouncing
   function scheduleAutoSave() {
     if (!documentId || readonly) return;
@@ -157,11 +161,13 @@
 
     // Clear existing timer
     if (autoSaveTimer) {
-      clearTimeout(autoSaveTimer);}
+      clearTimeout(autoSaveTimer);
+}
     // Schedule new auto-save after 2 seconds of inactivity
     autoSaveTimer = setTimeout(() => {
       autoSaveDocument();
-    }, 2000);}
+    }, 2000);
+}
   // Function to auto-save document
   async function autoSaveDocument() {
     if (!documentId || readonly || isSaving) return;
@@ -185,7 +191,8 @@
       });
 
       if (!response.ok) {
-        throw new Error("Failed to auto-save document");}
+        throw new Error("Failed to auto-save document");
+}
       const result = await response.json();
 
       if (result.success) {
@@ -193,12 +200,14 @@
         hasUnsavedChanges = false;
         console.log("Document auto-saved successfully");
       } else {
-        throw new Error(result.error || "Auto-save failed");}
+        throw new Error(result.error || "Auto-save failed");
+}
     } catch (err) {
       saveError = err instanceof Error ? err.message : "Auto-save failed";
       console.error("Auto-save failed:", err);
     } finally {
-      isSaving = false;}}
+      isSaving = false;
+}}
   // Function to manually save document
   async function manualSaveDocument() {
     if (!documentId || readonly || isSaving) return;
@@ -222,7 +231,8 @@
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save document");}
+        throw new Error("Failed to save document");
+}
       const result = await response.json();
 
       if (result.success) {
@@ -230,19 +240,22 @@
         hasUnsavedChanges = false;
         console.log("Document saved successfully");
       } else {
-        throw new Error(result.error || "Save failed");}
+        throw new Error(result.error || "Save failed");
+}
     } catch (err) {
       saveError = err instanceof Error ? err.message : "Save failed";
       console.error("Save failed:", err);
     } finally {
-      isSaving = false;}}
+      isSaving = false;
+}}
   // Function to get save status
   function getSaveStatus() {
     if (isSaving) return "Saving...";
     if (saveError) return "Save failed";
     if (hasUnsavedChanges) return "Unsaved changes";
     if (lastSaved) return `Last saved ${lastSaved}`;
-    return "All changes saved";}
+    return "All changes saved";
+}
   function getDocumentTypeIcon() {
     switch (documentType) {
       case "brief":
@@ -254,21 +267,25 @@
       case "evidence":
         return Search;
       default:
-        return FileText;}}
+        return FileText;
+}}
   onMount(() => {
     // Load document content if documentId is provided
     if (documentId) {
-      loadDocument();}
+      loadDocument();
+}
     // Set up auto-save on content changes
     return () => {
       if (autoSaveTimer) {
-        clearTimeout(autoSaveTimer);}
+        clearTimeout(autoSaveTimer);
+}
     };
   });
 
   // Reactive statement to trigger auto-save when content changes
   $: if (content && documentId && !loadingDocument) {
-    scheduleAutoSave();}
+    scheduleAutoSave();
+}
   // Reactive statement to update save status
   $: saveStatus = getSaveStatus();
 
@@ -288,7 +305,8 @@
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to load document: ${response.statusText}`);}
+        throw new Error(`Failed to load document: ${response.statusText}`);
+}
       const documentData: DocumentData = await response.json();
 
       // Update component state with loaded data
@@ -298,7 +316,8 @@
 
       // Load citations if available
       if (documentData.citations) {
-        citations = documentData.citations;}
+        citations = documentData.citations;
+}
       // Set initial save status
       lastSaved = new Date(documentData.updatedAt).toLocaleTimeString();
       hasUnsavedChanges = false;
@@ -309,7 +328,8 @@
         err instanceof Error ? err.message : "Failed to load document";
       console.error("Error loading document:", err);
     } finally {
-      loadingDocument = false;}}
+      loadingDocument = false;
+}}
   // Custom animation function for dialog
   function flyAndScale(
     node: Element,
@@ -349,7 +369,8 @@
         });
       },
       easing: quintOut,
-    };}
+    };
+}
 </script>
 
 <!-- Main Document Editor Container -->
@@ -590,11 +611,11 @@
     <div
       use:melt={$aiOverlay}
       class="container mx-auto px-4"
-      transition:fade={{ duration: 150 "
+      transition:fade={{ duration: 150 }}
     ></div>
     <div
       class="container mx-auto px-4"
-      transition:flyAndScale={{ duration: 150, y: 8, start: 0.96 "
+      transition:flyAndScale={{ duration: 150, y: 8, start: 0.96 }}
       use:melt={$aiContent}
     >
       <div class="container mx-auto px-4">
@@ -720,16 +741,21 @@
     font-size: 0.875rem;
     border: 1px solid #d1d5db;
     border-radius: 0.25rem;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .toolbar-btn:hover {
-    background-color: #f9fafb;}
+    background-color: #f9fafb;
+}
   .toolbar-separator {
     color: #d1d5db;
-    margin: 0 0.5rem;}
+    margin: 0 0.5rem;
+}
   .ai-button {
     background-color: #eff6ff;
     border-color: #93c5fd;
-    color: #1d4ed8;}
+    color: #1d4ed8;
+}
   .ai-button:hover {
-    background-color: #dbeafe;}
+    background-color: #dbeafe;
+}
 </style>

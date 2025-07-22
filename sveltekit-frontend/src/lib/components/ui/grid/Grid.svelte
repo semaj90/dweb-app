@@ -6,7 +6,8 @@
     colStart?: number;
     rowStart?: number;
     responsive?: boolean;
-    className?: string;}
+    className?: string;
+}
 </script>
 
 <!-- Grid Layout Component with svelte-brics inspired design -->
@@ -28,6 +29,7 @@
     xl: "gap-8",
   };
 
+  
   // Responsive breakpoints
   $: gridClass = responsive
     ? `grid-cols-1 sm:grid-cols-2 md:grid-cols-${Math.min(columns, 6)} lg:grid-cols-${Math.min(columns, 8)} xl:grid-cols-${columns}`

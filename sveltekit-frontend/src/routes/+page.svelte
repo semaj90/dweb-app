@@ -10,11 +10,11 @@
 
   export let caseId: string | undefined;
   export let evidenceIds: string[] = [];
-  export let placeholder = "Ask AI about this case...";
-  export let maxHeight = "400px";
+  export const placeholder = "Ask AI about this case...";
+  export const maxHeight = "400px";
   export let showReferences = true;
-  export let enableVoiceInput = false;
-  export let enableVoiceOutput = false;
+  export const enableVoiceInput = false;
+  export const enableVoiceOutput = false;
 
   interface AIResponse {
     answer: string;
@@ -158,4 +158,4 @@
   }
 </script>
 
-<!-- Markup & Style handled in UI layer. Let me know if you'd like the cleaned-up markup next -->
+<!-- Markup & Style are handled in the UI layer component at src/lib/components/ui/AskAI.svelte -->

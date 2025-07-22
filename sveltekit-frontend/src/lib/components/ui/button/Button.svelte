@@ -1,50 +1,81 @@
+
 <script lang="ts">
-  // Svelte 5 runes, Bits UI, UnoCSS, nier.css, shadcn-svelte, melt-ui, and context7 best practices
-  import { createButton } from 'bits-ui';
-  import { onMount } from 'svelte';
+  import { Button as BitsButton, type WithElementRef } from 'bits-ui';
   import type { HTMLButtonAttributes } from 'svelte/elements';
 
-  type ButtonProps = HTMLButtonAttributes & {
-    variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'warning' | 'info' | 'nier';
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-    loading?: boolean;
-    icon?: string;
-    iconPosition?: 'left' | 'right';
-    fullWidth?: boolean;
-  };
+  // Only allow variants that are supported by the Button
+  type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning' | 'info' | 'nier';
+  type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-  let { variant = 'primary', size = 'md', loading = false, icon, iconPosition = 'left', fullWidth = false, class: className = '', children, ...restProps } = $props<ButtonProps>();
-  const { builder } = createButton();
 
-  // Svelte 5 runes: use $derived(() => ...) for computed values
-  const classes = $derived(() => [
-    'nier-btn',
-    'btn',
-    `btn-${variant}`,
-    `btn-${size}`,
-    fullWidth ? 'w-full' : '',
-    loading ? 'btn-loading' : '',
-    className
-  ].filter(Boolean).join(' '));
+<script context="module" lang="ts">
+  import type { WithElementRef } from 'bits-ui';
+  import type { HTMLButtonAttributes } from 'svelte/elements';
+  type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning' | 'info' | 'nier';
+  type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  export interface ButtonProps extends WithElementRef<
+    HTMLButtonAttributes & {
+      variant?: ButtonVariant;
+      size?: ButtonSize;
+      loading?: boolean;
+      icon?: string;
+      iconPosition?: 'left' | 'right';
+      fullWidth?: boolean;
+      class?: string;
+    },
+    HTMLButtonElement
+  > {}
 </script>
 
-<button use:builder {...restProps} class={classes} disabled={loading || restProps.disabled} data-button-root>
+  export let variant: ButtonVariant = 'primary';
+  export let size: ButtonSize = 'md';
+  export let loading: boolean = false;
+  export let icon: string | undefined;
+  export let iconPosition: 'left' | 'right' = 'left';
+  export let fullWidth: boolean = false;
+  export let className: string = '';
+  export let ref: HTMLButtonElement | undefined;
+  export let children: any;
+  // Accept all other props
+
+  // Svelte does not support ...restProps as a let. Instead, use $$restProps for all other props
+
+  $: classes = [
+    'nier-btn',
+    `btn-${variant}`,
+    `btn-${size}`,
+    fullWidth && 'w-full',
+    loading && 'btn-loading',
+    className
+  ].filter(Boolean).join(' ');
+</script>
+
+
+<BitsButton.Root
+  bind:ref
+  class={classes}
+  disabled={loading || Boolean($$restProps.disabled)}
+  {...$$restProps}
+  data-button-root
+>
   {#if icon && iconPosition === 'left'}
     <i class={icon} aria-hidden="true"></i>
   {/if}
   {#if loading}
     <span class="loader mr-2"></span>
   {/if}
-  {@render children()}
+  {#if children}
+    {@html children}
+  {/if}
   {#if icon && iconPosition === 'right'}
     <i class={icon} aria-hidden="true"></i>
   {/if}
-</button>
+</BitsButton.Root>
+
 
 <style>
-  /* @unocss-include */
   :global(.nier-btn) {
-    font-family: 'Oswald', 'Montserrat', 'Inter', 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, 'Liberation Sans', 'Noto Sans', 'sans-serif', 'Gothic A1', 'Gothic', 'sans-serif';
+    font-family: 'Oswald', 'Montserrat', 'Inter', 'Segoe UI', 'Arial', 'Helvetica Neue', Arial, 'Liberation Sans', 'Noto Sans', 'Gothic A1', 'Gothic', 'sans-serif';
     font-weight: 600;
     letter-spacing: 0.01em;
     text-transform: uppercase;
@@ -75,11 +106,10 @@
     background: #23272e;
     color: #bcbcbc;
   }
-  /* Variant styles (shadcn-svelte, melt-ui, bits-ui inspired) */
+  /* Variant styles */
   :global(.btn-primary) { background: linear-gradient(90deg, #23272e 0%, #393e46 100%); color: #fff; }
   :global(.btn-secondary) { background: #f3f3f3; color: #23272e; border: 1px solid #393e46; }
   :global(.btn-outline) { background: transparent; color: #23272e; border: 1.5px solid #393e46; }
-  :global(.btn-ghost) { background: transparent; color: #393e46; border: none; }
   :global(.btn-danger) { background: #e53935; color: #fff; }
   :global(.btn-success) { background: #43a047; color: #fff; }
   :global(.btn-warning) { background: #fbc02d; color: #23272e; }
