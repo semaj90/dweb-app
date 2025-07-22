@@ -6,10 +6,12 @@ import {
   presetTypography,
   presetWebFonts,
 } from "unocss";
+import { presetWind } from "@unocss/preset-wind";
 
 export default defineConfig({
   presets: [
     presetUno(),
+    presetWind(), // Tailwind CSS compatibility for shadcn-svelte
     presetIcons({
       scale: 1.2,
       warn: true,
@@ -273,16 +275,16 @@ export default defineConfig({
   safelist: [
     // Commonly used dynamic classes
     ...["primary", "crimson", "gold", "digital", "outline"].map(
-      (variant) => `nier-button-${variant}`,
+      (variant) => `nier-button-${variant}`
     ),
     ...["success", "warning", "error", "info"].map(
-      (type) => `nier-badge-${type}`,
+      (type) => `nier-badge-${type}`
     ),
     ...["dark", "crimson", "gold", "digital", "glass"].map(
-      (type) => `nier-gradient-${type}`,
+      (type) => `nier-gradient-${type}`
     ),
     ...["critical", "high", "medium", "low"].map(
-      (level) => `priority-${level}`,
+      (level) => `priority-${level}`
     ),
     "animate-fade-in",
     "animate-slide-up",

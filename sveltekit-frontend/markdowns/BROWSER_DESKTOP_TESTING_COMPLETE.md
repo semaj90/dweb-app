@@ -167,6 +167,6 @@ The Legal Case Management System is now fully functional for both browser and de
 - Avatar upload and profile management
 - Tagging and categorization systems
 - Desktop app with local LLM support
-- Responsive, modern UI with DaisyUI/TailwindCSS
+- Responsive, modern UI with unocss/TailwindCSS
 
 **System is ready for production use!** 🎉

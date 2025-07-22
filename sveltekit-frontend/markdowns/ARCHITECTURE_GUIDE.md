@@ -70,13 +70,6 @@
 ```bash
 # Start development server
 npm run dev
-
-# Uses SQLite for:
-├── User registration/login
-├── Case creation/editing
-├── File upload/storage
-├── Session management
-└── All CRUD operations
 ```
 
 ### What to Skip for Now ⏸️
@@ -140,7 +133,7 @@ PostgreSQL containers  # ❌ Overkill for dev
 
 ```bash
 # Lightweight stack:
-SvelteKit + SQLite + Node.js
+SvelteKit + postgres + Node.js
 # No containers needed!
 ```
 
@@ -218,19 +211,10 @@ docker-compose up -d  # Now limited to 768MB total
 **For remote development:**
 
 ```bash
-# Use cloud PostgreSQL + local SQLite
 # Switch with .env.development vs .env.production
 ```
 
 ## 🎛️ Environment Configuration
-
-### SQLite Development (Current)
-
-```bash
-# .env.development
-DATABASE_URL="file:./dev.db"
-NODE_ENV="development"
-```
 
 ### Docker Testing (When Needed)
 
@@ -252,13 +236,6 @@ NODE_ENV="production"
 
 ## 📊 Performance Comparison
 
-### SQLite Development
-
-- **Startup**: < 1 second
-- **Memory**: ~50MB
-- **CPU**: Minimal
-- **Crashes**: Never
-
 ### Docker PostgreSQL + pgvector
 
 - **Startup**: 30-60 seconds
@@ -268,7 +245,7 @@ NODE_ENV="production"
 
 ## 🎉 Current Status
 
-Your current SQLite setup is **PERFECT** for development:
+Your currentsetup is **PERFECT** for development:
 
 - ✅ No crashes
 - ✅ Fast development cycle
