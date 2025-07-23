@@ -1,0 +1,71 @@
+ve created a comprehensive integration script that properly handles Melt UI + Bits UI v2 with prop merging, plus the 7-phase roadmap.
+
+✅ Key Features Added:
+
+Melt UI Integration:
+
+Proper createButton builders with Bits UI v2
+
+AI command parsing utilities for real-time updates
+
+XState machine for AI command processing
+
+Store barrel exports (.ts files)
+
+Enhanced Component System:
+
+Bits UI v2 prop merging via ButtonPrimitive.Root
+
+Melt UI use:melt={$root} directive integration
+
+AI-controlled class application
+
+Legacy .yorha-* class support
+
+# Install missing dependencies for proper shadcn-svelte + UnoCSS integration npm install -D @unocss/preset-wind @unocss/preset-typography @unocss/preset-icons npm install tailwind-merge npm install @unocss/transformer-variant-group # Ensure bits-ui v2 and clsx are latest npm install bits-ui@latest clsx@latest # Install UnoCSS Svelte integration if missing npm install -D @unocss/svelte-scoped # Install missing shadcn-svelte peer dependencies npm install class-variance-authority
+
+Phase 2 Foundations:
+
+AI command parsing with parseAICommand()
+
+Real-time UI updates via ai-controlled classes
+
+XState state machines for complex workflows
+
+Store architecture ready for Phase 3
+
+🚀 7-Phase Roadmap:
+
+Phase 2 (Current): Enhanced UI/UX with AI foundations Phase 3: AI Core (LLM + Vector search + RAG) Phase 4: Data Management (Loki.js + Redis + RabbitMQ + Neo4j) Phase 5: AI-driven UI updates in real-time Phase 6: Advanced AI (self-prompting + recommendations) Phase 7: Production optimization
+
+The script installs all dependencies, creates proper configurations, and sets up the foundation for AI-controlled UI updates that will save to your backend stack in later phases.
+
+I've created a comprehensive integration script that properly handles Melt UI + Bits UI v2 with prop merging, plus the 7-phase roadmap.
+
+✅ Key Features Added:
+
+Melt UI Integration:
+
+Proper createButton builders with Bits UI v2
+
+AI command parsing utilities for real-time updates
+
+XState machine for AI command processing
+
+Store barrel exports (.ts files)
+
+Enhanced Component System:
+
+Bits UI v2 prop merging via ButtonPrimitive.Root
+
+Melt UI use:melt={$root} directive integration
+
+AI-controlled class application
+
+Legacy .yorha-* class support
+
+Phase 2 Foundations:
+
+AI command parsing with parseAICommand()
+
+Real-time UI updates via ai-controlled classes

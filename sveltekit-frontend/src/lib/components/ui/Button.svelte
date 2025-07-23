@@ -15,11 +15,12 @@
     HTMLButtonElement
   >;
 
+
   let {
     variant = 'primary',
     size = 'md',
     loading = false,
-    icon,
+    icon = undefined,
     iconPosition = 'left',
     fullWidth = false,
     class: className = '',
@@ -45,7 +46,6 @@
   bind:ref
   class={classes()}
   disabled={loading || Boolean(restProps.disabled)}
-  {...restProps}
   {...restProps}
   data-button-root
 >

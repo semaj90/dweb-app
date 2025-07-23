@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { User } from '$lib/types';
-  import Button from "$lib/components/ui/button";
+  import { Button } from "$lib/components/ui/button/index.js";
   import {
     errorHandler,
     type UserFriendlyError,
@@ -157,43 +157,43 @@ Timestamp: ${new Date().toISOString()}`;
   {#if showInline}
     <!-- Inline Alert -->
     <div
-      class="container mx-auto px-4"
+      class={`alert ${getAlertClass(currentError.severity)} ${maxWidth} mx-auto`}
       role="alert"
     >
       {#if currentError.severity === "critical" || currentError.severity === "error"}
-        <AlertCircle class="container mx-auto px-4" />
+        <AlertCircle class="h-5 w-5 flex-shrink-0" />
       {:else if currentError.severity === "warning"}
-        <AlertTriangle class="container mx-auto px-4" />
+        <AlertTriangle class="h-5 w-5 flex-shrink-0" />
       {:else}
-        <Info class="container mx-auto px-4" />
+        <Info class="h-5 w-5 flex-shrink-0" />
       {/if}
 
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">{currentError.title}</h3>
-        <p class="container mx-auto px-4">{currentError.message}</p>
+      <div class="flex-1">
+        <h3 class="font-semibold">{currentError.title}</h3>
+        <p class="text-sm mt-1">{currentError.message}</p>
 
         {#if currentError.suggestion}
-          <p class="container mx-auto px-4">
+          <p class="text-sm mt-2">
             <strong>Suggestion:</strong>
             {currentError.suggestion}
           </p>
         {/if}
 
         {#if showDetails && currentError.showDetails}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">Technical Details</span>
+          <div class="mt-3 p-3 bg-base-200 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium">Technical Details</span>
               <Button
                 variant="ghost"
                 size="sm"
                 on:click={() => copyErrorDetails()}
-                class="container mx-auto px-4"
+                class="h-8 w-8 p-0"
                 aria-label="Copy error details"
               >
-                <Copy class="container mx-auto px-4" />
+                <Copy class="h-4 w-4" />
               </Button>
             </div>
-            <div class="container mx-auto px-4">
+            <div class="text-xs space-y-1">
               <div>Severity: {currentError.severity}</div>
               <div>Time: {new Date().toLocaleString()}</div>
             </div>
@@ -201,7 +201,7 @@ Timestamp: ${new Date().toISOString()}`;
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="flex items-start gap-1">
         {#if currentError.canRetry}
           <Button
             size="sm"
@@ -212,9 +212,9 @@ Timestamp: ${new Date().toISOString()}`;
             aria-label="Retry action"
           >
             {#if retryInProgress}
-              <div class="container mx-auto px-4"></div>
+              <div class="loading loading-spinner loading-xs"></div>
             {:else}
-              <RefreshCw class="container mx-auto px-4" />
+              <RefreshCw class="h-4 w-4" />
             {/if}
             Retry
           </Button>
@@ -228,9 +228,9 @@ Timestamp: ${new Date().toISOString()}`;
             aria-label="Toggle error details"
           >
             {#if showDetails}
-              <ChevronUp class="container mx-auto px-4" />
+              <ChevronUp class="h-4 w-4" />
             {:else}
-              <ChevronDown class="container mx-auto px-4" />
+              <ChevronDown class="h-4 w-4" />
             {/if}
           </Button>
         {/if}
@@ -241,32 +241,32 @@ Timestamp: ${new Date().toISOString()}`;
           on:click={() => clearError()}
           aria-label="Dismiss error"
         >
-          <X class="container mx-auto px-4" />
+          <X class="h-4 w-4" />
         </Button>
       </div>
     </div>
   {:else}
     <!-- Modal Error -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+      <div class={`modal-box ${maxWidth} max-h-[90vh] overflow-y-auto`}>
+        <div class="flex items-start gap-4">
           {#if currentError.severity === "critical" || currentError.severity === "error"}
-            <AlertCircle class="container mx-auto px-4" />
+            <AlertCircle class="h-6 w-6 text-error flex-shrink-0" />
           {:else if currentError.severity === "warning"}
-            <AlertTriangle class="container mx-auto px-4" />
+            <AlertTriangle class="h-6 w-6 text-warning flex-shrink-0" />
           {:else}
-            <Info class="container mx-auto px-4" />
+            <Info class="h-6 w-6 text-info flex-shrink-0" />
           {/if}
 
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">{currentError.title}</h3>
-            <p class="container mx-auto px-4">
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold mb-2">{currentError.title}</h3>
+            <p class="text-base-content/80">
               {currentError.message}
             </p>
 
             {#if currentError.suggestion}
-              <div class="container mx-auto px-4">
-                <p class="container mx-auto px-4">
+              <div class="mt-4 p-3 bg-base-200 rounded-lg">
+                <p class="text-sm">
                   <strong>💡 Suggestion:</strong>
                   {currentError.suggestion}
                 </p>
@@ -274,21 +274,21 @@ Timestamp: ${new Date().toISOString()}`;
             {/if}
 
             {#if showDetails && currentError.showDetails}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">Technical Details</h4>
+              <div class="mt-4 p-4 bg-base-200 rounded-lg">
+                <div class="flex items-center justify-between mb-3">
+                  <h4 class="font-medium">Technical Details</h4>
                   <Button
                     variant="ghost"
                     size="sm"
                     on:click={() => copyErrorDetails()}
-                    class="container mx-auto px-4"
+                    class="gap-2"
                     aria-label="Copy error details"
                   >
-                    <Copy class="container mx-auto px-4" />
+                    <Copy class="h-4 w-4" />
                     Copy
                   </Button>
                 </div>
-                <div class="container mx-auto px-4">
+                <div class="text-sm space-y-1 font-mono">
                   <div>Severity: {currentError.severity}</div>
                   <div>Time: {new Date().toLocaleString()}</div>
                   <div>Browser: {navigator.userAgent}</div>
@@ -298,15 +298,15 @@ Timestamp: ${new Date().toISOString()}`;
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="modal-action">
           {#if currentError.severity === "critical" || currentError.severity === "error"}
             <Button
               variant="outline"
               size="sm"
               on:click={() => reportError()}
-              class="container mx-auto px-4"
+              class="gap-2"
             >
-              <Bug class="container mx-auto px-4" />
+              <Bug class="h-4 w-4" />
               Report Issue
             </Button>
           {/if}
@@ -316,13 +316,13 @@ Timestamp: ${new Date().toISOString()}`;
               variant="outline"
               size="sm"
               on:click={() => (showDetails = !showDetails)}
-              class="container mx-auto px-4"
+              class="gap-2"
             >
               {#if showDetails}
-                <ChevronUp class="container mx-auto px-4" />
+                <ChevronUp class="h-4 w-4" />
                 Hide Details
               {:else}
-                <ChevronDown class="container mx-auto px-4" />
+                <ChevronDown class="h-4 w-4" />
                 Show Details
               {/if}
             </Button>
@@ -335,10 +335,10 @@ Timestamp: ${new Date().toISOString()}`;
               disabled={retryInProgress}
             >
               {#if retryInProgress}
-                <div class="container mx-auto px-4"></div>
+                <div class="loading loading-spinner loading-xs"></div>
                 Retrying...
               {:else}
-                <RefreshCw class="container mx-auto px-4" />
+                <RefreshCw class="h-4 w-4" />
                 Retry
               {/if}
             </Button>

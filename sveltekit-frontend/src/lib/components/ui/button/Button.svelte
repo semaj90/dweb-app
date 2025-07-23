@@ -1,7 +1,5 @@
-
-
 <script lang="ts">
-  import { Button as BitsButton, type WithElementRef } from 'bits-ui';
+  import { Button as BitsButton } from 'bits-ui';
   import type { HTMLButtonAttributes } from 'svelte/elements';
 
   type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning' | 'info' | 'nier';
@@ -10,11 +8,11 @@
   export let variant: ButtonVariant = 'primary';
   export let size: ButtonSize = 'md';
   export let loading: boolean = false;
-  export let icon: string | undefined;
+  export let icon: string | undefined = undefined;
   export let iconPosition: 'left' | 'right' = 'left';
   export let fullWidth: boolean = false;
   export let className: string = '';
-  export let ref: HTMLButtonElement | undefined;
+  export let ref: HTMLButtonElement | undefined = undefined;
   // Accept all other props via $$restProps
 
   $: classes = [
@@ -26,7 +24,6 @@
     className
   ].filter(Boolean).join(' ');
 </script>
-
 
 <BitsButton.Root
   bind:ref
@@ -46,7 +43,6 @@
     <i class={icon} aria-hidden="true"></i>
   {/if}
 </BitsButton.Root>
-
 
 <style>
   :global(.nier-btn) {
