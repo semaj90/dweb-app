@@ -45,7 +45,7 @@
           <p>Total Cases</p>
         </div>
       </div>
-      
+
       <div class="stat-card active">
         <div class="stat-icon">🔄</div>
         <div class="stat-content">
@@ -53,7 +53,7 @@
           <p>Active Cases</p>
         </div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-icon">🔍</div>
         <div class="stat-content">
@@ -61,7 +61,7 @@
           <p>Evidence Files</p>
         </div>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-icon">📊</div>
         <div class="stat-content">
@@ -80,19 +80,19 @@
           <h3>New Case</h3>
           <p>Create a new legal case</p>
         </a>
-        
+
         <a href="/evidence" class="action-card">
           <div class="action-icon">📤</div>
           <h3>Upload Evidence</h3>
           <p>Add evidence to existing cases</p>
         </a>
-        
+
         <a href="/search" class="action-card">
           <div class="action-icon">🔍</div>
           <h3>Search Cases</h3>
           <p>Find cases and evidence</p>
         </a>
-        
+
         <a href="/reports" class="action-card">
           <div class="action-icon">📈</div>
           <h3>Generate Report</h3>
@@ -105,19 +105,19 @@
     <div class="recent-section">
       <h2>Recent Cases</h2>
       <div class="cases-list">
-        {#each recentCases as case}
+        {#each recentCases as recentCase}
           <div class="case-item">
             <div class="case-info">
-              <h3>{case.title}</h3>
-              <p>Last updated: {case.lastUpdate}</p>
+              <h3>{recentCase.title}</h3>
+              <p>Last updated: {recentCase.lastUpdate}</p>
             </div>
-            <div class="case-status status-{case.status}">
-              {case.status}
+            <div class="case-status status-{recentCase.status}">
+              {recentCase.status}
             </div>
           </div>
         {/each}
       </div>
-      
+
       <a href="/cases" class="view-all-btn">View All Cases →</a>
     </div>
   {:else}
@@ -349,11 +349,11 @@
     .dashboard-container {
       padding: 1rem;
     }
-    
+
     .stats-grid {
       grid-template-columns: 1fr;
     }
-    
+
     .action-grid {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -363,7 +363,7 @@
     .action-grid {
       grid-template-columns: 1fr;
     }
-    
+
     .case-item {
       flex-direction: column;
       align-items: flex-start;

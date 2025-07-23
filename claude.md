@@ -1,1 +1,3 @@
-# Claude Context - Ultimate Legal AI SvelteKit 2.16 + Svelte 5 + XState + Fabric.js + UnoCSS + PostgreSQL + Drizzle + LangChain + Ollama Context7 sources: SvelteKit, Tailwind, UnoCSS, Drizzle, XState, Fabric.js Complete legal AI development context.
+# Reference: Shadcn-Svelte + UnoCSS Styling Guide
+
+See `frontendshadunocss.md` for up-to-date best practices on integrating shadcn-svelte and UnoCSS, shared UI patterns, and SSR/hydration with SvelteKit 2, XState, Superforms, Drizzle ORM, and pgvector.

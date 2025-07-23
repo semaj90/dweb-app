@@ -1,1 +1,3 @@
-# Copilot Context - Ultimate Legal AI GitHub Copilot with Context7 + MCP integration for complete tech stack. Models: GPT-4, Claude, Gemini - All with identical context. Tech Stack: Svelte 5 runes, XState workflows, Fabric.js canvas, UnoCSS atomic CSS, PostgreSQL vector search, Drizzle ORM, LangChain AI chains, Ollama local LLM. Legal Domain: Case management, evidence processing, document annotation, AI analysis. Real-time documentation via Context7 for all technologies.
+# Reference: Shadcn-Svelte + UnoCSS Styling Guide
+
+See `frontendshadunocss.md` for up-to-date best practices on integrating shadcn-svelte and UnoCSS, shared UI patterns, and SSR/hydration with SvelteKit 2, XState, Superforms, Drizzle ORM, and pgvector.

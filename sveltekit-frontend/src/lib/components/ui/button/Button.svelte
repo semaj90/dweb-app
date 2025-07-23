@@ -1,31 +1,11 @@
 
+
 <script lang="ts">
   import { Button as BitsButton, type WithElementRef } from 'bits-ui';
   import type { HTMLButtonAttributes } from 'svelte/elements';
 
-  // Only allow variants that are supported by the Button
   type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning' | 'info' | 'nier';
   type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-
-
-<script context="module" lang="ts">
-  import type { WithElementRef } from 'bits-ui';
-  import type { HTMLButtonAttributes } from 'svelte/elements';
-  type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning' | 'info' | 'nier';
-  type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  export interface ButtonProps extends WithElementRef<
-    HTMLButtonAttributes & {
-      variant?: ButtonVariant;
-      size?: ButtonSize;
-      loading?: boolean;
-      icon?: string;
-      iconPosition?: 'left' | 'right';
-      fullWidth?: boolean;
-      class?: string;
-    },
-    HTMLButtonElement
-  > {}
-</script>
 
   export let variant: ButtonVariant = 'primary';
   export let size: ButtonSize = 'md';
@@ -35,10 +15,7 @@
   export let fullWidth: boolean = false;
   export let className: string = '';
   export let ref: HTMLButtonElement | undefined;
-  export let children: any;
-  // Accept all other props
-
-  // Svelte does not support ...restProps as a let. Instead, use $$restProps for all other props
+  // Accept all other props via $$restProps
 
   $: classes = [
     'nier-btn',
@@ -64,9 +41,7 @@
   {#if loading}
     <span class="loader mr-2"></span>
   {/if}
-  {#if children}
-    {@html children}
-  {/if}
+  <slot />
   {#if icon && iconPosition === 'right'}
     <i class={icon} aria-hidden="true"></i>
   {/if}

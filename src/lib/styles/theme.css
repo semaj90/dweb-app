@@ -1,0 +1,58 @@
+/* Nier.css + shadcn-svelte Integration */
+@import url('nier.css');
+
+@layer base {
+  :root {
+    /* Nier-inspired monochromatic palette */
+    --background: 40 6% 8%;     /* Deep charcoal */
+    --foreground: 50 8% 95%;    /* Off-white text */
+    --card: 40 6% 12%;          /* Darker surface */
+    --card-foreground: 50 8% 95%;
+    --popover: 40 6% 10%;
+    --popover-foreground: 50 8% 95%;
+    --primary: 50 8% 85%;       /* Light gray primary */
+    --primary-foreground: 40 6% 8%;
+    --secondary: 40 6% 16%;     /* Medium surface */
+    --secondary-foreground: 50 8% 85%;
+    --muted: 40 6% 14%;
+    --muted-foreground: 50 4% 65%;
+    --accent: 45 100% 65%;      /* Yellow accent */
+    --accent-foreground: 40 6% 8%;
+    --destructive: 0 65% 55%;   /* Muted red */
+    --destructive-foreground: 50 8% 95%;
+    --border: 40 6% 18%;        /* Subtle borders */
+    --input: 40 6% 14%;
+    --ring: 45 100% 65%;        /* Yellow focus ring */
+    --radius: 0.25rem;            /* Angular radius */
+  }
+
+  .light {
+    --background: 50 8% 96%;
+    --foreground: 40 6% 12%;
+    --card: 50 8% 98%;
+    --card-foreground: 40 6% 12%;
+    --primary: 40 6% 15%;
+    --primary-foreground: 50 8% 95%;
+    --accent: 45 100% 45%;
+    --border: 50 8% 88%;
+  }
+}
+
+/* Nier typography */
+body {
+  font-family: 'Gothic A1', 'JetBrains Mono', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+}
+
+/* Nier animations */
+@keyframes nier-glow {
+  0%, 100% { box-shadow: 0 0 10px hsl(var(--accent) / 0.3); }
+  50% { box-shadow: 0 0 20px hsl(var(--accent) / 0.5); }
+}
+
+@keyframes nier-scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}

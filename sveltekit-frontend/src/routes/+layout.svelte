@@ -1,5 +1,7 @@
 <script lang="ts">
   import '../app.css';
+  import '../lib/styles/nier.css';
+  import 'shadcn-svelte/styles.css';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   
