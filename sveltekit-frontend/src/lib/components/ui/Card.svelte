@@ -18,13 +18,15 @@
 
   const handleClick = (event: MouseEvent) => {
     if (interactive || href) {
-      dispatch('click', event);}
+      dispatch('click', event);
+    }
   };
 
   const handleKeydown = (event: KeyboardEvent) => {
     if ((interactive || href) && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
-      dispatch('click', event);}
+      dispatch('click', event);
+    }
   };
 
   // Dynamic classes
@@ -119,7 +121,9 @@
   /* @unocss-include */
   /* Custom hover scale using CSS transforms for better performance */
   .hover\:scale-102:hover {
-    transform: scale(1.02);}
+    transform: scale(1.02);
+  }
   .active\:scale-98:active {
-    transform: scale(0.98);}
+    transform: scale(0.98);
+  }
 </style>

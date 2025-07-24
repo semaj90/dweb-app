@@ -1,5 +1,8 @@
+import { join } from 'path';
+
 // Gemma3 Model Configuration for Legal AI Assistant
-// Optimized configurations for different Gemma3 variants
+// Optimized configurations for your local Gemma3 model
+
 
 export interface Gemma3ModelConfig {
   modelId: string;
@@ -8,45 +11,29 @@ export interface Gemma3ModelConfig {
   modelPath: string;
   contextLength: number;
   maxTokens: number;
-  quantization: "f16" | "q4_0" | "q4_1" | "q5_0" | "q5_1" | "q8_0";
+  quantization: "f16" | "q4_0" | "q4_1" | "q5_0" | "q5_1" | "q8_0" | "q4_k_m";
   memoryRequirement: number; // in GB
   inferenceSpeed: "fast" | "medium" | "slow";
   quality: "high" | "medium" | "low";
   useCase: string[];
   promptTemplate: string;
+  ollamaModel?: string;
+  fallbackModel?: string;
+  format: string;
+  size: string;
 }
+
+const projectRoot = process.cwd();
+
 export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
   {
-    modelId: "gemma-2b-it-q4_k_m",
-    name: "Gemma 2B Instruct (Q4_K_M)",
-    description: "Fast, lightweight model for quick legal queries",
-    modelPath: "/models/gemma-2b-it-q4_k_m.gguf",
-    contextLength: 8192,
-    maxTokens: 2048,
-    quantization: "q4_1",
-    memoryRequirement: 2,
-    inferenceSpeed: "fast",
-    quality: "medium",
-    useCase: [
-      "quick_queries",
-      "document_summarization",
-      "basic_legal_analysis",
-    ],
-    promptTemplate: `<bos><start_of_turn>user
-{system_prompt}
-
-{user_input}<end_of_turn>
-<start_of_turn>model
-`,
-  },
-  {
-    modelId: "gemma-7b-it-q4_k_m",
-    name: "Gemma 7B Instruct (Q4_K_M)",
-    description: "Balanced model for comprehensive legal analysis",
-    modelPath: "/models/gemma-7b-it-q4_k_m.gguf",
+    modelId: "gemma3-legal-q4_k_m",
+    name: "Gemma3 Legal (Q4_K_M)",
+    description: "Local Gemma3 8B model optimized for legal analysis",
+    modelPath: join(projectRoot, "gemma3Q4_K_M", "mo16.gguf"),
     contextLength: 8192,
     maxTokens: 4096,
-    quantization: "q4_1",
+    quantization: "q4_k_m",
     memoryRequirement: 6,
     inferenceSpeed: "medium",
     quality: "high",
@@ -55,6 +42,8 @@ export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
       "legal_research",
       "case_review",
       "contract_analysis",
+      "document_summarization",
+      "quick_queries"
     ],
     promptTemplate: `<bos><start_of_turn>user
 {system_prompt}
@@ -62,26 +51,11 @@ export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
 {user_input}<end_of_turn>
 <start_of_turn>model
 `,
-  },
-  {
-    modelId: "gemma-2b-it-q8_0",
-    name: "Gemma 2B Instruct (Q8_0)",
-    description: "Higher quality model for precise legal work",
-    modelPath: "/models/gemma-2b-it-q8_0.gguf",
-    contextLength: 8192,
-    maxTokens: 2048,
-    quantization: "q8_0",
-    memoryRequirement: 3,
-    inferenceSpeed: "medium",
-    quality: "high",
-    useCase: ["precise_analysis", "citation_generation", "legal_reasoning"],
-    promptTemplate: `<bos><start_of_turn>user
-{system_prompt}
-
-{user_input}<end_of_turn>
-<start_of_turn>model
-`,
-  },
+    ollamaModel: "gemma3-legal",
+    fallbackModel: "gemma3:12b",
+    format: "gguf",
+    size: "8B"
+  }
 ];
 
 export const LEGAL_SYSTEM_PROMPTS = {
@@ -154,39 +128,19 @@ export const GEMMA3_INFERENCE_SETTINGS = {
 };
 
 export function selectOptimalGemmaModel(
-  queryType: string,
   contextLength: number,
   availableMemory: number,
 ): Gemma3ModelConfig | null {
-  // Filter models by memory requirements
-  const availableModels = GEMMA3_MODELS.filter(
-    (model) => model.memoryRequirement <= availableMemory,
-  );
+  // Since we only have one model, check if it fits memory requirements
+  const model = GEMMA3_MODELS[0];
 
-  if (availableModels.length === 0) {
-    return null;
+  if (model.memoryRequirement <= availableMemory) {
+    return model;
   }
-  // Select based on query type and context length
-  if (contextLength > 4000 || queryType.includes("complex")) {
-    // Use the largest available model for complex queries
-    return availableModels.reduce((best, current) =>
-      current.memoryRequirement > best.memoryRequirement ? current : best,
-    );
-  }
-  if (queryType.includes("quick") || queryType.includes("summary")) {
-    // Use fastest model for quick queries
-    return (
-      availableModels.find((model) => model.inferenceSpeed === "fast") ||
-      availableModels[0]
-    );
-  }
-  // Default to balanced model
-  return (
-    availableModels.find(
-      (model) => model.name.includes("7B") && model.quality === "high",
-    ) || availableModels[0]
-  );
+
+  return null;
 }
+
 export function formatGemmaPrompt(
   template: string,
   systemPrompt: string,
@@ -196,6 +150,7 @@ export function formatGemmaPrompt(
     .replace("{system_prompt}", systemPrompt)
     .replace("{user_input}", userInput);
 }
+
 export function getSystemPromptForContext(
   queryType: string,
   hasLegalContext: boolean,
@@ -214,8 +169,8 @@ export function getSystemPromptForContext(
   }
   return LEGAL_SYSTEM_PROMPTS.general;
 }
+
 export function getInferenceSettings(
-  queryType: string,
   priorityLevel: "quick" | "balanced" | "creative" | "precise" = "balanced",
 ) {
   return GEMMA3_INFERENCE_SETTINGS[priorityLevel];

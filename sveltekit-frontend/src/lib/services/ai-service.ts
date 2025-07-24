@@ -8,7 +8,9 @@ const normalizeEmbedding = (embedding: number[] | number[][]): number[] => {
 
 // Use in the problematic section:
 // Enhanced AI Service with Local LLM Integration
+// Enhanced AI Service with Local LLM Integration and Vector Database Support
 // Combines cloud (OpenAI/Ollama) and local (Tauri/Rust) LLM capabilities
+// Supports PostgreSQL with pgvector, Qdrant, Redis, RabbitMQ, and Neo4j
 import { env } from "$env/dynamic/private";
 import { tauriLLM } from "./tauri-llm";
 
@@ -373,7 +375,7 @@ class EnhancedAIService {
 
     if (this.config.legalDomain || options.legalContext) {
       prompt += `
-You are a specialized legal AI assistant with expertise in legal document analysis, case law, and legal procedures. 
+You are a specialized legal AI assistant with expertise in legal document analysis, case law, and legal procedures.
 Provide accurate, professional responses based on legal knowledge and cite relevant legal authorities when possible.
 Consider jurisdiction-specific laws and regulations. Always clarify if you need more context about the specific jurisdiction.
 `;

@@ -11,7 +11,7 @@ export class User implements Partial<UserType> {
   firstName?: string;
   lastName?: string;
   avatarUrl?: string;
-  role = "guest";
+  role: "prosecutor" | "investigator" | "admin" | "user" = "user";
   isActive = false;
   emailVerified?: Date | null;
   createdAt?: Date;
@@ -22,14 +22,17 @@ export class User implements Partial<UserType> {
   constructor(userData = {}) {
     Object.assign(this, userData);
   }
+  
   // Check if the user is authenticated
   get isLoggedIn() {
     return this.isAuthenticated;
   }
+  
   // Check if the user has an admin role
   get isAdmin() {
     return this.role === "admin";
   }
+  
   // Get display name
   get displayName() {
     return (
@@ -39,6 +42,7 @@ export class User implements Partial<UserType> {
     );
   }
 }
+
 // 2. User Store (Svelte Writable)
 // Creates a global, reactive store initialized with a Guest user.
 const createUserStore = () => {
@@ -47,7 +51,7 @@ const createUserStore = () => {
   return {
     subscribe,
     // Set the user data (e.g., on login)
-    setUser: (userData) => {
+    setUser: (userData: any) => {
       const user = new User({ ...userData, isAuthenticated: true });
       set(user);
     },
@@ -56,11 +60,11 @@ const createUserStore = () => {
       set(new User()); // Reset to Guest user
     },
     // Update a specific property of the user
-    updateUser: (props) => {
+    updateUser: (props: any) => {
       update((user) => ({ ...user, ...props }));
     },
     // Select a case for the user
-    selectCase: (caseId) => {
+    selectCase: (caseId: string | null) => {
       update((user) => {
         user.caseId = caseId;
         return user;
@@ -73,3 +77,5 @@ export const user = createUserStore();
 
 // Export individual functions for easier use
 export const { setUser, clearUser, updateUser, selectCase } = user;
+
+export default user;

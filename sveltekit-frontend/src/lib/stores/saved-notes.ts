@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-import Fuse from "fuse";
+import Fuse from "fuse.js";
 import { del, get, keys, set } from "idb-keyval";
 import { derived, writable } from "svelte/store";
 
@@ -17,12 +17,14 @@ export interface SavedNote {
   savedAt: Date;
   metadata?: any;
 }
+
 export interface NoteFilters {
   search: string;
   noteType: string;
   tags: string[];
   caseId?: string;
 }
+
 // Main store for saved notes
 export const savedNotes = writable<SavedNote[]>([]);
 
@@ -98,6 +100,7 @@ class NotesManager {
     }
     return NotesManager.instance;
   }
+  
   // Save note to both store and IndexedDB
   async saveNote(note: Omit<SavedNote, "savedAt">): Promise<void> {
     const noteWithTimestamp: SavedNote = {
@@ -125,6 +128,7 @@ class NotesManager {
       }
     }
   }
+  
   // Remove note from store and IndexedDB
   async removeNote(noteId: string): Promise<void> {
     savedNotes.update((notes) => notes.filter((n) => n.id !== noteId));
@@ -137,6 +141,7 @@ class NotesManager {
       }
     }
   }
+  
   // Load all notes from IndexedDB on app start
   async loadSavedNotes(): Promise<void> {
     if (!browser) return;
@@ -170,6 +175,7 @@ class NotesManager {
       console.warn("Failed to load notes from IndexedDB:", error);
     }
   }
+  
   // Sync with server
   async syncWithServer(apiEndpoint: string = "/api/notes"): Promise<void> {
     try {
@@ -211,6 +217,7 @@ class NotesManager {
       console.warn("Failed to sync with server:", error);
     }
   }
+  
   // Utility to check if object is a valid note
   private isValidNote(obj: any): obj is SavedNote {
     return (
@@ -221,6 +228,7 @@ class NotesManager {
       Array.isArray(obj.tags)
     );
   }
+  
   // Export notes to file
   async exportNotes(format: "json" | "markdown" = "json"): Promise<void> {
     if (!browser) return;
@@ -261,6 +269,7 @@ class NotesManager {
     URL.revokeObjectURL(url);
   }
 }
+
 // Export singleton instance
 export const notesManager = NotesManager.getInstance();
 
@@ -268,15 +277,19 @@ export const notesManager = NotesManager.getInstance();
 export async function saveNoteForLater(note: Omit<SavedNote, "savedAt">) {
   await notesManager.saveNote(note);
 }
+
 export async function removeSavedNote(noteId: string) {
   await notesManager.removeNote(noteId);
 }
+
 export async function loadSavedNotes() {
   await notesManager.loadSavedNotes();
 }
+
 export function setNoteFilter(filter: Partial<NoteFilters>) {
   noteFilters.update((current) => ({ ...current, ...filter }));
 }
+
 export function clearNoteFilters() {
   noteFilters.set({
     search: "",
@@ -285,3 +298,5 @@ export function clearNoteFilters() {
     caseId: undefined,
   });
 }
+
+export default notesManager;

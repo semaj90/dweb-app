@@ -2,12 +2,8 @@
 // Supports multiple search strategies with automatic fallbacks
 import { json } from "@sveltejs/kit";
 import { and, desc, ilike, or, sql } from "drizzle-orm";
-import { generateEmbedding } from "$lib/server/ai/embeddings-simple";
-import {
-  cacheSearchResults,
-  getCachedSearchResults,
-} from "$lib/server/cache/redis";
 import { db, isPostgreSQL } from "$lib/server/db/index";
+import { cases } from "$lib/server/db/schema-postgres";
 import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -32,68 +28,18 @@ export const GET: RequestHandler = async ({ url }) => {
         message: "Query too short",
       });
     }
+    
     const startTime = Date.now();
-
-    // Check cache first
-    const cacheKey = `cases_${searchType}_${query}_${JSON.stringify(filters)}`;
-    const cachedResults = await getCachedSearchResults(
-      query,
-      `cases_${searchType}`,
-      filters,
-    );
-
-    if (cachedResults) {
-      return json({
-        results: cachedResults.slice(offset, offset + limit),
-        searchType: searchType + "_cached",
-        executionTime: Date.now() - startTime,
-        total: cachedResults.length,
-        fromCache: true,
-      });
-    }
     let results = [];
 
-    switch (searchType) {
-      case "text":
-        results = await searchCasesText(query, limit + offset, filters);
-        break;
-
-      case "semantic":
-        if (isPostgreSQL) {
-          results = await searchCasesSemantic(query, limit + offset, filters);
-        } else {
-          // Fallback to text search in development
-          results = await searchCasesText(query, limit + offset, filters);
-        }
-        break;
-
-      case "hybrid":
-      default:
-        if (isPostgreSQL) {
-          results = await searchCasesHybrid(query, limit + offset, filters);
-        } else {
-          // Fallback to text search in development
-          results = await searchCasesText(query, limit + offset, filters);
-        }
-        break;
-    }
+    // For now, use text search only until vector search is properly configured
+    results = await searchCasesText(query, limit + offset, filters);
+    
     const executionTime = Date.now() - startTime;
 
-    // Cache the results
-    await cacheSearchResults(query, `cases_${searchType}`, results, filters);
-
-    // Log performance for monitoring
-    if (isPostgreSQL) {
-      await logSearchPerformance(
-        "case_search",
-        searchType,
-        executionTime,
-        results.length,
-      );
-    }
     return json({
       results: results.slice(offset, offset + limit),
-      searchType,
+      searchType: "text",
       executionTime,
       total: results.length,
       query,
@@ -120,11 +66,6 @@ async function searchCasesText(
   filters: any,
 ): Promise<any[]> {
   try {
-    // Import the appropriate schema based on environment
-    const { cases } = isPostgreSQL
-      ? await import("../../../../lib/server/db/unified-schema.js")
-      : await import("../../../../lib/server/db/schema-postgres.js");
-
     const whereConditions = [
       or(
         ilike(cases.title, `%${query}%`),
@@ -143,6 +84,7 @@ async function searchCasesText(
     if (filters.category) {
       whereConditions.push(sql`${cases.category} = ${filters.category}`);
     }
+    
     const results = await db
       .select()
       .from(cases)
@@ -158,137 +100,5 @@ async function searchCasesText(
   } catch (error) {
     console.error("Text search failed:", error);
     return [];
-  }
-}
-// Semantic search using pgvector (PostgreSQL only)
-async function searchCasesSemantic(
-  query: string,
-  limit: number,
-  filters: any,
-): Promise<any[]> {
-  try {
-    const embedding = await generateEmbedding(query);
-    if (!embedding) {
-      return [];
-    }
-    const { cases } = await import(
-      "../../../../lib/server/db/unified-schema.js"
-    );
-
-    const whereConditions = [
-      sql`${cases.titleEmbedding} IS NOT NULL`,
-      sql`1 - (${cases.titleEmbedding} <=> ${JSON.stringify(embedding)}::vector) > 0.7`,
-    ];
-
-    // Add filters
-    if (filters.status) {
-      whereConditions.push(sql`${cases.status} = ${filters.status}`);
-    }
-    if (filters.priority) {
-      whereConditions.push(sql`${cases.priority} = ${filters.priority}`);
-    }
-    if (filters.category) {
-      whereConditions.push(sql`${cases.category} = ${filters.category}`);
-    }
-    const results = await db
-      .select({
-        id: cases.id,
-        caseNumber: cases.caseNumber,
-        title: cases.title,
-        name: cases.name,
-        description: cases.description,
-        incidentDate: cases.incidentDate,
-        location: cases.location,
-        priority: cases.priority,
-        status: cases.status,
-        category: cases.category,
-        dangerScore: cases.dangerScore,
-        estimatedValue: cases.estimatedValue,
-        jurisdiction: cases.jurisdiction,
-        leadProsecutor: cases.leadProsecutor,
-        assignedTeam: cases.assignedTeam,
-        tags: cases.tags,
-        aiSummary: cases.aiSummary,
-        aiTags: cases.aiTags,
-        metadata: cases.metadata,
-        createdBy: cases.createdBy,
-        createdAt: cases.createdAt,
-        updatedAt: cases.updatedAt,
-        closedAt: cases.closedAt,
-        searchScore: sql<number>`1 - (${cases.titleEmbedding} <=> ${JSON.stringify(embedding)}::vector)`,
-      })
-      .from(cases)
-      .where(and(...whereConditions))
-      .orderBy(
-        sql`1 - (${cases.titleEmbedding} <=> ${JSON.stringify(embedding)}::vector) DESC`,
-      )
-      .limit(limit);
-
-    return results.map((case_) => ({
-      ...case_,
-      matchType: "semantic",
-    }));
-  } catch (error) {
-    console.error("Semantic search failed:", error);
-    return [];
-  }
-}
-// Hybrid search combining text and semantic results
-async function searchCasesHybrid(
-  query: string,
-  limit: number,
-  filters: any,
-): Promise<any[]> {
-  try {
-    const [textResults, semanticResults] = await Promise.all([
-      searchCasesText(query, Math.floor(limit / 2), filters),
-      searchCasesSemantic(query, Math.floor(limit / 2), filters),
-    ]);
-
-    // Combine and deduplicate results
-    const combinedResults = new Map();
-
-    textResults.forEach((result) => {
-      combinedResults.set(result.id, { ...result, matchType: "text" });
-    });
-
-    semanticResults.forEach((result) => {
-      if (combinedResults.has(result.id)) {
-        // Boost score for items that match both text and semantic
-        const existing = combinedResults.get(result.id);
-        combinedResults.set(result.id, {
-          ...existing,
-          searchScore:
-            Math.max(existing.searchScore || 0, result.searchScore || 0) * 1.2,
-          matchType: "hybrid",
-        });
-      } else {
-        combinedResults.set(result.id, { ...result, matchType: "semantic" });
-      }
-    });
-
-    return Array.from(combinedResults.values())
-      .sort((a, b) => (b.searchScore || 0) - (a.searchScore || 0))
-      .slice(0, limit);
-  } catch (error) {
-    console.error("Hybrid search failed:", error);
-    return [];
-  }
-}
-// Log search performance for monitoring
-async function logSearchPerformance(
-  searchType: string,
-  queryType: string,
-  executionTime: number,
-  resultCount: number,
-): Promise<void> {
-  try {
-    await db.execute(sql`
-      INSERT INTO vector_search_stats (query_type, execution_time_ms, results_count, query_vector_dims)
-      VALUES (${searchType + "_" + queryType}, ${executionTime}, ${resultCount}, ${queryType.includes("semantic") ? 1536 : null})
-    `);
-  } catch (error) {
-    // Ignore logging errors to not break search functionality
-    console.warn("Failed to log search performance:", error);
   }
 }

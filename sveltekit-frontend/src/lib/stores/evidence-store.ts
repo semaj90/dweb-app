@@ -1,4 +1,4 @@
-import Fuse from "fuse";
+import Fuse from "fuse.js";
 import type { Writable } from "svelte/store";
 import { derived, writable } from "svelte/store";
 
@@ -35,6 +35,7 @@ export interface Evidence {
   uploadedAt: string;
   updatedAt: string;
 }
+
 export interface UploadFile {
   id: string;
   file: File;
@@ -45,6 +46,7 @@ export interface UploadFile {
   aiAnalysis?: any;
   error?: string;
 }
+
 export interface EvidenceGridState {
   items: Evidence[];
   searchQuery: string;
@@ -56,6 +58,7 @@ export interface EvidenceGridState {
   isLoading: boolean;
   error?: string;
 }
+
 export interface UploadModalState {
   isOpen: boolean;
   caseId?: string;
@@ -64,6 +67,7 @@ export interface UploadModalState {
   isProcessing: boolean;
   error?: string;
 }
+
 // === STORES ===
 
 // Evidence Grid Store
@@ -112,12 +116,13 @@ export const filteredEvidence = derived(evidenceGrid, ($evidenceGrid) => {
 
   // Apply search filter
   if (searchQuery.trim()) {
-    if (!fuseInstance || fuseInstance.getIndex().size !== items.length) {
+    if (!fuseInstance || fuseInstance._docs.length !== items.length) {
       fuseInstance = new Fuse(items, fuseOptions);
     }
     const searchResults = fuseInstance.search(searchQuery);
     filtered = searchResults.map((result) => result.item);
   }
+  
   // Apply sorting
   filtered.sort((a, b) => {
     let aVal: any, bVal: any;
@@ -424,6 +429,7 @@ export const uploadActions = {
           xhr.send(formData);
         });
       }
+      
       // Reload evidence after successful upload
       await evidenceActions.loadEvidence(state.caseId);
 
@@ -440,3 +446,5 @@ export const uploadActions = {
     }
   },
 };
+
+export default evidenceActions;

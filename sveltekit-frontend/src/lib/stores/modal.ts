@@ -11,10 +11,12 @@ export interface ModalConfig {
   onClose?: (...args: any[]) => void;
   onConfirm?: (...args: any[]) => void;
 }
+
 interface ModalState {
   modals: ModalConfig[];
   activeModal: string | null;
 }
+
 const initialState: ModalState = {
   modals: [],
   activeModal: null,
@@ -168,4 +170,6 @@ function createModalStore() {
 
   return store;
 }
+
 export const modals = createModalStore();
+export default modals;

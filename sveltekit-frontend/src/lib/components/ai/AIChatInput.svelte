@@ -13,12 +13,7 @@
   export let maxRows = 6;
 
   // Event dispatcher
-  const dispatch = createEventDispatcher<{
-    send: string;
-    input: string;
-    focus: void;
-    blur: void;
-  }>();
+  const dispatch = createEventDispatcher();
 
   // Elements
   let textarea: HTMLTextAreaElement;
@@ -27,7 +22,8 @@
   // Auto-focus on mount
   onMount(() => {
     if (browser && autoFocus && textarea) {
-      setTimeout(() => textarea.focus(), 100);}
+      setTimeout(() => textarea.focus(), 100);
+}
   });
 
   // Handle input changes
@@ -35,7 +31,8 @@
     const target = event.target as HTMLTextAreaElement;
     value = target.value;
     dispatch("input", value);
-    adjustTextareaHeight();}
+    adjustTextareaHeight();
+}
   // Handle key press
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === "Enter") {
@@ -54,7 +51,8 @@
 
     dispatch("send", trimmedValue);
     value = "";
-    resetTextareaHeight();}
+    resetTextareaHeight();
+}
   // Auto-resize textarea
   function adjustTextareaHeight() {
     if (!textarea) return;
@@ -74,7 +72,8 @@
     const targetRows = Math.min(Math.max(currentRows, rows), maxRows);
 
     textarea.style.height = `${targetRows * lineHeight + paddingHeight}px`;
-    isMultiline = targetRows > 1;}
+    isMultiline = targetRows > 1;
+}
   // Reset textarea height
   function resetTextareaHeight() {
     if (!textarea) return;
@@ -85,28 +84,31 @@
       parseInt(getComputedStyle(textarea).paddingBottom);
 
     textarea.style.height = `${rows * lineHeight + paddingHeight}px`;
-    isMultiline = false;}
+    isMultiline = false;
+}
   // Handle focus/blur events
   function handleFocus() {
-    dispatch("focus");}
+    dispatch("focus");
+}
   function handleBlur() {
-    dispatch("blur");}
+    dispatch("blur");
+}
   // Character count
   $: characterCount = value.length;
   $: isNearLimit = characterCount > maxLength * 0.8;
   $: isAtLimit = characterCount >= maxLength;
 </script>
 
-<div class="container mx-auto px-4" class:multiline={isMultiline}>
-  <div class="container mx-auto px-4">
+<div class="chat-input-wrapper" class:multiline={isMultiline}>
+  <div class="input-container">
     <textarea
       bind:this={textarea}
-      bind:value
-      {placeholder}
-      {disabled}
+      bind:value={value}
+      placeholder={placeholder}
+      disabled={disabled}
       maxlength={maxLength}
-      class="container mx-auto px-4"
-      class:disabled
+      class="chat-input"
+      class:disabled={disabled}
       class:near-limit={isNearLimit}
       class:at-limit={isAtLimit}
       rows={rows}
@@ -118,10 +120,10 @@
       spellcheck="true"
     ></textarea>
 
-    <div class="container mx-auto px-4">
+    <div class="input-actions">
       {#if characterCount > 0}
         <span
-          class="container mx-auto px-4"
+          class="character-count"
           class:near-limit={isNearLimit}
           class:at-limit={isAtLimit}
         >
@@ -131,8 +133,8 @@
 
       <button
         type="button"
-        class="container mx-auto px-4"
-        {disabled}
+        class="send-button"
+        disabled={disabled}
         class:has-content={value.trim().length > 0}
         on:click={() => handleSend()}
         title="Send message (Enter)"
@@ -154,19 +156,15 @@
   </div>
 
   {#if isMultiline}
-    <div class="container mx-auto px-4">
-      <span class="container mx-auto px-4">
+    <div class="input-hint">
+      <span class="hint-text">
         <kbd>Shift + Enter</kbd> for new line, <kbd>Enter</kbd> to send
       </span>
     </div>
   {/if}
-</div>
-
-<style>
-  /* @unocss-include */
-  .chat-input-wrapper {
-    position: relative;
-    width: 100%;}
+  /* ...existing code... */
+  width: 100%;
+}
   .input-container {
     display: flex;
     align-items: flex-end;
@@ -177,10 +175,12 @@
     border-radius: 8px;
     transition:
       border-color 0.2s ease,
-      box-shadow 0.2s ease;}
+      box-shadow 0.2s ease;
+  }
   .input-container:focus-within {
     border-color: var(--accent-color, #3b82f6);
-    box-shadow: 0 0 0 3px var(--accent-shadow, rgba(59, 130, 246, 0.1));}
+    box-shadow: 0 0 0 3px var(--accent-shadow, rgba(59, 130, 246, 0.1));
+}
   .chat-input {
     flex: 1;
     min-height: 20px;
@@ -195,30 +195,39 @@
     line-height: 1.5;
     color: var(--text-primary, #1e293b);
     overflow-y: auto;
-    scrollbar-width: thin;}
+    scrollbar-width: thin;
+}
   .chat-input::placeholder {
-    color: var(--text-placeholder, #94a3b8);}
+    color: var(--text-placeholder, #94a3b8);
+}
   .chat-input:disabled {
     color: var(--text-disabled, #94a3b8);
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .chat-input.near-limit {
-    color: var(--text-warning, #d97706);}
+    color: var(--text-warning, #d97706);
+}
   .chat-input.at-limit {
-    color: var(--text-error, #dc2626);}
+    color: var(--text-error, #dc2626);
+}
   .input-actions {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   .character-count {
     font-size: 0.75rem;
     color: var(--text-muted, #94a3b8);
-    font-variant-numeric: tabular-nums;}
+    font-variant-numeric: tabular-nums;
+}
   .character-count.near-limit {
-    color: var(--text-warning, #d97706);}
+    color: var(--text-warning, #d97706);
+}
   .character-count.at-limit {
     color: var(--text-error, #dc2626);
-    font-weight: 600;}
+    font-weight: 600;
+}
   .send-button {
     display: flex;
     align-items: center;
@@ -230,24 +239,31 @@
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;}
+    transition: all 0.2s ease;
+}
   .send-button:hover:not(:disabled) {
     background: var(--bg-hover, #e2e8f0);
-    color: var(--text-primary, #1e293b);}
+    color: var(--text-primary, #1e293b);
+}
   .send-button.has-content {
     background: var(--accent-color, #3b82f6);
-    color: white;}
+    color: white;
+}
   .send-button.has-content:hover:not(:disabled) {
-    background: var(--accent-hover, #2563eb);}
+    background: var(--accent-hover, #2563eb);
+}
   .send-button:disabled {
     opacity: 0.5;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .input-hint {
     margin-top: 8px;
-    padding: 0 12px;}
+    padding: 0 12px;
+}
   .hint-text {
     font-size: 0.75rem;
-    color: var(--text-muted, #94a3b8);}
+    color: var(--text-muted, #94a3b8);
+}
   .hint-text kbd {
     font-size: 0.6875rem;
     padding: 2px 4px;
@@ -255,30 +271,39 @@
     border: 1px solid var(--border-color, #e2e8f0);
     border-radius: 3px;
     font-family: monospace;
-    color: var(--text-secondary, #64748b);}
+    color: var(--text-secondary, #64748b);
+}
   /* Scrollbar styling */
   .chat-input::-webkit-scrollbar {
-    width: 4px;}
+    width: 4px;
+}
   .chat-input::-webkit-scrollbar-track {
-    background: transparent;}
+    background: transparent;
+}
   .chat-input::-webkit-scrollbar-thumb {
     background: var(--border-color, #e2e8f0);
-    border-radius: 2px;}
+    border-radius: 2px;
+}
   .chat-input::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted, #94a3b8);}
+    background: var(--text-muted, #94a3b8);
+}
   /* Dark mode support */
   @media (prefers-color-scheme: dark) {
     .input-container {
       background: var(--bg-primary, #0f172a);
-      border-color: var(--border-color, #334155);}
+      border-color: var(--border-color, #334155);
+}
     .chat-input {
-      color: var(--text-primary, #f8fafc);}
+      color: var(--text-primary, #f8fafc);
+}
     .send-button {
       background: var(--bg-muted, #334155);
-      color: var(--text-muted, #94a3b8);}
+      color: var(--text-muted, #94a3b8);
+}
     .send-button:hover:not(:disabled) {
       background: var(--bg-hover, #475569);
-      color: var(--text-primary, #f8fafc);}
+      color: var(--text-primary, #f8fafc);
+}
     .hint-text kbd {
       background: var(--bg-secondary, #1e293b);
       border-color: var(--border-color, #475569);
@@ -287,10 +312,12 @@
   /* Responsive design */
   @media (max-width: 768px) {
     .input-container {
-      padding: 8px;}
+      padding: 8px;
+}
     .send-button {
       width: 32px;
-      height: 32px;}
+      height: 32px;
+}
     .send-button svg {
       width: 16px;
       height: 16px;

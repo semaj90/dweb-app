@@ -112,6 +112,20 @@ export interface ProcessingError {
   retryable: boolean;
 }
 
+type EvidenceEvent = 
+  | { type: 'ADD_EVIDENCE'; evidence: Evidence }
+  | { type: 'PROCESS_NEXT' }
+  | { type: 'GENERATE_EMBEDDINGS'; evidenceId: string }
+  | { type: 'FIND_RELATIONSHIPS'; evidenceId: string }
+  | { type: 'ANALYZE_CONTENT'; evidenceId: string }
+  | { type: 'SEARCH_SIMILAR'; embeddings: number[] }
+  | { type: 'UPDATE_GRAPH'; relationships: GraphNode[] }
+  | { type: 'STREAM_RESULTS'; updates: StreamingUpdate[] }
+  | { type: 'RETRY_FAILED'; evidenceId: string }
+  | { type: 'CLEAR_ERRORS' }
+  | { type: 'HEALTH_CHECK' }
+  | { type: 'SYNC_CACHE' };
+
 // ======================================================================
 // EVIDENCE PROCESSING STATE MACHINE
 // ======================================================================
@@ -119,19 +133,7 @@ export interface ProcessingError {
 export const evidenceProcessingMachine = setup({
   types: {
     context: {} as EnhancedAIContext,
-    events: {} as 
-      | { type: 'ADD_EVIDENCE'; evidence: Evidence }
-      | { type: 'PROCESS_NEXT' }
-      | { type: 'GENERATE_EMBEDDINGS'; evidenceId: string }
-      | { type: 'FIND_RELATIONSHIPS'; evidenceId: string }
-      | { type: 'ANALYZE_CONTENT'; evidenceId: string }
-      | { type: 'SEARCH_SIMILAR'; embeddings: number[] }
-      | { type: 'UPDATE_GRAPH'; relationships: GraphNode[] }
-      | { type: 'STREAM_RESULTS'; updates: StreamingUpdate[] }
-      | { type: 'RETRY_FAILED'; evidenceId: string }
-      | { type: 'CLEAR_ERRORS' }
-      type: 'network',
-      | { type: 'SYNC_CACHE' }
+    events: {} as EvidenceEvent,
   },
   
   actors: {
@@ -193,7 +195,7 @@ export const evidenceProcessingMachine = setup({
           timestamp: new Date()
         };
       } catch (error) {
-        throw new Error(`AI processing failed: ${error.message}`);
+        throw new Error(`AI processing failed: ${(error as Error).message}`);
       }
     }),
 
@@ -407,7 +409,7 @@ export const evidenceProcessingMachine = setup({
             },
             
             onError: {
-              target: 'relationshipDiscovery', // Continue processing even if vector search fails
+              target: 'relationshipDiscovery',
               actions: assign({
                 errors: ({ context, event }) => [...context.errors, {
                   id: crypto.randomUUID(),
@@ -444,7 +446,7 @@ export const evidenceProcessingMachine = setup({
             },
             
             onError: {
-              target: 'complete', // Complete processing even without relationships
+              target: 'complete',
               actions: assign({
                 errors: ({ context, event }) => [...context.errors, {
                   id: crypto.randomUUID(),
@@ -501,7 +503,7 @@ export const evidenceProcessingMachine = setup({
         onDone: {
           target: 'idle',
           actions: assign({
-            systemHealth: event.output.health as 'healthy' | 'degraded' | 'critical'
+            systemHealth: ({ event }) => event.output.health as 'healthy' | 'degraded' | 'critical'
           })
         },
         
@@ -553,7 +555,6 @@ export const evidenceProcessingMachine = setup({
     }
   },
 
-  // Global error handling
   on: {
     CLEAR_ERRORS: {
       actions: assign({
@@ -569,136 +570,6 @@ export const evidenceProcessingMachine = setup({
     }
   }
 });
-
-// ======================================================================
-// REAL-TIME STREAMING MACHINE
-// ======================================================================
-
-export const streamingMachine = setup({
-  types: {
-    context: {} as {
-      connected: boolean;
-      reconnectAttempts: number;
-      messageQueue: any[];
-      latency: number;
-      throughput: number;
-    },
-    events: {} as 
-      | { type: 'CONNECT' }
-      | { type: 'DISCONNECT' }
-      | { type: 'MESSAGE_RECEIVED'; data: any }
-      | { type: 'SEND_MESSAGE'; message: any }
-      | { type: 'CONNECTION_ERROR'; error: any }
-      | { type: 'RECONNECT' }
-  },
-  
-  actors: {
-    websocketConnect: fromPromise(async () => {
-      return new Promise((resolve, reject) => {
-        const ws = new WebSocket(getWebSocketURL());
-        
-        ws.onopen = () => resolve({ status: 'connected' });
-        ws.onerror = (error) => reject(error);
-        
-        // Store WebSocket reference globally for message handling
-        if (browser) {
-          (window as any).__legalAI_ws = ws;
-        }
-      });
-    })
-  }
-}).createMachine({
-  id: 'streaming',
-  initial: 'disconnected',
-  
-  context: {
-    connected: false,
-    reconnectAttempts: 0,
-    messageQueue: [],
-    latency: 0,
-    throughput: 0
-  },
-
-  states: {
-    disconnected: {
-      on: {
-        CONNECT: {
-          target: 'connecting'
-        }
-      }
-    },
-
-    connecting: {
-      invoke: {
-        src: 'websocketConnect',
-        
-        onDone: {
-          target: 'connected',
-          actions: assign({
-            connected: true,
-            reconnectAttempts: 0
-          })
-        },
-        
-        onError: {
-          target: 'error',
-          actions: assign({
-            connected: false,
-            reconnectAttempts: ({ context }) => context.reconnectAttempts + 1
-          })
-        }
-      }
-    },
-
-    connected: {
-      on: {
-        DISCONNECT: {
-          target: 'disconnected',
-          actions: assign({ connected: false })
-        },
-        
-        MESSAGE_RECEIVED: {
-          actions: assign({
-            messageQueue: ({ context, event }) => [...context.messageQueue, event.data]
-          })
-        },
-        
-        CONNECTION_ERROR: {
-          target: 'error'
-        }
-      }
-    },
-
-    error: {
-      after: {
-        5000: {
-          target: 'connecting',
-          guard: ({ context }) => context.reconnectAttempts < 5
-        },
-        
-        30000: {
-          target: 'disconnected'
-        }
-      },
-      
-      on: {
-        RECONNECT: {
-          target: 'connecting'
-        }
-      }
-    }
-  }
-});
-
-// ======================================================================
-// UTILITY FUNCTIONS
-// ======================================================================
-
-function getWebSocketURL(): string {
-  if (!browser) return '';
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${protocol}//${window.location.host}/ws/legal-ai`;
-}
 
 // ======================================================================
 // SVELTE STORE INTEGRATIONS
@@ -776,9 +647,6 @@ export async function initializeEnhancedMachines() {
     // Create evidence processing machine
     const evidenceActor = createActor(evidenceProcessingMachine);
     
-    // Create streaming machine
-    const streamingActor = createActor(streamingMachine);
-    
     // Subscribe to state changes
     evidenceActor.subscribe((state) => {
       evidenceProcessingStore.set({
@@ -788,28 +656,14 @@ export async function initializeEnhancedMachines() {
       });
     });
     
-    streamingActor.subscribe((state) => {
-      streamingStore.set({
-        machine: streamingActor,
-        connected: state.context.connected,
-        messageQueue: state.context.messageQueue
-      });
-    });
-    
     // Start machines
     evidenceActor.start();
-    streamingActor.start();
-    
-    // Auto-connect streaming
-    streamingActor.send({ type: 'CONNECT' });
     
     return {
-      evidenceActor,
-      streamingActor
+      evidenceActor
     };
   } catch (error) {
     console.error('Failed to initialize enhanced machines:', error);
     throw error;
   }
 }
-

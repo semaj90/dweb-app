@@ -1,0 +1,1554 @@
+
+> prosecutor-web-frontend@0.0.1 build
+> vite build
+
+3:42:14 PM [vite-plugin-svelte] WARNING: The following packages have a svelte field in their package.json but no exports condition for svelte.
+
+svelte-grid-responsive@1.2.4
+svelte-infinite-scroll@2.0.1
+
+Please see https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition for details.
+[36mvite v6.3.5 [32mbuilding SSR bundle for production...[36m[39m
+transforming...
+3:42:15 PM [vite-plugin-svelte] src/routes/ai-assistant/+page.svelte:2:0 `<html>` element should have a lang attribute
+https://svelte.dev/e/a11y_missing_attribute
+1: <!DOCTYPE html>
+2: <html>
+          ^
+3: <head>
+4:     <meta charset="UTF-8" />
+3:42:17 PM [vite-plugin-svelte] src/routes/ai-test/+page.svelte:188:10 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+186:       <div class="container mx-auto px-4">
+187:         <div>
+188:           <label class="container mx-auto px-4">Document Text</label>
+                                                                          ^
+189:           <textarea
+190:             bind:value={documentText}
+3:42:17 PM [vite-plugin-svelte] src/routes/ai-test/+page.svelte:196:10 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+194:         </div>
+195:         <div>
+196:           <label class="container mx-auto px-4">Search Query</label>
+                                                                         ^
+197:           <input
+198:             type="text"
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:571:2 Unused CSS selector ".case-workspace"
+https://svelte.dev/e/css_unused_selector
+569: <style>
+570:   /* @unocss-include */
+571:   .case-workspace {
+                      ^
+572:     height: 100vh;
+573:     display: flex;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:576:2 Unused CSS selector ".notification-bar"
+https://svelte.dev/e/css_unused_selector
+574:     flex-direction: column;
+575:     overflow: hidden;}
+576:   .notification-bar {
+                        ^
+577:     display: flex;
+578:     flex-direction: column;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:583:2 Unused CSS selector ".notification"
+https://svelte.dev/e/css_unused_selector
+581:     background: var(--background-alt, #f8f9fa);
+582:     border-bottom: 1px solid var(--border, #dee2e6);}
+583:   .notification {
+                    ^
+584:     padding: 0.5rem 1rem;
+585:     border-radius: 4px;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:588:2 Unused CSS selector ".notification.error"
+https://svelte.dev/e/css_unused_selector
+586:     font-size: 0.875rem;
+587:     animation: slideIn 0.3s ease-out;}
+588:   .notification.error {
+                          ^
+589:     background: var(--error-light, #f8d7da);
+590:     color: var(--error-dark, #721c24);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:592:2 Unused CSS selector ".notification.success"
+https://svelte.dev/e/css_unused_selector
+590:     color: var(--error-dark, #721c24);
+591:     border: 1px solid var(--error, #dc3545);}
+592:   .notification.success {
+                            ^
+593:     background: var(--success-light, #d4edda);
+594:     color: var(--success-dark, #155724);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:603:2 Unused CSS selector ".case-header"
+https://svelte.dev/e/css_unused_selector
+601:       opacity: 1;
+602:       transform: translateY(0);}}
+603:   .case-header {
+                   ^
+604:     display: flex;
+605:     justify-content: space-between;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:611:2 Unused CSS selector ".case-title"
+https://svelte.dev/e/css_unused_selector
+609:     border-bottom: 1px solid var(--border, #dee2e6);
+610:     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);}
+611:   .case-title {
+                  ^
+612:     margin: 0;
+613:     font-size: 1.5rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:615:2 Unused CSS selector ".case-meta"
+https://svelte.dev/e/css_unused_selector
+613:     font-size: 1.5rem;
+614:     color: var(--text-primary, #333);}
+615:   .case-meta {
+                 ^
+616:     display: flex;
+617:     gap: 1rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:619:2 Unused CSS selector ".case-number"
+https://svelte.dev/e/css_unused_selector
+617:     gap: 1rem;
+618:     margin-top: 0.5rem;}
+619:   .case-number {
+                   ^
+620:     font-weight: 600;
+621:     color: var(--primary, #007bff);}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:622:2 Unused CSS selector ".case-status"
+https://svelte.dev/e/css_unused_selector
+620:     font-weight: 600;
+621:     color: var(--primary, #007bff);}
+622:   .case-status {
+                   ^
+623:     padding: 0.25rem 0.5rem;
+624:     border-radius: 4px;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:628:2 Unused CSS selector ".case-status.status-open"
+https://svelte.dev/e/css_unused_selector
+626:     background: var(--warning, #ffc107);
+627:     color: white;}
+628:   .case-status.status-open {
+                               ^
+629:     background: var(--success, #28a745);}
+630:   .evidence-count {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:630:2 Unused CSS selector ".evidence-count"
+https://svelte.dev/e/css_unused_selector
+628:   .case-status.status-open {
+629:     background: var(--success, #28a745);}
+630:   .evidence-count {
+                      ^
+631:     color: var(--text-secondary, #666);
+632:     font-size: 0.875rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:633:2 Unused CSS selector ".ai-controls"
+https://svelte.dev/e/css_unused_selector
+631:     color: var(--text-secondary, #666);
+632:     font-size: 0.875rem;}
+633:   .ai-controls {
+                   ^
+634:     display: flex;
+635:     gap: 1rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:636:2 Unused CSS selector ".btn-ai"
+https://svelte.dev/e/css_unused_selector
+634:     display: flex;
+635:     gap: 1rem;}
+636:   .btn-ai {
+              ^
+637:     display: flex;
+638:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:648:2 Unused CSS selector ".btn-ai:hover:not(:disabled)"
+https://svelte.dev/e/css_unused_selector
+646:     font-weight: 500;
+647:     transition: all 0.3s ease;}
+648:   .btn-ai:hover:not(:disabled) {
+                                   ^
+649:     transform: translateY(-2px);
+650:     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:651:2 Unused CSS selector ".btn-ai:disabled"
+https://svelte.dev/e/css_unused_selector
+649:     transform: translateY(-2px);
+650:     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);}
+651:   .btn-ai:disabled {
+                       ^
+652:     opacity: 0.6;
+653:     cursor: not-allowed;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:654:2 Unused CSS selector ".btn-toggle"
+https://svelte.dev/e/css_unused_selector
+652:     opacity: 0.6;
+653:     cursor: not-allowed;}
+654:   .btn-toggle {
+                  ^
+655:     display: flex;
+656:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:666:2 Unused CSS selector ".btn-toggle:hover"
+https://svelte.dev/e/css_unused_selector
+664:     font-weight: 500;
+665:     transition: all 0.3s ease;}
+666:   .btn-toggle:hover {
+                        ^
+667:     background: var(--background-alt, #f8f9fa);
+668:     border-color: var(--primary, #007bff);}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:669:2 Unused CSS selector ".loading-spinner"
+https://svelte.dev/e/css_unused_selector
+667:     background: var(--background-alt, #f8f9fa);
+668:     border-color: var(--primary, #007bff);}
+669:   .loading-spinner {
+                       ^
+670:     animation: spin 1s linear infinite;}
+671:   @keyframes spin {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:676:2 Unused CSS selector ".workspace-layout"
+https://svelte.dev/e/css_unused_selector
+674:     to {
+675:       transform: rotate(360deg);}}
+676:   .workspace-layout {
+                        ^
+677:     display: flex;
+678:     flex: 1;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:680:2 Unused CSS selector ".sidebar"
+https://svelte.dev/e/css_unused_selector
+678:     flex: 1;
+679:     overflow: hidden;}
+680:   .sidebar {
+               ^
+681:     width: 350px;
+682:     background: var(--background-alt, #f8f9fa);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:687:2 Unused CSS selector ".sidebar:not(.open)"
+https://svelte.dev/e/css_unused_selector
+685:     flex-direction: column;
+686:     transition: transform 0.3s ease;}
+687:   .sidebar:not(.open) {
+                          ^
+688:     transform: translateX(-100%);}
+689:   .sidebar-tabs {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:689:2 Unused CSS selector ".sidebar-tabs"
+https://svelte.dev/e/css_unused_selector
+687:   .sidebar:not(.open) {
+688:     transform: translateX(-100%);}
+689:   .sidebar-tabs {
+                    ^
+690:     display: flex;
+691:     background: var(--surface, #fff);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:693:2 Unused CSS selector ".tab-btn"
+https://svelte.dev/e/css_unused_selector
+691:     background: var(--surface, #fff);
+692:     border-bottom: 1px solid var(--border, #dee2e6);}
+693:   .tab-btn {
+               ^
+694:     flex: 1;
+695:     padding: 0.75rem 1rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:700:2 Unused CSS selector ".tab-btn.active"
+https://svelte.dev/e/css_unused_selector
+698:     cursor: pointer;
+699:     transition: background-color 0.3s ease;}
+700:   .tab-btn.active {
+                      ^
+701:     background: var(--primary, #007bff);
+702:     color: white;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:703:2 Unused CSS selector ".sidebar-content"
+https://svelte.dev/e/css_unused_selector
+701:     background: var(--primary, #007bff);
+702:     color: white;}
+703:   .sidebar-content {
+                       ^
+704:     flex: 1;
+705:     overflow-y: auto;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:707:2 Unused CSS selector ".evidence-item"
+https://svelte.dev/e/css_unused_selector
+705:     overflow-y: auto;
+706:     padding: 1rem;}
+707:   .evidence-item {
+                     ^
+708:     display: flex;
+709:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:718:2 Unused CSS selector ".evidence-item:hover"
+https://svelte.dev/e/css_unused_selector
+716:     cursor: grab;
+717:     transition: all 0.3s ease;}
+718:   .evidence-item:hover {
+                           ^
+719:     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+720:     transform: translateY(-1px);}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:721:2 Unused CSS selector ".evidence-thumbnail"
+https://svelte.dev/e/css_unused_selector
+719:     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+720:     transform: translateY(-1px);}
+721:   .evidence-thumbnail {
+                          ^
+722:     width: 40px;
+723:     height: 40px;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:730:2 Unused CSS selector ".evidence-thumbnail img"
+https://svelte.dev/e/css_unused_selector
+728:     align-items: center;
+729:     justify-content: center;}
+730:   .evidence-thumbnail img {
+                              ^
+731:     width: 100%;
+732:     height: 100%;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:735:2 Unused CSS selector ".file-icon"
+https://svelte.dev/e/css_unused_selector
+733:     -o-object-fit: cover;
+734:        object-fit: cover;}
+735:   .file-icon {
+                 ^
+736:     font-size: 1.5rem;}
+737:   .evidence-info {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:737:2 Unused CSS selector ".evidence-info"
+https://svelte.dev/e/css_unused_selector
+735:   .file-icon {
+736:     font-size: 1.5rem;}
+737:   .evidence-info {
+                     ^
+738:     flex: 1;}
+739:   .evidence-title {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:739:2 Unused CSS selector ".evidence-title"
+https://svelte.dev/e/css_unused_selector
+737:   .evidence-info {
+738:     flex: 1;}
+739:   .evidence-title {
+                      ^
+740:     font-weight: 500;
+741:     font-size: 0.875rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:743:2 Unused CSS selector ".evidence-meta"
+https://svelte.dev/e/css_unused_selector
+741:     font-size: 0.875rem;
+742:     color: var(--text-primary, #333);}
+743:   .evidence-meta {
+                     ^
+744:     font-size: 0.75rem;
+745:     color: var(--text-secondary, #666);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:747:2 Unused CSS selector ".ai-tags"
+https://svelte.dev/e/css_unused_selector
+745:     color: var(--text-secondary, #666);
+746:     margin-top: 0.25rem;}
+747:   .ai-tags {
+               ^
+748:     display: flex;
+749:     gap: 0.25rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:751:2 Unused CSS selector ".tag"
+https://svelte.dev/e/css_unused_selector
+749:     gap: 0.25rem;
+750:     margin-top: 0.5rem;}
+751:   .tag {
+           ^
+752:     padding: 0.125rem 0.375rem;
+753:     background: var(--primary-light, #e7f3ff);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:757:2 Unused CSS selector ".add-to-canvas-btn"
+https://svelte.dev/e/css_unused_selector
+755:     border-radius: 4px;
+756:     font-size: 0.75rem;}
+757:   .add-to-canvas-btn {
+                         ^
+758:     padding: 0.25rem 0.5rem;
+759:     background: var(--success, #28a745);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:765:2 Unused CSS selector ".main-content"
+https://svelte.dev/e/css_unused_selector
+763:     cursor: pointer;
+764:     font-size: 0.875rem;}
+765:   .main-content {
+                    ^
+766:     flex: 1;
+767:     display: flex;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:770:2 Unused CSS selector ".content-tabs"
+https://svelte.dev/e/css_unused_selector
+768:     flex-direction: column;
+769:     overflow: hidden;}
+770:   .content-tabs {
+                    ^
+771:     display: flex;
+772:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:775:2 Unused CSS selector ".tab-shortcuts"
+https://svelte.dev/e/css_unused_selector
+773:     background: var(--surface, #fff);
+774:     border-bottom: 1px solid var(--border, #dee2e6);}
+775:   .tab-shortcuts {
+                     ^
+776:     margin-left: auto;
+777:     padding: 0.75rem 1rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:778:2 Unused CSS selector ".shortcuts-hint"
+https://svelte.dev/e/css_unused_selector
+776:     margin-left: auto;
+777:     padding: 0.75rem 1rem;}
+778:   .shortcuts-hint {
+                      ^
+779:     font-size: 0.75rem;
+780:     color: var(--text-secondary, #666);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:782:2 Unused CSS selector ".content-area"
+https://svelte.dev/e/css_unused_selector
+780:     color: var(--text-secondary, #666);
+781:     font-style: italic;}
+782:   .content-area {
+                    ^
+783:     flex: 1;
+784:     overflow: hidden;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:785:2 Unused CSS selector ".canvas-container"
+https://svelte.dev/e/css_unused_selector
+783:     flex: 1;
+784:     overflow: hidden;}
+785:   .canvas-container,
+                        ^
+786:   .editor-container {
+787:     height: 100%;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:786:2 Unused CSS selector ".editor-container"
+https://svelte.dev/e/css_unused_selector
+784:     overflow: hidden;}
+785:   .canvas-container,
+786:   .editor-container {
+                        ^
+787:     height: 100%;
+788:     padding: 1rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:789:2 Unused CSS selector ".report-item"
+https://svelte.dev/e/css_unused_selector
+787:     height: 100%;
+788:     padding: 1rem;}
+789:   .report-item {
+                   ^
+790:     padding: 1rem;
+791:     background: var(--surface, #fff);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:795:2 Unused CSS selector ".report-title"
+https://svelte.dev/e/css_unused_selector
+793:     margin-bottom: 0.5rem;
+794:     border: 1px solid var(--border, #dee2e6);}
+795:   .report-title {
+                    ^
+796:     font-weight: 500;
+797:     margin-bottom: 0.5rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:798:2 Unused CSS selector ".report-meta"
+https://svelte.dev/e/css_unused_selector
+796:     font-weight: 500;
+797:     margin-bottom: 0.5rem;}
+798:   .report-meta {
+                   ^
+799:     font-size: 0.875rem;
+800:     color: var(--text-secondary, #666);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:802:2 Unused CSS selector ".btn-small"
+https://svelte.dev/e/css_unused_selector
+800:     color: var(--text-secondary, #666);
+801:     margin-bottom: 0.5rem;}
+802:   .btn-small {
+                 ^
+803:     padding: 0.25rem 0.75rem;
+804:     background: var(--primary, #007bff);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:810:2 Unused CSS selector ".ai-summary"
+https://svelte.dev/e/css_unused_selector
+808:     cursor: pointer;
+809:     font-size: 0.875rem;}
+810:   .ai-summary {
+                  ^
+811:     padding: 1rem;
+812:     background: var(--success-light, #d4edda);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:815:2 Unused CSS selector ".ai-summary h4"
+https://svelte.dev/e/css_unused_selector
+813:     border-radius: 8px;
+814:     margin-top: 1rem;}
+815:   .ai-summary h4 {
+                     ^
+816:     margin: 0 0 0.5rem 0;
+817:     color: var(--success-dark, #155724);}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:818:2 Unused CSS selector ".ai-summary p"
+https://svelte.dev/e/css_unused_selector
+816:     margin: 0 0 0.5rem 0;
+817:     color: var(--success-dark, #155724);}
+818:   .ai-summary p {
+                    ^
+819:     margin: 0;
+820:     color: var(--success-dark, #155724);
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:823:2 Unused CSS selector ".loading-indicator"
+https://svelte.dev/e/css_unused_selector
+821:     font-size: 0.875rem;}
+822:   /* Loading indicators */
+823:   .loading-indicator {
+                         ^
+824:     display: flex;
+825:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:829:2 Unused CSS selector ".spinner"
+https://svelte.dev/e/css_unused_selector
+827:     color: var(--text-secondary, #666);
+828:     font-size: 0.875rem;}
+829:   .spinner {
+               ^
+830:     width: 16px;
+831:     height: 16px;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:836:2 Unused CSS selector ".evidence-list-header"
+https://svelte.dev/e/css_unused_selector
+834:     border-radius: 50%;
+835:     animation: spin 1s linear infinite;}
+836:   .evidence-list-header,
+                            ^
+837:   .reports-header {
+838:     display: flex;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:837:2 Unused CSS selector ".reports-header"
+https://svelte.dev/e/css_unused_selector
+835:     animation: spin 1s linear infinite;}
+836:   .evidence-list-header,
+837:   .reports-header {
+                      ^
+838:     display: flex;
+839:     justify-content: space-between;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:842:2 Unused CSS selector ".evidence-list-header h3"
+https://svelte.dev/e/css_unused_selector
+840:     align-items: center;
+841:     margin-bottom: 1rem;}
+842:   .evidence-list-header h3,
+                               ^
+843:   .reports-header h3 {
+844:     margin: 0;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:843:2 Unused CSS selector ".reports-header h3"
+https://svelte.dev/e/css_unused_selector
+841:     margin-bottom: 1rem;}
+842:   .evidence-list-header h3,
+843:   .reports-header h3 {
+                         ^
+844:     margin: 0;}
+845:   .canvas-saving-indicator,
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:845:2 Unused CSS selector ".canvas-saving-indicator"
+https://svelte.dev/e/css_unused_selector
+843:   .reports-header h3 {
+844:     margin: 0;}
+845:   .canvas-saving-indicator,
+                               ^
+846:   .editor-saving-indicator {
+847:     position: absolute;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:846:2 Unused CSS selector ".editor-saving-indicator"
+https://svelte.dev/e/css_unused_selector
+844:     margin: 0;}
+845:   .canvas-saving-indicator,
+846:   .editor-saving-indicator {
+                               ^
+847:     position: absolute;
+848:     top: 1rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:861:2 Unused CSS selector ".canvas-container"
+https://svelte.dev/e/css_unused_selector
+859:     color: var(--text-secondary, #666);
+860:     z-index: 1000;}
+861:   .canvas-container,
+                        ^
+862:   .editor-container {
+863:     position: relative;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:862:2 Unused CSS selector ".editor-container"
+https://svelte.dev/e/css_unused_selector
+860:     z-index: 1000;}
+861:   .canvas-container,
+862:   .editor-container {
+                        ^
+863:     position: relative;}
+864:   /* Responsive design */
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:866:4 Unused CSS selector ".case-header"
+https://svelte.dev/e/css_unused_selector
+864:   /* Responsive design */
+865:   @media (max-width: 768px) {
+866:     .case-header {
+                     ^
+867:       flex-direction: column;
+868:       gap: 1rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:870:4 Unused CSS selector ".case-meta"
+https://svelte.dev/e/css_unused_selector
+868:       gap: 1rem;
+869:       align-items: flex-start;}
+870:     .case-meta {
+                   ^
+871:       flex-direction: column;
+872:       gap: 0.5rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:873:4 Unused CSS selector ".ai-controls"
+https://svelte.dev/e/css_unused_selector
+871:       flex-direction: column;
+872:       gap: 0.5rem;}
+873:     .ai-controls {
+                     ^
+874:       flex-direction: column;
+875:       gap: 0.5rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:877:4 Unused CSS selector ".btn-ai"
+https://svelte.dev/e/css_unused_selector
+875:       gap: 0.5rem;
+876:       width: 100%;}
+877:     .btn-ai,
+                ^
+878:     .btn-toggle {
+879:       width: 100%;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:878:4 Unused CSS selector ".btn-toggle"
+https://svelte.dev/e/css_unused_selector
+876:       width: 100%;}
+877:     .btn-ai,
+878:     .btn-toggle {
+                    ^
+879:       width: 100%;
+880:       justify-content: center;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:881:4 Unused CSS selector ".sidebar"
+https://svelte.dev/e/css_unused_selector
+879:       width: 100%;
+880:       justify-content: center;}
+881:     .sidebar {
+                 ^
+882:       position: fixed;
+883:       top: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:889:4 Unused CSS selector ".sidebar:not(.open)"
+https://svelte.dev/e/css_unused_selector
+887:       background: var(--surface, #fff);
+888:       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);}
+889:     .sidebar:not(.open) {
+                            ^
+890:       transform: translateX(-100%);}
+891:     .workspace-layout {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:891:4 Unused CSS selector ".workspace-layout"
+https://svelte.dev/e/css_unused_selector
+889:     .sidebar:not(.open) {
+890:       transform: translateX(-100%);}
+891:     .workspace-layout {
+                          ^
+892:       position: relative;}
+893:     .main-content {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:893:4 Unused CSS selector ".main-content"
+https://svelte.dev/e/css_unused_selector
+891:     .workspace-layout {
+892:       position: relative;}
+893:     .main-content {
+                      ^
+894:       width: 100%;}
+895:     .content-tabs {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:895:4 Unused CSS selector ".content-tabs"
+https://svelte.dev/e/css_unused_selector
+893:     .main-content {
+894:       width: 100%;}
+895:     .content-tabs {
+                      ^
+896:       flex-direction: column;
+897:       gap: 0.5rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:898:4 Unused CSS selector ".tab-shortcuts"
+https://svelte.dev/e/css_unused_selector
+896:       flex-direction: column;
+897:       gap: 0.5rem;}
+898:     .tab-shortcuts {
+                       ^
+899:       display: none;}
+900:     .shortcuts-hint {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:900:4 Unused CSS selector ".shortcuts-hint"
+https://svelte.dev/e/css_unused_selector
+898:     .tab-shortcuts {
+899:       display: none;}
+900:     .shortcuts-hint {
+                        ^
+901:       display: none;}}
+902:   @media (max-width: 480px) {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:903:4 Unused CSS selector ".case-header"
+https://svelte.dev/e/css_unused_selector
+901:       display: none;}}
+902:   @media (max-width: 480px) {
+903:     .case-header {
+                     ^
+904:       padding: 0.5rem 1rem;}
+905:     .case-title {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:905:4 Unused CSS selector ".case-title"
+https://svelte.dev/e/css_unused_selector
+903:     .case-header {
+904:       padding: 0.5rem 1rem;}
+905:     .case-title {
+                    ^
+906:       font-size: 1.25rem;}
+907:     .sidebar {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:907:4 Unused CSS selector ".sidebar"
+https://svelte.dev/e/css_unused_selector
+905:     .case-title {
+906:       font-size: 1.25rem;}
+907:     .sidebar {
+                 ^
+908:       width: 100%;}
+909:     .evidence-item {
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:909:4 Unused CSS selector ".evidence-item"
+https://svelte.dev/e/css_unused_selector
+907:     .sidebar {
+908:       width: 100%;}
+909:     .evidence-item {
+                       ^
+910:       flex-direction: column;
+911:       align-items: flex-start;
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:913:4 Unused CSS selector ".evidence-thumbnail"
+https://svelte.dev/e/css_unused_selector
+911:       align-items: flex-start;
+912:       gap: 0.5rem;}
+913:     .evidence-thumbnail {
+                            ^
+914:       width: 100%;
+915:       height: 80px;}
+3:42:17 PM [vite-plugin-svelte] src/routes/cases/[id]/enhanced/+page.svelte:916:4 Unused CSS selector ".add-to-canvas-btn"
+https://svelte.dev/e/css_unused_selector
+914:       width: 100%;
+915:       height: 80px;}
+916:     .add-to-canvas-btn {
+                           ^
+917:       align-self: flex-end;}}
+918: </style>
+3:42:17 PM [vite-plugin-svelte] src/routes/crud-dashboard/+page.svelte:19:2 Unused CSS selector ".page-header"
+https://svelte.dev/e/css_unused_selector
+17: <style>
+18:   /* @unocss-include */
+19:   .page-header {
+                  ^
+20:     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+21:     color: white;
+3:42:17 PM [vite-plugin-svelte] src/routes/crud-dashboard/+page.svelte:26:2 Unused CSS selector ".page-title h1"
+https://svelte.dev/e/css_unused_selector
+24:     text-align: center;
+25: }
+26:   .page-title h1 {
+                    ^
+27:     font-size: 2.5rem;
+28:     font-weight: 700;
+3:42:17 PM [vite-plugin-svelte] src/routes/crud-dashboard/+page.svelte:32:2 Unused CSS selector ".page-title p"
+https://svelte.dev/e/css_unused_selector
+30:     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+31: }
+32:   .page-title p {
+                   ^
+33:     font-size: 1.125rem;
+34:     margin: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/crud-dashboard/+page.svelte:38:4 Unused CSS selector ".page-header"
+https://svelte.dev/e/css_unused_selector
+36: }
+37:   @media (max-width: 768px) {
+38:     .page-header {
+                    ^
+39:       padding: 2rem 1rem;
+40:       margin: -1rem -1rem 1rem -1rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/crud-dashboard/+page.svelte:42:4 Unused CSS selector ".page-title h1"
+https://svelte.dev/e/css_unused_selector
+40:       margin: -1rem -1rem 1rem -1rem;
+41: }
+42:     .page-title h1 {
+                      ^
+43:       font-size: 2rem;
+44: }
+3:42:17 PM [vite-plugin-svelte] src/routes/crud-dashboard/+page.svelte:45:4 Unused CSS selector ".page-title p"
+https://svelte.dev/e/css_unused_selector
+43:       font-size: 2rem;
+44: }
+45:     .page-title p {
+                     ^
+46:       font-size: 1rem;
+47: }
+3:42:17 PM [vite-plugin-svelte] src/routes/editor/+page.svelte:132:2 Unused CSS selector ".report-page"
+https://svelte.dev/e/css_unused_selector
+130: <style>
+131:   /* @unocss-include */
+132:   .report-page {
+                   ^
+133:     width: 100%;
+134:     height: 100vh;
+3:42:17 PM [vite-plugin-svelte] src/routes/enhanced-ai-demo/+page.svelte:398:2 Unused CSS selector ".shimmer"
+https://svelte.dev/e/css_unused_selector
+396:   }
+397:   
+398:   .shimmer {
+               ^
+399:     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+400:     background-size: 1000px 100%;
+3:42:17 PM [vite-plugin-svelte] src/routes/enhanced-ai-demo/+page.svelte:410:2 Unused CSS selector ".gradient-text"
+https://svelte.dev/e/css_unused_selector
+408:   
+409:   /* Custom gradient text */
+410:   .gradient-text {
+                     ^
+411:     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+412:     -webkit-background-clip: text;
+3:42:17 PM [vite-plugin-svelte] src/routes/frameworks-demo/+page.svelte:356:2 Unused CSS selector ".demo-container"
+https://svelte.dev/e/css_unused_selector
+354: <style>
+355:   /* @unocss-include */
+356:   .demo-container {
+                      ^
+357:     min-height: 100vh;
+358:     background: #fafafa;}
+3:42:17 PM [vite-plugin-svelte] src/routes/frameworks-demo/+page.svelte:359:2 Unused CSS selector ".demo-header"
+https://svelte.dev/e/css_unused_selector
+357:     min-height: 100vh;
+358:     background: #fafafa;}
+359:   .demo-header {
+                   ^
+360:     background: white;
+361:     border-bottom: 1px solid #e5e7eb;
+3:42:17 PM [vite-plugin-svelte] src/routes/frameworks-demo/+page.svelte:365:2 Unused CSS selector ".demo-main"
+https://svelte.dev/e/css_unused_selector
+363:     top: 0;
+364:     z-index: 10;}
+365:   .demo-main {
+                 ^
+366:     padding: 2rem 0;}
+367:   :global(.framework-demo) {
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:259:1 Unused CSS selector ".canvas-layout"
+https://svelte.dev/e/css_unused_selector
+257: <style>
+258:   /* @unocss-include */
+259:   .canvas-layout {
+                     ^
+260:     display: flex;
+261:     flex-direction: column;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:266:1 Unused CSS selector ".canvas-layout.fullscreen"
+https://svelte.dev/e/css_unused_selector
+264:     overflow: hidden;
+265:     background: var(--bg-primary);}
+266:   .canvas-layout.fullscreen {
+                                ^
+267:     position: fixed;
+268:     top: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:271:1 Unused CSS selector ".main-content"
+https://svelte.dev/e/css_unused_selector
+269:     left: 0;
+270:     z-index: 9999;}
+271:   .main-content {
+                    ^
+272:     display: flex;
+273:     flex: 1;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:276:1 Unused CSS selector ".canvas-container"
+https://svelte.dev/e/css_unused_selector
+274:     overflow: hidden;
+275:     position: relative;}
+276:   .canvas-container {
+                        ^
+277:     flex: 1;
+278:     display: flex;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:283:1 Unused CSS selector ".canvas-container.sidebar-open"
+https://svelte.dev/e/css_unused_selector
+281:     transition: margin-left 0.3s ease;
+282:     background: var(--bg-secondary);}
+283:   .canvas-container.sidebar-open {
+                                     ^
+284:     margin-left: 320px;}
+285:   .toolbar-container {
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:285:1 Unused CSS selector ".toolbar-container"
+https://svelte.dev/e/css_unused_selector
+283:   .canvas-container.sidebar-open {
+284:     margin-left: 320px;}
+285:   .toolbar-container {
+                         ^
+286:     border-bottom: 1px solid var(--border-light);
+287:     background: var(--bg-secondary);
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:289:1 Unused CSS selector ".canvas-editor-container"
+https://svelte.dev/e/css_unused_selector
+287:     background: var(--bg-secondary);
+288:     z-index: 10;}
+289:   .canvas-editor-container {
+                               ^
+290:     flex: 1;
+291:     position: relative;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:293:1 Unused CSS selector ".upload-zone"
+https://svelte.dev/e/css_unused_selector
+291:     position: relative;
+292:     overflow: hidden;}
+293:   .upload-zone {
+                   ^
+294:     position: absolute;
+295:     bottom: 20px;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:302:1 Unused CSS selector ".upload-zone:hover"
+https://svelte.dev/e/css_unused_selector
+300:     opacity: 0.9;
+301:     transition: opacity 0.3s ease;}
+302:   .upload-zone:hover {
+                         ^
+303:     opacity: 1;}
+304:   /* Upload Progress Styles */
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:305:1 Unused CSS selector ".upload-progress-container"
+https://svelte.dev/e/css_unused_selector
+303:     opacity: 1;}
+304:   /* Upload Progress Styles */
+305:   .upload-progress-container {
+                                 ^
+306:     background: var(--bg-secondary);
+307:     border: 1px solid var(--border-light);
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:312:1 Unused CSS selector ".upload-progress-container h4"
+https://svelte.dev/e/css_unused_selector
+310:     margin-bottom: 12px;
+311:     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);}
+312:   .upload-progress-container h4 {
+                                    ^
+313:     margin: 0 0 12px 0;
+314:     font-size: 14px;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:316:1 Unused CSS selector ".upload-item"
+https://svelte.dev/e/css_unused_selector
+314:     font-size: 14px;
+315:     color: var(--text-primary);}
+316:   .upload-item {
+                   ^
+317:     margin-bottom: 12px;
+318:     padding-bottom: 12px;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:320:1 Unused CSS selector ".upload-item:last-child"
+https://svelte.dev/e/css_unused_selector
+318:     padding-bottom: 12px;
+319:     border-bottom: 1px solid var(--border-light);}
+320:   .upload-item:last-child {
+                              ^
+321:     margin-bottom: 0;
+322:     padding-bottom: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:324:1 Unused CSS selector ".upload-info"
+https://svelte.dev/e/css_unused_selector
+322:     padding-bottom: 0;
+323:     border-bottom: none;}
+324:   .upload-info {
+                   ^
+325:     display: flex;
+326:     justify-content: space-between;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:329:1 Unused CSS selector ".file-name"
+https://svelte.dev/e/css_unused_selector
+327:     align-items: center;
+328:     margin-bottom: 6px;}
+329:   .file-name {
+                 ^
+330:     font-weight: 500;
+331:     font-size: 13px;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:333:1 Unused CSS selector ".file-size"
+https://svelte.dev/e/css_unused_selector
+331:     font-size: 13px;
+332:     color: var(--text-primary);}
+333:   .file-size {
+                 ^
+334:     font-size: 12px;
+335:     color: var(--text-muted);}
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:336:1 Unused CSS selector ".progress-bar"
+https://svelte.dev/e/css_unused_selector
+334:     font-size: 12px;
+335:     color: var(--text-muted);}
+336:   .progress-bar {
+                    ^
+337:     width: 100%;
+338:     height: 6px;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:343:1 Unused CSS selector ".progress-fill"
+https://svelte.dev/e/css_unused_selector
+341:     overflow: hidden;
+342:     margin-bottom: 6px;}
+343:   .progress-fill {
+                     ^
+344:     height: 100%;
+345:     background: linear-gradient(90deg, #3b82f6, #10b981);
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:348:1 Unused CSS selector ".upload-status"
+https://svelte.dev/e/css_unused_selector
+346:     transition: width 0.3s ease;
+347:     border-radius: 3px;}
+348:   .upload-status {
+                     ^
+349:     font-size: 12px;
+350:     color: var(--text-muted);
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:352:1 Unused CSS selector ".hash-preview"
+https://svelte.dev/e/css_unused_selector
+350:     color: var(--text-muted);
+351:     margin-bottom: 4px;}
+352:   .hash-preview {
+                    ^
+353:     font-size: 11px;
+354:     color: var(--text-muted);
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:359:1 Unused CSS selector ".hash-text"
+https://svelte.dev/e/css_unused_selector
+357:     padding: 4px 6px;
+358:     border-radius: 4px;}
+359:   .hash-text {
+                 ^
+360:     color: var(--harvard-crimson);}
+361:   /* Completed Uploads Styles */
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:362:1 Unused CSS selector ".completed-uploads"
+https://svelte.dev/e/css_unused_selector
+360:     color: var(--harvard-crimson);}
+361:   /* Completed Uploads Styles */
+362:   .completed-uploads {
+                         ^
+363:     background: var(--bg-secondary);
+364:     border: 1px solid #10b981;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:369:1 Unused CSS selector ".completed-uploads h4"
+https://svelte.dev/e/css_unused_selector
+367:     margin-bottom: 12px;
+368:     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);}
+369:   .completed-uploads h4 {
+                            ^
+370:     margin: 0 0 12px 0;
+371:     font-size: 14px;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:373:1 Unused CSS selector ".completed-item"
+https://svelte.dev/e/css_unused_selector
+371:     font-size: 14px;
+372:     color: #10b981;}
+373:   .completed-item {
+                      ^
+374:     display: flex;
+375:     flex-direction: column;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:380:1 Unused CSS selector ".completed-item:last-child"
+https://svelte.dev/e/css_unused_selector
+378:     padding-bottom: 12px;
+379:     border-bottom: 1px solid var(--border-light);}
+380:   .completed-item:last-child {
+                                 ^
+381:     margin-bottom: 0;
+382:     padding-bottom: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:384:1 Unused CSS selector ".hash-verification"
+https://svelte.dev/e/css_unused_selector
+382:     padding-bottom: 0;
+383:     border-bottom: none;}
+384:   .hash-verification {
+                         ^
+385:     display: flex;
+386:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:389:1 Unused CSS selector ".hash-label"
+https://svelte.dev/e/css_unused_selector
+387:     gap: 8px;
+388:     font-size: 12px;}
+389:   .hash-label {
+                  ^
+390:     color: var(--text-muted);
+391:     font-weight: 500;}
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:392:1 Unused CSS selector ".hash-value"
+https://svelte.dev/e/css_unused_selector
+390:     color: var(--text-muted);
+391:     font-weight: 500;}
+392:   .hash-value {
+                  ^
+393:     font-family: monospace;
+394:     background: var(--code-background-color);
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:398:1 Unused CSS selector ".verify-btn"
+https://svelte.dev/e/css_unused_selector
+396:     border-radius: 4px;
+397:     color: var(--harvard-crimson);}
+398:   .verify-btn {
+                  ^
+399:     background: #3b82f6;
+400:     color: white;
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:407:1 Unused CSS selector ".verify-btn:hover"
+https://svelte.dev/e/css_unused_selector
+405:     cursor: pointer;
+406:     transition: background 0.2s ease;}
+407:   .verify-btn:hover {
+                        ^
+408:     background: #2563eb;}
+409:   /* Responsive Design */
+3:42:17 PM [vite-plugin-svelte] src/routes/interactive-canvas/+page.svelte:411:2 Unused CSS selector ".canvas-container.sidebar-open"
+https://svelte.dev/e/css_unused_selector
+409:   /* Responsive Design */
+410:   @media (max-width: 768px) {
+411:     .canvas-container.sidebar-open {
+                                       ^
+412:       margin-left: 0;}}
+413: </style>
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:276:2 Unused CSS selector ".demo-page"
+https://svelte.dev/e/css_unused_selector
+274: <style>
+275:   /* @unocss-include */
+276:   .demo-page {
+                 ^
+277:     height: 100vh;
+278:     overflow: hidden;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:281:2 Unused CSS selector ".demo-header"
+https://svelte.dev/e/css_unused_selector
+279:     background: #f8fafc;
+280: }
+281:   .demo-header {
+                   ^
+282:     padding: 2rem;
+283:     text-align: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:287:2 Unused CSS selector ".demo-header h1"
+https://svelte.dev/e/css_unused_selector
+285:     border-bottom: 1px solid #e2e8f0;
+286: }
+287:   .demo-header h1 {
+                      ^
+288:     margin: 0 0 0.5rem 0;
+289:     color: #3b82f6;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:292:2 Unused CSS selector ".demo-header p"
+https://svelte.dev/e/css_unused_selector
+290:     font-size: 2.5rem;
+291: }
+292:   .demo-header p {
+                     ^
+293:     margin: 0;
+294:     color: #6b7280;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:297:2 Unused CSS selector ".main-content"
+https://svelte.dev/e/css_unused_selector
+295:     font-size: 1.125rem;
+296: }
+297:   .main-content {
+                    ^
+298:     padding: 2rem;
+299:     overflow-y: auto;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:302:2 Unused CSS selector ".demo-section"
+https://svelte.dev/e/css_unused_selector
+300:     height: 100%;
+301: }
+302:   .demo-section {
+                    ^
+303:     margin-bottom: 3rem;
+304: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:305:2 Unused CSS selector ".demo-section h2"
+https://svelte.dev/e/css_unused_selector
+303:     margin-bottom: 3rem;
+304: }
+305:   .demo-section h2 {
+                       ^
+306:     margin: 0 0 1rem 0;
+307:     color: #111827;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:310:2 Unused CSS selector ".demo-section p"
+https://svelte.dev/e/css_unused_selector
+308:     font-size: 1.5rem;
+309: }
+310:   .demo-section p {
+                      ^
+311:     margin: 0 0 1.5rem 0;
+312:     color: #6b7280;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:315:2 Unused CSS selector ".navigation-demo"
+https://svelte.dev/e/css_unused_selector
+313:     line-height: 1.6;
+314: }
+315:   .navigation-demo {
+                       ^
+316:     display: flex;
+317:     flex-wrap: wrap;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:320:2 Unused CSS selector ".demo-link"
+https://svelte.dev/e/css_unused_selector
+318:     gap: 1rem;
+319: }
+320:   .demo-link {
+                 ^
+321:     display: inline-flex;
+322:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:331:2 Unused CSS selector ".demo-link:hover"
+https://svelte.dev/e/css_unused_selector
+329:     transition: all 0.2s ease;
+330: }
+331:   .demo-link:hover {
+                       ^
+332:     background: #2563eb;
+333:     transform: translateY(-2px);
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:336:2 Unused CSS selector ".features-grid"
+https://svelte.dev/e/css_unused_selector
+334:     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+335: }
+336:   .features-grid {
+                     ^
+337:     display: grid;
+338:     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:342:2 Unused CSS selector ".feature-card"
+https://svelte.dev/e/css_unused_selector
+340:     margin-top: 1.5rem;
+341: }
+342:   .feature-card {
+                    ^
+343:     padding: 1.5rem;
+344:     background: #ffffff;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:349:2 Unused CSS selector ".feature-card:hover"
+https://svelte.dev/e/css_unused_selector
+347:     transition: all 0.2s ease;
+348: }
+349:   .feature-card:hover {
+                          ^
+350:     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+351:     transform: translateY(-2px);
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:353:2 Unused CSS selector ".feature-card h3"
+https://svelte.dev/e/css_unused_selector
+351:     transform: translateY(-2px);
+352: }
+353:   .feature-card h3 {
+                       ^
+354:     margin: 0 0 0.5rem 0;
+355:     color: #3b82f6;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:358:2 Unused CSS selector ".feature-card p"
+https://svelte.dev/e/css_unused_selector
+356:     font-size: 1.125rem;
+357: }
+358:   .feature-card p {
+                      ^
+359:     margin: 0;
+360:     color: #6b7280;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:363:2 Unused CSS selector ".sidebar-content"
+https://svelte.dev/e/css_unused_selector
+361:     font-size: 0.875rem;
+362: }
+363:   .sidebar-content {
+                       ^
+364:     height: 100%;
+365:     overflow-y: auto;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:367:2 Unused CSS selector ".sidebar-content h3"
+https://svelte.dev/e/css_unused_selector
+365:     overflow-y: auto;
+366: }
+367:   .sidebar-content h3 {
+                          ^
+368:     margin: 0 0 1rem 0;
+369:     color: #111827;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:372:2 Unused CSS selector ".citations-list"
+https://svelte.dev/e/css_unused_selector
+370:     font-size: 1.125rem;
+371: }
+372:   .citations-list {
+                      ^
+373:     margin-bottom: 2rem;
+374: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:375:2 Unused CSS selector ".citation-item"
+https://svelte.dev/e/css_unused_selector
+373:     margin-bottom: 2rem;
+374: }
+375:   .citation-item {
+                     ^
+376:     padding: 0.75rem;
+377:     background: #ffffff;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:382:2 Unused CSS selector ".citation-title"
+https://svelte.dev/e/css_unused_selector
+380:     margin-bottom: 0.5rem;
+381: }
+382:   .citation-title {
+                      ^
+383:     font-weight: 600;
+384:     color: #111827;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:388:2 Unused CSS selector ".citation-source"
+https://svelte.dev/e/css_unused_selector
+386:     margin-bottom: 0.25rem;
+387: }
+388:   .citation-source {
+                       ^
+389:     color: #6b7280;
+390:     font-size: 0.75rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:393:2 Unused CSS selector ".citation-date"
+https://svelte.dev/e/css_unused_selector
+391:     margin-bottom: 0.25rem;
+392: }
+393:   .citation-date {
+                     ^
+394:     color: #9ca3af;
+395:     font-size: 0.75rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:397:2 Unused CSS selector ".shortcuts-list"
+https://svelte.dev/e/css_unused_selector
+395:     font-size: 0.75rem;
+396: }
+397:   .shortcuts-list {
+                      ^
+398:     margin-bottom: 2rem;
+399: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:400:2 Unused CSS selector ".shortcut-item"
+https://svelte.dev/e/css_unused_selector
+398:     margin-bottom: 2rem;
+399: }
+400:   .shortcut-item {
+                     ^
+401:     display: flex;
+402:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:407:2 Unused CSS selector ".shortcut-item:last-child"
+https://svelte.dev/e/css_unused_selector
+405:     border-bottom: 1px solid #e2e8f0;
+406: }
+407:   .shortcut-item:last-child {
+                                ^
+408:     border-bottom: none;
+409: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:410:2 Unused CSS selector ".shortcut-item kbd"
+https://svelte.dev/e/css_unused_selector
+408:     border-bottom: none;
+409: }
+410:   .shortcut-item kbd {
+                         ^
+411:     background: #ffffff;
+412:     border: 1px solid #e2e8f0;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:419:2 Unused CSS selector ".shortcut-item span"
+https://svelte.dev/e/css_unused_selector
+417:     color: var(--pico-color, #111827);
+418: }
+419:   .shortcut-item span {
+                          ^
+420:     color: var(--pico-muted-color, #6b7280);
+421:     font-size: 0.875rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:423:2 Unused CSS selector ".features-list"
+https://svelte.dev/e/css_unused_selector
+421:     font-size: 0.875rem;
+422: }
+423:   .features-list {
+                     ^
+424:     list-style: none;
+425:     padding: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:428:2 Unused CSS selector ".features-list li"
+https://svelte.dev/e/css_unused_selector
+426:     margin: 0;
+427: }
+428:   .features-list li {
+                        ^
+429:     padding: 0.5rem 0;
+430:     color: var(--pico-muted-color, #6b7280);
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:434:2 Unused CSS selector ".features-list li:last-child"
+https://svelte.dev/e/css_unused_selector
+432:     border-bottom: 1px solid var(--pico-border-color, #e2e8f0);
+433: }
+434:   .features-list li:last-child {
+                                   ^
+435:     border-bottom: none;
+436: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:437:2 Unused CSS selector ".features-list li::before"
+https://svelte.dev/e/css_unused_selector
+435:     border-bottom: none;
+436: }
+437:   .features-list li::before {
+                                ^
+438:     content: "✓";
+439:     color: var(--pico-primary, #3b82f6);
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:461:4 Unused CSS selector ".demo-header"
+https://svelte.dev/e/css_unused_selector
+459:   /* Responsive design */
+460:   @media (max-width: 768px) {
+461:     .demo-header {
+                     ^
+462:       padding: 1rem;
+463: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:464:4 Unused CSS selector ".demo-header h1"
+https://svelte.dev/e/css_unused_selector
+462:       padding: 1rem;
+463: }
+464:     .demo-header h1 {
+                        ^
+465:       font-size: 2rem;
+466: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:467:4 Unused CSS selector ".main-content"
+https://svelte.dev/e/css_unused_selector
+465:       font-size: 2rem;
+466: }
+467:     .main-content {
+                      ^
+468:       padding: 1rem;
+469: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:470:4 Unused CSS selector ".features-grid"
+https://svelte.dev/e/css_unused_selector
+468:       padding: 1rem;
+469: }
+470:     .features-grid {
+                       ^
+471:       grid-template-columns: 1fr;
+472: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:473:4 Unused CSS selector ".navigation-demo"
+https://svelte.dev/e/css_unused_selector
+471:       grid-template-columns: 1fr;
+472: }
+473:     .navigation-demo {
+                         ^
+474:       flex-direction: column;
+475: }
+3:42:17 PM [vite-plugin-svelte] src/routes/modern-demo/+page.svelte:476:4 Unused CSS selector ".demo-link"
+https://svelte.dev/e/css_unused_selector
+474:       flex-direction: column;
+475: }
+476:     .demo-link {
+                   ^
+477:       justify-content: center;
+478: }
+3:42:17 PM [vite-plugin-svelte] src/routes/original-home/+page.svelte:224:2 Unused CSS selector ".hero-section"
+https://svelte.dev/e/css_unused_selector
+222: <style>
+223:   /* @unocss-include */
+224:   .hero-section {
+                    ^
+225:     background-image: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+226:                       radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+3:42:17 PM [vite-plugin-svelte] src/routes/original-home/+page.svelte:228:4 Unused CSS selector ".line-clamp-3"
+https://svelte.dev/e/css_unused_selector
+226:                       radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+227:                       radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);}
+228:     .line-clamp-3 {
+                      ^
+229:     display: -webkit-box;
+230:     -webkit-line-clamp: 3;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:192:2 Unused CSS selector ".auth-layout"
+https://svelte.dev/e/css_unused_selector
+190: <style>
+191:   /* @unocss-include */
+192:   .auth-layout {
+                   ^
+193:     display: grid;
+194:     grid-template-columns: 1fr 1fr;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:199:2 Unused CSS selector ".auth-info"
+https://svelte.dev/e/css_unused_selector
+197:     align-items: center;
+198:     padding: 2rem 0;}
+199:   .auth-info {
+                 ^
+200:     padding: 2rem;}
+201:   .auth-header {
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:201:2 Unused CSS selector ".auth-header"
+https://svelte.dev/e/css_unused_selector
+199:   .auth-info {
+200:     padding: 2rem;}
+201:   .auth-header {
+                   ^
+202:     display: flex;
+203:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:206:2 Unused CSS selector ".brand-icon"
+https://svelte.dev/e/css_unused_selector
+204:     gap: 1rem;
+205:     margin-bottom: 1.5rem;}
+206:   .brand-icon {
+                  ^
+207:     color: var(--harvard-crimson);
+208:     flex-shrink: 0;}
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:209:2 Unused CSS selector ".auth-header h1"
+https://svelte.dev/e/css_unused_selector
+207:     color: var(--harvard-crimson);
+208:     flex-shrink: 0;}
+209:   .auth-header h1 {
+                      ^
+210:     font-size: 2.5rem;
+211:     margin: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:213:2 Unused CSS selector ".auth-subtitle"
+https://svelte.dev/e/css_unused_selector
+211:     margin: 0;
+212:     line-height: 1.2;}
+213:   .auth-subtitle {
+                     ^
+214:     color: var(--text-muted);
+215:     margin: 0;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:217:2 Unused CSS selector ".auth-description"
+https://svelte.dev/e/css_unused_selector
+215:     margin: 0;
+216:     font-size: 1.1rem;}
+217:   .auth-description {
+                        ^
+218:     font-size: 1.1rem;
+219:     line-height: 1.6;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:222:2 Unused CSS selector ".feature-list"
+https://svelte.dev/e/css_unused_selector
+220:     margin-bottom: 2rem;
+221:     color: var(--text-muted);}
+222:   .feature-list {
+                    ^
+223:     display: flex;
+224:     flex-direction: column;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:226:2 Unused CSS selector ".feature-item"
+https://svelte.dev/e/css_unused_selector
+224:     flex-direction: column;
+225:     gap: 1rem;}
+226:   .feature-item {
+                    ^
+227:     display: flex;
+228:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:230:2 Unused CSS selector ".feature-icon"
+https://svelte.dev/e/css_unused_selector
+228:     align-items: center;
+229:     gap: 0.75rem;}
+230:   .feature-icon {
+                    ^
+231:     display: inline-flex;
+232:     align-items: center;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:242:2 Unused CSS selector ".auth-form"
+https://svelte.dev/e/css_unused_selector
+240:     font-weight: bold;
+241:     flex-shrink: 0;}
+242:   .auth-form {
+                 ^
+243:     padding: 1rem;}
+244:   .auth-form article {
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:244:2 Unused CSS selector ".auth-form article"
+https://svelte.dev/e/css_unused_selector
+242:   .auth-form {
+243:     padding: 1rem;}
+244:   .auth-form article {
+                         ^
+245:     margin: 0;
+246:     max-width: 400px;}
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:247:2 Unused CSS selector ".auth-form h2"
+https://svelte.dev/e/css_unused_selector
+245:     margin: 0;
+246:     max-width: 400px;}
+247:   .auth-form h2 {
+                    ^
+248:     text-align: center;
+249:     margin-bottom: 1.5rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:250:2 Unused CSS selector ".error-alert"
+https://svelte.dev/e/css_unused_selector
+248:     text-align: center;
+249:     margin-bottom: 1.5rem;}
+250:   .error-alert {
+                   ^
+251:     padding: 1rem;
+252:     margin-bottom: 1rem;
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:258:4 Unused CSS selector ".auth-layout"
+https://svelte.dev/e/css_unused_selector
+256:     color: var(--del-color);}
+257:   @media (max-width: 768px) {
+258:     .auth-layout {
+                     ^
+259:       grid-template-columns: 1fr;
+260:       gap: 2rem;}
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:261:4 Unused CSS selector ".auth-info"
+https://svelte.dev/e/css_unused_selector
+259:       grid-template-columns: 1fr;
+260:       gap: 2rem;}
+261:     .auth-info {
+                   ^
+262:       padding: 1rem;
+263:       text-align: center;}
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:264:4 Unused CSS selector ".auth-header"
+https://svelte.dev/e/css_unused_selector
+262:       padding: 1rem;
+263:       text-align: center;}
+264:     .auth-header {
+                     ^
+265:       justify-content: center;}
+266:     .auth-header h1 {
+3:42:17 PM [vite-plugin-svelte] src/routes/register/+page.svelte:266:4 Unused CSS selector ".auth-header h1"
+https://svelte.dev/e/css_unused_selector
+264:     .auth-header {
+265:       justify-content: center;}
+266:     .auth-header h1 {
+                        ^
+267:       font-size: 2rem;}}
+268: </style>
+3:42:17 PM [vite-plugin-svelte] src/routes/search/+page.svelte:556:2 Unused CSS selector ".line-clamp-2"
+https://svelte.dev/e/css_unused_selector
+554: <style>
+555:   /* @unocss-include */
+556:   .line-clamp-2 {
+                    ^
+557:     display: -webkit-box;
+558:     -webkit-line-clamp: 2;
+3:42:17 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:3:13 Component has unused export property 'placement'. If it is for external reference only, please consider using `export const placement`
+https://svelte.dev/e/export_let_unused
+1: <script lang="ts">
+2:   export let content: string = "";
+3:   export let placement: "top" | "bottom" | "left" | "right" = "top";
+                                                              ^
+4:   export let disabled: boolean = false;
+5: 
+3:42:17 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:35:2 Unused CSS selector ".tooltip-wrapper"
+https://svelte.dev/e/css_unused_selector
+33: <style>
+34:   /* @unocss-include */
+35:   .tooltip-wrapper {
+                      ^
+36:     position: relative;
+37:     display: inline-block;}
+3:42:17 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:38:2 Unused CSS selector ".tooltip"
+https://svelte.dev/e/css_unused_selector
+36:     position: relative;
+37:     display: inline-block;}
+38:   .tooltip {
+              ^
+39:     position: absolute;
+40:     z-index: 9999;
+3:42:17 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:52:2 Unused CSS selector ".tooltip-top"
+https://svelte.dev/e/css_unused_selector
+50:     white-space: normal;
+51:     pointer-events: none;}
+52:   .tooltip-top {
+                  ^
+53:     bottom: 100%;
+54:     left: 50%;
+3:42:17 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:57:2 Unused CSS selector ".tooltip-bottom"
+https://svelte.dev/e/css_unused_selector
+55:     transform: translateX(-50%);
+56:     margin-bottom: 0.5rem;}
+57:   .tooltip-bottom {
+                     ^
+58:     top: 100%;
+59:     left: 50%;
+3:42:17 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:62:2 Unused CSS selector ".tooltip-left"
+https://svelte.dev/e/css_unused_selector
+60:     transform: translateX(-50%);
+61:     margin-top: 0.5rem;}
+62:   .tooltip-left {
+                   ^
+63:     right: 100%;
+64:     top: 50%;
+3:42:17 PM [vite-plugin-svelte] src/lib/components/ui/Tooltip.svelte:67:2 Unused CSS selector ".tooltip-right"
+https://svelte.dev/e/css_unused_selector
+65:     transform: translateY(-50%);
+66:     margin-right: 0.5rem;}
+67:   .tooltip-right {
+                    ^
+68:     left: 100%;
+69:     top: 50%;
+[32m✓[39m 74 modules transformed.
+[31m✗[39m Build failed in 2.78s
+[31merror during build:
+[31m[vite-plugin-svelte] [plugin vite-plugin-svelte] src/routes/cases/+page.svelte (79:20): C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/cases/+page.svelte:79:20 'case' is a reserved word in JavaScript and cannot be used here
+https://svelte.dev/e/unexpected_reserved_word[31m
+file: [36mC:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/routes/cases/+page.svelte:79:20[31m
+[33m
+ 77 |  
+ 78 |    <div class="cases-grid">
+ 79 |      {#each cases as case}
+                           ^
+ 80 |        <div class="case-card">
+ 81 |          <div class="case-header">
+[31m
+[39m

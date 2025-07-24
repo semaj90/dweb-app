@@ -4,10 +4,22 @@ import { writable, derived, get } from "svelte/store";
 import { browser } from "$app/environment";
 import type {
   AIResponse,
-  Gemma3Config,
   LocalModel,
 } from "$lib/data/types";
 import type { ConversationHistory } from "$lib/types/api";
+
+// Define Gemma3Config interface directly
+export interface Gemma3Config {
+  model: string;
+  temperature: number;
+  maxTokens: number;
+  topP: number;
+  topK: number;
+  repeatPenalty: number;
+  systemPrompt: string;
+  useSystemPrompt: boolean;
+  streamOutput: boolean;
+}
 
 // SSR-safe storage utilities
 const SSR_SAFE_STORAGE = {
@@ -63,6 +75,7 @@ export interface AIConversationState {
   isActive: boolean;
   lastUpdated: number;
 }
+
 // AI settings state interface
 export interface AISettingsState {
   preferredProvider: "local" | "cloud" | "auto";
@@ -72,6 +85,7 @@ export interface AISettingsState {
   autoSave: boolean;
   uiTheme: "dark" | "light" | "auto";
 }
+
 // AI status state interface
 export interface AIStatusState {
   isLoading: boolean;
@@ -83,6 +97,7 @@ export interface AIStatusState {
   error: string | null;
   lastHealthCheck: number | null;
 }
+
 // Default states with SSR safety
 const DEFAULT_CONVERSATION: AIConversationState = {
   id: "",
@@ -94,8 +109,7 @@ const DEFAULT_CONVERSATION: AIConversationState = {
 const DEFAULT_SETTINGS: AISettingsState = {
   preferredProvider: "auto",
   gemma3Config: {
-    name: "gemma2:2b",
-    temperature: 0.7,
+    model: "gemma2:2b",
     temperature: 0.7,
     maxTokens: 512,
     topP: 0.9,
@@ -160,6 +174,7 @@ function createPersistedStore<T>(key: string, defaultValue: T) {
     },
   };
 }
+
 // Main AI stores
 export const aiConversation = createPersistedStore<AIConversationState>(
   "ai_conversation",
@@ -289,13 +304,13 @@ export const aiStore = {
           id: `${messageId}_user`,
           role: "user" as const,
           content,
-          timestamp: Date.now(),
+          timestamp: new Date(),
         };
         const assistantMessage = {
           id: `${messageId}_assistant`,
           role: "assistant" as const,
           content: aiResponse.content,
-          timestamp: Date.now(),
+          timestamp: new Date(),
           sources: aiResponse.sources,
           metadata: {
             provider: aiResponse.metadata.provider,
@@ -404,9 +419,12 @@ if (browser) {
     aiStore.initialize().catch(console.error);
   }, 100);
 }
+
 // Export store subscriptions for reactive UI
 export {
   aiConversation as conversation,
   aiSettings as settings,
   aiStatus as status,
 };
+
+export default aiStore;

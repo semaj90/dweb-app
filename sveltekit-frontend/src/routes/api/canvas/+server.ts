@@ -1,4 +1,4 @@
-import { canvasStates } from "$lib/server/db/schema";
+import { canvasStates } from "$lib/server/db/schema-postgres";
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
@@ -15,6 +15,7 @@ export const POST: RequestHandler = async ({ request }) => {
         { status: 400 },
       );
     }
+    
     // Check if canvas state already exists for this case
     const existing = await db
       .select()
@@ -31,7 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
         .set({
           canvasData: canvasState,
           updatedAt: new Date(),
-          version: existing[0].version + 1,
+          version: (existing[0].version || 1) + 1,
         })
         .where(eq(canvasStates.caseId, caseId))
         .returning();
@@ -45,11 +46,11 @@ export const POST: RequestHandler = async ({ request }) => {
           name: `Canvas State ${new Date().toISOString()}`,
           canvasData: canvasState,
           version: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdBy: null, // Set to actual user ID when available
         })
         .returning();
     }
+    
     return json({
       success: true,
       canvasState: result,
@@ -74,6 +75,7 @@ export const GET: RequestHandler = async ({ url }) => {
     if (!caseId) {
       return json({ error: "Case ID is required" }, { status: 400 });
     }
+    
     const canvasState = await db
       .select()
       .from(canvasStates)

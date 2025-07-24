@@ -7,7 +7,8 @@ if (!dev && typeof window !== 'undefined') {
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === 'navigation') {
-          console.log('Page load time:', entry.loadEventEnd - entry.fetchStart);
+          const navEntry = entry as PerformanceNavigationTiming;
+          console.log('Page load time:', navEntry.loadEventEnd - navEntry.fetchStart);
         }
         if (entry.entryType === 'largest-contentful-paint') {
           console.log('LCP:', entry.startTime);

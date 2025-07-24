@@ -62,3 +62,5 @@ export const caseStore = {
     }
   },
 };
+
+export default caseStore;

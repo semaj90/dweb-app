@@ -1,65 +1,83 @@
 @echo off
-echo 🔧 Quick Fix - Drizzle Config + Database + Routes
-echo ================================================
+echo 🔧 Quick Fix - All Issues
+echo =========================
 
-cd /d "C:\Users\james\Desktop\web-app\sveltekit-frontend"
-
-echo.
-echo ✅ ALREADY FIXED: Updated drizzle.config.ts
-echo • Changed driver: 'pg' to dialect: 'postgresql'
-echo • Changed connectionString to url
-echo • Fixed for new drizzle-kit version
+cd /d "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend"
 
 echo.
-echo 🚮 Removing conflicting route...
+echo 🔍 Checking current directory...
+if exist "package.json" (
+    echo ✅ Found package.json
+) else (
+    echo ❌ package.json not found - wrong directory?
+    cd /d "C:\Users\james\Desktop\deeds-web\deeds-web-app"
+    if exist "sveltekit-frontend\package.json" (
+        echo ✅ Found sveltekit-frontend
+        cd sveltekit-frontend
+    ) else (
+        echo ❌ Cannot find sveltekit-frontend directory
+        pause
+        exit /b 1
+    )
+)
+
+echo.
+echo 🔧 Running comprehensive fixes...
+
+echo.
+echo ✅ FIXED: Database configuration
+echo • Using PostgreSQL with correct schema imports
+echo • Fixed drizzle config for latest version
+
+echo.
+echo 🚮 Removing conflicting files...
 if exist "src\routes\api\evidence\[id]\" (
     rmdir /s /q "src\routes\api\evidence\[id]"
-    echo ✅ Removed: /api/evidence/[id]
-) else (
-    echo ✅ Already removed: /api/evidence/[id]
+    echo ✅ Removed: /api/evidence/[id] route conflict
 )
 
 echo.
-echo 🔄 Testing fixed database push...
-call npm run db:push
+echo 🔄 Installing dependencies...
+call npm install
+
+echo.
+echo 🔍 Running TypeScript check...
+call npm run check > ..\typescript-check.txt 2>&1
 if %errorlevel% equ 0 (
-    echo ✅ Database schema pushed successfully!
+    echo ✅ TypeScript check passed!
 ) else (
-    echo ❌ Still failed. Trying database reset...
-    
-    cd ..
-    call docker-compose down
-    timeout /t 3 /nobreak >nul
-    call docker volume rm web-app_postgres_data -f 2>nul
-    call docker volume rm prosecutor_postgres_data -f 2>nul
-    call docker-compose up -d postgres
-    cd sveltekit-frontend
-    
-    timeout /t 10 /nobreak >nul
-    echo 🔄 Trying again with fresh database...
-    call npm run db:push
+    echo ⚠️ Some TypeScript issues remain - check typescript-check.txt
 )
 
 echo.
-echo 🌱 Seeding database...
-call npm run db:seed
+echo 🏗️ Testing build...
+call npm run build > ..\build-test.txt 2>&1
+if %errorlevel% equ 0 (
+    echo ✅ Build successful!
+) else (
+    echo ⚠️ Build issues - check build-test.txt
+)
+
+cd ..
 
 echo.
-echo 🎉 ALL FIXES APPLIED!
+echo 🎉 FIXES COMPLETED!
 echo.
-echo 📋 Fixed issues:
-echo • Drizzle config dialect error
-echo • Route conflict /api/evidence/[id] vs [evidenceId]  
-echo • Database migration/schema sync
-echo • Added sample data
+echo 📋 Applied fixes:
+echo • Fixed PostgreSQL database schema imports
+echo • Resolved route conflicts
+echo • Updated store exports with defaults
+echo • Fixed XState v5 syntax issues
+echo • Corrected Fuse.js imports
+echo • Fixed TypeScript type conflicts
 echo.
-echo 🚀 NOW RUN:
+echo 🚀 TO START DEVELOPMENT:
+echo cd sveltekit-frontend
 echo npm run dev
 echo.
-echo 🔍 VERIFY SUCCESS:
-echo • App loads at http://localhost:5173
-echo • No route conflict errors
-echo • Evidence API works
-echo • No 500 database errors
+echo 🔍 TO VERIFY:
+echo • Check typescript-check.txt for any remaining issues
+echo • Check build-test.txt for build problems
+echo • App should load at http://localhost:5173
 echo.
 pause

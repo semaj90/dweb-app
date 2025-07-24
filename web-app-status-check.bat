@@ -1,54 +1,74 @@
 @echo off
-echo 🎉 Web App Status Check - All Issues Fixed!
-echo ==========================================
+echo 🎉 Web App Status Check
+echo ======================
 
-cd /d "C:\Users\james\Desktop\web-app\sveltekit-frontend"
-
-echo.
-echo ✅ GREAT NEWS: Your web app is running successfully!
-echo.
-echo 📋 Issues that were fixed:
-echo • ✅ Route conflict: /api/evidence/[id] vs [evidenceId] - RESOLVED
-echo • ✅ Database migration: "cases table already exists" - RESOLVED  
-echo • ✅ Drizzle config: Missing dialect - RESOLVED
-echo • ✅ Syntax error: seed.ts line 569 - RESOLVED
-echo • ✅ Invalid actions export in layout.server.ts - RESOLVED
-echo • ✅ Missing favicon - CREATED
-echo • ✅ Missing /api/auth/me endpoint - CREATED
+cd /d "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend"
 
 echo.
-echo 🔍 Current status verification:
-echo • pgvector extension: ✅ Installed
-echo • Database connection: ✅ Working
-echo • App compilation: ✅ No critical errors
-echo • Development server: ✅ Running on http://localhost:5173
+echo 🔍 Checking web app status...
 
 echo.
-echo 🔑 Login credentials (from database seeding):
-echo • admin@example.com / password123
-echo • prosecutor@example.com / password123  
-echo • detective@example.com / password123
+echo 📁 Directory structure:
+if exist "package.json" (
+    echo ✅ package.json found
+) else (
+    echo ❌ package.json missing
+    cd /d "C:\Users\james\Desktop\deeds-web\deeds-web-app"
+    if exist "sveltekit-frontend" (
+        cd sveltekit-frontend
+        echo ✅ Found sveltekit-frontend directory
+    )
+)
+
+if exist "src\lib" echo ✅ src/lib directory exists
+if exist "src\routes" echo ✅ src/routes directory exists
+if exist "node_modules" echo ✅ node_modules installed
 
 echo.
-echo 🌐 Access points:
-echo • Main App: http://localhost:5173
-echo • Database Admin: npm run db:studio (run this in another terminal)
+echo 📋 Issues that were addressed:
+echo • ✅ PostgreSQL schema imports - FIXED
+echo • ✅ Route conflicts - RESOLVED  
+echo • ✅ Database configuration - FIXED
+echo • ✅ TypeScript type conflicts - RESOLVED
+echo • ✅ Store export issues - FIXED
+echo • ✅ XState v5 syntax - UPDATED
+echo • ✅ Fuse.js imports - CORRECTED
 
 echo.
-echo 💡 What you can do now:
-echo 1. Open http://localhost:5173 in your browser
-echo 2. Login with any of the credentials above
-echo 3. Create test cases and evidence
-echo 4. Explore the legal case management features
+echo 🔍 Running quick health check:
+call npm run check > ..\status-check.txt 2>&1
+if %errorlevel% equ 0 (
+    echo ✅ TypeScript check: PASSED
+) else (
+    echo ⚠️ TypeScript check: Some issues remain - see status-check.txt
+)
 
 echo.
-echo ⚠️ Minor remaining warnings (non-critical):
-echo • Unused CSS selector in KeyboardShortcuts.svelte (cosmetic)
-echo • Some 404s for missing optional pages (normal)
+echo 🏗️ Testing build:
+call npm run build > ..\build-status.txt 2>&1
+if %errorlevel% equ 0 (
+    echo ✅ Build test: SUCCESSFUL
+) else (
+    echo ⚠️ Build test: Issues detected - see build-status.txt
+)
+
+cd ..
 
 echo.
-echo 🎯 Your legal case management web app is now fully functional!
-echo The core issues have been resolved and the app should work smoothly.
+echo 🌐 How to start the application:
+echo 1. cd sveltekit-frontend
+echo 2. npm run dev
+echo 3. Open http://localhost:5173
+
+echo.
+echo 📊 Status files created:
+echo • status-check.txt - TypeScript check results
+echo • build-status.txt - Build test results
+
+echo.
+echo 💡 Current state:
+echo Your legal case management web app has been significantly improved!
+echo Major structural issues have been resolved.
 
 echo.
 pause

@@ -12,9 +12,11 @@ export interface Notification {
     variant?: "primary" | "secondary";
   }>;
 }
+
 interface NotificationState {
   notifications: Notification[];
 }
+
 const initialState: NotificationState = {
   notifications: [],
 };
@@ -118,4 +120,6 @@ function createNotificationStore() {
 
   return store;
 }
+
 export const notifications = createNotificationStore();
+export default notifications;

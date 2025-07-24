@@ -69,7 +69,7 @@
 
 /* Modern CSS Reset and Base Styles */
 *,
-*::before,
+*::before
 *::after {
   box-sizing: border-box;
 }

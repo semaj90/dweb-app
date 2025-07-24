@@ -36,7 +36,7 @@ export const LOCAL_LLM_PATHS = {
     ollamaModel: "gemma3-legal", // Custom Ollama model name
     fallbackModel: "gemma3:12b", // Fallback to existing model
     format: "gguf",
-    size: "16B", // Estimated from filename mo16.gguf
+    size: "8B", // Estimated from filename mo16.gguf
   },
 };
 

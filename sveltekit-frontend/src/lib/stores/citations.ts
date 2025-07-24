@@ -14,12 +14,14 @@ export interface Citation {
   createdAt: Date;
   updatedAt: Date;
 }
+
 export interface CitationStore {
   citations: Citation[];
   recentCitations: Citation[];
   searchQuery: string;
   selectedCategories: string[];
 }
+
 // Create the store
 function createCitationStore() {
   const { subscribe, set, update } = writable<CitationStore>({
@@ -177,6 +179,7 @@ function createCitationStore() {
     },
   };
 }
+
 export const citationStore = createCitationStore();
 
 // Sample citations for development
@@ -232,3 +235,5 @@ if (
   }));
   localStorage.setItem("citations-initialized", "true");
 }
+
+export default citationStore;

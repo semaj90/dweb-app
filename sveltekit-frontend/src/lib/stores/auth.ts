@@ -1,22 +1,21 @@
 import type { User } from '$lib/types/user';
-
-
-
 import { writable, type Writable } from "svelte/store";
 import { setContext, getContext } from "svelte";
 
-export interface User {
+export interface AuthUser {
   id: string;
   email: string;
   name?: string;
   role: string;
   avatarUrl?: string;
 }
+
 export interface AuthState {
   isAuthenticated: boolean;
-  user: User | null;
+  user: AuthUser | null;
   isLoading: boolean;
 }
+
 const createAuthStore = () => {
   const { subscribe, set, update } = writable<AuthState>({
     isAuthenticated: false,
@@ -76,7 +75,7 @@ const createAuthStore = () => {
       }
     },
 
-    updateUser: (userData: Partial<User>) => {
+    updateUser: (userData: Partial<AuthUser>) => {
       update((state) => ({
         ...state,
         user: state.user ? { ...state.user, ...userData } : null,
@@ -109,11 +108,15 @@ export const getAuthContext = (): AuthStore => {
 };
 
 // Utility to check if user has specific role
-export const hasRole = (user: User | null, role: string): boolean => {
+export const hasRole = (user: AuthUser | null, role: string): boolean => {
   return user?.role === role;
 };
 
 // Utility to check if user has any of the specified roles
-export const hasAnyRole = (user: User | null, roles: string[]): boolean => {
+export const hasAnyRole = (user: AuthUser | null, roles: string[]): boolean => {
   return user ? roles.includes(user.role) : false;
 };
+
+// Create and export default auth store
+const authStore = createAuthStore();
+export default authStore;

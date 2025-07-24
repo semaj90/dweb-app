@@ -1,100 +1,203 @@
 // lib/stores/ai.ts
-// Global AI Summary Store using XState, with memoization and streaming support
-import { createMachine, assign } from "xstate";
-import { useMachine } from "@xstate/svelte";
+// Global AI Summary Store using XState v5, with memoization and streaming support
+import { setup, createActor, assign, fromPromise } from "xstate";
+import { writable } from "svelte/store";
 
 // Memoization cache (in-memory, can be replaced with Redis for persistence)
 const summaryCache = new Map<string, string>();
 
-export const aiGlobalMachine = createMachine(
-  {
-    id: "aiGlobalSummary",
-    initial: "idle",
-    context: {
-      summary: "",
-      error: "",
-      loading: false,
-      caseId: "",
-      evidence: [],
-      userId: "",
-      stream: "",
-      cacheKey: "",
-      sources: [] as any[], // Top evidence sources
-    },
-    states: {
-      idle: {
-        on: { SUMMARIZE: { target: "summarizing", actions: "setContext" } },
+// Define context and events interfaces
+interface AIContext {
+  summary: string;
+  error: string;
+  loading: boolean;
+  caseId: string;
+  evidence: any[];
+  userId: string;
+  stream: string;
+  cacheKey: string;
+  sources: any[];
+}
+
+type AIEvent = 
+  | { type: 'SUMMARIZE'; caseId: string; evidence: any[]; userId: string }
+  | { type: 'RETRY' }
+  | { type: 'RESET' };
+
+export const aiGlobalMachine = setup({
+  types: {
+    context: {} as AIContext,
+    events: {} as AIEvent,
+  },
+  actions: {
+    setContext: assign(({ context, event }) => {
+      if (event.type !== 'SUMMARIZE') return {};
+      const cacheKey = event.caseId + ":" + hashEvidence(event.evidence);
+      return {
+        caseId: event.caseId,
+        evidence: event.evidence,
+        userId: event.userId,
+        cacheKey,
+        loading: true,
+        error: "",
+        stream: "",
+      };
+    }),
+    setSuccess: assign(({ event }) => {
+      if (event.type !== 'xstate.done.actor.summarizeEvidence') return {};
+      const data = event.output;
+      return {
+        summary: data.summary,
+        sources: data.sources || [],
+        loading: false,
+        stream: "",
+        error: "",
+      };
+    }),
+    setError: assign(({ event }) => {
+      if (event.type !== 'xstate.error.actor.summarizeEvidence') return {};
+      return {
+        error: (event.error as Error)?.message || "Error generating summary.",
+        loading: false,
+      };
+    }),
+  },
+  actors: {
+    summarizeEvidence: fromPromise(async ({ input }: { input: AIContext }) => {
+      // Memoization: check cache first
+      if (summaryCache.has(input.cacheKey)) {
+        return { 
+          summary: summaryCache.get(input.cacheKey)!, 
+          sources: [] 
+        };
+      }
+
+      // Call AI summary API
+      const res = await fetch("/api/ai-summary", {
+        method: "POST",
+        body: JSON.stringify({
+          caseId: input.caseId,
+          evidence: input.evidence,
+          userId: input.userId,
+        }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        throw new Error(`API request failed: ${res.statusText}`);
+      }
+
+      const data = await res.json();
+      if (!data.summary) throw new Error("No summary returned");
+
+      // Cache the result
+      summaryCache.set(input.cacheKey, data.summary);
+
+      return { 
+        summary: data.summary, 
+        sources: data.sources || [] 
+      };
+    }),
+  },
+}).createMachine({
+  id: "aiGlobalSummary",
+  initial: "idle",
+  context: {
+    summary: "",
+    error: "",
+    loading: false,
+    caseId: "",
+    evidence: [],
+    userId: "",
+    stream: "",
+    cacheKey: "",
+    sources: [],
+  },
+  states: {
+    idle: {
+      on: { 
+        SUMMARIZE: { 
+          target: "summarizing", 
+          actions: "setContext" 
+        } 
       },
-      summarizing: {
-        entry: assign({ loading: (_) => true, error: (_) => "", stream: "" }),
-        invoke: {
-          src: "summarizeEvidence",
-          onDone: {
-            target: "success",
-            actions: assign((ctx, e) => {
-              summaryCache.set(ctx.cacheKey, e.data.summary);
-              return {
-                summary: e.data.summary,
-                sources: e.data.sources || [],
-                loading: false,
-                stream: "",
-              };
-            }),
-          },
-          onError: {
-            target: "failure",
-            actions: assign({
-              error: (_, e) => e.data || "Error generating summary.",
-              loading: (_) => false,
-            }),
-          },
+    },
+    summarizing: {
+      invoke: {
+        src: "summarizeEvidence",
+        input: ({ context }) => context,
+        onDone: {
+          target: "success",
+          actions: "setSuccess",
+        },
+        onError: {
+          target: "failure",
+          actions: "setError",
         },
       },
-      success: { on: { SUMMARIZE: "summarizing" } },
-      failure: { on: { SUMMARIZE: "summarizing" } },
+    },
+    success: { 
+      on: { 
+        SUMMARIZE: "summarizing",
+        RESET: "idle",
+      } 
+    },
+    failure: { 
+      on: { 
+        SUMMARIZE: "summarizing",
+        RETRY: "summarizing",
+        RESET: "idle",
+      } 
     },
   },
-  {
-    actions: {
-      setContext: assign((ctx, evt) => {
-        const cacheKey = evt.caseId + ":" + hashEvidence(evt.evidence);
-        return {
-          caseId: evt.caseId,
-          evidence: evt.evidence,
-          userId: evt.userId,
-          cacheKey,
-        };
-      }),
-    },
-    services: {
-      summarizeEvidence: async (ctx) => {
-        // Memoization: check cache first
-        if (summaryCache.has(ctx.cacheKey)) {
-          return { summary: summaryCache.get(ctx.cacheKey), sources: [] };
-        }
-        // Streaming support (if API supports ReadableStream)
-        const res = await fetch("/api/ai-summary", {
-          method: "POST",
-          body: JSON.stringify({
-            caseId: ctx.caseId,
-            evidence: ctx.evidence,
-            userId: ctx.userId,
-          }),
-          headers: { "Content-Type": "application/json" },
-        });
-        // If streaming, process stream here (see AiAssistant.svelte for UI)
-        const data = await res.json();
-        if (!data.summary) throw new Error("No summary returned");
-        return { summary: data.summary, sources: data.sources || [] };
-      },
-    },
-  }
-);
+});
 
 // Utility: hash evidence array for cache key
 function hashEvidence(evidence: any[]): string {
   // Simple hash, replace with a better hash for production
-  return btoa(JSON.stringify(evidence)).slice(0, 32);
+  if (typeof btoa !== 'undefined') {
+    return btoa(JSON.stringify(evidence)).slice(0, 32);
+  }
+  // Fallback for Node.js environment
+  return Buffer.from(JSON.stringify(evidence)).toString('base64').slice(0, 32);
 }
 
-export const useAIGlobalStore = () => useMachine(aiGlobalMachine);
+// Create and export the actor
+export const aiGlobalActor = createActor(aiGlobalMachine);
+
+// Svelte store wrapper for reactivity
+export const aiGlobalStore = writable({
+  state: 'idle',
+  context: aiGlobalMachine.initialState.context,
+});
+
+// Subscribe to actor state changes
+aiGlobalActor.subscribe((state) => {
+  aiGlobalStore.set({
+    state: state.value as string,
+    context: state.context,
+  });
+});
+
+// Start the actor
+aiGlobalActor.start();
+
+// Export convenience functions
+export const aiGlobalActions = {
+  summarize: (caseId: string, evidence: any[], userId: string) => {
+    aiGlobalActor.send({ 
+      type: 'SUMMARIZE', 
+      caseId, 
+      evidence, 
+      userId 
+    });
+  },
+  retry: () => {
+    aiGlobalActor.send({ type: 'RETRY' });
+  },
+  reset: () => {
+    aiGlobalActor.send({ type: 'RESET' });
+  },
+};
+
+export default aiGlobalStore;

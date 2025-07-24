@@ -49,7 +49,7 @@ export const handle: Handle = async ({ event, resolve }) => {
             lastName: userRecord.last_name,
             role: userRecord.role || 'user',
             isActive: userRecord.is_active !== 0,
-            emailVerified: userRecord.email_verified !== 0,
+            emailVerified: userRecord.email_verified !== 0 ? new Date(userRecord.email_verified) : null,
             createdAt: new Date(userRecord.created_at),
             updatedAt: new Date(userRecord.updated_at)
           };

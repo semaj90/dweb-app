@@ -12,12 +12,14 @@ export interface Evidence {
   y: number;
   embedding?: number[];
 }
+
 // Store State Interface
 interface EvidenceStoreState {
   evidence: Evidence[];
   isLoading: boolean;
   error: string | null;
 }
+
 // 2. Evidence Store
 const createEvidenceStore = () => {
   const { subscribe, set, update } = writable<EvidenceStoreState>({
@@ -170,3 +172,4 @@ const createEvidenceStore = () => {
 };
 
 export const evidence = createEvidenceStore();
+export default evidence;

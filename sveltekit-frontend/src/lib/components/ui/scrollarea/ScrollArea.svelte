@@ -44,6 +44,4 @@
   {/if}
   <ScrollArea.Corner />
 </ScrollArea.Root>
-  <ScrollArea.Corner />
-</ScrollArea.Root>
 

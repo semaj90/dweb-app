@@ -3,7 +3,7 @@ echo 🔍 SvelteKit TypeScript Check
 echo ============================
 echo.
 
-cd /d "C:\Users\james\Desktop\web-app\sveltekit-frontend"
+cd /d "C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend"
 
 echo Running svelte-check...
 echo.
