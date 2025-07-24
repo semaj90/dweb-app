@@ -225,7 +225,6 @@
 }
 
     gap: 16px;
-}
   .stat-card {
     background: #f9fafb;
     padding: 20px;

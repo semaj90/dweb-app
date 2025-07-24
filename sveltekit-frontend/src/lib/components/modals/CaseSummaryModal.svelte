@@ -3,7 +3,7 @@
   import { Button } from "$lib/components/ui/button";
   import { createEventDispatcher } from "svelte";
   import Badge from '$lib/components/ui/Badge.svelte';
-  import Dialog from '$lib/components/ui/dialog/Dialog.svelte';
+  import * as Dialog from '$lib/components/ui/dialog';
   import Drawer from '$lib/components/ui/drawer/Drawer.svelte';
   import Grid from '$lib/components/ui/grid/Grid.svelte';
   import GridItem from '$lib/components/ui/grid/GridItem.svelte';
@@ -161,332 +161,91 @@
     </svelte:fragment>
   </Drawer>
 {:else}
-  <Dialog
-    bind:open
-    title="Case Summary"
-    description="Comprehensive AI-powered case analysis"
-    size="full"
-  >
-    <svelte:fragment slot="trigger">
-      <slot name="trigger" />
-    </svelte:fragment>
-
-    {#if caseData}
-      <div class="container mx-auto px-4">
-        <!-- Case Header -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <Folder class="container mx-auto px-4" />
-              </div>
-              <div>
-                <h2 class="container mx-auto px-4">
-                  {caseData.title}
-                </h2>
-                <p class="container mx-auto px-4">{caseData.description}</p>
-                <div class="container mx-auto px-4">
-                  <span
-                    class="container mx-auto px-4"
-                  >
-                    {caseData.status}
-                  </span>
-                  <span
-                    class="container mx-auto px-4"
-                  >
-                    {caseData.priority} priority
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="container mx-auto px-4">
-              <Button
-                variant="secondary"
-                size="sm"
-                on:click={() => generateSummary()}
-                disabled={isGeneratingSummary}
-              >
-                {#if isGeneratingSummary}
-                  <div
-                    class="container mx-auto px-4"
-                  ></div>
-                  Generating...
-                {:else}
-                  <Sparkles class="container mx-auto px-4" />
-                  Generate Summary
-                {/if}
+  <Dialog.Root open={isOpen} on:close={closeModal}>
+    <Dialog.Content size="lg">
+      <Dialog.Header>
+        <Dialog.Title>Case Summary</Dialog.Title>
+        <Dialog.Description>AI-generated summary of your case</Dialog.Description>
+      </Dialog.Header>
+      <!-- Main content of the modal -->
+      <div class="p-6 space-y-4">
+        {#if isGeneratingSummary}
+          <!-- Loading State -->
+          <div class="flex flex-col items-center justify-center h-48">
+            <Brain class="w-16 h-16 text-primary animate-pulse" />
+            <span class="text-lg text-muted-foreground mt-4">Generating AI Summary...</span>
+          </div>
+        {:else if caseData?.summary}
+          <!-- Summary Content -->
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-semibold">Overview</h3>
+              <Button on:click={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
+                <Sparkles class="w-4 h-4 mr-2" /> Regenerate
               </Button>
             </div>
-          </div>
+            <p class="text-muted-foreground">{caseData.summary.overview}</p>
 
-          <!-- Metrics -->
-          {#if caseData.metrics}
-            <Grid columns={5} gap="md">
-              <GridItem colSpan={1}>
-                <div class="container mx-auto px-4">
-                  <FileText class="container mx-auto px-4" />
-                  <div class="container mx-auto px-4">
-                    {caseData.metrics.evidenceCount}
+            <h3 class="text-lg font-semibold">Key Findings</h3>
+            <ul class="list-disc list-inside text-muted-foreground">
+              {#each caseData.summary.keyFindings as finding}
+                <li>{finding}</li>
+              {/each}
+            </ul>
+
+            <h3 class="text-lg font-semibold">Recommendations</h3>
+            <ul class="list-disc list-inside text-muted-foreground">
+              {#each caseData.summary.recommendations as rec}
+                <li>{rec}</li>
+              {/each}
+            </ul>
+
+            <h3 class="text-lg font-semibold">Risk Assessment</h3>
+            <div class="flex items-center gap-2">
+              <Badge variant="outline" class="{getRiskColor(caseData.summary.riskAssessment.level)}">
+                {caseData.summary.riskAssessment.level}
+              </Badge>
+              <span class="text-muted-foreground">({caseData.summary.riskAssessment.factors.join(', ')})</span>
+            </div>
+
+            <h3 class="text-lg font-semibold">Timeline</h3>
+            <ol class="border-l border-gray-200 space-y-4 pl-4">
+              {#each caseData.summary.timeline as event}
+                <li>
+                  <div class="flex items-center">
+                    <div class="absolute w-3 h-3 bg-primary rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                    <time class="ml-2 text-sm font-semibold text-primary">{formatDate(event.date)}</time>
                   </div>
-                  <div class="container mx-auto px-4">Evidence Items</div>
-                </div>
-              </GridItem>
+                  <p class="ml-2 text-muted-foreground">{event.event}</p>
+                </li>
+              {/each}
+            </ol>
 
-              <GridItem colSpan={1}>
-                <div class="container mx-auto px-4">
-                  <Users class="container mx-auto px-4" />
-                  <div class="container mx-auto px-4">
-                    {caseData.metrics.witnessesInterviewed}
-                  </div>
-                  <div class="container mx-auto px-4">Witnesses</div>
-                </div>
-              </GridItem>
+            <h3 class="text-lg font-semibold">Evidence Overview</h3>
+            <div class="grid grid-cols-2 gap-4 text-muted-foreground">
+              <div>Total Evidence: {caseData.summary.evidence.total}</div>
+              <div>Admissible: {caseData.summary.evidence.admissible}</div>
+              <div>Questionable: {caseData.summary.evidence.questionable}</div>
+              <div>Inadmissible: {caseData.summary.evidence.inadmissible}</div>
+            </div>
 
-              <GridItem colSpan={1}>
-                <div class="container mx-auto px-4">
-                  <Calendar class="container mx-auto px-4" />
-                  <div class="container mx-auto px-4">
-                    {caseData.metrics.daysActive}
-                  </div>
-                  <div class="container mx-auto px-4">Days Active</div>
-                </div>
-              </GridItem>
-
-              <GridItem colSpan={1}>
-                <div class="container mx-auto px-4">
-                  <Target class="container mx-auto px-4" />
-                  <div class="container mx-auto px-4">
-                    {caseData.metrics.completionPercentage}%
-                  </div>
-                  <div class="container mx-auto px-4">Complete</div>
-                </div>
-              </GridItem>
-
-              <GridItem colSpan={1}>
-                <div class="container mx-auto px-4">
-                  <Clock class="container mx-auto px-4" />
-                  <div class="container mx-auto px-4">
-                    {caseData.metrics.documentsReviewed}
-                  </div>
-                  <div class="container mx-auto px-4">Docs Reviewed</div>
-                </div>
-              </GridItem>
-            </Grid>
-          {/if}
-        </div>
-
-        <!-- Tabs -->
-        <div class="container mx-auto px-4">
-          <nav class="container mx-auto px-4">
-            {#each [{ id: "overview", label: "Overview", icon: Brain }, { id: "timeline", label: "Timeline", icon: Calendar }, { id: "evidence", label: "Evidence", icon: FileText }, { id: "recommendations", label: "Recommendations", icon: Target }] as tab}
-              <button
-                class="container mx-auto px-4"
-                on:click={() => (activeTab = tab.id as typeof activeTab)}
-              >
-                <svelte:component this={tab.icon} class="container mx-auto px-4" />
-                {tab.label}
-              </button>
-            {/each}
-          </nav>
-        </div>
-
-        <!-- Tab Content -->
-        {#if caseData.summary}
-          <div class="container mx-auto px-4">
-            {#if activeTab === "overview"}
-              <Grid columns={12} gap="lg">
-                <GridItem colSpan={8}>
-                  <div class="container mx-auto px-4">
-                    <h3 class="container mx-auto px-4">Case Overview</h3>
-                    <p class="container mx-auto px-4">
-                      {caseData.summary.overview}
-                    </p>
-                  </div>
-
-                  <div class="container mx-auto px-4">
-                    <h3 class="container mx-auto px-4">Key Findings</h3>
-                    <ul class="container mx-auto px-4">
-                      {#each caseData.summary.keyFindings as finding}
-                        <li class="container mx-auto px-4">
-                          <CheckCircle
-                            class="container mx-auto px-4"
-                          />
-                          <span class="container mx-auto px-4">{finding}</span>
-                        </li>
-                      {/each}
-                    </ul>
-                  </div>
-                </GridItem>
-
-                <GridItem colSpan={4}>
-                  <div class="container mx-auto px-4">
-                    <h3 class="container mx-auto px-4">Risk Assessment</h3>
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
-                        <span class="container mx-auto px-4">Risk Level</span>
-                        <span
-                          class="container mx-auto px-4"
-                        >
-                          {caseData.summary.riskAssessment.level.toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <h4 class="container mx-auto px-4">Risk Factors</h4>
-                    <ul class="container mx-auto px-4">
-                      {#each caseData.summary.riskAssessment.factors as factor}
-                        <li class="container mx-auto px-4">
-                          <AlertTriangle
-                            class="container mx-auto px-4"
-                          />
-                          <span class="container mx-auto px-4">{factor}</span>
-                        </li>
-                      {/each}
-                    </ul>
-                  </div>
-                </GridItem>
-              </Grid>
-            {/if}
-
-            {#if activeTab === "timeline"}
-              <div class="container mx-auto px-4">
-                <h3 class="container mx-auto px-4">Case Timeline</h3>
-                <div class="container mx-auto px-4">
-                  {#each caseData.summary.timeline as event}
-                    <div class="container mx-auto px-4">
-                      <div
-                        class="container mx-auto px-4"
-                      ></div>
-                      <div class="container mx-auto px-4">
-                        <div class="container mx-auto px-4">
-                          <span class="container mx-auto px-4"
-                            >{event.event}</span
-                          >
-                          <span class="container mx-auto px-4"
-                            >{formatDate(event.date)}</span
-                          >
-                        </div>
-                        <Badge
-                          variant={event.importance === "high"
-                            ? "destructive"
-                            : event.importance === "medium"
-                              ? "secondary"
-                              : "outline"}
-                          size="sm"
-                        >
-                          {event.importance} importance
-                        </Badge>
-                      </div>
-                    </div>
-                  {/each}
-                </div>
-              </div>
-            {/if}
-
-            {#if activeTab === "evidence"}
-              <div class="container mx-auto px-4">
-                <h3 class="container mx-auto px-4">Evidence Summary</h3>
-                <Grid columns={4} gap="md">
-                  <GridItem colSpan={1}>
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
-                        {caseData.summary.evidence.total}
-                      </div>
-                      <div class="container mx-auto px-4">Total Items</div>
-                    </div>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
-                        {caseData.summary.evidence.admissible}
-                      </div>
-                      <div class="container mx-auto px-4">Admissible</div>
-                    </div>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
-                        {caseData.summary.evidence.questionable}
-                      </div>
-                      <div class="container mx-auto px-4">Questionable</div>
-                    </div>
-                  </GridItem>
-                  <GridItem colSpan={1}>
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
-                        {caseData.summary.evidence.inadmissible}
-                      </div>
-                      <div class="container mx-auto px-4">Inadmissible</div>
-                    </div>
-                  </GridItem>
-                </Grid>
-              </div>
-            {/if}
-
-            {#if activeTab === "recommendations"}
-              <div class="container mx-auto px-4">
-                <h3 class="container mx-auto px-4">AI Recommendations</h3>
-                <div class="container mx-auto px-4">
-                  {#each caseData.summary.recommendations as recommendation}
-                    <div class="container mx-auto px-4">
-                      <Target
-                        class="container mx-auto px-4"
-                      />
-                      <span class="container mx-auto px-4">{recommendation}</span>
-                    </div>
-                  {/each}
-                </div>
-
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">Next Steps</h4>
-                  <ul class="container mx-auto px-4">
-                    {#each caseData.summary.nextSteps as step}
-                      <li class="container mx-auto px-4">
-                        <div
-                          class="container mx-auto px-4"
-                        ></div>
-                        <span class="container mx-auto px-4">{step}</span>
-                      </li>
-                    {/each}
-                  </ul>
-                </div>
-              </div>
-            {/if}
+            <h3 class="text-lg font-semibold">Next Steps</h3>
+            <ul class="list-disc list-inside text-muted-foreground">
+              {#each caseData.summary.nextSteps as step}
+                <li>{step}</li>
+              {/each}
+            </ul>
           </div>
         {:else}
-          <div class="container mx-auto px-4">
-            <Brain class="container mx-auto px-4" />
-            <h3 class="container mx-auto px-4">
-              No Summary Available
-            </h3>
-            <p class="container mx-auto px-4">
-              Generate an AI-powered summary to see comprehensive case analysis.
-            </p>
-            <Button on:click={() => generateSummary()} disabled={isGeneratingSummary}>
-              {#if isGeneratingSummary}
-                <div
-                  class="container mx-auto px-4"
-                ></div>
-                Generating Summary...
-              {:else}
-                <Sparkles class="container mx-auto px-4" />
-                Generate Summary
-              {/if}
+          <div class="flex flex-col items-center justify-center h-48 text-muted-foreground">
+            <Brain class="w-16 h-16 mb-4 opacity-50" />
+            <p>No AI summary available for this case.</p>
+            <Button on:click={generateSummary} disabled={isGeneratingSummary} class="mt-4">
+              <Sparkles class="w-4 h-4 mr-2" /> Generate Summary
             </Button>
           </div>
         {/if}
       </div>
-    {/if}
-
-    <svelte:fragment slot="footer" let:close>
-      <Button variant="secondary" on:click={() => close()}>Close</Button>
-      <Button
-        variant="primary"
-        on:click={() => dispatch("exportSummary", caseData)}
-      >
-        Export Summary
-      </Button>
-    </svelte:fragment>
-  </Dialog>
+    </Dialog.Content>
+  </Dialog.Root>
 {/if}

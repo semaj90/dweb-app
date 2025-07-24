@@ -1,43 +1,73 @@
-// Barrel export file for all stores - SvelteKit v2 best practices
-// This allows for clean imports: import { userStore, themeStore } from '$lib/stores'
+// Enhanced Store Barrel Exports for Phase 2 - Unified
+// Prosecutor AI - Clean merged stores
 
 // Core UI stores
-export { default as uiStore } from "./ui";
-export { default as modalStore } from "./modal";
-export { default as notificationStore } from "./notification";
+export { uiStore } from "./ui";
+export { modalStore } from "./modal";
+export { notificationStore } from "./notification";
 
 // Authentication & User stores
-export { default as authStore } from "./auth";
-export { default as userStore } from "./user";
-export { default as avatarStore } from "./avatarStore";
+export { authStore } from "./auth";
+export { userStore } from "./user";
+export { avatarStore } from "./avatarStore";
 
 // Data stores
-export { default as casesStore } from "./cases";
-export { default as evidenceStore } from "./evidence";
-export { default as citationsStore } from "./citations";
-export { default as reportStore } from "./report";
+export { casesStore } from "./cases";
+export { citationsStore } from "./citations";
+export { reportStore } from "./report";
 
-// AI & Chat stores
-export { default as aiStore } from "./ai-store";
-export { default as chatStore } from "./chatStore";
-export { default as aiHistoryStore } from "./aiHistoryStore";
+// Unified AI Store (merged ai-commands + ai-command-parser)
+export { 
+  aiStore,
+  parseAICommand, 
+  applyAIClasses, 
+  aiCommandService,
+  recentCommands,
+  isAIActive
+} from "./ai-unified";
+
+// Unified Evidence Store (merged evidence + evidenceStore)
+export { 
+  evidenceStore,
+  evidenceById,
+  evidenceByCase,
+  type Evidence
+} from "./evidence-unified";
 
 // Canvas & Visual stores
-export { default as canvasStore } from "./canvas";
+export { canvasStore } from "./canvas";
 
 // Form handling stores
-export { default as formStore } from "./form";
+export { formStore } from "./form";
 
-// LokiJS in-memory database stores
-export { default as lokiStore } from "./lokiStore";
-export { default as enhancedLokiStore } from "./enhancedLokiStore";
+// LokiJS database stores
+export { lokiStore } from "./lokiStore";
+export { enhancedLokiStore } from "./enhancedLokiStore";
 
 // XState machines
-export { default as autoTaggingMachine } from "./autoTaggingMachine";
-export { default as enhancedStateMachines } from "./enhancedStateMachines";
+export { autoTaggingMachine } from "./autoTaggingMachine";
+export { enhancedStateMachines } from "./enhancedStateMachines";
+export { aiCommandMachine } from "./ai-command-machine";
 
 // Error handling
-export { default as errorHandler } from "./error-handler";
+export { errorHandler } from "./error-handler";
 
 // Notes storage
-export { default as savedNotesStore } from "./saved-notes";
+export { savedNotesStore } from "./saved-notes";
+
+// Phase 2: Melt UI Integration utilities
+export * from "./melt-ui-integration";
+
+// Phase 2: Demo and health check
+export { 
+  runPhase2Demo, 
+  phase2HealthCheck,
+  demoEvidenceUpload,
+  demoEnhancedButton 
+} from "./phase2-demo";
+
+// Legacy compatibility aliases
+export { aiStore as aiCommands } from "./ai-unified";
+export { evidenceStore as evidence } from "./evidence-unified";
+export { chatStore } from "./chatStore";
+export { aiHistoryStore } from "./aiHistoryStore";

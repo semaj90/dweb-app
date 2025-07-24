@@ -1,6 +1,6 @@
 <script lang="ts">
   import { aiService } from '$lib/services/aiService';
-  import Dialog from '$lib/components/ui/dialog/Dialog.svelte';
+  import * as Dialog from '$lib/components/ui/dialog';
   import Button from "$lib/components/ui/button";
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Sparkles, Copy, X, AlertCircle, Check } from 'lucide-svelte';
@@ -30,14 +30,12 @@
     dispatch('close');}
 </script>
 
-<Dialog open={isOpen} on:close={closeModal} size="lg" title="AI Summary" description="AI-generated summary of your content">
-  <div slot="header" class="container mx-auto px-4">
-    <Sparkles class="container mx-auto px-4" />
-    <span>AI Summary</span>
-    {#if model}
-      <Badge variant="secondary" class="container mx-auto px-4">{model}</Badge>
-    {/if}
-  </div>
+<Dialog.Root open={isOpen} on:close={closeModal}>
+  <Dialog.Content size="lg">
+  <Dialog.Header>
+    <Dialog.Title>AI Summary</Dialog.Title>
+    <Dialog.Description>AI-generated summary of your content</Dialog.Description>
+  </Dialog.Header>
 
   <div class="container mx-auto px-4">
     {#if isLoading}
@@ -83,13 +81,15 @@
     {/if}
   </div>
 
-  <div slot="footer" class="container mx-auto px-4">
-    <Button on:click={() => closeModal()} variant="secondary" aria-label="Close summary modal">
-      <X class="container mx-auto px-4" />
-      <span class="container mx-auto px-4">Close</span>
-    </Button>
-  </div>
-</Dialog>
+  <Dialog.Footer>
+    <Dialog.Close asChild>
+      <Button on:click={() => closeModal()} variant="secondary" aria-label="Close summary modal">
+        <X class="container mx-auto px-4" />
+        <span class="container mx-auto px-4">Close</span>
+      </Button>
+    </Dialog.Close>
+  </Dialog.Footer>
+</Dialog.Root>
 
 <style>
   /* @unocss-include */

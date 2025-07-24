@@ -3,7 +3,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
-	import type { CanvasState, CanvasStateData, Evidence, CitationPoint } from "../data/types";
+	import type { CanvasState, CanvasStateData, CitationPoint } from "../data/types";
 	import { Toolbar } from 'bits-ui';
 	import { Separator } from 'bits-ui';
 	import { 

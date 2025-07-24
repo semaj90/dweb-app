@@ -2,22 +2,22 @@
   import { caseFormSchema, type CaseForm } from "$lib/schemas/forms";
   import { getAuthContext } from "$lib/stores/auth";
   import { createEventDispatcher } from 'svelte';
-  import { superForm } from 'sveltekit-superforms';
+  import { superForm, type SuperValidated } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
-  
-  export let initialData: Partial<CaseForm> = {};
+
+  export let initialData: SuperValidated<CaseForm> | Partial<CaseForm> = {};
   export let isEditing = false;
-  
+
   const dispatch = createEventDispatcher();
   const auth = getAuthContext();
-  
+
   // Available users for assignment (would come from API)
   let availableUsers = [
     { id: '1', name: 'John Smith', role: 'prosecutor' },
     { id: '2', name: 'Jane Doe', role: 'investigator' },
     { id: '3', name: 'Mike Johnson', role: 'legal_assistant' }
   ];
-  
+
   // Initialize superForm
   const { form, errors, constraints, enhance, submitting, delayed, message } = superForm(initialData, {
     validators: zodClient(caseFormSchema),
@@ -31,27 +31,32 @@
       if (result.type === 'success') {
         dispatch('success', result.data);
       } else if (result.type === 'error') {
-        dispatch('error', result.error);}}
+        dispatch('error', result.error);
+}}
   });
-  
+
   // Tag management
   let tagInput = '';
-  
+
   function addTag() {
     if (tagInput.trim() && (!$form.tags || !$form.tags.includes(tagInput.trim()))) {
       $form.tags = [...($form.tags || []), tagInput.trim()];
-      tagInput = '';}}
+      tagInput = '';
+}}
   function removeTag(tag: string) {
-    $form.tags = $form.tags?.filter(t => t !== tag) || [];}
+    $form.tags = $form.tags?.filter(t => t !== tag) || [];
+}
   function handleTagKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      addTag();}}
+      addTag();
+}}
   // Auto-generate case number
   function generateCaseNumber() {
     const year = new Date().getFullYear();
     const random = Math.floor(Math.random() * 900000) + 100000;
-    $form.caseNumber = `CAS-${year}-${random}`;}
+    $form.caseNumber = `CAS-${year}-${random}`;
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -65,9 +70,9 @@
           {isEditing ? 'Update case information and settings' : 'Enter case details to begin investigation'}
         </p>
       </div>
-      
+
       {#if !isEditing}
-        <button 
+        <button
           type="button"
           on:click={() => generateCaseNumber()}
           class="container mx-auto px-4"
@@ -76,7 +81,7 @@
         </button>
       {/if}
     </div>
-    
+
     <form method="POST" use:enhance>
       <!-- Case Number and Title -->
       <div class="container mx-auto px-4">
@@ -97,7 +102,7 @@
             <p class="container mx-auto px-4">{$errors.caseNumber}</p>
           {/if}
         </div>
-        
+
         <div>
           <label for="priority" class="container mx-auto px-4">
             Priority *
@@ -119,7 +124,7 @@
           {/if}
         </div>
       </div>
-      
+
       <!-- Title -->
       <div class="container mx-auto px-4">
         <label for="title" class="container mx-auto px-4">
@@ -138,7 +143,7 @@
           <p class="container mx-auto px-4">{$errors.title}</p>
         {/if}
       </div>
-      
+
       <!-- Description -->
       <div class="container mx-auto px-4">
         <label for="description" class="container mx-auto px-4">
@@ -157,7 +162,7 @@
           <p class="container mx-auto px-4">{$errors.description}</p>
         {/if}
       </div>
-      
+
       <!-- Status and Assignment -->
       <div class="container mx-auto px-4">
         <div>
@@ -177,7 +182,7 @@
             <option value="closed">Closed</option>
           </select>
         </div>
-        
+
         <div>
           <label for="assignedTo" class="container mx-auto px-4">
             Assigned To
@@ -196,7 +201,7 @@
           </select>
         </div>
       </div>
-      
+
       <!-- Due Date -->
       <div class="container mx-auto px-4">
         <label for="dueDate" class="container mx-auto px-4">
@@ -214,7 +219,7 @@
           <p class="container mx-auto px-4">{$errors.dueDate}</p>
         {/if}
       </div>
-      
+
       <!-- Tags -->
       <div class="container mx-auto px-4">
         <label for="tagInput" class="container mx-auto px-4">
@@ -256,7 +261,7 @@
           <p class="container mx-auto px-4">{$errors.tags}</p>
         {/if}
       </div>
-      
+
       <!-- Checkboxes -->
       <div class="container mx-auto px-4">
         <label class="container mx-auto px-4">
@@ -267,7 +272,7 @@
           />
           <span class="container mx-auto px-4">Mark as confidential</span>
         </label>
-        
+
         <label class="container mx-auto px-4">
           <input
             type="checkbox"
@@ -277,7 +282,7 @@
           <span class="container mx-auto px-4">Notify assignee via email</span>
         </label>
       </div>
-      
+
       <!-- Submit Buttons -->
       <div class="container mx-auto px-4">
         <button
@@ -288,7 +293,7 @@
         >
           Cancel
         </button>
-        
+
         <button
           type="submit"
           class="container mx-auto px-4"
@@ -304,14 +309,14 @@
           {/if}
         </button>
       </div>
-      
+
       <!-- Server Messages -->
       {#if $message}
         <div class="container mx-auto px-4">
           {$message.text}
         </div>
       {/if}
-      
+
       <!-- Loading Indicator -->
       {#if $delayed}
         <div class="container mx-auto px-4">
@@ -326,7 +331,9 @@
   /* @unocss-include */
   /* Custom validation styles */
   .legal-input:invalid {
-    border-color: #ef4444;}
+    border-color: #ef4444;
+}
   .legal-input:valid {
-    border-color: #10b981;}
+    border-color: #10b981;
+}
 </style>

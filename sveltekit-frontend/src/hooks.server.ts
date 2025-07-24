@@ -50,8 +50,8 @@ export const handle: Handle = async ({ event, resolve }) => {
             role: userRecord.role || 'user',
             isActive: userRecord.is_active !== 0,
             emailVerified: userRecord.email_verified !== 0,
-            createdAt: userRecord.created_at,
-            updatedAt: userRecord.updated_at
+            createdAt: new Date(userRecord.created_at),
+            updatedAt: new Date(userRecord.updated_at)
           };
           
           event.locals.session = {

@@ -10,7 +10,7 @@
     novalidate?: boolean;
     autocomplete?: "on" | "off";
     submitText?: string;
-    submitVariant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+    submitVariant?: "primary" | "secondary" | "outline" | "danger" | "success" | "warning" | "info" | "nier";
     showSubmitButton?: boolean;
     submitFullWidth?: boolean;
     resetText?: string;
@@ -96,7 +96,7 @@
       {#if showResetButton}
         <Button
           type="reset"
-          variant="ghost"
+          variant="secondary"
           disabled={!$form.isDirty || $form.isSubmitting || loading}
           class={submitFullWidth ? "w-full" : ""}
         >

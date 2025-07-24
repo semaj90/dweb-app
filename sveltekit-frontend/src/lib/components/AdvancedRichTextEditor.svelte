@@ -420,33 +420,31 @@
 }
 </script>
 
-<div class="container mx-auto px-4" class:fullscreen={isFullscreen}>
+<div class="advanced-editor" class:fullscreen={isFullscreen}>
   <!-- Main Toolbar -->
-  <div
-    class="container mx-auto px-4"
-  >
+  <div class="toolbar bg-white border-b border-gray-200 p-2 flex items-center gap-2 flex-wrap">
     <!-- File Operations -->
-    <div class="container mx-auto px-4">
+    <div class="toolbar-group">
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         on:click={() => saveContent()}
         title="Save (Ctrl+S)"
       >
         <Save size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         on:click={() => importDocument()}
         title="Import Document"
       >
         <Upload size="18" />
       </button>
-      <div class="container mx-auto px-4">
-        <button class="container mx-auto px-4">
+      <div class="dropdown">
+        <button class="toolbar-btn dropdown-toggle">
           <Download size="18" />
           <ChevronDown size="14" />
         </button>
-        <div class="container mx-auto px-4">
+        <div class="dropdown-menu">
           <button on:click={() => exportDocument("html")}>Export as HTML</button
           >
           <button on:click={() => exportDocument("json")}>Export as JSON</button
@@ -456,12 +454,12 @@
       </div>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="toolbar-separator"></div>
 
     <!-- Undo/Redo -->
-    <div class="container mx-auto px-4">
+    <div class="toolbar-group">
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:disabled={!state.canUndo}
         on:click={() => editor?.commands.undo()}
         title="Undo (Ctrl+Z)"
@@ -469,7 +467,7 @@
         <Undo size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:disabled={!state.canRedo}
         on:click={() => editor?.commands.redo()}
         title="Redo (Ctrl+Shift+Z)"
@@ -478,11 +476,11 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="toolbar-separator"></div>
 
     <!-- Text Formatting -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="toolbar-group">
+      <div class="font-selector">
         <select
           bind:value={state.currentFontFamily}
           on:change={(e) =>
@@ -495,7 +493,7 @@
       </div>
 
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isBold}
         on:click={() => toggleBold()}
         title="Bold (Ctrl+B)"
@@ -503,7 +501,7 @@
         <Bold size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isItalic}
         on:click={() => toggleItalic()}
         title="Italic (Ctrl+I)"
@@ -511,7 +509,7 @@
         <Italic size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isUnderline}
         on:click={() => toggleUnderline()}
         title="Underline (Ctrl+U)"
@@ -519,7 +517,7 @@
         <Underline size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isStrike}
         on:click={() => toggleStrike()}
         title="Strikethrough"
@@ -528,11 +526,11 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="toolbar-separator"></div>
 
     <!-- Color Tools -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="toolbar-group">
+      <div class="color-picker toolbar-btn">
         <input
           type="color"
           bind:value={state.currentColor}
@@ -542,15 +540,15 @@
         <Type size="18" />
       </div>
 
-      <div class="container mx-auto px-4">
-        <button class="container mx-auto px-4">
+      <div class="dropdown">
+        <button class="toolbar-btn dropdown-toggle">
           <Highlighter size="18" />
           <ChevronDown size="14" />
         </button>
-        <div class="container mx-auto px-4">
+        <div class="dropdown-menu color-palette">
           {#each colorPalettes.highlight as color}
             <button
-              class="container mx-auto px-4"
+              class="color-swatch"
               style="background-color: {color}"
               on:click={() => setHighlight(color)}
               title={color === "transparent"
@@ -565,12 +563,12 @@
       </div>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="toolbar-separator"></div>
 
     <!-- Alignment -->
-    <div class="container mx-auto px-4">
+    <div class="toolbar-group">
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.currentAlignment === "left"}
         on:click={() => setAlignment("left")}
         title="Align Left"
@@ -578,7 +576,7 @@
         <AlignLeft size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.currentAlignment === "center"}
         on:click={() => setAlignment("center")}
         title="Align Center"
@@ -586,7 +584,7 @@
         <AlignCenter size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.currentAlignment === "right"}
         on:click={() => setAlignment("right")}
         title="Align Right"
@@ -594,7 +592,7 @@
         <AlignRight size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.currentAlignment === "justify"}
         on:click={() => setAlignment("justify")}
         title="Justify"
@@ -603,12 +601,12 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="toolbar-separator"></div>
 
     <!-- Lists and Blocks -->
-    <div class="container mx-auto px-4">
+    <div class="toolbar-group">
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isList}
         on:click={() => editor?.chain().focus().toggleBulletList().run()}
         title="Bullet List"
@@ -616,7 +614,7 @@
         <List size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isOrderedList}
         on:click={() => editor?.chain().focus().toggleOrderedList().run()}
         title="Numbered List"
@@ -624,7 +622,7 @@
         <ListOrdered size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isQuote}
         on:click={() => editor?.chain().focus().toggleBlockquote().run()}
         title="Quote"
@@ -632,7 +630,7 @@
         <Quote size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={state.isCode}
         on:click={() => editor?.chain().focus().toggleCodeBlock().run()}
         title="Code Block"
@@ -641,19 +639,19 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="toolbar-separator"></div>
 
     <!-- Insert -->
-    <div class="container mx-auto px-4">
+    <div class="toolbar-group">
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         on:click={() => insertImage()}
         title="Insert Image"
       >
         <ImageIcon size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         on:click={() => insertTable()}
         title="Insert Table"
       >
@@ -661,20 +659,20 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="toolbar-separator"></div>
 
     <!-- View Controls -->
-    <div class="container mx-auto px-4">
+    <div class="toolbar-group">
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         on:click={() => adjustZoom(-10)}
         title="Zoom Out"
       >
         <ZoomOut size="18" />
       </button>
-      <span class="container mx-auto px-4">{currentZoom}%</span>
+      <span class="zoom-indicator">{currentZoom}%</span>
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         on:click={() => adjustZoom(10)}
         title="Zoom In"
       >
@@ -682,7 +680,7 @@
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         class:active={showGrid}
         on:click={() => (showGrid = !showGrid)}
         title="Toggle Grid"
@@ -691,7 +689,7 @@
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="toolbar-btn"
         on:click={() => toggleFullscreen()}
         title="Toggle Fullscreen"
       >
@@ -705,31 +703,29 @@
   </div>
 
   <!-- Secondary Toolbar for Advanced Features -->
-  <div
-    class="container mx-auto px-4"
-  >
-    <div class="container mx-auto px-4">
-      Words: <span class="container mx-auto px-4">{wordCount}</span> | Characters:
-      <span class="container mx-auto px-4">{characterCount}</span>
+  <div class="toolbar bg-gray-50 border-b border-gray-200 p-2 flex justify-between items-center text-sm">
+    <div class="text-gray-600">
+      Words: <span class="font-medium">{wordCount}</span> | Characters:
+      <span class="font-medium">{characterCount}</span>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="flex-1"></div>
 
     {#if autosave}
-      <div class="container mx-auto px-4">Auto-save enabled</div>
+      <div class="text-green-600 text-xs">Auto-save enabled</div>
     {/if}
   </div>
 
   <!-- Ruler (if enabled) -->
   {#if showRuler}
-    <div class="container mx-auto px-4">
+    <div class="ruler h-6 bg-gray-100 relative border-b border-gray-200">
       {#each Array(20) as _, i}
         <div
-          class="container mx-auto px-4"
+          class="ruler-mark absolute border-l border-gray-300"
           style="left: {i * 50}px"
         >
           {#if i % 2 === 0}
-            <span class="container mx-auto px-4">{i}</span>
+            <span class="text-xs text-gray-500 absolute -top-1 left-1">{i}</span>
           {/if}
         </div>
       {/each}
@@ -737,8 +733,8 @@
   {/if}
 
   <!-- Editor Container -->
-  <div class="container mx-auto px-4" class:show-grid={showGrid}>
-    <div bind:this={editorElement} class="container mx-auto px-4"></div>
+  <div class="editor-container bg-white" class:show-grid={showGrid}>
+    <div bind:this={editorElement} class="editor-content"></div>
   </div>
 </div>
 

@@ -619,6 +619,7 @@
     gap: 0.5rem;
     padding: 0.75rem 1rem;
     background: #3b82f6;
+  }
   @media (max-width: 768px) {
     .crud-dashboard {
       padding: 1rem;

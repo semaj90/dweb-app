@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { aiStore } from "../stores/canvas";
-	import Dialog from './Dialog.svelte';
+	import { Dialog } from './Dialog.svelte';
 	
 	import { Sparkles, Bot } from 'lucide-svelte';
 
