@@ -1,72 +1,20 @@
 {
-  "name": "deeds-legal-ai-assistant",
-  "version": "2.0.0",
-  "description": "Secure legal AI assistant with pgvector, Ollama integration, and semantic search",
+  "name": "legal-ai-system",
+  "version": "1.0.0",
+  "description": "Legal AI RAG System - Phase 3+4 Integration",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "test": "vitest",
-    "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "format": "prettier --plugin-search-dir . --write .",
-    "setup": "node scripts/setup.js",
-    "setup:full": "powershell -ExecutionPolicy Bypass -File COMPLETE-RAG-SETUP.bat",
-    "setup:gpu": "powershell -ExecutionPolicy Bypass -File WORKING-GPU-SETUP.bat",
-    "db:migrate": "node scripts/migrate.js",
-    "db:seed": "node scripts/seed.js",
-    "db:reset": "npm run db:migrate && npm run db:seed",
-    "db:studio": "npx drizzle-kit studio",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "docker:status": "docker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"",
-    "docker:clean": "docker-compose down -v && docker system prune -f",
-    "ai:start": "docker run -d --gpus=all --name deeds-ollama-gpu -v ollama_data:/root/.ollama -p 11434:11434 ollama/ollama",
-    "ai:stop": "docker stop deeds-ollama-gpu && docker rm deeds-ollama-gpu",
-    "ai:test": "curl -X POST http://localhost:11434/api/generate -H \"Content-Type: application/json\" -d \"{\\\"model\\\":\\\"gemma2-legal\\\",\\\"prompt\\\":\\\"What are the key elements of probable cause?\\\",\\\"stream\\\":false}\"",
-    "ai:health": "curl -s http://localhost:11434/api/tags | jq .",
-    "health": "node scripts/health-check.js",
-    "status": "npm run docker:status && npm run ai:health",
-    "monitor": "docker stats --format \"table {{.Container}}\\t{{.CPUPerc}}\\t{{.MemUsage}}\\t{{.MemPerc}}\" | grep -E \"(ollama|postgres|qdrant|redis)\"",
-    "start:all": "npm run setup:full && npm run db:reset && npm run dev",
-    "clean": "rm -rf .svelte-kit build dist node_modules/.vite"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.11",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.11.5",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.3.3"
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "restart": "docker-compose restart",
+    "test": "node test.mjs",
+    "status": "docker ps",
+    "logs": "docker-compose logs"
   },
   "dependencies": {
-    "amqplib": "^0.10.3",
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.4.1",
-    "ioredis": "^5.6.1",
-    "neo4j-driver": "^5.15.0",
-    "node-fetch": "^3.3.2",
-    "ws": "^8.18.0"
+    "neo4j-driver": "^5.15.0"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
-  },
-  "keywords": [
-    "legal",
-    "ai",
-    "sveltekit",
-    "ollama",
-    "postgresql",
-    "vector-search",
-    "document-analysis"
-  ],
-  "author": "Legal AI Team",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/deeds-legal-ai-assistant.git"
+    "node": ">=18.0.0"
   }
 }

@@ -260,7 +260,7 @@
               id="manual-query"
               bind:value={manualTestQuery}
               placeholder="Enter your test query..."
-              rows={${1"
+              rows={1}
             ></textarea>
           </div>
 
@@ -512,7 +512,7 @@
       bind:value={query}
       placeholder="Enter your legal question here..."
       class="container mx-auto px-4"
-      rows={${1"
+      rows={1}
     ></textarea>
 
     <button

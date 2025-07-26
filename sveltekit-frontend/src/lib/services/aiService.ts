@@ -1,4 +1,9 @@
 import { writable } from "svelte/store";
+import {
+  gemma3Client,
+  detectAvailableServer,
+  type Gemma3Client,
+} from "../gemma3Client";
 
 interface AIState {
   isLoading: boolean;
@@ -6,6 +11,8 @@ interface AIState {
   error: string | null;
   lastSummarizedContent: string | null;
   model: string;
+  serverAvailable: boolean;
+  serverBackend: string | null;
 }
 interface SummarizeRequest {
   content: string;
@@ -26,7 +33,27 @@ function createAIService() {
     error: null,
     lastSummarizedContent: null,
     model: "gemma3-legal",
+    serverAvailable: false,
+    serverBackend: null,
   });
+
+  // Check server availability on initialization
+  let currentClient = gemma3Client;
+  (async () => {
+    try {
+      const server = await detectAvailableServer();
+      if (server) {
+        currentClient = new (gemma3Client.constructor as any)(server.url);
+        update((state) => ({
+          ...state,
+          serverAvailable: true,
+          serverBackend: server.backend,
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to detect server:", error);
+    }
+  })();
 
   return {
     subscribe,
@@ -52,7 +79,36 @@ function createAIService() {
       }));
 
       try {
-        // Call the SvelteKit API endpoint that wraps Ollama
+        // First try direct Gemma3 client if server is available
+        if (currentClient) {
+          try {
+            const isHealthy = await currentClient.healthCheck();
+            if (isHealthy) {
+              const summary = await currentClient.summarizeContent(
+                request.content,
+                request.type || "general"
+              );
+
+              // Update state with successful result
+              update((state) => ({
+                ...state,
+                isLoading: false,
+                summary: summary,
+                error: null,
+                model: "gemma3-legal-direct",
+              }));
+
+              return summary;
+            }
+          } catch (directError) {
+            console.warn(
+              "Direct Gemma3 client failed, falling back to API:",
+              directError
+            );
+          }
+        }
+
+        // Fallback to SvelteKit API endpoint that wraps Ollama
         const response = await fetch("/api/ai/summarize", {
           method: "POST",
           headers: {
@@ -72,8 +128,7 @@ function createAIService() {
             .json()
             .catch(() => ({ error: "Unknown error" }));
           throw new Error(
-            errorData.error ||
-              `HTTP ${response.status}: ${response.statusText}`,
+            errorData.error || `HTTP ${response.status}: ${response.statusText}`
           );
         }
         const data: SummarizeResponse = await response.json();
@@ -110,7 +165,7 @@ function createAIService() {
     summarizeReport: async (
       reportContent: any,
       reportId?: string,
-      caseId?: string,
+      caseId?: string
     ): Promise<string | null> => {
       // Extract plain text from Slate.js content structure
       const plainText = extractTextFromSlateContent(reportContent);
@@ -129,7 +184,7 @@ function createAIService() {
     summarizeEvidence: async (
       evidence: { title: string; description?: string; aiAnalysis?: any },
       evidenceId?: string,
-      caseId?: string,
+      caseId?: string
     ): Promise<string | null> => {
       let content = evidence.title;
       if (evidence.description) {
@@ -153,7 +208,7 @@ function createAIService() {
     summarizePOI: async (
       poiData: { name: string; profileData: any },
       poiId?: string,
-      caseId?: string,
+      caseId?: string
     ): Promise<string | null> => {
       const profileData = poiData.profileData || {};
       let content = `Person of Interest: ${poiData.name}\n\n`;
@@ -181,6 +236,8 @@ function createAIService() {
         error: null,
         lastSummarizedContent: null,
         model: "gemma3-legal",
+        serverAvailable: false,
+        serverBackend: null,
       });
     },
 
@@ -193,6 +250,191 @@ function createAIService() {
         summary: null,
         error: null,
       }));
+    },
+
+    /**
+     * Check if Gemma3 server is available
+     */
+    checkServerHealth: async (): Promise<boolean> => {
+      try {
+        const server = await detectAvailableServer();
+        const isAvailable = server !== null;
+
+        update((state) => ({
+          ...state,
+          serverAvailable: isAvailable,
+          serverBackend: server?.backend || null,
+        }));
+
+        return isAvailable;
+      } catch (error) {
+        console.error("Server health check failed:", error);
+        update((state) => ({
+          ...state,
+          serverAvailable: false,
+          serverBackend: null,
+        }));
+        return false;
+      }
+    },
+
+    /**
+     * Ask a legal question directly using Gemma3
+     */
+    askLegalQuestion: async (
+      question: string,
+      context?: string
+    ): Promise<string | null> => {
+      update((state) => ({
+        ...state,
+        isLoading: true,
+        error: null,
+      }));
+
+      try {
+        if (!currentClient) {
+          throw new Error("Gemma3 client not available");
+        }
+
+        const isHealthy = await currentClient.healthCheck();
+        if (!isHealthy) {
+          throw new Error("Gemma3 server not responding");
+        }
+
+        const response = await currentClient.askLegalQuestion(
+          question,
+          context
+        );
+
+        update((state) => ({
+          ...state,
+          isLoading: false,
+          summary: response,
+          error: null,
+          model: "gemma3-legal-direct",
+        }));
+
+        return response;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to get legal answer";
+
+        update((state) => ({
+          ...state,
+          isLoading: false,
+          summary: null,
+          error: errorMessage,
+        }));
+
+        console.error("Legal question error:", err);
+        return null;
+      }
+    },
+
+    /**
+     * Analyze a document directly using Gemma3
+     */
+    analyzeDocument: async (
+      documentText: string,
+      analysisType: string = "general"
+    ): Promise<string | null> => {
+      update((state) => ({
+        ...state,
+        isLoading: true,
+        error: null,
+      }));
+
+      try {
+        if (!currentClient) {
+          throw new Error("Gemma3 client not available");
+        }
+
+        const isHealthy = await currentClient.healthCheck();
+        if (!isHealthy) {
+          throw new Error("Gemma3 server not responding");
+        }
+
+        const response = await currentClient.analyzeDocument(
+          documentText,
+          analysisType
+        );
+
+        update((state) => ({
+          ...state,
+          isLoading: false,
+          summary: response,
+          error: null,
+          model: "gemma3-legal-direct",
+        }));
+
+        return response;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to analyze document";
+
+        update((state) => ({
+          ...state,
+          isLoading: false,
+          summary: null,
+          error: errorMessage,
+        }));
+
+        console.error("Document analysis error:", err);
+        return null;
+      }
+    },
+
+    /**
+     * Review a contract directly using Gemma3
+     */
+    reviewContract: async (
+      contractText: string,
+      reviewFocus?: string
+    ): Promise<string | null> => {
+      update((state) => ({
+        ...state,
+        isLoading: true,
+        error: null,
+      }));
+
+      try {
+        if (!currentClient) {
+          throw new Error("Gemma3 client not available");
+        }
+
+        const isHealthy = await currentClient.healthCheck();
+        if (!isHealthy) {
+          throw new Error("Gemma3 server not responding");
+        }
+
+        const response = await currentClient.reviewContract(
+          contractText,
+          reviewFocus
+        );
+
+        update((state) => ({
+          ...state,
+          isLoading: false,
+          summary: response,
+          error: null,
+          model: "gemma3-legal-direct",
+        }));
+
+        return response;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to review contract";
+
+        update((state) => ({
+          ...state,
+          isLoading: false,
+          summary: null,
+          error: errorMessage,
+        }));
+
+        console.error("Contract review error:", err);
+        return null;
+      }
     },
   };
 }

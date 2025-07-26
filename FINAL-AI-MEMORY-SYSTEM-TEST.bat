@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 echo =========================================================
-echo   FINAL: Complete AI Memory System Test & Integration
+echo "  FINAL: Complete AI Memory System Test & Integration"
 echo   Google-style Memory + 4D Search + Predictive Analytics
 echo =========================================================
 echo.
@@ -16,12 +16,22 @@ set "NC=[0m"
 echo %BLUE%🧠 Testing complete AI memory system with all features...%NC%
 echo.
 
+:: 0. Check for Docker
+echo %BLUE%0. Checking for Docker...%NC%
+docker info >nul 2>&1
+if %errorlevel% neq 0 (
+  echo %RED%❌ Docker is not running. Please start Docker Desktop and try again.%NC%
+  pause
+  exit /b 1
+)
+echo %GREEN%✅ Docker is running.%NC%
+
 :: 1. Start all services
 echo %BLUE%1. Starting complete AI memory infrastructure...%NC%
 if exist "docker-compose-advanced.yml" (
     echo %YELLOW%Starting advanced services...%NC%
     docker-compose -f docker-compose-advanced.yml up -d
-    
+
     echo %YELLOW%⏳ Waiting for all services to be ready...%NC%
     timeout /t 30 >nul
 ) else (
@@ -50,7 +60,7 @@ echo %YELLOW%Testing PostgreSQL + pgvector...%NC%
 docker exec legal-postgres-advanced pg_isready -U legal_admin -d legal_ai_advanced >nul 2>&1
 if %errorlevel% == 0 (
     echo %GREEN%✅ PostgreSQL: Connected%NC%
-    
+
     :: Test 4D search function
     echo %YELLOW%  Testing 4D search functions...%NC%
     docker exec legal-postgres-advanced psql -U legal_admin -d legal_ai_advanced -c "SELECT COUNT(*) FROM user_memory;" >nul 2>&1
@@ -99,42 +109,42 @@ echo %BLUE%4. Testing Memory Engine API...%NC%
 if exist "memory-engine" (
     echo %YELLOW%Building Memory Engine...%NC%
     docker-compose -f docker-compose-advanced.yml build memory-engine >nul 2>&1
-    
+
     echo %YELLOW%Starting Memory Engine...%NC%
     docker-compose -f docker-compose-advanced.yml up -d memory-engine
-    
+
     echo %YELLOW%⏳ Waiting for Memory Engine to start...%NC%
     timeout /t 15 >nul
-    
+
     :: Test health endpoint
     curl -f http://localhost:8001/health >nul 2>&1
     if %errorlevel% == 0 (
         echo %GREEN%✅ Memory Engine: Running%NC%
-        
+
         :: Test store interaction
         echo %YELLOW%  Testing store interaction...%NC%
         curl -X POST http://localhost:8001/store-interaction ^
              -H "Content-Type: application/json" ^
              -d "{\"user_id\":\"test_user\",\"session_id\":\"test_session\",\"interaction_type\":\"test_query\",\"content\":\"Testing 4D memory storage\"}" >nul 2>&1
-        
+
         if %errorlevel% == 0 (
             echo %GREEN%  ✓ Store interaction working%NC%
         ) else (
             echo %YELLOW%  ⚠️ Store interaction needs debugging%NC%
         )
-        
+
         :: Test 4D search
         echo %YELLOW%  Testing 4D search...%NC%
         curl -X POST http://localhost:8001/search-4d ^
              -H "Content-Type: application/json" ^
              -d "{\"user_id\":\"test_user\",\"query\":\"test memory search\"}" >nul 2>&1
-        
+
         if %errorlevel% == 0 (
             echo %GREEN%  ✓ 4D search working%NC%
         ) else (
             echo %YELLOW%  ⚠️ 4D search needs debugging%NC%
         )
-        
+
     ) else (
         echo %RED%❌ Memory Engine: Not responding%NC%
     )
@@ -147,30 +157,30 @@ echo.
 echo %BLUE%5. Testing SvelteKit integration...%NC%
 if exist "sveltekit-frontend" (
     cd sveltekit-frontend
-    
+
     :: Check if dependencies are installed
     if not exist "node_modules" (
         echo %YELLOW%Installing SvelteKit dependencies...%NC%
         npm install >nul 2>&1
     )
-    
+
     :: Check for auto-memory store
     if exist "src\lib\stores\auto-memory.svelte.js" (
         echo %GREEN%✅ Auto-memory store found%NC%
     ) else (
         echo %YELLOW%⚠️ Auto-memory store missing%NC%
     )
-    
+
     :: Check for RealtimeRAG component
     if exist "src\lib\components\RealtimeRAG.svelte" (
         echo %GREEN%✅ RealtimeRAG component found%NC%
     ) else (
         echo %YELLOW%⚠️ RealtimeRAG component missing%NC%
     )
-    
+
     echo %GREEN%✅ SvelteKit frontend ready%NC%
     echo %BLUE%To start: npm run dev%NC%
-    
+
     cd ..
 ) else (
     echo %YELLOW%⚠️ SvelteKit frontend not found%NC%
@@ -195,28 +205,28 @@ echo.
 echo %BLUE%7. Creating test data for demonstration...%NC%
 if curl -f http://localhost:8001/health >nul 2>&1 (
     echo %YELLOW%Inserting sample interactions...%NC%
-    
+
     :: Sample legal queries
     curl -X POST http://localhost:8001/store-interaction ^
          -H "Content-Type: application/json" ^
          -d "{\"user_id\":\"demo_user\",\"session_id\":\"demo_session\",\"interaction_type\":\"legal_query\",\"content\":\"What are the liability clauses in software contracts?\",\"semantic_context\":{\"domain\":\"legal\",\"type\":\"contract_analysis\"}}" >nul 2>&1
-    
+
     curl -X POST http://localhost:8001/store-interaction ^
          -H "Content-Type: application/json" ^
          -d "{\"user_id\":\"demo_user\",\"session_id\":\"demo_session\",\"interaction_type\":\"document_review\",\"content\":\"Reviewing employment agreement for remote work terms\",\"semantic_context\":{\"domain\":\"legal\",\"type\":\"employment_law\"}}" >nul 2>&1
-    
+
     curl -X POST http://localhost:8001/store-interaction ^
          -H "Content-Type: application/json" ^
          -d "{\"user_id\":\"demo_user\",\"session_id\":\"demo_session\",\"interaction_type\":\"compliance_check\",\"content\":\"GDPR compliance audit for data processing\",\"semantic_context\":{\"domain\":\"legal\",\"type\":\"privacy_law\"}}" >nul 2>&1
-    
+
     echo %GREEN%✅ Sample data created%NC%
-    
+
     :: Test search with sample data
     echo %YELLOW%Testing search with sample data...%NC%
     curl -X POST http://localhost:8001/search-4d ^
          -H "Content-Type: application/json" ^
          -d "{\"user_id\":\"demo_user\",\"query\":\"contract liability\"}" >nul 2>&1
-    
+
     if %errorlevel% == 0 (
         echo %GREEN%✅ Search working with sample data%NC%
     )

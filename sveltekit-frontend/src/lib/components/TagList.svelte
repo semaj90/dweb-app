@@ -147,7 +147,7 @@
 <div class="container mx-auto px-4" class:readonly>
   <div class="container mx-auto px-4">
     {#each tags as tag (tag)}
-      <div class="container mx-auto px-4" transition:scale={{ duration: 200 ">
+      <div class="container mx-auto px-4" transition:scale={{ duration: 200 }}>
         <Tag class="container mx-auto px-4" size={14} />
         <span class="container mx-auto px-4">{tag}</span>
         {#if !readonly}

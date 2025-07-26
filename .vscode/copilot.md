@@ -44,7 +44,7 @@ Framework: "SvelteKit 2.16.0 + Svelte 5.0";
 Language: "TypeScript (strict mode)";
 Database: "Drizzle ORM + PostgreSQL + pg_vector";
 UI: "Melt UI + Bits UI + Custom CSS";
-AI: "Ollama + Gemma3 + nomic-embed-text";
+AI: "Ollama + Gemma3 C:UsersjamesDesktopdeeds-webdeeds-web-appgemma3Q4_K_Mmo16.gguf + nomic-embed-text";
 Authentication: "Lucia Auth";
 State: "XState machines + Svelte stores";
 Vector_Search: "Qdrant";

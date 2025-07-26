@@ -167,7 +167,7 @@
 {#if open}
 	<div 
 		class="container mx-auto px-4"
-		transition:fade={{ duration: 200  "
+		transition:fade={{ duration: 200 }}
 		on:click={() => handleBackdropClick()}
 		on:keydown={handleKeydown}
 		role="dialog"
@@ -178,7 +178,7 @@
 		<div 
 			class="container mx-auto px-4"
 			bind:this={dialogElement}
-			transition:fly={{ y: 50, duration: 300, easing: quintOut  "
+			transition:fly={{ y: 50, duration: 300, easing: quintOut }}
 		>
 			<!-- Header -->
 			<div class="container mx-auto px-4">
@@ -284,7 +284,8 @@
 							if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
 								e.preventDefault();
 								handleSubmit();
-}
+							}
+						}}
 						"
 					></textarea>
 					<button

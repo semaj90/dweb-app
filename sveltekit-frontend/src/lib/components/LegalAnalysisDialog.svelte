@@ -1,6 +1,10 @@
 <!-- Legal Case Analysis Dialog - Bits UI Component -->
 <script lang="ts">
-  import { Dialog, Select, Button, Badge, Progress } from 'bits-ui';
+  import { Dialog } from 'bits-ui/components/dialog';
+import { Select } from 'bits-ui/components/select';
+import { Button } from 'bits-ui/components/button';
+import { Badge } from 'bits-ui/components/badge';
+import { Progress } from 'bits-ui/components/progress';
   import { legalCaseStore } from '$lib/stores/legal-case.store.svelte';
   import type { LegalCase } from '$lib/types/legal';
 
@@ -21,7 +25,7 @@
     analyzeCase 
   } = legalCaseStore;
 
-  let selectedCaseForAnalysis = $state<LegalCase | null>(null);
+  let selectedCaseForAnalysis = $state<string | null>(null);
   let analysisProgress = $state(0);
   let analysisStatus = $state<'idle' | 'analyzing' | 'complete' | 'error'>('idle');
 
@@ -37,7 +41,7 @@
         analysisProgress = Math.min(analysisProgress + 10, 90);
       }, 200);
 
-      await analyzeCase(selectedCaseForAnalysis.id);
+      await analyzeCase(selectedCaseForAnalysis);
       
       clearInterval(progressInterval);
       analysisProgress = 100;
@@ -68,8 +72,8 @@
 </script>
 
 <Dialog.Root {open} {onOpenChange}>
-  <Dialog.Trigger asChild let:builder>
-    <Button builders={[builder]} class="legal-action-btn bg-blue-600 hover:bg-blue-700 text-white">
+  <Dialog.Trigger>
+    <Button class="legal-action-btn bg-blue-600 hover:bg-blue-700 text-white">
       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -85,8 +89,8 @@
       </Dialog.Title>
       <Dialog.Description class="text-gray-600 mt-2">
         Select a case to perform AI-powered legal analysis with compliance checking.
-      </Dialog.Description>
-    </Dialog.Header>
+      </DialogDescription>
+    </DialogHeader>
 
     <div class="p-6 space-y-6">
       <!-- Case Selection -->
@@ -94,12 +98,14 @@
         <label class="text-sm font-medium text-gray-700">Select Case for Analysis</label>
         <Select.Root bind:value={selectedCaseForAnalysis} disabled={loading.analysis}>
           <Select.Trigger class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <Select.Value placeholder="Choose a case to analyze..." />
+            <Select.Value placeholder="Choose a case to analyze..." let:value>
+              {value ? value.title : ''}
+            </Select.Value>
           </Select.Trigger>
           <Select.Content class="bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
-            {#each filteredCases as legalCase}
+            {#each filteredCases() as legalCase}
               <Select.Item 
-                value={legalCase} 
+                value={legalCase.id} 
                 class="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
               >
                 <div class="flex items-center justify-between w-full">
@@ -247,7 +253,7 @@
           Start Analysis
         {/if}
       </Button>
-    </Dialog.Footer>
+    </DialogFooter>
   </Dialog.Content>
 </Dialog.Root>
 

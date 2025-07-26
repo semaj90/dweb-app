@@ -11,7 +11,7 @@
     id: string;
     role: "user" | "assistant" | "system";
     content: string;
-    timestamp: number;
+    timestamp: Date;
     sources?: Array<{
       id: string;
       title: string;
@@ -38,8 +38,7 @@
   // Format timestamp
   onMount(() => {
     if (browser) {
-      const date = new Date(message.timestamp);
-      formattedTime = date.toLocaleTimeString([], {
+      formattedTime = new Date(message.timestamp).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       });

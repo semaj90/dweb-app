@@ -1,95 +1,311 @@
+version: '3.8'
 
 services:
-  ollama:
-    build:
-      context: .
-      dockerfile: Dockerfile.ollama
-    container_name: deeds-ollama-gpu
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-      - ./models:/models
+  # PostgreSQL with pgvector for document embeddings
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: legal-postgres
     environment:
-      - OLLAMA_MODELS=/models
-      - OLLAMA_KEEP_ALIVE=5m
-      - OLLAMA_FLASH_ATTENTION=1 # Enabled for RTX/Ampere GPUs
-    restart: unless-stopped
+      POSTGRES_DB: legal_ai
+      POSTGRES_USER: legal_admin
+      POSTGRES_PASSWORD: LegalRAG2024!
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD", "ollama", "list"]
+      test: ["CMD-SHELL", "pg_isready -U legal_admin -d legal_ai"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: legal-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
-    networks:
-      - ai-app-network
-
-  sveltekit:
-    build:
-      context: ./sveltekit-frontend
-      dockerfile: Dockerfile
-    container_name: sveltekit-app
-    ports:
-      - "5173:5173"
-    environment:
-      - OLLAMA_URL=http://ollama:11434
-      - PUBLIC_ORIGIN=http://localhost:5173
-    depends_on:
-      ollama:
-        condition: service_healthy
     restart: unless-stopped
     networks:
-      - ai-app-network
+      - legal-ai-network
 
+  # RabbitMQ for event streaming
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: legal-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: legal_admin
+      RABBITMQ_DEFAULT_PASS: LegalQueue2024!
+      RABBITMQ_DEFAULT_VHOST: legal_ai
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # Qdrant vector database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: legal-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # Neo4j graph database
   neo4j:
     image: neo4j:5.15-community
-    container_name: deeds-neo4j
+    container_name: legal-neo4j
     ports:
-      - "7474:7474" # HTTP
-      - "7687:7687" # Bolt
+      - "7474:7474"
+      - "7687:7687"
     environment:
-      - NEO4J_AUTH=neo4j/LegalSecure2024!
-      - NEO4J_PLUGINS=["apoc"]
-      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
-      - NEO4J_dbms_memory_heap_initial__size=1G
-      - NEO4J_dbms_memory_heap_max__size=2G
-      - NEO4J_dbms_memory_pagecache_size=1G
+      NEO4J_AUTH: neo4j/LegalGraph2024!
+      NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*,gds.*
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 2G
     volumes:
       - neo4j_data:/data
       - neo4j_logs:/logs
       - neo4j_import:/var/lib/neo4j/import
       - neo4j_plugins:/plugins
-    restart: unless-stopped
     healthcheck:
-      test:
-        [
-          "CMD",
-          "cypher-shell",
-          "-u",
-          "neo4j",
-          "-p",
-          "LegalSecure2024!",
-          "RETURN 1",
-        ]
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "LegalGraph2024!", "RETURN 1"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 40s
+    restart: unless-stopped
     networks:
-      - ai-app-network
+      - legal-ai-network
+
+  # vLLM Server for Gemma3 (high performance)
+  vllm-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.vllm
+    container_name: legal-vllm
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: legal_admin
+      RABBITMQ_DEFAULT_PASS: LegalRAG2024!
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK: 0.6
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # Neo4j for graph relationships (Phase 4)
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: legal-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/LegalRAG2024!
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_memory_heap_max__size: 1G
+      NEO4J_dbms_memory_pagecache_size: 512M
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7474/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # Qdrant for vector similarity search (Phase 3)
+  qdrant:
+    image: qdrant/qdrant:v1.7.0
+    container_name: legal-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # vLLM for GGUF model serving (replacing Ollama for better performance)
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: legal-vllm
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/models:ro
+      - vllm_cache:/root/.cache
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - VLLM_WORKER_MULTIPROC_METHOD=spawn
+    command: >
+      --model /models/unsloth-model.gguf
+      --host 0.0.0.0
+      --port 8000
+      --trust-remote-code
+      --max-model-len 4096
+      --tensor-parallel-size 1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # Ollama as fallback (CPU-only)
+  ollama-fallback:
+    image: ollama/ollama:latest
+    container_name: legal-ollama-fallback
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./models:/models:ro
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_MAX_LOADED_MODELS=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
+
+  # Enhanced TTS service
+  tts-service:
+    image: python:3.11-slim
+    container_name: legal-tts
+    ports:
+      - "5002:5002"
+    command: >
+      bash -c "
+        pip install flask flask-cors requests &&
+        echo 'from flask import Flask, jsonify, request
+from flask_cors import CORS
+import json
+import time
+app = Flask(__name__)
+CORS(app)
+@app.route(\"/health\")
+def health():
+    return jsonify({\"status\": \"healthy\", \"service\": \"tts\", \"timestamp\": time.time()})
+@app.route(\"/synthesize\", methods=[\"POST\"])
+def synthesize():
+    data = request.get_json() or {}
+    text = data.get(\"text\", \"Hello from Legal AI TTS\")
+    return jsonify({\"message\": \"TTS synthesis ready\", \"text\": text, \"status\": \"success\"})
+@app.route(\"/version\")
+def version():
+    return jsonify({\"version\": \"Phase3+4-v1.0\", \"features\": [\"synthesis\", \"health_check\"]})
+if __name__ == \"__main__\":
+    app.run(host=\"0.0.0.0\", port=5002, debug=False)' > /app/server.py &&
+        python /app/server.py"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - legal-ai-network
 
 volumes:
-  ollama_data:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
   neo4j_data:
+    driver: local
   neo4j_logs:
-  neo4j_import:
-  neo4j_plugins:
+    driver: local
+  qdrant_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  ollama_data:
+    driver: local
+  vllm_cache:
+    driver: local
 
 networks:
-  ai-app-network:
+  legal-ai-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

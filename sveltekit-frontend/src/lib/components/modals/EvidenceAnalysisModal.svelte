@@ -2,7 +2,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { fade, fly } from 'svelte/transition';
-  import Dialog from '$lib/components/ui/dialog/Dialog.svelte';
+  import { Dialog } from '$lib/components/ui/dialog/Dialog.svelte';
   import Grid from '$lib/components/ui/grid/Grid.svelte';
   import GridItem from '$lib/components/ui/grid/GridItem.svelte';
   import Button from "$lib/components/ui/button";
@@ -52,7 +52,7 @@
         body: JSON.stringify({
           caseId: evidence.caseId,
           content: evidence.content,
-          type: evidence.evidenceType || evidence.type,
+          type: evidence.type,
           generateAnalysis: true,
           metadata: { analysisMode }
         })
@@ -127,7 +127,7 @@
           </div>
           <div>
             <h3 class="container mx-auto px-4">
-              {evidence.evidenceType || evidence.type} Evidence
+              {evidence.type} Evidence
             </h3>
             <p class="container mx-auto px-4">ID: {evidence.id}</p>
           </div>

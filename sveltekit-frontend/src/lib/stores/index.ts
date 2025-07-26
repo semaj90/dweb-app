@@ -3,31 +3,31 @@
 
 // Core UI stores
 export { uiStore } from "./ui";
-export { modalStore } from "./modal";
-export { notificationStore } from "./notification";
+export { default as modalStore } from "./modal";
+export { notifications as notificationStore } from "./notification";
 
 // Authentication & User stores
-export { authStore } from "./auth";
-export { userStore } from "./user";
+export { default as authStore } from "./auth";
+export { default as userStore } from "./user";
 export { avatarStore } from "./avatarStore";
 
 // Data stores
-export { casesStore } from "./cases";
-export { citationsStore } from "./citations";
-export { reportStore } from "./report";
+export { default as casesStore } from "./cases";
+export { default as citationsStore } from "./citations";
+export { report as reportStore } from "./report";
 
 // Unified AI Store (merged ai-commands + ai-command-parser)
-export { 
+export {
   aiStore,
-  parseAICommand, 
-  applyAIClasses, 
+  parseAICommand,
+  applyAIClasses,
   aiCommandService,
   recentCommands,
   isAIActive
 } from "./ai-unified";
 
 // Unified Evidence Store (merged evidence + evidenceStore)
-export { 
+export {
   evidenceStore,
   evidenceById,
   evidenceByCase,
@@ -38,7 +38,7 @@ export {
 export { canvasStore } from "./canvas";
 
 // Form handling stores
-export { formStore } from "./form";
+export { createFormStore as formStore } from "./form";
 
 // LokiJS database stores
 export { lokiStore } from "./lokiStore";
@@ -46,28 +46,28 @@ export { enhancedLokiStore } from "./enhancedLokiStore";
 
 // XState machines
 export { autoTaggingMachine } from "./autoTaggingMachine";
-export { enhancedStateMachines } from "./enhancedStateMachines";
+export { evidenceProcessingMachine, evidenceProcessingStore, streamingStore } from "./enhancedStateMachines";
 export { aiCommandMachine } from "./ai-command-machine";
 
 // Error handling
 export { errorHandler } from "./error-handler";
 
 // Notes storage
-export { savedNotesStore } from "./saved-notes";
+export { default as savedNotesStore } from "./saved-notes";
 
 // Phase 2: Melt UI Integration utilities
 export * from "./melt-ui-integration";
 
 // Phase 2: Demo and health check
-export { 
-  runPhase2Demo, 
+export {
+  runPhase2Demo,
   phase2HealthCheck,
   demoEvidenceUpload,
-  demoEnhancedButton 
+  demoEnhancedButton
 } from "./phase2-demo";
 
 // Legacy compatibility aliases
 export { aiStore as aiCommands } from "./ai-unified";
 export { evidenceStore as evidence } from "./evidence-unified";
 export { chatStore } from "./chatStore";
-export { aiHistoryStore } from "./aiHistoryStore";
+export { aiHistory as aiHistoryStore } from "./aiHistoryStore";

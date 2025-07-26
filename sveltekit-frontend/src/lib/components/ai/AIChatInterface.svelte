@@ -1,354 +1,596 @@
-<!-- AI Chat Interface Component - SSR-safe with proper hydration -->
 <script lang="ts">
-  import { browser } from "$app/environment";
-  import { onDestroy, onMount, tick } from "svelte";
-  import { aiStore, conversation, status } from '$lib/stores/ai-store';
-  import AIChatInput from "./AIChatInput.svelte";
-  import AIChatMessage from "./AIChatMessage.svelte";
-  import AIStatusIndicator from "./AIStatusIndicator.svelte";
-  // Real-time evidence integration
-  import { evidenceStore } from "../../stores/evidenceStore";
+	import { onMount, createEventDispatcher, tick } from 'svelte';
+	import { fade, fly, scale } from 'svelte/transition';
+	import { quintOut, elasticOut } from 'svelte/easing';
+	import { writable } from 'svelte/store';
+	
+	// Types
+	interface Message {
+		id: string;
+		role: 'user' | 'assistant' | 'system';
+		content: string;
+		timestamp: Date;
+		streaming?: boolean;
+		error?: boolean;
+	}
+	
+	interface ChatSettings {
+		model: string;
+		temperature: number;
+		maxTokens: number;
+		topP: number;
+		systemPrompt: string;
+	}
+	
+	// Props
+	export let visible = false;
+	export let minimized = false;
+	export let draggable = true;
+	export let width = 400;
+	export let height = 600;
+	export let apiEndpoint = 'http://localhost:11434/api/generate';
+	export let fallbackEndpoint = 'http://localhost:8000/v1/chat/completions';
+	export let modelName = 'gemma3-legal:latest';
+	export let title = 'YoRHa Legal AI';
+	export let subtitle = 'Powered by Gemma3';
+	
+	// State
+	let messages: Message[] = [];
+	let inputValue = '';
+	let isTyping = false;
+	let isConnected = true;
+	let isDragging = false;
+	let dragOffset = { x: 0, y: 0 };
+	let position = { x: 0, y: 0 };
+	let settingsOpen = false;
+	
+	// Settings
+	let settings: ChatSettings = {
+		model: modelName,
+		temperature: 0.1,
+		maxTokens: 512,
+		topP: 0.9,
+		systemPrompt: 'You are a specialized Legal AI Assistant powered by Gemma 3. You excel at contract analysis, legal research, and providing professional legal guidance.'
+	};
+	
+	// Elements
+	let chatContainer: HTMLDivElement;
+	let messagesContainer: HTMLDivElement;
+	let inputElement: HTMLTextAreaElement;
+	let windowElement: HTMLDivElement;
+	
+	// Event dispatcher
+	const dispatch = createEventDispatcher<{
+		close: void;
+		minimize: void;
+		maximize: void;
+		message: { message: Message };
+		settingsChange: { settings: ChatSettings };
+	}>();
+	
+	// Initialize welcome message
+	onMount(() => {
+		addMessage('system', `Hello! I'm your YoRHa Legal AI Assistant powered by ${modelName}. I can help you with:
 
-  // Props
-  export let placeholder = "Ask a legal question...";
-  export let maxHeight = "500px";
-  export let showHistory = true;
-  export let autoFocus = false;
-  export let className = "";
-  export let caseId: string | undefined = undefined;
+• Contract analysis and review
+• Legal document interpretation
+• Liability and risk assessment
+• Compliance guidance
+• Legal terminology explanation
 
-  // Reactive state
-  let chatContainer: HTMLElement;
-  let isInitialized = false;
-  let currentInput = "";
-  let isProcessing = false;
-  let currentEvidence: any[] = [];
-
-  // Subscribe to real-time evidence for context
-  let unsubscribeEvidence: (() => void) | undefined;
-
-  // Initialize AI system on mount
-  onMount(async () => {
-    if (browser) {
-      try {
-        await aiStore.initialize();
-        isInitialized = true;
-
-        // Subscribe to real-time evidence updates for AI context
-        if (caseId) {
-          unsubscribeEvidence = evidenceStore.evidence.subscribe(
-            (evidenceList) => {
-              currentEvidence = evidenceList.filter((e) => e.caseId === caseId);
-}
-          );
-}
-      } catch (error) {
-        console.error("Failed to initialize AI:", error);
-}}
-  });
-
-  // Auto-scroll to bottom when new messages arrive
-  $: if (browser && $conversation.messages.length > 0) {
-    tick().then(() => {
-      if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-}
-    });
-}
-  // Handle message sending
-  async function handleSendMessage(content: string) {
-    if (!content.trim() || isProcessing || !isInitialized) return;
-
-    isProcessing = true;
-    currentInput = "";
-
-    try {
-      const response = await aiStore.sendMessage(content, {
-        includeHistory: showHistory,
-        maxSources: 5,
-        searchThreshold: 0.7,
-        useCache: true,
-        caseId,
-      });
-
-      if (!response) {
-        throw new Error("Failed to get AI response");
-}
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      // Error is handled in the store and reflected in $status
-    } finally {
-      isProcessing = false;
-}}
-  // Handle input changes
-  function handleInputChange(event: CustomEvent<string>) {
-    currentInput = event.detail;
-}
-  // Handle clear conversation
-  function handleClearConversation() {
-    aiStore.clearConversation();
-}
-  // Handle save conversation
-  function handleSaveConversation() {
-    aiStore.saveConversationToHistory();
-}
-  // Cleanup on destroy
-  onDestroy(() => {
-    if (unsubscribeEvidence) {
-      unsubscribeEvidence();
-}
-  });
+How can I assist you with your legal needs today?`);
+		
+		// Set initial position (bottom-right corner)
+		if (typeof window !== 'undefined') {
+			position = {
+				x: window.innerWidth - width - 20,
+				y: window.innerHeight - height - 20
+			};
+		}
+	});
+	
+	// Auto-scroll to bottom when new messages arrive
+	$: if (messages.length > 0) {
+		tick().then(() => {
+			if (messagesContainer) {
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			}
+		});
+	}
+	
+	// Add message to chat
+	function addMessage(role: Message['role'], content: string, options: Partial<Message> = {}) {
+		const message: Message = {
+			id: crypto.randomUUID(),
+			role,
+			content,
+			timestamp: new Date(),
+			...options
+		};
+		
+		messages = [...messages, message];
+		dispatch('message', { message });
+		return message;
+	}
+	
+	// Update message content (for streaming)
+	function updateMessage(id: string, content: string) {
+		messages = messages.map(msg => 
+			msg.id === id ? { ...msg, content } : msg
+		);
+	}
+	
+	// Send message to AI
+	async function sendMessage() {
+		if (!inputValue.trim() || isTyping) return;
+		
+		const userMessage = inputValue.trim();
+		inputValue = '';
+		
+		// Add user message
+		addMessage('user', userMessage);
+		
+		// Show typing indicator
+		isTyping = true;
+		const typingMessage = addMessage('assistant', '', { streaming: true });
+		
+		try {
+			// Try primary endpoint first
+			let response = await callGemma3API(userMessage);
+			
+			if (!response) {
+				// Fallback to enhanced API
+				response = await callFallbackAPI(userMessage);
+			}
+			
+			if (response) {
+				// Remove typing message and add real response
+				messages = messages.filter(msg => msg.id !== typingMessage.id);
+				addMessage('assistant', response);
+			} else {
+				throw new Error('No response from AI service');
+			}
+			
+		} catch (error) {
+			console.error('Chat error:', error);
+			messages = messages.filter(msg => msg.id !== typingMessage.id);
+			addMessage('assistant', 'Sorry, I\'m having trouble connecting. Please try again.', { error: true });
+		} finally {
+			isTyping = false;
+		}
+	}
+	
+	// Call Gemma3 API directly
+	async function callGemma3API(message: string): Promise<string | null> {
+		try {
+			const response = await fetch(apiEndpoint, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					model: settings.model,
+					prompt: formatPromptForGemma3(message),
+					stream: false,
+					options: {
+						temperature: settings.temperature,
+						num_predict: settings.maxTokens,
+						top_p: settings.topP,
+						top_k: 40,
+						repeat_penalty: 1.1,
+						stop: ['<start_of_turn>', '<end_of_turn>']
+					}
+				}),
+				signal: AbortSignal.timeout(60000)
+			});
+			
+			if (response.ok) {
+				const data = await response.json();
+				return data.response?.trim() || null;
+			}
+		} catch (error) {
+			console.warn('Primary API failed:', error);
+		}
+		
+		return null;
+	}
+	
+	// Call fallback API
+	async function callFallbackAPI(message: string): Promise<string | null> {
+		try {
+			const response = await fetch(fallbackEndpoint, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					messages: [
+						{ role: 'system', content: settings.systemPrompt },
+						{ role: 'user', content: message }
+					],
+					max_tokens: settings.maxTokens,
+					temperature: settings.temperature,
+					top_p: settings.topP
+				}),
+				signal: AbortSignal.timeout(60000)
+			});
+			
+			if (response.ok) {
+				const data = await response.json();
+				return data.response || data.choices?.[0]?.message?.content || null;
+			}
+		} catch (error) {
+			console.warn('Fallback API failed:', error);
+		}
+		
+		return null;
+	}
+	
+	// Format prompt for Gemma3 template
+	function formatPromptForGemma3(message: string): string {
+		const conversation = messages
+			.filter(msg => msg.role !== 'system' && !msg.error)
+			.map(msg => {
+				if (msg.role === 'user') {
+					return `<start_of_turn>user\n${msg.content}<end_of_turn>`;
+				} else {
+					return `<start_of_turn>model\n${msg.content}<end_of_turn>`;
+				}
+			})
+			.join('\n');
+		
+		return `${settings.systemPrompt}\n\n${conversation}\n<start_of_turn>user\n${message}<end_of_turn>\n<start_of_turn>model\n`;
+	}
+	
+	// Handle input keydown
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault();
+			sendMessage();
+		}
+	}
+	
+	// Auto-resize textarea
+	function autoResize() {
+		if (inputElement) {
+			inputElement.style.height = 'auto';
+			inputElement.style.height = Math.min(inputElement.scrollHeight, 120) + 'px';
+		}
+	}
+	
+	// Dragging functionality
+	function startDrag(event: MouseEvent) {
+		if (!draggable || event.target instanceof HTMLButtonElement) return;
+		
+		isDragging = true;
+		const rect = windowElement.getBoundingClientRect();
+		dragOffset = {
+			x: event.clientX - rect.left,
+			y: event.clientY - rect.top
+		};
+		
+		document.addEventListener('mousemove', handleDrag);
+		document.addEventListener('mouseup', stopDrag);
+	}
+	
+	function handleDrag(event: MouseEvent) {
+		if (!isDragging) return;
+		
+		const newX = event.clientX - dragOffset.x;
+		const newY = event.clientY - dragOffset.y;
+		
+		// Constrain to viewport
+		const maxX = window.innerWidth - width;
+		const maxY = window.innerHeight - height;
+		
+		position = {
+			x: Math.max(0, Math.min(newX, maxX)),
+			y: Math.max(0, Math.min(newY, maxY))
+		};
+	}
+	
+	function stopDrag() {
+		isDragging = false;
+		document.removeEventListener('mousemove', handleDrag);
+		document.removeEventListener('mouseup', stopDrag);
+	}
+	
+	// Window controls
+	function closeWindow() {
+		visible = false;
+		dispatch('close');
+	}
+	
+	function minimizeWindow() {
+		minimized = !minimized;
+		dispatch(minimized ? 'minimize' : 'maximize');
+	}
+	
+	// Clear chat
+	function clearChat() {
+		messages = [];
+		addMessage('system', 'Chat cleared. How can I help you?');
+	}
+	
+	// Toggle settings
+	function toggleSettings() {
+		settingsOpen = !settingsOpen;
+	}
+	
+	// Update settings
+	function updateSettings() {
+		dispatch('settingsChange', { settings });
+		settingsOpen = false;
+	}
+	
+	// Format timestamp
+	function formatTime(date: Date): string {
+		return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	}
 </script>
 
-<div class="container mx-auto px-4" style="max-height: {maxHeight}">
-  <!-- Status Bar -->
-  <div class="container mx-auto px-4">
-    <AIStatusIndicator
-      isReady={$status.localModelAvailable || $status.cloudModelAvailable}
-      isLoading={$status.isLoading || $status.isInitializing}
-      provider={$status.currentProvider}
-      model={$status.currentModel}
-      error={$status.error}
-    />
-
-    {#if $conversation.messages.length > 0}
-      <div class="container mx-auto px-4">
-        <button
-          type="button"
-          class="container mx-auto px-4"
-          on:click={() => handleSaveConversation()}
-          title="Save conversation to history"
-          aria-label="Save conversation to history"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-          </svg>
-        </button>
-
-        <button
-          type="button"
-          class="container mx-auto px-4"
-          on:click={() => handleClearConversation()}
-          title="Clear conversation"
-          aria-label="Clear conversation"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M3 6h18" />
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-          </svg>
-        </button>
-      </div>
-    {/if}
-  </div>
-
-  <!-- Chat Messages -->
-  <div
-    class="container mx-auto px-4"
-    bind:this={chatContainer}
-    role="log"
-    aria-live="polite"
-    aria-label="AI conversation"
-  >
-    {#if !isInitialized}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4"></div>
-        <p>Initializing AI system...</p>
-      </div>
-    {:else if $conversation.messages.length === 0}
-      <div class="container mx-auto px-4">
-        <h3>Legal AI Assistant</h3>
-        <p>Ask me anything about legal matters. I can help with:</p>
-        <ul>
-          <li>Contract analysis and interpretation</li>
-          <li>Legal research and case law</li>
-          <li>Document review and drafting</li>
-          <li>Compliance and regulatory questions</li>
-        </ul>
-        <p class="container mx-auto px-4">
-          <strong>Note:</strong> This AI provides general information only and does
-          not constitute legal advice.
-        </p>
-      </div>
-    {:else}
-      {#each $conversation.messages as message (message.id)}
-        <AIChatMessage
-          {message}
-          showSources={message.role === "assistant" &&
-            message.sources &&
-            message.sources.length > 0}
-          showMetadata={message.role === "assistant" && message.metadata}
-        />
-      {/each}
-    {/if}
-
-    {#if isProcessing}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4"></div>
-        <p>Processing your request...</p>
-      </div>
-    {/if}
-  </div>
-
-  <!-- Chat Input -->
-  <div class="container mx-auto px-4">
-    <AIChatInput
-      {placeholder}
-      {autoFocus}
-      disabled={!isInitialized || isProcessing}
-      value={currentInput}
-      on:send={(e) => handleSendMessage(e.detail)}
-      on:input={handleInputChange}
-    />
-  </div>
-</div>
+{#if visible}
+	<!-- Chat Window -->
+	<div
+		bind:this={windowElement}
+		class="fixed bg-yorha-bg-secondary border-2 border-yorha-primary shadow-2xl z-50 flex flex-col overflow-hidden font-mono"
+		class:opacity-50={isDragging}
+		style="
+			width: {width}px;
+			height: {minimized ? 60 : height}px;
+			left: {position.x}px;
+			top: {position.y}px;
+			transform: scale({isDragging ? 1.02 : 1});
+		"
+		in:scale={{ duration: 300, easing: elasticOut }}
+		out:scale={{ duration: 200 }}
+	>
+		<!-- Floating Particles Background -->
+		<div class="absolute inset-0 overflow-hidden pointer-events-none">
+			{#each Array(5) as _, i}
+				<div 
+					class="absolute w-1 h-1 bg-yorha-accent rounded-full opacity-60 animate-float"
+					style="
+						left: {10 + (i * 20)}%;
+						animation-delay: {i * 0.8}s;
+						animation-duration: {6 + (i * 2)}s;
+					"
+				></div>
+			{/each}
+		</div>
+		
+		<!-- Header -->
+		<div 
+			class="flex items-center justify-between p-4 bg-gradient-to-r from-yorha-bg-tertiary to-yorha-bg-secondary border-b border-yorha-border cursor-move select-none relative"
+			on:mousedown={startDrag}
+		>
+			<!-- Scan line effect -->
+			<div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yorha-primary to-transparent animate-scan"></div>
+			
+			<div class="flex items-center space-x-3">
+				<!-- Avatar -->
+				<div class="w-8 h-8 bg-gradient-to-br from-yorha-primary to-yorha-secondary flex items-center justify-center">
+					<svg class="w-4 h-4 text-yorha-bg-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+					</svg>
+				</div>
+				
+				<!-- Title -->
+				<div>
+					<h3 class="text-sm font-semibold text-yorha-text-primary">{title}</h3>
+					<div class="flex items-center space-x-2">
+						<span class="text-xs text-yorha-text-secondary">{subtitle}</span>
+						{#if isTyping}
+							<div class="flex space-x-1">
+								{#each Array(3) as _, i}
+									<div class="w-1 h-1 bg-yorha-accent rounded-full animate-pulse" style="animation-delay: {i * 0.2}s"></div>
+								{/each}
+							</div>
+						{:else}
+							<div class="flex items-center space-x-1">
+								<div class="w-2 h-2 bg-yorha-success rounded-full animate-pulse"></div>
+								<span class="text-xs text-yorha-success">READY</span>
+							</div>
+						{/if}
+					</div>
+				</div>
+			</div>
+			
+			<!-- Controls -->
+			<div class="flex items-center space-x-1">
+				<!-- Settings -->
+				<button
+					type="button"
+					class="w-6 h-6 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary transition-colors"
+					on:click={toggleSettings}
+					aria-label="Settings"
+				>
+					<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+					</svg>
+				</button>
+				
+				<!-- Minimize -->
+				<button
+					type="button"
+					class="w-6 h-6 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary transition-colors"
+					on:click={minimizeWindow}
+					aria-label={minimized ? 'Maximize' : 'Minimize'}
+				>
+					<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						{#if minimized}
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 14l9-9 3 3L9 18l-4-4z" />
+						{:else}
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+						{/if}
+					</svg>
+				</button>
+				
+				<!-- Close -->
+				<button
+					type="button"
+					class="w-6 h-6 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-red-500 hover:text-red-500 transition-colors"
+					on:click={closeWindow}
+					aria-label="Close"
+				>
+					<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
+		</div>
+		
+		{#if !minimized}
+			<!-- Settings Panel -->
+			{#if settingsOpen}
+				<div class="border-b border-yorha-border bg-yorha-bg-primary p-4" transition:fly={{ y: -50, duration: 200 }}>
+					<div class="space-y-3">
+						<!-- Model Selection -->
+						<div>
+							<label class="block text-xs text-yorha-text-secondary mb-1">Model</label>
+							<select bind:value={settings.model} class="w-full bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary text-xs p-2 focus:border-yorha-primary">
+								<option value="gemma3-legal:latest">Gemma3 Legal (11.8B)</option>
+								<option value="llama3.2:1b">Llama3.2 (1B)</option>
+							</select>
+						</div>
+						
+						<!-- Temperature -->
+						<div>
+							<label class="block text-xs text-yorha-text-secondary mb-1">Temperature: {settings.temperature}</label>
+							<input type="range" min="0" max="1" step="0.1" bind:value={settings.temperature} class="w-full">
+						</div>
+						
+						<!-- Max Tokens -->
+						<div>
+							<label class="block text-xs text-yorha-text-secondary mb-1">Max Tokens</label>
+							<input type="number" min="100" max="2048" bind:value={settings.maxTokens} class="w-full bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary text-xs p-2 focus:border-yorha-primary">
+						</div>
+						
+						<!-- Buttons -->
+						<div class="flex space-x-2">
+							<button type="button" on:click={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
+								Apply
+							</button>
+							<button type="button" on:click={clearChat} class="flex-1 bg-yorha-error text-white text-xs p-2 hover:bg-red-600 transition-colors">
+								Clear
+							</button>
+						</div>
+					</div>
+				</div>
+			{/if}
+			
+			<!-- Messages Container -->
+			<div bind:this={messagesContainer} class="flex-1 overflow-y-auto p-4 bg-yorha-bg-primary space-y-4">
+				{#each messages as message (message.id)}
+					<div class="flex {message.role === 'user' ? 'justify-end' : 'justify-start'}" in:fly={{ y: 20, duration: 300 }}>
+						<div class="max-w-[85%] {message.role === 'user' ? 'bg-yorha-bg-tertiary border-yorha-primary' : 'bg-yorha-bg-secondary'} border border-yorha-border p-3 relative">
+							{#if message.role === 'assistant'}
+								<div class="absolute left-0 top-0 bottom-0 w-1 bg-yorha-accent"></div>
+							{/if}
+							
+							<div class="text-sm text-yorha-text-primary whitespace-pre-wrap">
+								{message.content}
+							</div>
+							
+							{#if message.error}
+								<div class="mt-2 text-xs text-red-400">
+									Failed to get response. <button on:click={sendMessage} class="underline">Retry</button>
+								</div>
+							{/if}
+							
+							<div class="mt-2 text-xs text-yorha-text-muted">
+								{formatTime(message.timestamp)}
+							</div>
+						</div>
+					</div>
+				{/each}
+				
+				{#if isTyping}
+					<div class="flex justify-start" in:fade>
+						<div class="bg-yorha-bg-secondary border border-yorha-border p-3 relative">
+							<div class="absolute left-0 top-0 bottom-0 w-1 bg-yorha-accent"></div>
+							<div class="flex items-center space-x-2">
+								<div class="flex space-x-1">
+									{#each Array(3) as _, i}
+										<div class="w-2 h-2 bg-yorha-accent rounded-full animate-bounce" style="animation-delay: {i * 0.1}s"></div>
+									{/each}
+								</div>
+								<span class="text-xs text-yorha-text-muted">AI is thinking...</span>
+							</div>
+						</div>
+					</div>
+				{/if}
+			</div>
+			
+			<!-- Input Area -->
+			<div class="border-t border-yorha-border bg-yorha-bg-secondary p-4">
+				<div class="flex space-x-3">
+					<textarea
+						bind:this={inputElement}
+						bind:value={inputValue}
+						on:keydown={handleKeyDown}
+						on:input={autoResize}
+						placeholder="Ask me about contracts, liability, compliance, or any legal question..."
+						class="flex-1 bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary placeholder-yorha-text-muted p-3 text-sm resize-none focus:border-yorha-primary focus:outline-none"
+						rows="1"
+						style="min-height: 40px; max-height: 120px;"
+						disabled={isTyping}
+					></textarea>
+					
+					<button
+						type="button"
+						on:click={sendMessage}
+						disabled={!inputValue.trim() || isTyping}
+						class="w-10 h-10 bg-yorha-primary text-yorha-bg-primary flex items-center justify-center hover:bg-yorha-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+						aria-label="Send message"
+					>
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+						</svg>
+					</button>
+				</div>
+				
+				<div class="flex justify-between items-center mt-2 text-xs text-yorha-text-muted">
+					<span>Powered by {settings.model}</span>
+					<div class="flex items-center space-x-1">
+						<div class="w-2 h-2 bg-{isConnected ? 'yorha-success' : 'yorha-error'} rounded-full"></div>
+						<span>{isConnected ? 'Connected' : 'Disconnected'}</span>
+					</div>
+				</div>
+			</div>
+		{/if}
+	</div>
+{/if}
 
 <style>
-  /* @unocss-include */
-  .ai-chat-interface {
-    display: flex;
-    flex-direction: column;
-    background: var(--bg-primary, #ffffff);
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 16px;
-    background: var(--bg-secondary, #f8fafc);
-    border-bottom: 1px solid var(--border-color, #e2e8f0);
-    font-size: 0.875rem;
-}
-  .conversation-actions {
-    display: flex;
-    gap: 8px;
-}
-  .btn-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: none;
-    border: none;
-    border-radius: 4px;
-    color: var(--text-secondary, #64748b);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-  .btn-icon:hover {
-    background: var(--bg-hover, #e2e8f0);
-    color: var(--text-primary, #1e293b);
-}
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    min-height: 200px;
-    max-height: calc(100% - 120px);
-}
-  .initialization-message,
-  .processing-message {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background: var(--bg-info, #eff6ff);
-    border: 1px solid var(--border-info, #bfdbfe);
-    border-radius: 6px;
-    color: var(--text-info, #1e40af);
-}
-  .welcome-message {
-    padding: 24px;
-    text-align: center;
-    color: var(--text-secondary, #64748b);
-}
-  .welcome-message h3 {
-    margin: 0 0 16px 0;
-    color: var(--text-primary, #1e293b);
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-  .welcome-message ul {
-    text-align: left;
-    max-width: 400px;
-    margin: 16px auto;
-}
-  .welcome-message li {
-    margin: 8px 0;
-}
-  .note {
-    margin-top: 16px;
-    padding: 12px;
-    background: var(--bg-warning, #fef3c7);
-    border: 1px solid var(--border-warning, #fbbf24);
-    border-radius: 4px;
-    font-size: 0.875rem;
-    color: var(--text-warning, #92400e);
-}
-  .chat-input-container {
-    padding: 16px;
-    background: var(--bg-primary, #ffffff);
-    border-top: 1px solid var(--border-color, #e2e8f0);
-}
-  .loading-spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--border-color, #e2e8f0);
-    border-top: 2px solid var(--accent-color, #3b82f6);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-}
-    100% {
-      transform: rotate(360deg);
-}}
-  /* Dark mode support */
-  @media (prefers-color-scheme: dark) {
-    .ai-chat-interface {
-      background: var(--bg-primary, #0f172a);
-      border-color: var(--border-color, #334155);
-}
-    .status-bar {
-      background: var(--bg-secondary, #1e293b);
-      border-color: var(--border-color, #334155);
-}
-    .welcome-message {
-      color: var(--text-secondary, #94a3b8);
-}
-    .welcome-message h3 {
-      color: var(--text-primary, #f8fafc);
-}}
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .chat-messages {
-      padding: 12px;
-}
-    .chat-input-container {
-      padding: 12px;
-}
-    .status-bar {
-      padding: 8px 12px;
-}}
+	@keyframes float {
+		0%, 100% {
+			transform: translateY(0) rotate(0deg);
+			opacity: 0;
+		}
+		10% {
+			opacity: 1;
+		}
+		90% {
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(-100%) rotate(360deg);
+			opacity: 0;
+		}
+	}
+	
+	@keyframes scan {
+		0% {
+			transform: translateX(-100%);
+		}
+		100% {
+			transform: translateX(100%);
+		}
+	}
+	
+	.animate-float {
+		animation: float linear infinite;
+	}
+	
+	.animate-scan {
+		animation: scan 3s linear infinite;
+	}
 </style>

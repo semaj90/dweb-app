@@ -58,6 +58,14 @@ declare global {
         role: 'prosecutor' | 'admin' | 'analyst';
       } | null;
     }
+    
+    interface PageData {
+      flash?: any;
+    }
+    
+    namespace Superforms {
+      type Message = any;
+    }
   }
 }
 
