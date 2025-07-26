@@ -23,9 +23,11 @@ import type { Case } from '$lib/types';
     try {
       const response = await fetch("/api/cases");
       if (response.ok) {
-        cases = await response.json();}
+        cases = await response.json();
+}
     } catch (error) {
-      console.error("Failed to load cases:", error);}
+      console.error("Failed to load cases:", error);
+}
     // Open menu after mount
     await tick();
     triggerEl?.focus();
@@ -33,32 +35,41 @@ import type { Case } from '$lib/types';
 
   function sendToCase(caseId: string) {
     dispatch("sendToCase", { caseId });
-    closeMenu();}
+    closeMenu();
+}
   function viewEvidence() {
     if (item) window.open(`/evidence/${item.id}`, "_blank");
-    closeMenu();}
+    closeMenu();
+}
   function editEvidence() {
     if (item) window.location.href = `/evidence/${item.id}/edit`;
-    closeMenu();}
+    closeMenu();
+}
   function downloadEvidence() {
     if (item && item.fileUrl) {
       const link = document.createElement("a");
       link.href = item.fileUrl;
       link.download = item.fileName || "evidence";
-      link.click();}
-    closeMenu();}
+      link.click();
+}
+    closeMenu();
+}
   function duplicateEvidence() {
     // Implementation for duplicating evidence
     console.log("Duplicate evidence:", item?.id);
-    closeMenu();}
+    closeMenu();
+}
   function deleteEvidence() {
     if (item && confirm("Are you sure you want to delete this evidence?")) {
       // Implementation for deleting evidence
-      console.log("Delete evidence:", item.id);}
-    closeMenu();}
+      console.log("Delete evidence:", item.id);
+}
+    closeMenu();
+}
   function closeMenu() {
     menuOpen = false;
-    dispatch("close");}
+    dispatch("close");
+}
 </script>
 
 <DropdownMenuRoot
@@ -149,8 +160,10 @@ import type { Case } from '$lib/types';
   @keyframes contextMenuFadeIn {
     from {
       opacity: 0;
-      transform: scale(0.95);}
+      transform: scale(0.95);
+}
     to {
       opacity: 1;
-      transform: scale(1);}}
+      transform: scale(1);
+}}
 </style>

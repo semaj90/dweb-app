@@ -1,0 +1,67 @@
+# docker-compose-gpu.yml
+
+services:
+  ollama:
+    build:
+      context: .
+      dockerfile: Dockerfile.ollama
+    container_name: deeds-ollama-gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    ports:
+      - "11434:11434"
+    volumes:
+      # Corrected the path to /root/.ollama
+      - ollama_data:/root/.ollama
+      - ./models:/models
+    environment:
+      - OLLAMA_MODELS=/models
+      - OLLAMA_KEEP_ALIVE=5m
+      - OLLAMA_FLASH_ATTENTION=1
+      - OLLAMA_VERBOSE=1
+      - OLLAMA_NUM_GPU=1
+      - OLLAMA_GPU_LAYERS=50
+      # RTX 3060 Ampere optimizations
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - CUDA_VISIBLE_DEVICES=0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - sveltekit-network
+
+  sveltekit:
+    # This assumes you have a Dockerfile for your SvelteKit app
+    # in the 'sveltekit-frontend' directory
+    build:
+      context: ./sveltekit-frontend
+    container_name: sveltekit-app
+    ports:
+      - "5173:5173"
+    environment:
+      # This URL is used by the SvelteKit server to talk to Ollama.
+      # 'ollama' is the service name from this docker-compose file.
+      - OLLAMA_URL=http://ollama:11434
+      # This URL is used by the browser to talk to the SvelteKit server's API endpoint
+      - PUBLIC_ORIGIN=http://localhost:5173
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - sveltekit-network
+
+volumes:
+  ollama_data:
+
+networks:
+  sveltekit-network:
+    driver: bridge

@@ -19,7 +19,8 @@
       recommendations = fuse
         .search(lastPrompt)
         .map((r) => r.item)
-        .slice(0, 3);}
+        .slice(0, 3);
+}
   });
 </script>
 

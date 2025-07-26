@@ -21,24 +21,29 @@
     validators: {
       title: (value: string) => {
         if (!value || value.trim().length < 3) {
-          return "Title must be at least 3 characters long";}
+          return "Title must be at least 3 characters long";
+}
         if (value.length > 100) {
-          return "Title must be less than 100 characters";}
+          return "Title must be less than 100 characters";
+}
         return null;
       },
       description: (value: string) => {
         if (!value || value.trim().length < 10) {
-          return "Description must be at least 10 characters long";}
+          return "Description must be at least 10 characters long";
+}
         return null;
       },
       priority: (value: string) => {
         if (!["low", "medium", "high", "urgent"].includes(value)) {
-          return "Please select a valid priority level";}
+          return "Please select a valid priority level";
+}
         return null;
       },
       dueDate: (value: string) => {
         if (value && new Date(value) < new Date()) {
-          return "Due date cannot be in the past";}
+          return "Due date cannot be in the past";
+}
         return null;
       },
     },
@@ -59,15 +64,18 @@
     const { values } = event.detail;
     formValues = values;
     // Auto-save draft or other real-time updates
-    console.log("Form values changed:", values);}
+    console.log("Form values changed:", values);
+}
   // Update form state when formApi is available
   $: if (formApi) {
-    // You can access formApi methods here if needed}
+    // You can access formApi methods here if needed
+}
   async function handleSubmit(event: CustomEvent) {
     const { values, isValid } = event.detail;
 
     if (!isValid) {
-      return;}
+      return;
+}
     isSubmitting = true;
 
     try {
@@ -92,7 +100,8 @@
         notifications.error(
           "Failed to create case",
           error.message || "Please try again later"
-        );}
+        );
+}
     } catch (error) {
       console.error("Case creation error:", error);
       notifications.error(
@@ -100,13 +109,15 @@
         "Unable to create case. Please check your connection and try again."
       );
     } finally {
-      isSubmitting = false;}}
+      isSubmitting = false;
+}}
   function addTag() {
     const currentTags = formApi.getValues().tags || "";
     formApi.setField(
       "tags",
       currentTags + (currentTags ? ", " : "") + "New Tag"
-    );}
+    );
+}
   // Keyboard shortcuts
   function handleKeydown(event: KeyboardEvent) {
     if (event.ctrlKey || event.metaKey) {
@@ -115,7 +126,8 @@
         formApi?.submit();
       } else if (event.key === "r") {
         event.preventDefault();
-        formApi?.reset();}}}
+        formApi?.reset();
+}}}
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -353,5 +365,6 @@
     font-family:
       ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
-    font-size: 0.75rem;}
+    font-size: 0.75rem;
+}
 </style>

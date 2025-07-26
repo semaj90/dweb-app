@@ -19,7 +19,8 @@
       case "digital":
         return "i-lucide-hard-drive";
       default:
-        return "i-lucide-file";}}
+        return "i-lucide-file";
+}}
   function getTypeColor(type: string) {
     switch (type) {
       case "document":
@@ -33,20 +34,23 @@
       case "digital":
         return "bg-orange-50 text-orange-700";
       default:
-        return "bg-gray-50 text-gray-700";}}
+        return "bg-gray-50 text-gray-700";
+}}
   function formatFileSize(bytes: number): string {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];}
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
   function formatDate(date: string | Date): string {
     return new Date(date).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    });}
+    });
+}
 </script>
 
 <div
@@ -181,7 +185,9 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     line-clamp: 2;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .evidence-card:hover .group-hover\:opacity-100 {
-    opacity: 1;}
+    opacity: 1;
+}
 </style>

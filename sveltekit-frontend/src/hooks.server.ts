@@ -2,7 +2,7 @@ import { redirect, type Handle } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import { eq } from 'drizzle-orm';
-import * as schema from '$lib/server/db/schema';
+import * as schema from '$lib/server/db/schema-postgres';
 
 // Initialize database with error handling
 let db: any;

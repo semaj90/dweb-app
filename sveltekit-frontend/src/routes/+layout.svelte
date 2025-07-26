@@ -1,10 +1,9 @@
 <script lang="ts">
   import '../app.css';
   import '../lib/styles/nier.css';
-  import 'shadcn-svelte/styles.css';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  
+
   let mounted = false;
   onMount(() => { mounted = true; });
 </script>
@@ -23,7 +22,7 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .main-content {
     flex: 1;
     width: 100%;

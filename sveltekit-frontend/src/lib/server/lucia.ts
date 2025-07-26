@@ -1,9 +1,10 @@
-// Modern server-managed session authentication utilities (no Lucia)
 import { db } from "$lib/server/db/index";
 import { sessions } from "$lib/server/db/schema-postgres";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
 import { and, eq, gte } from "drizzle-orm";
+
+// Modern server-managed session authentication utilities (no Lucia)
 
 // --- Helper Functions ---
 function generateId(length: number = 40): string {
@@ -16,6 +17,7 @@ function createDate(timeSpan: { days: number }): Date {
   date.setDate(date.getDate() + timeSpan.days);
   return date;
 }
+
 // --- Password Hashing ---
 export async function hashPassword(password: string): Promise<string> {
   // Use bcrypt for strong password hashing
@@ -27,6 +29,7 @@ export async function verifyPassword(
 ): Promise<boolean> {
   return await bcrypt.compare(password, hashedPassword);
 }
+
 // --- Session Management ---
 export async function createUserSession(
   userId: string,
@@ -41,6 +44,7 @@ export async function createUserSession(
   });
   return { sessionId, expiresAt };
 }
+
 export async function validateSession(sessionId: string) {
   // Find the session in the database that is not expired, and join user
   const now = new Date();
@@ -58,12 +62,15 @@ export async function validateSession(sessionId: string) {
   });
   return session && session.user ? session.user : null;
 }
+
 export async function invalidateSession(sessionId: string): Promise<void> {
   await db.delete(sessions).where(eq(sessions.id, sessionId));
 }
+
 export async function invalidateUserSessions(userId: string): Promise<void> {
   await db.delete(sessions).where(eq(sessions.userId, userId));
 }
+
 // --- Cookie Helper ---
 export function setSessionCookie(
   cookies: any,
@@ -78,6 +85,7 @@ export function setSessionCookie(
     expires: expiresAt,
   });
 }
+
 export function clearSessionCookie(cookies: any) {
   cookies.delete("session_id", { path: "/" });
 }

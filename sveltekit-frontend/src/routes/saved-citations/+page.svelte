@@ -50,7 +50,8 @@
         createdAt: new Date(),
         updatedAt: new Date(),
         isFavorite: true,
-        notes: "Landmark case establishing Miranda warnings"}
+        notes: "Landmark case establishing Miranda warnings"
+}
     ];
   });
 
@@ -93,7 +94,8 @@
         selectedCategory === "all" || citation.category === selectedCategory;
 
       return matchesSearch && matchesCategory;
-    });}
+    });
+}
   async function saveCitation() {
     try {
       const citation = {
@@ -122,26 +124,31 @@
 
       showAddDialog = false;
     } catch (error) {
-      console.error("Error saving citation:", error);}}
+      console.error("Error saving citation:", error);
+}}
   async function deleteCitation(citationId: string) {
     try {
       // In a real app, this would DELETE /api/user/saved-citations/{id}
       savedCitations = savedCitations.filter((c) => c.id !== citationId);
     } catch (error) {
-      console.error("Error deleting citation:", error);}}
+      console.error("Error deleting citation:", error);
+}}
   async function toggleFavorite(citation: any) {
     try {
       citation.isFavorite = !citation.isFavorite;
       // In a real app, this would PATCH /api/user/saved-citations/{id}
       savedCitations = [...savedCitations];
     } catch (error) {
-      console.error("Error updating citation:", error);}}
+      console.error("Error updating citation:", error);
+}}
   function copyCitation(citation: any) {
     const citationText = `${citation.content}\n\nSource: ${citation.source}`;
-    navigator.clipboard.writeText(citationText);}
+    navigator.clipboard.writeText(citationText);
+}
   function editCitation(citation: any) {
     editingCitation = { ...citation };
-    editingCitation.tags = citation.tags.join(", ");}
+    editingCitation.tags = citation.tags.join(", ");
+}
   async function updateCitation() {
     try {
       const updated = {
@@ -155,10 +162,12 @@
       const index = savedCitations.findIndex((c) => c.id === updated.id);
       if (index >= 0) {
         savedCitations[index] = updated;
-        savedCitations = [...savedCitations];}
+        savedCitations = [...savedCitations];
+}
       editingCitation = null;
     } catch (error) {
-      console.error("Error updating citation:", error);}}
+      console.error("Error updating citation:", error);
+}}
   // Stats
   $: totalCitations = savedCitations.length;
   $: favoriteCitations = savedCitations.filter((c) => c.isFavorite).length;
@@ -507,181 +516,221 @@
   /* @unocss-include */
   .saved-citations-page {
     min-height: 100vh;
-    background: #f8fafc;}
+    background: #f8fafc;
+}
   .page-header {
     background: white;
     border-bottom: 1px solid #e5e7eb;
-    padding: 32px 24px;}
+    padding: 32px 24px;
+}
   .header-content {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;}
+    align-items: flex-end;
+}
   .page-title {
     font-size: 28px;
     font-weight: 700;
     color: #1f2937;
-    margin: 0 0 8px 0;}
+    margin: 0 0 8px 0;
+}
   .page-subtitle {
     font-size: 16px;
     color: #6b7280;
-    margin: 0;}
+    margin: 0;
+}
   .header-stats {
     display: flex;
-    gap: 24px;}
+    gap: 24px;
+}
   .stat {
-    text-align: center;}
+    text-align: center;
+}
   .stat-number {
     display: block;
     font-size: 24px;
     font-weight: 700;
-    color: #1f2937;}
+    color: #1f2937;
+}
   .stat-label {
     font-size: 12px;
     color: #6b7280;
     text-transform: uppercase;
-    font-weight: 500;}
+    font-weight: 500;
+}
   .toolbar {
     background: white;
     border-bottom: 1px solid #e5e7eb;
     padding: 16px 24px;
     display: flex;
     justify-content: space-between;
-    align-items: center;}
+    align-items: center;
+}
   .toolbar-left {
     display: flex;
     gap: 16px;
-    align-items: center;}
+    align-items: center;
+}
   .toolbar-right {
     display: flex;
-    gap: 8px;}
+    gap: 8px;
+}
   .search-container {
     position: relative;
-    width: 300px;}
+    width: 300px;
+}
   :global(.search-input) {
-    padding-left: 40px !important;}
+    padding-left: 40px !important;
+}
   .category-filter {
     padding: 8px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     background: white;
     font-size: 14px;
-    min-width: 150px;}
+    min-width: 150px;
+}
   .citations-grid {
     max-width: 1200px;
     margin: 0 auto;
     padding: 24px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 20px;}
+    gap: 20px;
+}
   :global(.citation-card) {
     transition: all 0.2s ease;
-    height: fit-content;}
+    height: fit-content;
+}
   :global(.citation-card:hover) {
     box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);}
+    transform: translateY(-2px);
+}
   :global(.citation-header) {
-    padding-bottom: 12px !important;}
+    padding-bottom: 12px !important;
+}
   .citation-title-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 8px;}
+    margin-bottom: 8px;
+}
   .citation-title {
     font-size: 16px;
     font-weight: 600;
     color: #1f2937;
     margin: 0;
     flex: 1;
-    padding-right: 8px;}
+    padding-right: 8px;
+}
   .citation-meta {
     display: flex;
     gap: 8px;
-    align-items: center;}
+    align-items: center;
+}
   :global(.category-badge),
   :global(.favorite-badge),
   :global(.context-badge) {
     font-size: 10px !important;
     padding: 2px 6px !important;
-    height: auto !important;}
+    height: auto !important;
+}
   :global(.favorite-badge) {
     background: #fef3c7 !important;
-    color: #92400e !important;}
+    color: #92400e !important;
+}
   :global(.citation-content) {
-    padding-top: 0 !important;}
+    padding-top: 0 !important;
+}
   .citation-text {
     font-size: 14px;
     color: #374151;
     line-height: 1.5;
-    margin: 0 0 12px 0;}
+    margin: 0 0 12px 0;
+}
   .citation-source {
     font-size: 12px;
     color: #6b7280;
     font-style: italic;
-    margin: 0 0 12px 0;}
+    margin: 0 0 12px 0;
+}
   .citation-notes {
     background: #f3f4f6;
     padding: 12px;
     border-radius: 6px;
-    margin: 12px 0;}
+    margin: 12px 0;
+}
   .citation-notes p {
     font-size: 12px;
     color: #4b5563;
     margin: 0;
-    line-height: 1.4;}
+    line-height: 1.4;
+}
   .citation-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin: 12px 0;}
+    margin: 12px 0;
+}
   :global(.tag) {
     font-size: 10px !important;
     padding: 2px 6px !important;
     height: auto !important;
     background: #e0e7ff !important;
-    color: #3730a3 !important;}
+    color: #3730a3 !important;
+}
   .citation-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 16px;
     padding-top: 12px;
-    border-top: 1px solid #f3f4f6;}
+    border-top: 1px solid #f3f4f6;
+}
   .saved-date {
     font-size: 11px;
-    color: #9ca3af;}
+    color: #9ca3af;
+}
   .empty-state {
     grid-column: 1 / -1;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 400px;}
+    min-height: 400px;
+}
   .empty-content {
     text-align: center;
-    max-width: 400px;}
+    max-width: 400px;
+}
   .empty-title {
     font-size: 18px;
     font-weight: 600;
     color: #374151;
-    margin: 0 0 8px 0;}
+    margin: 0 0 8px 0;
+}
   .empty-message {
     font-size: 14px;
     color: #6b7280;
     margin: 0 0 16px 0;
-    line-height: 1.5;}
+    line-height: 1.5;
+}
   .citation-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;}
+    gap: 16px;
+}
   .form-field {
     display: flex;
     flex-direction: column;
-    gap: 4px;}
+    gap: 4px;
+}
   .form-field label {
     font-size: 14px;
     font-weight: 500;
-    color: #374151;}
+    color: #374151;
+}
   .form-field textarea {
     width: 100%;
     padding: 8px 12px;
@@ -689,14 +738,17 @@
     border-radius: 6px;
     font-size: 14px;
     resize: vertical;
-    min-height: 80px;}
+    min-height: 80px;
+}
   .form-field select {
     padding: 8px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    font-size: 14px;}
+    font-size: 14px;
+}
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;}
+    gap: 16px;
+}
 </style>

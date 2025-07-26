@@ -11,7 +11,8 @@
     i = 0;
     
     if (intervalId) {
-      clearInterval(intervalId);}
+      clearInterval(intervalId);
+}
     intervalId = setInterval(() => {
       if (i < text.length) {
         output += text[i];
@@ -19,8 +20,10 @@
       } else {
         if (intervalId) {
           clearInterval(intervalId);
-          intervalId = null;}}
-    }, speed);}
+          intervalId = null;
+}}
+    }, speed);
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -35,10 +38,13 @@
     min-height: 1.5rem;
     border-right: 2px solid #007bff;
     padding-right: 5px;
-    animation: blink 1s infinite;}
+    animation: blink 1s infinite;
+}
   @keyframes blink {
     0%, 50% { 
-      border-color: #007bff; }
+      border-color: #007bff; 
+}
     51%, 100% { 
-      border-color: transparent; }}
+      border-color: transparent; 
+}}
 </style>

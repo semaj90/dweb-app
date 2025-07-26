@@ -45,7 +45,7 @@ export const canvasSystemMachine = setup({
       connections: ({ context, event }) => {
         if (event.type !== 'REMOVE_NODE') return context.connections;
         return context.connections.filter(
-          conn => conn.source !== event.nodeId && conn.target !== event.nodeId
+          conn => conn.sourceId !== event.nodeId && conn.targetId !== event.nodeId
         );
       },
     }),
@@ -105,10 +105,7 @@ export const canvasSystemMachine = setup({
       const state: CanvasState = {
         nodes: input.nodes,
         connections: input.connections,
-        metadata: {
-          lastSaved: new Date(),
-          version: '1.0',
-        },
+        viewport: { x: 0, y: 0, zoom: 1 },
       };
 
       // Save to localStorage or API
@@ -130,10 +127,7 @@ export const canvasSystemMachine = setup({
     canvasState: {
       nodes: [],
       connections: [],
-      metadata: {
-        lastSaved: new Date(),
-        version: '1.0',
-      },
+      viewport: { x: 0, y: 0, zoom: 1 },
     },
     error: null,
   },
@@ -180,7 +174,7 @@ export const canvasSystemMachine = setup({
                 return {
                   nodes: [],
                   connections: [],
-                  metadata: { lastSaved: new Date(), version: '1.0' },
+                  viewport: { x: 0, y: 0, zoom: 1 },
                 };
               }
               return event.state;

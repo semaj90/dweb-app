@@ -14,6 +14,10 @@ import type { User } from '$lib/types/user';
   export let case_: Case| null = null; // Edit mode if provided
 
 
+import type { User } from '$lib/types/user';
+
+import type { User } from '$lib/types/user';
+
   export let user: User;
 
   const dispatch = createEventDispatcher();

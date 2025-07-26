@@ -31,5 +31,6 @@
   .select-value {
     flex: 1;
     display: flex;
-    align-items: center;}
+    align-items: center;
+}
 </style>

@@ -61,11 +61,13 @@
       const result = await response.json();
       if (result.success) {
         evidence = { ...evidence, ...result.evidence };
-        dispatch('evidenceUpdated', evidence);}
+        dispatch('evidenceUpdated', evidence);
+}
     } catch (error) {
       console.error('Analysis failed:', error);
     } finally {
-      isAnalyzing = false;}}
+      isAnalyzing = false;
+}}
   async function updateTags() {
     if (!evidence || !newTags.trim()) return;
     
@@ -86,19 +88,23 @@
       if (result.success) {
         evidence = { ...evidence, tags: result.evidence.tags };
         newTags = '';
-        dispatch('evidenceUpdated', evidence);}
+        dispatch('evidenceUpdated', evidence);
+}
     } catch (error) {
-      console.error('Tag update failed:', error);}}
+      console.error('Tag update failed:', error);
+}}
   function getAdmissibilityColor(admissibility: string): string {
     switch (admissibility) {
       case 'admissible': return 'bg-green-100 text-green-800 border-green-300';
       case 'questionable': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'inadmissible': return 'bg-red-100 text-red-800 border-red-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';}}
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+}}
   function getRelevanceColor(relevance: number): string {
     if (relevance >= 8) return 'text-green-600';
     if (relevance >= 6) return 'text-yellow-600';
-    return 'text-red-600';}
+    return 'text-red-600';
+}
 </script>
 
 <Dialog 

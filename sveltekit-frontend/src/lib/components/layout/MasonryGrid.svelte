@@ -42,7 +42,8 @@
       setTimeout(() => {
         masonry = new Masonry(container, masonryOptions);
         isInitialized = true;
-      }, 100);}
+      }, 100);
+}
   });
   
   // Update layout when items change
@@ -50,12 +51,15 @@
     setTimeout(() => {
       if (masonry) {
         masonry.reloadItems();
-        masonry.layout();}
-    }, 50);}
+        masonry.layout();
+}
+    }, 50);
+}
   // Cleanup
   onDestroy(() => {
     if (masonry) {
-      masonry.destroy();}
+      masonry.destroy();
+}
   });
   
   // Handle drag and drop
@@ -68,7 +72,8 @@
     // Trigger layout update after reordering
     setTimeout(() => {
       if (masonry) {
-        masonry.layout();}
+        masonry.layout();
+}
     }, 100);
   };
   
@@ -90,13 +95,15 @@
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       if (masonry) {
-        masonry.layout();}
+        masonry.layout();
+}
     }, 150);
   };
   
   onMount(() => {
     if (resize) {
-      window.addEventListener('resize', handleResize);}
+      window.addEventListener('resize', handleResize);
+}
     return () => {
       window.removeEventListener('resize', handleResize);
       if (resizeTimeout) clearTimeout(resizeTimeout);
@@ -131,39 +138,50 @@
   /* @unocss-include */
   .masonry-grid {
     position: relative;
-    margin: 0 auto;}
+    margin: 0 auto;
+}
   :global(.masonry-item) {
     width: var(--column-width);
     margin-bottom: var(--gutter);
     break-inside: avoid;
     position: relative;
-    transition: transform 0.3s ease, opacity 0.3s ease;}
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
   /* Responsive design */
   @media (max-width: 640px) {
     :global(.masonry-item) {
-      width: calc(100% - var(--gutter));}}
+      width: calc(100% - var(--gutter));
+}}
   @media (min-width: 641px) and (max-width: 1024px) {
     :global(.masonry-item) {
-      width: calc(50% - var(--gutter));}}
+      width: calc(50% - var(--gutter));
+}}
   @media (min-width: 1025px) and (max-width: 1280px) {
     :global(.masonry-item) {
-      width: calc(33.333% - var(--gutter));}}
+      width: calc(33.333% - var(--gutter));
+}}
   @media (min-width: 1281px) {
     :global(.masonry-item) {
-      width: calc(25% - var(--gutter));}}
+      width: calc(25% - var(--gutter));
+}}
   /* Drag and drop styling */
   :global(.masonry-item.drag-disabled) {
-    cursor: default;}
+    cursor: default;
+}
   :global(.masonry-item:not(.drag-disabled)) {
-    cursor: grab;}
+    cursor: grab;
+}
   :global(.masonry-item:not(.drag-disabled):active) {
-    cursor: grabbing;}
+    cursor: grabbing;
+}
   :global(.masonry-item.drag-shadow) {
     opacity: 0.5;
-    transform: scale(0.95);}
+    transform: scale(0.95);
+}
   :global(.masonry-item.drag-ghost) {
     opacity: 0.3;
-    transform: rotate(5deg);}
+    transform: rotate(5deg);
+}
   /* Loading state */
   .masonry-grid:empty::before {
     content: 'Loading...';
@@ -171,23 +189,29 @@
     text-align: center;
     color: var(--pico-muted-color, #6b7280);
     font-style: italic;
-    padding: 2rem;}
+    padding: 2rem;
+}
   /* Animation for new items */
   :global(.masonry-item.newly-added) {
-    animation: slideInUp 0.3s ease-out;}
+    animation: slideInUp 0.3s ease-out;
+}
   @keyframes slideInUp {
     from {
       transform: translateY(20px);
-      opacity: 0;}
+      opacity: 0;
+}
     to {
       transform: translateY(0);
-      opacity: 1;}}
+      opacity: 1;
+}}
   /* Hover effects */
   :global(.masonry-item:hover) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);}
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
   /* Focus styles for accessibility */
   :global(.masonry-item:focus-within) {
     outline: 2px solid var(--pico-primary, #3b82f6);
-    outline-offset: 2px;}
+    outline-offset: 2px;
+}
 </style>

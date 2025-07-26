@@ -1,0 +1,33 @@
+# Celery Worker Dockerfile for Background Processing
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    cmake \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional dependencies for GGUF support
+RUN pip install --no-cache-dir \
+    llama-cpp-python \
+    sentence-transformers \
+    unsloth
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+Run mkdir -p /app/models /app/vector-store /app/logs
+
+# Start Celery worker
+CMD ["celery", "-A", "workers.celery_app", "worker", "--loglevel=info", "--concurrency=2"]

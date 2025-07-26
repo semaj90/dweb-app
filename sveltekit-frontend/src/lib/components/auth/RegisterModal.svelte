@@ -24,7 +24,8 @@
     } catch (e) {
       error = e instanceof Error ? e.message : "Registration failed";
     } finally {
-      loading = false;}}
+      loading = false;
+}}
 </script>
 
 <Modal open>
@@ -54,12 +55,15 @@
   /* @unocss-include */
   .error {
     color: red;
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;}
+    gap: 1rem;
+}
   input,
   button {
-    font-size: 1rem;}
+    font-size: 1rem;
+}
 </style>

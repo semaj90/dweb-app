@@ -309,13 +309,16 @@
     min-height: 3rem;
     position: sticky;
     top: 0;
-    z-index: 40;}
+    z-index: 40;
+}
   .menu-bar {
     display: flex;
     align-items: center;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .menu-item {
-    position: relative;}
+    position: relative;
+}
   .menu-trigger {
     background: none;
     border: none;
@@ -324,10 +327,12 @@
     font-size: 0.875rem;
     color: var(--pico-color, #374151);
     cursor: pointer;
-    transition: all 0.15s ease;}
+    transition: all 0.15s ease;
+}
   .menu-trigger:hover,
   .menu-trigger.active {
-    background: var(--pico-primary-background, #f3f4f6);}
+    background: var(--pico-primary-background, #f3f4f6);
+}
   .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -338,7 +343,8 @@
     border-radius: 0.5rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     padding: 0.5rem;
-    z-index: 50;}
+    z-index: 50;
+}
   .dropdown-item {
     display: flex;
     align-items: center;
@@ -352,22 +358,27 @@
     font-size: 0.875rem;
     color: var(--pico-color, #374151);
     cursor: pointer;
-    transition: background-color 0.15s ease;}
+    transition: background-color 0.15s ease;
+}
   .dropdown-item:hover {
-    background: var(--pico-primary-background, #f3f4f6);}
+    background: var(--pico-primary-background, #f3f4f6);
+}
   .dropdown-separator {
     height: 1px;
     background: var(--pico-border-color, #e2e8f0);
-    margin: 0.5rem 0;}
+    margin: 0.5rem 0;
+}
   .shortcut {
     margin-left: auto;
     font-size: 0.75rem;
     color: var(--pico-muted-color, #6b7280);
-    opacity: 0.7;}
+    opacity: 0.7;
+}
   .quick-actions {
     display: flex;
     align-items: center;
-    gap: 0.25rem;}
+    gap: 0.25rem;
+}
   .action-button {
     display: flex;
     align-items: center;
@@ -379,28 +390,36 @@
     border-radius: 0.25rem;
     color: var(--pico-color, #6b7280);
     cursor: pointer;
-    transition: all 0.15s ease;}
+    transition: all 0.15s ease;
+}
   .action-button:hover {
     background: var(--pico-primary-background, #f3f4f6);
-    color: var(--pico-primary, #3b82f6);}
+    color: var(--pico-primary, #3b82f6);
+}
   .action-button.unsaved {
-    color: var(--pico-del-color, #ef4444);}
+    color: var(--pico-del-color, #ef4444);
+}
   .separator {
     width: 1px;
     height: 1.5rem;
     background: var(--pico-border-color, #e2e8f0);
-    margin: 0 0.5rem;}
+    margin: 0 0.5rem;
+}
   .status-info {
     display: flex;
     align-items: center;
     gap: 1rem;
     font-size: 0.75rem;
-    color: var(--pico-muted-color, #6b7280);}
+    color: var(--pico-muted-color, #6b7280);
+}
   .word-count {
-    font-weight: 500;}
+    font-weight: 500;
+}
   .unsaved-indicator {
     color: var(--pico-del-color, #ef4444);
-    font-weight: 500;}
+    font-weight: 500;
+}
   .saved-indicator {
-    color: var(--pico-ins-color, #10b981);}
+    color: var(--pico-ins-color, #10b981);
+}
 </style>

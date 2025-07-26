@@ -15,13 +15,13 @@
   function handleClickOutside(event: MouseEvent) {
     if (menuElement && !menuElement.contains(event.target as Node)) {
       close();
-}
-}
+    }
+  }
   function handleEscape(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       close();
-}
-}
+    }
+  }
   onMount(() => {
     document.addEventListener('click', handleClickOutside);
     document.addEventListener('keydown', handleEscape);

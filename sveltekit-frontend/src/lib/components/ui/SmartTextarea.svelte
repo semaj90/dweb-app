@@ -27,21 +27,26 @@
     const textBeforeCursor = target.value.substring(0, cursorPosition);
 
     if (textBeforeCursor.endsWith(triggerChar)) {
-      openCommandMenu();}
-    dispatch("input", { value, target });}
+      openCommandMenu();
+}
+    dispatch("input", { value, target });
+}
   function handleKeydown(e: KeyboardEvent) {
     // Don't interfere with command menu navigation
     if (
       showCommandMenu &&
       ["ArrowUp", "ArrowDown", "Enter", "Escape"].includes(e.key)
     ) {
-      return;}
+      return;
+}
     // Ctrl/Cmd + K to open command menu
     if ((e.ctrlKey || e.metaKey) && e.key === "k") {
       e.preventDefault();
       openCommandMenu();
-      return;}
-    dispatch("keydown", e);}
+      return;
+}
+    dispatch("keydown", e);
+}
   function openCommandMenu() {
     if (!textarea) return;
 
@@ -65,30 +70,37 @@
     };
 
     showCommandMenu = true;
-    commandMenu?.openCommandMenu();}
+    commandMenu?.openCommandMenu();
+}
   function handleCommandInsert(text: string) {
     // The CommandMenu component handles text insertion
     showCommandMenu = false;
     textarea.focus();
-    dispatch("commandInsert", { text });}
+    dispatch("commandInsert", { text });
+}
   function handleBlur(e: FocusEvent) {
     // Don't close command menu immediately to allow clicking on it
     setTimeout(() => {
       if (!document.activeElement?.closest(".command-menu")) {
-        showCommandMenu = false;}
+        showCommandMenu = false;
+}
     }, 150);
 
-    dispatch("blur", e);}
+    dispatch("blur", e);
+}
   function handleFocus(e: FocusEvent) {
-    dispatch("focus", e);}
+    dispatch("focus", e);
+}
   // Auto-resize textarea
   function autoResize() {
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = textarea.scrollHeight + "px";}}
+      textarea.style.height = textarea.scrollHeight + "px";
+}}
   // Watch for value changes to auto-resize
   $: if (value !== undefined) {
-    setTimeout(autoResize, 0);}
+    setTimeout(autoResize, 0);
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -127,7 +139,8 @@
 <style>
   /* @unocss-include */
   .smart-textarea-container {
-    position: relative;}
+    position: relative;
+}
   .smart-textarea {
     width: 100%;
     min-height: 100px;
@@ -142,21 +155,27 @@
     color: var(--pico-color, #111827);
     transition:
       border-color 0.15s ease,
-      box-shadow 0.15s ease;}
+      box-shadow 0.15s ease;
+}
   .smart-textarea:focus {
     outline: none;
     border-color: var(--pico-primary, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);}
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
   .smart-textarea:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    background: var(--pico-card-sectioning-background-color, #f8fafc);}
+    background: var(--pico-card-sectioning-background-color, #f8fafc);
+}
   .smart-textarea:read-only {
-    background: var(--pico-card-sectioning-background-color, #f8fafc);}
+    background: var(--pico-card-sectioning-background-color, #f8fafc);
+}
   .smart-textarea::placeholder {
-    color: var(--pico-muted-color, #6b7280);}
+    color: var(--pico-muted-color, #6b7280);
+}
   .command-menu-overlay {
-    pointer-events: auto;}
+    pointer-events: auto;
+}
   /* Help text styling */
   .smart-textarea-container::after {
     content: "Tip: Use # for commands or Ctrl/Cmd + K";
@@ -166,7 +185,9 @@
     font-size: 0.75rem;
     color: var(--pico-muted-color, #6b7280);
     opacity: 0;
-    transition: opacity 0.15s ease;}
+    transition: opacity 0.15s ease;
+}
   .smart-textarea-container:hover::after {
-    opacity: 1;}
+    opacity: 1;
+}
 </style>

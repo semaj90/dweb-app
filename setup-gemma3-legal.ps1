@@ -30,8 +30,8 @@ Write-Host "🔧 Creating custom legal AI model..." -ForegroundColor Yellow
 Write-Host "This may take a few minutes as Ollama processes the model..." -ForegroundColor Gray
 
 try {
-    $result = & ollama create gemma3-legal -f "Gemma3-Legal-Modelfile" 2>&1
-    
+    $result = & ollama create gemma3-legal -f "Modelfile-Ultra-Light" 2>&1
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Successfully created 'gemma3-legal' model!" -ForegroundColor Green
     } else {
@@ -66,7 +66,7 @@ $testPrompt = "Analyze the key elements needed for a strong evidence timeline in
 try {
     Write-Host "Sending test prompt..." -ForegroundColor Gray
     $testResponse = & ollama run gemma3-legal $testPrompt --format json
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Model responds correctly!" -ForegroundColor Green
         Write-Host "Sample response preview:" -ForegroundColor Gray
@@ -89,7 +89,7 @@ Write-Host "3. Open the interactive canvas: http://localhost:5173/interactive-ca
 Write-Host "4. Test the AI assistant with legal queries" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Model Features:" -ForegroundColor White
-Write-Host "• Optimized for legal case management" -ForegroundColor Gray
-Write-Host "• Professional, consistent responses" -ForegroundColor Gray
-Write-Host "• Proper Gemma3 prompt formatting" -ForegroundColor Gray
-Write-Host "• Large context window for documents" -ForegroundColor Gray
+Write-Host "- Optimized for legal case management" -ForegroundColor Gray
+Write-Host "- Professional, consistent responses" -ForegroundColor Gray
+Write-Host "- Proper Gemma3 prompt formatting" -ForegroundColor Gray
+Write-Host "- Large context window for documents" -ForegroundColor Gray

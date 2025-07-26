@@ -201,16 +201,7 @@ export const userThemes = pgTable("user_themes", {
 });
 
 export const layoutComponents = pgTable("layout_components", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 100 }).notNull(),
   type: varchar("type", { length: 50 }).notNull(), // 'button', 'card', 'header', etc.
   htmlContent: text("html_content").notNull(),
@@ -229,16 +220,7 @@ export const layoutComponents = pgTable("layout_components", {
 });
 
 export const canvasLayouts = pgTable("canvas_layouts", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   themeId: uuid("theme_id").references(() => themes.id, {
     onDelete: "set null",
@@ -257,16 +239,7 @@ export const canvasLayouts = pgTable("canvas_layouts", {
 // === CRIMINAL RECORDS ===
 
 export const criminals = pgTable("criminals", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   firstName: varchar("first_name", { length: 100 }).notNull(),
   lastName: varchar("last_name", { length: 100 }).notNull(),
   middleName: varchar("middle_name", { length: 100 }),
@@ -300,16 +273,7 @@ export const criminals = pgTable("criminals", {
 export const cases = pgTable(
   "cases",
   {
-    id: uuid("id")
-      .primaryKey()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom(),
+    id: uuid("id").primaryKey().defaultRandom(),
     caseNumber: varchar("case_number", { length: 50 }).notNull().unique(),
     title: varchar("title", { length: 255 }).notNull(),
     name: varchar("name", { length: 255 }), // Alias for title for backward compatibility
@@ -365,16 +329,7 @@ export const cases = pgTable(
 // === CASE-CRIMINAL RELATIONSHIPS ===
 
 export const caseCriminals = pgTable("case_criminals", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id")
     .notNull()
     .references(() => cases.id, { onDelete: "cascade" }),
@@ -393,16 +348,7 @@ export const caseCriminals = pgTable("case_criminals", {
 // === PERSONS OF INTEREST ===
 
 export const personsOfInterest = pgTable("persons_of_interest", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id")
     .notNull()
     .references(() => cases.id, { onDelete: "cascade" }),
@@ -445,16 +391,7 @@ export const personsOfInterest = pgTable("persons_of_interest", {
 export const evidence = pgTable(
   "evidence",
   {
-    id: uuid("id")
-      .primaryKey()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom()
-      .defaultRandom(),
+    id: uuid("id").primaryKey().defaultRandom(),
     caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
     criminalId: uuid("criminal_id").references(() => criminals.id),
     title: varchar("title", { length: 255 }).notNull(),
@@ -536,16 +473,7 @@ export const evidence = pgTable(
 // === STATUTES & LEGAL REFERENCES ===
 
 export const statutes = pgTable("statutes", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   code: varchar("code", { length: 50 }).notNull().unique(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
@@ -566,16 +494,7 @@ export const statutes = pgTable("statutes", {
 // === CASE ACTIVITIES & TIMELINE ===
 
 export const caseActivities = pgTable("case_activities", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id")
     .notNull()
     .references(() => cases.id, { onDelete: "cascade" }),
@@ -598,16 +517,7 @@ export const caseActivities = pgTable("case_activities", {
 // === AI & SEARCH METADATA ===
 
 export const aiAnalyses = pgTable("ai_analyses", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   entityType: varchar("entity_type", { length: 20 }).notNull(), // case, criminal, evidence
   entityId: uuid("entity_id").notNull(),
   analysisType: varchar("analysis_type", { length: 50 }).notNull(), // summary, sentiment, classification, etc.
@@ -624,16 +534,7 @@ export const aiAnalyses = pgTable("ai_analyses", {
 });
 
 export const searchTags = pgTable("search_tags", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   entityType: varchar("entity_type", { length: 20 }).notNull(),
   entityId: uuid("entity_id").notNull(),
   tag: varchar("tag", { length: 100 }).notNull(),
@@ -647,16 +548,7 @@ export const searchTags = pgTable("search_tags", {
 // === EXPORT & REPORTING ===
 
 export const reports = pgTable("reports", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   title: varchar("title", { length: 255 }).notNull(),
   content: jsonb("content"), // Structured JSON from HugerTE/Slate.js
   summary: text("summary"),
@@ -920,16 +812,7 @@ export const canvasStates = pgTable("canvas_states", {
 // === CITATION POINTS ===
 
 export const citationPoints = pgTable("citation_points", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   text: text("text").notNull(), // The actual citation text
   source: varchar("source", { length: 500 }).notNull(), // Source reference (statute code, case name, etc.)
   page: integer("page"), // Page number if applicable
@@ -963,16 +846,7 @@ export const citationPoints = pgTable("citation_points", {
 // === HASH VERIFICATIONS ===
 
 export const hashVerifications = pgTable("hash_verifications", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   evidenceId: uuid("evidence_id")
     .notNull()
     .references(() => evidence.id, { onDelete: "cascade" }),
@@ -992,16 +866,7 @@ export const hashVerifications = pgTable("hash_verifications", {
 // === ATTACHMENT VERIFICATIONS ===
 
 export const attachmentVerifications = pgTable("attachment_verifications", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   attachmentId: uuid("attachment_id").notNull(),
   verifiedBy: uuid("verified_by")
     .notNull()
@@ -1018,16 +883,7 @@ export const attachmentVerifications = pgTable("attachment_verifications", {
 // === CRIMES (legacy compatibility) ===
 
 export const crimes = pgTable("crimes", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   criminalId: uuid("criminal_id").references(() => criminals.id, {
     onDelete: "cascade",
@@ -1051,7 +907,7 @@ export const crimes = pgTable("crimes", {
 // === RELATIONSHIPS ===
 
 export const usersRelations = relations(users, ({ one, many }) => ({
-  // sessions: many(sessions), // sessions table not defined in this schema
+  sessions: many(sessions),
   casesAsLead: many(cases, { relationName: "leadProsecutor" }),
   casesCreated: many(cases, { relationName: "createdBy" }),
   evidenceUploaded: many(evidence),
@@ -1066,13 +922,12 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   savedCitations: many(savedCitations),
 }));
 
-// Sessions relations commented out - sessions table not defined in this schema
-// export const sessionsRelations = relations(sessions, ({ one }) => ({
-//   user: one(users, {
-//     fields: [sessions.userId],
-//     references: [users.id],
-//   }),
-// }));
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
 
 export const casesRelations = relations(cases, ({ one, many }) => ({
   leadProsecutor: one(users, {
@@ -1200,16 +1055,5 @@ export const notesRelations = relations(notes, ({ one }) => ({
   user: one(users, {
     fields: [notes.userId],
     references: [users.id],
-  }),
-}));
-
-export const savedCitationsRelations = relations(savedCitations, ({ one }) => ({
-  user: one(users, {
-    fields: [savedCitations.userId],
-    references: [users.id],
-  }),
-  citationPoint: one(citationPoints, {
-    fields: [savedCitations.citationPointId],
-    references: [citationPoints.id],
   }),
 }));

@@ -37,14 +37,17 @@
       case "custom":
         calculatedMainFlex = mainFlex;
         calculatedSidebarFlex = sidebarFlex;
-        break;}}
+        break;
+}}
   function toggleSidebar() {
     collapsed = !collapsed;
-    dispatch("toggle", { collapsed });}
+    dispatch("toggle", { collapsed });
+}
   function handleKeydown(e: KeyboardEvent) {
     if (collapsible && (e.ctrlKey || e.metaKey) && e.key === "\\") {
       e.preventDefault();
-      toggleSidebar();}}
+      toggleSidebar();
+}}
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -124,14 +127,16 @@
     height: 100%;
     min-height: 0;
     transition: all 0.3s ease;
-    gap: 0; /* We handle gap with margins for better control */}
+    gap: 0; /* We handle gap with margins for better control */
+}
   .main-content {
     min-width: 0;
     flex-shrink: 1;
     overflow: hidden;
     background: var(--pico-card-background-color, #ffffff);
     border-radius: 0.5rem;
-    transition: all 0.3s ease;}
+    transition: all 0.3s ease;
+}
   .sidebar {
     position: relative;
     background: var(--pico-card-sectioning-background-color, #f8fafc);
@@ -139,21 +144,25 @@
     border-radius: 0.5rem;
     overflow: hidden;
     transition: all 0.3s ease;
-    min-width: 0;}
+    min-width: 0;
+}
   .sidebar.collapsed {
     min-width: 0 !important;
     max-width: 0 !important;
     border-width: 0;
-    margin: 0 !important;}
+    margin: 0 !important;
+}
   .sidebar-content {
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 1rem;
-    transition: opacity 0.3s ease;}
+    transition: opacity 0.3s ease;
+}
   .sidebar-content.hidden {
     opacity: 0;
-    pointer-events: none;}
+    pointer-events: none;
+}
   .sidebar-toggle {
     position: absolute;
     top: 50%;
@@ -171,59 +180,76 @@
     font-size: 0.75rem;
     font-weight: bold;
     transition: all 0.2s ease;
-    z-index: 10;}
+    z-index: 10;
+}
   .sidebar-toggle:hover {
     background: var(--pico-primary-hover, #2563eb);
-    transform: translateY(-50%) scale(1.1);}
+    transform: translateY(-50%) scale(1.1);
+}
   .sidebar-toggle.left {
-    right: -1rem;}
+    right: -1rem;
+}
   .sidebar-toggle.right {
-    left: -1rem;}
+    left: -1rem;
+}
   .collapsed .sidebar-toggle {
     background: var(--pico-card-background-color, #ffffff);
     color: var(--pico-primary, #3b82f6);
     border: 1px solid var(--pico-border-color, #e2e8f0);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);}
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
   .collapsed .sidebar-toggle:hover {
-    background: var(--pico-primary-background, #f3f4f6);}
+    background: var(--pico-primary-background, #f3f4f6);
+}
   /* Responsive design */
   @media (max-width: 768px) {
     .golden-layout {
-      flex-direction: column;}
+      flex-direction: column;
+}
     .sidebar {
       order: 2;
       min-width: 100% !important;
       max-width: 100% !important;
       margin: 0 !important;
-      margin-top: 1rem !important;}
+      margin-top: 1rem !important;
+}
     .sidebar.collapsed {
       margin-top: 0 !important;
       min-width: 0 !important;
-      max-width: 0 !important;}
+      max-width: 0 !important;
+}
     .main-content {
-      order: 1;}
+      order: 1;
+}
     .sidebar-toggle {
       top: -1rem;
       left: 50%;
-      transform: translateX(-50%);}
+      transform: translateX(-50%);
+}
     .sidebar-toggle.left,
     .sidebar-toggle.right {
       left: 50%;
       right: auto;
-      transform: translateX(-50%);}
+      transform: translateX(-50%);
+}
     .collapsed .sidebar-toggle {
       top: 1rem;
       right: 1rem;
       left: auto;
-      transform: none;}}
+      transform: none;
+}}
   /* Smooth scrollbar for sidebar */
   .sidebar-content::-webkit-scrollbar {
-    width: 6px;}
+    width: 6px;
+}
   .sidebar-content::-webkit-scrollbar-track {
-    background: transparent;}
+    background: transparent;
+}
   .sidebar-content::-webkit-scrollbar-thumb {
     background: var(--pico-border-color, #e2e8f0);
-    border-radius: 3px;}
+    border-radius: 3px;
+}
   .sidebar-content::-webkit-scrollbar-thumb:hover {
-    background: var(--pico-muted-color, #6b7280);}
+    background: var(--pico-muted-color, #6b7280);
+}
 </style>

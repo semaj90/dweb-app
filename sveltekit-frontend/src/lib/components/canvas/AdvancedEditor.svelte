@@ -24,7 +24,8 @@
         if (node.italic) text = `*${text}*`;
         if (node.color) text = `<span style="color: ${node.color}">${text}</span>`;
         if (node.fontSize) text = `<span style="font-size: ${node.fontSize}">${text}</span>`;
-        return text;}
+        return text;
+}
       if (node.children) {
         const childText = node.children.map(nodeToMd).join('');
         
@@ -49,15 +50,18 @@
           case 'image':
             return `![${node.alt || ''}](${node.url || ''})`;
           default:
-            return childText;}}
+            return childText;
+}}
       return '';
     };
 
-    return nodes.map(nodeToMd).join('');}
+    return nodes.map(nodeToMd).join('');
+}
   // Convert markdown to ContentNode array (simplified)
   function markdownToContent(markdown: string): ContentNode[] {
     if (!markdown.trim()) {
-      return [{ type: 'paragraph', children: [{ type: 'text', text: '' }] }];}
+      return [{ type: 'paragraph', children: [{ type: 'text', text: '' }] }];
+}
     // Basic markdown parsing - in production, use a proper parser
     const lines = markdown.split('\n');
     const nodes: ContentNode[] = [];
@@ -67,8 +71,10 @@
       if (line.trim() === '') {
         if (currentParagraph) {
           nodes.push(currentParagraph);
-          currentParagraph = null;}
-        continue;}
+          currentParagraph = null;
+}
+        continue;
+}
       // Headings
       if (line.startsWith('#')) {
         const level = line.match(/^#+/)?.[0].length || 1;
@@ -78,7 +84,8 @@
           level,
           children: [{ type: 'text', text }]
         });
-        continue;}
+        continue;
+}
       // Lists
       if (line.startsWith('- ') || line.startsWith('* ')) {
         const text = line.replace(/^[-*]\s*/, '');
@@ -86,7 +93,8 @@
           type: 'list-item',
           children: [{ type: 'text', text }]
         });
-        continue;}
+        continue;
+}
       // Blockquotes
       if (line.startsWith('> ')) {
         const text = line.replace(/^>\s*/, '');
@@ -94,13 +102,15 @@
           type: 'blockquote',
           children: [{ type: 'text', text }]
         });
-        continue;}
+        continue;
+}
       // Regular paragraph
       if (!currentParagraph) {
         currentParagraph = {
           type: 'paragraph',
           children: []
-        };}
+        };
+}
       // Basic inline formatting
       let text = line;
       const textNode: ContentNode = { type: 'text', text };
@@ -109,16 +119,21 @@
       if (text.includes('**')) {
         textNode.bold = true;
         text = text.replace(/\*\*(.*?)\*\*/g, '$1');
-        textNode.text = text;}
+        textNode.text = text;
+}
       // Italic
       if (text.includes('*') && !textNode.bold) {
         textNode.italic = true;
         text = text.replace(/\*(.*?)\*/g, '$1');
-        textNode.text = text;}
-      currentParagraph.children!.push(textNode);}
+        textNode.text = text;
+}
+      currentParagraph.children!.push(textNode);
+}
     if (currentParagraph) {
-      nodes.push(currentParagraph);}
-    return nodes.length > 0 ? nodes : [{ type: 'paragraph', children: [{ type: 'text', text: '' }] }];}
+      nodes.push(currentParagraph);
+}
+    return nodes.length > 0 ? nodes : [{ type: 'paragraph', children: [{ type: 'text', text: '' }] }];
+}
   onMount(() => {
     editor = new Editor({
       el: editorElement,
@@ -143,7 +158,8 @@
           reader.onload = (e) => {
             callback(e.target?.result as string, 'Uploaded image');
           };
-          reader.readAsDataURL(blob);}}
+          reader.readAsDataURL(blob);
+}}
     });
 
     // Listen for content changes
@@ -158,7 +174,8 @@
 
   onDestroy(() => {
     if (editor) {
-      editor.destroy();}
+      editor.destroy();
+}
   });
 
   // Reactive update when content prop changes
@@ -167,29 +184,39 @@
     const newMarkdown = contentToMarkdown(content);
     
     if (currentMarkdown !== newMarkdown) {
-      editor.setMarkdown(newMarkdown);}}
+      editor.setMarkdown(newMarkdown);
+}}
   // Expose methods for parent component
   export function setContent(newContent: ContentNode[]) {
     if (editor) {
-      editor.setMarkdown(contentToMarkdown(newContent));}}
+      editor.setMarkdown(contentToMarkdown(newContent));
+}}
   export function getContent(): ContentNode[] {
     if (editor) {
-      return markdownToContent(editor.getMarkdown());}
-    return content;}
+      return markdownToContent(editor.getMarkdown());
+}
+    return content;
+}
   export function getMarkdown(): string {
-    return editor ? editor.getMarkdown() : '';}
+    return editor ? editor.getMarkdown() : '';
+}
   export function getHTML(): string {
-    return editor ? editor.getHTML() : '';}
+    return editor ? editor.getHTML() : '';
+}
   export function insertText(text: string) {
     if (editor) {
-      editor.insertText(text);}}
+      editor.insertText(text);
+}}
   export function getSelectedText(): string {
     if (editor) {
-      return editor.getSelectedText() || '';}
-    return '';}
+      return editor.getSelectedText() || '';
+}
+    return '';
+}
   export function focus() {
     if (editor) {
-      editor.focus();}}
+      editor.focus();
+}}
   // Formatting methods
   export function toggleMark(mark: string) {
     if (!editor) return;
@@ -208,8 +235,10 @@
         break;
       case 'code':
         formattedText = `\`${selectedText}\``;
-        break;}
-    editor.replaceSelection(formattedText);}
+        break;
+}
+    editor.replaceSelection(formattedText);
+}
   export function addMark(mark: string, value: string) {
     if (!editor) return;
     
@@ -224,8 +253,10 @@
         break;
       case 'fontSize':
         formattedText = `<span style="font-size: ${value}">${selectedText}</span>`;
-        break;}
-    editor.replaceSelection(formattedText);}
+        break;
+}
+    editor.replaceSelection(formattedText);
+}
   export function insertNode(node: any) {
     if (!editor) return;
 
@@ -239,7 +270,8 @@
       case 'heading':
         const level = '#'.repeat(node.level || 1);
         editor.insertText(`\n${level} ${node.text || 'Heading'}\n`);
-        break;}}
+        break;
+}}
 </script>
 
 <div bind:this={editorElement} class="container mx-auto px-4"></div>
@@ -248,58 +280,74 @@
   /* @unocss-include */
   .advanced-editor {
     width: 100%;
-    height: 100%;}
+    height: 100%;
+}
   :global(.toastui-editor-defaultUI) {
-    border: none !important;}
+    border: none !important;
+}
   :global(.toastui-editor-toolbar) {
     background-color: #f8fafc !important;
-    border-bottom: 1px solid #e5e7eb !important;}
+    border-bottom: 1px solid #e5e7eb !important;
+}
   :global(.toastui-editor-md-container) {
-    background-color: white !important;}
+    background-color: white !important;
+}
   :global(.toastui-editor-preview-container) {
-    background-color: #fafafa !important;}
+    background-color: #fafafa !important;
+}
   :global(.toastui-editor-contents) {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     font-size: 14px !important;
-    line-height: 1.6 !important;}
+    line-height: 1.6 !important;
+}
   :global(.toastui-editor-contents h1) {
     color: #1f2937 !important;
-    font-weight: 700 !important;}
+    font-weight: 700 !important;
+}
   :global(.toastui-editor-contents h2) {
     color: #374151 !important;
-    font-weight: 600 !important;}
+    font-weight: 600 !important;
+}
   :global(.toastui-editor-contents h3) {
     color: #4b5563 !important;
-    font-weight: 600 !important;}
+    font-weight: 600 !important;
+}
   :global(.toastui-editor-contents p) {
     color: #1f2937 !important;
-    margin-bottom: 16px !important;}
+    margin-bottom: 16px !important;
+}
   :global(.toastui-editor-contents blockquote) {
     border-left: 4px solid #3b82f6 !important;
     background-color: #f1f5f9 !important;
     padding: 12px 16px !important;
-    margin: 16px 0 !important;}
+    margin: 16px 0 !important;
+}
   :global(.toastui-editor-contents code) {
     background-color: #f1f5f9 !important;
     color: #be185d !important;
     padding: 2px 4px !important;
-    border-radius: 4px !important;}
+    border-radius: 4px !important;
+}
   :global(.toastui-editor-contents pre) {
     background-color: #1f2937 !important;
     color: #f9fafb !important;
     padding: 16px !important;
     border-radius: 8px !important;
-    overflow-x: auto !important;}
+    overflow-x: auto !important;
+}
   :global(.toastui-editor-contents table) {
     border-collapse: collapse !important;
     width: 100% !important;
-    margin: 16px 0 !important;}
+    margin: 16px 0 !important;
+}
   :global(.toastui-editor-contents th),
   :global(.toastui-editor-contents td) {
     border: 1px solid #e5e7eb !important;
     padding: 8px 12px !important;
-    text-align: left !important;}
+    text-align: left !important;
+}
   :global(.toastui-editor-contents th) {
     background-color: #f8fafc !important;
-    font-weight: 600 !important;}
+    font-weight: 600 !important;
+}
 </style>

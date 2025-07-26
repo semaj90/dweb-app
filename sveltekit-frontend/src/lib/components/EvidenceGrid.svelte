@@ -59,29 +59,37 @@
 
   function handleSearch(event: Event) {
     const target = event.target as HTMLInputElement;
-    evidenceActions.setSearchQuery(target.value);}
+    evidenceActions.setSearchQuery(target.value);
+}
   function toggleViewMode() {
-    evidenceActions.setViewMode(viewMode === "grid" ? "list" : "grid");}
+    evidenceActions.setViewMode(viewMode === "grid" ? "list" : "grid");
+}
   function toggleSort(field: typeof sortBy) {
     if (sortBy === field) {
       evidenceActions.setSorting(field, sortOrder === "asc" ? "desc" : "asc");
     } else {
-      evidenceActions.setSorting(field, "desc");}}
+      evidenceActions.setSorting(field, "desc");
+}}
   function toggleSelection(item: Evidence) {
-    evidenceActions.toggleSelection(item.id);}
+    evidenceActions.toggleSelection(item.id);
+}
   function selectAll() {
     $filteredEvidence.forEach((item) => {
       if (!selectedItems.has(item.id)) {
-        evidenceActions.toggleSelection(item.id);}
-    });}
+        evidenceActions.toggleSelection(item.id);
+}
+    });
+}
   function clearSelection() {
-    evidenceActions.clearSelection();}
+    evidenceActions.clearSelection();
+}
   function getFileIcon(evidenceType: string, mimeType?: string) {
     if (mimeType) {
       if (isImageFile(mimeType)) return Image;
       if (mimeType.startsWith("video/")) return Video;
       if (mimeType.startsWith("audio/")) return Music;
-      if (mimeType.includes("pdf")) return FileText;}
+      if (mimeType.includes("pdf")) return FileText;
+}
     switch (evidenceType.toLowerCase()) {
       case "image":
         return Image;
@@ -93,7 +101,8 @@
       case "pdf":
         return FileText;
       default:
-        return File;}}
+        return File;
+}}
   function formatDate(dateString: string): string {
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
@@ -101,7 +110,8 @@
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(new Date(dateString));}
+    }).format(new Date(dateString));
+}
   async function downloadEvidence(item: Evidence) {
     if (!item.fileUrl) return;
 
@@ -110,24 +120,28 @@
       const blob = await response.blob();
       saveAs(blob, item.fileName || item.title);
     } catch (error) {
-      console.error("Download failed:", error);}}
+      console.error("Download failed:", error);
+}}
   async function deleteEvidence(item: Evidence) {
     if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
       try {
         await evidenceActions.deleteEvidence(item.id);
       } catch (error) {
         console.error("Delete failed:", error);
-        alert("Failed to delete evidence. Please try again.");}}}
+        alert("Failed to delete evidence. Please try again.");
+}}}
   function openPreview(item: Evidence) {
     selectedItem = item;
-    // You can implement a preview modal here}
+    // You can implement a preview modal here
+}
   function showContextMenu(event: MouseEvent, item: Evidence) {
     // Simple context menu implementation - could be enhanced with a proper context menu component
     event.preventDefault();
     selectedItem = item;
     // For now, just select the item - can be enhanced later with actual context menu
     if (!selectedItems.has(item.id)) {
-      toggleSelection(item);}}
+      toggleSelection(item);
+}}
   // Context menu actions
   const contextMenuItems = [
     { label: "Preview", icon: Eye, action: "preview" },
@@ -155,7 +169,8 @@
         break;
       case "delete":
         deleteEvidence(item);
-        break;}}
+        break;
+}}
 </script>
 
 <div class="container mx-auto px-4">
@@ -475,11 +490,13 @@
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     line-clamp: 3;
     -webkit-box-orient: vertical;
-    overflow: hidden;}
+    overflow: hidden;
+}
 </style>

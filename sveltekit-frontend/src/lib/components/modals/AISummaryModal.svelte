@@ -24,10 +24,12 @@
         copied = true;
         setTimeout(() => copied = false, 2000);
       } catch (err) {
-        console.error('Failed to copy text:', err);}}}
+        console.error('Failed to copy text:', err);
+}}}
   function closeModal() {
     aiService.reset();
-    dispatch('close');}
+    dispatch('close');
+}
 </script>
 
 <Dialog.Root open={isOpen} on:close={closeModal}>
@@ -94,5 +96,6 @@
 <style>
   /* @unocss-include */
   .prose {
-    max-width: none;}
+    max-width: none;
+}
 </style>

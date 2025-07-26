@@ -14,7 +14,8 @@
     const data = await res.json();
     summary = data.response;
     loading = false;
-    dispatch("summary", { summary });}
+    dispatch("summary", { summary });
+}
 </script>
 
 <button

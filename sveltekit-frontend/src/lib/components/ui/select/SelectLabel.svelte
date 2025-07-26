@@ -13,5 +13,6 @@
     font-weight: 500;
     color: #6b7280;
     margin-bottom: 4px;
-    display: block;}
+    display: block;
+}
 </style>

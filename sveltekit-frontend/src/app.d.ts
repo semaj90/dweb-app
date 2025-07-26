@@ -1,17 +1,51 @@
-// TypeScript declaration for Svelte components
+// Enhanced TypeScript declarations for Legal AI system
+
+// Svelte components
 declare module "*.svelte" {
   import type { ComponentType, SvelteComponent } from "svelte";
   const component: ComponentType<SvelteComponent>;
   export default component;
 }
 
-// Enhanced form component types
-declare module "$lib/components/forms/EnhancedCaseForm.svelte" {
-  import type { SvelteComponent } from "svelte";
-  export default class EnhancedCaseForm extends SvelteComponent<{
-    case_?: any;
-    user: any;
-  }> {}
+// AI Services
+declare module "$lib/services/ai-service" {
+  export class LocalAIService {
+    queryWithContext(prompt: string, caseId?: string): Promise<string>;
+    embedDocument(content: string, caseId: string, type: string): Promise<void>;
+  }
+}
+
+declare module "$lib/services/embedding-service" {
+  export class EmbeddingService {
+    embedText(text: string): Promise<number[]>;
+    storeEmbedding(text: string, caseId: string, type: string): Promise<void>;
+    similaritySearch(query: string, limit?: number): Promise<any[]>;
+  }
+}
+
+// Legal AI types
+interface LegalCase {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'open' | 'closed' | 'pending';
+  evidence: Evidence[];
+  created_at: Date;
+}
+
+interface Evidence {
+  id: string;
+  case_id: string;
+  title: string;
+  type: 'document' | 'physical' | 'digital' | 'witness';
+  content?: string;
+  embedding?: number[];
+}
+
+interface AIResponse {
+  response: string;
+  context: any[];
+  confidence: number;
 }
 
 declare global {
@@ -21,19 +55,7 @@ declare global {
         id: string;
         email: string;
         name: string;
-        role: string;
-        firstName?: string;
-        lastName?: string;
-        avatarUrl?: string;
-        emailVerified?: Date;
-        createdAt?: Date;
-        updatedAt?: Date;
-        isActive?: boolean;
-      } | null;
-      session: {
-        id: string;
-        userId: string;
-        expiresAt: Date;
+        role: 'prosecutor' | 'admin' | 'analyst';
       } | null;
     }
   }

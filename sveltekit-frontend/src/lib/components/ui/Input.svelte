@@ -15,7 +15,8 @@
 		success?: boolean;
 		disabled?: boolean | null | undefined;
 		required?: boolean | null | undefined;
-		readonly?: boolean | null | undefined;}
+		readonly?: boolean | null | undefined;
+}
 	export let label: $$Props['label'] = undefined;
 	export let error: $$Props['error'] = undefined;
 	export let hint: $$Props['hint'] = undefined;
@@ -54,19 +55,24 @@
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement;
 		value = target.value;
-		dispatch('input', event);}
+		dispatch('input', event);
+}
 	function handleChange(event: Event) {
-		dispatch('change', event);}
+		dispatch('change', event);
+}
 	function handleFocus(event: FocusEvent) {
 		isFocused = true;
-		dispatch('focus', event);}
+		dispatch('focus', event);
+}
 	function handleBlur(event: FocusEvent) {
 		isFocused = false;
-		dispatch('blur', event);}
+		dispatch('blur', event);
+}
 	function handleClear() {
 		value = '';
 		dispatch('clear');
-		inputElement?.focus();}
+		inputElement?.focus();
+}
 	// Dynamic classes
 	$: containerClasses = 'relative flex flex-col gap-1';
 

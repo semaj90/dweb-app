@@ -1,0 +1,113 @@
+@echo off
+title AI Legal App - System Health Check
+
+echo.
+echo ===================================================
+echo  AI Legal App - System Health Check
+echo ===================================================
+echo.
+echo This script will check your environment to ensure all components are ready.
+echo Please run this from the root of your project directory.
+echo.
+
+set "OLLAMA_CONTAINER=deeds-ollama-gpu"
+set "SVELTE_CONTAINER=sveltekit-app"
+set "COMPOSE_FILE=docker-compose-gpu.yml"
+
+:CHECK_NVIDIA
+echo [1/6] Checking Host System (NVIDIA GPU)...
+nvidia-smi >nul 2>&1
+if %errorlevel% neq 0 (
+    echo   [X] ERROR: NVIDIA drivers not found. Please install the latest drivers for your RTX 3060.
+    goto :END
+)
+echo   [+] SUCCESS: NVIDIA GPU and drivers detected.
+echo.
+
+:CHECK_DOCKER
+echo [2/6] Checking Docker Environment...
+docker ps >nul 2>&1
+if %errorlevel% neq 0 (
+    echo   [X] ERROR: Docker is not running. Please start Docker Desktop.
+    goto :END
+)
+echo   [+] SUCCESS: Docker is running.
+echo.
+
+:CHECK_FILES
+echo [3/6] Checking Project Files...
+if not exist "%COMPOSE_FILE%" (
+    echo   [X] ERROR: %COMPOSE_FILE% not found.
+    goto :END
+)
+if not exist "sveltekit-frontend" (
+    echo   [X] ERROR: 'sveltekit-frontend' directory not found.
+    goto :END
+)
+if not exist "models" (
+    echo   [X] ERROR: 'models' directory not found. Your GGUF model should be in here.
+    goto :END
+)
+if not exist "sveltekit-frontend\.dockerignore" (
+    echo   [!] WARNING: 'sveltekit-frontend\.dockerignore' not found. This will cause slow builds.
+    echo   [!] Please create this file to exclude node_modules from the build context.
+)
+echo   [+] SUCCESS: Essential project files and directories are present.
+echo.
+
+:CHECK_CONTAINERS
+echo [4/6] Checking Running Services...
+docker ps -f "name=%OLLAMA_CONTAINER%" --format "{{.Names}}" | findstr /I /C:"%OLLAMA_CONTAINER%" >nul
+if %errorlevel% neq 0 (
+    echo   [!] INFO: Ollama container (%OLLAMA_CONTAINER%) is not running.
+    echo   [!] Attempting to start services with 'docker-compose up -d'...
+    docker-compose -f %COMPOSE_FILE% up -d
+    timeout /t 15 >nul
+    docker ps -f "name=%OLLAMA_CONTAINER%" --format "{{.Names}}" | findstr /I /C:"%OLLAMA_CONTAINER%" >nul
+    if %errorlevel% neq 0 (
+        echo   [X] ERROR: Failed to start the Ollama container. Check docker-compose logs.
+        goto :END
+    )
+)
+echo   [+] SUCCESS: Ollama container is running.
+
+docker ps -f "name=%SVELTE_CONTAINER%" --format "{{.Names}}" | findstr /I /C:"%SVELTE_CONTAINER%" >nul
+if %errorlevel% neq 0 (
+    echo   [X] ERROR: SvelteKit container (%SVELTE_CONTAINER%) is not running. Check docker-compose logs.
+    goto :END
+)
+echo   [+] SUCCESS: SvelteKit container is running.
+echo.
+
+:CHECK_HEALTH
+echo [5/6] Checking Service Health...
+echo   [-] Pinging Ollama service...
+docker exec %OLLAMA_CONTAINER% curl --fail http://localhost:11434/api/tags >nul 2>&1
+if %errorlevel% neq 0 (
+    echo   [X] ERROR: Ollama service is not responding. It might still be starting up.
+    goto :END
+)
+echo   [+] SUCCESS: Ollama service is responsive.
+echo.
+
+:CHECK_APP_HEALTH
+echo [6/6] Checking SvelteKit App Health...
+echo   [-] Pinging SvelteKit app...
+curl --fail http://localhost:5173 >nul 2>&1
+if %errorlevel% neq 0 (
+    echo   [X] ERROR: SvelteKit app is not responding. Check the container logs: 'docker logs %SVELTE_CONTAINER%'.
+    goto :END
+)
+echo   [+] SUCCESS: SvelteKit app is responsive.
+echo.
+
+echo ===================================================
+echo  ✅ System Check Complete: All systems nominal!
+echo ===================================================
+echo.
+echo You can access your application at: http://localhost:5173/chat
+echo.
+goto :END
+
+:END
+pause

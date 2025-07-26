@@ -22,8 +22,10 @@
             action: () => console.log("View details clicked"),
             variant: "primary",
           },
-        ],}
-    );}
+        ],
+}
+    );
+}
   function showErrorNotification() {
     notifications.error(
       "Error Occurred",
@@ -41,18 +43,22 @@
             action: () => console.log("Cancel clicked"),
             variant: "secondary",
           },
-        ],}
-    );}
+        ],
+}
+    );
+}
   function showWarningNotification() {
     notifications.warning(
       "Warning",
       "This action may have consequences. Please review before proceeding."
-    );}
+    );
+}
   function showInfoNotification() {
     notifications.info(
       "Information",
       "Here is some useful information about the current process."
-    );}
+    );
+}
   // Demo modal functions
   function showConfirmModal() {
     modals.confirm({
@@ -70,7 +76,8 @@
       onCancel: () => {
         notifications.info("Cancelled", "Delete operation was cancelled.");
       },
-    });}
+    });
+}
   function showAlertModal() {
     modals.alert({
       title: "System Maintenance",
@@ -79,7 +86,8 @@
       onClose: () => {
         console.log("Alert dismissed");
       },
-    });}
+    });
+}
   function showPromptModal() {
     modals.prompt({
       title: "Add Note",
@@ -95,7 +103,8 @@
       onCancel: () => {
         console.log("Prompt cancelled");
       },
-    });}
+    });
+}
   // Demo form
   const demoFormOptions = {
     initialValues: {
@@ -141,7 +150,8 @@
       notifications.success(
         "Form submitted!",
         `Welcome ${values.name}! Your account has been created.`
-      );}}
+      );
+}}
   let interactiveCardSelected = false;
 </script>
 

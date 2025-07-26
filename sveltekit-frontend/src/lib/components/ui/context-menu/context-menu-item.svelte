@@ -3,7 +3,7 @@
   
   interface ContextMenuContext {
     close: () => void;
-}
+  }
   export let disabled = false;
   
   const dispatch = createEventDispatcher();
@@ -13,8 +13,8 @@
     if (!disabled) {
       dispatch('click');
       close();
-}
-}
+    }
+  }
 </script>
 
 <button

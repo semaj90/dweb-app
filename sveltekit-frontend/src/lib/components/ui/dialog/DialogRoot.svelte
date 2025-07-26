@@ -18,7 +18,8 @@
     onOpenChange: ({ next }) => {
       open = next;
       onOpenChange?.(next);
-      return next;}
+      return next;
+}
   });
   
   export { trigger, overlay, content, title, description, close, openState };

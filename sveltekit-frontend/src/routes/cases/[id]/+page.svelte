@@ -41,8 +41,8 @@
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           handleSidebarMouseEnter();
-}
-      "
+        }
+      }}
     >
       <div
         class="container mx-auto px-4"
@@ -59,8 +59,8 @@
         on:keydown={(e) => {
           if (e.key === "Escape") {
             handleSidebarMouseLeave();
-}
-        "
+          }
+        }}
       >
         <EvidencePanel {caseId} onEvidenceDrop={handleEvidenceDrop} />
       </div>

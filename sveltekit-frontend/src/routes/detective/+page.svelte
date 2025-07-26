@@ -96,7 +96,8 @@
       description: 'Forensic DNA analysis results',
       tags: ['dna', 'forensics', 'lab-report'],
       hash: 'dna456',
-      aiSummary: 'DNA evidence confirms 99.7% match with suspect sample collected at scene'}
+      aiSummary: 'DNA evidence confirms 99.7% match with suspect sample collected at scene'
+}
   ];
   
   onMount(() => {
@@ -105,9 +106,11 @@
   
   function handleCaseFormSuccess(event: CustomEvent) {
     console.log('Case created/updated:', event.detail);
-    currentView = 'board';}
+    currentView = 'board';
+}
   function handleCaseFormCancel() {
-    currentView = 'board';}
+    currentView = 'board';
+}
   // Demo collaboration simulation
   function simulateCollaboration() {
     if (!mounted) return;
@@ -144,8 +147,10 @@
         setTimeout(() => {
           document.body.removeChild(notification);
         }, 300);
-      }, 3000);}
-    console.log('🚀 Collaboration demo:', randomUser.name, 'joined the case');}
+      }, 3000);
+}
+    console.log('🚀 Collaboration demo:', randomUser.name, 'joined the case');
+}
 </script>
 
 <svelte:head>

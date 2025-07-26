@@ -12,12 +12,14 @@
       if (response.ok) {
         laws = await response.json();
       } else {
-        error = 'Failed to load laws';}
+        error = 'Failed to load laws';
+}
     } catch (err) {
       error = 'Error loading laws';
       console.error('Error:', err);
     } finally {
-      loading = false;}
+      loading = false;
+}
   });
   
   $: filteredLaws = laws.filter(law => 

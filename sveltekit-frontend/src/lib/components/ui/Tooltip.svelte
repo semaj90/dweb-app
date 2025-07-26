@@ -10,10 +10,12 @@
     if (disabled) return;
     timeoutId = setTimeout(() => {
       showTooltip = true;
-    }, 500);}
+    }, 500);
+}
   function handleMouseLeave() {
     clearTimeout(timeoutId);
-    showTooltip = false;}
+    showTooltip = false;
+}
 </script>
 
 <div
@@ -34,7 +36,8 @@
   /* @unocss-include */
   .tooltip-wrapper {
     position: relative;
-    display: inline-block;}
+    display: inline-block;
+}
   .tooltip {
     position: absolute;
     z-index: 9999;
@@ -48,25 +51,30 @@
     max-width: 200px;
     word-wrap: break-word;
     white-space: normal;
-    pointer-events: none;}
+    pointer-events: none;
+}
   .tooltip-top {
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    margin-bottom: 0.5rem;}
+    margin-bottom: 0.5rem;
+}
   .tooltip-bottom {
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
-    margin-top: 0.5rem;}
+    margin-top: 0.5rem;
+}
   .tooltip-left {
     right: 100%;
     top: 50%;
     transform: translateY(-50%);
-    margin-right: 0.5rem;}
+    margin-right: 0.5rem;
+}
   .tooltip-right {
     left: 100%;
     top: 50%;
     transform: translateY(-50%);
-    margin-left: 0.5rem;}
+    margin-left: 0.5rem;
+}
 </style>

@@ -9,5 +9,6 @@
 <style>
   /* @unocss-include */
   .select-group {
-    padding: 4px 0;}
+    padding: 4px 0;
+}
 </style>

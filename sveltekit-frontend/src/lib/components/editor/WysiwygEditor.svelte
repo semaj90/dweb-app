@@ -113,24 +113,28 @@
                 color: #374151;
                 max-width: 800px;
                 margin: 0 auto;
-                padding: 20px;}
+                padding: 20px;
+}
               h1, h2, h3, h4, h5, h6 { 
                 color: #1f2937; 
                 font-weight: 600;
                 margin-top: 1.5em;
-                margin-bottom: 0.5em;}
+                margin-bottom: 0.5em;
+}
               .citation {
                 background: #eff6ff;
                 border-left: 4px solid #3b82f6;
                 padding: 0.5em;
                 margin: 1em 0;
-                border-radius: 0 4px 4px 0;}
+                border-radius: 0 4px 4px 0;
+}
               .ai-suggestion {
                 background: #f0fdf4;
                 border: 1px solid #bbf7d0;
                 padding: 0.5em;
                 border-radius: 4px;
-                margin: 0.5em 0;}
+                margin: 0.5em 0;
+}
             `,
             setup: (editor: any) => {
               // Custom AI Assistant button
@@ -175,7 +179,8 @@
             spellchecker_language: 'en_US',
             spellchecker_whitelist: ['appellant', 'appellee', 'plaintiff', 'defendant', 'jurisdiction'],
             word_count: true,
-            character_count: true,}
+            character_count: true,
+}
         });
 
       // Listen to content changes from Hugerte
@@ -186,20 +191,24 @@
 
       isInitialized = true;
     } catch (error) {
-      console.error('Failed to initialize editor:', error);}}
+      console.error('Failed to initialize editor:', error);
+}}
   function updateCounts(text: string) {
     const plainText = text.replace(/<[^>]*>/g, '');
     wordCount.set(plainText.trim().split(/\s+/).filter(word => word.length > 0).length);
-    charCount.set(plainText.length);}
+    charCount.set(plainText.length);
+}
   function openAIAssistant(text: string) {
     selectedText = text;
     aiQuery = '';
     aiResults = '';
-    aiOpen.set(true);}
+    aiOpen.set(true);
+}
   function openCitationHelper(text: string) {
     citationQuery = text;
     citationResults = [];
-    citeOpen.set(true);}
+    citeOpen.set(true);
+}
   async function processAIRequest() {
     if (!aiQuery.trim()) return;
     
@@ -214,7 +223,8 @@
           options: {
             maxSources: 5,
             provider: 'auto',
-            enableLegalClassification: true}
+            enableLegalClassification: true
+}
         })
       });
 
@@ -223,12 +233,14 @@
         aiResults = data.data.answer;
         dispatch('aiRequest', { selectedText, action: aiQuery });
       } else {
-        aiResults = 'Sorry, I encountered an error processing your request.';}
+        aiResults = 'Sorry, I encountered an error processing your request.';
+}
     } catch (error) {
       console.error('AI request failed:', error);
       aiResults = 'Failed to connect to AI service.';
     } finally {
-      isProcessingAI = false;}}
+      isProcessingAI = false;
+}}
   async function searchCitations() {
     if (!citationQuery.trim()) return;
 
@@ -248,9 +260,11 @@
           title: r.title,
           citation: r.citation,
           relevance: r.similarity
-        }));}
+        }));
+}
     } catch (error) {
-      console.error('Citation search failed:', error);}}
+      console.error('Citation search failed:', error);
+}}
   function insertCitation(citation: any) {
     if (hugerte) {
       const citationHtml = `
@@ -260,7 +274,8 @@
         </div>
       `;
       hugerte.insertContent(citationHtml);
-      citeOpen.set(false);}}
+      citeOpen.set(false);
+}}
   function insertAIContent() {
     if (hugerte && aiResults) {
       const aiHtml = `
@@ -270,16 +285,20 @@
         </div>
       `;
       hugerte.insertContent(aiHtml);
-      aiOpen.set(false);}}
+      aiOpen.set(false);
+}}
   // Export content
   export function getContent(): string {
-    return hugerte ? hugerte.getContent() : content;}
+    return hugerte ? hugerte.getContent() : content;
+}
   // Import content
   export function setContent(newContent: string) {
     if (hugerte) {
-      hugerte.setContent(newContent);}
+      hugerte.setContent(newContent);
+}
     content = newContent;
-    updateCounts(newContent);}
+    updateCounts(newContent);
+}
 </script>
 
 <!-- Main Editor Container -->
@@ -427,17 +446,20 @@
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     overflow: hidden;
-    background: white;}
+    background: white;
+}
   .editor-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 1rem;
     background: #f9fafb;
-    border-bottom: 1px solid #d1d5db;}
+    border-bottom: 1px solid #d1d5db;
+}
   .toolbar-left {
     display: flex;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .toolbar-btn {
     padding: 0.25rem 0.75rem;
     font-size: 0.875rem;
@@ -445,26 +467,34 @@
     border: 1px solid #d1d5db;
     border-radius: 0.25rem;
     transition: background-color 0.2s;
-    cursor: pointer;}
+    cursor: pointer;
+}
   .toolbar-btn:hover {
-    background: #f3f4f6;}
+    background: #f3f4f6;
+}
   .ai-btn {
     border-color: #93c5fd;
-    color: #1d4ed8;}
+    color: #1d4ed8;
+}
   .ai-btn:hover {
-    background: #eff6ff;}
+    background: #eff6ff;
+}
   .cite-btn {
     border-color: #86efac;
-    color: #059669;}
+    color: #059669;
+}
   .cite-btn:hover {
-    background: #f0fdf4;}
+    background: #f0fdf4;
+}
   .toolbar-right {
     display: flex;
     gap: 1rem;
     font-size: 0.875rem;
-    color: #4b5563;}
+    color: #4b5563;
+}
   .editor-content {
-    width: 100%;}
+    width: 100%;
+}
   .dialog-overlay {
     position: fixed;
     top: 0;
@@ -472,7 +502,8 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 40;}
+    z-index: 40;
+}
   .dialog-content {
     position: fixed;
     top: 50%;
@@ -485,14 +516,17 @@
     width: 100%;
     max-width: 42rem;
     max-height: 80vh;
-    overflow-y: auto;}
+    overflow-y: auto;
+}
   .dialog-title {
     font-size: 1.25rem;
     font-weight: 600;
     padding: 1.5rem;
-    padding-bottom: 0;}
+    padding-bottom: 0;
+}
   .dialog-body {
-    padding: 1.5rem;}
+    padding: 1.5rem;
+}
   .dialog-close {
     position: absolute;
     top: 1rem;
@@ -502,15 +536,18 @@
     line-height: 1;
     cursor: pointer;
     background: none;
-    border: none;}
+    border: none;
+}
   .dialog-close:hover {
-    color: #374151;}
+    color: #374151;
+}
   .selected-text {
     background: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 0.25rem;
     padding: 0.75rem;
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   .ai-query-input, .cite-query-input {
     width: 100%;
     padding: 0.75rem;
@@ -518,64 +555,81 @@
     border-radius: 0.375rem;
     margin-bottom: 1rem;
     resize: vertical;
-    font-family: inherit;}
+    font-family: inherit;
+}
   .ai-results {
     margin-top: 1rem;
     padding: 1rem;
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
-    border-radius: 0.25rem;}
+    border-radius: 0.25rem;
+}
   .ai-response {
     margin: 0.75rem 0;
     padding: 0.75rem;
     background: white;
     border: 1px solid #e5e7eb;
-    border-radius: 0.25rem;}
+    border-radius: 0.25rem;
+}
   .citation-results {
-    margin-top: 1rem;}
+    margin-top: 1rem;
+}
   .citation-item {
     border: 1px solid #e5e7eb;
     border-radius: 0.25rem;
     padding: 0.75rem;
     margin-bottom: 0.75rem;
     cursor: pointer;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .citation-item:hover {
-    background: #f9fafb;}
+    background: #f9fafb;
+}
   .citation-title {
     font-weight: 600;
-    color: #111827;}
+    color: #111827;
+}
   .citation-text {
     font-size: 0.875rem;
     color: #374151;
-    margin-top: 0.25rem;}
+    margin-top: 0.25rem;
+}
   .citation-meta {
     font-size: 0.75rem;
     color: #6b7280;
-    margin-top: 0.5rem;}
+    margin-top: 0.5rem;
+}
   .btn {
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     font-weight: 500;
     transition: background-color 0.2s;
     cursor: pointer;
-    border: none;}
+    border: none;
+}
   .btn-primary {
     background: #2563eb;
-    color: white;}
+    color: white;
+}
   .btn-primary:hover {
-    background: #1d4ed8;}
+    background: #1d4ed8;
+}
   .btn-secondary {
     background: #e5e7eb;
-    color: #1f2937;}
+    color: #1f2937;
+}
   .btn-secondary:hover {
-    background: #d1d5db;}
+    background: #d1d5db;
+}
   .btn-sm {
     padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .btn:disabled {
     opacity: 0.5;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .btn:disabled:hover {
-    background: inherit;}
+    background: inherit;
+}
 </style>

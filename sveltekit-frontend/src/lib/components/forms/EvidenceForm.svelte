@@ -29,8 +29,10 @@
       onUpdated: async ({ form }) => {
         if (form.valid) {
           await invalidateAll();
-          dispatch("success");}
-      },}
+          dispatch("success");
+}
+      },
+}
   );
 </script>
 
@@ -114,7 +116,8 @@
   /* @unocss-include */
   form {
     max-width: 500px;
-    margin: 0 auto;}
+    margin: 0 auto;
+}
   .select-trigger {
     display: inline-flex;
     align-items: center;
@@ -125,10 +128,12 @@
     cursor: pointer;
     font-size: 1rem;
     min-width: 160px;
-    transition: box-shadow 0.2s;}
+    transition: box-shadow 0.2s;
+}
   .select-trigger:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #6366f1;}
+    box-shadow: 0 0 0 2px #6366f1;
+}
   .select-menu {
     position: absolute;
     z-index: 50;
@@ -138,11 +143,14 @@
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
     margin-top: 0.5rem;
     min-width: 160px;
-    padding: 0.5rem 0;}
+    padding: 0.5rem 0;
+}
   .select-menu > div {
     padding: 0.5rem 1rem;
     cursor: pointer;
-    transition: background 0.2s;}
+    transition: background 0.2s;
+}
   .select-menu > div:hover {
-    background: #f3f4f6;}
+    background: #f3f4f6;
+}
 </style>

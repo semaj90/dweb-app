@@ -75,7 +75,8 @@
 		if (browser) {
 			await loadFabricJs();
 			initializeCanvas();
-			loadCanvasState();}
+			loadCanvasState();
+}
 		// Subscribe to real-time evidence updates
 		unsubscribeEvidence = evidenceStore.evidence.subscribe((evidenceList) => {
 			realtimeEvidence = evidenceList;
@@ -84,11 +85,14 @@
 
 	onDestroy(() => {
 		if (autoSaveTimer) {
-			clearTimeout(autoSaveTimer);}
+			clearTimeout(autoSaveTimer);
+}
 		if (fabricCanvas) {
-			fabricCanvas.dispose();}
+			fabricCanvas.dispose();
+}
 		if (unsubscribeEvidence) {
-			unsubscribeEvidence();}
+			unsubscribeEvidence();
+}
 	});
 
 	async function loadFabricJs() {
@@ -102,17 +106,20 @@
 			} else if (fabricModule.default) {
 				fabric = fabricModule.default; // v5 pattern
 			} else {
-				fabric = fabricModule; // fallback}
+				fabric = fabricModule; // fallback
+}
 		} catch (error) {
 			console.error('Failed to load Fabric.js:', error);
 			// Fallback: load from CDN with matching version
-			await loadFabricFromCDN();}}
+			await loadFabricFromCDN();
+}}
 	function loadFabricFromCDN(): Promise<void> {
 		return new Promise((resolve, reject) => {
 			if (typeof window !== 'undefined' && (window as any).fabric) {
 				fabric = (window as any).fabric;
 				resolve();
-				return;}
+				return;
+}
 			const script = document.createElement('script');
 			// Updated to match the installed version 6.7.0
 			script.src = 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/6.7.0/fabric.min.js';
@@ -122,7 +129,8 @@
 			};
 			script.onerror = reject;
 			document.head.appendChild(script);
-		});}
+		});
+}
 	function initializeCanvas() {
 		if (!fabric || !canvasElement) return;
 
@@ -159,7 +167,8 @@
 		canvas.style.width = width + 'px';
 		canvas.style.height = height + 'px';
 		fabricCanvas.setDimensions({ width: width * ratio, height: height * ratio }, { cssOnly: false });
-		fabricCanvas.setZoom(fabricCanvas.getZoom() * ratio);}
+		fabricCanvas.setZoom(fabricCanvas.getZoom() * ratio);
+}
 	function loadCanvasState() {
 		if (!fabricCanvas || !canvasState) return;
 
@@ -169,7 +178,8 @@
 			if (typeof canvasState.canvasData === 'string') {
 				canvasData = JSON.parse(canvasState.canvasData);
 			} else {
-				canvasData = canvasState.canvasData as CanvasStateData;}
+				canvasData = canvasState.canvasData as CanvasStateData;
+}
 			if (canvasData.objects && canvasData.objects.length > 0) {
 				// Load objects from saved state
 				fabricCanvas.loadFromJSON(canvasData, () => {
@@ -186,26 +196,35 @@
 						if (typeof PointClass === 'function') {
 							fabricCanvas.relativePan(new PointClass(panX, panY));
 						} else {
-							fabricCanvas.relativePan({ x: panX, y: panY });}}
-				});}
+							fabricCanvas.relativePan({ x: panX, y: panY });
+}}
+				});
+}
 			// Set background if specified
 			if (canvasData.background) {
-				fabricCanvas.setBackgroundColor(canvasData.background, fabricCanvas.renderAll.bind(fabricCanvas));}
+				fabricCanvas.setBackgroundColor(canvasData.background, fabricCanvas.renderAll.bind(fabricCanvas));
+}
 		} catch (error) {
-			console.error('Failed to load canvas state:', error);}}
+			console.error('Failed to load canvas state:', error);
+}}
 	function handleObjectAdded(event: any) {
 		if (readOnly) return;
-		markDirty();}
+		markDirty();
+}
 	function handleObjectModified(event: any) {
 		if (readOnly) return;
-		markDirty();}
+		markDirty();
+}
 	function handleObjectRemoved(event: any) {
 		if (readOnly) return;
-		markDirty();}
+		markDirty();
+}
 	function handleSelectionCreated(event: any) {
-		selectedObject = event.selected[0];}
+		selectedObject = event.selected[0];
+}
 	function handleSelectionCleared(event: any) {
-		selectedObject = null;}
+		selectedObject = null;
+}
 	function handleMouseDown(event: any) {
 		if (readOnly) return;
 
@@ -229,20 +248,23 @@
 				break;
 			case 'highlight':
 				startHighlighting(pointer);
-				break;}}
+				break;
+}}
 	function handleMouseMove(event: any) {
 		if (!isDrawing || readOnly) return;
 
 		const pointer = fabricCanvas.getPointer(event.e);
 		
 		// Update drawing object based on current tool
-		// Implementation depends on the specific drawing logic}
+		// Implementation depends on the specific drawing logic
+}
 	function handleMouseUp(event: any) {
 		if (readOnly) return;
 		
 		isDrawing = false;
 		drawingPath = null;
-		markDirty();}
+		markDirty();
+}
 	function handlePathCreated(event: any) {
 		if (readOnly) return;
 		
@@ -253,7 +275,8 @@
 			fill: selectedTool === 'highlight' ? currentColor + '40' : 'transparent'
 		});
 		
-		markDirty();}
+		markDirty();
+}
 	function handleKeyDown(event: KeyboardEvent) {
 		if (readOnly) return;
 
@@ -272,12 +295,14 @@
 					if (event.shiftKey) {
 						redo();
 					} else {
-						undo();}
+						undo();
+}
 					break;
 				case 's':
 					event.preventDefault();
 					saveCanvas();
-					break;}
+					break;
+}
 		} else {
 			switch (event.key) {
 				case 'Delete':
@@ -287,9 +312,11 @@
 				case 'Escape':
 					fabricCanvas.discardActiveObject();
 					fabricCanvas.renderAll();
-					break;}}}
+					break;
+}}}
 	function handleKeyUp(event: KeyboardEvent) {
-		// Handle key up events if needed}
+		// Handle key up events if needed
+}
 	function selectTool(toolId: string) {
 		selectedTool = toolId;
 		
@@ -312,7 +339,8 @@
 			default:
 				fabricCanvas.isDrawingMode = false;
 				fabricCanvas.selection = false;
-				break;}}
+				break;
+}}
 	function addText(pointer: any) {
 		// Fabric.js v6+ uses FabricText instead of IText in some cases
 		const TextClass = fabric.IText || fabric.FabricText || fabric.Text;
@@ -327,8 +355,10 @@
 		fabricCanvas.add(text);
 		fabricCanvas.setActiveObject(text);
 		if (text.enterEditing) {
-			text.enterEditing();}
-		markDirty();}
+			text.enterEditing();
+}
+		markDirty();
+}
 	function startDrawingRectangle(pointer: any) {
 		isDrawing = true;
 		const RectClass = fabric.Rect || fabric.FabricRect;
@@ -343,7 +373,8 @@
 		});
 		
 		fabricCanvas.add(rect);
-		drawingPath = rect;}
+		drawingPath = rect;
+}
 	function startDrawingCircle(pointer: any) {
 		isDrawing = true;
 		const CircleClass = fabric.Circle || fabric.FabricCircle;
@@ -357,7 +388,8 @@
 		});
 		
 		fabricCanvas.add(circle);
-		drawingPath = circle;}
+		drawingPath = circle;
+}
 	function startDrawingArrow(pointer: any) {
 		isDrawing = true;
 		const LineClass = fabric.Line || fabric.FabricLine;
@@ -369,13 +401,16 @@
 		});
 		
 		fabricCanvas.add(line);
-		drawingPath = line;}
+		drawingPath = line;
+}
 	function startDrawingPath(pointer: any) {
 		isDrawing = true;
-		// Free drawing is handled by Fabric.js automatically}
+		// Free drawing is handled by Fabric.js automatically
+}
 	function startHighlighting(pointer: any) {
 		isDrawing = true;
-		// Highlighting uses free drawing with transparent color}
+		// Highlighting uses free drawing with transparent color
+}
 	function addEvidenceMarker(evidence: Evidence) {
 		if (readOnly) return;
 
@@ -411,7 +446,8 @@
 		});
 
 		fabricCanvas.add(marker);
-		markDirty();}
+		markDirty();
+}
 	function addCitationMarker(citation: CitationPoint) {
 		if (readOnly) return;
 
@@ -450,7 +486,8 @@
 		});
 
 		fabricCanvas.add(marker);
-		markDirty();}
+		markDirty();
+}
 	function deleteSelected() {
 		if (readOnly) return;
 		
@@ -458,13 +495,15 @@
 		if (activeObjects.length > 0) {
 			fabricCanvas.remove(...activeObjects);
 			fabricCanvas.discardActiveObject();
-			markDirty();}}
+			markDirty();
+}}
 	function copySelected() {
 		const activeObject = fabricCanvas.getActiveObject();
 		if (activeObject) {
 			activeObject.clone((cloned: any) => {
 				clipboardData = cloned;
-			});}}
+			});
+}}
 	function paste() {
 		if (clipboardData) {
 			clipboardData.clone((clonedObj: any) => {
@@ -482,39 +521,49 @@
 					});
 					clonedObj.setCoords();
 				} else {
-					fabricCanvas.add(clonedObj);}
+					fabricCanvas.add(clonedObj);
+}
 				fabricCanvas.setActiveObject(clonedObj);
 				fabricCanvas.requestRenderAll();
 				markDirty();
-			});}}
+			});
+}}
 	function undo() {
 		// Implement undo functionality
-		// This would require maintaining a history stack}
+		// This would require maintaining a history stack
+}
 	function redo() {
 		// Implement redo functionality
-		// This would require maintaining a history stack}
+		// This would require maintaining a history stack
+}
 	function zoomIn() {
 		zoomLevel = Math.min(zoomLevel * 1.2, 5);
-		fabricCanvas.setZoom(zoomLevel);}
+		fabricCanvas.setZoom(zoomLevel);
+}
 	function zoomOut() {
 		zoomLevel = Math.max(zoomLevel / 1.2, 0.1);
-		fabricCanvas.setZoom(zoomLevel);}
+		fabricCanvas.setZoom(zoomLevel);
+}
 	function resetZoom() {
 		zoomLevel = 1;
 		panX = 0;
 		panY = 0;
 		fabricCanvas.setZoom(1);
 		fabricCanvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-		fabricCanvas.requestRenderAll();}
+		fabricCanvas.requestRenderAll();
+}
 	function markDirty() {
 		isDirty = true;
-		scheduleAutoSave();}
+		scheduleAutoSave();
+}
 	function scheduleAutoSave() {
 		if (autoSaveTimer) {
-			clearTimeout(autoSaveTimer);}
+			clearTimeout(autoSaveTimer);
+}
 		autoSaveTimer = setTimeout(() => {
 			saveCanvas();
-		}, 2000);}
+		}, 2000);
+}
 	async function saveCanvas() {
 		if (!isDirty || isLoading || readOnly) return;
 		
@@ -536,7 +585,8 @@
 					description: '',
 					tags: [],
 					evidenceIds: getEvidenceIds(),
-					citationIds: getCitationIds()}
+					citationIds: getCitationIds()
+}
 			};
 
 			// Generate thumbnail
@@ -564,25 +614,31 @@
 				isDirty = false;
 				await onSave(savedCanvasState);
 			} else {
-				throw new Error('Failed to save canvas state');}
+				throw new Error('Failed to save canvas state');
+}
 		} catch (error) {
 			console.error('Canvas save failed:', error);
 		} finally {
-			isLoading = false;}}
+			isLoading = false;
+}}
 	function getEvidenceIds(): string[] {
 		const evidenceIds: string[] = [];
 		fabricCanvas.getObjects().forEach((obj: any) => {
 			if (obj.evidenceId) {
-				evidenceIds.push(obj.evidenceId);}
+				evidenceIds.push(obj.evidenceId);
+}
 		});
-		return evidenceIds;}
+		return evidenceIds;
+}
 	function getCitationIds(): string[] {
 		const citationIds: string[] = [];
 		fabricCanvas.getObjects().forEach((obj: any) => {
 			if (obj.citationId) {
-				citationIds.push(obj.citationId);}
+				citationIds.push(obj.citationId);
+}
 		});
-		return citationIds;}
+		return citationIds;
+}
 	function generateThumbnail(): string {
 		// Generate a thumbnail of the canvas
 		const scale = Math.min(200 / width, 150 / height);
@@ -590,7 +646,8 @@
 			format: 'png',
 			quality: 0.8,
 			multiplier: scale
-		});}
+		});
+}
 	function exportCanvas(format: 'png' | 'svg' | 'pdf' = 'png') {
 		let dataUrl: string;
 		
@@ -604,21 +661,24 @@
 					format: 'png',
 					quality: 1.0
 				});
-				break;}
+				break;
+}
 		// Download the file
 		const link = document.createElement('a');
 		link.download = `canvas-${Date.now()}.${format}`;
 		link.href = dataUrl;
 		document.body.appendChild(link);
 		link.click();
-		document.body.removeChild(link);}
+		document.body.removeChild(link);
+}
 	function clearCanvas() {
 		if (readOnly) return;
 		
 		if (confirm('Are you sure you want to clear the canvas? This action cannot be undone.')) {
 			fabricCanvas.clear();
 			fabricCanvas.setBackgroundColor('#ffffff', fabricCanvas.renderAll.bind(fabricCanvas));
-			markDirty();}}
+			markDirty();
+}}
 	// Add drop event handler for evidence
 	function handleDrop(event: DragEvent) {
 		event.preventDefault();
@@ -648,7 +708,8 @@
 							img.set({ left, top, scaleX: 0.3, scaleY: 0.3, selectable: true });
 							fabricCanvas.add(img);
 						};
-						imgElement.src = evd.fileUrl;}
+						imgElement.src = evd.fileUrl;
+}
 				} else {
 					const RectClass = fabric.Rect || fabric.FabricRect;
 					const TextboxClass = fabric.Textbox || fabric.FabricTextbox || fabric.Text;
@@ -673,14 +734,17 @@
 						fontWeight: 'bold',
 						width: 100
 					});
-					fabricCanvas.add(label);}
+					fabricCanvas.add(label);
+}
 				markDirty();
 			} catch (e) {
-				console.error('Invalid evidence drop:', e);}}}
+				console.error('Invalid evidence drop:', e);
+}}}
 	// Attach drop event to canvas element
 	$: if (canvasElement) {
 		canvasElement.ondragover = (e) => { e.preventDefault(); };
-		canvasElement.ondrop = handleDrop;}
+		canvasElement.ondrop = handleDrop;
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -782,7 +846,8 @@
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
 		background: white;
-		position: relative;}
+		position: relative;
+}
 	/* Canvas Editor Styles - Only keeping used selectors */
 	.canvas-editor-container {
 		display: flex;
@@ -791,11 +856,13 @@
 		background: white;
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
-		overflow: hidden;}
+		overflow: hidden;
+}
 	.canvas-toolbar-wrapper {
 		padding: 12px 16px;
 		border-bottom: 1px solid #e2e8f0;
-		background: #f8fafc;}
+		background: #f8fafc;
+}
 	.canvas-container {
 		flex: 1;
 		display: flex;
@@ -803,12 +870,14 @@
 		align-items: center;
 		background: #ffffff;
 		overflow: hidden;
-		position: relative;}
+		position: relative;
+}
 	.fabric-canvas {
 		border: 1px solid #d1d5db;
 		border-radius: 4px;
 		background: white;
-		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);}
+		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
 	.evidence-panel,
 	.citation-panel {
 		position: absolute;
@@ -820,11 +889,14 @@
 		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 		max-height: 300px;
 		overflow-y: auto;
-		z-index: 10;}
+		z-index: 10;
+}
 	.evidence-panel {
-		top: 80px;}
+		top: 80px;
+}
 	.citation-panel {
-		top: 400px;}
+		top: 400px;
+}
 	.evidence-panel h3,
 	.citation-panel h3 {
 		margin: 0;
@@ -832,10 +904,12 @@
 		font-size: 14px;
 		font-weight: 600;
 		border-bottom: 1px solid #e2e8f0;
-		background: #f8fafc;}
+		background: #f8fafc;
+}
 	.evidence-list,
 	.citation-list {
-		padding: 8px;}
+		padding: 8px;
+}
 	.evidence-item,
 	.citation-item {
 		display: flex;
@@ -844,11 +918,13 @@
 		border: 1px solid #e2e8f0;
 		border-radius: 4px;
 		margin-bottom: 4px;
-		background: white;}
+		background: white;
+}
 	.evidence-info,
 	.citation-info {
 		flex: 1;
-		min-width: 0;}
+		min-width: 0;
+}
 	.evidence-title,
 	.citation-source {
 		font-size: 12px;
@@ -856,14 +932,16 @@
 		color: #374151;
 		white-space: nowrap;
 		overflow: hidden;
-		text-overflow: ellipsis;}
+		text-overflow: ellipsis;
+}
 	.evidence-type,
 	.citation-text {
 		font-size: 11px;
 		color: #6b7280;
 		white-space: nowrap;
 		overflow: hidden;
-		text-overflow: ellipsis;}
+		text-overflow: ellipsis;
+}
 	.add-evidence-btn,
 	.add-citation-btn {
 		width: 24px;
@@ -878,17 +956,21 @@
 		font-weight: bold;
 		font-size: 14px;
 		color: #3b82f6;
-		margin-left: 8px;}
+		margin-left: 8px;
+}
 	.add-evidence-btn:hover:not(:disabled),
 	.add-citation-btn:hover:not(:disabled) {
-		background: #f3f4f6;}
+		background: #f3f4f6;
+}
 	.add-evidence-btn:disabled,
 	.add-citation-btn:disabled {
 		opacity: 0.5;
-		cursor: not-allowed;}
+		cursor: not-allowed;
+}
 	/* Hide panels on smaller screens */
 	@media (max-width: 1200px) {
 		.evidence-panel,
 		.citation-panel {
-			display: none;}}
+			display: none;
+}}
 </style>

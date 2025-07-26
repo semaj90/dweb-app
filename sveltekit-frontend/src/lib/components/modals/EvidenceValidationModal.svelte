@@ -36,18 +36,22 @@
       tags: evidence.aiTags || [],
       evidenceType: evidence.evidenceType || "",
       analysis: evidence.aiAnalysis?.analysis || "",
-    };}
+    };
+}
   function handleValidationChoice(choice: "approve" | "reject") {
     validationChoice = choice;
-    showCorrections = choice === "reject";}
+    showCorrections = choice === "reject";
+}
   function addTag() {
     const tagInput = document.getElementById("new-tag") as HTMLInputElement;
     const newTag = tagInput?.value.trim();
     if (newTag && !corrections.tags.includes(newTag)) {
       corrections.tags = [...corrections.tags, newTag];
-      tagInput.value = "";}}
+      tagInput.value = "";
+}}
   function removeTag(tagToRemove: string) {
-    corrections.tags = corrections.tags.filter((tag) => tag !== tagToRemove);}
+    corrections.tags = corrections.tags.filter((tag) => tag !== tagToRemove);
+}
   async function submitValidation() {
     if (!evidence || !validationChoice) return;
 
@@ -84,19 +88,22 @@
         open = false;
       } else {
         console.error("Validation failed:", result.error);
-        alert("Failed to submit validation. Please try again.");}
+        alert("Failed to submit validation. Please try again.");
+}
     } catch (error) {
       console.error("Validation submission error:", error);
       alert(
         "Failed to submit validation. Please check your connection and try again."
       );
     } finally {
-      isSubmitting = false;}}
+      isSubmitting = false;
+}}
   function closeModal() {
     validationChoice = null;
     feedback = "";
     showCorrections = false;
-    open = false;}
+    open = false;
+}
 </script>
 
 <DialogPrimitive.Root bind:open>

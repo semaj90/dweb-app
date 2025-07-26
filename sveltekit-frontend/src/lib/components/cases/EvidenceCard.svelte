@@ -36,7 +36,8 @@
       case "testimony":
         return FileText;
       default:
-        return FileText;}}
+        return FileText;
+}}
   function getTypeColor(type: string) {
     switch (type) {
       case "document":
@@ -54,7 +55,8 @@
       case "testimony":
         return "bg-orange-100 text-orange-800";
       default:
-        return "bg-gray-100 text-gray-800";}}
+        return "bg-gray-100 text-gray-800";
+}}
   $: evidenceIcon = getEvidenceIcon(evidence.evidenceType || evidence.type);
   $: formattedDate = formatDistanceToNow(new Date(${1} || new Date()), {
     addSuffix: true,
@@ -62,16 +64,20 @@
 
   function handleEdit() {
     if (!disabled) {
-      dispatch("edit", evidence);}}
+      dispatch("edit", evidence);
+}}
   function handleDelete() {
     if (!disabled) {
-      dispatch("delete", evidence);}}
+      dispatch("delete", evidence);
+}}
   function handleView() {
     if (!disabled) {
-      dispatch("view", evidence);}}
+      dispatch("view", evidence);
+}}
   function handleDownload() {
     if (!disabled) {
-      dispatch("download", evidence);}}
+      dispatch("download", evidence);
+}}
 </script>
 
 <div
@@ -155,11 +161,13 @@
   /* @unocss-include */
   .disabled {
     opacity: 0.6;
-    pointer-events: none;}
+    pointer-events: none;
+}
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
-    overflow: hidden;}
+    overflow: hidden;
+}
 </style>

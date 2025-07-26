@@ -19,7 +19,8 @@
   // Custom dialog implementation
   function handleClose() {
     open = false;
-    dispatch("close");}
+    dispatch("close");
+}
   function handleKeydown(event: KeyboardEvent) {
     if (closeOnEscape && event.key === "Escape") {
       handleClose();

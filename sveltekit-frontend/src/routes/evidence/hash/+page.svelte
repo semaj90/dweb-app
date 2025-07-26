@@ -12,13 +12,15 @@
     const urlHash = $page.url.searchParams.get('hash');
     if (urlHash) {
       hashInput = urlHash;
-      searchByHash();}
+      searchByHash();
+}
   });
 
   async function searchByHash() {
     if (!hashInput || hashInput.length !== 64) {
       error = 'Please enter a valid 64-character SHA256 hash';
-      return;}
+      return;
+}
     loading = true;
     error = '';
     searchResult = null;
@@ -30,11 +32,13 @@
       if (response.ok) {
         searchResult = result;
       } else {
-        error = result.error || 'Search failed';}
+        error = result.error || 'Search failed';
+}
     } catch (e) {
       error = 'Network error occurred';
     } finally {
-      loading = false;}}
+      loading = false;
+}}
   async function verifyIntegrity(evidenceId: string) {
     if (!evidenceId) return;
     
@@ -53,15 +57,18 @@
       if (response.ok) {
         alert(`Integrity Check: ${result.message}`);
       } else {
-        error = result.error || 'Verification failed';}
+        error = result.error || 'Verification failed';
+}
     } catch (e) {
       error = 'Network error occurred';
     } finally {
-      loading = false;}}
+      loading = false;
+}}
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text).then(() => {
       alert('Copied to clipboard!');
-    });}
+    });
+}
 </script>
 
 <svelte:head>

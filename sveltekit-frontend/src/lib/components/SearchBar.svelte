@@ -27,15 +27,18 @@
 	};
 
 	function handleSearch(event: CustomEvent) {
-		dispatch('search', event.detail);}
+		dispatch('search', event.detail);
+}
 	function handleSortChange(sortId: string) {
 		selectedSort = sortId;
-		dispatch('sortChanged', { sort: sortId });}
+		dispatch('sortChanged', { sort: sortId });
+}
 	function toggleFilters() {
 		filtersOpen = !filtersOpen;
 		if (filtersOpen) {
 			// Dispatch current filter state when opening
-			dispatchFilters();}}
+			dispatchFilters();
+}}
 	function handleFileTypeChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const value = target.value;
@@ -43,15 +46,19 @@
 		if (target.checked) {
 			selectedFileTypes = [...selectedFileTypes, value];
 		} else {
-			selectedFileTypes = selectedFileTypes.filter(type => type !== value);}
-		dispatchFilters();}
+			selectedFileTypes = selectedFileTypes.filter(type => type !== value);
+}
+		dispatchFilters();
+}
 	function handleDateChange() {
-		dispatchFilters();}
+		dispatchFilters();
+}
 	function dispatchFilters() {
 		dispatch('filtersChanged', {
 			fileTypes: selectedFileTypes,
 			dateRange: dateRange
-		});}
+		});
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -182,16 +189,19 @@
 		display: flex;
 		gap: 0.5rem;
 		align-items: center;
-		width: 100%;}
+		width: 100%;
+}
 	.search-controls {
 		display: flex;
 		gap: 0.5rem;
 		align-items: center;
-		flex-shrink: 0;}
+		flex-shrink: 0;
+}
 	.sort-container {
 		position: relative;
 		display: flex;
-		align-items: center;}
+		align-items: center;
+}
 	.sort-select {
 		appearance: none;
 		background: var(--bg-primary);
@@ -201,14 +211,16 @@
 		font-size: 0.875rem;
 		color: var(--text-primary);
 		cursor: pointer;
-		min-width: 100px;}
+		min-width: 100px;
+}
 	.sort-container :global(svg) {
 		position: absolute;
 		right: 0.5rem;
 		top: 50%;
 		transform: translateY(-50%);
 		pointer-events: none;
-		color: var(--text-muted);}
+		color: var(--text-muted);
+}
 	.filter-button {
 		display: flex;
 		align-items: center;
@@ -220,15 +232,18 @@
 		border-radius: 6px;
 		cursor: pointer;
 		transition: all 0.2s ease;
-		color: var(--text-muted);}
+		color: var(--text-muted);
+}
 	.filter-button:hover {
 		background: var(--bg-tertiary);
 		border-color: var(--harvard-crimson);
-		color: var(--harvard-crimson);}
+		color: var(--harvard-crimson);
+}
 	.filter-button.active {
 		background: var(--harvard-crimson);
 		border-color: var(--harvard-crimson);
-		color: var(--text-inverse);}
+		color: var(--text-inverse);
+}
 	.filters-panel {
 		margin-top: 1rem;
 		padding: 1rem;
@@ -237,42 +252,50 @@
 		border-radius: 8px;
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;}
+		gap: 1rem;
+}
 	.filter-group label,
 	.filter-group .filter-label {
 		display: block;
 		font-size: 0.875rem;
 		font-weight: 600;
 		color: var(--text-primary);
-		margin-bottom: 0.5rem;}
+		margin-bottom: 0.5rem;
+}
 	.filter-options {
 		display: flex;
 		gap: 1rem;
-		flex-wrap: wrap;}
+		flex-wrap: wrap;
+}
 	.filter-checkbox {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: normal;
 		margin-bottom: 0;
-		cursor: pointer;}
+		cursor: pointer;
+}
 	.filter-checkbox input {
-		margin: 0;}
+		margin: 0;
+}
 	.date-range {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;}
+		gap: 0.5rem;
+}
 	.date-input {
 		padding: 0.5rem;
 		border: 1px solid var(--border-light);
 		border-radius: 4px;
 		background: var(--bg-primary);
-		color: var(--text-primary);}
+		color: var(--text-primary);
+}
 	.filter-actions {
 		display: flex;
 		justify-content: flex-end;
 		padding-top: 0.5rem;
-		border-top: 1px solid var(--border-light);}
+		border-top: 1px solid var(--border-light);
+}
 	.clear-filters-btn {
 		padding: 0.5rem 1rem;
 		background: transparent;
@@ -281,22 +304,28 @@
 		color: var(--text-muted);
 		cursor: pointer;
 		font-size: 0.875rem;
-		transition: all 0.2s ease;}
+		transition: all 0.2s ease;
+}
 	.clear-filters-btn:hover {
 		background: var(--bg-tertiary);
 		border-color: var(--harvard-crimson);
-		color: var(--harvard-crimson);}
+		color: var(--harvard-crimson);
+}
 	/* Responsive */
 	@media (max-width: 768px) {
 		.search-controls {
 			flex-direction: column;
-			align-items: stretch;}
+			align-items: stretch;
+}
 		.sort-select {
-			min-width: auto;}
+			min-width: auto;
+}
 		.filter-options {
 			flex-direction: column;
-			gap: 0.5rem;}
+			gap: 0.5rem;
+}
 		.date-range {
 			flex-direction: column;
-			align-items: stretch;}}
+			align-items: stretch;
+}}
 </style>

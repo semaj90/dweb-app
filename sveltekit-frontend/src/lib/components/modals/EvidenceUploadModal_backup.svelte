@@ -4,7 +4,8 @@
   $: isOpen = $uploadModal.isOpen;
 
   function closeModal() {
-    uploadActions.closeModal();}
+    uploadActions.closeModal();
+}
 </script>
 
 {#if isOpen}

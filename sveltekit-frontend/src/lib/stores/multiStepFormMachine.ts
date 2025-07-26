@@ -94,7 +94,9 @@ export const CriminalFormSchema = z.object({
   knownAssociates: z.array(z.string()).default([]),
   criminalHistory: z.array(z.any()).default([]),
   
-  // Step 6: Case Association
+import type { Case } from '$lib/types';
+
+  // Step 6: CaseAssociation
   associatedCases: z.array(z.string()).default([]),
   notes: z.string().optional(),
   metadata: z.record(z.any()).default({}),

@@ -1,0 +1,200 @@
+# Phase 4: Security & Monitoring Configuration
+# #memory #create_entities #get-library-docs security
+
+# Security Headers & Configuration
+security_config:
+  authentication:
+    jwt_expiry: "1h"
+    refresh_token_expiry: "7d"
+    password_min_length: 12
+    max_login_attempts: 5
+    lockout_duration: "15m"
+  
+  encryption:
+    algorithm: "aes-256-gcm"
+    key_rotation_interval: "30d"
+  
+  headers:
+    csp: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    hsts: "max-age=31536000; includeSubDomains"
+    referrer_policy: "strict-origin-when-cross-origin"
+    
+  rate_limiting:
+    api: "100/15m"
+    auth: "5/15m"
+    upload: "10/1h"
+
+# Monitoring Configuration
+monitoring:
+  metrics:
+    - app_requests_total
+    - app_request_duration
+    - app_database_connections
+    - app_memory_usage
+    - app_error_rate
+    - app_active_users
+    - app_case_operations
+    - app_ai_requests
+  
+  alerts:
+    error_rate_threshold: 5%
+    response_time_threshold: 2000ms
+    memory_usage_threshold: 80%
+    disk_usage_threshold: 85%
+    database_connection_threshold: 90%
+  
+  dashboards:
+    - name: "Application Overview"
+      panels:
+        - requests_per_second
+        - response_times
+        - error_rates
+        - active_users
+    
+    - name: "Legal AI Metrics"
+      panels:
+        - case_operations
+        - evidence_processing
+        - ai_query_performance
+        - vector_search_latency
+
+# Logging Configuration  
+logging:
+  level: "info"
+  format: "json"
+  retention: "30d"
+  
+  structured_fields:
+    - user_id
+    - request_id
+    - case_id
+    - action
+    - ip_address
+    - user_agent
+    - session_id
+    - performance_metrics
+
+# Security Middleware Configuration
+security_middleware:
+  cors:
+    origin: ["https://yourdomain.com", "https://app.yourdomain.com"]
+    methods: ["GET", "POST", "PUT", "DELETE"]
+    allowed_headers: ["Content-Type", "Authorization"]
+    credentials: true
+  
+  helmet:
+    content_security_policy: true
+    cross_origin_embedder_policy: true
+    cross_origin_opener_policy: true
+    cross_origin_resource_policy: true
+    dns_prefetch_control: true
+    frameguard: true
+    hide_powered_by: true
+    hsts: true
+    ie_no_open: true
+    no_sniff: true
+    origin_agent_cluster: true
+    permitted_cross_domain_policies: false
+    referrer_policy: true
+    x_content_type_options: true
+    x_dns_prefetch_control: true
+    x_download_options: true
+    x_frame_options: true
+    x_permitted_cross_domain_policies: true
+    x_powered_by: false
+    x_xss_protection: true
+
+# Database Security
+database_security:
+  ssl_mode: "require"
+  connection_encryption: true
+  query_logging: true
+  sensitive_data_masking: true
+  backup_encryption: true
+  
+  access_control:
+    read_only_user: "legal_ai_read"
+    app_user: "legal_ai_app"
+    admin_user: "legal_ai_admin"
+  
+  audit_log:
+    enabled: true
+    log_connections: true
+    log_disconnections: true
+    log_statement: "all"
+    log_duration: true
+
+# API Security
+api_security:
+  authentication:
+    required: true
+    methods: ["jwt", "api_key"]
+  
+  authorization:
+    rbac_enabled: true
+    resource_based: true
+  
+  input_validation:
+    max_request_size: "10MB"
+    sanitize_inputs: true
+    validate_schemas: true
+  
+  output_security:
+    sensitive_data_filtering: true
+    response_compression: true
+    cache_control_headers: true
+
+# File Upload Security
+file_upload_security:
+  max_file_size: "100MB"
+  allowed_types: [".pdf", ".docx", ".txt", ".jpg", ".png"]
+  virus_scanning: true
+  content_type_validation: true
+  file_name_sanitization: true
+  quarantine_suspicious_files: true
+  
+  storage:
+    encryption_at_rest: true
+    access_logging: true
+    retention_policy: "7 years"
+
+# Environment Variables Security
+env_security:
+  required_vars:
+    - DATABASE_URL
+    - JWT_SECRET
+    - ENCRYPTION_KEY
+    - REDIS_URL
+    - QDRANT_URL
+  
+  validation:
+    jwt_secret_min_length: 32
+    encryption_key_length: 32
+    database_ssl_required: true
+  
+  rotation_schedule:
+    jwt_secret: "monthly"
+    encryption_key: "quarterly"
+    api_keys: "monthly"
+
+# Compliance & Audit
+compliance:
+  gdpr:
+    enabled: true
+    data_retention: "7 years"
+    right_to_erasure: true
+    data_portability: true
+    consent_management: true
+  
+  hipaa:
+    enabled: true
+    audit_logs: true
+    encryption_requirements: true
+    access_controls: true
+  
+  audit_trail:
+    user_actions: true
+    data_access: true
+    configuration_changes: true
+    security_events: true
+    retention_period: "10 years"

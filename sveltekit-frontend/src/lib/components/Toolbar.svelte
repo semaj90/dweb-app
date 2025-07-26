@@ -61,23 +61,28 @@
 			...state,
 			selectedTool: toolId
 		}));
-		dispatch('toolSelected', { tool: toolId });}
+		dispatch('toolSelected', { tool: toolId });
+}
 	function toggleFormatting(formatType: string) {
 		toolbarStore.update(state => ({
 			...state,
 			formatting: {
 				...state.formatting,
-				[formatType]: !(state.formatting as any)[formatType]}
+				[formatType]: !(state.formatting as any)[formatType]
+}
 		}));
-		dispatch('formatToggled', { type: formatType, value: !(formatting as any)[formatType] });}
+		dispatch('formatToggled', { type: formatType, value: !(formatting as any)[formatType] });
+}
 	function setAlignment(alignment: string) {
 		toolbarStore.update(state => ({
 			...state,
 			formatting: {
 				...state.formatting,
-				textAlign: alignment}
+				textAlign: alignment
+}
 		}));
-		dispatch('alignmentChanged', { alignment });}
+		dispatch('alignmentChanged', { alignment });
+}
 	function handleColorChange(event: Event, type: 'color' | 'backgroundColor') {
 		const target = event.target as HTMLInputElement;
 		const color = target.value;
@@ -86,9 +91,11 @@
 			...state,
 			formatting: {
 				...state.formatting,
-				[type]: color}
+				[type]: color
+}
 		}));
-		dispatch('colorChanged', { type, color });}
+		dispatch('colorChanged', { type, color });
+}
 	function handleFontSizeChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const fontSize = parseInt(target.value, 10);
@@ -97,9 +104,11 @@
 			...state,
 			formatting: {
 				...state.formatting,
-				fontSize}
+				fontSize
+}
 		}));
-		dispatch('fontSizeChanged', { fontSize });}
+		dispatch('fontSizeChanged', { fontSize });
+}
 	function handleStrokeWidthChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const strokeWidth = parseInt(target.value, 10);
@@ -108,18 +117,22 @@
 			...state,
 			drawing: {
 				...state.drawing,
-				strokeWidth}
+				strokeWidth
+}
 		}));
-		dispatch('strokeWidthChanged', { strokeWidth });}
+		dispatch('strokeWidthChanged', { strokeWidth });
+}
 	function handleAction(action: string) {
-		dispatch('action', { action });}
+		dispatch('action', { action });
+}
 	function handleZoom(delta: number) {
 		const newZoom = Math.max(10, Math.min(500, zoom + delta));
 		toolbarStore.update(state => ({
 			...state,
 			zoom: newZoom
 		}));
-		dispatch('zoomChanged', { zoom: newZoom });}
+		dispatch('zoomChanged', { zoom: newZoom });
+}
 </script>
 
 <div class="container mx-auto px-4" role="toolbar" aria-label="Canvas tools">
@@ -317,12 +330,14 @@
 		background: var(--bg-secondary);
 		border-bottom: 1px solid var(--border-light);
 		overflow-x: auto;
-		min-height: 60px;}
+		min-height: 60px;
+}
 	.toolbar-section {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		flex-shrink: 0;}
+		flex-shrink: 0;
+}
 	.tool-group {
 		display: flex;
 		align-items: center;
@@ -330,7 +345,8 @@
 		padding: 0.25rem;
 		background: var(--bg-primary);
 		border-radius: 6px;
-		border: 1px solid var(--border-light);}
+		border: 1px solid var(--border-light);
+}
 	.tool-button,
 	.format-button,
 	.align-button,
@@ -345,82 +361,98 @@
 		cursor: pointer;
 		border-radius: 4px;
 		transition: all 0.2s ease;
-		color: var(--text-primary);}
+		color: var(--text-primary);
+}
 	.tool-button:hover,
 	.format-button:hover,
 	.align-button:hover,
 	.action-button:hover {
-		background: var(--bg-tertiary);}
+		background: var(--bg-tertiary);
+}
 	.tool-button.active,
 	.format-button.active,
 	.align-button.active {
 		background: var(--harvard-crimson);
-		color: var(--text-inverse);}
+		color: var(--text-inverse);
+}
 	.tool-button:disabled,
 	.format-button:disabled,
 	.align-button:disabled,
 	.action-button:disabled {
 		opacity: 0.5;
-		cursor: not-allowed;}
+		cursor: not-allowed;
+}
 	.color-input {
 		position: relative;
-		cursor: pointer;}
+		cursor: pointer;
+}
 	.color-input input[type="color"] {
 		position: absolute;
 		opacity: 0;
 		width: 100%;
 		height: 100%;
-		cursor: pointer;}
+		cursor: pointer;
+}
 	.color-preview {
 		display: block;
 		width: 24px;
 		height: 24px;
 		border-radius: 4px;
 		border: 2px solid var(--border-light);
-		cursor: pointer;}
+		cursor: pointer;
+}
 	.size-input {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.5rem;}
+		padding: 0.5rem;
+}
 	.size-input input[type="range"] {
 		width: 80px;
 		height: 4px;
 		background: var(--muted-background);
 		border-radius: 2px;
 		outline: none;
-		cursor: pointer;}
+		cursor: pointer;
+}
 	.size-input input[type="range"]::-webkit-slider-thumb {
 		appearance: none;
 		width: 16px;
 		height: 16px;
 		background: var(--harvard-crimson);
 		border-radius: 50%;
-		cursor: pointer;}
+		cursor: pointer;
+}
 	.size-label {
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		min-width: 35px;
-		text-align: center;}
+		text-align: center;
+}
 	.zoom-level {
 		font-size: 0.875rem;
 		color: var(--text-primary);
 		min-width: 45px;
 		text-align: center;
-		font-weight: 500;}
+		font-weight: 500;
+}
 	.toolbar-separator {
 		width: 1px;
 		height: 32px;
 		background: var(--border-light);
 		margin: 0 0.5rem;
-		flex-shrink: 0;}
+		flex-shrink: 0;
+}
 	/* Responsive */
 	@media (max-width: 768px) {
 		.toolbar-container {
 			padding: 0.5rem;
-			gap: 0.25rem;}
+			gap: 0.25rem;
+}
 		.size-input input[type="range"] {
-			width: 60px;}
+			width: 60px;
+}
 		.size-label {
-			display: none;}}
+			display: none;
+}}
 </style>

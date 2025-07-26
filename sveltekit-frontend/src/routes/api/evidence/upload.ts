@@ -6,6 +6,30 @@ import { promises as fs } from "fs";
 import path from "path";
 import { db } from "$lib/server/db/index";
 
+
+export const POST: RequestHandler = async ({ request, locals, url }) => {
+  const user = locals.user;
+  if (!user) {
+    return json({ error: "Not authenticated" }, { status: 401 });
+  }
+  const formData = await request.formData();
+  const file = formData.get("file");
+  const caseId = formData.get("caseId")?.toString();
+  const description = formData.get("description")?.toString() || "";
+  if (!file || !(file instanceof File) || !caseId) {
+    return json({ error: "Missing file or caseId" }, { status: 400 });
+  }
+  const id = randomUUID();
+  const now = new Date();
+  const ext = path.extname(file.name);
+  const safeName = `${id}${ext}`;
+  const uploadDir = path.resolve("static", "uploads", caseId);import { evidence } from "$lib/server/db/schema-postgres";
+
+
+
+
+
+
 export const POST: RequestHandler = async ({ request, locals, url }) => {
   const user = locals.user;
   if (!user) {

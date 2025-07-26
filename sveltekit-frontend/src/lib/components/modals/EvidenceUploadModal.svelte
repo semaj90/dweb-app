@@ -27,24 +27,30 @@
   function handleFileSelect(event: Event) {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
-      uploadActions.addFiles(Array.from(target.files));}}
+      uploadActions.addFiles(Array.from(target.files));
+}}
   function handleDrop(event: DragEvent) {
     event.preventDefault();
     dragActive = false;
 
     if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
-      uploadActions.addFiles(Array.from(event.dataTransfer.files));}}
+      uploadActions.addFiles(Array.from(event.dataTransfer.files));
+}}
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
-    dragActive = true;}
+    dragActive = true;
+}
   function handleDragLeave(event: DragEvent) {
     event.preventDefault();
-    dragActive = false;}
+    dragActive = false;
+}
   function removeFile(fileId: string) {
-    uploadActions.removeFile(fileId);}
+    uploadActions.removeFile(fileId);
+}
   function closeModal() {
     uploadActions.closeModal();
-    dispatch("close");}
+    dispatch("close");
+}
 </script>
 
 {#if isOpen}

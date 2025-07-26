@@ -12,7 +12,8 @@
 
   function selectCase(caseId) {
     user.selectCase(caseId);
-    showModal = false;}
+    showModal = false;
+}
 </script>
 
 <Button on:click={() => showModal = true}>Select Case</Button>

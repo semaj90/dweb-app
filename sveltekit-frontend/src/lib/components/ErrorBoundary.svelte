@@ -184,7 +184,7 @@ Timestamp: ${new Date().toISOString()}`;
             <div class="flex items-center justify-between mb-2">
               <span class="text-sm font-medium">Technical Details</span>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 on:click={() => copyErrorDetails()}
                 class="h-8 w-8 p-0"
@@ -223,7 +223,7 @@ Timestamp: ${new Date().toISOString()}`;
         {#if currentError.showDetails}
           <Button
             size="sm"
-            variant="ghost"
+            variant="outline"
             on:click={() => (showDetails = !showDetails)}
             aria-label="Toggle error details"
           >
@@ -237,7 +237,7 @@ Timestamp: ${new Date().toISOString()}`;
 
         <Button
           size="sm"
-          variant="ghost"
+          variant="outline"
           on:click={() => clearError()}
           aria-label="Dismiss error"
         >
@@ -278,7 +278,7 @@ Timestamp: ${new Date().toISOString()}`;
                 <div class="flex items-center justify-between mb-3">
                   <h4 class="font-medium">Technical Details</h4>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     on:click={() => copyErrorDetails()}
                     class="gap-2"
@@ -345,7 +345,7 @@ Timestamp: ${new Date().toISOString()}`;
           {/if}
 
           <Button
-            variant={currentError.canRetry ? "outline" : "default"}
+            variant={currentError.canRetry ? "outline" : "primary"}
             on:click={() => clearError()}
           >
             {currentError.canRetry ? "Cancel" : "Close"}

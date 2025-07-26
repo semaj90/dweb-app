@@ -38,42 +38,50 @@
         font-size: 14px; 
         line-height: 1.6;
         color: #374151;
-        background: #ffffff;}
+        background: #ffffff;
+}
       p { margin-bottom: 1em; }
       h1, h2, h3, h4, h5, h6 { 
         font-weight: 600; 
         margin-top: 1.5em; 
         margin-bottom: 0.5em; 
-        color: #111827;}
+        color: #111827;
+}
       blockquote {
         border-left: 4px solid #3B82F6;
         padding-left: 1em;
         margin: 1em 0;
         font-style: italic;
-        background: #F8FAFC;}
+        background: #F8FAFC;
+}
       code {
         background: #F1F5F9;
         padding: 0.2em 0.4em;
         border-radius: 3px;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.9em;}
+        font-size: 0.9em;
+}
       pre {
         background: #1E293B;
         color: #E2E8F0;
         padding: 1em;
         border-radius: 6px;
-        overflow-x: auto;}
+        overflow-x: auto;
+}
       table {
         border-collapse: collapse;
         width: 100%;
-        margin: 1em 0;}
+        margin: 1em 0;
+}
       th, td {
         border: 1px solid #D1D5DB;
         padding: 0.5em;
-        text-align: left;}
+        text-align: left;
+}
       th {
         background: #F9FAFB;
-        font-weight: 600;}
+        font-weight: 600;
+}
     `,
     placeholder,
     resize: true,
@@ -107,7 +115,8 @@
           
           // Update word count
           const wordCount = editor.plugins.wordcount?.getCount() || 0;
-          editorState.update(s => ({ ...s, wordCount }));}
+          editorState.update(s => ({ ...s, wordCount }));
+}
       });
       
       editor.on('selectionchange', () => {
@@ -121,16 +130,19 @@
       
       editor.on('blur', () => {
         editorState.update(s => ({ ...s, isEditing: false }));
-      });}
+      });
+}
   };
   
   // Reactive updates
   $: if (editorInstance && $report.content !== editorInstance.getContent()) {
-    editorInstance.setContent($report.content);}
+    editorInstance.setContent($report.content);
+}
   // Custom methods
   export const insertContent = (content: string) => {
     if (editorInstance) {
-      editorInstance.insertContent(content);}
+      editorInstance.insertContent(content);
+}
   };
   
   export const insertEvidence = (evidence: any) => {
@@ -173,19 +185,25 @@
   /* @unocss-include */
   .tinymce-container {
     position: relative;
-    width: 100%;}
+    width: 100%;
+}
   :global(.tox) {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;}
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
   :global(.tox-toolbar) {
     background: #F8FAFC !important;
-    border-bottom: 1px solid #E2E8F0 !important;}
+    border-bottom: 1px solid #E2E8F0 !important;
+}
   :global(.tox-menubar) {
     background: #FFFFFF !important;
-    border-bottom: 1px solid #E2E8F0 !important;}
+    border-bottom: 1px solid #E2E8F0 !important;
+}
   :global(.tox-edit-area) {
-    border: none !important;}
+    border: none !important;
+}
   :global(.tox-edit-area__iframe) {
-    background: #FFFFFF !important;}
+    background: #FFFFFF !important;
+}
   /* Evidence block styling */
   :global(.evidence-block) {
     background: #EFF6FF;
@@ -193,25 +211,30 @@
     border-left: 4px solid #3B82F6;
     padding: 1em;
     margin: 1em 0;
-    border-radius: 6px;}
+    border-radius: 6px;
+}
   :global(.evidence-header) {
     display: flex;
     align-items: center;
     gap: 0.5em;
-    margin-bottom: 0.5em;}
+    margin-bottom: 0.5em;
+}
   :global(.evidence-type) {
     background: #3B82F6;
     color: white;
     padding: 0.2em 0.5em;
     border-radius: 12px;
     font-size: 0.8em;
-    font-weight: 500;}
+    font-weight: 500;
+}
   :global(.evidence-description) {
     margin: 0.5em 0;
     color: #4B5563;
-    font-style: italic;}
+    font-style: italic;
+}
   /* Dark theme support */
   :global([data-theme="dark"]) :global(.tox) {
     --tox-collection-toolbar-button-active-background: #374151;
-    --tox-collection-toolbar-button-hover-background: #4B5563;}
+    --tox-collection-toolbar-button-hover-background: #4B5563;
+}
 </style>

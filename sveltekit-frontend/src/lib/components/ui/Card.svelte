@@ -1,129 +1,63 @@
+<!-- Replace the Card component file -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { quintOut } from 'svelte/easing';
-  import { fly, scale } from 'svelte/transition';
-  import { motion } from '$lib/stores/ui';
+  import type { HTMLAttributes } from 'svelte/elements';
 
-  export let variant: 'default' | 'elevated' | 'outlined' | 'filled' = 'default';
-  export let padding: 'none' | 'sm' | 'md' | 'lg' = 'md';
-  export let interactive = false;
-  export let href: string | undefined = undefined;
-  export let selected = false;
-  export let loading = false;
+  interface Props extends HTMLAttributes<HTMLDivElement> {
+    variant?: 'default' | 'interactive' | 'outline';
+    padding?: 'none' | 'sm' | 'md' | 'lg';
+  }
 
-  const dispatch = createEventDispatcher();
+  let {
+    variant = 'default',
+    padding = 'md',
+    class: className = '',
+    ...restProps
+  }: Props = $props();
 
-  let cardElement: HTMLElement;
-  let isHovered = false;
-
-  const handleClick = (event: MouseEvent) => {
-    if (interactive || href) {
-      dispatch('click', event);
-    }
-  };
-
-  const handleKeydown = (event: KeyboardEvent) => {
-    if ((interactive || href) && (event.key === 'Enter' || event.key === ' ')) {
-      event.preventDefault();
-      dispatch('click', event);
-    }
-  };
-
-  // Dynamic classes
-  $: baseClasses = `
-    relative overflow-hidden rounded-xl border transition-all duration-200 ease-out
-    ${interactive ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500' : ''}
-    ${selected ? 'ring-2 ring-blue-500 border-blue-300' : ''}
-  `;
-
-  $: variantClasses = {
-    default: 'bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-800',
-    elevated: 'bg-white border-gray-200 shadow-sm hover:shadow-md dark:bg-gray-900 dark:border-gray-800',
-    outlined: 'bg-transparent border-gray-300 dark:border-gray-600',
-    filled: 'bg-gray-50 border-gray-200 dark:bg-gray-800 dark:border-gray-700'
-  }[variant];
-
-  $: interactiveClasses = interactive ? 'hover:shadow-lg hover:scale-102 active:scale-98' : '';
-
-  $: paddingClasses = {
-    none: '',
-    sm: 'p-3',
-    md: 'p-4',
-    lg: 'p-6'
-  }[padding];
-
-  $: classes = `${baseClasses} ${variantClasses} ${interactiveClasses} ${paddingClasses}`;
+  const classes = $derived(() => {
+    const base = [
+      'nier-card',
+      `nier-card-${variant}`,
+      padding !== 'none' && `nier-card-padding-${padding}`,
+      className
+    ];
+    return base.filter(Boolean).join(' ');
+  });
 </script>
 
-<svelte:element
-  this={href ? 'a' : 'div'}
-  bind:this={cardElement}
-  {href}
-  class={classes}
-  role={interactive ? 'button' : undefined}
-  tabindex={interactive ? 0 : undefined}
-  on:click={handleClick}
-  on:keydown={handleKeydown}
-  on:mouseenter={() => isHovered = true}
-  on:mouseleave={() => isHovered = false}
-  in:scale={{
-    duration: $motion.reduceMotion ? 0 : 300,
-    easing: quintOut,
-    start: 0.9
-  }}
-  {...$$restProps}
->
-  {#if loading}
-    <div
-      class="container mx-auto px-4"
-      in:fly={{ y: 20, duration: $motion.reduceMotion ? 0 : 200 }}
-    >
-      <div class="container mx-auto px-4"></div>
-    </div>
-  {/if}
-
-  <!-- Glow effect for interactive cards -->
-  {#if interactive && isHovered && !$motion.reduceMotion}
-    <div
-      class="container mx-auto px-4"
-      aria-hidden="true"
-    ></div>
-  {/if}
-
-  <!-- Header slot -->
-  {#if $$slots.header}
-    <div class="container mx-auto px-4">
-      <slot name="header" />
-    </div>
-  {/if}
-
-  <!-- Main content -->
-  <div class="container mx-auto px-4">
-    <slot />
-  </div>
-
-  <!-- Footer slot -->
-  {#if $$slots.footer}
-    <div class="container mx-auto px-4">
-      <slot name="footer" />
-    </div>
-  {/if}
-
-  <!-- Actions slot -->
-  {#if $$slots.actions}
-    <div class="container mx-auto px-4">
-      <slot name="actions" />
-    </div>
-  {/if}
-</svelte:element>
+<div class={classes()} {...restProps} data-card-root>
+  <slot />
+</div>
 
 <style>
-  /* @unocss-include */
-  /* Custom hover scale using CSS transforms for better performance */
-  .hover\:scale-102:hover {
-    transform: scale(1.02);
+  :global([data-card-root]) {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 1px solid #404040;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
   }
-  .active\:scale-98:active {
-    transform: scale(0.98);
+
+  :global(.nier-card-interactive:hover) {
+    border-color: #f59e0b;
+    box-shadow: 0 8px 25px -8px rgba(245, 158, 11, 0.3);
+    transform: translateY(-2px);
+  }
+
+  :global(.nier-card-outline) {
+    background: transparent;
+    border: 2px solid #404040;
+  }
+
+  :global(.nier-card-padding-sm) {
+    padding: 0.75rem;
+  }
+
+  :global(.nier-card-padding-md) {
+    padding: 1rem;
+  }
+
+  :global(.nier-card-padding-lg) {
+    padding: 1.5rem;
   }
 </style>

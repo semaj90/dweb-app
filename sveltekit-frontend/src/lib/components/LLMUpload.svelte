@@ -15,7 +15,8 @@
     } catch (e) {
       error = 'Upload failed or cancelled.';
     } finally {
-      loading = false;}}
+      loading = false;
+}}
 </script>
 
 <div class="container mx-auto px-4">
@@ -41,7 +42,8 @@
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.08);
   font-family: 'Segoe UI', Arial, sans-serif;
-  text-align: center;}
+  text-align: center;
+}
 .upload-btn {
   background: #007bff;
   color: #fff;
@@ -51,18 +53,23 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;}
+  transition: background 0.2s;
+}
 .upload-btn:disabled {
   background: #b0c4de;
-  cursor: not-allowed;}
+  cursor: not-allowed;
+}
 .upload-btn:not(:disabled):hover {
-  background: #0056b3;}
+  background: #0056b3;
+}
 .success {
   color: #218838;
   margin-top: 1.5rem;
-  font-weight: 600;}
+  font-weight: 600;
+}
 .error {
   color: #b30000;
   margin-top: 1.5rem;
-  font-weight: 600;}
+  font-weight: 600;
+}
 </style>

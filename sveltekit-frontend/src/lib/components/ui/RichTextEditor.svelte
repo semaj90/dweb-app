@@ -74,7 +74,8 @@
 
   onDestroy(() => {
     if (autoSaveTimer) {
-      clearTimeout(autoSaveTimer);}
+      clearTimeout(autoSaveTimer);
+}
     editor?.destroy();
   });
 
@@ -84,7 +85,8 @@
     isBold = editor.isActive("bold");
     isItalic = editor.isActive("italic");
     isBulletList = editor.isActive("bulletList");
-    isOrderedList = editor.isActive("orderedList");}
+    isOrderedList = editor.isActive("orderedList");
+}
   function handleContentChange() {
     if (!editor || !isReady) return;
 
@@ -98,10 +100,12 @@
 
     if (autoSave) {
       if (autoSaveTimer) {
-        clearTimeout(autoSaveTimer);}
+        clearTimeout(autoSaveTimer);
+}
       autoSaveTimer = setTimeout(() => {
         dispatch("save", { html, markdown, json });
-      }, autoSaveDelay);}}
+      }, autoSaveDelay);
+}}
   function htmlToMarkdown(html: string): string {
     // Simple HTML to Markdown conversion
     return html
@@ -126,20 +130,26 @@
       .replace(/<br\s*\/?>/g, "\n")
       .replace(/<[^>]+>/g, "") // Remove remaining HTML tags
       .replace(/\n{3,}/g, "\n\n") // Clean up excessive newlines
-      .trim();}
+      .trim();
+}
   // Toolbar actions
   function toggleBold() {
-    editor?.chain().focus().toggleBold().run();}
+    editor?.chain().focus().toggleBold().run();
+}
   function toggleItalic() {
-    editor?.chain().focus().toggleItalic().run();}
+    editor?.chain().focus().toggleItalic().run();
+}
   function toggleBulletList() {
-    editor?.chain().focus().toggleBulletList().run();}
+    editor?.chain().focus().toggleBulletList().run();
+}
   function toggleOrderedList() {
-    editor?.chain().focus().toggleOrderedList().run();}
+    editor?.chain().focus().toggleOrderedList().run();
+}
   function addImage() {
     const url = prompt("Enter image URL:");
     if (url) {
-      editor?.chain().focus().setImage({ src: url }).run();}}
+      editor?.chain().focus().setImage({ src: url }).run();
+}}
   function setHeading(level: number) {
     if (level === 0) {
       editor?.chain().focus().setParagraph().run();
@@ -148,7 +158,8 @@
         ?.chain()
         .focus()
         .toggleHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 })
-        .run();}}
+        .run();
+}}
   function saveContent() {
     if (!editor || !isReady) return;
 
@@ -156,7 +167,8 @@
     const json = editor.getJSON();
     const markdown = htmlToMarkdown(html);
 
-    dispatch("save", { html, markdown, json });}
+    dispatch("save", { html, markdown, json });
+}
   // Public methods
   export function getContent() {
     if (!editor || !isReady) return { html: "", markdown: "", json: null };
@@ -165,7 +177,8 @@
     const json = editor.getJSON();
     const markdown = htmlToMarkdown(html);
 
-    return { html, markdown, json };}
+    return { html, markdown, json };
+}
   export function setContent(
     newContent: string,
     format: "html" | "json" = "html"
@@ -175,11 +188,14 @@
     if (format === "json") {
       editor.commands.setContent(JSON.parse(newContent));
     } else {
-      editor.commands.setContent(newContent);}}
+      editor.commands.setContent(newContent);
+}}
   export function focus() {
-    editor?.commands.focus();}
+    editor?.commands.focus();
+}
   export function clear() {
-    editor?.commands.clearContent();}
+    editor?.commands.clearContent();
+}
 </script>
 
 {#if showToolbar && editable}
@@ -276,40 +292,50 @@
   /* @unocss-include */
   :global(.ProseMirror) {
     outline: none;
-    min-height: 200px;}
+    min-height: 200px;
+}
   :global(.ProseMirror p.is-editor-empty:first-child::before) {
     content: attr(data-placeholder);
     float: left;
     color: #9ca3af;
     pointer-events: none;
-    height: 0;}
+    height: 0;
+}
   :global(.ProseMirror img) {
     max-width: 100%;
     height: auto;
     border-radius: 0.5rem;
-    margin: 0.5rem 0;}
+    margin: 0.5rem 0;
+}
   :global(.ProseMirror h1) {
     font-size: 1.875rem;
     font-weight: 700;
     margin: 1rem 0 0.5rem 0;
-    line-height: 1.2;}
+    line-height: 1.2;
+}
   :global(.ProseMirror h2) {
     font-size: 1.5rem;
     font-weight: 600;
     margin: 1rem 0 0.5rem 0;
-    line-height: 1.3;}
+    line-height: 1.3;
+}
   :global(.ProseMirror h3) {
     font-size: 1.25rem;
     font-weight: 600;
     margin: 0.75rem 0 0.5rem 0;
-    line-height: 1.4;}
+    line-height: 1.4;
+}
   :global(.ProseMirror ul, .ProseMirror ol) {
     margin: 0.5rem 0;
-    padding-left: 1.5rem;}
+    padding-left: 1.5rem;
+}
   :global(.ProseMirror li) {
-    margin: 0.25rem 0;}
+    margin: 0.25rem 0;
+}
   :global(.ProseMirror strong) {
-    font-weight: 600;}
+    font-weight: 600;
+}
   :global(.ProseMirror em) {
-    font-style: italic;}
+    font-style: italic;
+}
 </style>

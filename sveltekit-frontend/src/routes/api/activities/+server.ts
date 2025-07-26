@@ -23,8 +23,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     const sortBy = url.searchParams.get("sortBy") || "scheduledFor";
     const sortOrder = url.searchParams.get("sortOrder") || "asc";
 
-    // Build query with filters
-    let query = db.select().from(caseActivities);
+    // Build base query
+    let queryBuilder = db.select().from(caseActivities);
     const filters: any[] = [];
 
     // Add case filter
@@ -56,10 +56,13 @@ export const GET: RequestHandler = async ({ locals, url }) => {
         ),
       );
     }
-    // Apply filters
-    let finalQuery = db.select().from(caseActivities).where(filters.length > 0 ? and(...filters) : undefined);
 
-    // Add sorting
+    // Apply filters to the query builder
+    if (filters.length > 0) {
+      queryBuilder = queryBuilder.where(and(...filters));
+    }
+
+    // Determine the column for sorting
     const orderColumn =
       sortBy === "title"
         ? caseActivities.title
@@ -71,20 +74,19 @@ export const GET: RequestHandler = async ({ locals, url }) => {
               ? caseActivities.priority
               : sortBy === "completedAt"
                 ? caseActivities.completedAt
-                : caseActivities.createdAt; // Default to createdAt if updatedAt is not available
+                : caseActivities.createdAt; // Default to createdAt
 
-    finalQuery = finalQuery.orderBy(
+    // Apply sorting to the query builder
+    queryBuilder = queryBuilder.orderBy(
       sortOrder === "asc" ? orderColumn : desc(orderColumn),
     );
 
-    // Add pagination
-    finalQuery = finalQuery.limit(limit).offset(offset);
+    // Apply pagination to the query builder
+    queryBuilder = queryBuilder.limit(limit).offset(offset);
 
-    const activityResults = await finalQuery;
+    const activityResults = await queryBuilder;
 
-    const activityResults = await query;
-
-    // Get total count for pagination
+    // Get total count for pagination (using the same filters)
     let countQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(caseActivities);

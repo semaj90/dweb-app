@@ -32,7 +32,8 @@
           if (event.results[i].isFinal) {
             final += transcript;
           } else {
-            interim += transcript;}}
+            interim += transcript;
+}}
         finalTranscript = final;
         interimTranscript = interim;
         currentTranscript = final + interim;
@@ -40,7 +41,8 @@
       recognition.onend = () => {
         isListening = false;
         if (finalTranscript === '') {
-          speak('No speech detected. Please try again.');}
+          speak('No speech detected. Please try again.');
+}
       };
       recognition.onerror = (event: any) => {
         isListening = false;
@@ -51,10 +53,12 @@
         } else if (event.error === 'not-allowed') {
           speak('Permission to use microphone denied. Please enable microphone access.');
         } else {
-          speak('Error occurred in recognition: ' + event.error);}
+          speak('Error occurred in recognition: ' + event.error);
+}
       };
     } else {
-      isSupported = false;}
+      isSupported = false;
+}
   });
 </script>
 
@@ -70,7 +74,8 @@
         recognition.stop();
         isListening = false;
       } else {
-        recognition.start();}
+        recognition.start();
+}
     }}>
       {#if isListening}
         Stop Listening

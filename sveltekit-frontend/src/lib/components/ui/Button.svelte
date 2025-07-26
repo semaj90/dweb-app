@@ -1,20 +1,16 @@
+<!-- Replace the Button component file -->
 <script lang="ts">
-  import { Button, type WithElementRef } from 'bits-ui';
+  import { Button } from 'bits-ui';
   import type { HTMLButtonAttributes } from 'svelte/elements';
 
-  type ButtonProps = WithElementRef<
-    HTMLButtonAttributes & {
-      variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'warning' | 'info';
-      size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-      loading?: boolean;
-      icon?: string;
-      iconPosition?: 'left' | 'right';
-      fullWidth?: boolean;
-      class?: string;
-    },
-    HTMLButtonElement
-  >;
-
+  interface Props extends HTMLButtonAttributes {
+    variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    loading?: boolean;
+    icon?: string;
+    iconPosition?: 'left' | 'right';
+    fullWidth?: boolean;
+  }
 
   let {
     variant = 'primary',
@@ -24,13 +20,12 @@
     iconPosition = 'left',
     fullWidth = false,
     class: className = '',
-    ref = $bindable(),
-    children,
+    disabled,
     ...restProps
-  }: ButtonProps = $props();
+  }: Props = $props();
 
   const classes = $derived(() => {
-    const arr = [
+    const base = [
       'nier-btn',
       `nier-btn-${variant}`,
       `nier-btn-${size}`,
@@ -38,14 +33,13 @@
       loading && 'nier-btn-loading',
       className
     ];
-    return arr.filter(Boolean).join(' ');
+    return base.filter(Boolean).join(' ');
   });
 </script>
 
 <Button.Root
-  bind:ref
   class={classes()}
-  disabled={loading || Boolean(restProps.disabled)}
+  disabled={loading || disabled}
   {...restProps}
   data-button-root
 >
@@ -55,16 +49,13 @@
   {#if loading}
     <span class="loader mr-2"></span>
   {/if}
-  {#if children}
-    {@render children()}
-  {/if}
+  <slot />
   {#if icon && iconPosition === 'right'}
     <i class={icon} aria-hidden="true"></i>
   {/if}
 </Button.Root>
 
 <style>
-/* @unocss-include */
   :global([data-button-root]) {
     height: 2.5rem;
     min-width: 2.5rem;
@@ -82,15 +73,18 @@
     align-items: center;
     gap: 0.5em;
   }
+  
   :global([data-button-root]:hover) {
     background: linear-gradient(90deg, #393e46 0%, #23272e 100%);
     color: #a3e7fc;
     border-color: #a3e7fc;
   }
+  
   :global([data-button-root][disabled]) {
     opacity: 0.6;
     cursor: not-allowed;
   }
+  
   .loader {
     width: 1rem;
     height: 1rem;
@@ -99,8 +93,8 @@
     border-radius: 50%;
     animation: spin 0.75s linear infinite;
     display: inline-block;
-    vertical-align: middle;
   }
+  
   @keyframes spin {
     to { transform: rotate(360deg); }
   }

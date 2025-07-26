@@ -23,7 +23,7 @@
   onMount(() => {
     if (browser && autoFocus && textarea) {
       setTimeout(() => textarea.focus(), 100);
-}
+    }
   });
 
   // Handle input changes
@@ -32,7 +32,7 @@
     value = target.value;
     dispatch("input", value);
     adjustTextareaHeight();
-}
+  }
   // Handle key press
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === "Enter") {
@@ -43,7 +43,9 @@
         // Enter: send message
         event.preventDefault();
         handleSend();
-}}}
+      }
+    }
+  }
   // Send message
   function handleSend() {
     const trimmedValue = value.trim();
@@ -52,7 +54,7 @@
     dispatch("send", trimmedValue);
     value = "";
     resetTextareaHeight();
-}
+  }
   // Auto-resize textarea
   function adjustTextareaHeight() {
     if (!textarea) return;
@@ -73,7 +75,7 @@
 
     textarea.style.height = `${targetRows * lineHeight + paddingHeight}px`;
     isMultiline = targetRows > 1;
-}
+  }
   // Reset textarea height
   function resetTextareaHeight() {
     if (!textarea) return;
@@ -85,14 +87,14 @@
 
     textarea.style.height = `${rows * lineHeight + paddingHeight}px`;
     isMultiline = false;
-}
+  }
   // Handle focus/blur events
   function handleFocus() {
     dispatch("focus");
-}
+  }
   function handleBlur() {
     dispatch("blur");
-}
+  }
   // Character count
   $: characterCount = value.length;
   $: isNearLimit = characterCount > maxLength * 0.8;
@@ -162,21 +164,27 @@
       </span>
     </div>
   {/if}
-  /* ...existing code... */
+</div>
+
+<style>
+.chat-input-wrapper {
+  position: relative;
   width: 100%;
 }
-  .input-container {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    padding: 12px;
-    background: var(--bg-primary, #ffffff);
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 8px;
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
-  }
+
+/* --- Chat Input Styles --- */
+.input-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
   .input-container:focus-within {
     border-color: var(--accent-color, #3b82f6);
     box-shadow: 0 0 0 3px var(--accent-shadow, rgba(59, 130, 246, 0.1));

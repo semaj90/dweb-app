@@ -1,9 +1,7 @@
 <script lang="ts">
   import { Button as BitsButton } from 'bits-ui';
   import type { HTMLButtonAttributes } from 'svelte/elements';
-
-  type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning' | 'info' | 'nier';
-  type ButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  import type { ButtonVariant, ButtonSize } from '$lib/types';
 
   export let variant: ButtonVariant = 'primary';
   export let size: ButtonSize = 'md';
@@ -78,14 +76,20 @@
     color: #bcbcbc;
   }
   /* Variant styles */
+  :global(.btn-default) { background: linear-gradient(90deg, #23272e 0%, #393e46 100%); color: #fff; }
   :global(.btn-primary) { background: linear-gradient(90deg, #23272e 0%, #393e46 100%); color: #fff; }
   :global(.btn-secondary) { background: #f3f3f3; color: #23272e; border: 1px solid #393e46; }
   :global(.btn-outline) { background: transparent; color: #23272e; border: 1.5px solid #393e46; }
   :global(.btn-danger) { background: #e53935; color: #fff; }
+  :global(.btn-destructive) { background: #e53935; color: #fff; }
   :global(.btn-success) { background: #43a047; color: #fff; }
   :global(.btn-warning) { background: #fbc02d; color: #23272e; }
   :global(.btn-info) { background: #1976d2; color: #fff; }
+  :global(.btn-ghost) { background: transparent; color: #23272e; border: none; }
+  :global(.btn-ghost:hover) { background: rgba(35, 39, 46, 0.1); }
   :global(.btn-nier) { background: linear-gradient(90deg, #181a1b 0%, #393e46 100%); color: #e0e0e0; }
+  :global(.btn-crimson) { background: linear-gradient(90deg, #8B0000 0%, #DC143C 100%); color: #fff; }
+  :global(.btn-gold) { background: linear-gradient(90deg, #B8860B 0%, #FFD700 100%); color: #000; }
   /* Size styles */
   :global(.btn-xs) { font-size: 0.75rem; padding: 0.25rem 0.75rem; }
   :global(.btn-sm) { font-size: 0.875rem; padding: 0.375rem 1rem; }

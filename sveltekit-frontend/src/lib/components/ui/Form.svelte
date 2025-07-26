@@ -15,7 +15,8 @@
     submitFullWidth?: boolean;
     resetText?: string;
     showResetButton?: boolean;
-    loading?: boolean;}
+    loading?: boolean;
+}
   export let options: NonNullable<$$Props["options"]> = {};
   export let submitText: NonNullable<$$Props["submitText"]> = "Submit";
   export let submitVariant: NonNullable<$$Props["submitVariant"]> = "primary";
@@ -37,13 +38,15 @@
     onSubmit: async (values) => {
       dispatch("submit", { values, isValid: true });
       if (options.onSubmit) {
-        await options.onSubmit(values);}
+        await options.onSubmit(values);
+}
     },
   });
 
   // Subscribe to form values for change events
   $: if ($form.isDirty) {
-    dispatch("change", { values: $form.values });}
+    dispatch("change", { values: $form.values });
+}
   async function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
 
@@ -52,10 +55,12 @@
       notifications.error(
         "Form validation failed",
         "Please correct the errors and try again."
-      );}}
+      );
+}}
   function handleReset() {
     form.reset();
-    dispatch("reset");}
+    dispatch("reset");
+}
   // Expose form methods for parent components
   export const formApi = {
     setField: form.setField,

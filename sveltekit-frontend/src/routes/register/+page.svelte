@@ -4,7 +4,8 @@
     name?: string;
     email?: string;
     role?: string;
-    [key: string]: any;}
+    [key: string]: any;
+}
   import { enhance } from '$app/forms';
   import type { ActionData } from './$types';
   export let form: RegisterForm = {};
@@ -21,7 +22,8 @@
     if (/[A-Z]/.test(pwd)) strength++;
     if (/[0-9]/.test(pwd)) strength++;
     if (/[^a-zA-Z0-9]/.test(pwd)) strength++;
-    return strength;}
+    return strength;
+}
   $: passwordStrength = checkPasswordStrength(password);
   $: passwordsMatch = password === confirmPassword && confirmPassword !== '';
   $: strengthText = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength] || 'Very Weak';
@@ -195,38 +197,47 @@
     gap: 3rem;
     min-height: 80vh;
     align-items: center;
-    padding: 2rem 0;}
+    padding: 2rem 0;
+}
   .auth-info {
-    padding: 2rem;}
+    padding: 2rem;
+}
   .auth-header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;}
+    margin-bottom: 1.5rem;
+}
   .brand-icon {
     color: var(--harvard-crimson);
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   .auth-header h1 {
     font-size: 2.5rem;
     margin: 0;
-    line-height: 1.2;}
+    line-height: 1.2;
+}
   .auth-subtitle {
     color: var(--text-muted);
     margin: 0;
-    font-size: 1.1rem;}
+    font-size: 1.1rem;
+}
   .auth-description {
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 2rem;
-    color: var(--text-muted);}
+    color: var(--text-muted);
+}
   .feature-list {
     display: flex;
     flex-direction: column;
-    gap: 1rem;}
+    gap: 1rem;
+}
   .feature-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;}
+    gap: 0.75rem;
+}
   .feature-icon {
     display: inline-flex;
     align-items: center;
@@ -238,31 +249,40 @@
     color: white;
     font-size: 0.875rem;
     font-weight: bold;
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   .auth-form {
-    padding: 1rem;}
+    padding: 1rem;
+}
   .auth-form article {
     margin: 0;
-    max-width: 400px;}
+    max-width: 400px;
+}
   .auth-form h2 {
     text-align: center;
-    margin-bottom: 1.5rem;}
+    margin-bottom: 1.5rem;
+}
   .error-alert {
     padding: 1rem;
     margin-bottom: 1rem;
     background: var(--del-background-color);
     border: 1px solid var(--del-color);
     border-radius: var(--border-radius);
-    color: var(--del-color);}
+    color: var(--del-color);
+}
   @media (max-width: 768px) {
     .auth-layout {
       grid-template-columns: 1fr;
-      gap: 2rem;}
+      gap: 2rem;
+}
     .auth-info {
       padding: 1rem;
-      text-align: center;}
+      text-align: center;
+}
     .auth-header {
-      justify-content: center;}
+      justify-content: center;
+}
     .auth-header h1 {
-      font-size: 2rem;}}
+      font-size: 2rem;
+}}
 </style>

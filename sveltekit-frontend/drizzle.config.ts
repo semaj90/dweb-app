@@ -1,14 +1,11 @@
 import { defineConfig } from 'drizzle-kit';
-import { loadEnv } from 'vite';
-
-const env = loadEnv('', process.cwd(), '');
 
 export default defineConfig({
  schema: './src/lib/db/schema.ts',
  out: './drizzle',
  dialect: 'postgresql',
  dbCredentials: {
- url: env.DATABASE_URL || 'postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3'
+ url: process.env.DATABASE_URL || 'postgresql://legal_admin:LegalSecure2024!@localhost:5432/prosecutor_db'
  },
  verbose: true,
  strict: true,

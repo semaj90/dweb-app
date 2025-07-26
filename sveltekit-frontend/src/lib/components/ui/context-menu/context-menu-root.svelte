@@ -18,7 +18,7 @@
       position.set({ x, y });
       isOpen.set(true);
       onOpenChange?.(true);
-}
+    }
   });
 </script>
 

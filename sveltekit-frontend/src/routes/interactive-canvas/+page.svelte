@@ -51,10 +51,12 @@
 		if (mainContainer) {
 			const rect = mainContainer.getBoundingClientRect();
 			canvasWidth = rect.width;
-			canvasHeight = rect.height;}}
+			canvasHeight = rect.height;
+}}
 	function toggleFullscreen() {
 		isFullscreen = !isFullscreen;
-		updateCanvasDimensions();}
+		updateCanvasDimensions();
+}
 	// Enhanced file upload state
 	let uploadProgress: { [key: string]: number } = {};
 	let uploadingFiles: { [key: string]: { name: string; size: number; hash?: string } } = {};
@@ -65,9 +67,11 @@
 		event.preventDefault();
 		const files = event.dataTransfer?.files;
 		if (files && files.length > 0) {
-			await processFileUploads(Array.from(files));}}
+			await processFileUploads(Array.from(files));
+}}
 	function handleDragOver(event: DragEvent) {
-		event.preventDefault();}
+		event.preventDefault();
+}
 	// Process multiple file uploads with hash calculation
 	async function processFileUploads(files: File[]) {
 		for (const file of files) {
@@ -110,7 +114,8 @@
 				console.error('Upload failed:', error);
 				// Handle error state
 				delete uploadingFiles[fileId];
-				delete uploadProgress[fileId];}}}
+				delete uploadProgress[fileId];
+}}}
 	// Calculate SHA256 hash with progress
 	async function calculateFileHash(file: File, onProgress?: (progress: number) => void): Promise<string> {
 		const chunkSize = 1024 * 1024; // 1MB chunks
@@ -121,10 +126,12 @@
 		if (onProgress) {
 			for (let i = 0; i <= 100; i += 10) {
 				await new Promise(resolve => setTimeout(resolve, 10));
-				onProgress(i / 100);}}
+				onProgress(i / 100);
+}}
 		return Array.from(new Uint8Array(hash))
 			.map(b => b.toString(16).padStart(2, '0'))
-			.join('');}
+			.join('');
+}
 	// Upload file with calculated hash
 	async function uploadFileWithHash(file: File, hash: string, onProgress?: (progress: number) => void): Promise<{ id: string }> {
 		const formData = new FormData();
@@ -136,16 +143,19 @@
 		if (onProgress) {
 			for (let i = 0; i <= 100; i += 5) {
 				await new Promise(resolve => setTimeout(resolve, 50));
-				onProgress(i / 100);}}
+				onProgress(i / 100);
+}}
 		const response = await fetch('/api/evidence/upload', {
 			method: 'POST',
 			body: formData
 		});
 
 		if (!response.ok) {
-			throw new Error('Upload failed');}
+			throw new Error('Upload failed');
+}
 		const result = await response.json();
-		return { id: result.uploaded?.[0]?.id || crypto.randomUUID() };}
+		return { id: result.uploaded?.[0]?.id || crypto.randomUUID() };
+}
 </script>
 
 <svelte:head>
@@ -262,34 +272,41 @@
 		height: 100vh;
 		width: 100vw;
 		overflow: hidden;
-		background: var(--bg-primary);}
+		background: var(--bg-primary);
+}
 	.canvas-layout.fullscreen {
 		position: fixed;
 		top: 0;
 		left: 0;
-		z-index: 9999;}
+		z-index: 9999;
+}
 	.main-content {
 		display: flex;
 		flex: 1;
 		overflow: hidden;
-		position: relative;}
+		position: relative;
+}
 	.canvas-container {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 		position: relative;
 		transition: margin-left 0.3s ease;
-		background: var(--bg-secondary);}
+		background: var(--bg-secondary);
+}
 	.canvas-container.sidebar-open {
-		margin-left: 320px;}
+		margin-left: 320px;
+}
 	.toolbar-container {
 		border-bottom: 1px solid var(--border-light);
 		background: var(--bg-secondary);
-		z-index: 10;}
+		z-index: 10;
+}
 	.canvas-editor-container {
 		flex: 1;
 		position: relative;
-		overflow: hidden;}
+		overflow: hidden;
+}
 	.upload-zone {
 		position: absolute;
 		bottom: 20px;
@@ -298,9 +315,11 @@
 		z-index: 5;
 		max-width: 400px;
 		opacity: 0.9;
-		transition: opacity 0.3s ease;}
+		transition: opacity 0.3s ease;
+}
 	.upload-zone:hover {
-		opacity: 1;}
+		opacity: 1;
+}
 	/* Upload Progress Styles */
 	.upload-progress-container {
 		background: var(--bg-secondary);
@@ -308,56 +327,68 @@
 		border-radius: 8px;
 		padding: 16px;
 		margin-bottom: 12px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);}
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 	.upload-progress-container h4 {
 		margin: 0 0 12px 0;
 		font-size: 14px;
-		color: var(--text-primary);}
+		color: var(--text-primary);
+}
 	.upload-item {
 		margin-bottom: 12px;
 		padding-bottom: 12px;
-		border-bottom: 1px solid var(--border-light);}
+		border-bottom: 1px solid var(--border-light);
+}
 	.upload-item:last-child {
 		margin-bottom: 0;
 		padding-bottom: 0;
-		border-bottom: none;}
+		border-bottom: none;
+}
 	.upload-info {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 6px;}
+		margin-bottom: 6px;
+}
 	.file-name {
 		font-weight: 500;
 		font-size: 13px;
-		color: var(--text-primary);}
+		color: var(--text-primary);
+}
 	.file-size {
 		font-size: 12px;
-		color: var(--text-muted);}
+		color: var(--text-muted);
+}
 	.progress-bar {
 		width: 100%;
 		height: 6px;
 		background: var(--border-light);
 		border-radius: 3px;
 		overflow: hidden;
-		margin-bottom: 6px;}
+		margin-bottom: 6px;
+}
 	.progress-fill {
 		height: 100%;
 		background: linear-gradient(90deg, #3b82f6, #10b981);
 		transition: width 0.3s ease;
-		border-radius: 3px;}
+		border-radius: 3px;
+}
 	.upload-status {
 		font-size: 12px;
 		color: var(--text-muted);
-		margin-bottom: 4px;}
+		margin-bottom: 4px;
+}
 	.hash-preview {
 		font-size: 11px;
 		color: var(--text-muted);
 		font-family: monospace;
 		background: var(--code-background-color);
 		padding: 4px 6px;
-		border-radius: 4px;}
+		border-radius: 4px;
+}
 	.hash-text {
-		color: var(--harvard-crimson);}
+		color: var(--harvard-crimson);
+}
 	/* Completed Uploads Styles */
 	.completed-uploads {
 		background: var(--bg-secondary);
@@ -365,36 +396,43 @@
 		border-radius: 8px;
 		padding: 16px;
 		margin-bottom: 12px;
-		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);}
+		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+}
 	.completed-uploads h4 {
 		margin: 0 0 12px 0;
 		font-size: 14px;
-		color: #10b981;}
+		color: #10b981;
+}
 	.completed-item {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 		margin-bottom: 12px;
 		padding-bottom: 12px;
-		border-bottom: 1px solid var(--border-light);}
+		border-bottom: 1px solid var(--border-light);
+}
 	.completed-item:last-child {
 		margin-bottom: 0;
 		padding-bottom: 0;
-		border-bottom: none;}
+		border-bottom: none;
+}
 	.hash-verification {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		font-size: 12px;}
+		font-size: 12px;
+}
 	.hash-label {
 		color: var(--text-muted);
-		font-weight: 500;}
+		font-weight: 500;
+}
 	.hash-value {
 		font-family: monospace;
 		background: var(--code-background-color);
 		padding: 2px 6px;
 		border-radius: 4px;
-		color: var(--harvard-crimson);}
+		color: var(--harvard-crimson);
+}
 	.verify-btn {
 		background: #3b82f6;
 		color: white;
@@ -403,11 +441,14 @@
 		border-radius: 4px;
 		font-size: 11px;
 		cursor: pointer;
-		transition: background 0.2s ease;}
+		transition: background 0.2s ease;
+}
 	.verify-btn:hover {
-		background: #2563eb;}
+		background: #2563eb;
+}
 	/* Responsive Design */
 	@media (max-width: 768px) {
 		.canvas-container.sidebar-open {
-			margin-left: 0;}}
+			margin-left: 0;
+}}
 </style>

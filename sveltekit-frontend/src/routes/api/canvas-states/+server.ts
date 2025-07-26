@@ -34,8 +34,8 @@ export async function GET({ url, locals }: RequestEvent) {
       }
       return json(canvasState);
     } else {
-      // Build query with filters
-      let query = db.select().from(canvasStates);
+      // Build base query
+      let queryBuilder = db.select().from(canvasStates);
       const filters: any[] = [];
 
       // Add case filter
@@ -50,10 +50,13 @@ export async function GET({ url, locals }: RequestEvent) {
       if (isTemplate !== null) {
         filters.push(eq(canvasStates.isDefault, isTemplate === "true"));
       }
-      // Apply filters
-      let finalQuery = db.select().from(canvasStates).where(filters.length > 0 ? and(...filters) : undefined);
 
-      // Add sorting
+      // Apply filters to the query builder
+      if (filters.length > 0) {
+        queryBuilder = queryBuilder.where(and(...filters));
+      }
+
+      // Determine the column for sorting
       const orderColumn =
         sortBy === "name"
           ? canvasStates.name
@@ -61,18 +64,17 @@ export async function GET({ url, locals }: RequestEvent) {
             ? canvasStates.version
             : canvasStates.createdAt; // Default to createdAt
 
-      finalQuery = finalQuery.orderBy(
+      // Apply sorting to the query builder
+      queryBuilder = queryBuilder.orderBy(
         sortOrder === "asc" ? orderColumn : desc(orderColumn),
       );
 
-      // Add pagination
-      finalQuery = finalQuery.limit(limit).offset(offset);
+      // Apply pagination to the query builder
+      queryBuilder = queryBuilder.limit(limit).offset(offset);
 
-      const canvasStateList = await finalQuery;
+      const canvasStateList = await queryBuilder;
 
-      const canvasStateList = await query;
-
-      // Get total count for pagination
+      // Get total count for pagination (using the same filters)
       let countQuery = db
         .select({ count: sql<number>`count(*)` })
         .from(canvasStates);

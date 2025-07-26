@@ -40,13 +40,16 @@
       setupEditor();
       loadAvailableCitations();
       if (report) {
-        loadReportContent();}
-      setupAutoSave();}
+        loadReportContent();
+}
+      setupAutoSave();
+}
   });
 
   onDestroy(() => {
     if (autoSaveTimer) {
-      clearTimeout(autoSaveTimer);}
+      clearTimeout(autoSaveTimer);
+}
   });
 
   function setupEditor() {
@@ -67,7 +70,8 @@
     editorElement.addEventListener("blur", handleBlur);
 
     // Initialize word count
-    updateWordCount();}
+    updateWordCount();
+}
   function handleContentChange(event: Event) {
     if (readOnly) return;
 
@@ -80,7 +84,8 @@
 
     // Generate AI suggestions if enabled
     if (content.length > 100) {
-      debounceAiSuggestions();}}
+      debounceAiSuggestions();
+}}
   function handlePaste(event: ClipboardEvent) {
     if (readOnly) return;
 
@@ -89,7 +94,8 @@
 
     // Insert plain text to avoid formatting issues
     document.execCommand("insertText", false, text);
-    handleContentChange(event);}
+    handleContentChange(event);
+}
   function handleKeyDown(event: KeyboardEvent) {
     if (readOnly) return;
 
@@ -115,28 +121,34 @@
         case "k":
           event.preventDefault();
           insertCitationPrompt();
-          break;}}
+          break;
+}}
     // Handle tab key for indentation
     if (event.key === "Tab") {
       event.preventDefault();
-      document.execCommand("insertText", false, "    ");}}
+      document.execCommand("insertText", false, "    ");
+}}
   function handleSelectionChange() {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
       currentSelection = selection.getRangeAt(0);
-      cursorPosition = currentSelection.startOffset;}}
+      cursorPosition = currentSelection.startOffset;
+}}
   function handleFocus() {
     // Add focus styling or behavior
-    editorElement.classList.add("focused");}
+    editorElement.classList.add("focused");
+}
   function handleBlur() {
     editorElement.classList.remove("focused");
     if (isDirty && autoSaveEnabled) {
-      saveReport();}}
+      saveReport();
+}}
   function formatText(command: string) {
     if (readOnly) return;
 
     document.execCommand(command, false);
-    handleContentChange(new Event("input"));}
+    handleContentChange(new Event("input"));
+}
   function insertCitation(citation: CitationPoint) {
     if (readOnly) return;
 
@@ -155,11 +167,14 @@
       selection?.addRange(range);
     } else {
       // Append to end if no selection
-      editorElement.innerHTML += citationHtml;}
+      editorElement.innerHTML += citationHtml;
+}
     // Add to selected citations if not already present
     if (!selectedCitations.find((c) => c.id === citation.id)) {
-      selectedCitations = [...selectedCitations, citation];}
-    handleContentChange(new Event("input"));}
+      selectedCitations = [...selectedCitations, citation];
+}
+    handleContentChange(new Event("input"));
+}
   function removeCitation(citationId: string) {
     // Remove citation tokens from content
     const citationTokens = editorElement.querySelectorAll(
@@ -170,17 +185,21 @@
     // Remove from selected citations
     selectedCitations = selectedCitations.filter((c) => c.id !== citationId);
 
-    handleContentChange(new Event("input"));}
+    handleContentChange(new Event("input"));
+}
   function insertCitationPrompt() {
     // Show citation picker modal or sidebar
-    citationSidebar.style.display = "block";}
+    citationSidebar.style.display = "block";
+}
   async function loadAvailableCitations() {
     try {
       const response = await fetch(`/api/citations?caseId=${caseId}`);
       if (response.ok) {
-        availableCitations = await response.json();}
+        availableCitations = await response.json();
+}
     } catch (error) {
-      console.error("Failed to load citations:", error);}}
+      console.error("Failed to load citations:", error);
+}}
   function loadReportContent() {
     if (!report) return;
 
@@ -188,10 +207,12 @@
     content = report.content || "";
 
     if (editorElement) {
-      editorElement.innerHTML = content;}
+      editorElement.innerHTML = content;
+}
     // Extract existing citations from content
     extractExistingCitations();
-    updateWordCount();}
+    updateWordCount();
+}
   function extractExistingCitations() {
     const citationTokens = editorElement.querySelectorAll(".citation-token");
     const citationIds: string[] = [];
@@ -199,13 +220,15 @@
     citationTokens.forEach((token) => {
       const citationId = token.getAttribute("data-citation-id");
       if (citationId) {
-        citationIds.push(citationId);}
+        citationIds.push(citationId);
+}
     });
 
     // Load full citation data
     selectedCitations = availableCitations.filter((c) =>
       citationIds.includes(c.id)
-    );}
+    );
+}
   function updateWordCount() {
     const textContent = editorElement.textContent || "";
     const words = textContent
@@ -214,15 +237,18 @@
       .filter((word) => word.length > 0);
     wordCount = words.length;
     characterCount = textContent.length;
-    estimatedReadTime = Math.ceil(wordCount / 200); // Assume 200 words per minute}
+    estimatedReadTime = Math.ceil(wordCount / 200); // Assume 200 words per minute
+}
   function scheduleAutoSave() {
     if (!autoSaveEnabled) return;
 
     if (autoSaveTimer) {
-      clearTimeout(autoSaveTimer);}
+      clearTimeout(autoSaveTimer);
+}
     autoSaveTimer = setTimeout(() => {
       saveReport();
-    }, 2000); // Auto-save after 2 seconds of inactivity}
+    }, 2000); // Auto-save after 2 seconds of inactivity
+}
   async function saveReport() {
     if (!isDirty || isLoading) return;
 
@@ -259,20 +285,24 @@
         lastSaved = new Date();
         await onSave(savedReport);
       } else {
-        throw new Error("Failed to save report");}
+        throw new Error("Failed to save report");
+}
     } catch (error) {
       console.error("Save failed:", error);
       // Show error message to user
     } finally {
-      isLoading = false;}}
+      isLoading = false;
+}}
   let aiSuggestionTimer: NodeJS.Timeout | null = null;
 
   function debounceAiSuggestions() {
     if (aiSuggestionTimer) {
-      clearTimeout(aiSuggestionTimer);}
+      clearTimeout(aiSuggestionTimer);
+}
     aiSuggestionTimer = setTimeout(async () => {
       await generateAiSuggestions();
-    }, 1000);}
+    }, 1000);
+}
   async function generateAiSuggestions() {
     if (isGeneratingAi) return;
 
@@ -293,11 +323,13 @@
 
       if (response.ok) {
         const suggestions = await response.json();
-        aiSuggestions = suggestions.suggestions || [];}
+        aiSuggestions = suggestions.suggestions || [];
+}
     } catch (error) {
       console.error("Failed to generate AI suggestions:", error);
     } finally {
-      isGeneratingAi = false;}}
+      isGeneratingAi = false;
+}}
   function insertAiSuggestion(suggestion: string) {
     if (readOnly) return;
 
@@ -306,15 +338,19 @@
       range.insertNode(range.createContextualFragment(suggestion));
       range.collapse(false);
     } else {
-      editorElement.innerHTML += suggestion;}
+      editorElement.innerHTML += suggestion;
+}
     handleContentChange(new Event("input"));
-    aiSuggestions = [];}
+    aiSuggestions = [];
+}
   function setupAutoSave() {
     // Auto-save every 30 seconds if dirty
     setInterval(() => {
       if (isDirty && autoSaveEnabled) {
-        saveReport();}
-    }, 30000);}
+        saveReport();
+}
+    }, 30000);
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -505,13 +541,15 @@
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: white;
-    position: relative;}
+    position: relative;
+}
   .editor-header {
     display: flex;
     align-items: center;
     padding: 16px;
     border-bottom: 1px solid #e2e8f0;
-    background: #f8fafc;}
+    background: #f8fafc;
+}
   .report-title-input {
     flex: 1;
     font-size: 20px;
@@ -519,27 +557,35 @@
     border: none;
     background: transparent;
     outline: none;
-    margin-right: 16px;}
+    margin-right: 16px;
+}
   .editor-controls {
     display: flex;
     align-items: center;
-    gap: 16px;}
+    gap: 16px;
+}
   .editor-stats {
     display: flex;
     gap: 12px;
     font-size: 12px;
-    color: #64748b;}
+    color: #64748b;
+}
   .save-status {
-    font-size: 12px;}
+    font-size: 12px;
+}
   .saving {
-    color: #f59e0b;}
+    color: #f59e0b;
+}
   .saved {
-    color: #10b981;}
+    color: #10b981;
+}
   .unsaved {
-    color: #ef4444;}
+    color: #ef4444;
+}
   .action-buttons {
     display: flex;
-    gap: 8px;}
+    gap: 8px;
+}
   .btn-primary,
   .btn-secondary {
     padding: 8px 16px;
@@ -547,34 +593,42 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    transition: all 0.2s;}
+    transition: all 0.2s;
+}
   .btn-primary {
     background: #3b82f6;
     border-color: #3b82f6;
-    color: white;}
+    color: white;
+}
   .btn-primary:hover:not(:disabled) {
-    background: #2563eb;}
+    background: #2563eb;
+}
   .btn-primary:disabled {
     opacity: 0.5;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .btn-secondary {
     background: white;
     border-color: #d1d5db;
-    color: #374151;}
+    color: #374151;
+}
   .btn-secondary:hover {
-    background: #f9fafb;}
+    background: #f9fafb;
+}
   .editor-main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .formatting-toolbar {
     display: flex;
     align-items: center;
     padding: 8px 16px;
     border-bottom: 1px solid #e2e8f0;
     background: #f8fafc;
-    gap: 8px;}
+    gap: 8px;
+}
   .formatting-toolbar button {
     padding: 6px 10px;
     border: 1px solid #d1d5db;
@@ -582,14 +636,17 @@
     background: white;
     cursor: pointer;
     font-size: 14px;
-    transition: all 0.2s;}
+    transition: all 0.2s;
+}
   .formatting-toolbar button:hover {
-    background: #f3f4f6;}
+    background: #f3f4f6;
+}
   .separator {
     width: 1px;
     height: 20px;
     background: #d1d5db;
-    margin: 0 8px;}
+    margin: 0 8px;
+}
   .content-editor {
     flex: 1;
     padding: 24px;
@@ -598,10 +655,12 @@
     font-size: 16px;
     line-height: 1.6;
     outline: none;
-    background: white;}
+    background: white;
+}
   .content-editor.read-only {
     background: #f9fafb;
-    cursor: default;}
+    cursor: default;
+}
   /* Citation token styling */
   .content-editor :global(.citation-token) {
     background: #dbeafe;
@@ -612,9 +671,11 @@
     font-weight: 500;
     text-decoration: none;
     cursor: pointer;
-    white-space: nowrap;}
+    white-space: nowrap;
+}
   .content-editor :global(.citation-token:hover) {
-    background: #bfdbfe;}
+    background: #bfdbfe;
+}
   .citation-sidebar {
     position: absolute;
     right: 0;
@@ -623,41 +684,49 @@
     height: 100%;
     border-left: 1px solid #e2e8f0;
     background: white;
-    z-index: 10;}
+    z-index: 10;
+}
   .sidebar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    border-bottom: 1px solid #e2e8f0;}
+    border-bottom: 1px solid #e2e8f0;
+}
   .close-btn {
     background: none;
     border: none;
     font-size: 20px;
     cursor: pointer;
-    color: #6b7280;}
+    color: #6b7280;
+}
   .sidebar-content {
     padding: 16px;
     height: calc(100% - 60px);
-    overflow-y: auto;}
+    overflow-y: auto;
+}
   .citation-search input {
     width: 100%;
     padding: 8px 12px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    margin-bottom: 16px;}
+    margin-bottom: 16px;
+}
   .citation-item {
     padding: 12px;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
-    margin-bottom: 8px;}
+    margin-bottom: 8px;
+}
   .citation-text {
     font-size: 14px;
-    margin-bottom: 4px;}
+    margin-bottom: 4px;
+}
   .citation-source {
     font-size: 12px;
     color: #6b7280;
-    margin-bottom: 8px;}
+    margin-bottom: 8px;
+}
   .add-citation-btn {
     padding: 4px 8px;
     background: #3b82f6;
@@ -665,7 +734,8 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;}
+    font-size: 12px;
+}
   .ai-suggestions-panel {
     position: absolute;
     bottom: 0;
@@ -674,23 +744,27 @@
     height: 200px;
     border-top: 1px solid #e2e8f0;
     background: white;
-    z-index: 10;}
+    z-index: 10;
+}
   .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
     border-bottom: 1px solid #e2e8f0;
-    background: #f8fafc;}
+    background: #f8fafc;
+}
   .panel-content {
     padding: 16px;
     height: calc(100% - 50px);
-    overflow-y: auto;}
+    overflow-y: auto;
+}
   .suggestion-item {
     padding: 12px;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
-    margin-bottom: 8px;}
+    margin-bottom: 8px;
+}
   .use-suggestion-btn {
     padding: 4px 8px;
     background: #10b981;
@@ -699,15 +773,18 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
-    margin-top: 8px;}
+    margin-top: 8px;
+}
   .selected-citations {
     padding: 16px;
     border-top: 1px solid #e2e8f0;
-    background: #f8fafc;}
+    background: #f8fafc;
+}
   .selected-citations h4 {
     margin: 0 0 8px 0;
     font-size: 14px;
-    color: #374151;}
+    color: #374151;
+}
   .selected-citation {
     display: inline-flex;
     align-items: center;
@@ -716,16 +793,19 @@
     padding: 4px 8px;
     border-radius: 4px;
     margin: 2px;
-    font-size: 12px;}
+    font-size: 12px;
+}
   .remove-citation {
     background: none;
     border: none;
     color: #6b7280;
     cursor: pointer;
     font-size: 14px;
-    line-height: 1;}
+    line-height: 1;
+}
   .loading {
     text-align: center;
     color: #6b7280;
-    font-style: italic;}
+    font-style: italic;
+}
 </style>

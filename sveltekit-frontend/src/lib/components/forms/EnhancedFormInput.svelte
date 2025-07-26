@@ -73,7 +73,8 @@
     dispatch("input", {
       value,
       validation: { isValid, errors, warnings, value },
-    });}
+    });
+}
   function handleChange(event: Event) {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
     value = target.value;
@@ -83,13 +84,16 @@
     dispatch("change", {
       value,
       validation: { isValid, errors, warnings, value },
-    });}
+    });
+}
   function handleFocus() {
-    dispatch("focus", { name });}
+    dispatch("focus", { name });
+}
   function handleBlur() {
     isDirty = true;
     validateField();
-    dispatch("blur", { name });}
+    dispatch("blur", { name });
+}
   function validateField() {
     if (validator && config) {
       const result = validator.setValue(name, value);
@@ -105,30 +109,36 @@
             (validationResult) => {
               errors = validationResult.errors;
               warnings = validationResult.warnings;
-              isValid = validationResult.isValid;}
+              isValid = validationResult.isValid;
+}
           );
         } else {
           errors = result.errors;
           warnings = result.warnings;
-          isValid = result.isValid;}
+          isValid = result.isValid;
+}
       });
     } else {
       // Basic HTML5 validation
       if (inputElement) {
         isValid = inputElement.validity.valid;
         errors = isValid ? [] : [inputElement.validationMessage];
-        warnings = [];}}}
+        warnings = [];
+}}}
   function togglePasswordVisibility() {
-    showPassword = !showPassword;}
+    showPassword = !showPassword;
+}
   function focusInput() {
     if (inputElement) {
-      inputElement.focus();}}
+      inputElement.focus();
+}}
   // Expose focus method
   export { focusInput as focus };
 
   // Reactive validation
   $: if (value !== undefined) {
-    validateField();}
+    validateField();
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -301,17 +311,22 @@
   .textarea-disabled,
   .input-disabled {
     opacity: 0.6;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .input-error,
   .textarea-error {
-    border-color: #ef4444;}
+    border-color: #ef4444;
+}
   .input-error:focus,
   .textarea-error:focus {
-    border-color: #ef4444;}
+    border-color: #ef4444;
+}
   .input-success,
   .textarea-success {
-    border-color: #10b981;}
+    border-color: #10b981;
+}
   .input-success:focus,
   .textarea-success:focus {
-    border-color: #10b981;}
+    border-color: #10b981;
+}
 </style>

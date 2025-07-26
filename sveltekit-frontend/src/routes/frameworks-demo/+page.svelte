@@ -35,9 +35,11 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
   // Handle component events
   function handleSave(event: CustomEvent) {
     console.log("Document saved:", event.detail);
-    // TODO: Save to backend}
+    // TODO: Save to backend
+}
   function handleAIResponse(event: CustomEvent) {
-    console.log("AI Response:", event.detail);}
+    console.log("AI Response:", event.detail);
+}
   onMount(() => {
     console.log("Legal Frameworks Demo loaded");
   });
@@ -355,20 +357,24 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
   /* @unocss-include */
   .demo-container {
     min-height: 100vh;
-    background: #fafafa;}
+    background: #fafafa;
+}
   .demo-header {
     background: white;
     border-bottom: 1px solid #e5e7eb;
     position: sticky;
     top: 0;
-    z-index: 10;}
+    z-index: 10;
+}
   .demo-main {
-    padding: 2rem 0;}
+    padding: 2rem 0;
+}
   :global(.framework-demo) {
     padding: 1rem;
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
-    background: #fff;}
+    background: #fff;
+}
   :global(.tab-trigger) {
     padding: 0.75rem 1rem;
     font-size: 1rem;
@@ -377,19 +383,25 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
     transition: color 0.2s;
     border-bottom: 2px solid transparent;
     display: flex;
-    align-items: center;}
+    align-items: center;
+}
   :global(.tab-trigger.active) {
     color: var(--primary-600);
-    border-bottom: 2px solid var(--primary-600);}
+    border-bottom: 2px solid var(--primary-600);
+}
   :global(.tab-content) {
-    display: none;}
+    display: none;
+}
   :global(.tab-content[data-state="active"]) {
-    display: block;}
+    display: block;
+}
   /* Ensure Pico CSS form styles work properly */
   :global(form fieldset) {
     border: none;
     padding: 0;
-    margin: 0 0 1rem 0;}
+    margin: 0 0 1rem 0;
+}
   :global(form fieldset:last-child) {
-    margin-bottom: 0;}
+    margin-bottom: 0;
+}
 </style>

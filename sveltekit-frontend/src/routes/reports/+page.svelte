@@ -14,13 +14,16 @@
       error = "Error loading reports";
       console.error("Error:", err);
     } finally {
-      loading = false;}
+      loading = false;
+}
   });
 
   function formatDate(date: Date | string) {
     if (typeof date === 'string') {
-      return new Date(date).toLocaleDateString();}
-    return date.toLocaleDateString();}
+      return new Date(date).toLocaleDateString();
+}
+    return date.toLocaleDateString();
+}
   function getStatusBadgeClass(status: string) {
     switch (status) {
       case "published":
@@ -30,7 +33,8 @@
       case "archived":
         return "badge-neutral";
       default:
-        return "badge-info";}}
+        return "badge-info";
+}}
 </script>
 
 <svelte:head>

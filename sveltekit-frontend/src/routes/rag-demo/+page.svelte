@@ -15,7 +15,8 @@
     database: boolean;
     qdrant: boolean;
     embeddings: boolean;
-    vectorSearch: boolean;}
+    vectorSearch: boolean;
+}
   let systemStatus: SystemStatus = {
     database: false,
     qdrant: false,
@@ -36,7 +37,8 @@
       type: string;
     }>;
     executionTime?: number;
-    source?: string;}
+    source?: string;
+}
   let testResults: TestResults | null = null;
   let isTestingSearch = false;
 
@@ -82,7 +84,8 @@
     } catch (error) {
       console.error("Status check failed:", error);
     } finally {
-      isLoadingStatus = false;}}
+      isLoadingStatus = false;
+}}
   async function testVectorSearch() {
     if (!testQuery.trim()) return;
 
@@ -108,19 +111,25 @@
         testResults = data.data;
       } else {
         const error = await response.json();
-        testResults = { error: error.error };}
+        testResults = { error: error.error };
+}
     } catch (error) {
       testResults = { error: "Network error" };
     } finally {
-      isTestingSearch = false;}}
+      isTestingSearch = false;
+}}
   function handleAIResponse(event: CustomEvent) {
-    console.log("AI Response:", event.detail);}
+    console.log("AI Response:", event.detail);
+}
   function handleReferenceClick(event: CustomEvent) {
-    console.log("Reference clicked:", event.detail);}
+    console.log("Reference clicked:", event.detail);
+}
   function getStatusIcon(status: boolean) {
-    return status ? CheckCircle : AlertTriangle;}
+    return status ? CheckCircle : AlertTriangle;
+}
   function getStatusColor(status: boolean) {
-    return status ? "text-green-600" : "text-red-600";}
+    return status ? "text-green-600" : "text-red-600";
+}
 </script>
 
 <svelte:head>

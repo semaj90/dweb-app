@@ -74,7 +74,8 @@
       const bVal = b[sortBy as keyof Case];
       const compare = aVal > bVal ? 1 : -1;
       return sortOrder === 'asc' ? compare : -compare;
-    });}
+    });
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -109,18 +110,22 @@
 <style>
   /* @unocss-include */
   .case-filters {
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   .filter-row {
     display: flex;
     gap: 1rem;
-    align-items: center;}
+    align-items: center;
+}
   .search-input {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ccc;
-    border-radius: 4px;}
+    border-radius: 4px;
+}
   .filter-select {
     padding: 0.5rem;
     border: 1px solid #ccc;
-    border-radius: 4px;}
+    border-radius: 4px;
+}
 </style>

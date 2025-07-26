@@ -8,7 +8,8 @@
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'}
+          'Content-Type': 'application/json'
+}
       });
       
       if (response.ok) {
@@ -18,11 +19,13 @@
       } else {
         console.error('Logout failed');
         // Redirect anyway for security
-        goto('/');}
+        goto('/');
+}
     } catch (error) {
       console.error('Logout error:', error);
       // Redirect anyway for security
-      goto('/');}
+      goto('/');
+}
   });
 </script>
 

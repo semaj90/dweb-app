@@ -1,47 +1,23 @@
 <script lang="ts">
-  import { $props } from "svelte";
-  import { ScrollArea, type WithoutChild } from "bits-ui";
-  // Svelte 5 runes, UnoCSS, nier.css, context7 best practices
-  // UnoCSS handles styling via class names; see /src/styles/uno.css for class definitions.
+	import { ScrollArea as ScrollAreaPrimitive } from "bits-ui";
+	import { cn } from "$lib/utils.js";
+	import type { ScrollAreaRootProps } from "bits-ui";
 
-  type Props = WithoutChild<ScrollArea.RootProps> & {
-    orientation?: "vertical" | "horizontal" | "both";
-    viewportClasses?: string;
-    type?: "hover" | "scroll" | "auto" | "always";
-    scrollHideDelay?: number;
-    el?: HTMLDivElement | null;
-    children?: any;
-  };
+	type Props = ScrollAreaRootProps & {
+		class?: string;
+	};
 
-  let {
-    // Use Svelte 5's $bindable for two-way binding, e.g., bind:el={...}
-    el = $bindable(null),
-    orientation = "vertical",
-    viewportClasses = "",
-    type = "hover",
-    scrollHideDelay = 600,
-    // The `children` prop is part of the type but Svelte's <slot /> is used for content projection.
-    // The `...restProps` gathers all other properties passed to this component.
-    // These are then spread onto the underlying ScrollArea.Root component,
-    // allowing you to pass any of its props directly through this wrapper.
-    ...restProps
-  }: Props = $props();
+	let { class: className, ...rest }: Props = $props();
 </script>
 
-<ScrollArea.Root bind:el={el} type={type} scrollHideDelay={scrollHideDelay} {...restProps}>
-  <ScrollArea.Viewport class={viewportClasses}>
-    <slot />
-  </ScrollArea.Viewport>
-  {#if orientation === "vertical" || orientation === "both"}
-    <ScrollArea.Scrollbar orientation="vertical">
-      <ScrollArea.Thumb />
-    </ScrollArea.Scrollbar>
-  {/if}
-  {#if orientation === "horizontal" || orientation === "both"}
-    <ScrollArea.Scrollbar orientation="horizontal">
-      <ScrollArea.Thumb />
-    </ScrollArea.Scrollbar>
-  {/if}
-  <ScrollArea.Corner />
-</ScrollArea.Root>
-
+<ScrollAreaPrimitive.Root
+	class={cn("relative overflow-hidden", className)}
+	{...rest}
+>
+	<ScrollAreaPrimitive.Viewport class="h-full w-full rounded-[inherit]">
+		<slot />
+	</ScrollAreaPrimitive.Viewport>
+	<ScrollAreaPrimitive.Scrollbar orientation="vertical" />
+	<ScrollAreaPrimitive.Scrollbar orientation="horizontal" />
+	<ScrollAreaPrimitive.Corner />
+</ScrollAreaPrimitive.Root>

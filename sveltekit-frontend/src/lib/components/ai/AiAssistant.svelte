@@ -10,7 +10,7 @@
   // UI components
   import { Button } from '$lib/components/ui';
   import { Card } from '$lib/components/ui';
-  import { useAIGlobalStore } from '$lib/stores/ai';
+  import { aiGlobalStore, aiGlobalActions } from '$lib/stores/ai';
 
   // Get user from context (SSR-safe)
   const getUser = getContext('user');
@@ -20,7 +20,13 @@
   export let caseId: string = '';
 
   // Use the global AI store (XState-based, memoized, streaming-ready)
-  const { snapshot, send, actorRef } = useAIGlobalStore();
+  // Access store state via $aiGlobalStore, send actions via aiGlobalActions.send
+  // The actorRef is not directly used in the component's script, but can be accessed via aiGlobalStore if needed.
+  // const { snapshot, send, actorRef } = useAIGlobalStore(); // Old usage
+  // Use $aiGlobalStore for reactive state and aiGlobalActions for sending events.
+  // The snapshot is implicitly available via $aiGlobalStore.
+  // The send function is available via aiGlobalActions.summarize, aiGlobalActions.retry, aiGlobalActions.reset.
+  // For direct send, you can use aiGlobalActor.send if imported.
 
   // Example: Move getSummaryCache() into onMount to avoid SSR issues
   onMount(() => {
@@ -30,15 +36,15 @@
   // Trigger summary
   function handleSummarize() {
     if (!user?.id) return;
-    send({ type: 'SUMMARIZE', caseId, evidence: contextItems, userId: user.id });
+    aiGlobalActions.summarize(caseId, contextItems, user.id);
   }
 
   // Save summary to DB
   async function saveSummary() {
-    if (!$snapshot.context.summary || !caseId) return;
+    if (!$aiGlobalStore.context.summary || !caseId) return;
     await fetch('/api/summary/save', {
       method: 'POST',
-      body: JSON.stringify({ caseId, summary: $snapshot.context.summary }),
+      body: JSON.stringify({ caseId, summary: $aiGlobalStore.context.summary }),
       headers: { 'Content-Type': 'application/json' }
     });
     // Optionally show a notification here
@@ -51,16 +57,16 @@
     <div class="flex gap-2">
       <Button
         onclick={handleSummarize}
-        disabled={!user || $snapshot.context.loading}
+        disabled={!user || $aiGlobalStore.context.loading}
         variant="primary"
         class="nier-button"
       >
-        {!user ? 'Sign in to Summarize' : ($snapshot.context.loading ? 'Summarizing...' : 'Summarize Evidence')}
+        {!user ? 'Sign in to Summarize' : ($aiGlobalStore.context.loading ? 'Summarizing...' : 'Summarize Evidence')}
       </Button>
       <Button
         onclick={saveSummary}
-        disabled={!$snapshot.context.summary || $snapshot.context.loading}
-        variant="success"
+        disabled={!$aiGlobalStore.context.summary || $aiGlobalStore.context.loading}
+        variant="primary"
         class="nier-button"
       >
         Save Summary
@@ -69,27 +75,27 @@
   </div>
 
   <div class="nier-content">
-    {#if $snapshot.context.loading}
+    {#if $aiGlobalStore.context.loading}
       <div class="nier-loading">
         <span class="nier-text-muted">Summarizing evidence...</span>
         <!-- Streaming output (if supported) -->
-        {#if $snapshot.context.stream}
-          <pre class="nier-code mt-2">{$snapshot.context.stream}</pre>
+        {#if $aiGlobalStore.context.stream}
+          <pre class="nier-code mt-2">{$aiGlobalStore.context.stream}</pre>
         {/if}
       </div>
-    {:else if $snapshot.context.error}
+    {:else if $aiGlobalStore.context.error}
       <div class="nier-error p-3 rounded">
-        <span class="text-red-600">{$snapshot.context.error}</span>
+        <span class="text-red-600">{$aiGlobalStore.context.error}</span>
       </div>
-    {:else if $snapshot.context.summary}
+    {:else if $aiGlobalStore.context.summary}
       <div class="nier-summary">
-        <pre class="nier-code whitespace-pre-wrap">{$snapshot.context.summary}</pre>
+        <pre class="nier-code whitespace-pre-wrap">{$aiGlobalStore.context.summary}</pre>
         <!-- Top 3 evidence sources (if available) -->
-        {#if $snapshot.context.sources && $snapshot.context.sources.length > 0}
+        {#if $aiGlobalStore.context.sources && $aiGlobalStore.context.sources.length > 0}
           <div class="nier-sources mt-4 pt-4 border-t border-gray-200">
             <h4 class="nier-subtitle font-semibold mb-2">Top Evidence Used:</h4>
             <ol class="nier-list space-y-1">
-              {#each $snapshot.context.sources.slice(0, 3) as item, i}
+              {#each $aiGlobalStore.context.sources.slice(0, 3) as item, i}
                 <li class="nier-list-item">
                   <span class="nier-badge">{i + 1}</span>
                   {item.title || item.id || `Evidence #${i+1}`}

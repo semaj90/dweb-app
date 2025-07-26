@@ -84,7 +84,7 @@
               {#each notification.actions as action}
                 <Button
                   size="sm"
-                  variant={action.variant || "ghost"}
+                  variant={action.variant || "secondary"}
                   on:click={() => handleAction(notification, action)}
                 >
                   {action.label}
@@ -102,7 +102,7 @@
             on:click={() => handleClose(notification)}
           >
             <span class="container mx-auto px-4">Dismiss</span>
-            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
+            <iconify-icon icon="ph:x" class="container mx-auto px-4"></iconify-icon>
           </button>
         </div>
       </div>

@@ -12,12 +12,14 @@ onMount(() => {
       language: 'javascript',
       theme: 'vs-dark',
       automaticLayout: true
-    });}
+    });
+}
 });
 
 onDestroy(() => {
   if (editor) {
-    editor.dispose();}
+    editor.dispose();
+}
 });
 </script>
 
@@ -27,5 +29,6 @@ onDestroy(() => {
   /* @unocss-include */
 /* Ensure the Monaco editor fills the container */
 :global(.monaco-editor) {
-  border-radius: 0.5rem;}
+  border-radius: 0.5rem;
+}
 </style>

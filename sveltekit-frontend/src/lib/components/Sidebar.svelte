@@ -34,7 +34,8 @@
     fuse = new Fuse(notesItems, {
       keys: ["title", "content", "tags"],
       threshold: 0.3,
-    });}
+    });
+}
   // Search results
   $: searchResults =
     searchQuery && fuse
@@ -58,21 +59,27 @@
       loki.notes.refreshStore();
 }}
   function handleMouseEnter() {
-    isHovered = true;}
+    isHovered = true;
+}
   function handleMouseLeave() {
-    isHovered = false;}
+    isHovered = false;
+}
   function togglePin() {
     isPinned = !isPinned;
-    sidebarStore.update((state) => ({ ...state, open: isPinned }));}
+    sidebarStore.update((state) => ({ ...state, open: isPinned }));
+}
   function handleSearch(event: CustomEvent) {
-    searchQuery = event.detail.query;}
+    searchQuery = event.detail.query;
+}
   function handleItemClick(item: any) {
     console.log("Item clicked:", item);
-    // Emit event or call parent function}
+    // Emit event or call parent function
+}
   function handleTabChange(tab: string) {
     activeTab = tab;
     searchQuery = "";
-    refreshData();}
+    refreshData();
+}
 </script>
 
 <div
@@ -213,10 +220,12 @@
     z-index: 20;
     pointer-events: none;
     transition: transform 0.3s ease;
-    transform: translateX(-100%);}
+    transform: translateX(-100%);
+}
   .sidebar-container.open {
     transform: translateX(0);
-    pointer-events: all;}
+    pointer-events: all;
+}
   .hover-trigger {
     position: absolute;
     top: 0;
@@ -225,7 +234,8 @@
     height: 100%;
     background: transparent;
     pointer-events: all;
-    z-index: 1;}
+    z-index: 1;
+}
   .sidebar-content {
     width: 100%;
     height: 100%;
@@ -234,25 +244,30 @@
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .sidebar-header {
     padding: 1rem;
     border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--bg-primary);}
+    background: var(--bg-primary);
+}
   .sidebar-header h3 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text-primary);}
+    color: var(--text-primary);
+}
   .header-actions {
     display: flex;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .pin-button.pinned {
     background: var(--bg-secondary);
-    color: var(--text-inverse);}
+    color: var(--text-inverse);
+}
   .pin-button,
   .close-button {
     background: transparent;
@@ -263,17 +278,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-primary);}
+    color: var(--text-primary);
+}
   .pin-button:hover,
   .close-button:hover {
-    background: var(--bg-tertiary);}
+    background: var(--bg-tertiary);
+}
   .search-section {
     padding: 1rem;
-    border-bottom: 1px solid var(--border-light);}
+    border-bottom: 1px solid var(--border-light);
+}
   .tab-list {
     display: flex;
     border-bottom: 1px solid var(--border-light);
-    background: var(--bg-primary);}
+    background: var(--bg-primary);
+}
   .tab-trigger {
     flex: 1;
     display: flex;
@@ -284,28 +303,34 @@
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.2s ease;}
+    transition: all 0.2s ease;
+}
   .tab-trigger:hover {
     background: var(--bg-tertiary);
-    color: var(--text-primary);}
+    color: var(--text-primary);
+}
   .tab-trigger.active {
     background: var(--bg-secondary);
     color: var(--text-inverse);
-    border-bottom: 2px solid var(--harvard-crimson);}
+    border-bottom: 2px solid var(--harvard-crimson);
+}
   .tab-content {
     flex: 1;
     overflow: hidden;
     display: flex;
-    flex-direction: column;}
+    flex-direction: column;
+}
   .tabs-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .tags-section {
     padding: 1rem;
     border-top: 1px solid var(--border-light);
-    background: var(--bg-primary);}
+    background: var(--bg-primary);
+}
   /* Responsive */
   @media (max-width: 768px) {
     .sidebar-container {

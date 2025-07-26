@@ -29,7 +29,8 @@
     error?: string;
     success: boolean;
     progress?: number;
-    retryCount?: number;}
+    retryCount?: number;
+}
   const dispatch = createEventDispatcher<{
     'upload-start': { files: FileList };
     'upload-progress': { progress: number; file: File };
@@ -66,7 +67,8 @@
     dragCounter++;
     if (!isDragOver) {
       isDragOver = true;
-      clearTimeout(dragLeaveTimer);}}
+      clearTimeout(dragLeaveTimer);
+}}
   function handleDragOver(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -75,7 +77,8 @@
     
     // Ensure we're allowing the drop
     if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'copy';}}
+      e.dataTransfer.dropEffect = 'copy';
+}}
   function handleDragLeave(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -88,8 +91,10 @@
     dragLeaveTimer = setTimeout(() => {
       if (dragCounter <= 0) {
         isDragOver = false;
-        dragCounter = 0;}
-    }, 50);}
+        dragCounter = 0;
+}
+    }, 50);
+}
   async function handleDrop(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -108,7 +113,8 @@
       if (autoUpload) {
         await processFiles(droppedFiles);
       } else {
-        files = droppedFiles;}}}
+        files = droppedFiles;
+}}}
   async function handleFileInput(e: Event) {
     const target = e.target as HTMLInputElement;
     if (target.files && target.files.length > 0 && !disabled) {
@@ -117,14 +123,17 @@
       if (autoUpload) {
         await processFiles(target.files);
       } else {
-        files = target.files;}}}
+        files = target.files;
+}}}
   function handleKeyDown(e: KeyboardEvent) {
     if ((e.key === 'Enter' || e.key === ' ') && !disabled) {
       e.preventDefault();
-      fileInput?.click();}}
+      fileInput?.click();
+}}
   function browseFiles() {
     if (!disabled) {
-      fileInput?.click();}}
+      fileInput?.click();
+}}
   function clearFiles() {
     files = null;
     uploadErrors = [];
@@ -135,13 +144,16 @@
     
     // Reset file input
     if (fileInput) {
-      fileInput.value = '';}}
+      fileInput.value = '';
+}}
   async function startUpload() {
     if (files && !isUploading) {
-      await processFiles(files);}}
+      await processFiles(files);
+}}
   function retryUpload() {
     if (files && !isUploading) {
-      processFiles(files);}}
+      processFiles(files);
+}}
   function removeFile(index: number) {
     if (!files || isUploading) return;
     
@@ -154,7 +166,8 @@
     files = dt.files;
     
     if (files.length === 0) {
-      clearFiles();}}
+      clearFiles();
+}}
   async function processFiles(fileList: FileList) {
     if (fileList.length === 0) return;
     
@@ -174,7 +187,8 @@
       if (validationErrors.length > 0) {
         uploadErrors = validationErrors;
         dispatch('validation-error', { errors: validationErrors });
-        throw new Error(validationErrors.join(', '));}
+        throw new Error(validationErrors.join(', '));
+}
       const fileArray = Array.from(fileList);
       
       // Process files with better progress tracking and retry logic
@@ -204,14 +218,17 @@
             
             if (retryCount < retryAttempts) {
               // Wait before retry (exponential backoff)
-              await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));}}}
+              await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
+}}}
         if (!success) {
           uploadErrors = [...uploadErrors, `${file.name}: ${lastError} (failed after ${retryAttempts} attempts)`];
           uploadResults.push({ file, error: lastError, success: false, retryCount });
-          dispatch('file-error', { file, error: lastError, index: i });}
+          dispatch('file-error', { file, error: lastError, index: i });
+}
         processedFiles = i + 1;
         uploadProgress = (processedFiles / totalFiles) * 100;
-        dispatch('upload-progress', { progress: uploadProgress, file });}
+        dispatch('upload-progress', { progress: uploadProgress, file });
+}
       const successfulFiles = uploadResults.filter(r => r.success);
       const failedFiles = uploadResults.filter(r => !r.success);
       
@@ -221,57 +238,71 @@
           results: successfulFiles.map(r => r.result),
           failed: failedFiles.length
         });
-        onUpload(fileList);}
+        onUpload(fileList);
+}
       if (failedFiles.length > 0 && successfulFiles.length === 0) {
-        throw new Error(`All ${failedFiles.length} files failed to upload`);}
+        throw new Error(`All ${failedFiles.length} files failed to upload`);
+}
     } catch (error) {
       console.error('Upload process failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       dispatch('upload-error', { error: errorMessage, errors: uploadErrors });
     } finally {
-      isUploading = false;}}
+      isUploading = false;
+}}
   function validateFiles(fileList: FileList): string[] {
     const errors: string[] = [];
     const fileArray = Array.from(fileList);
     
     // Check file count
     if (fileArray.length > maxFiles) {
-      errors.push(`Too many files selected. Maximum ${maxFiles} allowed.`);}
+      errors.push(`Too many files selected. Maximum ${maxFiles} allowed.`);
+}
     // Check each file
     fileArray.forEach((file, index) => {
       // Check file size
       if (file.size > maxFileSize) {
-        errors.push(`${file.name}: File too large (${formatFileSize(file.size)}). Maximum ${formatFileSize(maxFileSize)} allowed.`);}
+        errors.push(`${file.name}: File too large (${formatFileSize(file.size)}). Maximum ${formatFileSize(maxFileSize)} allowed.`);
+}
       // Check file type by extension
       const extension = '.' + file.name.split('.').pop()?.toLowerCase();
       if (!acceptedTypes.toLowerCase().includes(extension)) {
-        errors.push(`${file.name}: Unsupported file type (${extension}). Allowed: ${acceptedTypes}`);}
+        errors.push(`${file.name}: Unsupported file type (${extension}). Allowed: ${acceptedTypes}`);
+}
       // Check MIME type for additional security
       if (allowedMimeTypes.length > 0 && !allowedMimeTypes.includes(file.type)) {
-        errors.push(`${file.name}: Invalid MIME type (${file.type})`);}
+        errors.push(`${file.name}: Invalid MIME type (${file.type})`);
+}
       // Check for empty files
       if (file.size === 0) {
-        errors.push(`${file.name}: File is empty`);}
+        errors.push(`${file.name}: File is empty`);
+}
       // Basic file name validation
       if (file.name.length > 255) {
-        errors.push(`${file.name}: Filename too long (max 255 characters)`);}
+        errors.push(`${file.name}: Filename too long (max 255 characters)`);
+}
       // Check for potentially dangerous file names
       if (/[<>:"|?*\\\/]/.test(file.name)) {
-        errors.push(`${file.name}: Filename contains invalid characters`);}
+        errors.push(`${file.name}: Filename contains invalid characters`);
+}
       // Check for suspicious file extensions
       const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.vbs', '.js', '.jar'];
       if (suspiciousExtensions.some(ext => file.name.toLowerCase().endsWith(ext))) {
-        errors.push(`${file.name}: Potentially unsafe file type`);}
+        errors.push(`${file.name}: Potentially unsafe file type`);
+}
       // Check for null bytes in filename (potential path traversal)
       if (file.name.includes('\0')) {
-        errors.push(`${file.name}: Invalid filename characters detected`);}
+        errors.push(`${file.name}: Invalid filename characters detected`);
+}
     });
     
     // Check for duplicate files
     const duplicates = findDuplicateFiles(fileArray);
     if (duplicates.length > 0) {
-      errors.push(`Duplicate files detected: ${duplicates.join(', ')}`);}
-    return errors;}
+      errors.push(`Duplicate files detected: ${duplicates.join(', ')}`);
+}
+    return errors;
+}
   function findDuplicateFiles(files: File[]): string[] {
     const seen = new Map<string, string>();
     const duplicates: string[] = [];
@@ -281,16 +312,19 @@
       if (seen.has(key)) {
         duplicates.push(file.name);
       } else {
-        seen.set(key, file.name);}
+        seen.set(key, file.name);
+}
     });
     
-    return duplicates;}
+    return duplicates;
+}
   function formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];}
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
   async function uploadFileWithProgress(file: File, onProgress?: (progress: number) => void): Promise<any> {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
@@ -305,7 +339,8 @@
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable && onProgress) {
           const progress = (e.loaded / e.total) * 100;
-          onProgress(progress);}
+          onProgress(progress);
+}
       };
       
       xhr.onload = () => {
@@ -314,9 +349,11 @@
             const response = JSON.parse(xhr.responseText);
             resolve(response);
           } catch (e) {
-            resolve(xhr.responseText);}
+            resolve(xhr.responseText);
+}
         } else {
-          reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));}
+          reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+}
       };
       
       xhr.onerror = () => reject(new Error('Network error occurred'));
@@ -327,7 +364,8 @@
       
       xhr.open('POST', endpoint);
       xhr.send(formData);
-    });}
+    });
+}
   function getUploadEndpoint(file: File): string {
     const extension = file.name.split('.').pop()?.toLowerCase();
     
@@ -340,7 +378,8 @@
     } else if (extension && ['mp3', 'wav', 'ogg', 'mpeg'].includes(extension)) {
       return `${uploadEndpoint}audio`;
     } else {
-      throw new Error(`Unsupported file type: ${extension || 'unknown'}`);}}
+      throw new Error(`Unsupported file type: ${extension || 'unknown'}`);
+}}
   function getFileIcon(fileName: string): string {
     const extension = fileName.split('.').pop()?.toLowerCase();
     switch (extension) {
@@ -358,7 +397,8 @@
       case 'wav':
       case 'ogg':
       case 'mpeg': return 'bi-file-earmark-music';
-      default: return 'bi-file-earmark';}}
+      default: return 'bi-file-earmark';
+}}
   function getFileTypeColor(fileName: string): string {
     const extension = fileName.split('.').pop()?.toLowerCase();
     switch (extension) {
@@ -376,7 +416,8 @@
       case 'wav':
       case 'ogg':
       case 'mpeg': return 'text-success';
-      default: return 'text-secondary';}}
+      default: return 'text-secondary';
+}}
   function truncateFileName(fileName: string, maxLength: number = 25): string {
     if (fileName.length <= maxLength) return fileName;
     
@@ -384,7 +425,8 @@
     const name = fileName.substring(0, fileName.lastIndexOf('.'));
     const truncatedName = name.substring(0, maxLength - extension!.length - 4) + '...';
     
-    return `${truncatedName}.${extension}`;}
+    return `${truncatedName}.${extension}`;
+}
 </script>
 
 <div class="container mx-auto px-4" role="region" aria-label="File upload area">
@@ -633,90 +675,116 @@
 <style>
   /* @unocss-include */
   .upload-area {
-    position: relative;}
+    position: relative;
+}
   .drop-zone {
     min-height: 200px;
     transition: all 0.3s ease;
     cursor: pointer;
-    outline: none;}
+    outline: none;
+}
   .drop-zone:hover:not(.disabled) {
     border-color: var(--bs-primary) !important;
     background-color: var(--bs-light);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
   .drop-zone:focus:not(.disabled) {
     border-color: var(--bs-primary) !important;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);}
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
   .drop-zone.disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    background-color: var(--bs-light);}
+    background-color: var(--bs-light);
+}
   .upload-progress {
-    animation: fadeIn 0.3s ease-in;}
+    animation: fadeIn 0.3s ease-in;
+}
   .file-preview {
-    animation: slideUp 0.3s ease-out;}
+    animation: slideUp 0.3s ease-out;
+}
   .error-state {
-    animation: fadeIn 0.3s ease-in;}
+    animation: fadeIn 0.3s ease-in;
+}
   .default-state {
-    padding: 2rem 1rem;}
+    padding: 2rem 1rem;
+}
   .progress {
     border-radius: 10px;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .progress-bar {
-    transition: width 0.3s ease;}
+    transition: width 0.3s ease;
+}
   .card {
     transition: all 0.2s ease;
-    border-radius: 8px;}
+    border-radius: 8px;
+}
   .card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);}
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
   .spinner-border-sm {
     width: 1rem;
-    height: 1rem;}
+    height: 1rem;
+}
   .badge {
     font-size: 0.7rem;
-    padding: 0.25rem 0.5rem;}
+    padding: 0.25rem 0.5rem;
+}
   .text-truncate {
-    max-width: 150px;}
+    max-width: 150px;
+}
   /* Drag and drop visual feedback */
   .drop-zone.border-primary {
     border-color: var(--bs-primary) !important;
     background: linear-gradient(135deg, 
       rgba(13, 110, 253, 0.1), 
-      rgba(13, 110, 253, 0.05));}
+      rgba(13, 110, 253, 0.05));
+}
   .drop-zone.border-success {
     border-color: var(--bs-success) !important;
     background: linear-gradient(135deg, 
       rgba(25, 135, 84, 0.1), 
-      rgba(25, 135, 84, 0.05));}
+      rgba(25, 135, 84, 0.05));
+}
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .drop-zone {
       min-height: 150px;
-      padding: 1rem !important;}
+      padding: 1rem !important;
+}
     .default-state {
-      padding: 1rem 0.5rem;}
+      padding: 1rem 0.5rem;
+}
     .display-1 {
-      font-size: 3rem;}}
+      font-size: 3rem;
+}}
   /* Accessibility improvements */
   .drop-zone:focus-visible {
     outline: 2px solid var(--bs-primary);
-    outline-offset: 2px;}
+    outline-offset: 2px;
+}
   /* Animation keyframes */
   @keyframes fadeIn {
     from { 
       opacity: 0; 
-      transform: scale(0.95);}
+      transform: scale(0.95);
+}
     to { 
       opacity: 1; 
-      transform: scale(1);}}
+      transform: scale(1);
+}}
   @keyframes slideUp {
     from { 
       opacity: 0; 
-      transform: translateY(20px); }
+      transform: translateY(20px); 
+}
     to { 
       opacity: 1; 
-      transform: translateY(0); }}
+      transform: translateY(0); 
+}}
   /* File type specific colors */
   .text-danger { color: #dc3545 !important; }
   .text-primary { color: #0d6efd !important; }

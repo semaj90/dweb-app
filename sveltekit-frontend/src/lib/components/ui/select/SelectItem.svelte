@@ -20,7 +20,8 @@
 
   function handleClick() {
     onSelect(value);
-    open.set(false);}
+    open.set(false);
+}
 </script>
 
 <div
@@ -42,10 +43,13 @@
     font-size: 14px;
     color: #374151;
     display: flex;
-    align-items: center;}
+    align-items: center;
+}
   .select-item:hover {
-    background-color: #f3f4f6;}
+    background-color: #f3f4f6;
+}
   .select-item:focus {
     outline: none;
-    background-color: #e5e7eb;}
+    background-color: #e5e7eb;
+}
 </style>

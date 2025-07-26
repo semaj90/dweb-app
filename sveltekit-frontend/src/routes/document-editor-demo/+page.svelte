@@ -10,17 +10,22 @@
   let isReadonly = false;
 
   function handleSave(event: CustomEvent) {
-    console.log("Document saved:", event.detail);}
+    console.log("Document saved:", event.detail);
+}
   function handleAIRequest(event: CustomEvent) {
-    console.log("AI request:", event.detail);}
+    console.log("AI request:", event.detail);
+}
   function handleCitationAdded(event: CustomEvent) {
-    console.log("Citation added:", event.detail);}
+    console.log("Citation added:", event.detail);
+}
   function createNewDocument() {
     documentId = `doc-${Date.now()}`;
-    console.log("Created new document:", documentId);}
+    console.log("Created new document:", documentId);
+}
   function switchDocumentType(type: typeof selectedDocumentType) {
     selectedDocumentType = type;
-    editorTitle = `${type.charAt(0).toUpperCase() + type.slice(1)} Demo`;}
+    editorTitle = `${type.charAt(0).toUpperCase() + type.slice(1)} Demo`;
+}
 </script>
 
 <svelte:head>
@@ -101,5 +106,6 @@
   :global(body) {
     font-family:
       -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-      sans-serif;}
+      sans-serif;
+}
 </style>

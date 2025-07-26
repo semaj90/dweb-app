@@ -78,7 +78,8 @@ import type { User } from '$lib/types';
   onMount(() => {
     if (open) {
       focusInput();
-      loadConversationHistory();}
+      loadConversationHistory();
+}
   });
 
   afterUpdate(() => {
@@ -93,16 +94,20 @@ import type { User } from '$lib/types';
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.conversation) {
-          messages.set(result.conversation);}}
+          messages.set(result.conversation);
+}}
     } catch (error) {
-      console.warn("Failed to load conversation history:", error);}}
+      console.warn("Failed to load conversation history:", error);
+}}
   function focusInput() {
     tick().then(() => {
       messageInput?.focus();
-    });}
+    });
+}
   function scrollToBottom() {
     if (messagesContainer) {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;}}
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}}
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === "Enter") {
       if (event.shiftKey) {
@@ -110,12 +115,15 @@ import type { User } from '$lib/types';
         return;
       } else {
         event.preventDefault();
-        sendMessage();}
+        sendMessage();
+}
     } else if (event.key === "Escape") {
-      closeChat();}}
+      closeChat();
+}}
   function handleQuickAction(action: string) {
     currentMessage = action;
-    sendMessage();}
+    sendMessage();
+}
   async function sendMessage() {
     if (!currentMessage.trim() || isGenerating) return;
 
@@ -176,14 +184,18 @@ import type { User } from '$lib/types';
 
         // Dispatch events for suggestions and actions
         if (result.suggestions?.length > 0) {
-          dispatch("suggestionsReceived", result.suggestions);}
+          dispatch("suggestionsReceived", result.suggestions);
+}
         if (result.actions?.length > 0) {
-          dispatch("actionsReceived", result.actions);}
+          dispatch("actionsReceived", result.actions);
+}
         // Store message embedding for future context
         if (aiMessage.content) {
-          storeMessageEmbedding(aiMessage.content, "assistant");}
+          storeMessageEmbedding(aiMessage.content, "assistant");
+}
       } else {
-        throw new Error(result.error || "Failed to get AI response");}
+        throw new Error(result.error || "Failed to get AI response");
+}
     } catch (error) {
       console.error("Failed to send message:", error);
 
@@ -201,7 +213,8 @@ import type { User } from '$lib/types';
     } finally {
       isGenerating = false;
       scrollToBottom();
-      focusInput();}}
+      focusInput();
+}}
   async function storeMessageEmbedding(
     content: string,
     role: "user" | "assistant"
@@ -223,7 +236,8 @@ import type { User } from '$lib/types';
         }),
       });
     } catch (error) {
-      console.warn("Failed to store message embedding:", error);}}
+      console.warn("Failed to store message embedding:", error);
+}}
   async function sendMessageLegacy() {
     if (!currentMessage.trim() || isGenerating) return;
 
@@ -271,7 +285,8 @@ import type { User } from '$lib/types';
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);}
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+}
       const data = await response.json();
 
       // Remove typing indicator and add real response
@@ -318,21 +333,26 @@ import type { User } from '$lib/types';
     } finally {
       isGenerating = false;
       await tick();
-      focusInput();}}
+      focusInput();
+}}
   function closeChat() {
     open = false;
-    dispatch("close");}
+    dispatch("close");
+}
   function clearConversation() {
     messages.set([]);
-    conversationId = crypto.randomUUID();}
+    conversationId = crypto.randomUUID();
+}
   function formatTimestamp(timestamp: Date): string {
     return new Intl.DateTimeFormat("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    }).format(timestamp);}
+    }).format(timestamp);
+}
   function handleActionClick(action: any) {
-    dispatch("action", action);}
+    dispatch("action", action);
+}
 </script>
 
 {#if open}
@@ -571,7 +591,8 @@ import type { User } from '$lib/types';
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    padding: 1rem;}
+    padding: 1rem;
+}
   .chat-container {
     background: white;
     border-radius: 12px;
@@ -582,7 +603,8 @@ import type { User } from '$lib/types';
     max-height: 600px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .chat-header {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid #e5e7eb;
@@ -590,29 +612,35 @@ import type { User } from '$lib/types';
     color: white;
     display: flex;
     align-items: center;
-    justify-content: space-between;}
+    justify-content: space-between;
+}
   .header-content {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex: 1;}
+    flex: 1;
+}
   .title-section {
     display: flex;
     align-items: center;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .ai-indicator {
     padding: 0.5rem;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     display: flex;
     align-items: center;
-    justify-content: center;}
+    justify-content: center;
+}
   .chat-header h2 {
     margin: 0;
     font-size: 1.125rem;
-    font-weight: 600;}
+    font-weight: 600;
+}
   .mode-section {
-    position: relative;}
+    position: relative;
+}
   .mode-button {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -624,9 +652,11 @@ import type { User } from '$lib/types';
     gap: 0.5rem;
     font-size: 0.875rem;
     cursor: pointer;
-    transition: all 0.2s;}
+    transition: all 0.2s;
+}
   .mode-button:hover {
-    background: rgba(255, 255, 255, 0.2);}
+    background: rgba(255, 255, 255, 0.2);
+}
   .mode-dropdown {
     position: absolute;
     top: 100%;
@@ -637,7 +667,8 @@ import type { User } from '$lib/types';
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     z-index: 10;
-    min-width: 200px;}
+    min-width: 200px;
+}
   .mode-option {
     width: 100%;
     padding: 0.75rem;
@@ -648,25 +679,32 @@ import type { User } from '$lib/types';
     gap: 0.75rem;
     cursor: pointer;
     transition: background 0.2s;
-    color: #374151;}
+    color: #374151;
+}
   .mode-option:hover {
-    background: #f3f4f6;}
+    background: #f3f4f6;
+}
   .mode-option.selected {
     background: #e0e7ff;
-    color: #3730a3;}
+    color: #3730a3;
+}
   .mode-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;}
+    align-items: flex-start;
+}
   .mode-name {
     font-weight: 500;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .mode-desc {
     font-size: 0.75rem;
-    color: #6b7280;}
+    color: #6b7280;
+}
   .header-actions {
     display: flex;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .header-action {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -677,28 +715,35 @@ import type { User } from '$lib/types';
     transition: all 0.2s;
     display: flex;
     align-items: center;
-    justify-content: center;}
+    justify-content: center;
+}
   .header-action:hover {
-    background: rgba(255, 255, 255, 0.2);}
+    background: rgba(255, 255, 255, 0.2);
+}
   .header-action:disabled {
     opacity: 0.5;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .messages-container {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;}
+    gap: 1rem;
+}
   .message {
     display: flex;
     gap: 0.75rem;
-    max-width: 85%;}
+    max-width: 85%;
+}
   .message.user {
     align-self: flex-end;
-    flex-direction: row-reverse;}
+    flex-direction: row-reverse;
+}
   .message.assistant {
-    align-self: flex-start;}
+    align-self: flex-start;
+}
   .message-avatar {
     width: 32px;
     height: 32px;
@@ -706,72 +751,91 @@ import type { User } from '$lib/types';
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   .message.user .message-avatar {
     background: #3b82f6;
-    color: white;}
+    color: white;
+}
   .message.assistant .message-avatar {
     background: #10b981;
-    color: white;}
+    color: white;
+}
   .message-content {
     background: #f8fafc;
     padding: 0.75rem 1rem;
     border-radius: 12px;
-    flex: 1;}
+    flex: 1;
+}
   .message.user .message-content {
     background: #3b82f6;
-    color: white;}
+    color: white;
+}
   .message.error .message-content {
     background: #fef2f2;
     border: 1px solid #fecaca;
-    color: #dc2626;}
+    color: #dc2626;
+}
   .message-text {
     line-height: 1.5;
-    white-space: pre-wrap;}
+    white-space: pre-wrap;
+}
   .typing-indicator {
     display: flex;
     align-items: center;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .typing-dots {
     display: flex;
-    gap: 4px;}
+    gap: 4px;
+}
   .typing-dots span {
     width: 6px;
     height: 6px;
     background: #9ca3af;
     border-radius: 50%;
-    animation: typing 1.4s infinite;}
+    animation: typing 1.4s infinite;
+}
   .typing-dots span:nth-child(2) {
-    animation-delay: 0.2s;}
+    animation-delay: 0.2s;
+}
   .typing-dots span:nth-child(3) {
-    animation-delay: 0.4s;}
+    animation-delay: 0.4s;
+}
   .typing-text {
     color: #6b7280;
     font-style: italic;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .suggestions {
     margin-top: 0.75rem;
     padding-top: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);}
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
   .message.assistant .suggestions {
-    border-top-color: #e5e7eb;}
+    border-top-color: #e5e7eb;
+}
   .suggestions h4 {
     margin: 0 0 0.5rem 0;
     font-size: 0.875rem;
     font-weight: 600;
-    opacity: 0.9;}
+    opacity: 0.9;
+}
   .suggestions ul {
     margin: 0;
     padding-left: 1rem;
-    font-size: 0.875rem;}
+    font-size: 0.875rem;
+}
   .suggestions li {
     margin-bottom: 0.25rem;
-    opacity: 0.9;}
+    opacity: 0.9;
+}
   .actions {
     margin-top: 0.75rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .action-button {
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -780,37 +844,46 @@ import type { User } from '$lib/types';
     border-radius: 6px;
     font-size: 0.75rem;
     cursor: pointer;
-    transition: all 0.2s;}
+    transition: all 0.2s;
+}
   .message.assistant .action-button {
     background: #e5e7eb;
     border-color: #d1d5db;
-    color: #374151;}
+    color: #374151;
+}
   .action-button:hover {
-    background: rgba(255, 255, 255, 0.3);}
+    background: rgba(255, 255, 255, 0.3);
+}
   .message.assistant .action-button:hover {
-    background: #d1d5db;}
+    background: #d1d5db;
+}
   .message-meta {
     margin-top: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 0.75rem;
-    opacity: 0.7;}
+    opacity: 0.7;
+}
   .context-indicator {
     display: flex;
     align-items: center;
-    gap: 0.25rem;}
+    gap: 0.25rem;
+}
   .quick-actions {
     padding: 2rem;
-    text-align: center;}
+    text-align: center;
+}
   .quick-actions h3 {
     margin: 0 0 1.5rem 0;
     color: #374151;
-    font-size: 1.125rem;}
+    font-size: 1.125rem;
+}
   .action-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;}
+    gap: 1rem;
+}
   .quick-action {
     background: #f8fafc;
     border: 1px solid #e5e7eb;
@@ -822,23 +895,28 @@ import type { User } from '$lib/types';
     gap: 0.5rem;
     cursor: pointer;
     transition: all 0.2s;
-    color: #374151;}
+    color: #374151;
+}
   .quick-action:hover {
     background: #f1f5f9;
     border-color: #cbd5e1;
-    transform: translateY(-1px);}
+    transform: translateY(-1px);
+}
   .quick-action:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none;}
+    transform: none;
+}
   .input-area {
     padding: 1rem 1.5rem;
     border-top: 1px solid #e5e7eb;
-    background: #f8fafc;}
+    background: #f8fafc;
+}
   .input-container {
     display: flex;
     gap: 0.75rem;
-    align-items: flex-end;}
+    align-items: flex-end;
+}
   .message-input {
     flex: 1;
     border: 1px solid #d1d5db;
@@ -851,14 +929,17 @@ import type { User } from '$lib/types';
     min-height: 44px;
     max-height: 120px;
     background: white;
-    transition: border-color 0.2s;}
+    transition: border-color 0.2s;
+}
   .message-input:focus {
     outline: none;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);}
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
   .message-input:disabled {
     background: #f3f4f6;
-    color: #9ca3af;}
+    color: #9ca3af;
+}
   .send-button {
     background: #3b82f6;
     border: none;
@@ -871,46 +952,60 @@ import type { User } from '$lib/types';
     align-items: center;
     justify-content: center;
     min-width: 44px;
-    height: 44px;}
+    height: 44px;
+}
   .send-button:hover {
-    background: #2563eb;}
+    background: #2563eb;
+}
   .send-button:disabled {
     background: #9ca3af;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .loading-spinner {
     width: 20px;
     height: 20px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-top: 2px solid white;
     border-radius: 50%;
-    animation: spin 1s linear infinite;}
+    animation: spin 1s linear infinite;
+}
   @keyframes typing {
     0%,
     60%,
     100% {
-      transform: translateY(0);}
+      transform: translateY(0);
+}
     30% {
-      transform: translateY(-10px);}}
+      transform: translateY(-10px);
+}}
   @keyframes spin {
     0% {
-      transform: rotate(0deg);}
+      transform: rotate(0deg);
+}
     100% {
-      transform: rotate(360deg);}}
+      transform: rotate(360deg);
+}}
   /* Responsive design */
   @media (max-width: 768px) {
     .chat-overlay {
-      padding: 0.5rem;}
+      padding: 0.5rem;
+}
     .chat-container {
       height: 90vh;
-      max-height: none;}
+      max-height: none;
+}
     .chat-header {
-      padding: 1rem;}
+      padding: 1rem;
+}
     .header-content {
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.75rem;}
+      gap: 0.75rem;
+}
     .action-grid {
-      grid-template-columns: 1fr;}
+      grid-template-columns: 1fr;
+}
     .message {
-      max-width: 95%;}}
+      max-width: 95%;
+}}
 </style>

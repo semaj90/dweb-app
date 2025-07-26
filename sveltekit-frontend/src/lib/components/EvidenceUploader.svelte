@@ -25,10 +25,12 @@
 
   function handleDragOver(e: DragEvent) {
     e.preventDefault();
-    dragActive = true;}
+    dragActive = true;
+}
   function handleDragLeave(e: DragEvent) {
     e.preventDefault();
-    dragActive = false;}
+    dragActive = false;
+}
   function handleDrop(e: DragEvent) {
     e.preventDefault();
     dragActive = false;
@@ -36,12 +38,14 @@
     const droppedFiles = e.dataTransfer?.files;
     if (droppedFiles) {
       files = droppedFiles;
-      handleFileUpload();}}
+      handleFileUpload();
+}}
   function handleFileSelect(e: Event) {
     const input = e.target as HTMLInputElement;
     files = input.files;
     if (files) {
-      handleFileUpload();}}
+      handleFileUpload();
+}}
   async function handleFileUpload() {
     if (!files || files.length === 0) return;
 
@@ -56,11 +60,13 @@
         // Validate file type
         if (!allAllowedTypes.includes(file.type)) {
           uploadStatus.set(`Unsupported file type: ${file.type}`);
-          continue;}
+          continue;
+}
         // Validate file size
         if (file.size > maxFileSize) {
           uploadStatus.set(`File too large: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
-          continue;}
+          continue;
+}
         uploadStatus.set(`Uploading ${file.name}...`);
 
         const formData = new FormData();
@@ -85,7 +91,8 @@
           });
         } else {
           const error = await response.json();
-          uploadStatus.set(`Upload failed: ${error.error}`);}}
+          uploadStatus.set(`Upload failed: ${error.error}`);
+}}
       uploadStatus.set('Upload complete');
       setTimeout(() => {
         uploadStatus.set('');
@@ -96,25 +103,29 @@
       uploadStatus.set(`Upload error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       uploading = false;
-      files = null;}}
+      files = null;
+}}
   function getEvidenceType(mimeType: string): string {
     if (allowedTypes.images.includes(mimeType)) return 'photograph';
     if (allowedTypes.videos.includes(mimeType)) return 'video';
     if (allowedTypes.documents.includes(mimeType)) return 'document';
     if (allowedTypes.audio.includes(mimeType)) return 'audio';
-    return 'physical';}
+    return 'physical';
+}
   function getFileIcon(mimeType: string): string {
     if (allowedTypes.images.includes(mimeType)) return '🖼️';
     if (allowedTypes.videos.includes(mimeType)) return '🎥';
     if (allowedTypes.documents.includes(mimeType)) return '📄';
     if (allowedTypes.audio.includes(mimeType)) return '🎵';
-    return '📁';}
+    return '📁';
+}
   function formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];}
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -191,7 +202,8 @@
 <style>
   /* @unocss-include */
   .evidence-uploader {
-    width: 100%;}
+    width: 100%;
+}
   .upload-zone {
     border: 2px dashed #ccc;
     border-radius: 12px;
@@ -199,92 +211,116 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: var(--background-alt, #f8f9fa);}
+    background: var(--background-alt, #f8f9fa);
+}
   .upload-zone:hover {
     border-color: var(--primary, #007bff);
-    background: var(--background-hover, #e9ecef);}
+    background: var(--background-hover, #e9ecef);
+}
   .upload-zone.drag-active {
     border-color: var(--primary, #007bff);
     background: var(--primary-light, #e7f3ff);
-    transform: scale(1.02);}
+    transform: scale(1.02);
+}
   .upload-zone.uploading {
     border-color: var(--warning, #ffc107);
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .upload-prompt .upload-icon {
     font-size: 3rem;
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   .upload-prompt h3 {
     margin: 0 0 0.5rem 0;
-    color: var(--text-primary, #333);}
+    color: var(--text-primary, #333);
+}
   .upload-prompt p {
     margin: 0 0 1rem 0;
-    color: var(--text-secondary, #666);}
+    color: var(--text-secondary, #666);
+}
   .file-types {
     display: flex;
     gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   .file-type {
     padding: 0.25rem 0.5rem;
     background: var(--surface, #fff);
     border-radius: 4px;
     font-size: 0.875rem;
-    color: var(--text-secondary, #666);}
+    color: var(--text-secondary, #666);
+}
   .size-limit {
     font-size: 0.875rem;
-    color: var(--text-muted, #999);}
+    color: var(--text-muted, #999);
+}
   .upload-progress {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;}
+    gap: 1rem;
+}
   .upload-spinner {
     font-size: 2rem;
-    animation: spin 1s linear infinite;}
+    animation: spin 1s linear infinite;
+}
   @keyframes spin {
     from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }}
+    to { transform: rotate(360deg); }
+}
   .upload-message {
     font-weight: 500;
-    color: var(--text-primary, #333);}
+    color: var(--text-primary, #333);
+}
   .progress-bar {
     width: 100%;
     max-width: 300px;
     height: 8px;
     background: var(--surface, #e9ecef);
     border-radius: 4px;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .progress-fill {
     height: 100%;
     background: var(--primary, #007bff);
-    transition: width 0.3s ease;}
+    transition: width 0.3s ease;
+}
   .file-preview {
     margin-top: 1rem;
     padding: 1rem;
     background: var(--surface, #fff);
     border-radius: 8px;
-    border: 1px solid var(--border, #dee2e6);}
+    border: 1px solid var(--border, #dee2e6);
+}
   .file-preview h4 {
     margin: 0 0 1rem 0;
-    color: var(--text-primary, #333);}
+    color: var(--text-primary, #333);
+}
   .file-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border-light, #f1f3f4);}
+    border-bottom: 1px solid var(--border-light, #f1f3f4);
+}
   .file-item:last-child {
-    border-bottom: none;}
+    border-bottom: none;
+}
   .file-icon {
-    font-size: 1.5rem;}
+    font-size: 1.5rem;
+}
   .file-info {
-    flex: 1;}
+    flex: 1;
+}
   .file-name {
     font-weight: 500;
-    color: var(--text-primary, #333);}
+    color: var(--text-primary, #333);
+}
   .file-meta {
     font-size: 0.875rem;
     color: var(--text-secondary, #666);
-    margin-top: 0.25rem;}
+    margin-top: 0.25rem;
+}
 </style>

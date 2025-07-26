@@ -68,35 +68,44 @@
     uploadedChunks?: number;
     totalChunks?: number;
     url?: string;
-    thumbnailUrl?: string;}
+    thumbnailUrl?: string;
+}
   onMount(() => {
     if (browser && enablePasteUpload) {
-      document.addEventListener("paste", handlePaste);}
+      document.addEventListener("paste", handlePaste);
+}
     return () => {
       if (browser && enablePasteUpload) {
-        document.removeEventListener("paste", handlePaste);}
+        document.removeEventListener("paste", handlePaste);
+}
       if (recordingStream) {
-        recordingStream.getTracks().forEach((track) => track.stop());}
+        recordingStream.getTracks().forEach((track) => track.stop());
+}
     };
   });
 
   function generateId(): string {
-    return Math.random().toString(36).substr(2, 9);}
+    return Math.random().toString(36).substr(2, 9);
+}
   function handleFileSelect(event: Event) {
     const target = event.target as HTMLInputElement;
     if (target.files) {
-      addFiles(Array.from(target.files));}}
+      addFiles(Array.from(target.files));
+}}
   function handleDrop(event: DragEvent) {
     event.preventDefault();
     isDragOver = false;
 
     const droppedFiles = Array.from(event.dataTransfer?.files || []);
-    addFiles(droppedFiles);}
+    addFiles(droppedFiles);
+}
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
-    isDragOver = true;}
+    isDragOver = true;
+}
   function handleDragLeave() {
-    isDragOver = false;}
+    isDragOver = false;
+}
   function handlePaste(event: ClipboardEvent) {
     if (!enablePasteUpload || disabled) return;
 
@@ -112,7 +121,8 @@
         type: "info",
         title: "Files Pasted",
         message: `${files.length} file(s) added from clipboard`,
-      });}}
+      });
+}}
   async function addFiles(newFiles: File[]) {
     if (disabled) return;
 
@@ -123,7 +133,8 @@
         title: "Too Many Files",
         message: `Maximum ${maxFiles} files allowed`,
       });
-      return;}
+      return;
+}
     // Validate and process files
     const validFiles: FileUploadItem[] = [];
 
@@ -138,7 +149,8 @@
           title: "Invalid File Type",
           message: `${file.name} is not a supported file type`,
         });
-        continue;}
+        continue;
+}
       // Validate file size
       if (file.size > maxFileSize) {
         notifications.add({
@@ -146,7 +158,8 @@
           title: "File Too Large",
           message: `${file.name} exceeds maximum size of ${formatFileSize(maxFileSize)}`,
         });
-        continue;}
+        continue;
+}
       // Create file item
       const fileItem: FileUploadItem = {
         id: generateId(),
@@ -160,8 +173,10 @@
 
       // Generate preview if enabled
       if (enablePreview && file.type.startsWith("image/")) {
-        fileItem.preview = await generatePreview(file);}
-      validFiles.push(fileItem);}
+        fileItem.preview = await generatePreview(file);
+}
+      validFiles.push(fileItem);
+}
     // Check total size
     const totalSize = [...files, ...validFiles].reduce(
       (sum, item) => sum + item.size,
@@ -173,20 +188,24 @@
         title: "Total Size Exceeded",
         message: `Total size cannot exceed ${formatFileSize(maxTotalSize)}`,
       });
-      return;}
+      return;
+}
     files = [...files, ...validFiles];
 
     if (autoUpload) {
-      uploadFiles(validFiles.map((f) => f.id));}
+      uploadFiles(validFiles.map((f) => f.id));
+}
     // Announce to screen reader
     FocusManager.announceToScreenReader(
       `${validFiles.length} file(s) added. Total: ${files.length} files`
     );
 
-    dispatch("filesAdded", { files: validFiles });}
+    dispatch("filesAdded", { files: validFiles });
+}
   async function compressFile(file: File): Promise<File> {
     if (!enableCompression || !file.type.startsWith("image/")) {
-      return file;}
+      return file;
+}
     return new Promise((resolve) => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
@@ -201,7 +220,8 @@
         if (width > maxWidth || height > maxHeight) {
           const ratio = Math.min(maxWidth / width, maxHeight / height);
           width *= ratio;
-          height *= ratio;}
+          height *= ratio;
+}
         canvas.width = width;
         canvas.height = height;
 
@@ -216,7 +236,8 @@
               });
               resolve(compressedFile);
             } else {
-              resolve(file);}
+              resolve(file);
+}
           },
           file.type,
           compressionQuality
@@ -225,14 +246,16 @@
 
       img.onerror = () => resolve(file);
       img.src = URL.createObjectURL(file);
-    });}
+    });
+}
   async function generatePreview(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = reject;
       reader.readAsDataURL(file);
-    });}
+    });
+}
   async function uploadFiles(fileIds?: string[]) {
     const filesToUpload = fileIds
       ? files.filter((f) => fileIds.includes(f.id))
@@ -243,11 +266,13 @@
     isUploading = true;
 
     for (const fileItem of filesToUpload) {
-      await uploadFile(fileItem);}
+      await uploadFile(fileItem);
+}
     isUploading = false;
     updateTotalProgress();
 
-    dispatch("uploadComplete", { files: filesToUpload });}
+    dispatch("uploadComplete", { files: filesToUpload });
+}
   async function uploadFile(fileItem: FileUploadItem) {
     fileItem.status = "uploading";
     fileItem.progress = 0;
@@ -256,7 +281,8 @@
       if (enableChunking && fileItem.size > chunkSize) {
         await uploadFileInChunks(fileItem);
       } else {
-        await uploadFileWhole(fileItem);}
+        await uploadFileWhole(fileItem);
+}
       fileItem.status = "success";
       fileItem.progress = 100;
 
@@ -273,8 +299,10 @@
         type: "error",
         title: "Upload Failed",
         message: `Failed to upload ${fileItem.name}: ${fileItem.error}`,
-      });}
-    updateTotalProgress();}
+      });
+}
+    updateTotalProgress();
+}
   async function uploadFileWhole(fileItem: FileUploadItem) {
     const formData = new FormData();
     formData.append("file", fileItem.file);
@@ -286,10 +314,12 @@
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);}
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+}
     const result = await response.json();
     fileItem.url = result.url;
-    fileItem.thumbnailUrl = result.thumbnailUrl;}
+    fileItem.thumbnailUrl = result.thumbnailUrl;
+}
   async function uploadFileInChunks(fileItem: FileUploadItem) {
     const totalChunks = Math.ceil(fileItem.size / chunkSize);
     fileItem.totalChunks = totalChunks;
@@ -313,9 +343,11 @@
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);}
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+}
       fileItem.uploadedChunks = chunkIndex + 1;
-      fileItem.progress = (fileItem.uploadedChunks / totalChunks) * 100;}
+      fileItem.progress = (fileItem.uploadedChunks / totalChunks) * 100;
+}
     // Finalize chunked upload
     const finalizeResponse = await fetch(`${uploadUrl}/finalize`, {
       method: "POST",
@@ -328,42 +360,50 @@
     });
 
     if (!finalizeResponse.ok) {
-      throw new Error("Failed to finalize upload");}
+      throw new Error("Failed to finalize upload");
+}
     const result = await finalizeResponse.json();
     fileItem.url = result.url;
-    fileItem.thumbnailUrl = result.thumbnailUrl;}
+    fileItem.thumbnailUrl = result.thumbnailUrl;
+}
   function updateTotalProgress() {
     if (files.length === 0) {
       totalProgress = 0;
-      return;}
+      return;
+}
     const totalProgressSum = files.reduce(
       (sum, file) => sum + file.progress,
       0
     );
-    totalProgress = totalProgressSum / files.length;}
+    totalProgress = totalProgressSum / files.length;
+}
   function removeFile(fileId: string) {
     files = files.filter((f) => f.id !== fileId);
     updateTotalProgress();
 
     FocusManager.announceToScreenReader("File removed");
-    dispatch("fileRemoved", { fileId });}
+    dispatch("fileRemoved", { fileId });
+}
   function retryUpload(fileId: string) {
     const fileItem = files.find((f) => f.id === fileId);
     if (fileItem) {
       fileItem.status = "pending";
       fileItem.progress = 0;
       fileItem.error = undefined;
-      uploadFiles([fileId]);}}
+      uploadFiles([fileId]);
+}}
   // Wrapper functions to handle event propagation
   function handleCameraCaptureClick(event: CustomEvent | Event) {
     event.stopPropagation();
-    startCameraCapture();}
+    startCameraCapture();
+}
   function handleAudioRecordingClick(event: CustomEvent | Event) {
     event.stopPropagation();
     if (isRecording) {
       stopAudioRecording();
     } else {
-      startAudioRecording();}}
+      startAudioRecording();
+}}
   async function startCameraCapture() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -390,11 +430,13 @@
         type: "error",
         title: "Camera Error",
         message: "Could not access camera",
-      });}}
+      });
+}}
   async function startAudioRecording() {
     if (isRecording) {
       stopAudioRecording();
-      return;}
+      return;
+}
     try {
       recordingStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -427,7 +469,8 @@
         type: "error",
         title: "Recording Error",
         message: "Could not start audio recording",
-      });}}
+      });
+}}
   function stopAudioRecording() {
     if (mediaRecorder && isRecording) {
       mediaRecorder.stop();
@@ -435,12 +478,14 @@
 
       if (recordingStream) {
         recordingStream.getTracks().forEach((track) => track.stop());
-        recordingStream = null;}
+        recordingStream = null;
+}
       notifications.add({
         type: "success",
         title: "Recording Complete",
         message: "Audio recording saved",
-      });}}
+      });
+}}
   function formatFileSize(bytes: number): string {
     const units = ["B", "KB", "MB", "GB"];
     let size = bytes;
@@ -448,13 +493,16 @@
 
     while (size >= 1024 && unitIndex < units.length - 1) {
       size /= 1024;
-      unitIndex++;}
-    return `${Math.round(size * 100) / 100} ${units[unitIndex]}`;}
+      unitIndex++;
+}
+    return `${Math.round(size * 100) / 100} ${units[unitIndex]}`;
+}
   function getFileIcon(type: string) {
     if (type.startsWith("image/")) return ImageIcon;
     if (type.startsWith("video/")) return Video;
     if (type.startsWith("text/") || type.includes("document")) return FileText;
-    return FileIcon;}
+    return FileIcon;
+}
   function getStatusColor(status: string) {
     switch (status) {
       case "success":
@@ -464,7 +512,8 @@
       case "uploading":
         return "text-blue-600";
       default:
-        return "text-gray-600";}}
+        return "text-gray-600";
+}}
 </script>
 
 <div class="container mx-auto px-4" class:disabled>
@@ -484,7 +533,7 @@
     on:keydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
-        fileInput.click();}
+        fileInput.click();
       }
     }}
   >
@@ -694,7 +743,8 @@
 <style>
   /* @unocss-include */
   .advanced-file-upload {
-    width: 100%;}
+    width: 100%;
+}
   .drop-zone {
     border: 2px dashed #d1d5db;
     border-radius: 12px;
@@ -702,93 +752,114 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    background: #fafafa;}
+    background: #fafafa;
+}
   .drop-zone:hover:not(.disabled) {
     border-color: #3b82f6;
-    background: #eff6ff;}
+    background: #eff6ff;
+}
   .drop-zone.drag-over {
     border-color: #3b82f6;
     background: #eff6ff;
-    transform: scale(1.02);}
+    transform: scale(1.02);
+}
   .drop-zone.disabled {
     opacity: 0.6;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
   .drop-zone:focus {
     outline: 2px solid #3b82f6;
-    outline-offset: 2px;}
+    outline-offset: 2px;
+}
   .upload-icon {
     margin-bottom: 1rem;
-    color: #6b7280;}
+    color: #6b7280;
+}
   .upload-actions {
     display: flex;
     gap: 0.75rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 1rem;}
+    margin-top: 1rem;
+}
   .file-list {
     margin-top: 2rem;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .file-list-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;}
+    border-bottom: 1px solid #e5e7eb;
+}
   .file-list-actions {
     display: flex;
-    gap: 0.5rem;}
+    gap: 0.5rem;
+}
   .total-progress {
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 1rem;
     background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;}
+    border-bottom: 1px solid #e5e7eb;
+}
   .progress-bar {
     flex: 1;
     height: 6px;
     background: #e5e7eb;
     border-radius: 3px;
-    overflow: hidden;}
+    overflow: hidden;
+}
   .progress-fill {
     height: 100%;
     background: #3b82f6;
-    transition: width 0.3s ease;}
+    transition: width 0.3s ease;
+}
   .progress-text {
     font-size: 0.875rem;
     font-weight: 500;
     color: #6b7280;
     min-width: 3rem;
-    text-align: right;}
+    text-align: right;
+}
   .files {
     max-height: 400px;
-    overflow-y: auto;}
+    overflow-y: auto;
+}
   .file-item {
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 1rem;
     border-bottom: 1px solid #e5e7eb;
-    transition: background-color 0.2s ease;}
+    transition: background-color 0.2s ease;
+}
   .file-item:last-child {
-    border-bottom: none;}
+    border-bottom: none;
+}
   .file-item:hover {
-    background: #f9fafb;}
+    background: #f9fafb;
+}
   .file-item.uploading {
-    background: #eff6ff;}
+    background: #eff6ff;
+}
   .file-preview {
     width: 48px;
     height: 48px;
     border-radius: 6px;
     overflow: hidden;
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   .file-preview img {
     width: 100%;
     height: 100%;
-    object-fit: cover;}
+    object-fit: cover;
+}
   .file-icon {
     width: 48px;
     height: 48px;
@@ -798,70 +869,88 @@
     background: #f3f4f6;
     border-radius: 6px;
     color: #6b7280;
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   .file-info {
     flex: 1;
-    min-width: 0;}
+    min-width: 0;
+}
   .file-name {
     font-weight: 500;
     color: #111827;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    margin-bottom: 0.25rem;}
+    margin-bottom: 0.25rem;
+}
   .file-meta {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     font-size: 0.875rem;
-    color: #6b7280;}
+    color: #6b7280;
+}
   .file-error {
     color: #ef4444;
     display: flex;
-    align-items: center;}
+    align-items: center;
+}
   .file-progress {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-top: 0.5rem;}
+    margin-top: 0.5rem;
+}
   .file-progress .progress-bar {
-    height: 4px;}
+    height: 4px;
+}
   .file-progress .progress-text {
     font-size: 0.75rem;
-    min-width: 2.5rem;}
+    min-width: 2.5rem;
+}
   .file-actions {
     display: flex;
     gap: 0.25rem;
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   /* Responsive design */
   @media (max-width: 640px) {
     .drop-zone {
-      padding: 2rem 1rem;}
+      padding: 2rem 1rem;
+}
     .upload-actions {
       flex-direction: column;
-      align-items: center;}
+      align-items: center;
+}
     .file-list-header {
       flex-direction: column;
       align-items: stretch;
-      gap: 1rem;}
+      gap: 1rem;
+}
     .file-item {
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.75rem;}
+      gap: 0.75rem;
+}
     .file-actions {
-      align-self: flex-end;}}
+      align-self: flex-end;
+}}
   /* High contrast mode */
   @media (prefers-contrast: high) {
     .drop-zone {
-      border-width: 3px;}
+      border-width: 3px;
+}
     .file-item {
-      border-bottom-width: 2px;}}
+      border-bottom-width: 2px;
+}}
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .drop-zone,
     .file-item,
     .progress-fill {
-      transition: none !important;}
+      transition: none !important;
+}
     .drop-zone.drag-over {
-      transform: none;}}
+      transform: none;
+}}
 </style>

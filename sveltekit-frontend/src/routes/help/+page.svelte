@@ -18,7 +18,8 @@ import type { User } from '$lib/types/user';
     description: string;
     duration: string;
     popularity: number;
-    type: string;}
+    type: string;
+}
   // Help state
   let activeCategory = "getting-started";
   let searchQuery = "";
@@ -405,7 +406,8 @@ Build on previous responses:
     if (activeCategory !== "all") {
       results = results.filter(
         (article) => article.category === activeCategory
-      );}
+      );
+}
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -414,11 +416,13 @@ Build on previous responses:
           article.title.toLowerCase().includes(query) ||
           article.description.toLowerCase().includes(query) ||
           article.content.toLowerCase().includes(query)
-      );}
+      );
+}
     // Sort by popularity
     results = results.sort((a, b) => b.popularity - a.popularity);
 
-    filteredArticles = results;}
+    filteredArticles = results;
+}
   function getTypeIcon(type: string) {
     switch (type) {
       case "video":
@@ -426,7 +430,8 @@ Build on previous responses:
       case "interactive":
         return Play;
       default:
-        return Book;}}
+        return Book;
+}}
   function getTypeColor(type: string) {
     switch (type) {
       case "video":
@@ -434,9 +439,11 @@ Build on previous responses:
       case "interactive":
         return "text-blue-600";
       default:
-        return "text-gray-600";}}
+        return "text-gray-600";
+}}
   $: {
-    filterArticles();}
+    filterArticles();
+}
 </script>
 
 <svelte:head>
@@ -679,22 +686,28 @@ Build on previous responses:
 <style>
   /* @unocss-include */
   .prose {
-    max-width: none;}
+    max-width: none;
+}
   .prose :global(h1) {
     font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;}
+    margin-bottom: 1rem;
+}
   .prose :global(h2) {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
-    margin-top: 1.5rem;}
+    margin-top: 1.5rem;
+}
   .prose :global(p) {
     margin-bottom: 1rem;
-    line-height: 1.6;}
+    line-height: 1.6;
+}
   .prose :global(ul) {
     margin-bottom: 1rem;
-    padding-left: 1.5rem;}
+    padding-left: 1.5rem;
+}
   .prose :global(li) {
-    margin-bottom: 0.5rem;}
+    margin-bottom: 0.5rem;
+}
 </style>

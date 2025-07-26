@@ -1,0 +1,31 @@
+# WSL2 Configuration for Legal AI Development
+# Place this file in %USERPROFILE%\.wslconfig
+
+[wsl2]
+# Memory allocation for AI workload (adjust based on your system)
+memory=16GB
+
+# CPU allocation
+processors=8
+
+# Swap file size for memory overflow
+swap=4GB
+
+# Enable localhost forwarding for Docker services
+localhostForwarding=true
+
+# Experimental features for better performance
+[experimental]
+# Automatic memory reclaim when WSL is idle
+autoMemoryReclaim=gradual
+
+# Improved networking performance
+networkingMode=mirrored
+
+# DNS tunneling for better connectivity
+dnsTunneling=true
+
+# Additional settings for Docker performance
+[boot]
+# Enable systemd for better service management
+systemd=true

@@ -12,7 +12,8 @@
       svg = renderedSvg;
     } catch (err) {
       console.error('Failed to load mermaid:', err);
-      svg = '<p>Diagram failed to load</p>';}
+      svg = '<p>Diagram failed to load</p>';
+}
   });
 </script>
 
@@ -30,5 +31,6 @@
   border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   padding: 2rem;
-  overflow-x: auto;}
+  overflow-x: auto;
+}
 </style>

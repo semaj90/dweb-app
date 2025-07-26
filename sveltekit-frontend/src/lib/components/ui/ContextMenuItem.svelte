@@ -14,7 +14,8 @@
   const { item } = elements;
 
   function handleSelect() {
-    dispatch("select");}
+    dispatch("select");
+}
 </script>
 
 <button

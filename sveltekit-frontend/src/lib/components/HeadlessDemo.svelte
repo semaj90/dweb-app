@@ -94,7 +94,8 @@
   .headless-demo {
     max-width: 500px;
     margin: 0 auto;
-    padding: var(--spacing-lg);}
+    padding: var(--spacing-lg);
+}
   .select-menu {
     position: absolute;
     z-index: 50;
@@ -104,14 +105,17 @@
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     padding: var(--spacing-xs);
-    margin-top: var(--spacing-xs);}
+    margin-top: var(--spacing-xs);
+}
   .select-option {
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background-color var(--transition-fast);}
+    transition: background-color var(--transition-fast);
+}
   .select-option:hover {
-    background-color: var(--color-surface);}
+    background-color: var(--color-surface);
+}
   .dialog-overlay {
     position: fixed;
     inset: 0;
@@ -120,7 +124,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-lg);}
+    padding: var(--spacing-lg);
+}
   .dialog-content {
     background-color: var(--color-background);
     border-radius: var(--radius-lg);
@@ -129,18 +134,22 @@
     max-width: 500px;
     width: 100%;
     max-height: 90vh;
-    overflow-y: auto;}
+    overflow-y: auto;
+}
   .dialog-title {
     font-size: var(--font-size-xl);
     font-weight: 600;
     margin-bottom: var(--spacing-md);
-    color: var(--color-text);}
+    color: var(--color-text);
+}
   .dialog-description {
     color: var(--color-text-muted);
     margin-bottom: var(--spacing-lg);
-    line-height: 1.6;}
+    line-height: 1.6;
+}
   .dialog-actions {
     display: flex;
     gap: var(--spacing-sm);
-    justify-content: flex-end;}
+    justify-content: flex-end;
+}
 </style>

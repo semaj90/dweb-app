@@ -19,12 +19,15 @@
       type: "success",
       title: "Copied",
       message: "Message copied to clipboard",
-    });}
+    });
+}
   function toggleSaved() {
-    chatActions.toggleMessageSaved(message.id);}
+    chatActions.toggleMessageSaved(message.id);
+}
   function formatTime(timestamp: Date | string | number): string {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });}
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
   function getEmotionalToneColor(tone: string): string {
     switch (tone) {
       case "encouraging":
@@ -38,7 +41,8 @@
       case "professional":
         return "text-gray-600";
       default:
-        return "text-gray-500";}}
+        return "text-gray-500";
+}}
   function getEmotionalToneIcon(tone: string) {
     switch (tone) {
       case "encouraging":
@@ -48,7 +52,8 @@
       case "enthusiastic":
         return Star;
       default:
-        return null;}}
+        return null;
+}}
 </script>
 
 <div class="container mx-auto px-4">
@@ -179,34 +184,45 @@
   /* @unocss-include */
   :global(.message-content) {
     word-wrap: break-word;
-    overflow-wrap: break-word;}
+    overflow-wrap: break-word;
+}
   :global(.message-content p) {
-    margin-bottom: 0.5rem;}
+    margin-bottom: 0.5rem;
+}
   :global(.message-content p:last-child) {
-    margin-bottom: 0;}
+    margin-bottom: 0;
+}
   :global(.message-content ul, .message-content ol) {
     margin: 0.5rem 0;
-    padding-left: 1.25rem;}
+    padding-left: 1.25rem;
+}
   :global(.message-content li) {
-    margin-bottom: 0.25rem;}
+    margin-bottom: 0.25rem;
+}
   :global(.message-content code) {
     background: rgba(0, 0, 0, 0.1);
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
     font-family: "Courier New", monospace;
-    font-size: 0.875em;}
+    font-size: 0.875em;
+}
   :global(.message-content blockquote) {
     border-left: 3px solid rgba(0, 0, 0, 0.2);
     padding-left: 1rem;
     margin: 0.5rem 0;
-    font-style: italic;}
+    font-style: italic;
+}
   :global(.message-content h1, .message-content h2, .message-content h3) {
     font-weight: 600;
-    margin: 0.75rem 0 0.5rem 0;}
+    margin: 0.75rem 0 0.5rem 0;
+}
   :global(.message-content h1) {
-    font-size: 1.25em;}
+    font-size: 1.25em;
+}
   :global(.message-content h2) {
-    font-size: 1.125em;}
+    font-size: 1.125em;
+}
   :global(.message-content h3) {
-    font-size: 1em;}
+    font-size: 1em;
+}
 </style>

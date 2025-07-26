@@ -11,30 +11,40 @@
   
   function handleUploadStart(event: CustomEvent) {
     uploadStatus = `Starting upload of ${event.detail.files.length} files...`;
-    console.log('Upload started:', event.detail);}
+    console.log('Upload started:', event.detail);
+}
   function handleUploadProgress(event: CustomEvent) {
     uploadStatus = `Upload progress: ${Math.round(event.detail.progress)}%`;
-    console.log('Upload progress:', event.detail);}
+    console.log('Upload progress:', event.detail);
+}
   function handleUploadComplete(event: CustomEvent) {
     uploadStatus = `Successfully uploaded ${event.detail.files.length} files!`;
     uploadedFiles = [...uploadedFiles, ...event.detail.results];
-    console.log('Upload completed:', event.detail);}
+    console.log('Upload completed:', event.detail);
+}
   function handleUploadError(event: CustomEvent) {
     uploadStatus = `Upload failed: ${event.detail.error}`;
-    console.error('Upload error:', event.detail);}
+    console.error('Upload error:', event.detail);
+}
   function handleFileStart(event: CustomEvent) {
-    console.log('File upload started:', event.detail.file.name);}
+    console.log('File upload started:', event.detail.file.name);
+}
   function handleFileSuccess(event: CustomEvent) {
-    console.log('File uploaded successfully:', event.detail.file.name);}
+    console.log('File uploaded successfully:', event.detail.file.name);
+}
   function handleFileError(event: CustomEvent) {
-    console.error('File upload failed:', event.detail.file.name, event.detail.error);}
+    console.error('File upload failed:', event.detail.file.name, event.detail.error);
+}
   function handleFilesSelected(event: CustomEvent) {
-    console.log('Files selected:', event.detail.files.length);}
+    console.log('Files selected:', event.detail.files.length);
+}
   function handleValidationError(event: CustomEvent) {
-    console.warn('Validation errors:', event.detail.errors);}
+    console.warn('Validation errors:', event.detail.errors);
+}
   function clearStatus() {
     uploadStatus = '';
-    uploadedFiles = [];}
+    uploadedFiles = [];
+}
 </script>
 
 <div class="container mx-auto px-4">
@@ -97,7 +107,8 @@
                   on:input={(e) => {
                     const target = e.target as HTMLInputElement;
                     if (target) {
-                      maxFileSize = parseInt(target.value) * 1024 * 1024;}
+                      maxFileSize = parseInt(target.value) * 1024 * 1024;
+}
                   "
                   value={Math.round(maxFileSize / 1024 / 1024)}
                   min="1" 
@@ -223,11 +234,14 @@
 <style>
   /* @unocss-include */
   .container {
-    max-width: 1200px;}
+    max-width: 1200px;
+}
   .alert {
-    position: relative;}
+    position: relative;
+}
   .btn-close {
     position: absolute;
     top: 0.5rem;
-    right: 0.5rem;}
+    right: 0.5rem;
+}
 </style>

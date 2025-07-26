@@ -6,7 +6,8 @@
     title: string;
     type: string;
     created: string;
-    status: "draft" | "review" | "final";}
+    status: "draft" | "review" | "final";
+}
   let documents: Document[] = [];
   let loading = true;
 
@@ -42,7 +43,8 @@
     } catch (error) {
       console.error("Error loading documents:", error);
     } finally {
-      loading = false;}
+      loading = false;
+}
   });
 
   function getStatusClass(status: string): string {
@@ -54,7 +56,8 @@
       case "final":
         return "bg-green-100 text-green-800";
       default:
-        return "bg-gray-100 text-gray-800";}}
+        return "bg-gray-100 text-gray-800";
+}}
 </script>
 
 <svelte:head>
@@ -167,5 +170,6 @@
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
-    overflow: hidden;}
+    overflow: hidden;
+}
 </style>

@@ -173,57 +173,71 @@
     border-radius: 6px;
     font-size: 0.875rem;
     transition: all 0.2s ease;
-    cursor: help;}
+    cursor: help;
+}
   .ai-status-indicator:hover {
-    background: var(--bg-hover, rgba(0, 0, 0, 0.05));}
+    background: var(--bg-hover, rgba(0, 0, 0, 0.05));
+}
   .ai-status-indicator:hover .status-tooltip {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);}
+    transform: translateY(0);
+}
   .status-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;}
+    flex-shrink: 0;
+}
   .loading-spinner {
     width: 16px;
     height: 16px;
     border: 2px solid transparent;
     border-top: 2px solid currentColor;
     border-radius: 50%;
-    animation: spin 1s linear infinite;}
+    animation: spin 1s linear infinite;
+}
   @keyframes spin {
     0% {
-      transform: rotate(0deg);}
+      transform: rotate(0deg);
+}
     100% {
-      transform: rotate(360deg);}}
+      transform: rotate(360deg);
+}}
   .status-details {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    min-width: 0; /* Allow text truncation */}
+    min-width: 0; /* Allow text truncation */
+}
   .status-text {
     font-weight: 600;
-    line-height: 1.2;}
+    line-height: 1.2;
+}
   .provider-info {
     display: flex;
     align-items: center;
     gap: 4px;
     font-size: 0.75rem;
     color: var(--text-secondary, #64748b);
-    line-height: 1.2;}
+    line-height: 1.2;
+}
   .provider {
-    font-weight: 500;}
+    font-weight: 500;
+}
   .provider.local {
-    color: var(--text-success, #059669);}
+    color: var(--text-success, #059669);
+}
   .separator {
-    color: var(--text-muted, #94a3b8);}
+    color: var(--text-muted, #94a3b8);
+}
   .model {
     font-family: monospace;
     background: var(--bg-muted, #f1f5f9);
     padding: 1px 4px;
     border-radius: 2px;
-    color: var(--text-primary, #1e293b);}
+    color: var(--text-primary, #1e293b);
+}
   .error-text {
     font-size: 0.75rem;
     color: var(--status-error, #ef4444);
@@ -231,7 +245,8 @@
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;}
+    white-space: nowrap;
+}
   .status-tooltip {
     position: absolute;
     bottom: 100%;
@@ -248,7 +263,8 @@
     z-index: 1000;
     white-space: nowrap;
     font-size: 0.75rem;
-    min-width: 200px;}
+    min-width: 200px;
+}
   .status-tooltip::after {
     content: "";
     position: absolute;
@@ -256,54 +272,70 @@
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: var(--bg-tooltip, #1e293b);}
+    border-top-color: var(--bg-tooltip, #1e293b);
+}
   .tooltip-content {
     display: flex;
     flex-direction: column;
-    gap: 6px;}
+    gap: 6px;
+}
   .tooltip-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;}
+    gap: 12px;
+}
   .tooltip-section.error {
-    color: var(--status-error, #fca5a5);}
+    color: var(--status-error, #fca5a5);
+}
   .tooltip-section strong {
-    color: var(--text-primary-inverse, #f8fafc);}
+    color: var(--text-primary-inverse, #f8fafc);
+}
   .tooltip-section small {
     font-style: italic;
     opacity: 0.8;
     white-space: normal;
-    max-width: 180px;}
+    max-width: 180px;
+}
   /* Dark mode support */
   @media (prefers-color-scheme: dark) {
     .ai-status-indicator:hover {
-      background: var(--bg-hover, rgba(255, 255, 255, 0.05));}
+      background: var(--bg-hover, rgba(255, 255, 255, 0.05));
+}
     .model {
       background: var(--bg-muted, #334155);
-      color: var(--text-primary, #f8fafc);}
+      color: var(--text-primary, #f8fafc);
+}
     .status-tooltip {
       background: var(--bg-tooltip, #0f172a);
-      border: 1px solid var(--border-color, #334155);}
+      border: 1px solid var(--border-color, #334155);
+}
     .status-tooltip::after {
-      border-top-color: var(--bg-tooltip, #0f172a);}}
+      border-top-color: var(--bg-tooltip, #0f172a);
+}}
   /* Responsive design */
   @media (max-width: 768px) {
     .ai-status-indicator {
       padding: 2px 6px;
-      font-size: 0.8125rem;}
+      font-size: 0.8125rem;
+}
     .status-icon {
       width: 14px;
-      height: 14px;}
+      height: 14px;
+}
     .status-icon svg,
     .loading-spinner {
       width: 14px;
-      height: 14px;}
+      height: 14px;
+}
     .provider-info {
-      font-size: 0.6875rem;}
+      font-size: 0.6875rem;
+}
     .status-tooltip {
       min-width: 180px;
-      font-size: 0.6875rem;}
+      font-size: 0.6875rem;
+}
     .tooltip-section small {
-      max-width: 160px;}}
+      max-width: 160px;
+}}
 </style>

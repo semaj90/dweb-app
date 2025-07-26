@@ -58,7 +58,8 @@
 
   function updateStats() {
     if (lokiEvidenceService.isReady()) {
-      stats = lokiEvidenceService.getEvidenceStats();}}
+      stats = lokiEvidenceService.getEvidenceStats();
+}}
   function updateSyncStatus() {
     if (lokiEvidenceService.isReady()) {
       const status = lokiEvidenceService.getSyncStatus();
@@ -67,7 +68,8 @@
         failed: status.failed,
         total: status.total,
         inProgress: status.inProgress ?? false,
-      };}}
+      };
+}}
   async function startDemoMode() {
     demoMode = true;
 
@@ -133,29 +135,36 @@
         try {
           await evidenceStore.createEvidence(demoEvidence[i]);
         } catch (err) {
-          console.error("Failed to create demo evidence:", err);}
-      }, i * 1000);}}
+          console.error("Failed to create demo evidence:", err);
+}
+      }, i * 1000);
+}}
   async function clearAllEvidence() {
     if (
       !confirm(
         "Are you sure you want to clear all evidence? This action cannot be undone."
       )
     ) {
-      return;}
+      return;
+}
     try {
       await lokiEvidenceService.clearLocalData();
       evidenceStore.evidence.set([]);
       stats = { total: 0, byType: {}, byCase: {}, recentCount: 0 };
     } catch (err) {
-      console.error("Failed to clear evidence:", err);}}
+      console.error("Failed to clear evidence:", err);
+}}
   function getConnectionStatusColor(): string {
-    return isConnected ? "text-green-600" : "text-red-600";}
+    return isConnected ? "text-green-600" : "text-red-600";
+}
   function formatObjectAsCount(obj: Record<string, number>): string {
     const entries = Object.entries(obj);
     if (entries.length === 0) return "0 types";
     if (entries.length <= 3) {
-      return entries.map(([key, value]) => `${key}: ${value}`).join(", ");}
-    return `${entries.length} types`;}
+      return entries.map(([key, value]) => `${key}: ${value}`).join(", ");
+}
+    return `${entries.length} types`;
+}
 </script>
 
 <svelte:head>
@@ -524,5 +533,6 @@
 <style>
   /* @unocss-include */
   :global(body) {
-    background-color: #f9fafb;}
+    background-color: #f9fafb;
+}
 </style>

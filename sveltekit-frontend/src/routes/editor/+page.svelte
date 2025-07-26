@@ -70,7 +70,8 @@
       tags: ['weapon', 'evidence', 'measurement'],
       metadata: { format: 'JPG', size: 1536000 },
       createdAt: new Date('2024-01-16'),
-      updatedAt: new Date('2024-01-16')}
+      updatedAt: new Date('2024-01-16')
+}
   ];
   
   onMount(() => {
@@ -111,7 +112,8 @@
       settings: {
         autoSave: true,
         theme: 'light' as const,
-        layout: 'dual' as const}
+        layout: 'dual' as const
+}
     };
     
     reportActions.load(sampleReport);
@@ -132,37 +134,48 @@
   .report-page {
     width: 100%;
     height: 100vh;
-    overflow: hidden;}
+    overflow: hidden;
+}
   /* Global styles for the report editor */
   :global(body) {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;}
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
   /* Ensure TinyMCE works well with our layout */
   :global(.tox-tinymce) {
     border: 1px solid var(--pico-border-color, #e2e8f0) !important;
-    border-radius: 0.5rem !important;}
+    border-radius: 0.5rem !important;
+}
   :global(.tox-toolbar) {
-    background: var(--pico-card-sectioning-background-color, #f8fafc) !important;}
+    background: var(--pico-card-sectioning-background-color, #f8fafc) !important;
+}
   :global(.tox-statusbar) {
     background: var(--pico-card-sectioning-background-color, #f8fafc) !important;
-    border-top: 1px solid var(--pico-border-color, #e2e8f0) !important;}
+    border-top: 1px solid var(--pico-border-color, #e2e8f0) !important;
+}
   /* Improve scrollbar styling */
   :global(::-webkit-scrollbar) {
     width: 8px;
-    height: 8px;}
+    height: 8px;
+}
   :global(::-webkit-scrollbar-track) {
-    background: var(--pico-card-sectioning-background-color, #f1f5f9);}
+    background: var(--pico-card-sectioning-background-color, #f1f5f9);
+}
   :global(::-webkit-scrollbar-thumb) {
     background: var(--pico-border-color, #cbd5e1);
-    border-radius: 4px;}
+    border-radius: 4px;
+}
   :global(::-webkit-scrollbar-thumb:hover) {
-    background: var(--pico-muted-color, #94a3b8);}
+    background: var(--pico-muted-color, #94a3b8);
+}
   /* Focus improvements */
   :global(*:focus-visible) {
     outline: 2px solid var(--pico-primary, #3b82f6);
-    outline-offset: 2px;}
+    outline-offset: 2px;
+}
   /* Animation improvements */
   :global(*) {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);}
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
 </style>

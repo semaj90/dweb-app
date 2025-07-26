@@ -70,7 +70,8 @@
     if (viewMode === "canvas") {
       canvasEvidence = $evidenceStore;
     } else {
-      distributeEvidence();}}
+      distributeEvidence();
+}}
   // 1. Extract WebSocket connection logic
   function connectWebSocket() {
     try {
@@ -86,7 +87,8 @@
           const data = JSON.parse(event.data);
           handleRealtimeUpdate(data);
         } catch (error) {
-          console.error("Failed to parse WebSocket message:", error);}
+          console.error("Failed to parse WebSocket message:", error);
+}
       };
       ws.onerror = (error) => {
         console.error("WebSocket error:", error);
@@ -95,14 +97,16 @@
         console.log("Disconnected from real-time updates");
         setTimeout(() => {
           if (!ws || ws.readyState === WebSocket.CLOSED) {
-            connectWebSocket();}
+            connectWebSocket();
+}
         }, 3000);
       };
     } catch (error) {
       console.warn(
         "WebSocket not available, real-time features disabled:",
         error
-      );}}
+      );
+}}
   onMount(() => {
     connectWebSocket();
     // Distribute evidence into columns for initial view
@@ -111,7 +115,8 @@
 
   onDestroy(() => {
     if (ws) {
-      ws.close();}
+      ws.close();
+}
   });
 
   function distributeEvidence() {
@@ -132,7 +137,8 @@
         title: "Case Ready",
         items: items.filter((item) => item.status === "approved"),
       },
-    ];}
+    ];
+}
   // 2. Fix Evidence type in handleRightClick
   function handleRightClick(event: MouseEvent, item: EvidenceType) {
     event.preventDefault();
@@ -141,9 +147,11 @@
       x: event.clientX,
       y: event.clientY,
       item,
-    };}
+    };
+}
   function closeContextMenu() {
-    contextMenu.show = false;}
+    contextMenu.show = false;
+}
   async function sendToCase(evidenceId: string, targetCaseId: string) {
     try {
       const response = await fetch("/api/evidence/move", {
@@ -156,13 +164,17 @@
         // Remove from current view
         evidenceStore.update((items) =>
           items.filter((item) => item.id !== evidenceId)
-        );}
+        );
+}
     } catch (error) {
-      console.error("Failed to move evidence:", error);}
-    closeContextMenu();}
+      console.error("Failed to move evidence:", error);
+}
+    closeContextMenu();
+}
   function handleDndConsider(e: CustomEvent, columnId: string) {
     const columnIndex = columns.findIndex((col) => col.id === columnId);
-    columns[columnIndex].items = e.detail.items;}
+    columns[columnIndex].items = e.detail.items;
+}
   async function handleDndFinalize(e: CustomEvent, columnId: string) {
     const columnIndex = columns.findIndex((col) => col.id === columnId);
     columns[columnIndex].items = e.detail.items;
@@ -172,7 +184,8 @@
       (item: Evidence) => item.id === e.detail.info.id
     );
     if (movedItem && movedItem.status !== columnId) {
-      await updateEvidenceStatus(movedItem.id, columnId);}}
+      await updateEvidenceStatus(movedItem.id, columnId);
+}}
   async function updateEvidenceStatus(evidenceId: string, newStatus: string) {
     try {
       const response = await fetch("/api/evidence/status", {
@@ -185,11 +198,14 @@
         evidenceStore.update((items) => {
           const item = items.find((item) => item.id === evidenceId);
           if (item) {
-            item.status = newStatus;}
+            item.status = newStatus;
+}
           return items;
-        });}
+        });
+}
     } catch (error) {
-      console.error("Failed to update evidence status:", error);}}
+      console.error("Failed to update evidence status:", error);
+}}
   async function handleFileUpload(files: FileList, columnId: string = "new") {
     for (const file of files) {
       const formData = new FormData();
@@ -205,9 +221,11 @@
 
         if (response.ok) {
           const newEvidence = await response.json();
-          evidenceStore.update((items) => [...items, newEvidence]);}
+          evidenceStore.update((items) => [...items, newEvidence]);
+}
       } catch (error) {
-        console.error("Upload failed:", error);}}}
+        console.error("Upload failed:", error);
+}}}
   // 3. Fix updatePosition usage in handleRealtimeUpdate
   function handleRealtimeUpdate(data: { type: string; payload: any }) {
     switch (data.type) {
@@ -215,7 +233,8 @@
         evidenceStore.update((items: EvidenceWithPosition[]) => {
           const item = items.find((item) => item.id === data.payload.id);
           if (item) {
-            item.position = { x: data.payload.x, y: data.payload.y };}
+            item.position = { x: data.payload.x, y: data.payload.y };
+}
           return items;
         });
         break;
@@ -226,7 +245,8 @@
           if (index !== -1) {
             items[index] = { ...items[index], ...data.payload };
           } else {
-            items.push(data.payload);}
+            items.push(data.payload);
+}
           return items;
         });
         break;
@@ -245,7 +265,8 @@
         activeUsers.update((users) =>
           users.filter((user) => user.id !== data.payload.id)
         );
-        break;}}
+        break;
+}}
   function broadcastPositionUpdate(evidenceId: string, x: number, y: number) {
     if (ws && ws.readyState === WebSocket.OPEN) {
       ws.send(
@@ -253,15 +274,18 @@
           type: "EVIDENCE_POSITION_UPDATE",
           payload: { id: evidenceId, x, y },
         })
-      );}}
+      );
+}}
   function switchViewMode(mode: "columns" | "canvas") {
-    viewMode = mode;}
+    viewMode = mode;
+}
   function handleStatusChange(item: EvidenceType, newStatus: string) {
     evidenceStore.update((evidenceList) =>
       evidenceList.map((ev) =>
         ev.id === item.id ? { ...ev, status: newStatus } : ev
       )
-    );}
+    );
+}
 </script>
 
 <svelte:window on:click={() => closeContextMenu()} />
@@ -482,11 +506,15 @@
 <style>
   /* @unocss-include */
   .detective-board {
-    font-family: var(--font-family);}
+    font-family: var(--font-family);
+}
   .evidence-item {
-    transform: translateZ(0); /* Force hardware acceleration */}
+    transform: translateZ(0); /* Force hardware acceleration */
+}
   :global(.dnd-item) {
-    cursor: grab;}
+    cursor: grab;
+}
   :global(.dnd-item:active) {
-    cursor: grabbing;}
+    cursor: grabbing;
+}
 </style>

@@ -49,14 +49,16 @@
             evented: false
           });
           (fabricCanvas as any)?.setBackgroundImage?.(img, () => (fabricCanvas as any)?.renderAll?.());
-        });}
+        });
+}
       // Setup event listeners for annotations
       (fabricCanvas as any)?.on?.('object:modified', saveCanvasState);
       (fabricCanvas as any)?.on?.('object:added', saveCanvasState);
       (fabricCanvas as any)?.on?.('object:removed', saveCanvasState);
       
     } catch (error) {
-      console.warn('Fabric.js not available, canvas features disabled:', error);}
+      console.warn('Fabric.js not available, canvas features disabled:', error);
+}
     // Click handling for selection
     nodeElement.addEventListener('click', () => {
       isSelected = true;
@@ -64,20 +66,23 @@
 
     document.addEventListener('click', (e) => {
       if (!nodeElement.contains(e.target as Node)) {
-        isSelected = false;}
+        isSelected = false;
+}
     });
   });
 
   onDestroy(() => {
     if (fabricCanvas) {
-      fabricCanvas.dispose();}
+      fabricCanvas.dispose();
+}
   });
 
   function saveCanvasState() {
     if (fabricCanvas) {
       const state = fabricCanvas.toJSON();
       canvasState = state;
-      isDirty = true;}}
+      isDirty = true;
+}}
   function addAnnotation(type: string) {
     if (!fabricCanvas) return;
 
@@ -127,19 +132,24 @@
           fill: '#1f2937'
         });
         fabricCanvas.add(text);
-        break;}
-    fabricCanvas.renderAll();}
+        break;
+}
+    fabricCanvas.renderAll();
+}
   function clearAnnotations() {
     if (fabricCanvas) {
       fabricCanvas.getObjects().forEach((obj: FabricObject) => {
         if (obj !== fabricCanvas.backgroundImage) {
-          fabricCanvas.remove(obj);}
+          fabricCanvas.remove(obj);
+}
       });
-      fabricCanvas.renderAll();}}
+      fabricCanvas.renderAll();
+}}
   function handleTitleChange(event: Event) {
     const target = event.target as HTMLInputElement;
     title = target.value;
-    isDirty = true;}
+    isDirty = true;
+}
   // Resize handling
   function handleResize(corner: string, event: MouseEvent) {
     event.preventDefault();
@@ -168,12 +178,15 @@
         fabricCanvas.setDimensions({
           width: newWidth - 20,
           height: newHeight - 80
-        });}}
+        });
+}}
     function onMouseUp() {
       document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);}
+      document.removeEventListener('mouseup', onMouseUp);
+}
     document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);}
+    document.addEventListener('mouseup', onMouseUp);
+}
   // Add a handler for touch events
   function handleResizeTouch(direction: string, e: TouchEvent) {
     if (e.touches && e.touches.length > 0) {
@@ -183,10 +196,12 @@
         ...e,
         clientX: touch.clientX,
         clientY: touch.clientY
-      } as unknown as MouseEvent);}}
+      } as unknown as MouseEvent);
+}}
   // Draggable handler  
   function handleDrag(newX: number, newY: number) {
-    position = { x: newX, y: newY };}
+    position = { x: newX, y: newY };
+}
 </script>
 
 <!-- Fix: Use <section> for main node container and remove tabindex if not needed -->
@@ -227,7 +242,8 @@
       on:keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleResize('bottom-right', e);}
+          handleResize('bottom-right', e);
+}
       "
       role="button"
       tabindex="0"
@@ -240,7 +256,8 @@
       on:keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleResize('bottom', e);}
+          handleResize('bottom', e);
+}
       "
       role="button"
       tabindex="0"
@@ -253,7 +270,8 @@
       on:keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleResize('right', e);}
+          handleResize('right', e);
+}
       "
       role="button"
       tabindex="0"
@@ -272,7 +290,8 @@
     background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     min-width: 200px;
-    min-height: 150px;}
+    min-height: 150px;
+}
   .node-header {
     display: flex;
     justify-content: space-between;
@@ -280,69 +299,86 @@
     padding: 8px 12px;
     background: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
-    border-radius: 6px 6px 0 0;}
+    border-radius: 6px 6px 0 0;
+}
   .node-title {
-    flex: 1;}
+    flex: 1;
+}
   .title-text {
     font-weight: 600;
     color: #374151;
-    font-size: 14px;}
+    font-size: 14px;
+}
   .node-controls {
     display: flex;
-    gap: 4px;}
+    gap: 4px;
+}
   .control-button {
     padding: 4px;
     border: none;
     background: transparent;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;}
+    transition: background-color 0.2s;
+}
   .control-button:hover {
-    background: #e2e8f0;}
+    background: #e2e8f0;
+}
   .control-button:focus {
     outline: 2px solid #3b82f6;
-    outline-offset: 2px;}
+    outline-offset: 2px;
+}
   .icon {
     width: 16px;
     height: 16px;
-    color: #6b7280;}
+    color: #6b7280;
+}
   .canvas-area {
     padding: 12px;
-    height: calc(100% - 60px);}
+    height: calc(100% - 60px);
+}
   .evidence-canvas {
     width: 100%;
     height: 100%;
     border: 1px dashed #d1d5db;
-    border-radius: 4px;}
+    border-radius: 4px;
+}
   .resize-handles {
     position: absolute;
     bottom: 0;
-    right: 0;}
+    right: 0;
+}
   .resize-handle {
     position: absolute;
     background: #3b82f6;
-    border: 1px solid #2563eb;}
+    border: 1px solid #2563eb;
+}
   .resize-bottom-right {
     width: 12px;
     height: 12px;
     bottom: -6px;
     right: -6px;
-    cursor: nw-resize;}
+    cursor: nw-resize;
+}
   .resize-bottom {
     width: 20px;
     height: 6px;
     bottom: -3px;
     right: 20px;
-    cursor: n-resize;}
+    cursor: n-resize;
+}
   .resize-right {
     width: 6px;
     height: 20px;
     bottom: 20px;
     right: -3px;
-    cursor: w-resize;}
+    cursor: w-resize;
+}
   /* Minimal styles for functionality not covered by UnoCSS */
   :global(.dnd-item) {
-    cursor: grab;}
+    cursor: grab;
+}
   :global(.dnd-item:active) {
-    cursor: grabbing;}
+    cursor: grabbing;
+}
 </style>

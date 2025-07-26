@@ -14,7 +14,8 @@
       models = await getAvailableModels();
       if (models.length > 0) selectedModel = models[0];
     } catch (e) {
-      error = 'Failed to load models.';}
+      error = 'Failed to load models.';
+}
   });
 
   async function handleInference() {
@@ -27,7 +28,8 @@
     } catch (e) {
       error = 'Inference failed.';
     } finally {
-      loading = false;}}
+      loading = false;
+}}
 </script>
 
 <div class="container mx-auto px-4">
@@ -67,20 +69,24 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-  font-family: 'Segoe UI', Arial, sans-serif;}
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
 .model-select, .prompt-input {
-  margin-bottom: 1.5rem;}
+  margin-bottom: 1.5rem;
+}
 label {
   font-weight: 600;
   display: block;
-  margin-bottom: 0.5rem;}
+  margin-bottom: 0.5rem;
+}
 select, textarea {
   width: 100%;
   padding: 0.75rem;
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 1rem;
-  margin-bottom: 0.5rem;}
+  margin-bottom: 0.5rem;
+}
 .run-btn {
   background: #007bff;
   color: #fff;
@@ -90,20 +96,25 @@ select, textarea {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;}
+  transition: background 0.2s;
+}
 .run-btn:disabled {
   background: #b0c4de;
-  cursor: not-allowed;}
+  cursor: not-allowed;
+}
 .run-btn:not(:disabled):hover {
-  background: #0056b3;}
+  background: #0056b3;
+}
 .result {
   margin-top: 2rem;
   background: #f8f9fa;
   border-radius: 6px;
   padding: 1rem;
-  font-size: 1rem;}
+  font-size: 1rem;
+}
 .error {
   color: #b30000;
   margin-top: 1rem;
-  font-weight: 600;}
+  font-weight: 600;
+}
 </style>
