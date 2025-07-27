@@ -6,6 +6,17 @@ Ollama/lib/ollama/cuda_v12/ggml-cuda.dll
 Ollama/lib/ollama/cuda_v12/cublasLt64_12.dll
 Ollama/lib/ollama/cuda_v12/cublas64_12.dll
 
+# Add TIO files and folders
+tio/
+tio*
+tio.*
+tio_*
+tio-*
+tio.log
+tio.json
+tio.db
+tio.sqlite
+
 # Existing rules
 node_modules
 
