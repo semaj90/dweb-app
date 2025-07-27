@@ -85,12 +85,12 @@
     if (!speechSynthesis || !$state.context.voiceEnabled) return;
 
     speechSynthesis.cancel();
-    
+
     currentUtterance = new SpeechSynthesisUtterance(section.content);
     currentUtterance.rate = 0.9;
     currentUtterance.pitch = 1.0;
     currentUtterance.volume = 0.8;
-    
+
     currentUtterance.onend = () => {
       if ($state.context.currentSection < $state.context.sections.length - 1) {
         nextSection();
@@ -111,8 +111,8 @@
   }
 
   function toggleVoice() {
-    send({ 
-      type: 'UPDATE_PREFERENCES', 
+    send({
+      type: 'UPDATE_PREFERENCES',
       preferences: { voiceEnabled: !$state.context.voiceEnabled }
     });
   }
@@ -292,7 +292,7 @@
           <!-- Progress Bar -->
           {#if isReading}
             <div class="bg-gray-200 rounded-full h-2" transition:fade>
-              <div 
+              <div
                 class="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style="width: {progress}%"
               ></div>
@@ -331,7 +331,7 @@
                   {currentSection.importance.charAt(0).toUpperCase() + currentSection.importance.slice(1)} Priority
                 </span>
               </div>
-              
+
               <div class="prose prose-gray max-w-none">
                 <p class="text-gray-700 leading-relaxed">{currentSection.content}</p>
               </div>
@@ -342,7 +342,7 @@
                   <h5 class="text-sm font-medium text-gray-900 mb-3">Key Entities</h5>
                   <div class="flex flex-wrap gap-2">
                     {#each currentSection.entities as entity}
-                      <span 
+                      <span
                         class="px-2 py-1 text-xs rounded-md"
                         class:bg-blue-100={entity.type === 'legal_term'}
                         class:text-blue-800={entity.type === 'legal_term'}
@@ -418,7 +418,7 @@
           {#if $state.context.synthesisData}
             <div class="space-y-6" transition:fly={{ y: 20, duration: 300 }}>
               <h4 class="text-lg font-semibold text-gray-900">Synthesis & Strategic Analysis</h4>
-              
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-4">
                   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">

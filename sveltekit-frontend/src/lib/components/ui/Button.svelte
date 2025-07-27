@@ -73,18 +73,18 @@
     align-items: center;
     gap: 0.5em;
   }
-  
+
   :global([data-button-root]:hover) {
     background: linear-gradient(90deg, #393e46 0%, #23272e 100%);
     color: #a3e7fc;
     border-color: #a3e7fc;
   }
-  
+
   :global([data-button-root][disabled]) {
     opacity: 0.6;
     cursor: not-allowed;
   }
-  
+
   .loader {
     width: 1rem;
     height: 1rem;
@@ -94,7 +94,7 @@
     animation: spin 0.75s linear infinite;
     display: inline-block;
   }
-  
+
   @keyframes spin {
     to { transform: rotate(360deg); }
   }

@@ -4,17 +4,17 @@
   import { CaseCard } from '$lib/components/cases/CaseCard.svelte'
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
   import { Button } from 'bits-ui'
-  
+
   let isDarkMode = $state(false)
   let showAIAssistant = $state(false)
-  
+
   // Sample user data
   const user = {
     name: 'Commander White',
     email: 'commander@yorha.mil',
     avatar: null
   }
-  
+
   // Sample case data
   const sampleCases = [
     {
@@ -75,24 +75,24 @@
       progress: 60
     }
   ]
-  
+
   // Case actions
   const handleViewCase = (id: string) => {
     console.log('View case:', id)
   }
-  
+
   const handleEditCase = (id: string) => {
     console.log('Edit case:', id)
   }
-  
+
   const handleArchiveCase = (id: string) => {
     console.log('Archive case:', id)
   }
-  
+
   const handleDeleteCase = (id: string) => {
     console.log('Delete case:', id)
   }
-  
+
   // Apply dark mode class to body
   $effect(() => {
     if (isDarkMode) {
@@ -113,7 +113,7 @@
 <div class="min-h-screen bg-nier-white dark:bg-nier-black transition-colors duration-500">
   <!-- Header -->
   <NierHeader {user} bind:isDarkMode />
-  
+
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Hero Section -->
@@ -124,10 +124,10 @@
       <p class="text-xl text-nier-gray dark:text-nier-silver mb-8 animate-fade-in" style="animation-delay: 0.2s">
         Advanced Case Management System • For the Glory of Mankind
       </p>
-      
+
       <div class="flex justify-center gap-4 animate-fade-in" style="animation-delay: 0.4s">
         <button
-          onclick={() => showAIAssistant = true}
+          on:click={() => showAIAssistant = true}
           class="nier-button-digital px-6 py-3"
         >
           <span class="mr-2">🤖</span>
@@ -138,7 +138,7 @@
         </a>
       </div>
     </section>
-    
+
     <!-- Stats Overview -->
     <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
       <div class="nier-card p-6 text-center group hover:border-digital-green dark:hover:border-digital-green">
@@ -147,21 +147,21 @@
         </div>
         <p class="text-sm text-nier-gray dark:text-nier-silver">Active Cases</p>
       </div>
-      
+
       <div class="nier-card p-6 text-center group hover:border-digital-green dark:hover:border-digital-green">
         <div class="text-3xl font-bold text-harvard-crimson dark:text-digital-green mb-2">
           89%
         </div>
         <p class="text-sm text-nier-gray dark:text-nier-silver">Success Rate</p>
       </div>
-      
+
       <div class="nier-card p-6 text-center group hover:border-digital-green dark:hover:border-digital-green">
         <div class="text-3xl font-bold text-harvard-crimson dark:text-digital-green mb-2">
           1,247
         </div>
         <p class="text-sm text-nier-gray dark:text-nier-silver">Evidence Items</p>
       </div>
-      
+
       <div class="nier-card p-6 text-center group hover:border-digital-green dark:hover:border-digital-green">
         <div class="text-3xl font-bold text-harvard-crimson dark:text-digital-green mb-2">
           24/7
@@ -169,7 +169,7 @@
         <p class="text-sm text-nier-gray dark:text-nier-silver">AI Support</p>
       </div>
     </section>
-    
+
     <!-- Recent Cases -->
     <section class="mb-12">
       <div class="flex items-center justify-between mb-6">
@@ -178,7 +178,7 @@
           View all cases →
         </a>
       </div>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {#each sampleCases as caseData}
           <CaseCard
@@ -191,7 +191,7 @@
         {/each}
       </div>
     </section>
-    
+
     <!-- Component Showcase -->
     <section id="showcase" class="py-12">
       <div class="text-center mb-8">
@@ -202,16 +202,16 @@
           Explore the complete NieR: Automata themed component library
         </p>
       </div>
-      
+
       <NierThemeShowcase />
     </section>
-    
+
     <!-- Features Section -->
     <section class="py-16 border-t border-nier-light-gray dark:border-nier-gray/30">
       <h2 class="text-3xl font-display font-bold nier-heading text-center mb-12">
         System Features
       </h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="text-center">
           <div class="w-20 h-20 mx-auto mb-4 bg-nier-gradient-digital rounded-2xl flex items-center justify-center text-3xl animate-pulse">
@@ -222,7 +222,7 @@
             Military-grade encryption and blockchain verification for all case evidence
           </p>
         </div>
-        
+
         <div class="text-center">
           <div class="w-20 h-20 mx-auto mb-4 bg-nier-gradient-crimson rounded-2xl flex items-center justify-center text-3xl">
             🧠
@@ -232,7 +232,7 @@
             Advanced pattern recognition and predictive analytics for case insights
           </p>
         </div>
-        
+
         <div class="text-center">
           <div class="w-20 h-20 mx-auto mb-4 bg-nier-gradient-gold rounded-2xl flex items-center justify-center text-3xl">
             ⚡
@@ -245,7 +245,7 @@
       </div>
     </section>
   </main>
-  
+
   <!-- Footer -->
   <footer class="mt-24 py-8 border-t border-nier-light-gray dark:border-nier-gray/30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -257,17 +257,17 @@
       </p>
     </div>
   </footer>
-  
+
   <!-- AI Assistant -->
-  <NierAIAssistant 
+  <NierAIAssistant
     bind:isOpen={showAIAssistant}
     onClose={() => showAIAssistant = false}
     caseContext={sampleCases[0]}
   />
-  
+
   <!-- Floating Action Button -->
   <button
-    onclick={() => showAIAssistant = true}
+    on:click={() => showAIAssistant = true}
     class="fixed bottom-6 right-6 w-14 h-14 bg-nier-gradient-digital rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-110 nier-transition animate-digital-glow"
     aria-label="Open AI Assistant"
   >
@@ -288,7 +288,7 @@
       transform: translateY(0);
     }
   }
-  
+
   .animate-fade-in {
     animation: fade-in 0.6s ease-out forwards;
   }

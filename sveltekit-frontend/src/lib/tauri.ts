@@ -11,7 +11,7 @@ async function loadTauriAPI() {
   if (typeof window === "undefined" || !isTauri || tauriInvoke) return;
 
   try {
-    const { invoke } = await import("@tauri-apps/api/tauri");
+    const { invoke } = await import("@tauri-apps/api/core");
     const { listen } = await import("@tauri-apps/api/event");
     tauriInvoke = invoke;
     tauriListen = listen;

@@ -1,18 +1,26 @@
 <script lang="ts">
   import AdvancedFileUpload from "$lib/components/upload/AdvancedFileUpload.svelte";
 
-  let uploadedFiles: any[] = [];
+  interface UploadedFile {
+    name: string;
+    size: number;
+    type: string;
+    status?: string;
+    url?: string;
+  }
+  
+  let uploadedFiles: UploadedFile[] = [];
 
-  function handleFilesAdded(event) {
+  function handleFilesAdded(event: CustomEvent<{ files: File[] }>) {
     console.log("Files added:", event.detail.files);
-}
-  function handleUploadComplete(event) {
+  }
+  function handleUploadComplete(event: CustomEvent<{ files: UploadedFile[] }>) {
     console.log("Upload complete:", event.detail.files);
     uploadedFiles = [...uploadedFiles, ...event.detail.files];
-}
-  function handleFileRemoved(event) {
+  }
+  function handleFileRemoved(event: CustomEvent<{ fileId: string }>) {
     console.log("File removed:", event.detail.fileId);
-}
+  }
 </script>
 
 <svelte:head>

@@ -222,7 +222,6 @@
           <AIChatInterface
             height={400}
             visible={true}
-            class="test-chat"
           />
         </div>
 

@@ -4,7 +4,14 @@
       "Bash(npm run check:*)",
       "Bash(claude mcp:*)",
       "Bash(npm run build:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "mcp__context7-custom__analyze-stack",
+      "mcp__context7-custom__suggest-integration",
+      "mcp__context7-custom__suggest-integration",
+      "Bash(mv:*)",
+      "Bash(npm run dev:*)",
+      "mcp__filesystem__directory_tree",
+      "mcp__context7-custom__generate-best-practices"
     ],
     "deny": []
   }

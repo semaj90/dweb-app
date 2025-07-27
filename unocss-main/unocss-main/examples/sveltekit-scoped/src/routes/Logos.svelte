@@ -18,7 +18,7 @@
     {/if}
   </div>
 
-  <Button onclick={toggle}>Toggle Svelte Logo</Button>
+  <Button on:click={toggle}>Toggle Svelte Logo</Button>
 </Toggle>
 
 <style>

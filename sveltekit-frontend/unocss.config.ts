@@ -13,13 +13,15 @@ export default defineConfig({
     presetUno(),
     presetAttributify(),
     presetIcons({
+      scale: 1.2,
+      cdn: 'https://esm.sh/',
       collections: {
-        lucide: () =>
-          import("@iconify/json/json/lucide.json").then((i) => i.default),
-        mdi: () => import("@iconify/json/json/mdi.json").then((i) => i.default),
-        tabler: () =>
-          import("@iconify/json/json/tabler.json").then((i) => i.default),
+        lucide: () => import('@iconify-json/lucide/icons.json').then(i => i.default).catch(() => ({})),
+        mdi: () => import('@iconify-json/mdi/icons.json').then(i => i.default).catch(() => ({})),
+        tabler: () => import('@iconify-json/tabler/icons.json').then(i => i.default).catch(() => ({})),
+        heroicons: () => import('@iconify-json/heroicons/icons.json').then(i => i.default).catch(() => ({}))
       },
+      autoInstall: true
     }),
     // REMOVED presetWebFonts to fix timeout error
     // presetWebFonts({

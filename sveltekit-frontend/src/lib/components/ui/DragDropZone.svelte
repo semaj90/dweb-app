@@ -1,21 +1,29 @@
 <script lang="ts">
   import { AlertCircle, FileText, Image, Upload } from 'lucide-svelte';
-  import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher<{
-    filesDropped: File[];
-    fileHover: boolean;
-  }>();
+  interface Props {
+    accept?: string;
+    multiple?: boolean;
+    maxSize?: number;
+    disabled?: boolean;
+    dragActive?: boolean;
+    onFilesDropped?: (files: File[]) => void;
+    onFileHover?: (hovering: boolean) => void;
+  }
 
-  export let accept = '*/*';
-  export let multiple = true;
-  export let maxSize = 10 * 1024 * 1024; // 10MB default
-  export let disabled = false;
-  export let dragActive = false;
+  let {
+    accept = '*/*',
+    multiple = true,
+    maxSize = 10 * 1024 * 1024, // 10MB default
+    disabled = false,
+    dragActive = $bindable(false),
+    onFilesDropped,
+    onFileHover
+  }: Props = $props();
 
   let fileInput: HTMLInputElement;
-  let isDragOver = false;
-  let errors: string[] = [];
+  let isDragOver = $state(false);
+  let errors = $state<string[]>([]);
 
   const allowedTypes = {
     'image/*': { icon: Image, label: 'Images' },
@@ -30,7 +38,7 @@
 
     isDragOver = true;
     dragActive = true;
-    dispatch('fileHover', true);
+    onFileHover?.(true);
 }
   function handleDragLeave(e: DragEvent) {
     e.preventDefault();
@@ -38,7 +46,7 @@
 
     isDragOver = false;
     dragActive = false;
-    dispatch('fileHover', false);
+    onFileHover?.(false);
 }
   function handleDrop(e: DragEvent) {
     e.preventDefault();
@@ -46,7 +54,7 @@
 
     isDragOver = false;
     dragActive = false;
-    dispatch('fileHover', false);
+    onFileHover?.(false);
 
     const files = Array.from(e.dataTransfer?.files || []);
     processFiles(files);
@@ -74,7 +82,7 @@
       validFiles.push(file);
 }
     if (validFiles.length > 0) {
-      dispatch('filesDropped', validFiles);
+      onFilesDropped?.(validFiles);
 }
     // Clear input so same file can be selected again
     if (fileInput) {
@@ -100,7 +108,7 @@
 }
   function getAcceptedFileInfo() {
     const types = accept.split(',').map(s => s.trim());
-    return types.map(type => allowedTypes[type] || allowedTypes['*/*']);
+    return types.map(type => allowedTypes[type as keyof typeof allowedTypes] || allowedTypes['*/*']);
 }
   function openFileDialog() {
     if (!disabled && fileInput) {
@@ -110,13 +118,13 @@
 
 <div
   class="container mx-auto px-4"
-  on:dragover={handleDragOver}
-  on:dragleave={handleDragLeave}
-  on:drop={handleDrop}
-  on:click={() => openFileDialog()}
+  ondragover={handleDragOver}
+  ondragleave={handleDragLeave}
+  ondrop={handleDrop}
+  onclick={() => openFileDialog()}
   role="button"
   tabindex={0}
-  on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
+  onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
 >
   <input
     bind:this={fileInput}
@@ -124,7 +132,7 @@
     {accept}
     {multiple}
     {disabled}
-    on:change={handleFileSelect}
+    onchange={handleFileSelect}
     class="container mx-auto px-4"
   />
 

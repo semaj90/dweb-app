@@ -1,7 +1,12 @@
 <script lang="ts">
   // In a real project, automate this with a Vite plugin or a build script for dynamic route discovery.
   // For now, keep this static or import from a generated file.
-  export let routes: { path: string; label: string }[] = [
+  interface Props {
+    routes?: { path: string; label: string }[];
+  }
+
+  let {
+    routes = [
     { path: "/", label: "Home" },
     { path: "/ai", label: "AI" },
     { path: "/ai-assistant", label: "AI Assistant" },
@@ -44,7 +49,8 @@
     { path: "/test-gemma3", label: "Test Gemma3" },
     { path: "/test-upload", label: "Test Upload" },
     { path: "/ui-demo", label: "UI Demo" }
-  ];
+  ]
+  }: Props = $props();
 </script>
 
 <!-- Add this to your homepage below the hero/feature section -->

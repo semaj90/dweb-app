@@ -3,31 +3,43 @@
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize } from '$lib/types';
 
-  export let variant: ButtonVariant = 'primary';
-  export let size: ButtonSize = 'md';
-  export let loading: boolean = false;
-  export let icon: string | undefined = undefined;
-  export let iconPosition: 'left' | 'right' = 'left';
-  export let fullWidth: boolean = false;
-  export let className: string = '';
-  export let ref: HTMLButtonElement | undefined = undefined;
-  // Accept all other props via $$restProps
+  // Migrated to Svelte 5 runes
+  let {
+    variant = 'primary',
+    size = 'md',
+    loading = false,
+    icon = undefined,
+    iconPosition = 'left',
+    fullWidth = false,
+    class: className = '',
+    ...rest
+  }: {
+    variant?: ButtonVariant;
+    size?: ButtonSize;
+    loading?: boolean;
+    icon?: string;
+    iconPosition?: 'left' | 'right';
+    fullWidth?: boolean;
+    class?: string;
+  } & HTMLButtonAttributes = $props();
 
-  $: classes = [
+  let ref: HTMLButtonElement | undefined = undefined;
+
+  let classes = $derived([
     'nier-btn',
     `btn-${variant}`,
     `btn-${size}`,
     fullWidth && 'w-full',
     loading && 'btn-loading',
     className
-  ].filter(Boolean).join(' ');
+  ].filter(Boolean).join(' '));
 </script>
 
 <BitsButton.Root
   bind:ref
   class={classes}
-  disabled={loading || Boolean($$restProps.disabled)}
-  {...$$restProps}
+  disabled={loading || Boolean(rest.disabled)}
+  {...rest}
   data-button-root
 >
   {#if icon && iconPosition === 'left'}

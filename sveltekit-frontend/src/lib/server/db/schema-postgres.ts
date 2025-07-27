@@ -12,20 +12,12 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { vector } from "pgvector/drizzle-orm";
 
 // === AUTHENTICATION & USER MANAGEMENT ===
 
 export const users = pgTable("users", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: timestamp("email_verified", { mode: "date" }),
   hashedPassword: text("hashed_password"),
@@ -50,7 +42,6 @@ export const sessions = pgTable("sessions", {
     withTimezone: true,
     mode: "date",
   }).notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
 
 export const emailVerificationCodes = pgTable("email_verification_codes", {
@@ -78,18 +69,156 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   }).notNull(),
 });
 
+// === LEGAL DOCUMENT MANAGEMENT ===
+
+export const legalDocuments = pgTable("legal_documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 500 }).notNull(),
+  documentType: varchar("document_type", { length: 50 }).notNull(), // statute, regulation, case_law, precedent, contract
+  jurisdiction: varchar("jurisdiction", { length: 100 }),
+  court: varchar("court", { length: 200 }),
+  citation: varchar("citation", { length: 300 }),
+  fullCitation: text("full_citation"),
+  docketNumber: varchar("docket_number", { length: 100 }),
+  dateDecided: timestamp("date_decided", { mode: "date" }),
+  datePublished: timestamp("date_published", { mode: "date" }),
+  fullText: text("full_text"),
+  content: text("content"), // Main document content for search/display
+  summary: text("summary"),
+  headnotes: text("headnotes"),
+  embedding: vector("embedding", { dimensions: 768 }), // Nomic embed-text default dimension
+  keywords: jsonb("keywords").$type<string[]>().default([]),
+  topics: jsonb("topics").$type<string[]>().default([]),
+  parties: jsonb("parties")
+    .$type<{
+      plaintiff?: string;
+      defendant?: string;
+      petitioner?: string;
+      respondent?: string;
+    }>()
+    .default({}),
+  judges: jsonb("judges").$type<string[]>().default([]),
+  attorneys: jsonb("attorneys")
+    .$type<{ plaintiff?: string[]; defendant?: string[] }>()
+    .default({}),
+  outcome: varchar("outcome", { length: 100 }),
+  precedentialValue: varchar("precedential_value", { length: 50 }), // binding, persuasive, non_precedential
+  url: text("url"),
+  pdfUrl: text("pdf_url"),
+  westlawId: varchar("westlaw_id", { length: 100 }),
+  lexisId: varchar("lexis_id", { length: 100 }),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  evidenceId: uuid("evidence_id").references(() => evidence.id, {
+    onDelete: "cascade",
+  }),
+  isActive: boolean("is_active").default(true),
+  // Auto-save functionality
+  isDirty: boolean("is_dirty").default(false),
+  lastSavedAt: timestamp("last_saved_at", { mode: "date" }),
+  autoSaveData: jsonb("auto_save_data"),
+  // Metadata
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const citations = pgTable("citations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  documentId: uuid("document_id").references(() => legalDocuments.id, {
+    onDelete: "cascade",
+  }),
+  citationType: varchar("citation_type", { length: 50 }).notNull(), // primary_authority, secondary_authority, supporting, distinguishing, overruled
+  relevanceScore: decimal("relevance_score", { precision: 3, scale: 2 }), // 0.00 - 1.00
+  pageNumber: integer("page_number"),
+  pinpointCitation: varchar("pinpoint_citation", { length: 100 }),
+  quotedText: text("quoted_text"),
+  contextBefore: text("context_before"),
+  contextAfter: text("context_after"),
+  annotation: text("annotation"),
+  legalPrinciple: text("legal_principle"),
+  citationFormat: varchar("citation_format", { length: 20 }).default(
+    "bluebook"
+  ), // bluebook, apa, mla, chicago
+  formattedCitation: text("formatted_citation"),
+  shepardsTreatment: varchar("shepards_treatment", { length: 50 }), // good_law, questioned, criticized, overruled
+  isKeyAuthority: boolean("is_key_authority").default(false),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const savedReports = pgTable("saved_reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 300 }).notNull(),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  reportType: varchar("report_type", { length: 50 }).notNull(), // case_summary, evidence_analysis, legal_brief, motion, discovery
+  templateId: uuid("template_id"),
+  content: jsonb("content").notNull(), // Rich report data structure
+  htmlContent: text("html_content"),
+  generatedBy: varchar("generated_by", { length: 50 }).default("manual"), // ai, manual, template
+  aiModel: varchar("ai_model", { length: 50 }),
+  aiPrompt: text("ai_prompt"),
+  exportFormat: varchar("export_format", { length: 20 }).default("pdf"), // pdf, docx, html, txt
+  status: varchar("status", { length: 20 }).default("draft"), // draft, final, archived
+  version: integer("version").default(1),
+  wordCount: integer("word_count"),
+  tags: jsonb("tags").$type<string[]>().default([]),
+  metadata: jsonb("metadata").default({}),
+  sharedWith: jsonb("shared_with").$type<string[]>().default([]),
+  lastExported: timestamp("last_exported", { mode: "date" }),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const canvasAnnotations = pgTable("canvas_annotations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  evidenceId: uuid("evidence_id").references(() => evidence.id, {
+    onDelete: "cascade",
+  }),
+  fabricData: jsonb("fabric_data").notNull(), // Complete Fabric.js canvas state
+  annotationType: varchar("annotation_type", { length: 50 }), // text, highlight, arrow, shape, measurement, redaction
+  coordinates: jsonb("coordinates"), // Simplified coordinate data for queries
+  boundingBox: jsonb("bounding_box"), // x, y, width, height for spatial queries
+  text: text("text"), // Extracted text for search
+  color: varchar("color", { length: 20 }),
+  layerOrder: integer("layer_order").default(0),
+  isVisible: boolean("is_visible").default(true),
+  metadata: jsonb("metadata").default({}),
+  version: integer("version").default(1),
+  parentAnnotationId: uuid("parent_annotation_id"), // For grouped annotations
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const legalResearch = pgTable("legal_research", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  query: text("query").notNull(),
+  searchTerms: jsonb("search_terms").$type<string[]>().default([]),
+  jurisdiction: varchar("jurisdiction", { length: 100 }),
+  dateRange: jsonb("date_range"), // {from: date, to: date}
+  courtLevel: varchar("court_level", { length: 50 }), // supreme, appellate, trial
+  practiceArea: varchar("practice_area", { length: 100 }),
+  resultsCount: integer("results_count").default(0),
+  searchResults: jsonb("search_results").default([]),
+  aiSummary: text("ai_summary"),
+  keyFindings: jsonb("key_findings").default([]),
+  recommendedCitations: jsonb("recommended_citations").default([]),
+  searchDuration: integer("search_duration"), // milliseconds
+  dataSource: varchar("data_source", { length: 50 }), // westlaw, lexis, google_scholar, internal
+  isBookmarked: boolean("is_bookmarked").default(false),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
 // === CASE MANAGEMENT ===
 
 export const cases = pgTable("cases", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseNumber: varchar("case_number", { length: 50 }).notNull().unique(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -120,13 +249,6 @@ export const cases = pgTable("cases", {
 export const criminals = pgTable("criminals", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   firstName: varchar("first_name", { length: 100 }).notNull(),
   lastName: varchar("last_name", { length: 100 }).notNull(),
@@ -161,13 +283,6 @@ export const criminals = pgTable("criminals", {
 export const evidence = pgTable("evidence", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseId: uuid("case_id"),
   criminalId: uuid("criminal_id"),
@@ -206,13 +321,6 @@ export const evidence = pgTable("evidence", {
 export const caseActivities = pgTable("case_activities", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseId: uuid("case_id").notNull(),
   activityType: varchar("activity_type", { length: 50 }).notNull(),
@@ -236,13 +344,6 @@ export const caseActivities = pgTable("case_activities", {
 export const attachmentVerifications = pgTable("attachment_verifications", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   attachmentId: uuid("attachment_id").notNull(),
   verifiedBy: uuid("verified_by")
@@ -262,13 +363,6 @@ export const attachmentVerifications = pgTable("attachment_verifications", {
 export const themes = pgTable("themes", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   name: varchar("name", { length: 100 }).notNull(),
   description: text("description"),
@@ -288,13 +382,6 @@ export const themes = pgTable("themes", {
 export const contentEmbeddings = pgTable("content_embeddings", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   contentId: uuid("content_id").notNull(),
   contentType: varchar("content_type", { length: 50 }).notNull(), // 'case', 'evidence', 'criminal'
@@ -310,13 +397,6 @@ export const contentEmbeddings = pgTable("content_embeddings", {
 export const ragSessions = pgTable("rag_sessions", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   sessionId: varchar("session_id", { length: 255 }).notNull().unique(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
@@ -330,13 +410,6 @@ export const ragSessions = pgTable("rag_sessions", {
 export const ragMessages = pgTable("rag_messages", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   sessionId: varchar("session_id", { length: 255 }).notNull(),
   messageIndex: integer("message_index").notNull(),
@@ -355,13 +428,6 @@ export const ragMessages = pgTable("rag_messages", {
 export const reports = pgTable("reports", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 255 }).notNull(),
@@ -379,13 +445,6 @@ export const reports = pgTable("reports", {
 export const canvasStates = pgTable("canvas_states", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
@@ -400,13 +459,6 @@ export const canvasStates = pgTable("canvas_states", {
 export const personsOfInterest = pgTable("persons_of_interest", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
@@ -425,13 +477,6 @@ export const personsOfInterest = pgTable("persons_of_interest", {
 export const hashVerifications = pgTable("hash_verifications", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   evidenceId: uuid("evidence_id").references(() => evidence.id, {
     onDelete: "cascade",
@@ -440,7 +485,7 @@ export const hashVerifications = pgTable("hash_verifications", {
   storedHash: varchar("stored_hash", { length: 64 }),
   result: boolean("result").notNull(),
   verificationMethod: varchar("verification_method", { length: 50 }).default(
-    "manual",
+    "manual"
   ),
   verifiedBy: uuid("verified_by").references(() => users.id),
   verifiedAt: timestamp("verified_at", { mode: "date" }).defaultNow(),
@@ -453,13 +498,6 @@ export const hashVerifications = pgTable("hash_verifications", {
 export const aiReports = pgTable("ai_reports", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   reportType: varchar("report_type", { length: 50 }).notNull(), // case_overview, evidence_analysis, timeline_summary, prosecution_strategy
@@ -479,13 +517,6 @@ export const aiReports = pgTable("ai_reports", {
 export const statutes = pgTable("statutes", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   title: varchar("title", { length: 255 }).notNull(),
   code: varchar("code", { length: 100 }).notNull(),
@@ -500,28 +531,8 @@ export const statutes = pgTable("statutes", {
 
 // === CONTEXT7 LEGAL AI ENHANCEMENT TABLES ===
 
-export const legalDocuments = pgTable("legal_documents", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom(),
-  content: text("content").notNull(),
-  embedding: text("embedding"), // 1536-dimensional vector for legal embeddings
-  legalCategory: varchar("legal_category", { length: 50 }),
-  caseReference: varchar("case_reference", { length: 100 }),
-  jurisdiction: varchar("jurisdiction", { length: 50 }),
-  documentType: varchar("document_type", { length: 50 }), // statute, precedent, brief, motion
-  confidence: decimal("confidence", { precision: 3, scale: 2 }).default("0.85"),
-  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
-  evidenceId: uuid("evidence_id").references(() => evidence.id, { onDelete: "cascade" }),
-  metadata: jsonb("metadata").default({}).notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-});
-
 export const legalPrecedents = pgTable("legal_precedents", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   caseTitle: varchar("case_title", { length: 255 }).notNull(),
   citation: varchar("citation", { length: 255 }).notNull(),
   court: varchar("court", { length: 100 }),
@@ -538,9 +549,7 @@ export const legalPrecedents = pgTable("legal_precedents", {
 });
 
 export const legalAnalysisSessions = pgTable("legal_analysis_sessions", {
-  id: uuid("id")
-    .primaryKey()
-    .defaultRandom(),
+  id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   sessionType: varchar("session_type", { length: 50 }).default("case_analysis"),
@@ -560,13 +569,6 @@ export const legalAnalysisSessions = pgTable("legal_analysis_sessions", {
 export const userEmbeddings = pgTable("user_embeddings", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
@@ -578,13 +580,6 @@ export const userEmbeddings = pgTable("user_embeddings", {
 export const chatEmbeddings = pgTable("chat_embeddings", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   conversationId: uuid("conversation_id").notNull(),
   messageId: uuid("message_id").notNull(),
@@ -598,13 +593,6 @@ export const chatEmbeddings = pgTable("chat_embeddings", {
 export const evidenceVectors = pgTable("evidence_vectors", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   evidenceId: uuid("evidence_id").references(() => evidence.id, {
     onDelete: "cascade",
@@ -618,13 +606,6 @@ export const evidenceVectors = pgTable("evidence_vectors", {
 export const caseEmbeddings = pgTable("case_embeddings", {
   id: uuid("id")
     .primaryKey()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
-    .defaultRandom()
     .defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
@@ -679,7 +660,7 @@ export const personsOfInterestRelations = relations(
       fields: [personsOfInterest.createdBy],
       references: [users.id],
     }),
-  }),
+  })
 );
 
 export const hashVerificationsRelations = relations(
@@ -693,7 +674,7 @@ export const hashVerificationsRelations = relations(
       fields: [hashVerifications.verifiedBy],
       references: [users.id],
     }),
-  }),
+  })
 );
 
 export const userEmbeddingsRelations = relations(userEmbeddings, ({ one }) => ({
@@ -714,7 +695,7 @@ export const evidenceVectorsRelations = relations(
       fields: [evidenceVectors.evidenceId],
       references: [evidence.id],
     }),
-  }),
+  })
 );
 
 export const caseEmbeddingsRelations = relations(caseEmbeddings, ({ one }) => ({
@@ -737,20 +718,26 @@ export const legalDocumentsRelations = relations(legalDocuments, ({ one }) => ({
   }),
 }));
 
-export const legalPrecedentsRelations = relations(legalPrecedents, ({ many }) => ({
-  // No direct foreign key relations but used via vector similarity
-}));
+export const legalPrecedentsRelations = relations(
+  legalPrecedents,
+  ({ many }) => ({
+    // No direct foreign key relations but used via vector similarity
+  })
+);
 
-export const legalAnalysisSessionsRelations = relations(legalAnalysisSessions, ({ one }) => ({
-  case: one(cases, {
-    fields: [legalAnalysisSessions.caseId],
-    references: [cases.id],
-  }),
-  user: one(users, {
-    fields: [legalAnalysisSessions.userId],
-    references: [users.id],
-  }),
-}));
+export const legalAnalysisSessionsRelations = relations(
+  legalAnalysisSessions,
+  ({ one }) => ({
+    case: one(cases, {
+      fields: [legalAnalysisSessions.caseId],
+      references: [cases.id],
+    }),
+    user: one(users, {
+      fields: [legalAnalysisSessions.userId],
+      references: [users.id],
+    }),
+  })
+);
 
 // === RELATIONSHIPS ===
 
@@ -829,7 +816,7 @@ export const attachmentVerificationsRelations = relations(
       fields: [attachmentVerifications.verifiedBy],
       references: [users.id],
     }),
-  }),
+  })
 );
 
 export const themesRelations = relations(themes, ({ one }) => ({
@@ -846,7 +833,7 @@ export const contentEmbeddingsRelations = relations(
       fields: [contentEmbeddings.contentId],
       references: [cases.id],
     }),
-  }),
+  })
 );
 
 export const ragSessionsRelations = relations(ragSessions, ({ one }) => ({

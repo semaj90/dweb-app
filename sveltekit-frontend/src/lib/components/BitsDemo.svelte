@@ -4,22 +4,25 @@
   import { createToaster, melt } from '@melt-ui/svelte';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
-  
-  export let caseTypes = [
+
+  // Migrated to Svelte 5 runes
+  let {
+    caseTypes = [
     { value: 'criminal', label: 'Criminal Cases' },
     { value: 'civil', label: 'Civil Cases' },
     { value: 'family', label: 'Family Law' },
     { value: 'corporate', label: 'Corporate Law' }
-  ];
-  
-  interface ToastData {
+  ]
+  } = $props();
+
+  type ToastData = {
     title?: string;
     description?: string;
     color: string;
-}
+  };
   let dialogOpen = false;
   let alertOpen = false;
-  
+
   // Melt-UI Toast/Notification setup
   const {
     elements: { content, title, description, close },
@@ -27,7 +30,7 @@
     states: { toasts },
     actions: { portal }
   } = createToaster<ToastData>();
-  
+
   // Notification functions
   function showSuccessNotification() {
     addToast({
@@ -67,9 +70,10 @@
 }
 </script>
 
+
 <div class="container mx-auto px-4">
   <h2 class="container mx-auto px-4">Bits UI Components Demo</h2>
-  
+
   <!-- Melt-UI Notification Demo Section -->
   <div class="container mx-auto px-4">
     <h3 class="container mx-auto px-4">Melt-UI Notifications Demo</h3>
@@ -88,12 +92,12 @@
       </button>
     </div>
   </div>
-  
+
   <!-- Bits UI Button -->
-  <Button.Root class="container mx-auto px-4" onclick={showSuccessNotification}>
+  <Button.Root class="container mx-auto px-4" on:click={showSuccessNotification}>
     Create New Case
   </Button.Root>
-  
+
   <!-- Bits UI Select -->
   <div class="container mx-auto px-4">
     <label class="container mx-auto px-4" for="practice-area-select">Legal Practice Area</label>
@@ -112,7 +116,7 @@
       </Select.Portal>
     </Select.Root>
   </div>
-  
+
   <!-- Bits UI Dialog -->
   <Dialog.Root bind:open={dialogOpen} onOpenChange={(open) => { if (open) showInfoNotification(); }}>
     <Dialog.Trigger class="container mx-auto px-4">
@@ -125,10 +129,10 @@
           Case Management System
         </Dialog.Title>
         <Dialog.Description class="container mx-auto px-4">
-          Manage your legal cases with our comprehensive case management system. 
+          Manage your legal cases with our comprehensive case management system.
           Track evidence, deadlines, and case progress all in one place.
         </Dialog.Description>
-        
+
         <div class="container mx-auto px-4">
           <div class="container mx-auto px-4">
             <h4>Evidence Management</h4>
@@ -143,7 +147,7 @@
             <p>Get AI-powered insights on your cases</p>
           </div>
         </div>
-        
+
         <div class="container mx-auto px-4">
           <Dialog.Close class="container mx-auto px-4">
             Close
@@ -155,7 +159,7 @@
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>
-  
+
   <!-- Bits UI Alert Dialog -->
   <AlertDialog.Root bind:open={alertOpen}>
     <AlertDialog.Trigger class="container mx-auto px-4">
@@ -170,19 +174,19 @@
         <AlertDialog.Description class="container mx-auto px-4">
           Are you sure you want to delete this case? This action cannot be undone and will permanently remove all case data, evidence, and related documents.
         </AlertDialog.Description>
-        
+
         <div class="container mx-auto px-4">
           <AlertDialog.Cancel class="container mx-auto px-4">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="container mx-auto px-4" onclick={showErrorNotification}>
+          <AlertDialog.Action class="container mx-auto px-4" on:click={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>
       </AlertDialog.Content>
     </AlertDialog.Portal>
   </AlertDialog.Root>
-  
+
   <div class="container mx-auto px-4">
     <p class="container mx-auto px-4">
       <strong>Demo:</strong> Bits UI components provide accessible, unstyled components.
@@ -449,3 +453,5 @@
     border-radius: var(--radius-md);
 }
 </style>
+
+

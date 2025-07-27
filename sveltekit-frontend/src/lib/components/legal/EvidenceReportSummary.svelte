@@ -4,7 +4,7 @@
   import AISummaryReader from './AISummaryReader.svelte';
   import { FileText, AlertTriangle, CheckCircle, Clock, Target, Scale, Eye, Download } from 'lucide-svelte';
   import { fly, fade } from 'svelte/transition';
-  
+
   export let evidenceId: string;
   export let caseId: string;
   export let reportData: EvidenceReport;
@@ -58,7 +58,7 @@
 
   // Generate comprehensive content for AI analysis
   $: analysisContent = generateAnalysisContent(reportData);
-  
+
   function generateAnalysisContent(report: EvidenceReport): string {
     return `
 EVIDENCE ANALYSIS REPORT
@@ -222,18 +222,18 @@ ${report.attachments.map(att => `• ${att.name} (${att.type})`).join('\n')}
         <Eye class="w-5 h-5" />
         Evidence Details
       </h3>
-      
+
       <div class="space-y-4">
         <div>
           <label class="text-sm font-medium text-gray-700">Item Number</label>
           <p class="mt-1 text-gray-900 font-mono">{reportData.evidence.itemNumber}</p>
         </div>
-        
+
         <div>
           <label class="text-sm font-medium text-gray-700">Description</label>
           <p class="mt-1 text-gray-900">{reportData.evidence.description}</p>
         </div>
-        
+
         <div>
           <label class="text-sm font-medium text-gray-700">Collection Details</label>
           <div class="mt-1 text-sm text-gray-900">
@@ -264,7 +264,7 @@ ${report.attachments.map(att => `• ${att.name} (${att.type})`).join('\n')}
         <Target class="w-5 h-5" />
         Analysis Details
       </h3>
-      
+
       <div class="space-y-4">
         <div>
           <label class="text-sm font-medium text-gray-700">Analyst</label>
@@ -286,7 +286,7 @@ ${report.attachments.map(att => `• ${att.name} (${att.type})`).join('\n')}
                 {/each}
               </ul>
             </div>
-            
+
             <div>
               <p class="text-sm font-medium text-gray-600">Tools</p>
               <div class="mt-1 flex flex-wrap gap-1">
@@ -306,7 +306,7 @@ ${report.attachments.map(att => `• ${att.name} (${att.type})`).join('\n')}
         <Scale class="w-5 h-5" />
         Legal Implications
       </h3>
-      
+
       <div class="space-y-4">
         <div>
           <label class="text-sm font-medium text-gray-700">Potential Charges</label>
@@ -349,19 +349,19 @@ ${report.attachments.map(att => `• ${att.name} (${att.type})`).join('\n')}
   <!-- Key Findings -->
   <div class="bg-white border border-gray-200 rounded-lg p-6">
     <h3 class="text-lg font-semibold text-gray-900 mb-4">Key Findings</h3>
-    
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div>
         <h4 class="font-medium text-gray-900 mb-3">Summary</h4>
         <p class="text-gray-700 leading-relaxed">{reportData.findings.summary}</p>
-        
+
         <div class="mt-4">
           <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-gray-700">Confidence Level</span>
             <span class="text-sm font-semibold text-gray-900">{Math.round(reportData.findings.confidence * 100)}%</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               class="h-2 rounded-full transition-all duration-300"
               class:bg-green-500={reportData.findings.confidence >= 0.8}
               class:bg-yellow-500={reportData.findings.confidence >= 0.6 && reportData.findings.confidence < 0.8}
@@ -404,7 +404,7 @@ ${report.attachments.map(att => `• ${att.name} (${att.type})`).join('\n')}
   {#if reportData.attachments.length > 0}
     <div class="bg-white border border-gray-200 rounded-lg p-6">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">Attachments</h3>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {#each reportData.attachments as attachment}
           <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">

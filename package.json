@@ -10,7 +10,8 @@
     "test": "node test.mjs",
     "status": "docker ps",
     "logs": "docker-compose logs",
-    "check": "npx svelte-kit check || npx tsc --noEmit"
+    "check": "npx svelte-kit check || npx tsc --noEmit",
+    "dev": "cd sveltekit-frontend && npm run dev"
   },
   "dependencies": {
     "@langchain/community": "^0.3.49",
@@ -19,14 +20,19 @@
     "langchain": "^0.3.30",
     "neo4j-driver": "^5.15.0",
     "node-fetch": "^3.3.2",
+    "pdf-parse": "^1.1.1",
     "pg": "^8.11.3",
-    "redis": "^4.7.1"
+    "redis": "^4.7.1",
+    "xml2js": "^0.6.2"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
+    "@sveltejs/adapter-auto": "^6.0.1",
     "@sveltejs/kit": "^2.26.1",
+    "@types/pdf-parse": "^1.1.5",
+    "svelte-preprocess": "^6.0.3",
     "typescript": "^5.8.3"
   }
 }

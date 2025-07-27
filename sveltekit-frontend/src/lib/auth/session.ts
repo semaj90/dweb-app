@@ -10,7 +10,7 @@ import { db } from "../server/db/pg";
 if (!db) {
   throw new Error("Database connection is not available");
 }
-const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
+const adapter = new DrizzlePostgreSQLAdapter(db, sessions as any, users as any);
 
 // Initialize Lucia with proper configuration
 export const lucia = new Lucia(adapter, {

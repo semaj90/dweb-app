@@ -2,11 +2,21 @@
   import { marked } from "marked";
   import { onMount } from "svelte";
 
-  export let markdown: string = "";
-  export let className: string = "";
-  export let unsafe: boolean = false; // Allow raw HTML in markdown
-  export let baseUrl: string = "";
-  export let breaks: boolean = true; // Convert \n to <br>
+  interface Props {
+    markdown?: string;
+    className?: string;
+    unsafe?: boolean; // Allow raw HTML in markdown
+    baseUrl?: string;
+    breaks?: boolean; // Convert \n to <br>
+  }
+
+  let {
+    markdown = "",
+    className = "",
+    unsafe = false,
+    baseUrl = "",
+    breaks = true
+  }: Props = $props();
 
   let renderedHtml: string = "";
   let isClient = false;
@@ -41,7 +51,7 @@
       const renderer = new marked.Renderer();
 
       // Customize link rendering for security
-      renderer.link = ({ href, title, tokens }) => {
+      renderer.link = ({ href, title, tokens }: { href: string; title?: string; tokens?: any[] }) => {
         const titleAttr = title ? ` title="${title}"` : "";
         const target = href.startsWith("http")
           ? ' target="_blank" rel="noopener noreferrer"'
@@ -76,10 +86,12 @@
       console.error("Error rendering markdown:", error);
       renderedHtml = `<p class="container mx-auto px-4">Error rendering markdown: ${error instanceof Error ? error.message : "Unknown error"}</p>`;
 }}
-  // Re-render when markdown changes
-  $: if (isClient && markdown) {
-    renderMarkdown();
-}
+  // Re-render when markdown changes using $effect
+  $effect(() => {
+    if (isClient && markdown) {
+      renderMarkdown();
+    }
+  });
 </script>
 
 <div

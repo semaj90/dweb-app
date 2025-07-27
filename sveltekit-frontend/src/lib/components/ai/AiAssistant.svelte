@@ -16,8 +16,15 @@
   const getUser = getContext('user');
   const user = typeof getUser === 'function' ? getUser() : undefined;
 
-  export let contextItems: any[] = [];
-  export let caseId: string = '';
+  interface Props {
+    contextItems?: any[];
+    caseId?: string;
+  }
+
+  let {
+    contextItems = [],
+    caseId = ''
+  }: Props = $props();
 
   // Use the global AI store (XState-based, memoized, streaming-ready)
   // Access store state via $aiGlobalStore, send actions via aiGlobalActions.send

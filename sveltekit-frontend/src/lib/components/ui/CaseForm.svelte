@@ -153,7 +153,7 @@
     </div>
   </div>
 
-  <Card variant="elevated" padding="lg">
+  <Card variant="interactive" padding="lg">
     <Form
       bind:formApi
       options={formOptions}

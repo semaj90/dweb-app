@@ -95,7 +95,7 @@
           class="flex-1"
         />
         <Button
-          onclick={performVectorSearch}
+          on:click={performVectorSearch}
           loading={isSearching}
           disabled={!searchQuery.trim()}
         >
@@ -148,7 +148,7 @@
       <Card>
         <div class="p-4">
           <h3 class="text-lg font-semibold mb-4 text-crimson">Modal Component</h3>
-            <Button onclick={() => modalOpen = true}>Open Modal</Button>
+            <Button on:click={() => modalOpen = true}>Open Modal</Button>
 
             <Modal
               bind:open={modalOpen}
@@ -160,8 +160,8 @@
                     The modal integrates with bits-ui and follows Svelte 5 best practices.
                   </p>
                   <div class="flex gap-2 justify-end">
-                    <Button variant="ghost" onclick={() => modalOpen = false}>Cancel</Button>
-                    <Button onclick={() => modalOpen = false}>Acknowledge</Button>
+                    <Button variant="ghost" on:click={() => modalOpen = false}>Cancel</Button>
+                    <Button on:click={() => modalOpen = false}>Acknowledge</Button>
                   </div>
                 </div>
             </Modal>

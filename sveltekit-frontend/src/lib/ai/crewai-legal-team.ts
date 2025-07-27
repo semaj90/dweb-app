@@ -286,19 +286,19 @@ class CrewAILegalTeam {
         throw new Error(`Crew '${crewName}' not found`);
       }
 
-      // Create workflow promise
-      const workflowPromise = this.runCrewWorkflow(crew, context, workflowId);
+      // Create workflow promise with proper typing
+      const workflowPromise = this.runCrewWorkflow(crew, context, workflowId).then(result => ({
+        ...result,
+        crewId: workflowId,
+        workflowName: crewName,
+        totalTime: Date.now() - startTime
+      }));
       this.activeWorkflows.set(workflowId, workflowPromise);
 
       const result = await workflowPromise;
       this.activeWorkflows.delete(workflowId);
 
-      return {
-        ...result,
-        crewId: workflowId,
-        workflowName: crewName,
-        totalTime: Date.now() - startTime
-      };
+      return result;
 
     } catch (error) {
       this.activeWorkflows.delete(workflowId);

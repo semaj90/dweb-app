@@ -396,7 +396,7 @@
                   background: "var(--drop-zone-active)",
                   border: "2px dashed var(--drop-indicator)",
                 },
-              "
+              }}
               on:consider={(e) => handleDndConsider(e, column.id)}
               on:finalize={(e) => handleDndFinalize(e, column.id)}
             >
@@ -471,7 +471,7 @@
                 title={evidence.title}
                 fileUrl={evidence.fileUrl}
                 position={evidence.position}
-                size={{ width: 400, height: 300  "
+                size={{ width: 400, height: 300 }}
                 isSelected={false}
                 isDirty={false}
                 on:positionUpdate={(e) =>

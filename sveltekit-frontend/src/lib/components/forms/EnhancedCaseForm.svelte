@@ -1,8 +1,3 @@
-import type { Case } from '$lib/types';
-
-import type { User } from '$lib/types/user';
-
-
 <!-- Enhanced Case Form with proper schema mapping -->
 <script lang="ts">
   import { notifications } from "$lib/stores/notification";
@@ -10,13 +5,7 @@ import type { User } from '$lib/types/user';
   import { createEventDispatcher } from "svelte";
   import type { Case } from "$lib/types/index";
 
-
   export let case_: Case| null = null; // Edit mode if provided
-
-
-import type { User } from '$lib/types/user';
-
-import type { User } from '$lib/types/user';
 
   export let user: User;
 
@@ -232,7 +221,7 @@ import type { User } from '$lib/types/user';
           id="description"
           bind:value={formData.description}
           placeholder="Detailed case description"
-          rows={${1"
+          rows="4"
         ></textarea>
       </div>
     </section>

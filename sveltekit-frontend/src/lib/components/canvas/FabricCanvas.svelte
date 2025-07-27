@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -8,17 +8,25 @@
     Save, Download, Image as ImageIcon, FileText 
   } from 'lucide-svelte';
 
-  // Props
-  export let width = 800;
-  export let height = 600;
-  export let caseId: string | undefined = undefined;
-  export let readOnly = false;
+  interface Props {
+    width?: number;
+    height?: number;
+    caseId?: string;
+    readOnly?: boolean;
+    onSave?: (data: { objects: any[] }) => void;
+    onDelete?: (data: { objectId: string }) => void;
+    onSelect?: (data: { object: any }) => void;
+  }
 
-  const dispatch = createEventDispatcher<{
-    save: { objects: any[] };
-    delete: { objectId: string };
-    select: { object: any };
-  }>();
+  let {
+    width = 800,
+    height = 600,
+    caseId = undefined,
+    readOnly = false,
+    onSave,
+    onDelete,
+    onSelect
+  }: Props = $props();
 
   // Fabric.js canvas instance
   let fabricCanvas: any = null;
@@ -62,7 +70,7 @@
     // Object selection
     fabricCanvas.on('selection:created', (e: any) => {
       selectedObject = e.selected[0];
-      dispatch('select', { object: selectedObject });
+      onSelect?.({ object: selectedObject });
     });
 
     fabricCanvas.on('selection:cleared', () => {
@@ -263,7 +271,7 @@
     
     if (evidenceId) {
       evidenceItems = evidenceItems.filter(item => item.id !== evidenceId);
-      dispatch('delete', { objectId: evidenceId });
+      onDelete?.({ objectId: evidenceId });
     }
     
     selectedObject = null;
@@ -294,7 +302,7 @@
     
     const objects = fabricCanvas.getObjects();
     updateCanvasObjects();
-    dispatch('save', { objects: canvasObjects });
+    onSave?.({ objects: canvasObjects });
   }
 
   function updateCanvasObjects() {

@@ -13,7 +13,7 @@
   </p>
 
   <div>
-    <Button class="mb-2" onclick={() => alert("hello!")}>Hello</Button>
+    <Button class="mb-2" on:click={() => alert("hello!")}>Hello</Button>
   </div>
 
   <div class="logo bg-red-100" />

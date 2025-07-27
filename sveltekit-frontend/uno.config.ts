@@ -1,4 +1,4 @@
-import { defineConfig, presetUno, presetAttributify, presetIcons, presetTypography, presetWebFonts, transformerDirectives, transformerVariantGroup } from 'unocss'
+import { defineConfig, presetUno, presetAttributify, presetIcons, presetTypography, presetWebFonts, transformerDirectives, transformerVariantGroup, transformerCompileClass } from 'unocss'
 import extractorSvelte from '@unocss/extractor-svelte'
 
 export default defineConfig({
@@ -7,23 +7,65 @@ export default defineConfig({
     presetAttributify(),
     presetIcons({
       scale: 1.2,
-      cdn: 'https://esm.sh/'
+      cdn: 'https://esm.sh/',
+      collections: {
+        lucide: () => import('@iconify-json/lucide/icons.json').then(i => i.default).catch(() => ({})),
+        tabler: () => import('@iconify-json/tabler/icons.json').then(i => i.default).catch(() => ({})),
+        heroicons: () => import('@iconify-json/heroicons/icons.json').then(i => i.default).catch(() => ({}))
+      },
+      autoInstall: true
     }),
-    presetTypography(),
+    presetTypography({
+      cssExtend: {
+        'code': {
+          color: 'var(--color-nier-accent)',
+          'background-color': 'var(--color-nier-bg-tertiary)',
+          padding: '0.125rem 0.25rem',
+          'border-radius': '0.25rem',
+          'font-size': '0.875em',
+          'font-family': 'var(--font-mono)'
+        },
+        'pre': {
+          'background-color': 'var(--color-nier-bg-secondary)',
+          'border': '1px solid var(--color-nier-border)',
+          'border-radius': '0.5rem'
+        }
+      }
+    }),
     presetWebFonts({
       fonts: {
         mono: ['JetBrains Mono', 'Roboto Mono', 'SF Mono', 'Monaco', 'Consolas'],
-        gothic: ['MS Gothic', 'MS UI Gothic', 'monospace']
+        gothic: ['MS Gothic', 'MS UI Gothic', 'monospace'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        oswald: ['Oswald', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif']
       }
     })
   ],
   transformers: [
     transformerDirectives(),
-    transformerVariantGroup()
+    transformerVariantGroup(),
+    transformerCompileClass({
+      classPrefix: 'nier-'
+    })
   ],
   extractors: [
     extractorSvelte(),
   ],
+  content: {
+    pipeline: {
+      include: [
+        'src/**/*.{svelte,js,ts}',
+        'src/**/*.{html,vue,tsx,jsx}'
+      ],
+      exclude: [
+        'node_modules/**/*',
+        '.git/**/*',
+        'dist/**/*',
+        'build/**/*'
+      ]
+    }
+  },
   theme: {
     colors: {
       // NieR: Automata Color Palette

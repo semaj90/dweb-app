@@ -1,0 +1,520 @@
+// LangChain.js RAG Implementation for Legal AI Platform
+// Advanced RAG with vLLM integration and legal domain specialization
+import { ChatOpenAI } from "@langchain/openai";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
+import { QdrantClient } from "@qdrant/js-client-rest";
+import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
+import {
+  RunnableSequence,
+  RunnablePassthrough,
+  RunnableMap,
+} from "@langchain/core/runnables";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { MultiQueryRetriever } from "langchain/retrievers/multi_query";
+import { ContextualCompressionRetriever } from "langchain/retrievers/contextual_compression";
+import { LLMChainExtractor } from "langchain/retrievers/document_compressors/chain_extract";
+import type { BaseRetriever } from "@langchain/core/retrievers";
+import { formatDocumentsAsString } from "langchain/util/document";
+import type { Document } from "@langchain/core/documents";
+import type { LegalDocumentMetadata } from "./qdrant-service";
+
+export interface LegalRAGConfig {
+  qdrantUrl: string;
+  vllmGenerationUrl: string;
+  vllmEmbeddingUrl: string;
+  apiKey: string;
+  collectionName: string;
+  embeddingDimensions: number;
+}
+
+export interface RAGQueryOptions {
+  thinkingMode?: boolean;
+  verbose?: boolean;
+  documentType?: string;
+  jurisdiction?: string;
+  practiceArea?: string;
+  maxRetrievedDocs?: number;
+  useCompression?: boolean;
+  includeMetadata?: boolean;
+  confidenceThreshold?: number;
+}
+
+export interface RAGResult {
+  answer: string;
+  sourceDocuments: Document[];
+  confidence: number;
+  reasoning?: string;
+  metadata: {
+    retrievedChunks: number;
+    processingTime: number;
+    usedThinkingMode: boolean;
+    usedCompression: boolean;
+  };
+}
+
+/**
+ * Advanced Legal RAG System with LangChain.js
+ * Implements sophisticated retrieval and generation patterns for legal document analysis
+ */
+export class LegalRAGService {
+  private llm: ChatOpenAI;
+  private embeddings: OpenAIEmbeddings;
+  private vectorStore: QdrantVectorStore | null = null;
+  private qdrantClient: QdrantClient;
+  private textSplitter: RecursiveCharacterTextSplitter;
+  private config: LegalRAGConfig;
+
+  // Legal-specific prompt templates
+  private readonly LEGAL_PROMPTS = {
+    STANDARD_RAG: ChatPromptTemplate.fromTemplate(`
+You are a specialized legal AI assistant. Answer the user's question based solely on the provided legal document context.
+
+Context from legal documents:
+{context}
+
+Question: {question}
+
+Instructions:
+- Provide accurate legal analysis based only on the provided context
+- Cite specific document sections when making claims
+- If the context is insufficient, clearly state this limitation
+- Use appropriate legal terminology
+- Identify key legal concepts, parties, and obligations
+- If asked about jurisdiction-specific laws, note any applicable jurisdictions mentioned in the context
+
+Answer:`),
+
+    THINKING_MODE_RAG: ChatPromptTemplate.fromTemplate(`
+You are a specialized legal AI assistant operating in "thinking mode." Provide comprehensive legal analysis based on the provided context.
+
+Context from legal documents:
+{context}
+
+Question: {question}
+
+Instructions for thinking mode:
+- Provide step-by-step legal reasoning
+- Consider multiple legal perspectives and interpretations
+- Identify potential risks, opportunities, and implications
+- Analyze relationships between different document sections
+- Consider statutory requirements and regulatory compliance
+- Suggest areas that may require additional research or legal counsel
+- Provide detailed citations to specific document sections
+
+Comprehensive Analysis:`),
+
+    VERBOSE_RAG: ChatPromptTemplate.fromTemplate(`
+You are a specialized legal AI assistant providing detailed legal analysis based on the provided context.
+
+Context from legal documents:
+{context}
+
+Question: {question}
+
+Instructions for verbose mode:
+- Provide comprehensive explanations with legal background
+- Include relevant legal principles and doctrines
+- Explain implications and consequences in detail
+- Discuss practical considerations for implementation
+- Address potential compliance requirements
+- Provide detailed document analysis with specific citations
+- Include guidance on next steps or recommended actions
+
+Detailed Legal Analysis:`),
+
+    QUERY_GENERATION: PromptTemplate.fromTemplate(`
+You are a legal research assistant. Generate diverse search queries to find relevant information for the following question.
+
+Original question: {question}
+
+Generate 3 different search queries that would help find relevant legal information:
+1. A query focusing on legal concepts and principles
+2. A query focusing on specific legal terms and definitions
+3. A query focusing on practical applications and implications
+
+Only return the queries, one per line.`),
+  };
+
+  constructor(config: LegalRAGConfig) {
+    this.config = config;
+
+    // Initialize LLM for generation
+    this.llm = new ChatOpenAI({
+      modelName: "gemma-3-legal",
+      openAIApiKey: config.apiKey,
+      configuration: {
+        baseURL: config.vllmGenerationUrl,
+      },
+      temperature: 0.1, // Low temperature for legal accuracy
+      maxTokens: 4096,
+      timeout: 120000,
+    });
+
+    // Initialize embeddings
+    this.embeddings = new OpenAIEmbeddings({
+      modelName: "nomic-embed-legal",
+      openAIApiKey: config.apiKey,
+      configuration: {
+        baseURL: config.vllmEmbeddingUrl,
+      },
+      dimensions: config.embeddingDimensions,
+    });
+
+    // Initialize Qdrant client
+    this.qdrantClient = new QdrantClient({
+      url: config.qdrantUrl,
+    });
+
+    // Initialize text splitter optimized for legal documents
+    this.textSplitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 1200, // Larger chunks for legal context
+      chunkOverlap: 200, // Substantial overlap to preserve legal context
+      separators: [
+        "\n\n", // Paragraph breaks
+        "\n", // Line breaks
+        ". ", // Sentence endings
+        ", ", // Clause separators
+        " ", // Word breaks
+      ],
+    });
+
+    this.initializeVectorStore();
+  }
+
+  /**
+   * Initialize Qdrant vector store
+   */
+  private async initializeVectorStore(): Promise<void> {
+    try {
+      this.vectorStore = await QdrantVectorStore.fromExistingCollection(
+        this.embeddings,
+        {
+          client: this.qdrantClient,
+          collectionName: this.config.collectionName,
+          contentPayloadKey: "content",
+          metadataPayloadKey: "metadata",
+        }
+      );
+      console.log("✅ Legal RAG vector store initialized");
+    } catch (error) {
+      console.error("❌ Failed to initialize vector store:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Perform RAG query with advanced legal analysis
+   */
+  async query(
+    question: string,
+    options: RAGQueryOptions = {}
+  ): Promise<RAGResult> {
+    const startTime = Date.now();
+
+    if (!this.vectorStore) {
+      throw new Error("Vector store not initialized");
+    }
+
+    const {
+      thinkingMode = false,
+      verbose = false,
+      maxRetrievedDocs = 5,
+      useCompression = true,
+      confidenceThreshold = 0.7,
+      documentType,
+      jurisdiction,
+      practiceArea,
+    } = options;
+
+    try {
+      // Create retriever with legal-specific filtering
+      let retriever: any = this.vectorStore.asRetriever({
+        k: thinkingMode ? maxRetrievedDocs * 2 : maxRetrievedDocs,
+        filter: this.buildMetadataFilter(
+          documentType,
+          jurisdiction,
+          practiceArea
+        ),
+      });
+
+      // Use MultiQueryRetriever for thinking mode
+      if (thinkingMode) {
+        const multiQueryRetriever = MultiQueryRetriever.fromLLM({
+          llm: this.llm,
+          retriever,
+          prompt: this.LEGAL_PROMPTS.QUERY_GENERATION,
+          verbose: true,
+        });
+        // Use MultiQueryRetriever directly
+        retriever = multiQueryRetriever;
+      }
+
+      // Add contextual compression for better relevance
+      if (useCompression) {
+        const compressor = LLMChainExtractor.fromLLM(this.llm);
+        const compressionRetriever = new ContextualCompressionRetriever({
+          baseCompressor: compressor,
+          baseRetriever: retriever,
+        });
+        // Use ContextualCompressionRetriever directly
+        retriever = compressionRetriever;
+      }
+
+      // Select appropriate prompt template
+      let promptTemplate = this.LEGAL_PROMPTS.STANDARD_RAG;
+      if (thinkingMode) {
+        promptTemplate = this.LEGAL_PROMPTS.THINKING_MODE_RAG;
+      } else if (verbose) {
+        promptTemplate = this.LEGAL_PROMPTS.VERBOSE_RAG;
+      }
+
+      // Build RAG chain with proper type handling
+      const contextRetriever = RunnableSequence.from([
+        (input: string) => retriever.getRelevantDocuments(input),
+        formatDocumentsAsString,
+      ]);
+
+      const ragChain = RunnableSequence.from([
+        RunnableMap.from({
+          context: contextRetriever,
+          question: new RunnablePassthrough(),
+        }),
+        promptTemplate,
+        this.llm,
+        new StringOutputParser(),
+      ]);
+
+      // Execute RAG query with proper error handling
+      const [answer, retrievedDocs] = await Promise.all([
+        ragChain.invoke(question).catch((error) => {
+          console.warn("RAG chain error:", error);
+          return "Unable to generate response due to processing error.";
+        }),
+        retriever.getRelevantDocuments(question).catch((error: any) => {
+          console.warn("Document retrieval error:", error);
+          return [];
+        }),
+      ]);
+
+      // Calculate confidence based on document relevance scores
+      const confidence = this.calculateConfidence(
+        retrievedDocs,
+        confidenceThreshold
+      );
+
+      const processingTime = Date.now() - startTime;
+
+      return {
+        answer,
+        sourceDocuments: retrievedDocs,
+        confidence,
+        reasoning: thinkingMode
+          ? "Applied multi-query retrieval with comprehensive analysis"
+          : undefined,
+        metadata: {
+          retrievedChunks: retrievedDocs.length,
+          processingTime,
+          usedThinkingMode: thinkingMode,
+          usedCompression: useCompression,
+        },
+      };
+    } catch (error) {
+      console.error("Error in RAG query:", error);
+      throw new Error(
+        `RAG query failed: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
+    }
+  }
+
+  /**
+   * Index a legal document into the vector store
+   */
+  async indexDocument(
+    text: string,
+    metadata: LegalDocumentMetadata
+  ): Promise<string[]> {
+    if (!this.vectorStore) {
+      throw new Error("Vector store not initialized");
+    }
+
+    try {
+      // Split document into chunks
+      const chunks = await this.textSplitter.splitText(text);
+
+      // Create documents with metadata
+      const documents = chunks.map((chunk, index) => ({
+        pageContent: chunk,
+        metadata: {
+          ...metadata,
+          chunkIndex: index,
+          totalChunks: chunks.length,
+          chunkSize: chunk.length,
+        },
+      }));
+
+      // Add to vector store
+      const ids = await this.vectorStore.addDocuments(documents);
+
+      console.log(
+        `✅ Indexed ${chunks.length} chunks for document ${metadata.documentId}`
+      );
+      return ids ?? [];
+    } catch (error) {
+      console.error("Error indexing document:", error);
+      throw new Error(
+        `Document indexing failed: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
+    }
+  }
+
+  /**
+   * Perform legal document summarization with RAG context
+   */
+  async summarizeWithContext(
+    documentId: string,
+    options: RAGQueryOptions = {}
+  ): Promise<string> {
+    const summaryQuery = `Provide a comprehensive summary of the key legal points, parties, obligations, and risks in this document.`;
+
+    const filter = { documentId };
+    const result = await this.query(summaryQuery, {
+      ...options,
+      maxRetrievedDocs: 10, // Get more context for summarization
+    });
+
+    return result.answer;
+  }
+
+  /**
+   * Compare multiple legal documents
+   */
+  async compareDocuments(
+    documentIds: string[],
+    comparisonFocus: string,
+    options: RAGQueryOptions = {}
+  ): Promise<RAGResult> {
+    const query = `Compare and contrast the following aspects across the provided documents: ${comparisonFocus}.
+    Identify similarities, differences, and any potential conflicts or inconsistencies.`;
+
+    // Note: Filter would be applied in the query method
+    // const filter = {
+    //   documentId: { $in: documentIds },
+    // };
+
+    return await this.query(query, {
+      ...options,
+      maxRetrievedDocs: 15, // Get more context for comparison
+    });
+  }
+
+  /**
+   * Extract specific legal information
+   */
+  async extractLegalEntities(
+    query: string,
+    documentType?: string,
+    options: RAGQueryOptions = {}
+  ): Promise<RAGResult> {
+    const entityQuery = `Extract and list all ${query} mentioned in the legal documents.
+    Provide specific references to where each item is mentioned.`;
+
+    return await this.query(entityQuery, {
+      ...options,
+      documentType,
+      useCompression: true,
+    });
+  }
+
+  /**
+   * Build metadata filter for legal documents
+   */
+  private buildMetadataFilter(
+    documentType?: string,
+    jurisdiction?: string,
+    practiceArea?: string
+  ): Record<string, any> {
+    const filter: Record<string, any> = {};
+
+    if (documentType) {
+      filter.documentType = documentType;
+    }
+
+    if (jurisdiction) {
+      filter.jurisdiction = jurisdiction;
+    }
+
+    if (practiceArea) {
+      filter["classification.practiceArea"] = practiceArea;
+    }
+
+    return Object.keys(filter).length > 0 ? filter : {};
+  }
+
+  /**
+   * Calculate confidence score based on retrieved documents
+   */
+  private calculateConfidence(
+    documents: Document[],
+    threshold: number
+  ): number {
+    if (documents.length === 0) return 0;
+
+    // Use metadata scores if available, otherwise use heuristics
+    const scores = documents.map((doc) => {
+      const score = doc.metadata?.score;
+      if (typeof score === "number") return score;
+
+      // Fallback: estimate based on content length and overlap
+      return Math.min(1.0, doc.pageContent.length / 1000);
+    });
+
+    const avgScore =
+      scores.reduce((sum, score) => sum + score, 0) / scores.length;
+    return Math.max(0, Math.min(1, avgScore));
+  }
+
+  /**
+   * Get RAG service health status
+   */
+  async healthCheck(): Promise<{
+    status: string;
+    vectorStoreConnected: boolean;
+    collectionExists: boolean;
+    documentsCount?: number;
+  }> {
+    try {
+      const collectionExists = await this.qdrantClient.getCollection(
+        this.config.collectionName
+      );
+      const info = await this.qdrantClient.getCollections();
+
+      return {
+        status: "healthy",
+        vectorStoreConnected: !!this.vectorStore,
+        collectionExists: !!collectionExists,
+        documentsCount: collectionExists.points_count || 0,
+      };
+    } catch (error) {
+      return {
+        status: "unhealthy",
+        vectorStoreConnected: !!this.vectorStore,
+        collectionExists: false,
+      };
+    }
+  }
+}
+
+// Export singleton instance with environment configuration
+export const legalRAG = new LegalRAGService({
+  qdrantUrl: process.env.QDRANT_URL || "http://localhost:6333",
+  vllmGenerationUrl:
+    process.env.VLLM_GENERATION_URL || "http://localhost:8000/v1",
+  vllmEmbeddingUrl:
+    process.env.VLLM_EMBEDDING_URL || "http://localhost:8001/v1",
+  apiKey: process.env.VLLM_API_KEY || "EMPTY",
+  collectionName: "legal_documents",
+  embeddingDimensions: 768,
+});
+

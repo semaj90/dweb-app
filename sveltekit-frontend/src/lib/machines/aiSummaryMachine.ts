@@ -123,8 +123,8 @@ export const aiSummaryMachine = createMachine<AISummaryContext, AISummaryEvent>(
           LOAD_DOCUMENT: {
             target: 'loading',
             actions: assign({
-              documentId: ({ event }) => event.documentId,
-              caseId: ({ event }) => event.caseId || null,
+              documentId: ({ event }: { event: Extract<AISummaryEvent, { type: 'LOAD_DOCUMENT' }> }) => event.documentId,
+              caseId: ({ event }: { event: Extract<AISummaryEvent, { type: 'LOAD_DOCUMENT' }> }) => event.caseId || null,
               loading: true,
               error: null
             })
@@ -132,14 +132,14 @@ export const aiSummaryMachine = createMachine<AISummaryContext, AISummaryEvent>(
           GENERATE_SUMMARY: {
             target: 'generating',
             actions: assign({
-              originalContent: ({ event }) => event.content,
-              documentType: ({ event }) => event.documentType,
+              originalContent: ({ event }: { event: Extract<AISummaryEvent, { type: 'GENERATE_SUMMARY' }> }) => event.content,
+              documentType: ({ event }: { event: Extract<AISummaryEvent, { type: 'GENERATE_SUMMARY' }> }) => event.documentType,
               loading: true,
               error: null
             })
           },
           UPDATE_PREFERENCES: {
-            actions: assign(({ context, event }) => ({
+            actions: assign(({ context, event }: { context: AISummaryContext; event: Extract<AISummaryEvent, { type: 'UPDATE_PREFERENCES' }> }) => ({
               ...context,
               ...event.preferences
             }))

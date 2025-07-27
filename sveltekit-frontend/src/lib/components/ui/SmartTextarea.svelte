@@ -1,16 +1,37 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import CommandMenu from "./CommandMenu.svelte";
 
-  export let value = "";
-  export let placeholder = "Type here... Use # for commands";
-  export let rows = 4;
-  export let disabled = false;
-  export let readonly = false;
-  export let className: string = "";
-  export let triggerChar = "#";
+  interface Props {
+    value?: string;
+    placeholder?: string;
+    rows?: number;
+    disabled?: boolean;
+    readonly?: boolean;
+    className?: string;
+    triggerChar?: string;
+    onCommandSelect?: (command: string) => void;
+    onInput?: (data: { value: string; target: HTMLTextAreaElement }) => void;
+    onKeydown?: (e: KeyboardEvent) => void;
+    onCommandInsert?: (data: { text: string }) => void;
+    onBlur?: (e: FocusEvent) => void;
+    onFocus?: (e: FocusEvent) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let {
+    value = $bindable(""),
+    placeholder = "Type here... Use # for commands",
+    rows = 4,
+    disabled = false,
+    readonly = false,
+    className = "",
+    triggerChar = "#",
+    onCommandSelect,
+    onInput,
+    onKeydown,
+    onCommandInsert,
+    onBlur,
+    onFocus
+  }: Props = $props();
 
   let textarea: HTMLTextAreaElement;
   let commandMenu: CommandMenu;
@@ -29,7 +50,7 @@
     if (textBeforeCursor.endsWith(triggerChar)) {
       openCommandMenu();
 }
-    dispatch("input", { value, target });
+    onInput?.({ value, target });
 }
   function handleKeydown(e: KeyboardEvent) {
     // Don't interfere with command menu navigation
@@ -45,7 +66,7 @@
       openCommandMenu();
       return;
 }
-    dispatch("keydown", e);
+    onKeydown?.(e);
 }
   function openCommandMenu() {
     if (!textarea) return;
@@ -76,7 +97,7 @@
     // The CommandMenu component handles text insertion
     showCommandMenu = false;
     textarea.focus();
-    dispatch("commandInsert", { text });
+    onCommandInsert?.({ text });
 }
   function handleBlur(e: FocusEvent) {
     // Don't close command menu immediately to allow clicking on it
@@ -86,10 +107,10 @@
 }
     }, 150);
 
-    dispatch("blur", e);
+    onBlur?.(e);
 }
   function handleFocus(e: FocusEvent) {
-    dispatch("focus", e);
+    onFocus?.(e);
 }
   // Auto-resize textarea
   function autoResize() {

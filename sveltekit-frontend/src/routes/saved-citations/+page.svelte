@@ -360,9 +360,6 @@
 <!-- Add Citation Dialog -->
 <DialogRoot bind:open={showAddDialog}>
   <DialogContent
-    overlay={() => {"
-    content={() => {"
-    openState={{ subscribe: () => () => {} "
     class="container mx-auto px-4"
   >
     <DialogHeader>
@@ -450,9 +447,6 @@
 {#if editingCitation}
   <DialogRoot open={true} onOpenChange={() => (editingCitation = null)}>
     <DialogContent
-      overlay={() => {"
-      content={() => {"
-      openState={{ subscribe: () => () => {} "
       class="container mx-auto px-4"
     >
       <DialogHeader>

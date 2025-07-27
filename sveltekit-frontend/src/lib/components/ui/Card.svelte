@@ -11,8 +11,9 @@
     variant = 'default',
     padding = 'md',
     class: className = '',
+    children,
     ...restProps
-  }: Props = $props();
+  }: Props & { children?: any } = $props();
 
   const classes = $derived(() => {
     const base = [
@@ -26,7 +27,7 @@
 </script>
 
 <div class={classes()} {...restProps} data-card-root>
-  <slot />
+  {@render children?.()}
 </div>
 
 <style>
