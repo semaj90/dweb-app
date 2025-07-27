@@ -1,31 +1,22 @@
-<script lang="ts">
-  import '../app.css';
-  import '../lib/styles/nier.css';
-  import { page } from '$app/stores';
-  import { onMount } from 'svelte';
-
-  let mounted = false;
-  onMount(() => { mounted = true; });
+<script>
+	import '../app.css';
 </script>
 
-{#if mounted}
-  <div class="app-layout">
-    <main class="main-content">
-      <slot />
-    </main>
-  </div>
-{/if}
+<main>
+	<slot />
+</main>
 
 <style>
-  .app-layout {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .main-content {
-    flex: 1;
-    width: 100%;
-    max-width: none;
-  }
+	:global(html) {
+		background: #1a1a1a;
+		color: #f5f5f5;
+	}
+	
+	:global(body) {
+		margin: 0;
+		padding: 0;
+		font-family: 'JetBrains Mono', monospace;
+		line-height: 1.6;
+		overflow-x: hidden;
+	}
 </style>

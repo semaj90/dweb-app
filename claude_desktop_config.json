@@ -1,0 +1,47 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\mcp\\custom-context7-server.js"
+      ],
+      "env": {
+        "NODE_PATH": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\mcp\\node_modules"
+      }
+    },
+    "figma-http": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-figma-http"],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "YOUR_FIGMA_TOKEN_HERE"
+      }
+    },
+    "autogen": {
+      "command": "npx",
+      "args": ["-y", "@autogen/server"],
+      "env": {
+        "AUTOGEN_CONFIG": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\autogen-config.json"
+      }
+    },
+    "crewai": {
+      "command": "npx",
+      "args": ["-y", "@crewai/server"],
+      "env": {
+        "CREWAI_CONFIG": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\crewai-config.json"
+      }
+    },
+    "vllm": {
+      "command": "python",
+      "args": [
+        "-m",
+        "vllm.entrypoints.openai.api_server",
+        "--model",
+        "gemma3Q4_K_M/mohf16-Q4_K_M.gguf",
+        "--gpu"
+      ],
+      "env": {
+        "VLLM_CONFIG": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\vllm-config.json"
+      }
+    }
+  }
+}
