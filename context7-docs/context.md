@@ -50,6 +50,102 @@ This document tracks the implementation status, integration notes, and best prac
 - Offload heavy tasks to Web Workers and Service Worker.
 - Log errors and lost relevance to a todo log for review.
 
+## Phase 9: Webcam Intent Tracking & Worker Integration
+
+- Provide access to the webcam feed using browser APIs
+- Transfer video frames to a dedicated Web Worker for CV model inference
+- Combine results (e.g., focus coordinates) with high-frequency mouse cursor data
+- Synthesize raw data into higher-level "intent signals" (e.g., INTENT_FOCUS_COMPONENT_X)
+- Send intent signals to AI Prefetcher's worker and dispatch to Redis cache for server-side reranker
+
+### Phase 9 Implementation Checklist
+
+| Priority | Component                       | Notes                                         |
+| -------- | ------------------------------- | --------------------------------------------- |
+| 🔥 High  | webcam-access.ts                | Browser webcam feed, permissions, fallback    |
+| 🔥 High  | cv-worker.js (OpenCV.js/YOLOv8) | Frame transfer, model inference, postMessage  |
+| 🔥 High  | intent-synthesizer.ts           | Merge gaze/cursor, synthesize signals         |
+| 🔥 High  | predictive-prefetch-worker.ts   | Accept intent signals, trigger prefetch       |
+| 🔥 High  | redis-intent-cache.ts           | Store/retrieve signals for reranker           |
+| 🟡 Mid   | UI integration (SvelteKit)      | Display intent, debug overlay, error handling |
+| 🟡 Mid   | Test pipeline                   | Simulate user, validate signal flow           |
+| 🔵 Low   | Documentation                   | Usage, troubleshooting, onboarding            |
+
+### Key Implementation Steps
+
+1. Integrate webcam access and frame capture in SvelteKit UI
+2. Set up a Web Worker for OpenCV.js/YOLOv8 inference
+3. Merge cursor and gaze data into intent signals
+4. Connect intent signals to predictive-prefetch worker and Redis
+5. Document and test the full pipeline
+
+## Phase 10: Advanced Local LLM Integration & Self-Learning
+
+- Integrate new NVIDIA drivers and benchmark GPU performance for LLM inference
+- Implement self-learning local LLM pipeline with eval and unsupervised recommendations
+- Extend RAG pipeline for advanced semantic search and recommendation
+- Add support for OCR, PDF, Chromium-based browser automation, and document parsing
+- Develop eval scripts to test LLM integration, accuracy, and self-improvement
+- Review and optimize all AI analysis, predictive analytics, and caching strategies
+
+### Phase 10 Implementation Checklist
+
+| Priority | Component              | Notes                                         |
+| -------- | ---------------------- | --------------------------------------------- |
+| 🔥 High  | nvidia-driver-setup.sh | GPU driver install, CUDA benchmarks           |
+| 🔥 High  | llm-eval.ts            | LLM eval, accuracy, self-learning             |
+| 🔥 High  | rag-advanced.ts        | Unsupervised recommendations, semantic search |
+| 🔥 High  | ocr-pdf-parser.ts      | OCR, PDF, document parsing                    |
+| 🔥 High  | chromium-automation.ts | Browser automation, scraping                  |
+| 🟡 Mid   | ai-analysis.ts         | Predictive analytics, caching review          |
+| 🟡 Mid   | test-benchmarks        | Performance, accuracy, resource usage         |
+| 🔵 Low   | Documentation          | Usage, troubleshooting, onboarding            |
+
+---
+
+## Phase 11: WebGL, Matrix, Texture Streaming & UI/UX Review
+
+- Implement advanced WebGL shader and matrix parsing for UI rendering
+- Add texture streaming and caching for high-performance graphics
+- Integrate JSON UI compiler with matrix transforms and LOD management
+- Review and optimize XState-driven UI flows for seamless AI assistance
+- Conduct full UI/UX review for self-prompting and legal AI research workflows
+
+### Phase 11 Implementation Checklist
+
+| Priority | Component                | Notes                              |
+| -------- | ------------------------ | ---------------------------------- |
+| 🔥 High  | webgl-shader.ts          | Advanced shaders, matrix parsing   |
+| 🔥 High  | texture-streamer.ts      | Texture streaming, caching         |
+| 🔥 High  | json-matrix-compiler.ts  | JSON UI, matrix transforms, LOD    |
+| 🔥 High  | xstate-ui-review.ts      | State-driven UI, AI assistance     |
+| 🟡 Mid   | ui-ux-review.md          | Self-prompting, legal research     |
+| 🟡 Mid   | test-graphics-benchmarks | Performance, resource usage        |
+| 🔵 Low   | Documentation            | Usage, troubleshooting, onboarding |
+
+---
+
+## Phase 12: Full System Integration, Testing & Continuous Improvement
+
+- Integrate all components for seamless operation and orchestration
+- Develop continuous integration and deployment pipelines for all services
+- Implement automated testing, monitoring, and feedback loops
+- Review and optimize predictive analytics, caching, and AI recommendations
+- Ensure robust UI/UX for legal AI research and self-prompting flows
+- Document all integration steps, benchmarks, and best practices
+
+### Phase 12 Implementation Checklist
+
+| Priority | Component                      | Notes                               |
+| -------- | ------------------------------ | ----------------------------------- |
+| 🔥 High  | ci-cd-pipeline.yml             | Continuous integration/deployment   |
+| 🔥 High  | integration-tests.ts           | Automated testing, monitoring       |
+| 🔥 High  | feedback-loop.ts               | LLM feedback, self-improvement      |
+| 🔥 High  | predictive-analytics-review.ts | Analytics, caching, recommendations |
+| 🟡 Mid   | ui-ux-final-review.md          | Legal AI research, self-prompting   |
+| 🟡 Mid   | system-benchmarks              | Performance, resource usage         |
+| 🔵 Low   | Documentation                  | Usage, troubleshooting, onboarding  |
+
 ---
 
 For full code, implementation checklists, or error reports, see PHASE8_CONTEXT7_ARCHITECTURE.md and related files.
