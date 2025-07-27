@@ -1,0 +1,631 @@
+/**
+ * Copilot Orchestration Wrapper
+ * Self-prompts after using MCP memory/codebase tools
+ */
+// Note: Removed circular imports since functions are defined in this same file
+
+export async function copilotOrchestrator(
+  prompt: string,
+  options: {
+    useMemory?: boolean;
+    useCodebase?: boolean;
+    useChangedFiles?: boolean;
+    useReadGraph?: boolean;
+    useSemanticSearch?: boolean;
+    useMultiAgent?: boolean;
+    logErrors?: boolean;
+    synthesizeOutputs?: boolean;
+    directoryPath?: string;
+    context?: any;
+  } = {}
+) {
+  let results: any = {};
+
+  // Step 1: Semantic Search
+  if (options.useSemanticSearch) {
+    results.semantic = await semanticSearch(prompt);
+  }
+
+  // Step 2: Memory MCP Server
+  if (options.useMemory) {
+    results.memory = await mcpMemoryReadGraph();
+  }
+
+  // Step 3: Codebase Analysis
+  if (options.useCodebase) {
+    results.codebase = await mcpCodebaseAnalyze(prompt);
+  }
+
+  // Step 4: Changed Files
+  if (options.useChangedFiles) {
+    results.changedFiles = await getChangedFiles();
+  }
+
+  // Step 5: Directory Reading
+  if (options.directoryPath) {
+    results.directory = await mcpReadDirectory(options.directoryPath);
+  }
+
+  // Step 6: Multi-Agent Orchestration
+  if (options.useMultiAgent) {
+    results.autogen = await autogenService.runAgents(prompt, options.context);
+    results.crewai = await crewAIService.analyzeLegalCaseWithCrew(prompt);
+    results.vllm = await vllmService.runInference(prompt);
+  }
+
+  // Step 7: Log Errors and Synthesize Outputs
+  if (options.logErrors) {
+    results.errorLog = await mcpReadErrorLog();
+    results.criticalErrors = await mcpRankErrors(results.errorLog);
+  }
+  if (options.synthesizeOutputs) {
+    results.synthesized = synthesizeLLMOutputs(results);
+  }
+
+  // Step 8: Rank and Suggest Best Practices
+  results.bestPractices = await mcpSuggestBestPractices(results);
+
+  // Step 9: Compose self-prompt for Copilot/agentic action
+  results.selfPrompt = `Given the following results, what is the best next action?\n\n${JSON.stringify(
+    results,
+    null,
+    2
+  )}\n\nPrompt: ${prompt}`;
+
+  return results;
+}
+
+/**
+ * MCP Context7 Helper Functions
+ * Utility functions for interacting with Context7 MCP tools
+ */
+
+export interface MCPToolRequest {
+  tool:
+    | "analyze-stack"
+    | "generate-best-practices"
+    | "suggest-integration"
+    | "resolve-library-id"
+    | "get-library-docs"
+    | "vllm-best-practices"
+    | "unsloth-best-practices"
+    | "rag-query"
+    | "rag-upload-document"
+    | "rag-get-stats"
+    | "rag-analyze-relevance"
+    | "rag-integration-guide";
+  component?: string;
+  context?:
+    | "legal-ai"
+    | "gaming-ui"
+    | "performance"
+    | "llm"
+    | "vllm"
+    | "unsloth";
+  area?: "performance" | "security" | "ui-ux" | "gpu" | "low-memory";
+  feature?: string;
+  requirements?: string;
+  library?: string;
+  topic?: string;
+  // RAG-specific properties
+  query?: string;
+  maxResults?: number;
+  confidenceThreshold?: number;
+  caseId?: string;
+  documentTypes?: string[];
+  filePath?: string;
+  documentType?: string;
+  title?: string;
+  documentId?: string;
+  integrationType?:
+    | "api-integration"
+    | "component-integration"
+    | "search-ui"
+    | "document-upload";
+}
+
+export interface MCPResponse {
+  success: boolean;
+  data?: any;
+  error?: string;
+}
+
+/**
+ * Generate a natural language prompt for MCP tools
+ */
+export function generateMCPPrompt(request: MCPToolRequest): string {
+  const {
+    tool,
+    component,
+    context,
+    area,
+    feature,
+    requirements,
+    library,
+    topic,
+    query,
+    maxResults,
+    confidenceThreshold,
+    caseId,
+    documentTypes,
+    filePath,
+    documentType,
+    title,
+    documentId,
+    integrationType,
+  } = request;
+
+  switch (tool) {
+    case "analyze-stack":
+      if (!component)
+        throw new Error("Component is required for analyze-stack");
+      return `analyze ${component}${context ? ` with context ${context}` : ""}`;
+
+    case "generate-best-practices":
+      if (!area)
+        throw new Error("Area is required for generate-best-practices");
+      return `generate best practices for ${area}`;
+
+    case "suggest-integration":
+      if (!feature)
+        throw new Error("Feature is required for suggest-integration");
+      return `suggest integration for ${feature}${requirements ? ` with requirements ${requirements}` : ""}`;
+
+    case "resolve-library-id":
+      if (!library)
+        throw new Error("Library is required for resolve-library-id");
+      return `resolve library id for ${library}`;
+
+    case "get-library-docs":
+      if (!library) throw new Error("Library is required for get-library-docs");
+      return `get library docs for ${library}${topic ? ` topic ${topic}` : ""}`;
+
+    case "rag-query":
+      if (!query) throw new Error("Query is required for rag-query");
+      return `rag query "${query}"${caseId ? ` for case ${caseId}` : ""}${maxResults ? ` max results ${maxResults}` : ""}`;
+
+    case "rag-upload-document":
+      if (!filePath)
+        throw new Error("File path is required for rag-upload-document");
+      return `upload document "${filePath}"${caseId ? ` to case ${caseId}` : ""}${documentType ? ` as ${documentType}` : ""}`;
+
+    case "rag-get-stats":
+      return "get rag system statistics";
+
+    case "rag-analyze-relevance":
+      if (!query || !documentId)
+        throw new Error(
+          "Query and document ID are required for rag-analyze-relevance"
+        );
+      return `analyze relevance of document ${documentId} for query "${query}"`;
+
+    case "rag-integration-guide":
+      if (!integrationType)
+        throw new Error(
+          "Integration type is required for rag-integration-guide"
+        );
+      return `get rag integration guide for ${integrationType}`;
+
+    default:
+      throw new Error(`Unknown tool: ${tool}`);
+  }
+}
+
+/**
+ * Validate MCP tool request
+ */
+export function validateMCPRequest(request: MCPToolRequest): {
+  valid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  if (!request.tool) {
+    errors.push("Tool is required");
+  }
+
+  switch (request.tool) {
+    case "analyze-stack":
+      if (!request.component)
+        errors.push("Component is required for analyze-stack");
+      if (
+        request.context &&
+        !["legal-ai", "gaming-ui", "performance"].includes(request.context)
+      ) {
+        errors.push("Context must be one of: legal-ai, gaming-ui, performance");
+      }
+      break;
+
+    case "generate-best-practices":
+      if (!request.area)
+        errors.push("Area is required for generate-best-practices");
+      if (
+        request.area &&
+        !["performance", "security", "ui-ux"].includes(request.area)
+      ) {
+        errors.push("Area must be one of: performance, security, ui-ux");
+      }
+      break;
+
+    case "suggest-integration":
+      if (!request.feature)
+        errors.push("Feature is required for suggest-integration");
+      break;
+
+    case "resolve-library-id":
+      if (!request.library)
+        errors.push("Library is required for resolve-library-id");
+      break;
+
+    case "get-library-docs":
+      if (!request.library)
+        errors.push("Library is required for get-library-docs");
+      break;
+
+    case "rag-query":
+      if (!request.query) errors.push("Query is required for rag-query");
+      if (
+        request.maxResults &&
+        (request.maxResults < 1 || request.maxResults > 50)
+      )
+        errors.push("Max results must be between 1 and 50");
+      if (
+        request.confidenceThreshold &&
+        (request.confidenceThreshold < 0 || request.confidenceThreshold > 1)
+      )
+        errors.push("Confidence threshold must be between 0 and 1");
+      break;
+
+    case "rag-upload-document":
+      if (!request.filePath)
+        errors.push("File path is required for rag-upload-document");
+      break;
+
+    case "rag-get-stats":
+      // No validation needed
+      break;
+
+    case "rag-analyze-relevance":
+      if (!request.query)
+        errors.push("Query is required for rag-analyze-relevance");
+      if (!request.documentId)
+        errors.push("Document ID is required for rag-analyze-relevance");
+      break;
+
+    case "rag-integration-guide":
+      if (!request.integrationType)
+        errors.push("Integration type is required for rag-integration-guide");
+      if (
+        request.integrationType &&
+        ![
+          "api-integration",
+          "component-integration",
+          "search-ui",
+          "document-upload",
+        ].includes(request.integrationType)
+      ) {
+        errors.push(
+          "Integration type must be one of: api-integration, component-integration, search-ui, document-upload"
+        );
+      }
+      break;
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Common MCP queries for the legal AI stack
+ */
+export const commonMCPQueries = {
+  // Stack Analysis
+  analyzeSvelteKit: (): MCPToolRequest => ({
+    tool: "analyze-stack",
+    component: "sveltekit",
+    context: "legal-ai",
+  }),
+
+  analyzeDrizzle: (): MCPToolRequest => ({
+    tool: "analyze-stack",
+    component: "drizzle",
+    context: "legal-ai",
+  }),
+
+  analyzeUnoCSS: (): MCPToolRequest => ({
+    tool: "analyze-stack",
+    component: "unocss",
+    context: "performance",
+  }),
+
+  // Best Practices
+  performanceBestPractices: (): MCPToolRequest => ({
+    tool: "generate-best-practices",
+    area: "performance",
+  }),
+
+  securityBestPractices: (): MCPToolRequest => ({
+    tool: "generate-best-practices",
+    area: "security",
+  }),
+
+  uiUxBestPractices: (): MCPToolRequest => ({
+    tool: "generate-best-practices",
+    area: "ui-ux",
+  }),
+
+  vllmBestPractices: (): MCPToolRequest => ({
+    tool: "vllm-best-practices",
+  }),
+
+  unslothBestPractices: (): MCPToolRequest => ({
+    tool: "unsloth-best-practices",
+  }),
+
+  // Integration Suggestions
+  aiChatIntegration: (): MCPToolRequest => ({
+    tool: "suggest-integration",
+    feature: "AI chat component",
+    requirements: "legal compliance and audit trails",
+  }),
+
+  documentUploadIntegration: (): MCPToolRequest => ({
+    tool: "suggest-integration",
+    feature: "document upload system",
+    requirements: "security and virus scanning",
+  }),
+
+  gamingUIIntegration: (): MCPToolRequest => ({
+    tool: "suggest-integration",
+    feature: "gaming-style UI components",
+    requirements: "professional legal interface",
+  }),
+
+  // Library Documentation
+  svelteKitRouting: (): MCPToolRequest => ({
+    tool: "get-library-docs",
+    library: "sveltekit",
+    topic: "routing",
+  }),
+
+  bitsUIDialog: (): MCPToolRequest => ({
+    tool: "get-library-docs",
+    library: "bits-ui",
+    topic: "dialog",
+  }),
+
+  drizzleSchema: (): MCPToolRequest => ({
+    tool: "get-library-docs",
+    library: "drizzle",
+    topic: "schema",
+  }),
+
+  // RAG System Queries
+  ragStats: (): MCPToolRequest => ({
+    tool: "rag-get-stats",
+  }),
+
+  ragLegalQuery: (query: string, caseId?: string): MCPToolRequest => ({
+    tool: "rag-query",
+    query,
+    caseId,
+    maxResults: 10,
+    confidenceThreshold: 0.7,
+    documentTypes: ["contract", "case_law", "statute", "evidence"],
+  }),
+
+  ragContractAnalysis: (query: string): MCPToolRequest => ({
+    tool: "rag-query",
+    query,
+    maxResults: 5,
+    confidenceThreshold: 0.8,
+    documentTypes: ["contract", "agreement"],
+  }),
+
+  ragCaseLawSearch: (query: string): MCPToolRequest => ({
+    tool: "rag-query",
+    query,
+    maxResults: 15,
+    confidenceThreshold: 0.75,
+    documentTypes: ["case_law", "judgment", "precedent"],
+  }),
+
+  ragEvidenceSearch: (query: string, caseId: string): MCPToolRequest => ({
+    tool: "rag-query",
+    query,
+    caseId,
+    maxResults: 20,
+    confidenceThreshold: 0.6,
+    documentTypes: ["evidence", "exhibit", "testimony"],
+  }),
+
+  ragApiIntegration: (): MCPToolRequest => ({
+    tool: "rag-integration-guide",
+    integrationType: "api-integration",
+  }),
+
+  ragComponentIntegration: (): MCPToolRequest => ({
+    tool: "rag-integration-guide",
+    integrationType: "component-integration",
+  }),
+
+  ragSearchUI: (): MCPToolRequest => ({
+    tool: "rag-integration-guide",
+    integrationType: "search-ui",
+  }),
+
+  ragDocumentUpload: (): MCPToolRequest => ({
+    tool: "rag-integration-guide",
+    integrationType: "document-upload",
+  }),
+};
+
+/**
+ * Format MCP response for display
+ */
+export function formatMCPResponse(response: any): string {
+  if (typeof response === "string") {
+    return response;
+  }
+
+  if (response?.content) {
+    if (Array.isArray(response.content)) {
+      return response.content
+        .map((item: any) => item.text || item.content || String(item))
+        .join("\n");
+    }
+    return String(response.content);
+  }
+
+  return JSON.stringify(response, null, 2);
+}
+
+/**
+ * Quick access to MCP resources
+ */
+export const mcpResources = {
+  stackOverview: "context7://stack-overview",
+  integrationGuide: "context7://integration-guide",
+  performanceTips: "context7://performance-tips",
+} as const;
+
+/**
+ * Generate Claude Code prompt for MCP tool usage
+ */
+export function generateClaudePrompt(request: MCPToolRequest): string {
+  const validation = validateMCPRequest(request);
+  if (!validation.valid) {
+    throw new Error(`Invalid request: ${validation.errors.join(", ")}`);
+  }
+
+  const prompt = generateMCPPrompt(request);
+  return `Please use the Context7 MCP tools to ${prompt}.`;
+}
+
+// vLLM Best Practices
+export function getVLLMBestPractices(): string {
+  return `# vLLM Best Practices\n\n- Use GPU for high-throughput inference (set --gpu flag)\n- Batch requests for maximum efficiency\n- Use quantized models for low memory\n- Monitor GPU memory usage\n- Use OpenAI API compatibility for easy integration\n- For multiple models, run separate vLLM instances\n- Use context7 to resolve library IDs and fetch docs\n- Integrate with SvelteKit via REST or WebSocket endpoints\n`;
+}
+
+// Unsloth Best Practices
+export function getUnslothBestPractices(): string {
+  return `# Unsloth Best Practices\n\n- Use Unsloth for ultra-fast, low-memory fine-tuning\n- Supports LoRA, QLoRA, and quantized models\n- Use with vLLM for efficient serving\n- Monitor training logs for memory spikes\n- Use context7 to fetch Unsloth docs and integration patterns\n- Integrate with SvelteKit backend for custom training workflows\n`;
+}
+
+// Stub implementations for missing MCP and agent functions
+// Production: Integrate with Context7 MCP semantic search
+export async function semanticSearch(query: string) {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    // const { functions } = await import("@modelcontextprotocol/sdk");
+    // const results = await functions.semantic_search({ query });
+    return [{ result: `Semantic search result for: ${query}` }];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}
+
+// Production: Integrate with MCP memory server
+export async function mcpMemoryReadGraph() {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    return [{ node: "memory-graph-node", value: "example" }];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}
+
+// Production: Integrate with Context7 MCP codebase analysis
+export async function mcpCodebaseAnalyze(prompt: string) {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    return [{ analysis: `Codebase analysis for: ${prompt}` }];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}
+
+// Production: Integrate with MCP get_changed_files
+export async function getChangedFiles() {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    return ["file1.ts", "file2.svelte"];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}
+
+// Production: Integrate with MCP directory reading
+export async function mcpReadDirectory(path: string) {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    return [`Read directory: ${path}`];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}
+
+// Production: Autogen agent orchestration (stub, replace with real API integration if available)
+const autogenService = {
+  async runAgents(prompt: string, context?: any) {
+    // TODO: Replace with real Autogen API call
+    return { agent: "autogen", result: `AutoGen agent result for: ${prompt}` };
+  },
+};
+
+// Production: CrewAI agent orchestration (stub, replace with real API integration if available)
+const crewAIService = {
+  async analyzeLegalCaseWithCrew(prompt: string) {
+    // TODO: Replace with real CrewAI API call
+    return { agent: "crewai", result: `CrewAI agent result for: ${prompt}` };
+  },
+};
+
+// Production: vLLM agent orchestration (stub, replace with real API integration if available)
+const vllmService = {
+  async runInference(prompt: string) {
+    // TODO: Replace with real vLLM API call
+    return { agent: "vllm", result: `vLLM inference result for: ${prompt}` };
+  },
+};
+
+// Production: Read error log from MCP
+export async function mcpReadErrorLog() {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    return ["Error: Example error log entry"];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}
+
+// Production: Rank errors using MCP
+export async function mcpRankErrors(errorLog: any) {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    return ["Critical error: Example ranked error"];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}
+
+// Production: Synthesize LLM outputs
+export function synthesizeLLMOutputs(results: any) {
+  // Combine and format results for display or further processing
+  return JSON.stringify(results, null, 2);
+}
+
+// Production: Suggest best practices using Microsoft Docs via MCP
+export async function mcpSuggestBestPractices(results: any) {
+  try {
+    // TODO: Implement MCP SDK integration when available
+    return [
+      "Best practice: Always use Drizzle ORM",
+      "Best practice: Use SSR for sensitive data",
+    ];
+  } catch (error) {
+    return [{ error: String(error) }];
+  }
+}

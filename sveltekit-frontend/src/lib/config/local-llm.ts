@@ -31,26 +31,27 @@ export const LOCAL_LLM_PATHS = {
 
   // Local Gemma3 Q4_K_M model
   gemmaModel: {
-    path: join(projectRoot, "gemma3Q4_K_M", "mo16.gguf"),
+    path: join(projectRoot, "gemma3Q4_K_M", "mohf16-Q4_K_M.gguf"),
     name: "gemma3-legal", // Use the custom model we'll create
     ollamaModel: "gemma3-legal", // Custom Ollama model name
-    fallbackModel: "gemma3:12b", // Fallback to existing model
+    fallbackModel: "gemma3:2b", // Fallback to existing model
     format: "gguf",
-    size: "8B", // Estimated from filename mo16.gguf
+    size: "2B", // Updated from filename mohf16-Q4_K_M.gguf
+    quantization: "Q4_K_M", // Explicit quantization level
   },
 };
 
 // Model configurations for different use cases
 export const MODEL_CONFIGS = {
-  // Legal AI assistant configuration
+  // Legal AI assistant configuration (optimized for Q4_K_M)
   legal: {
-    temperature: 0.7,
-    maxTokens: 512,
+    temperature: 0.1,
+    maxTokens: 1024,
     topP: 0.9,
     topK: 40,
-    repeatPenalty: 1.1,
-    systemPrompt: `You are a specialized legal AI assistant. You provide accurate, professional legal analysis and guidance based on the provided context. Always cite your sources and clearly state when information is insufficient. Use appropriate legal terminology and maintain professional standards.`,
-    contextWindow: 4096,
+    repeatPenalty: 1.05,
+    systemPrompt: `You are a specialized Legal AI Assistant powered by Gemma 3. You excel at contract analysis, legal research, and providing professional legal guidance. Always cite relevant statutes, case law, and legal precedents. Maintain professional standards and clearly state when information is insufficient for definitive legal advice.`,
+    contextWindow: 8192,
   },
 
   // Fast response configuration
@@ -186,23 +187,21 @@ export async function loadGemmaModel() {
 
     const modelfileContent = `FROM ${LOCAL_LLM_PATHS.gemmaModel.path}
 
-# Set parameters
-PARAMETER temperature 0.7
+# Set parameters for Q4_K_M quantization
+PARAMETER temperature 0.1
 PARAMETER top_p 0.9
 PARAMETER top_k 40
-PARAMETER repeat_penalty 1.1
+PARAMETER repeat_penalty 1.05
+PARAMETER num_ctx 8192
 
-# Set the template
-TEMPLATE """{{ if .System "<|start_header_id|>system<|end_header_id|>
+# Gemma3 template format
+TEMPLATE """<start_of_turn>user
+{{ .Prompt }}<end_of_turn>
+<start_of_turn>model
+{{ .Response }}<end_of_turn>"""
 
-{{ .System "<|eot_id|>{{ end "{{ if .Prompt "<|start_header_id|>user<|end_header_id|>
-
-{{ .Prompt "<|eot_id|>{{ end "<|start_header_id|>assistant<|end_header_id|>
-
-{{ .Response "<|eot_id|>"""
-
-# Set system message
-SYSTEM """You are a specialized legal AI assistant. You provide accurate, professional legal analysis and guidance based on the provided context. Always cite your sources and clearly state when information is insufficient. Use appropriate legal terminology and maintain professional standards."""
+# Set system message for legal AI
+SYSTEM """You are a specialized Legal AI Assistant powered by Gemma 3. You excel at contract analysis, legal research, and providing professional legal guidance. Always cite relevant statutes, case law, and legal precedents. Maintain professional standards and clearly state when information is insufficient for definitive legal advice."""
 `;
 
     writeFileSync(modelfilePath, modelfileContent);

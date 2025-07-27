@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
-import { evidence } from "$lib/server/schema";
+import { evidence } from "$lib/server/db/schema";
 import { eq } from "drizzle-orm";
 
 // Example vector similarity function (replace with actual pgvector logic)

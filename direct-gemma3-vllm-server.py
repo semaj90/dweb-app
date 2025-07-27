@@ -37,7 +37,7 @@ if not VLLM_AVAILABLE:
         sys.exit(1)
 
 # Configuration
-MODEL_PATH = r"C:\Users\james\Desktop\deeds-web\deeds-web-app\gemma3Q4_K_M\mo16.gguf"
+MODEL_PATH = r"C:\Users\james\Desktop\deeds-web\deeds-web-app\gemma3Q4_K_M\mohf16-Q4_K_M.gguf"
 HOST = "0.0.0.0"
 PORT = 8001
 MAX_TOKENS = 2048

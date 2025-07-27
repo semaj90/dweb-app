@@ -33,7 +33,7 @@ try {
     Write-Host "  Please run 'ollama serve' in another terminal" -ForegroundColor Gray
     Write-Host "  Then press Enter to continue..." -ForegroundColor Yellow
     Read-Host
-    
+
     # Try again
     try {
         $ollamaStatus = Invoke-RestMethod -Uri "http://localhost:11434/api/version" -Method GET -TimeoutSec 5 -ErrorAction Stop
@@ -72,7 +72,7 @@ $modelfileContent = @"
 # Gemma3 Legal AI Model Configuration
 FROM $modelPath
 
-# Template for Gemma3 chat format  
+# Template for Gemma3 chat format
 TEMPLATE """"""<bos><start_of_turn>user
 {{ if .System }}{{ .System }}
 
@@ -84,7 +84,7 @@ TEMPLATE """"""<bos><start_of_turn>user
 SYSTEM """"""You are a specialized Legal AI Assistant powered by Gemma 3, trained on legal documents and case law. You provide:
 
 - Accurate legal analysis and research assistance
-- Contract review and document interpretation  
+- Contract review and document interpretation
 - Evidence evaluation and case strategy guidance
 - Regulatory compliance insights
 - Professional legal terminology and citations
@@ -113,19 +113,19 @@ Write-Host "This may take several minutes for a $modelSize GB model..." -Foregro
 
 try {
     $importResult = & ollama create gemma3-legal -f $modelfilePath 2>&1
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Successfully imported 'gemma3-legal' model!" -ForegroundColor Green
     } else {
         Write-Host "❌ Failed to import model:" -ForegroundColor Red
         Write-Host $importResult -ForegroundColor Gray
-        
+
         # Try with absolute path
         Write-Host "Trying with absolute path..." -ForegroundColor Yellow
         $absoluteModelPath = (Resolve-Path $modelPath).Path
         $absoluteModelfileContent = $modelfileContent -replace [regex]::Escape($modelPath), $absoluteModelPath
         $absoluteModelfileContent | Out-File -FilePath ".\Modelfile-Absolute" -Encoding UTF8
-        
+
         $importResult2 = & ollama create gemma3-legal -f ".\Modelfile-Absolute" 2>&1
         if ($LASTEXITCODE -ne 0) {
             Write-Host "❌ Import failed with absolute path too:" -ForegroundColor Red
@@ -146,7 +146,7 @@ try {
     $models = & ollama list 2>&1
     if ($models -match "gemma3-legal") {
         Write-Host "✅ Model 'gemma3-legal' is available!" -ForegroundColor Green
-        
+
         # Show model info
         $modelInfo = $models | Select-String "gemma3-legal"
         Write-Host "  Model info: $modelInfo" -ForegroundColor Gray
@@ -165,11 +165,11 @@ $testPrompt = "What are the essential elements required for a valid contract und
 
 try {
     Write-Host "Sending test prompt..." -ForegroundColor Gray
-    
+
     # Use a simpler test approach
     $testCommand = "ollama run gemma3-legal `"$testPrompt`""
     $testResponse = Invoke-Expression $testCommand 2>&1
-    
+
     if ($LASTEXITCODE -eq 0 -and $testResponse -and $testResponse.Length -gt 10) {
         Write-Host "✅ Model responds correctly!" -ForegroundColor Green
         Write-Host "Sample response:" -ForegroundColor Gray
@@ -190,14 +190,14 @@ Write-Host "`n🔗 Updating SvelteKit API endpoints..." -ForegroundColor Cyan
 $chatServerPath = ".\sveltekit-frontend\src\routes\api\ai\chat\+server.ts"
 if (Test-Path $chatServerPath) {
     Write-Host "📝 Updating chat API endpoint..." -ForegroundColor Yellow
-    
+
     $newChatServer = @"
 import { json } from "@sveltejs/kit";
 import { ollamaService } from "`$lib/services/ollama-service";
 
 export const POST = async ({ request }) => {
   const startTime = Date.now();
-  
+
   try {
     const {
       message,
@@ -208,7 +208,7 @@ export const POST = async ({ request }) => {
       maxTokens = 512,
       systemPrompt
     } = await request.json();
-    
+
     if (!message || message.trim() === "") {
       return json({ error: "Message is required" }, { status: 400 });
     }
@@ -222,8 +222,8 @@ export const POST = async ({ request }) => {
       topK: 20,
       repeatPenalty: 1.05
     });
-    
-    return json({ 
+
+    return json({
       response,
       model,
       conversationId: conversationId || `conv_`${Date.now()}`,
@@ -236,14 +236,14 @@ export const POST = async ({ request }) => {
     });
   } catch (error) {
     console.error("AI chat error:", error);
-    return json({ 
+    return json({
       error: "Failed to process chat",
       details: error instanceof Error ? error.message : "Unknown error"
     }, { status: 500 });
   }
 };
 "@
-    
+
     try {
         $newChatServer | Out-File -FilePath $chatServerPath -Encoding UTF8
         Write-Host "✅ Updated chat API endpoint" -ForegroundColor Green
@@ -271,7 +271,7 @@ export const GET = async () => {
     const isAvailable = await ollamaService.healthCheck();
     const models = ollamaService.getAvailableModels();
     const currentModel = ollamaService.getGemma3Model();
-    
+
     return json({
       status: "success",
       ollama: {
@@ -292,15 +292,15 @@ export const GET = async () => {
 export const POST = async ({ request }) => {
   try {
     const { prompt = "What are the key elements of a valid contract?" } = await request.json();
-    
+
     const response = await ollamaService.generate(prompt, {
       system: "You are a specialized Legal AI Assistant.",
       temperature: 0.1,
       maxTokens: 256
     });
-    
+
     return json({
-      status: "success", 
+      status: "success",
       prompt,
       response,
       model: ollamaService.getGemma3Model(),
@@ -356,7 +356,7 @@ Write-Host ""
 Write-Host "🚀 Next Steps:" -ForegroundColor White
 Write-Host "  1. Start development server:" -ForegroundColor Gray
 Write-Host "     cd sveltekit-frontend && npm run dev" -ForegroundColor Cyan
-Write-Host "  2. Open your browser to:" -ForegroundColor Gray  
+Write-Host "  2. Open your browser to:" -ForegroundColor Gray
 Write-Host "     http://localhost:5173" -ForegroundColor Cyan
 Write-Host "  3. Test the AI chat interface" -ForegroundColor Gray
 Write-Host "  4. Try the test endpoint:" -ForegroundColor Gray
@@ -365,7 +365,7 @@ Write-Host ""
 Write-Host "🧪 Quick Tests:" -ForegroundColor White
 Write-Host "  • Test model directly:" -ForegroundColor Gray
 Write-Host "    ollama run gemma3-legal 'Explain contract law basics'" -ForegroundColor Cyan
-Write-Host "  • Test API endpoint:" -ForegroundColor Gray  
+Write-Host "  • Test API endpoint:" -ForegroundColor Gray
 Write-Host "    curl http://localhost:5173/api/ai/test-gemma3" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "📚 Documentation:" -ForegroundColor White

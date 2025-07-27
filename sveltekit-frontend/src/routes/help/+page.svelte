@@ -137,11 +137,11 @@ The top navigation bar contains links to all major sections:
 - **AI Assistant**: Get AI help
 
 ## Keyboard Shortcuts
-Press `Ctrl + H` to see all keyboard shortcuts, including:
-- `Ctrl + K`: Quick search
-- `Ctrl + N`: New evidence
-- `Ctrl + S`: Save current work
-- `F11`: Toggle fullscreen
+Press \`Ctrl + H\` to see all keyboard shortcuts, including:
+- \`Ctrl + K\`: Quick search
+- \`Ctrl + N\`: New evidence
+- \`Ctrl + S\`: Save current work
+- \`F11\`: Toggle fullscreen
 
 ## User Menu
 Click your profile picture (top right) to access:

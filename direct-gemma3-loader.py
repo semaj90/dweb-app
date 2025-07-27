@@ -53,9 +53,9 @@ class ChatCompletionRequest(BaseModel):
 def find_gemma3_model():
     """Find your Gemma3 GGUF model"""
     possible_paths = [
-        r"C:\Users\james\Desktop\deeds-web\deeds-web-app\gemma3Q4_K_M\mo16.gguf",
-        "./gemma3Q4_K_M/mo16.gguf",
-        "./models/gemma3Q4_K_M/mo16.gguf",
+        r"C:\Users\james\Desktop\deeds-web\deeds-web-app\gemma3Q4_K_M\mohf16-Q4_K_M.gguf",
+        "./gemma3Q4_K_M/mohf16-Q4_K_M.gguf",
+        "./models/gemma3Q4_K_M/mohf16-Q4_K_M.gguf",
         "./gemma3.gguf"
     ]
 

@@ -1,0 +1,73 @@
+{
+  "mcpServers": {
+    "context7-legal": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@context7/mcp-server",
+        "--project-path",
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app",
+        "--config-path",
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\context7-docs"
+      ],
+      "env": {
+        "CONTEXT7_PROJECT_TYPE": "legal-ai",
+        "CONTEXT7_TECH_STACK": "sveltekit5,postgresql,drizzle,gemma3,autogen,crewai,vllm",
+        "CONTEXT7_FEATURES": "legal-analysis,precedent-search,document-processing,vector-search,multi-agent-workflows,gpu-acceleration",
+        "GEMMA3_MODEL_PATH": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\gemma3Q4_K_M\\mohf16-Q4_K_M.gguf",
+        "DATABASE_URL": "postgresql://postgres:password@localhost:5432/legal_ai_db",
+        "OLLAMA_ENDPOINT": "http://localhost:11434",
+        "VLLM_ENDPOINT": "http://localhost:8000",
+        "AUTOGEN_ENABLED": "true",
+        "CREWAI_ENABLED": "true",
+        "GPU_ACCELERATION": "true"
+      }
+    },
+    "context7-docs": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\context7-mcp-server.js"
+      ],
+      "env": {
+        "DOCS_PATH": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\context7-docs",
+        "PROJECT_ROOT": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+      }
+    },
+    "autogen-legal": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\autogen-mcp-server.js"
+      ],
+      "env": {
+        "AUTOGEN_CONFIG_PATH": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\autogen-config.json",
+        "OLLAMA_ENDPOINT": "http://localhost:11434",
+        "VLLM_ENDPOINT": "http://localhost:8000",
+        "PROJECT_ROOT": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+      }
+    },
+    "crewai-legal": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\crewai-mcp-server.js"
+      ],
+      "env": {
+        "CREWAI_CONFIG_PATH": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\crewai-config.json",
+        "AI_ENDPOINT": "http://localhost:11434",
+        "VLLM_ENDPOINT": "http://localhost:8000",
+        "PROJECT_ROOT": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+      }
+    },
+    "vllm-legal": {
+      "command": "python",
+      "args": [
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\scripts\\vllm-mcp-server.py"
+      ],
+      "env": {
+        "VLLM_HOST": "http://localhost:8000",
+        "MODEL_PATH": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\gemma3Q4_K_M\\mohf16-Q4_K_M.gguf",
+        "GPU_ACCELERATION": "true",
+        "PROJECT_ROOT": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+      }
+    }
+  }
+}

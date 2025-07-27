@@ -77,8 +77,8 @@
       const helpOverlay = document.getElementById('help-overlay');
       if (helpOverlay) {
         helpOverlay.style.display = 'none';
-}
-    "
+      }
+    }}
   >
     Got it!
   </Button>

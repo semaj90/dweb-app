@@ -3,7 +3,7 @@
   import { Card } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
-  import { serviceStatus } from '$lib/services/connectivity';
+  import { serviceStatus } from '$lib/stores/chatStore';
   import { onMount } from 'svelte';
 
   // Use the XState machine through the store

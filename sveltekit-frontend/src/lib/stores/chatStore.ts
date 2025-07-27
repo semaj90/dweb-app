@@ -1,108 +1,111 @@
-import type { Writable, Readable } from "svelte/store";
-import { derived, writable, readonly } from "svelte/store";
+/**
+ * Svelte 5 Compatible Chat Store with XState-like Interface
+ * Enhanced for Gemma3 Legal AI Integration
+ */
 
-// === TYPES ===
+import { writable, derived, readonly } from "svelte/store";
+import type {
+  ChatMessage,
+  Conversation,
+  ChatSettings,
+  ServiceStatus,
+} from "./types";
 
-export interface ChatMessage {
-  id: string;
-  content: string;
-  role: "user" | "assistant";
-  timestamp: Date;
-  conversationId?: string;
-  saved?: boolean;
-  metadata?: {
-    model?: string;
-    temperature?: number;
-    tokensUsed?: number;
-    references?: string[];
-    emotionalTone?: string;
-    proactive?: boolean;
-    reactions?: Record<string, boolean>;
-    saved?: boolean;
-  };
-}
-export interface Conversation {
-  id: string;
-  title: string;
+// === CHAT STATE INTERFACE ===
+export interface ChatContext {
   messages: ChatMessage[];
-  created: Date;
-  updated: Date;
-  isFavorite?: boolean;
-  tags?: string[];
-}
-export interface ChatState {
-  currentConversation: Conversation | null;
   conversations: Conversation[];
+  currentConversation: Conversation | null;
+  error: Error | null;
+  settings: ChatSettings;
   isLoading: boolean;
   isTyping: boolean;
-  error: string | null;
-  lastActivity?: Date;
-  settings: {
-    model: string;
-    temperature: number;
-    maxTokens: number;
-    proactiveMode: boolean;
-    emotionalMode: boolean;
+  isStreaming: boolean;
+  modelStatus: "unknown" | "loading" | "ready" | "error";
+  contextInjection: {
+    enabled: boolean;
+    documents: string[];
+    vectorResults: any[];
   };
 }
-// === INITIAL STATE ===
 
-const initialState: ChatState = {
-  currentConversation: null,
+// === INITIAL STATE ===
+const initialState: ChatContext = {
+  messages: [],
   conversations: [],
+  currentConversation: null,
+  error: null,
   isLoading: false,
   isTyping: false,
-  error: null,
+  isStreaming: false,
+  modelStatus: "unknown",
   settings: {
-    model: "gpt-4",
-    temperature: 0.7,
-    maxTokens: 2048,
+    model: "gemma3-legal",
+    temperature: 0.1,
+    maxTokens: 1024,
+    streaming: true,
+    contextWindow: 8192,
     proactiveMode: true,
-    emotionalMode: true,
+    emotionalMode: false,
+  },
+  contextInjection: {
+    enabled: false,
+    documents: [],
+    vectorResults: [],
   },
 };
 
-// === STORE ===
+// === MAIN STORE ===
+export const chatStore = writable<ChatContext>(initialState);
 
-export const chatStore: Writable<ChatState> = writable(initialState);
-
-// AI Personality configuration
-export const aiPersonality = writable({
-  name: "Legal Assistant",
-  role: "prosecutor assistant",
-  description:
-    "Professional legal AI assistant specialized in prosecution cases",
+// === SERVICE STATUS ===
+export const serviceStatus = writable<ServiceStatus>({
+  ollama: "unknown",
+  qdrant: "unknown",
+  database: "unknown",
+  gemma3: "unknown",
 });
 
 // === DERIVED STORES ===
-
-export const currentMessages = derived(
-  chatStore,
-  ($chat) => $chat.currentConversation?.messages || [],
-);
-
-export const conversationsList = derived(chatStore, ($chat) =>
-  $chat.conversations.sort((a, b) => b.updated.getTime() - a.updated.getTime()),
-);
-
-export const isActiveChat = derived(
-  chatStore,
-  ($chat) => !!$chat.currentConversation,
-);
+export const messages = derived(chatStore, ($store) => $store.messages);
 
 export const currentConversation = derived(
   chatStore,
-  ($chat) => $chat.currentConversation,
+  ($store) => $store.currentConversation
 );
 
-export const isLoading = derived(chatStore, ($chat) => $chat.isLoading);
+export const conversations = derived(
+  chatStore,
+  ($store) => $store.conversations
+);
 
-export const isTyping = derived(chatStore, ($chat) => $chat.isTyping);
+export const isLoading = derived(chatStore, ($store) => $store.isLoading);
 
-export const showProactivePrompt = writable(false);
+export const isStreaming = derived(chatStore, ($store) => $store.isStreaming);
+
+export const isTyping = derived(chatStore, ($store) => $store.isTyping);
+
+export const error = derived(chatStore, ($store) => $store.error);
+
+export const settings = derived(chatStore, ($store) => $store.settings);
+
+export const modelStatus = derived(chatStore, ($store) => $store.modelStatus);
+
+export const contextInjection = derived(
+  chatStore,
+  ($store) => $store.contextInjection
+);
+
+export const conversationsList = derived(conversations, ($conversations) =>
+  $conversations.sort((a, b) => b.updated.getTime() - a.updated.getTime())
+);
+
+export const isActiveChat = derived(
+  currentConversation,
+  ($conversation) => !!$conversation
+);
 
 // === ACTIONS ===
-
 export const chatActions = {
   // Create new conversation
   newConversation: (title?: string) => {
@@ -118,6 +121,7 @@ export const chatActions = {
       ...state,
       currentConversation: conversation,
       conversations: [conversation, ...state.conversations],
+      messages: [],
     }));
 
     return conversation.id;
@@ -127,11 +131,12 @@ export const chatActions = {
   loadConversation: (conversationId: string) => {
     chatStore.update((state) => {
       const conversation = state.conversations.find(
-        (c) => c.id === conversationId,
+        (c) => c.id === conversationId
       );
       return {
         ...state,
         currentConversation: conversation || null,
+        messages: conversation?.messages || [],
       };
     });
   },
@@ -151,6 +156,7 @@ export const chatActions = {
         state.currentConversation = conversation;
         state.conversations = [conversation, ...state.conversations];
       }
+
       const message: ChatMessage = {
         id: crypto.randomUUID(),
         content,
@@ -160,19 +166,27 @@ export const chatActions = {
         metadata,
       };
 
-      state.currentConversation.messages.push(message);
+      const updatedMessages = [...state.messages, message];
+      state.currentConversation.messages = updatedMessages;
       state.currentConversation.updated = new Date();
 
       // Update title if it's the first user message
-      if (role === "user" && state.currentConversation.messages.length === 1) {
+      if (
+        role === "user" &&
+        updatedMessages.filter((m) => m.role === "user").length === 1
+      ) {
         state.currentConversation.title =
           content.slice(0, 50) + (content.length > 50 ? "..." : "");
       }
-      return { ...state };
+
+      return {
+        ...state,
+        messages: updatedMessages,
+      };
     });
   },
 
-  // Send message
+  // Send message with streaming support
   sendMessage: async (content: string) => {
     chatActions.addMessage(content, "user");
 
@@ -191,31 +205,38 @@ export const chatActions = {
           message: content,
           conversationId: getCurrentConversationId(),
           settings: getSettings(),
+          contextInjection: getContextInjection(),
         }),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      const data = await response.json();
 
-      chatActions.addMessage(data.response, "assistant", {
-        model: data.model,
-        tokensUsed: data.tokensUsed,
-        references: data.references,
-      });
+      // Handle streaming vs non-streaming responses
+      if (response.headers.get("content-type")?.includes("text/stream")) {
+        await handleStreamingResponse(response);
+      } else {
+        const data = await response.json();
+        chatActions.addMessage(data.response, "assistant", {
+          model: data.model,
+          tokensUsed: data.tokensUsed,
+          references: data.references,
+        });
+      }
     } catch (error) {
       console.error("Error sending message:", error);
       chatStore.update((state) => ({
         ...state,
         error:
-          error instanceof Error ? error.message : "Failed to send message",
+          error instanceof Error ? error : new Error("Failed to send message"),
       }));
     } finally {
       chatStore.update((state) => ({
         ...state,
         isLoading: false,
         isTyping: false,
+        isStreaming: false,
       }));
     }
   },
@@ -224,7 +245,7 @@ export const chatActions = {
   deleteConversation: (conversationId: string) => {
     chatStore.update((state) => {
       const conversations = state.conversations.filter(
-        (c) => c.id !== conversationId,
+        (c) => c.id !== conversationId
       );
       const currentConversation =
         state.currentConversation?.id === conversationId
@@ -235,41 +256,283 @@ export const chatActions = {
         ...state,
         conversations,
         currentConversation,
+        messages: currentConversation?.messages || [],
       };
     });
   },
 
   // Update settings
-  updateSettings: (newSettings: Partial<ChatState["settings"]>) => {
+  updateSettings: (newSettings: Partial<ChatSettings>) => {
     chatStore.update((state) => ({
       ...state,
       settings: { ...state.settings, ...newSettings },
     }));
   },
 
-  // Clear error
+  // Context injection
+  injectContext: (documents: string[]) => {
+    chatStore.update((state) => ({
+      ...state,
+      contextInjection: {
+        ...state.contextInjection,
+        enabled: true,
+        documents,
+      },
+    }));
+  },
+
+  clearContext: () => {
+    chatStore.update((state) => ({
+      ...state,
+      contextInjection: {
+        enabled: false,
+        documents: [],
+        vectorResults: [],
+      },
+    }));
+  },
+
+  // Model status
+  checkModelStatus: async () => {
+    chatStore.update((state) => ({ ...state, modelStatus: "loading" }));
+
+    try {
+      const response = await fetch("/api/ai/model-status");
+      if (response.ok) {
+        const data = await response.json();
+        chatStore.update((state) => ({
+          ...state,
+          modelStatus: data.status || "ready",
+        }));
+      } else {
+        chatStore.update((state) => ({ ...state, modelStatus: "error" }));
+      }
+    } catch (error) {
+      chatStore.update((state) => ({ ...state, modelStatus: "error" }));
+    }
+  },
+
+  // Error handling
   clearError: () => {
     chatStore.update((state) => ({ ...state, error: null }));
   },
 
-  // Save conversation to local storage
+  // Reset chat
+  resetChat: () => {
+    chatStore.update((state) => ({
+      ...state,
+      currentConversation: null,
+      messages: [],
+      error: null,
+      isLoading: false,
+      isTyping: false,
+      isStreaming: false,
+    }));
+  },
+
+  // Loading states
+  setLoading: (loading: boolean) => {
+    chatStore.update((state) => ({ ...state, isLoading: loading }));
+  },
+
+  setTyping: (typing: boolean) => {
+    chatStore.update((state) => ({ ...state, isTyping: typing }));
+  },
+
+  setStreaming: (streaming: boolean) => {
+    chatStore.update((state) => ({ ...state, isStreaming: streaming }));
+  },
+};
+
+// === SERVICE ACTIONS ===
+export const serviceActions = {
+  updateStatus: (
+    service: keyof ServiceStatus,
+    status: ServiceStatus[keyof ServiceStatus]
+  ) => {
+    serviceStatus.update((current) => ({ ...current, [service]: status }));
+  },
+
+  checkAllServices: async () => {
+    // Check Ollama
+    try {
+      const ollamaResponse = await fetch("/api/ai/test-ollama");
+      serviceActions.updateStatus(
+        "ollama",
+        ollamaResponse.ok ? "connected" : "error"
+      );
+    } catch {
+      serviceActions.updateStatus("ollama", "error");
+    }
+
+    // Check Gemma3 model
+    try {
+      const modelResponse = await fetch("/api/ai/model-status");
+      if (modelResponse.ok) {
+        const data = await modelResponse.json();
+        serviceActions.updateStatus("gemma3", data.status || "ready");
+      } else {
+        serviceActions.updateStatus("gemma3", "error");
+      }
+    } catch {
+      serviceActions.updateStatus("gemma3", "error");
+    }
+
+    // Check database
+    try {
+      const dbResponse = await fetch("/api/health/database");
+      serviceActions.updateStatus(
+        "database",
+        dbResponse.ok ? "connected" : "error"
+      );
+    } catch {
+      serviceActions.updateStatus("database", "error");
+    }
+
+    // Check Qdrant
+    try {
+      const qdrantResponse = await fetch("/api/health/qdrant");
+      serviceActions.updateStatus(
+        "qdrant",
+        qdrantResponse.ok ? "connected" : "error"
+      );
+    } catch {
+      serviceActions.updateStatus("qdrant", "error");
+    }
+  },
+};
+
+// === HELPER FUNCTIONS ===
+function getCurrentConversationId(): string | undefined {
+  let currentId: string | undefined;
+  const unsubscribe = chatStore.subscribe((state) => {
+    currentId = state.currentConversation?.id;
+  });
+  unsubscribe();
+  return currentId;
+}
+
+function getSettings(): ChatSettings {
+  let settings: ChatSettings;
+  const unsubscribe = chatStore.subscribe((state) => {
+    settings = state.settings;
+  });
+  unsubscribe();
+  return settings!;
+}
+
+function getContextInjection() {
+  let context: any;
+  const unsubscribe = chatStore.subscribe((state) => {
+    context = state.contextInjection;
+  });
+  unsubscribe();
+  return context;
+}
+
+// Handle streaming responses
+async function handleStreamingResponse(response: Response) {
+  if (!response.body) return;
+
+  chatStore.update((state) => ({ ...state, isStreaming: true }));
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let assistantMessage = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+      assistantMessage += chunk;
+
+      // Update the last message or create new one
+      chatStore.update((state) => {
+        const messages = [...state.messages];
+        const lastMessage = messages[messages.length - 1];
+
+        if (lastMessage && lastMessage.role === "assistant") {
+          messages[messages.length - 1] = {
+            ...lastMessage,
+            content: assistantMessage,
+          };
+        } else {
+          messages.push({
+            id: crypto.randomUUID(),
+            content: assistantMessage,
+            role: "assistant",
+            timestamp: new Date(),
+            conversationId: state.currentConversation?.id,
+          });
+        }
+
+        return { ...state, messages };
+      });
+    }
+  } catch (error) {
+    console.error("Streaming error:", error);
+    chatStore.update((state) => ({
+      ...state,
+      error: error instanceof Error ? error : new Error("Streaming failed"),
+    }));
+  }
+}
+
+// === XSTATE-LIKE COMPATIBILITY ===
+interface XStateCompatibleState {
+  context: ChatContext;
+  matches: (state: string) => boolean;
+}
+
+export const xstateCompatibleStore = derived(
+  chatStore,
+  ($chatStore): XStateCompatibleState => ({
+    context: $chatStore,
+    matches: (state: string) => {
+      switch (state) {
+        case "loading":
+          return $chatStore.isLoading;
+        case "streaming":
+          return $chatStore.isStreaming;
+        case "error":
+          return !!$chatStore.error;
+        case "idle":
+          return !$chatStore.isLoading && !$chatStore.error;
+        default:
+          return false;
+      }
+    },
+  })
+);
+
+export function useChatActor() {
+  return {
+    state: readonly(xstateCompatibleStore),
+  };
+}
+
+// === PERSISTENCE ===
+export const persistenceHelpers = {
   saveToStorage: () => {
     if (typeof window === "undefined") return;
 
-    chatStore.subscribe((state) => {
+    const unsubscribe = chatStore.subscribe((state) => {
       try {
         localStorage.setItem(
           "chat-conversations",
-          JSON.stringify(state.conversations),
+          JSON.stringify(state.conversations)
         );
         localStorage.setItem("chat-settings", JSON.stringify(state.settings));
       } catch (error) {
         console.warn("Failed to save chat data to localStorage:", error);
       }
     });
+
+    return unsubscribe;
   },
 
-  // Load from local storage
   loadFromStorage: () => {
     if (typeof window === "undefined") return;
 
@@ -277,130 +540,31 @@ export const chatActions = {
       const conversations = localStorage.getItem("chat-conversations");
       const settings = localStorage.getItem("chat-settings");
 
-      if (conversations || settings) {
-        chatStore.update((state) => ({
-          ...state,
-          conversations: conversations
-            ? JSON.parse(conversations).map((c: any) => ({
-                ...c,
-                created: new Date(c.created),
-                updated: new Date(c.updated),
-                messages: c.messages.map((m: any) => ({
-                  ...m,
-                  timestamp: new Date(m.timestamp),
-                })),
-              }))
-            : state.conversations,
-          settings: settings
-            ? { ...state.settings, ...JSON.parse(settings) }
-            : state.settings,
-        }));
-      }
+      chatStore.update((state) => ({
+        ...state,
+        conversations: conversations
+          ? JSON.parse(conversations).map((c: any) => ({
+              ...c,
+              created: new Date(c.created),
+              updated: new Date(c.updated),
+              messages: c.messages.map((m: any) => ({
+                ...m,
+                timestamp: new Date(m.timestamp),
+              })),
+            }))
+          : state.conversations,
+        settings: settings
+          ? { ...state.settings, ...JSON.parse(settings) }
+          : state.settings,
+      }));
     } catch (error) {
       console.warn("Failed to load chat data from localStorage:", error);
     }
   },
-
-  // Update activity timestamp
-  updateActivity: () => {
-    chatStore.update((state) => ({
-      ...state,
-      lastActivity: new Date(),
-    }));
-  },
-
-  // Toggle message saved status
-  toggleMessageSaved: (messageId: string) => {
-    chatStore.update((state) => {
-      if (!state.currentConversation) return state;
-
-      const messages = state.currentConversation.messages.map((msg) => {
-        if (msg.id === messageId) {
-          return { ...msg, saved: !msg.metadata?.saved };
-        }
-        return msg;
-      });
-
-      return {
-        ...state,
-        currentConversation: {
-          ...state.currentConversation,
-          messages,
-        },
-      };
-    });
-  },
-
-  // React to message
-  reactToMessage: (messageId: string, reaction: string) => {
-    chatStore.update((state) => {
-      if (!state.currentConversation) return state;
-
-      const messages = state.currentConversation.messages.map((msg) => {
-        if (msg.id === messageId) {
-          const reactions = msg.metadata?.reactions || {};
-          return {
-            ...msg,
-            metadata: {
-              ...msg.metadata,
-              reactions: { ...reactions, [reaction]: !reactions[reaction] },
-            },
-          };
-        }
-        return msg;
-      });
-
-      return {
-        ...state,
-        currentConversation: {
-          ...state.currentConversation,
-          messages,
-        },
-      };
-    });
-  },
-
-  // Set loading state
-  setLoading: (loading: boolean) => {
-    chatStore.update((state) => ({
-      ...state,
-      isLoading: loading,
-    }));
-  },
-
-  // Set typing state
-  setTyping: (typing: boolean) => {
-    chatStore.update((state) => ({
-      ...state,
-      isTyping: typing,
-    }));
-  },
-
-  // Reset chat (clear current conversation)
-  resetChat: () => {
-    chatStore.update((state) => ({
-      ...state,
-      currentConversation: null,
-      error: null,
-      isLoading: false,
-      isTyping: false,
-    }));
-  },
 };
 
-// === HELPER FUNCTIONS ===
-
-function getCurrentConversationId(): string | undefined {
-  let currentId: string | undefined;
-  chatStore.subscribe((state) => {
-    currentId = state.currentConversation?.id;
-  })();
-  return currentId;
-}
-function getSettings(): ChatState["settings"] {
-  let settings: ChatState["settings"];
-  chatStore.subscribe((state) => {
-    settings = state.settings;
-  })();
-  return settings!;
+// Initialize persistence on client-side
+if (typeof window !== "undefined") {
+  persistenceHelpers.loadFromStorage();
+  persistenceHelpers.saveToStorage();
 }

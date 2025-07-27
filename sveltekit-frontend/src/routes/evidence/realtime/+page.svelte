@@ -405,7 +405,7 @@
                 on:click={() => {
                   selectedTypes = [];
                   searchQuery = "";
-                "
+                }}
               >
                 Clear Filters
               </Button>

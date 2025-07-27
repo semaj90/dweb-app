@@ -498,6 +498,63 @@ export const statutes = pgTable("statutes", {
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
 
+// === CONTEXT7 LEGAL AI ENHANCEMENT TABLES ===
+
+export const legalDocuments = pgTable("legal_documents", {
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
+  content: text("content").notNull(),
+  embedding: text("embedding"), // 1536-dimensional vector for legal embeddings
+  legalCategory: varchar("legal_category", { length: 50 }),
+  caseReference: varchar("case_reference", { length: 100 }),
+  jurisdiction: varchar("jurisdiction", { length: 50 }),
+  documentType: varchar("document_type", { length: 50 }), // statute, precedent, brief, motion
+  confidence: decimal("confidence", { precision: 3, scale: 2 }).default("0.85"),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  evidenceId: uuid("evidence_id").references(() => evidence.id, { onDelete: "cascade" }),
+  metadata: jsonb("metadata").default({}).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const legalPrecedents = pgTable("legal_precedents", {
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
+  caseTitle: varchar("case_title", { length: 255 }).notNull(),
+  citation: varchar("citation", { length: 255 }).notNull(),
+  court: varchar("court", { length: 100 }),
+  year: integer("year"),
+  jurisdiction: varchar("jurisdiction", { length: 50 }),
+  summary: text("summary"),
+  fullText: text("full_text"),
+  embedding: text("embedding"), // Legal document vector
+  relevanceScore: decimal("relevance_score", { precision: 3, scale: 2 }),
+  legalPrinciples: jsonb("legal_principles").default([]).notNull(),
+  linkedCases: jsonb("linked_cases").default([]).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const legalAnalysisSessions = pgTable("legal_analysis_sessions", {
+  id: uuid("id")
+    .primaryKey()
+    .defaultRandom(),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  sessionType: varchar("session_type", { length: 50 }).default("case_analysis"),
+  analysisPrompt: text("analysis_prompt"),
+  analysisResult: text("analysis_result"),
+  confidenceLevel: decimal("confidence_level", { precision: 3, scale: 2 }),
+  sourcesUsed: jsonb("sources_used").default([]).notNull(),
+  model: varchar("model", { length: 100 }).default("gemma3-legal"),
+  processingTime: integer("processing_time"), // milliseconds
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
 // === VECTOR SEARCH TABLES ===
 
 export const userEmbeddings = pgTable("user_embeddings", {
@@ -664,6 +721,34 @@ export const caseEmbeddingsRelations = relations(caseEmbeddings, ({ one }) => ({
   case: one(cases, {
     fields: [caseEmbeddings.caseId],
     references: [cases.id],
+  }),
+}));
+
+// === CONTEXT7 LEGAL AI RELATIONS ===
+
+export const legalDocumentsRelations = relations(legalDocuments, ({ one }) => ({
+  case: one(cases, {
+    fields: [legalDocuments.caseId],
+    references: [cases.id],
+  }),
+  evidence: one(evidence, {
+    fields: [legalDocuments.evidenceId],
+    references: [evidence.id],
+  }),
+}));
+
+export const legalPrecedentsRelations = relations(legalPrecedents, ({ many }) => ({
+  // No direct foreign key relations but used via vector similarity
+}));
+
+export const legalAnalysisSessionsRelations = relations(legalAnalysisSessions, ({ one }) => ({
+  case: one(cases, {
+    fields: [legalAnalysisSessions.caseId],
+    references: [cases.id],
+  }),
+  user: one(users, {
+    fields: [legalAnalysisSessions.userId],
+    references: [users.id],
   }),
 }));
 

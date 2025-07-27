@@ -167,3 +167,213 @@ const aiLog = await db.insert(aiHistory).values({
 - Regular backups of case data
 - Monitor AI token usage costs
 - Implement audit logging for evidence changes
+
+## RAG System Integration
+
+The RAG (Retrieval Augmented Generation) system is now fully integrated with MCP tools for seamless legal document search and analysis.
+
+### RAG-MCP Tools Available:
+
+1. **`rag-query`** - Semantic search across legal documents
+   ```
+   Usage: Ask Claude to "rag query '[legal question]' for case [case-id]"
+   Example: "rag query 'contract liability clauses' for case CASE-2024-001"
+   ```
+
+2. **`rag-upload-document`** - Upload and index legal documents
+   ```
+   Usage: Ask Claude to "upload document '[file-path]' to case [case-id] as [document-type]"
+   Example: "upload document '/legal/contract.pdf' to case CASE-001 as contract"
+   ```
+
+3. **`rag-get-stats`** - Get RAG system health and statistics
+   ```
+   Usage: Ask Claude to "get rag system statistics"
+   ```
+
+4. **`rag-analyze-relevance`** - Analyze document relevance for queries
+   ```
+   Usage: Ask Claude to "analyze relevance of document [doc-id] for query '[query]'"
+   Example: "analyze relevance of document doc-123 for query 'liability clauses'"
+   ```
+
+5. **`rag-integration-guide`** - Get integration guidance for SvelteKit
+   ```
+   Usage: Ask Claude to "get rag integration guide for [type]"
+   Types: api-integration, component-integration, search-ui, document-upload
+   Example: "get rag integration guide for search-ui"
+   ```
+
+### RAG Common Queries (TypeScript):
+
+```typescript
+import { commonMCPQueries } from '$lib/utils/mcp-helpers'
+
+// Legal document search
+const legalQuery = commonMCPQueries.ragLegalQuery('contract terms', 'CASE-001')
+
+// Contract analysis
+const contractQuery = commonMCPQueries.ragContractAnalysis('liability provisions')
+
+// Case law search
+const caseLawQuery = commonMCPQueries.ragCaseLawSearch('employment disputes')
+
+// Evidence search
+const evidenceQuery = commonMCPQueries.ragEvidenceSearch('digital forensics', 'CASE-001')
+
+// Integration guides
+const apiGuide = commonMCPQueries.ragApiIntegration()
+const uiGuide = commonMCPQueries.ragSearchUI()
+```
+
+### RAG Configuration:
+
+```bash
+# Environment variables for RAG system
+RAG_ENDPOINT=http://localhost:8000
+RAG_ENABLED=true
+DATABASE_URL=postgresql://user:pass@localhost:5432/legal_ai
+QDRANT_URL=http://localhost:6333  # Optional vector database
+```
+
+### RAG Demo Interface:
+
+Access the interactive RAG testing interface at:
+```
+http://localhost:5173/dev/mcp-tools
+```
+
+Features:
+- Legal document search testing
+- Document upload simulation
+- System statistics monitoring
+- Integration code examples
+- Relevance analysis tools
+
+## MCP Context7 Tools (Available via Claude Code)
+
+### Available MCP Tools for Stack Development:
+
+1. **`analyze-stack`** - Analyze any component with context-aware suggestions
+   ```
+   Usage: Ask Claude to "analyze [component] with context [legal-ai|gaming-ui|performance]"
+   Example: "analyze sveltekit with context legal-ai"
+   ```
+
+2. **`generate-best-practices`** - Get best practices for specific areas
+   ```
+   Usage: Ask Claude to "generate best practices for [area]"
+   Areas: performance, security, ui-ux
+   Example: "generate best practices for performance"
+   ```
+
+3. **`suggest-integration`** - Integration patterns for new features
+   ```
+   Usage: Ask Claude to "suggest integration for [feature] with requirements [details]"
+   Example: "suggest integration for document upload with requirements security and audit trails"
+   ```
+
+4. **`resolve-library-id`** - Find Context7-compatible library IDs
+   ```
+   Usage: Ask Claude to "resolve library id for [library-name]"
+   Example: "resolve library id for drizzle"
+   ```
+
+5. **`get-library-docs`** - Retrieve specific documentation with topic filtering
+   ```
+   Usage: Ask Claude to "get library docs for [library-id] topic [topic]"
+   Example: "get library docs for sveltekit topic routing"
+   ```
+
+### Available Resources:
+
+- **`context7://stack-overview`** - Complete technology stack configuration
+- **`context7://integration-guide`** - Component integration guide
+- **`context7://performance-tips`** - Performance optimization recommendations
+
+### Quick Reference Commands:
+
+```bash
+# Ask for stack analysis
+"analyze typescript with context legal-ai"
+
+# Get performance guidance  
+"generate best practices for performance"
+
+# Integration help
+"suggest integration for AI chat component"
+
+# Library documentation
+"get library docs for bits-ui topic dialog"
+
+# Stack overview
+"show me the stack overview resource"
+```
+
+### JSON Function Helper:
+
+For complex queries, use this JSON structure:
+```json
+{
+  "tool": "analyze-stack|generate-best-practices|suggest-integration|resolve-library-id|get-library-docs",
+  "component": "string",
+  "context": "legal-ai|gaming-ui|performance",
+  "area": "performance|security|ui-ux",
+  "feature": "string",
+  "requirements": "string",
+  "library": "string",
+  "topic": "string"
+}
+```
+
+### MCP Helper Functions (TypeScript):
+
+Location: `src/lib/utils/mcp-helpers.ts`
+
+```typescript
+import { generateMCPPrompt, commonMCPQueries } from '$lib/utils/mcp-helpers'
+
+// Quick access to common queries
+const svelteKitQuery = commonMCPQueries.analyzeSvelteKit()
+const performanceQuery = commonMCPQueries.performanceBestPractices()
+const aiChatQuery = commonMCPQueries.aiChatIntegration()
+
+// Generate prompts programmatically
+const customPrompt = generateMCPPrompt({
+  tool: 'analyze-stack',
+  component: 'typescript',
+  context: 'legal-ai'
+})
+```
+
+### Common Pre-built Queries:
+
+```typescript
+// Stack Analysis
+commonMCPQueries.analyzeSvelteKit()      // SvelteKit for legal AI
+commonMCPQueries.analyzeDrizzle()        // Drizzle ORM for legal data
+commonMCPQueries.analyzeUnoCSS()         // UnoCSS performance
+
+// Best Practices
+commonMCPQueries.performanceBestPractices()  // Performance optimization
+commonMCPQueries.securityBestPractices()     // Security guidelines
+commonMCPQueries.uiUxBestPractices()         // UI/UX patterns
+
+// Integration Help
+commonMCPQueries.aiChatIntegration()         // AI chat components
+commonMCPQueries.documentUploadIntegration() // Document upload system
+commonMCPQueries.gamingUIIntegration()       // Gaming-style UI
+
+// Documentation
+commonMCPQueries.svelteKitRouting()      // SvelteKit routing docs
+commonMCPQueries.bitsUIDialog()          // Bits UI dialog components
+commonMCPQueries.drizzleSchema()         // Drizzle schema patterns
+```
+
+## MCP Servers Status:
+
+- ✅ **context7-custom** - Stack-aware analysis and best practices
+- ✅ **figma-http** - Figma API integration with design tokens
+- ⚠️ **serena** - Semantic code analysis (requires setup)
+- ❌ **filesystem** - Local file access (connection issues)
+- ❌ **puppeteer** - Browser automation (deprecated package)

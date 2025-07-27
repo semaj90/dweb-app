@@ -223,8 +223,9 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
-
+  .stats-grid {
     gap: 16px;
+  }
   .stat-card {
     background: #f9fafb;
     padding: 20px;

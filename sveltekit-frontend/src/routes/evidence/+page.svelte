@@ -12,7 +12,6 @@
     evidenceActions,
     evidenceGrid,
     uploadActions,
-    type Evidence,
   } from "$lib/stores/evidence-store";
   import { notifications } from "$lib/stores/notification";
   import { ThinkingProcessor } from "$lib/ai/thinking-processor";
@@ -730,7 +729,7 @@
             dateFrom = "";
             dateTo = "";
             searchQuery = "";
-          "
+          }}
         >
           Clear Filters
         </Button>
@@ -819,7 +818,7 @@
               selectedEvidence.clear();
               selectedEvidence = selectedEvidence;
               showBulkActions = false;
-            "
+            }}
             disabled={bulkOperationLoading}
           >
             Cancel
@@ -1348,7 +1347,7 @@
         <Button on:click={() => {
           // Save analysis or perform other actions
           closeAnalysisModal();
-        ">Save Analysis</Button>
+        }}>Save Analysis</Button>
       </div>
     </div>
     <div class="container mx-auto px-4" on:click={closeAnalysisModal}></div>

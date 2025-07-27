@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import ReportEditor from "$lib/components/ReportEditor.svelte";
 	import CanvasEditor from "$lib/components/CanvasEditor.svelte";
-	import type { Report, CanvasState, Evidence, CitationPoint } from "$lib/data/types";
+	import type { Report, CanvasState, CitationPoint } from "$lib/data/types";
 
 	let currentReport: Report | null = null;
 	let currentCanvasState: CanvasState | null = null;

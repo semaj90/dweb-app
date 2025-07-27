@@ -336,7 +336,7 @@
               on:click={() => {
                 searchQuery = "";
                 selectedCategory = "all";
-              "
+              }}
             >
               Clear filters
             </Button>

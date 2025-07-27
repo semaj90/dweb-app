@@ -32,7 +32,7 @@ This document provides comprehensive context for Claude and other AI assistants 
 ```yaml
 Framework: SvelteKit 2.16.0 with Svelte 5.0 (latest runes system)
 Language: TypeScript with strict type checking
-Styling: Custom CSS with PostCSS, SCSS, and Nier-themed UI
+Styling: Custom CSS with PostCSS, unocss, and Nier-themed UI
 UI Components: Melt UI, Bits UI, shadcn-svelte
 Database: Drizzle ORM with PostgreSQL + pg_vector
 Vector Search: Qdrant (Docker) for semantic search
@@ -46,6 +46,7 @@ Development Tools: VS Code Remote Indexing, Context7 MCP
 ### Application Purpose
 
 **Legal AI Assistant Web Application** designed for prosecutor/legal professional use with:
+
 - Case management with enhanced views and canvas mode
 - Evidence upload, validation, and real-time grid display
 - AI-powered legal analysis and chat interface
@@ -62,6 +63,7 @@ Development Tools: VS Code Remote Indexing, Context7 MCP
 The system integrates with Context7 MCP (Model Context Protocol) for enhanced AI context sharing:
 
 #### Context7 Configuration
+
 ```json
 {
   "mcpServers": {
@@ -82,20 +84,22 @@ The system integrates with Context7 MCP (Model Context Protocol) for enhanced AI
 ```
 
 #### Context7 Library Mappings
+
 ```typescript
 const library_mappings = {
-  "svelte": "/sveltejs/svelte",
-  "sveltekit": "/sveltejs/kit", 
-  "typescript": "/microsoft/typescript",
-  "drizzle": "/drizzle-team/drizzle-orm",
-  "postgres": "/postgres/postgres",
-  "qdrant": "/qdrant/qdrant",
-  "ollama": "/ollama/ollama",
-  "legal-ai": "/legal-ai-systems/legal-ai-remote-indexing"
+  svelte: "/sveltejs/svelte",
+  sveltekit: "/sveltejs/kit",
+  typescript: "/microsoft/typescript",
+  drizzle: "/drizzle-team/drizzle-orm",
+  postgres: "/postgres/postgres",
+  qdrant: "/qdrant/qdrant",
+  ollama: "/ollama/ollama",
+  "legal-ai": "/legal-ai-systems/legal-ai-remote-indexing",
 };
 ```
 
 #### Enhanced Context Provider Integration
+
 ```typescript
 interface Context7CompatibleResult {
   content: string;
@@ -107,7 +111,7 @@ interface Context7CompatibleResult {
     source: "enhanced_local_index" | "basic_local_index" | "context7_mcp";
     priority: "high" | "medium" | "low";
     index_type?: "enhanced_legal_ai";
-  }
+  };
 }
 ```
 
@@ -116,6 +120,7 @@ interface Context7CompatibleResult {
 ## 📁 Project Structure & Codebase
 
 ### Root Directory Structure
+
 ```
 C:\Users\james\Desktop\deeds-web\deeds-web-app
 ├── sveltekit-frontend/          # Main SvelteKit application
@@ -130,6 +135,7 @@ C:\Users\james\Desktop\deeds-web\deeds-web-app
 ```
 
 ### SvelteKit Frontend Structure
+
 ```
 sveltekit-frontend/src/
 ├── lib/
@@ -169,15 +175,16 @@ sveltekit-frontend/src/
 ### Modern Svelte 5 Patterns
 
 #### Component Structure (New Runes System)
+
 ```svelte
 <script lang="ts">
   // Use $props() instead of export let
   let { variant = 'default', size = 'md' } = $props();
-  
+
   // Use $state() for reactive local state
   let isLoading = $state(false);
   let clickCount = $state(0);
-  
+
   // Use $derived() for computed values
   let buttonClasses = $derived(() => {
     const base = 'inline-flex items-center justify-center rounded-md';
@@ -187,7 +194,7 @@ sveltekit-frontend/src/
     };
     return `${base} ${variants[variant]}`;
   });
-  
+
   // Use $effect() for side effects
   $effect(() => {
     if (clickCount > 5) {
@@ -198,52 +205,55 @@ sveltekit-frontend/src/
 ```
 
 #### Data Loading Pattern (SSR-First)
+
 ```typescript
 // +page.server.ts - Server-side data loading
 export async function load({ params, locals, cookies }) {
   const user = locals.user;
-  
+
   if (!user) {
     redirect(307, "/login");
   }
-  
+
   // Parallel data loading
   const [cases, evidence, reports] = await Promise.all([
     db.select().from(cases).where(eq(cases.userId, user.id)),
     db.select().from(evidence).where(eq(evidence.userId, user.id)),
-    db.select().from(reports).where(eq(reports.userId, user.id))
+    db.select().from(reports).where(eq(reports.userId, user.id)),
   ]);
-  
+
   return {
     cases,
     evidence,
     reports,
-    user: { id: user.id, name: user.name }
+    user: { id: user.id, name: user.name },
   };
 }
 ```
 
 #### Form Actions Pattern
+
 ```typescript
 // Server actions for data mutations
 export const actions = {
   createCase: async ({ request, locals }) => {
     const data = await request.formData();
     const caseData = {
-      title: data.get('title'),
-      description: data.get('description'),
-      userId: locals.user.id
+      title: data.get("title"),
+      description: data.get("description"),
+      userId: locals.user.id,
     };
-    
+
     const result = await db.insert(cases).values(caseData).returning();
     return { success: true, case: result[0] };
-  }
+  },
 };
 ```
 
 ### Component Architecture
 
 #### UI Component System
+
 ```
 src/lib/components/ui/
 ├── button/                     # Button component with variants
@@ -258,6 +268,7 @@ src/lib/components/ui/
 ```
 
 #### Specialized Components
+
 ```
 src/lib/components/
 ├── ai/                        # AI-related components
@@ -287,6 +298,7 @@ src/lib/components/
 ### Local LLM Integration
 
 #### Ollama Configuration
+
 ```typescript
 // src/lib/config/local-llm.ts
 export const ollamaConfig = {
@@ -294,38 +306,39 @@ export const ollamaConfig = {
   model: "gemma3-legal:latest",
   embedModel: "nomic-embed-text",
   timeout: 30000,
-  maxTokens: 4096
+  maxTokens: 4096,
 };
 ```
 
 #### AI Service Implementation
+
 ```typescript
 // src/lib/services/ai-service.ts
 export class AIService {
   async generateResponse(prompt: string, context: string[]) {
     const response = await fetch(`${ollamaConfig.baseUrl}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: ollamaConfig.model,
-        prompt: `Context: ${context.join('\n')}\n\nUser: ${prompt}`,
-        stream: false
-      })
+        prompt: `Context: ${context.join("\n")}\n\nUser: ${prompt}`,
+        stream: false,
+      }),
     });
-    
+
     return response.json();
   }
-  
+
   async generateEmbedding(text: string) {
     const response = await fetch(`${ollamaConfig.baseUrl}/api/embeddings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: ollamaConfig.embedModel,
-        prompt: text
-      })
+        prompt: text,
+      }),
     });
-    
+
     return response.json();
   }
 }
@@ -334,34 +347,37 @@ export class AIService {
 ### Vector Search Integration
 
 #### Qdrant Service
+
 ```typescript
 // src/lib/server/services/qdrant-service.ts
 export class QdrantService {
   private client: QdrantClient;
-  
+
   constructor() {
     this.client = new QdrantClient({
-      url: process.env.QDRANT_URL || "http://localhost:6333"
+      url: process.env.QDRANT_URL || "http://localhost:6333",
     });
   }
-  
+
   async searchSimilar(embedding: number[], limit: number = 10) {
     const searchResult = await this.client.search("legal_vectors", {
       vector: embedding,
       limit,
-      score_threshold: 0.7
+      score_threshold: 0.7,
     });
-    
+
     return searchResult;
   }
-  
+
   async storeEmbedding(id: string, embedding: number[], metadata: any) {
     await this.client.upsert("legal_vectors", {
-      points: [{
-        id,
-        vector: embedding,
-        payload: metadata
-      }]
+      points: [
+        {
+          id,
+          vector: embedding,
+          payload: metadata,
+        },
+      ],
     });
   }
 }
@@ -374,62 +390,65 @@ export class QdrantService {
 ### Drizzle ORM Schema
 
 #### Core Tables
+
 ```typescript
 // src/lib/server/db/schema.ts
-export const users = pgTable('users', {
-  id: text('id').primaryKey(),
-  email: text('email').notNull().unique(),
-  username: text('username').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  username: text("username").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const cases = pgTable('cases', {
-  id: text('id').primaryKey(),
-  title: text('title').notNull(),
-  description: text('description'),
-  status: text('status').default('active'),
-  userId: text('user_id').references(() => users.id),
-  canvasData: json('canvas_data').$type<CanvasData>(),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+export const cases = pgTable("cases", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: text("status").default("active"),
+  userId: text("user_id").references(() => users.id),
+  canvasData: json("canvas_data").$type<CanvasData>(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const evidence = pgTable('evidence', {
-  id: text('id').primaryKey(),
-  title: text('title').notNull(),
-  description: text('description'),
-  evidenceType: text('evidence_type').notNull(),
-  filePath: text('file_path'),
-  fileSize: integer('file_size'),
-  mimeType: text('mime_type'),
-  caseId: text('case_id').references(() => cases.id),
-  userId: text('user_id').references(() => users.id),
-  tags: json('tags').$type<string[]>(),
-  metadata: json('metadata').$type<EvidenceMetadata>(),
-  aiTags: json('ai_tags').$type<string[]>(),
-  embedding: vector('embedding', { dimensions: 1536 }),
-  createdAt: timestamp('created_at').defaultNow()
+export const evidence = pgTable("evidence", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  evidenceType: text("evidence_type").notNull(),
+  filePath: text("file_path"),
+  fileSize: integer("file_size"),
+  mimeType: text("mime_type"),
+  caseId: text("case_id").references(() => cases.id),
+  userId: text("user_id").references(() => users.id),
+  tags: json("tags").$type<string[]>(),
+  metadata: json("metadata").$type<EvidenceMetadata>(),
+  aiTags: json("ai_tags").$type<string[]>(),
+  embedding: vector("embedding", { dimensions: 1536 }),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 ```
 
 #### Vector Extension Setup
+
 ```sql
 -- Enable pg_vector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Create vector index for similarity search
-CREATE INDEX CONCURRENTLY IF NOT EXISTS evidence_embedding_idx 
-ON evidence USING ivfflat (embedding vector_cosine_ops) 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS evidence_embedding_idx
+ON evidence USING ivfflat (embedding vector_cosine_ops)
 WITH (lists = 100);
 ```
 
 ### Database Connection
+
 ```typescript
 // src/lib/server/db/index.ts
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
 const connectionString = process.env.DATABASE_URL!;
 const client = postgres(connectionString);
@@ -443,6 +462,7 @@ export const db = drizzle(client);
 ### SvelteKit Best Practices
 
 #### Essential Patterns
+
 ```yaml
 Props: Use $props() instead of export let (Svelte 5)
 State: Use $state() for reactive local state
@@ -455,6 +475,7 @@ Styling: Utility-first CSS with Tailwind or custom CSS
 ```
 
 #### Component Modernization Checklist
+
 ```yaml
 ✅ Replace export let with $props()
 ✅ Replace reactive statements with $derived()
@@ -467,6 +488,7 @@ Styling: Utility-first CSS with Tailwind or custom CSS
 ```
 
 ### XState Integration
+
 ```typescript
 // State machine for case creation
 const caseCreationMachine = createMachine({
@@ -475,15 +497,15 @@ const caseCreationMachine = createMachine({
   states: {
     idle: { on: { START: "collecting" } },
     collecting: { on: { SUBMIT: "submitting" } },
-    submitting: { 
-      on: { 
-        SUCCESS: "success", 
-        ERROR: "error" 
-      }
+    submitting: {
+      on: {
+        SUCCESS: "success",
+        ERROR: "error",
+      },
     },
     success: { type: "final" },
-    error: { on: { RETRY: "submitting" } }
-  }
+    error: { on: { RETRY: "submitting" } },
+  },
 });
 ```
 
@@ -494,6 +516,7 @@ const caseCreationMachine = createMachine({
 ### Enhanced Indexing System
 
 #### File Types and Language Support
+
 ```yaml
 Languages: [TypeScript, JavaScript, Python, Svelte, HTML, CSS, SQL, Markdown]
 Frameworks: [SvelteKit, Drizzle ORM, Ollama, Docker, PostgreSQL]
@@ -502,6 +525,7 @@ Special Files: [.svelte components, +page.server.ts, +layout.svelte, schema.ts]
 ```
 
 #### Semantic Search Capabilities
+
 ```typescript
 interface SearchQuery {
   query: string;
@@ -527,6 +551,7 @@ interface SearchResult {
 ```
 
 #### Enhanced Context Provider
+
 ```typescript
 class EnhancedCopilotContextProvider {
   async getSemanticContext(
@@ -535,23 +560,36 @@ class EnhancedCopilotContextProvider {
     language: string,
     include_context7: boolean = true
   ): Promise<Context7CompatibleResult[]> {
-    
     // 1. Analyze current code context
-    const context_analysis = this.analyzer.analyze_code_context(code, language, cursor_position[0]);
-    
+    const context_analysis = this.analyzer.analyze_code_context(
+      code,
+      language,
+      cursor_position[0]
+    );
+
     // 2. Generate intelligent queries
     const queries = this.generateIntelligentQueries(context_analysis, language);
-    
+
     // 3. Search enhanced local index (PRIORITY)
-    const enhanced_results = await this.getEnhancedLocalContext(queries.main, language);
-    
+    const enhanced_results = await this.getEnhancedLocalContext(
+      queries.main,
+      language
+    );
+
     // 4. Get Context7 documentation if enabled
-    const context7_results = include_context7 
-      ? await this.getContext7Documentation(context_analysis.libraries, queries.topic)
+    const context7_results = include_context7
+      ? await this.getContext7Documentation(
+          context_analysis.libraries,
+          queries.topic
+        )
       : [];
-    
+
     // 5. Combine and rank results with enhanced priority
-    return this.combineAndRankResults(enhanced_results, context7_results, context_analysis);
+    return this.combineAndRankResults(
+      enhanced_results,
+      context7_results,
+      context_analysis
+    );
   }
 }
 ```
@@ -559,20 +597,21 @@ class EnhancedCopilotContextProvider {
 ### File Context Patterns
 
 #### Component Context Detection
+
 ```typescript
 const language_patterns = {
-  'svelte': {
-    'component': /<(\w+)/g,
-    'props': /export\s+let\s+(\w+)/g,
-    'reactive': /\$:\s*(\w+)/g,
-    'import': /import.*from\s+['"]([^'"]+)['"]/g
+  svelte: {
+    component: /<(\w+)/g,
+    props: /export\s+let\s+(\w+)/g,
+    reactive: /\$:\s*(\w+)/g,
+    import: /import.*from\s+['"]([^'"]+)['"]/g,
   },
-  'typescript': {
-    'function': /(?:export\s+)?(?:async\s+)?function\s+(\w+)/g,
-    'class': /(?:export\s+)?class\s+(\w+)/g,
-    'interface': /(?:export\s+)?interface\s+(\w+)/g,
-    'type': /type\s+(\w+)\s*=/g
-  }
+  typescript: {
+    function: /(?:export\s+)?(?:async\s+)?function\s+(\w+)/g,
+    class: /(?:export\s+)?class\s+(\w+)/g,
+    interface: /(?:export\s+)?interface\s+(\w+)/g,
+    type: /type\s+(\w+)\s*=/g,
+  },
 };
 ```
 
@@ -583,6 +622,7 @@ const language_patterns = {
 ### Model Context Protocol Implementation
 
 #### MCP Server Configuration
+
 ```json
 {
   "mcpServers": {
@@ -605,6 +645,7 @@ const language_patterns = {
 ```
 
 #### MCP Request Types
+
 ```typescript
 interface MCPRequest {
   method: "initialize" | "shutdown" | "notification" | "request";
@@ -634,6 +675,7 @@ interface MCPResponse {
 ```
 
 #### Enhanced vs Basic Index Priority
+
 ```python
 # Enhanced index takes priority over basic indexing
 async def get_enhanced_context(query: str, language: str) -> List[Context7CompatibleResult]:
@@ -646,10 +688,10 @@ async def get_enhanced_context(query: str, language: str) -> List[Context7Compat
         "priority_mode": True,
         "source_priority": "enhanced_over_basic"
     }
-    
+
     # Try enhanced middleware first (port 8000)
     response = await session.post(f"{server_url}/context7/search", json=payload)
-    
+
     if response.status == 200:
         results = response.json()["results"]
         for result in results:
@@ -669,6 +711,7 @@ async def get_enhanced_context(query: str, language: str) -> List[Context7Compat
 ### System Components
 
 #### Core Services
+
 ```python
 # Remote Indexing Server - Main API endpoint
 class RemoteIndexingServer:
@@ -701,6 +744,7 @@ class SystemMonitor:
 ```
 
 #### Docker Service Stack
+
 ```yaml
 services:
   prosecutor_ollama:
@@ -709,12 +753,12 @@ services:
     volumes: ["ollama_models:/root/.ollama"]
     environment:
       - OLLAMA_MODELS=/root/.ollama
-    
+
   prosecutor_qdrant:
     image: qdrant/qdrant
     ports: ["6333:6333", "6334:6334"]
     volumes: ["qdrant_storage:/qdrant/storage"]
-    
+
   indexing_server:
     build: ./vscode-remote-indexing
     ports: ["8000:8000"]
@@ -727,25 +771,27 @@ services:
 ### VS Code Extension Integration
 
 #### Semantic Search Commands
+
 ```typescript
 // VS Code extension commands
 const commands = {
   "legalAI.injectContext7Context": {
     keybinding: "ctrl+shift+alt+c",
-    description: "Inject Context7 enhanced context at cursor"
+    description: "Inject Context7 enhanced context at cursor",
   },
   "legalAI.semanticSearch": {
-    keybinding: "ctrl+shift+f", 
-    description: "Semantic code search across projects"
+    keybinding: "ctrl+shift+f",
+    description: "Semantic code search across projects",
   },
   "legalAI.indexWorkspace": {
     keybinding: "ctrl+shift+i",
-    description: "Index current workspace with AI analysis"
-  }
+    description: "Index current workspace with AI analysis",
+  },
 };
 ```
 
 #### Enhanced Context Provider
+
 ```typescript
 class VSCodeContextProvider {
   async provideInlineCompletionItems(
@@ -756,19 +802,25 @@ class VSCodeContextProvider {
     const code = document.getText();
     const language = document.languageId;
     const cursor_pos = [position.line, position.character];
-    
+
     // Get enhanced context with Context7 integration
     const results = await this.contextProvider.getSemanticContext(
-      code, cursor_pos, language, true
+      code,
+      cursor_pos,
+      language,
+      true
     );
-    
+
     // Format for VS Code Copilot
-    const contextText = await this.contextProvider.formatContextForCopilot(results);
-    
-    return [{
-      insertText: contextText,
-      range: new vscode.Range(position, position)
-    }];
+    const contextText =
+      await this.contextProvider.formatContextForCopilot(results);
+
+    return [
+      {
+        insertText: contextText,
+        range: new vscode.Range(position, position),
+      },
+    ];
   }
 }
 ```
@@ -780,44 +832,47 @@ class VSCodeContextProvider {
 ### Common Issues and Solutions
 
 #### TypeScript Errors
+
 ```yaml
 Missing Dependencies:
   Error: "Cannot find module 'fuse.js'"
   Fix: npm install fuse.js @types/node
-  
+
 Import Errors:
   Error: "Cannot find module 'fuse'"
   Fix: import Fuse from "fuse.js"; // Correct import
-  
+
 Environment Variables:
   Error: "Cannot find name 'env'"
   Fix: import { env } from '$env/static/private';
 ```
 
 #### Database Connection Issues
+
 ```yaml
 Connection Refused:
   Error: "Connection refused"
   Fix: Ensure PostgreSQL container is running
   Command: docker ps | grep postgres
-  
+
 Migration Errors:
-  Error: "Migration failed"  
+  Error: "Migration failed"
   Fix: Check database schema compatibility
   Command: npm run db:generate && npm run db:migrate
-  
+
 Vector Extension:
   Error: "Extension does not exist"
   Fix: CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 #### AI Service Issues
+
 ```yaml
 Ollama Connection:
   Error: "Failed to connect to Ollama"
   Fix: Check Ollama service status
   Command: docker-compose ps prosecutor_ollama
-  
+
 Model Loading:
   Error: "Model not found"
   Fix: Pull required models
@@ -825,13 +880,14 @@ Model Loading:
 ```
 
 ### Error Monitoring
+
 ```typescript
 // Error boundary component
 class ErrorBoundary extends Error {
   constructor(
     public code: string,
     public context: any,
-    public severity: 'low' | 'medium' | 'high' | 'critical'
+    public severity: "low" | "medium" | "high" | "critical"
   ) {
     super();
   }
@@ -840,14 +896,14 @@ class ErrorBoundary extends Error {
 // Global error handler
 export function handleError(error: Error, context: string) {
   console.error(`[${context}] Error:`, error);
-  
+
   // Log to monitoring service
   if (error instanceof ErrorBoundary) {
     logToMonitoring({
       code: error.code,
       context: error.context,
       severity: error.severity,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 }
@@ -860,25 +916,29 @@ export function handleError(error: Error, context: string) {
 ### Frontend Optimization
 
 #### Code Splitting
+
 ```typescript
 // Route-based code splitting
-const LazyComponent = lazy(() => import('./HeavyComponent.svelte'));
+const LazyComponent = lazy(() => import("./HeavyComponent.svelte"));
 
 // Dynamic imports for heavy features
 async function loadCanvas() {
-  const { EnhancedEvidenceCanvas } = await import('./canvas/EnhancedEvidenceCanvas.svelte');
+  const { EnhancedEvidenceCanvas } = await import(
+    "./canvas/EnhancedEvidenceCanvas.svelte"
+  );
   return EnhancedEvidenceCanvas;
 }
 ```
 
 #### State Management Optimization
+
 ```typescript
 // Efficient derived stores
 export const filteredEvidence = derived(
   [evidenceStore, searchQuery],
   ([$evidence, $query]) => {
     if (!$query) return $evidence;
-    return $evidence.filter(item => 
+    return $evidence.filter((item) =>
       item.title.toLowerCase().includes($query.toLowerCase())
     );
   }
@@ -887,8 +947,8 @@ export const filteredEvidence = derived(
 // Debounced search
 export function createDebouncedSearch(delay: number = 300) {
   let timeout: NodeJS.Timeout;
-  
-  return function(query: string, callback: (query: string) => void) {
+
+  return function (query: string, callback: (query: string) => void) {
     clearTimeout(timeout);
     timeout = setTimeout(() => callback(query), delay);
   };
@@ -898,18 +958,19 @@ export function createDebouncedSearch(delay: number = 300) {
 ### Backend Optimization
 
 #### Database Query Optimization
+
 ```typescript
 // Efficient queries with proper indexes
 export async function getCaseWithEvidence(caseId: string) {
   const result = await db
     .select({
       case: cases,
-      evidence: evidence
+      evidence: evidence,
     })
     .from(cases)
     .leftJoin(evidence, eq(evidence.caseId, cases.id))
     .where(eq(cases.id, caseId));
-    
+
   return result;
 }
 
@@ -917,14 +978,14 @@ export async function getCaseWithEvidence(caseId: string) {
 export async function semanticSearch(query: string, limit: number = 10) {
   // Generate embedding for query
   const embedding = await generateEmbedding(query);
-  
+
   // Use index for fast similarity search
   const results = await db
     .select()
     .from(evidence)
     .orderBy(cosineDistance(evidence.embedding, embedding))
     .limit(limit);
-    
+
   return results;
 }
 ```
@@ -932,6 +993,7 @@ export async function semanticSearch(query: string, limit: number = 10) {
 ### Indexing System Optimization
 
 #### Enhanced Indexing Performance
+
 ```python
 # 70GB Development Mode Optimization
 class EnhancedIndexingOptimizer:
@@ -939,24 +1001,24 @@ class EnhancedIndexingOptimizer:
         self.memory_limit = "70GB"
         self.optimization_mode = "dev_performance"
         self.cache_strategy = "aggressive"
-    
+
     async def optimize_for_development(self):
         """Optimize indexing for 70GB development environment"""
         # Prioritize enhanced index over basic
         # Implement intelligent caching
         # Use memory-efficient chunking
         # Enable real-time incremental updates
-        
+
     async def prioritize_enhanced_index(self, query_results):
         """Ensure enhanced index results take priority"""
         enhanced_results = [r for r in query_results if r.source == "enhanced_local_index"]
         basic_results = [r for r in query_results if r.source == "basic_local_index"]
-        
+
         # Boost enhanced scores and prioritize
         for result in enhanced_results:
             result.relevance_score += 0.5
             result.priority = "high"
-            
+
         return enhanced_results + basic_results
 ```
 
@@ -967,6 +1029,7 @@ class EnhancedIndexingOptimizer:
 ### Authentication System
 
 #### Lucia Auth Integration
+
 ```typescript
 // src/lib/server/lucia.ts
 import { lucia } from "lucia";
@@ -980,38 +1043,47 @@ export const auth = lucia(adapter, {
   getUserAttributes: (data) => ({
     username: data.username,
     email: data.email,
-    role: data.role
-  })
+    role: data.role,
+  }),
 });
 ```
 
 #### Session Management
+
 ```typescript
 // src/hooks.server.ts
 export const handle: Handle = async ({ event, resolve }) => {
   const sessionId = event.cookies.get(auth.sessionCookieName);
-  
+
   if (!sessionId) {
     event.locals.user = null;
     event.locals.session = null;
     return resolve(event);
   }
-  
+
   const { session, user } = await auth.validateSession(sessionId);
-  
+
   if (session?.fresh) {
     const sessionCookie = auth.createSessionCookie(session.id);
-    event.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    event.cookies.set(
+      sessionCookie.name,
+      sessionCookie.value,
+      sessionCookie.attributes
+    );
   }
-  
+
   if (!session) {
     const sessionCookie = auth.createBlankSessionCookie();
-    event.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    event.cookies.set(
+      sessionCookie.name,
+      sessionCookie.value,
+      sessionCookie.attributes
+    );
   }
-  
+
   event.locals.user = user;
   event.locals.session = session;
-  
+
   return resolve(event);
 };
 ```
@@ -1019,54 +1091,64 @@ export const handle: Handle = async ({ event, resolve }) => {
 ### Security Best Practices
 
 #### Data Validation
+
 ```typescript
 // Input validation with Zod
 const caseSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().optional(),
-  status: z.enum(['active', 'closed', 'archived']),
-  evidence: z.array(z.string().uuid()).optional()
+  status: z.enum(["active", "closed", "archived"]),
+  evidence: z.array(z.string().uuid()).optional(),
 });
 
 export async function validateCaseData(data: unknown) {
   try {
     return caseSchema.parse(data);
   } catch (error) {
-    throw new Error('Invalid case data');
+    throw new Error("Invalid case data");
   }
 }
 ```
 
 #### File Upload Security
+
 ```typescript
 // Secure file upload with validation
 export async function handleFileUpload(file: File, userId: string) {
   // Validate file type
-  const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "application/pdf",
+    "text/plain",
+  ];
   if (!allowedTypes.includes(file.type)) {
-    throw new Error('Invalid file type');
+    throw new Error("Invalid file type");
   }
-  
+
   // Validate file size (10MB limit)
   if (file.size > 10 * 1024 * 1024) {
-    throw new Error('File too large');
+    throw new Error("File too large");
   }
-  
+
   // Generate secure filename
   const fileId = crypto.randomUUID();
-  const extension = file.name.split('.').pop();
+  const extension = file.name.split(".").pop();
   const secureFilename = `${fileId}.${extension}`;
-  
+
   // Store file metadata
-  const evidenceRecord = await db.insert(evidence).values({
-    id: fileId,
-    fileName: file.name,
-    filePath: secureFilename,
-    fileSize: file.size,
-    mimeType: file.type,
-    userId
-  }).returning();
-  
+  const evidenceRecord = await db
+    .insert(evidence)
+    .values({
+      id: fileId,
+      fileName: file.name,
+      filePath: secureFilename,
+      fileSize: file.size,
+      mimeType: file.type,
+      userId,
+    })
+    .returning();
+
   return evidenceRecord[0];
 }
 ```
@@ -1076,6 +1158,7 @@ export async function handleFileUpload(file: File, userId: string) {
 ## 📚 Quick Reference Commands
 
 ### Development Commands
+
 ```bash
 # Main development workflow
 npm run dev                    # Start development server
@@ -1104,6 +1187,7 @@ ollama run gemma3:8b          # Run model interactively
 ```
 
 ### System Health Checks
+
 ```bash
 # Check service status
 curl http://localhost:8000/health     # Indexing server
@@ -1134,31 +1218,52 @@ When working with this codebase, AI assistants should be aware of:
 ### For Copilot Integration
 
 The system provides enhanced context through:
+
 - **Semantic code analysis** with language-aware patterns
-- **Real-time indexing** of workspace changes  
+- **Real-time indexing** of workspace changes
 - **Context7 documentation** integration
 - **Priority ranking** of enhanced vs basic index results
 - **Legal-specific** code patterns and best practices
 - **Multi-source context** combining local index + official docs
 
-This context enables more accurate and relevant code suggestions, completions, and assistance for legal AI application development. 
- # #   =���  P r o j e c t   D i r e c t o r y   S t r u c t u r e  
-  
- * * M a i n   P r o j e c t   P a t h : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p  
-  
- # # #   K e y   D i r e c t o r i e s :  
- -   * * S v e l t e K i t   F r o n t e n d : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d  
- -   * * C o m p o n e n t s : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ s r c \ l i b \ c o m p o n e n t s  
- -   * * K e y b o a r d   C o m p o n e n t s : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ s r c \ l i b \ c o m p o n e n t s \ k e y b o a r d  
- -   * * V S   C o d e   C o n f i g : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ . v s c o d e  
-  
- # # #   I m p o r t a n t   F i l e s :  
- -   * * K e y b o a r d S h o r t c u t s . s v e l t e : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ s r c \ l i b \ c o m p o n e n t s \ k e y b o a r d \ K e y b o a r d S h o r t c u t s . s v e l t e  
- -   * * P a c k a g e . j s o n : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ p a c k a g e . j s o n  
- -   * * T h i s   f i l e : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ . v s c o d e \ c l a u d e . m d  
-  
- # # #   R e c e n t   F i x e s :  
- -   '  F i x e d   K e y b o a r d S h o r t c u t s . s v e l t e   s y n t a x   e r r o r   ( u n t e r m i n a t e d   s t r i n g   c o n s t a n t )  
- -   '  F i l e   s y s t e m   o p e r a t i o n s   w o r k i n g   w i t h   a b s o l u t e   p a t h s  
- -   '  P o w e r S h e l l   c o m m a n d s   s u c c e s s f u l   f o r   f i l e   m o d i f i c a t i o n s  
+This context enables more accurate and relevant code suggestions, completions, and assistance for legal AI application development.
+ 
+ # #   =���  P r o j e c t   D i r e c t o r y   S t r u c t u r e 
+ 
+ 
+ 
+ * * M a i n   P r o j e c t   P a t h : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p 
+ 
+ 
+ 
+ # # #   K e y   D i r e c t o r i e s : 
+ 
+ -   * * S v e l t e K i t   F r o n t e n d : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d 
+ 
+ -   * * C o m p o n e n t s : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ s r c \ l i b \ c o m p o n e n t s 
+ 
+ -   * * K e y b o a r d   C o m p o n e n t s : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ s r c \ l i b \ c o m p o n e n t s \ k e y b o a r d 
+ 
+ -   * * V S   C o d e   C o n f i g : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ . v s c o d e 
+ 
+ 
+ 
+ # # #   I m p o r t a n t   F i l e s : 
+ 
+ -   * * K e y b o a r d S h o r t c u t s . s v e l t e : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ s r c \ l i b \ c o m p o n e n t s \ k e y b o a r d \ K e y b o a r d S h o r t c u t s . s v e l t e 
+ 
+ -   * * P a c k a g e . j s o n : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ s v e l t e k i t - f r o n t e n d \ p a c k a g e . j s o n 
+ 
+ -   * * T h i s   f i l e : * *   C : \ U s e r s \ j a m e s \ D e s k t o p \ d e e d s - w e b \ d e e d s - w e b - a p p \ . v s c o d e \ c l a u d e . m d 
+ 
+ 
+ 
+ # # #   R e c e n t   F i x e s : 
+ 
+ -   '  F i x e d   K e y b o a r d S h o r t c u t s . s v e l t e   s y n t a x   e r r o r   ( u n t e r m i n a t e d   s t r i n g   c o n s t a n t ) 
+ 
+ -   '  F i l e   s y s t e m   o p e r a t i o n s   w o r k i n g   w i t h   a b s o l u t e   p a t h s 
+ 
+ -   '  P o w e r S h e l l   c o m m a n d s   s u c c e s s f u l   f o r   f i l e   m o d i f i c a t i o n s 
+ 
  

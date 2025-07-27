@@ -1,0 +1,311 @@
+{
+  "low_memory_profiles": {
+    "ultra_low_memory": {
+      "name": "Ultra Low Memory (2-4GB GPU)",
+      "description": "Optimized for systems with very limited GPU memory",
+      "target_memory": "2-4GB GPU",
+      "ollama_config": {
+        "gpu_layers": 15,
+        "num_ctx": 1024,
+        "num_batch": 64,
+        "num_predict": 256,
+        "temperature": 0.7,
+        "rope_freq_base": 10000,
+        "rope_freq_scale": 1.0,
+        "low_vram": true,
+        "main_gpu": 0,
+        "split_mode": 1,
+        "tensor_split": [1.0]
+      },
+      "vllm_config": {
+        "max_model_len": 1024,
+        "gpu_memory_utilization": 0.7,
+        "max_num_batched_tokens": 1024,
+        "max_num_seqs": 32,
+        "block_size": 8,
+        "swap_space": 2,
+        "cpu_offload_gb": 2
+      },
+      "autogen_config": {
+        "max_tokens": 256,
+        "max_agents": 2,
+        "max_iterations": 2,
+        "temperature": 0.7,
+        "enable_memory": false
+      },
+      "crewai_config": {
+        "max_execution_time": 120000,
+        "max_concurrent_tasks": 1,
+        "memory_system": false,
+        "verbose": false
+      }
+    },
+    "low_memory": {
+      "name": "Low Memory (4-8GB GPU)",
+      "description": "Balanced performance for mid-range systems",
+      "target_memory": "4-8GB GPU",
+      "ollama_config": {
+        "gpu_layers": 25,
+        "num_ctx": 2048,
+        "num_batch": 128,
+        "num_predict": 512,
+        "temperature": 0.5,
+        "rope_freq_base": 10000,
+        "rope_freq_scale": 1.0,
+        "low_vram": false,
+        "main_gpu": 0,
+        "split_mode": 1,
+        "tensor_split": [1.0]
+      },
+      "vllm_config": {
+        "max_model_len": 2048,
+        "gpu_memory_utilization": 0.8,
+        "max_num_batched_tokens": 2048,
+        "max_num_seqs": 64,
+        "block_size": 16,
+        "swap_space": 4,
+        "cpu_offload_gb": 1
+      },
+      "autogen_config": {
+        "max_tokens": 512,
+        "max_agents": 3,
+        "max_iterations": 3,
+        "temperature": 0.5,
+        "enable_memory": true
+      },
+      "crewai_config": {
+        "max_execution_time": 180000,
+        "max_concurrent_tasks": 2,
+        "memory_system": true,
+        "verbose": false
+      }
+    },
+    "balanced": {
+      "name": "Balanced (8-16GB GPU)",
+      "description": "Optimal balance of performance and memory usage",
+      "target_memory": "8-16GB GPU",
+      "ollama_config": {
+        "gpu_layers": -1,
+        "num_ctx": 4096,
+        "num_batch": 256,
+        "num_predict": 1024,
+        "temperature": 0.3,
+        "rope_freq_base": 10000,
+        "rope_freq_scale": 1.0,
+        "low_vram": false,
+        "main_gpu": 0,
+        "split_mode": 1,
+        "tensor_split": [1.0]
+      },
+      "vllm_config": {
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.85,
+        "max_num_batched_tokens": 4096,
+        "max_num_seqs": 128,
+        "block_size": 16,
+        "swap_space": 4,
+        "cpu_offload_gb": 0
+      },
+      "autogen_config": {
+        "max_tokens": 1024,
+        "max_agents": 5,
+        "max_iterations": 3,
+        "temperature": 0.3,
+        "enable_memory": true
+      },
+      "crewai_config": {
+        "max_execution_time": 240000,
+        "max_concurrent_tasks": 3,
+        "memory_system": true,
+        "verbose": true
+      }
+    },
+    "high_performance": {
+      "name": "High Performance (16GB+ GPU)",
+      "description": "Maximum performance for high-end systems",
+      "target_memory": "16GB+ GPU",
+      "ollama_config": {
+        "gpu_layers": -1,
+        "num_ctx": 8192,
+        "num_batch": 512,
+        "num_predict": 2048,
+        "temperature": 0.2,
+        "rope_freq_base": 10000,
+        "rope_freq_scale": 1.0,
+        "low_vram": false,
+        "main_gpu": 0,
+        "split_mode": 1,
+        "tensor_split": [1.0]
+      },
+      "vllm_config": {
+        "max_model_len": 8192,
+        "gpu_memory_utilization": 0.9,
+        "max_num_batched_tokens": 8192,
+        "max_num_seqs": 256,
+        "block_size": 32,
+        "swap_space": 4,
+        "cpu_offload_gb": 0
+      },
+      "autogen_config": {
+        "max_tokens": 2048,
+        "max_agents": 6,
+        "max_iterations": 4,
+        "temperature": 0.2,
+        "enable_memory": true
+      },
+      "crewai_config": {
+        "max_execution_time": 360000,
+        "max_concurrent_tasks": 4,
+        "memory_system": true,
+        "verbose": true
+      }
+    }
+  },
+  "optimization_strategies": {
+    "memory_efficient_batching": {
+      "description": "Reduce batch sizes to minimize memory usage",
+      "settings": {
+        "dynamic_batching": true,
+        "max_batch_size": 32,
+        "batch_timeout": 100,
+        "adaptive_batching": true
+      }
+    },
+    "model_parallelism": {
+      "description": "Split model across multiple GPUs if available",
+      "settings": {
+        "tensor_parallel_size": "auto",
+        "pipeline_parallel_size": 1,
+        "distribute_strategy": "even"
+      }
+    },
+    "quantization_optimization": {
+      "description": "Use quantized models for lower memory footprint",
+      "settings": {
+        "preferred_quantization": "Q4_K_M",
+        "fallback_quantization": "Q8_0",
+        "dynamic_quantization": false
+      }
+    },
+    "caching_strategy": {
+      "description": "Optimize KV cache usage",
+      "settings": {
+        "enable_prefix_caching": true,
+        "kv_cache_dtype": "auto",
+        "block_size": 16,
+        "max_num_blocks_per_seq": 2048
+      }
+    },
+    "cpu_offloading": {
+      "description": "Offload parts of computation to CPU when GPU memory is limited",
+      "settings": {
+        "enable_cpu_offload": true,
+        "offload_threshold": 0.9,
+        "cpu_memory_gb": 8,
+        "offload_strategy": "layers"
+      }
+    }
+  },
+  "performance_monitoring": {
+    "metrics": [
+      "gpu_memory_usage",
+      "gpu_utilization",
+      "inference_latency",
+      "throughput_tokens_per_second",
+      "queue_time",
+      "processing_time",
+      "memory_efficiency",
+      "batch_utilization"
+    ],
+    "alerts": {
+      "high_memory_usage": {
+        "threshold": 0.95,
+        "action": "reduce_batch_size"
+      },
+      "high_latency": {
+        "threshold": 30000,
+        "action": "optimize_parameters"
+      },
+      "low_gpu_utilization": {
+        "threshold": 0.3,
+        "action": "increase_batch_size"
+      }
+    }
+  },
+  "fallback_strategies": {
+    "gpu_oom": {
+      "description": "Actions when GPU runs out of memory",
+      "steps": [
+        "reduce_context_length",
+        "reduce_batch_size",
+        "enable_cpu_offload",
+        "switch_to_cpu_only"
+      ]
+    },
+    "model_loading_failure": {
+      "description": "Fallback when model fails to load",
+      "steps": [
+        "try_lower_precision",
+        "enable_cpu_offload",
+        "reduce_model_layers",
+        "use_smaller_model"
+      ]
+    },
+    "performance_degradation": {
+      "description": "Actions when performance drops significantly",
+      "steps": [
+        "clear_cache",
+        "restart_model",
+        "optimize_parameters",
+        "scale_down_requests"
+      ]
+    }
+  },
+  "auto_scaling": {
+    "enabled": true,
+    "strategies": {
+      "memory_based": {
+        "scale_up_threshold": 0.8,
+        "scale_down_threshold": 0.3,
+        "adjustment_factor": 0.1
+      },
+      "latency_based": {
+        "target_latency_ms": 5000,
+        "tolerance_ms": 2000,
+        "adjustment_factor": 0.15
+      },
+      "throughput_based": {
+        "target_tokens_per_second": 50,
+        "min_tokens_per_second": 20,
+        "adjustment_factor": 0.2
+      }
+    }
+  },
+  "deployment_modes": {
+    "development": {
+      "profile": "low_memory",
+      "optimizations": ["memory_efficient_batching", "caching_strategy"],
+      "monitoring": "basic",
+      "auto_scaling": false
+    },
+    "testing": {
+      "profile": "balanced",
+      "optimizations": ["memory_efficient_batching", "quantization_optimization", "caching_strategy"],
+      "monitoring": "detailed",
+      "auto_scaling": true
+    },
+    "production": {
+      "profile": "high_performance",
+      "optimizations": ["model_parallelism", "quantization_optimization", "caching_strategy"],
+      "monitoring": "comprehensive",
+      "auto_scaling": true,
+      "redundancy": true
+    },
+    "edge": {
+      "profile": "ultra_low_memory",
+      "optimizations": ["memory_efficient_batching", "cpu_offloading", "quantization_optimization"],
+      "monitoring": "minimal",
+      "auto_scaling": false
+    }
+  }
+}

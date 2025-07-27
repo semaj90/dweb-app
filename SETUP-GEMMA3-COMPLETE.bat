@@ -103,14 +103,14 @@ if %errorLevel% == 0 (
     echo ✅ Ollama service is running
 ) else (
     echo ⚠️  Ollama service not detected. Attempting to start...
-    
+
     REM Try to start Ollama service
     echo    Starting Ollama service...
     start /B ollama serve >nul 2>&1
-    
+
     REM Wait a moment for service to start
     timeout /t 5 /nobreak >nul
-    
+
     REM Check again
     curl -s http://localhost:11434/api/version >nul 2>&1
     if %errorLevel% == 0 (
@@ -132,10 +132,10 @@ if exist "setup-gemma3-complete.ps1" (
     echo ✅ PowerShell setup script found
     echo    Executing comprehensive setup...
     echo.
-    
+
     REM Execute PowerShell setup with proper execution policy
     powershell -ExecutionPolicy Bypass -File "setup-gemma3-complete.ps1"
-    
+
     if %errorLevel% == 0 (
         echo ✅ PowerShell setup completed successfully
     ) else (
@@ -145,13 +145,13 @@ if exist "setup-gemma3-complete.ps1" (
 ) else (
     echo ❌ PowerShell setup script not found
     echo    Creating basic setup...
-    
+
     REM Create basic Modelfile if PowerShell script is missing
     echo FROM .\gemma3Q4_K_M\mo16.gguf > Modelfile-Basic
     echo PARAMETER temperature 0.1 >> Modelfile-Basic
     echo PARAMETER top_p 0.8 >> Modelfile-Basic
     echo SYSTEM "You are a specialized Legal AI Assistant." >> Modelfile-Basic
-    
+
     ollama create gemma3-legal -f Modelfile-Basic
     if %errorLevel% == 0 (
         echo ✅ Basic model setup completed

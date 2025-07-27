@@ -220,10 +220,8 @@
 
         <div class="container mx-auto px-4">
           <AIChatInterface
-            placeholder="Ask any legal question..."
-            maxHeight="400px"
-            showHistory={true}
-            autoFocus={false}
+            height={400}
+            visible={true}
             class="test-chat"
           />
         </div>
@@ -1071,57 +1069,5 @@
       background: #1e293b;
       border-color: #334155;
 }
-    .debug-section {
-      background: #0f172a;
 }
-    .debug-card {
-      background: #1e293b;
-      border-color: #334155;
-}
-    .input-group textarea {
-      background: #1e293b;
-      border-color: #334155;
-      color: #f8fafc;
-}
-    .query-button {
-      background: #334155;
-      border-color: #475569;
-      color: #e2e8f0;
-}
-    .query-button:hover:not(:disabled) {
-      background: #475569;
-      border-color: #64748b;
-}}
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .test-page {
-      padding: 12px;
-}
-    .page-header {
-      padding: 16px;
-}
-    .page-header h1 {
-      font-size: 1.5rem;
-}
-    .subtitle {
-      font-size: 1rem;
-}
-    .status-overview {
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-}
-    .chat-section,
-    .manual-test-section,
-    .debug-section {
-      padding: 16px;
-}
-    .test-actions {
-      flex-direction: column;
-}
-    .debug-grid {
-      grid-template-columns: 1fr;
-}
-    .debug-actions {
-      flex-direction: column;
-}}
 </style>

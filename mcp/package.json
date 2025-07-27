@@ -1,0 +1,23 @@
+{
+  "name": "custom-context7-mcp",
+  "version": "0.1.0",
+  "description": "Custom Context7-like MCP server for Legal AI applications",
+  "type": "module",
+  "main": "custom-context7-server.js",
+  "bin": {
+    "custom-context7": "./custom-context7-server.js"
+  },
+  "scripts": {
+    "start": "node custom-context7-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  },
+  "keywords": [
+    "mcp",
+    "context7",
+    "legal-ai",
+    "sveltekit",
+    "drizzle"
+  ]
+}

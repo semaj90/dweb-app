@@ -9,12 +9,24 @@
     "restart": "docker-compose restart",
     "test": "node test.mjs",
     "status": "docker ps",
-    "logs": "docker-compose logs"
+    "logs": "docker-compose logs",
+    "check": "npx svelte-kit check || npx tsc --noEmit"
   },
   "dependencies": {
-    "neo4j-driver": "^5.15.0"
+    "@langchain/community": "^0.3.49",
+    "@langchain/openai": "^0.6.3",
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "langchain": "^0.3.30",
+    "neo4j-driver": "^5.15.0",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.11.3",
+    "redis": "^4.7.1"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/kit": "^2.26.1",
+    "typescript": "^5.8.3"
   }
 }

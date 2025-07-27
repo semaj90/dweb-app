@@ -1,0 +1,84 @@
+{
+  "MCP Context7 Analyze Stack": {
+    "prefix": "mcp-analyze",
+    "body": [
+      "analyze ${1:component} with context ${2|legal-ai,gaming-ui,performance|}"
+    ],
+    "description": "Analyze stack component with context"
+  },
+  
+  "MCP Generate Best Practices": {
+    "prefix": "mcp-practices",
+    "body": [
+      "generate best practices for ${1|performance,security,ui-ux|}"
+    ],
+    "description": "Generate best practices for specific area"
+  },
+  
+  "MCP Suggest Integration": {
+    "prefix": "mcp-integrate",
+    "body": [
+      "suggest integration for ${1:feature} with requirements ${2:requirements}"
+    ],
+    "description": "Get integration suggestions for new features"
+  },
+  
+  "MCP Get Library Docs": {
+    "prefix": "mcp-docs",
+    "body": [
+      "get library docs for ${1|sveltekit,bits-ui,drizzle,unocss,melt-ui|} topic ${2:topic}"
+    ],
+    "description": "Get library documentation for specific topic"
+  },
+  
+  "MCP JSON Request": {
+    "prefix": "mcp-json",
+    "body": [
+      "{",
+      "  \"tool\": \"${1|analyze-stack,generate-best-practices,suggest-integration,resolve-library-id,get-library-docs|}\",",
+      "  \"component\": \"${2:component}\",",
+      "  \"context\": \"${3|legal-ai,gaming-ui,performance|}\",",
+      "  \"area\": \"${4|performance,security,ui-ux|}\",",
+      "  \"feature\": \"${5:feature}\",",
+      "  \"requirements\": \"${6:requirements}\",",
+      "  \"library\": \"${7:library}\",",
+      "  \"topic\": \"${8:topic}\"",
+      "}"
+    ],
+    "description": "Generate MCP JSON request structure"
+  },
+  
+  "MCP TypeScript Helper": {
+    "prefix": "mcp-helper",
+    "body": [
+      "import { ${1|generateMCPPrompt,commonMCPQueries,validateMCPRequest|} } from '$lib/utils/mcp-helpers'",
+      "",
+      "const query = ${2:commonMCPQueries.analyzeSvelteKit()}"
+    ],
+    "description": "Import and use MCP helper functions"
+  },
+  
+  "MCP Common Queries": {
+    "prefix": "mcp-common",
+    "body": [
+      "commonMCPQueries.${1|analyzeSvelteKit,analyzeDrizzle,analyzeUnoCSS,performanceBestPractices,securityBestPractices,uiUxBestPractices,aiChatIntegration,documentUploadIntegration,gamingUIIntegration,svelteKitRouting,bitsUIDialog,drizzleSchema|}()"
+    ],
+    "description": "Use pre-built common MCP queries"
+  },
+  
+  "MCP Stack Analysis": {
+    "prefix": "mcp-stack",
+    "body": [
+      "Please use the Context7 MCP tools to analyze ${1:component} with context ${2|legal-ai,gaming-ui,performance|}. Focus on ${3:specific_aspect} and provide recommendations for ${4:use_case}."
+    ],
+    "description": "Detailed stack analysis request"
+  },
+  
+  "MCP Resource Access": {
+    "prefix": "mcp-resource",
+    "body": [
+      "show me the ${1|stack overview,integration guide,performance tips|} resource from context7"
+    ],
+    "description": "Access Context7 MCP resources"
+  }
+}

@@ -76,23 +76,23 @@
   </div>
 
   <div class="cases-grid">
-    {#each cases as case}
+    {#each cases as caseItem}
       <div class="case-card">
         <div class="case-header">
-          <h3>{case.title}</h3>
-          <span class="case-status status-{case.status}">{case.status}</span>
+          <h3>{caseItem.title}</h3>
+          <span class="case-status status-{caseItem.status}">{caseItem.status}</span>
         </div>
         
-        <p class="case-description">{case.description}</p>
+        <p class="case-description">{caseItem.description}</p>
         
         <div class="case-meta">
           <div class="meta-item">
             <span class="meta-label">Created:</span>
-            <span class="meta-value">{case.created}</span>
+            <span class="meta-value">{caseItem.created}</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Priority:</span>
-            <span class="meta-value priority-{case.priority}">{case.priority}</span>
+            <span class="meta-value priority-{caseItem.priority}">{caseItem.priority}</span>
           </div>
         </div>
         

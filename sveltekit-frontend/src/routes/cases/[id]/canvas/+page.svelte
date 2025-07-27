@@ -238,8 +238,8 @@
               createdBy: report.createdBy ?? "",
               metadata: report.metadata ?? {},
               caseId: report.caseId ?? caseId,
-              reportType: report.reportType ?? "",
-            "
+              reportType: report.reportType ?? ""
+            }}
           />
         {/each}
 
@@ -251,11 +251,11 @@
             position={{
               x: evidenceItem.posX ?? evidenceItem.x ?? 0,
               y: evidenceItem.posY ?? evidenceItem.y ?? 0,
-            "
+            }}
             size={{
               width: evidenceItem.width || 200,
               height: evidenceItem.height || 150,
-            "
+            }}
             isSelected={evidenceItem.isSelected || false}
             isDirty={evidenceItem.isDirty || false}
           />
