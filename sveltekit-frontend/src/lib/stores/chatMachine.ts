@@ -3,7 +3,7 @@
  * Enhanced with streaming, context injection, and model selection
  */
 
-import { createMachine, assign } from "xstate";
+import { setup, assign, fromPromise } from "xstate";
 import type { ChatMessage, Conversation, ChatSettings } from "./types";
 
 export interface ChatContext {
@@ -63,52 +63,219 @@ const initialContext: ChatContext = {
   },
 };
 
-export const chatMachine = createMachine(
-  {
-    id: "chat",
-    initial: "idle",
-    context: initialContext,
-    states: {
+// Services
+const sendMessageService = fromPromise(async ({ input }: { input: { context: ChatContext } }) => {
+  const { context } = input;
+  const response = await fetch("/api/ai/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: context.messages[context.messages.length - 1]?.content,
+      conversationId: context.currentConversation?.id,
+      settings: context.settings,
+      contextInjection: context.contextInjection.enabled
+        ? {
+            documents: context.contextInjection.documents,
+          }
+        : undefined,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+});
+
+const checkModelService = fromPromise(async () => {
+  const response = await fetch("/api/ai/model-status");
+
+  if (!response.ok) {
+    throw new Error("Model not ready");
+  }
+
+  return await response.json();
+});
+
+export const chatMachine = setup({
+  types: {
+    context: {} as ChatContext,
+    events: {} as ChatEvent,
+  },
+  actors: {
+    sendMessageService,
+    checkModelService,
+  }
+}).createMachine({
+  id: "chat",
+  initial: "idle",
+  context: initialContext,
+  states: {
       idle: {
         on: {
           SEND_MESSAGE: "sendingMessage",
           NEW_CONVERSATION: {
-            actions: "createNewConversation",
+            actions: assign({
+              currentConversation: ({ event }) => {
+                const title =
+                  event.type === "NEW_CONVERSATION"
+                    ? event.title || "New Conversation"
+                    : "New Conversation";
+                return {
+                  id: crypto.randomUUID(),
+                  title,
+                  messages: [],
+                  created: new Date(),
+                  updated: new Date(),
+                };
+              },
+              messages: () => [],
+            }),
           },
           LOAD_CONVERSATION: {
-            actions: "loadConversation",
+            actions: assign({
+              currentConversation: ({ context, event }) => {
+                if (event.type !== "LOAD_CONVERSATION")
+                  return context.currentConversation;
+                return (
+                  context.conversations.find((c) => c.id === event.conversationId) ||
+                  null
+                );
+              },
+              messages: ({ context, event }) => {
+                if (event.type !== "LOAD_CONVERSATION") return context.messages;
+                const conversation = context.conversations.find(
+                  (c) => c.id === event.conversationId
+                );
+                return conversation?.messages || [];
+              },
+            }),
           },
           DELETE_CONVERSATION: {
-            actions: "deleteConversation",
+            actions: assign({
+              conversations: ({ context, event }) => {
+                if (event.type !== "DELETE_CONVERSATION")
+                  return context.conversations;
+                return context.conversations.filter(
+                  (c) => c.id !== event.conversationId
+                );
+              },
+              currentConversation: ({ context, event }) => {
+                if (event.type !== "DELETE_CONVERSATION")
+                  return context.currentConversation;
+                return context.currentConversation?.id === event.conversationId
+                  ? null
+                  : context.currentConversation;
+              },
+            }),
           },
           UPDATE_SETTINGS: {
-            actions: "updateSettings",
+            actions: assign({
+              settings: ({ context, event }) => {
+                if (event.type !== "UPDATE_SETTINGS") return context.settings;
+                return { ...context.settings, ...event.settings };
+              },
+            }),
           },
           INJECT_CONTEXT: {
-            actions: "injectContext",
+            actions: assign({
+              contextInjection: ({ context, event }) => {
+                if (event.type !== "INJECT_CONTEXT") return context.contextInjection;
+                return {
+                  ...context.contextInjection,
+                  enabled: true,
+                  documents: event.documents,
+                };
+              },
+            }),
           },
           CLEAR_CONTEXT: {
-            actions: "clearContext",
+            actions: assign({
+              contextInjection: ({ context }) => ({
+                ...context.contextInjection,
+                enabled: false,
+                documents: [],
+                vectorResults: [],
+              }),
+            }),
           },
           CHECK_MODEL_STATUS: "checkingModel",
           RESET_CHAT: {
-            actions: "resetChat",
+            actions: assign({
+              currentConversation: () => null,
+              messages: () => [],
+              error: () => null,
+              stream: () => null,
+            }),
           },
         },
       },
 
       sendingMessage: {
-        entry: "addUserMessage",
+        entry: assign({
+          messages: ({ context, event }) => {
+            if (event.type !== "SEND_MESSAGE") return context.messages;
+
+            const message: ChatMessage = {
+              id: crypto.randomUUID(),
+              content: event.message,
+              role: "user",
+              timestamp: new Date(),
+              conversationId: context.currentConversation?.id,
+            };
+
+            return [...context.messages, message];
+          },
+          currentConversation: ({ context, event }) => {
+            if (event.type !== "SEND_MESSAGE") return context.currentConversation;
+
+            if (!context.currentConversation) {
+              const conversation: Conversation = {
+                id: crypto.randomUUID(),
+                title:
+                  event.message.slice(0, 50) +
+                  (event.message.length > 50 ? "..." : ""),
+                messages: [],
+                created: new Date(),
+                updated: new Date(),
+              };
+              return conversation;
+            }
+
+            return {
+              ...context.currentConversation,
+              updated: new Date(),
+            };
+          },
+        }),
         invoke: {
-          id: "sendMessage",
           src: "sendMessageService",
+          input: ({ context }) => ({ context }),
           onDone: {
             target: "idle",
-            actions: "handleMessageResponse",
+            actions: assign({
+              messages: ({ context, event }) => {
+                const response: ChatMessage = {
+                  id: crypto.randomUUID(),
+                  content: event.output.response,
+                  role: "assistant",
+                  timestamp: new Date(),
+                  conversationId: context.currentConversation?.id,
+                  metadata: event.output.metadata,
+                };
+
+                return [...context.messages, response];
+              },
+            }),
           },
           onError: {
             target: "error",
-            actions: "setError",
+            actions: assign({
+              error: ({ event }) =>
+                new Error(event.error?.message || "Unknown error"),
+            }),
           },
         },
         on: {
@@ -117,33 +284,69 @@ export const chatMachine = createMachine(
       },
 
       streaming: {
-        entry: "initializeStream",
+        entry: assign({
+          stream: () => null, // Will be set by streaming service
+        }),
         on: {
           STREAM_CHUNK: {
-            actions: "appendStreamChunk",
+            actions: assign({
+              messages: ({ context, event }) => {
+                if (event.type !== "STREAM_CHUNK") return context.messages;
+
+                const lastMessage = context.messages[context.messages.length - 1];
+                if (lastMessage && lastMessage.role === "assistant") {
+                  return [
+                    ...context.messages.slice(0, -1),
+                    { ...lastMessage, content: lastMessage.content + event.chunk },
+                  ];
+                }
+
+                // Create new assistant message if none exists
+                const newMessage: ChatMessage = {
+                  id: crypto.randomUUID(),
+                  content: event.chunk,
+                  role: "assistant",
+                  timestamp: new Date(),
+                  conversationId: context.currentConversation?.id,
+                };
+
+                return [...context.messages, newMessage];
+              },
+            }),
           },
           STREAM_COMPLETE: {
             target: "idle",
-            actions: "finalizeStream",
+            actions: assign({
+              stream: () => null,
+            }),
           },
           STREAM_ERROR: {
             target: "error",
-            actions: "setStreamError",
+            actions: assign({
+              error: ({ event }) =>
+                event.type === "STREAM_ERROR" ? event.error : null,
+              stream: () => null,
+            }),
           },
         },
       },
 
       checkingModel: {
         invoke: {
-          id: "checkModel",
           src: "checkModelService",
           onDone: {
             target: "idle",
-            actions: "setModelReady",
+            actions: assign({
+              modelStatus: () => "ready",
+            }),
           },
           onError: {
             target: "idle",
-            actions: "setModelError",
+            actions: assign({
+              modelStatus: () => "error",
+              error: ({ event }) =>
+                new Error(event.error?.message || "Model check failed"),
+            }),
           },
         },
       },
@@ -152,246 +355,13 @@ export const chatMachine = createMachine(
         on: {
           CLEAR_ERROR: {
             target: "idle",
-            actions: "clearError",
+            actions: assign({
+              error: () => null,
+            }),
           },
           SEND_MESSAGE: "sendingMessage",
         },
       },
     },
-  },
-  {
-    actions: {
-      addUserMessage: assign({
-        messages: ({ context, event }) => {
-          if (event.type !== "SEND_MESSAGE") return context.messages;
-
-          const message: ChatMessage = {
-            id: crypto.randomUUID(),
-            content: event.message,
-            role: "user",
-            timestamp: new Date(),
-            conversationId: context.currentConversation?.id,
-          };
-
-          return [...context.messages, message];
-        },
-        currentConversation: ({ context, event }) => {
-          if (event.type !== "SEND_MESSAGE") return context.currentConversation;
-
-          if (!context.currentConversation) {
-            const conversation: Conversation = {
-              id: crypto.randomUUID(),
-              title:
-                event.message.slice(0, 50) +
-                (event.message.length > 50 ? "..." : ""),
-              messages: [],
-              created: new Date(),
-              updated: new Date(),
-            };
-            return conversation;
-          }
-
-          return {
-            ...context.currentConversation,
-            updated: new Date(),
-          };
-        },
-      }),
-
-      handleMessageResponse: assign({
-        messages: ({ context, event }) => {
-          const response: ChatMessage = {
-            id: crypto.randomUUID(),
-            content: event.output.response,
-            role: "assistant",
-            timestamp: new Date(),
-            conversationId: context.currentConversation?.id,
-            metadata: event.output.metadata,
-          };
-
-          return [...context.messages, response];
-        },
-      }),
-
-      createNewConversation: assign({
-        currentConversation: ({ event }) => {
-          const title =
-            event.type === "NEW_CONVERSATION"
-              ? event.title || "New Conversation"
-              : "New Conversation";
-          return {
-            id: crypto.randomUUID(),
-            title,
-            messages: [],
-            created: new Date(),
-            updated: new Date(),
-          };
-        },
-        messages: () => [],
-      }),
-
-      loadConversation: assign({
-        currentConversation: ({ context, event }) => {
-          if (event.type !== "LOAD_CONVERSATION")
-            return context.currentConversation;
-          return (
-            context.conversations.find((c) => c.id === event.conversationId) ||
-            null
-          );
-        },
-        messages: ({ context, event }) => {
-          if (event.type !== "LOAD_CONVERSATION") return context.messages;
-          const conversation = context.conversations.find(
-            (c) => c.id === event.conversationId
-          );
-          return conversation?.messages || [];
-        },
-      }),
-
-      deleteConversation: assign({
-        conversations: ({ context, event }) => {
-          if (event.type !== "DELETE_CONVERSATION")
-            return context.conversations;
-          return context.conversations.filter(
-            (c) => c.id !== event.conversationId
-          );
-        },
-        currentConversation: ({ context, event }) => {
-          if (event.type !== "DELETE_CONVERSATION")
-            return context.currentConversation;
-          return context.currentConversation?.id === event.conversationId
-            ? null
-            : context.currentConversation;
-        },
-      }),
-
-      updateSettings: assign({
-        settings: ({ context, event }) => {
-          if (event.type !== "UPDATE_SETTINGS") return context.settings;
-          return { ...context.settings, ...event.settings };
-        },
-      }),
-
-      injectContext: assign({
-        contextInjection: ({ context, event }) => {
-          if (event.type !== "INJECT_CONTEXT") return context.contextInjection;
-          return {
-            ...context.contextInjection,
-            enabled: true,
-            documents: event.documents,
-          };
-        },
-      }),
-
-      clearContext: assign({
-        contextInjection: ({ context }) => ({
-          ...context.contextInjection,
-          enabled: false,
-          documents: [],
-          vectorResults: [],
-        }),
-      }),
-
-      initializeStream: assign({
-        stream: () => null, // Will be set by streaming service
-      }),
-
-      appendStreamChunk: assign({
-        messages: ({ context, event }) => {
-          if (event.type !== "STREAM_CHUNK") return context.messages;
-
-          const lastMessage = context.messages[context.messages.length - 1];
-          if (lastMessage && lastMessage.role === "assistant") {
-            return [
-              ...context.messages.slice(0, -1),
-              { ...lastMessage, content: lastMessage.content + event.chunk },
-            ];
-          }
-
-          // Create new assistant message if none exists
-          const newMessage: ChatMessage = {
-            id: crypto.randomUUID(),
-            content: event.chunk,
-            role: "assistant",
-            timestamp: new Date(),
-            conversationId: context.currentConversation?.id,
-          };
-
-          return [...context.messages, newMessage];
-        },
-      }),
-
-      finalizeStream: assign({
-        stream: () => null,
-      }),
-
-      setModelReady: assign({
-        modelStatus: () => "ready",
-      }),
-
-      setModelError: assign({
-        modelStatus: () => "error",
-        error: ({ event }) =>
-          event.type === "MODEL_ERROR" ? event.error : null,
-      }),
-
-      setError: assign({
-        error: ({ event }) =>
-          new Error(event.type === "error" ? event.data : "Unknown error"),
-      }),
-
-      setStreamError: assign({
-        error: ({ event }) =>
-          event.type === "STREAM_ERROR" ? event.error : null,
-        stream: () => null,
-      }),
-
-      clearError: assign({
-        error: () => null,
-      }),
-
-      resetChat: assign({
-        currentConversation: () => null,
-        messages: () => [],
-        error: () => null,
-        stream: () => null,
-      }),
-    },
-
-    services: {
-      sendMessageService: async ({ context }) => {
-        const response = await fetch("/api/ai/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: context.messages[context.messages.length - 1]?.content,
-            conversationId: context.currentConversation?.id,
-            settings: context.settings,
-            contextInjection: context.contextInjection.enabled
-              ? {
-                  documents: context.contextInjection.documents,
-                }
-              : undefined,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data;
-      },
-
-      checkModelService: async () => {
-        const response = await fetch("/api/ai/model-status");
-
-        if (!response.ok) {
-          throw new Error("Model not ready");
-        }
-
-        return await response.json();
-      },
-    },
   }
-);
+});

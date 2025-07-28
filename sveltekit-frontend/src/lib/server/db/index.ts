@@ -2,8 +2,11 @@ import { db, sql } from './drizzle';
 
 export { db, sql };
 
-// Re-export performance optimizations
-export { OptimizedQueries, CacheService } from '$lib/performance/optimizations';
+// Re-export all database tables and relations
+export * from './schema-postgres';
+
+// Re-export performance optimizations (optional - may not exist)
+// export { OptimizedQueries, CacheService } from '$lib/performance/optimizations';
 
 // Database connection health check
 export async function healthCheck() {

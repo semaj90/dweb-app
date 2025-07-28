@@ -77,7 +77,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, theme(colors.yorha-primary), transparent);
+    background: linear-gradient(90deg, transparent, theme(colors.yorha.primary), transparent);
     animation: scan-line 3s linear infinite;
   }
 }
@@ -89,27 +89,27 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: theme(colors.yorha-bg-secondary);
+  background: theme(colors.yorha.background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme(colors.yorha-border);
+  background: theme(colors.yorha.border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme(colors.yorha-primary);
+  background: theme(colors.yorha.primary);
 }
 
 /* Selection styling */
 ::selection {
-  background: theme(colors.yorha-primary);
-  color: theme(colors.yorha-bg-primary);
+  background: theme(colors.yorha.primary);
+  color: theme(colors.yorha.text);
 }
 
 /* Focus indicators */
 .focus-visible {
-  outline: 2px solid theme(colors.yorha-primary);
+  outline: 2px solid theme(colors.yorha.primary);
   outline-offset: 2px;
 }
 
@@ -142,10 +142,10 @@
 
 @keyframes glow {
   from {
-    box-shadow: 0 0 20px theme(colors.yorha-primary / 20%);
+    box-shadow: 0 0 20px theme(colors.yorha.primary / 20%);
   }
   to {
-    box-shadow: 0 0 30px theme(colors.yorha-primary / 40%);
+    box-shadow: 0 0 30px theme(colors.yorha.primary / 40%);
   }
 }
 

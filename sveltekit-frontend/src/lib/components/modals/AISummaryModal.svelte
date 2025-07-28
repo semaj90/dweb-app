@@ -91,6 +91,7 @@
       </Button>
     </Dialog.Close>
   </Dialog.Footer>
+  </Dialog.Content>
 </Dialog.Root>
 
 <style>

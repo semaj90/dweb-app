@@ -11,7 +11,16 @@
       "Bash(mv:*)",
       "Bash(npm run dev:*)",
       "mcp__filesystem__directory_tree",
-      "mcp__context7-custom__generate-best-practices"
+      "mcp__context7-custom__generate-best-practices",
+      "mcp__ide__getDiagnostics",
+      "Bash(./install-graphql-deps.bat)",
+      "Bash(timeout 30 npm run build)",
+      "Bash(timeout 45 npm run build)",
+      "Bash(timeout 60 npm run build)",
+      "Bash(touch:*)",
+      "mcp__filesystem__read_file",
+      "mcp__filesystem__read_multiple_files",
+      "Bash(npx tsc:*)"
     ],
     "deny": []
   }

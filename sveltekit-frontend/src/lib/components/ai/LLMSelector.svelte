@@ -284,8 +284,7 @@
           <div class="flex items-center gap-1">
             <svelte:component 
               this={getStatusIcon(selectedModel.status)} 
-              class="h-3 w-3 {getStatusColor(selectedModel.status)}"
-              class:animate-spin={selectedModel.status === 'loading'}
+              class="h-3 w-3 {getStatusColor(selectedModel.status)} {selectedModel.status === 'loading' ? 'animate-spin' : ''}"
             />
             <span class="text-xs {getStatusColor(selectedModel.status)}">
               {selectedModel.status.toUpperCase()}
@@ -297,8 +296,7 @@
       {/if}
     </div>
     
-    <ChevronDown class="h-4 w-4 text-gray-400 transition-transform duration-200" 
-                 class:rotate-180={$open} />
+    <ChevronDown class="h-4 w-4 text-gray-400 transition-transform duration-200 {$open ? 'rotate-180' : ''}" />
   </button>
   
   <!-- Dropdown Menu -->
@@ -364,8 +362,7 @@
                 <div class="flex items-center gap-1">
                   <svelte:component 
                     this={getStatusIcon(model.status)} 
-                    class="h-4 w-4 {getStatusColor(model.status)}"
-                    class:animate-spin={model.status === 'loading'}
+                    class="h-4 w-4 {getStatusColor(model.status)} {model.status === 'loading' ? 'animate-spin' : ''}"
                   />
                   <span class="text-xs {getStatusColor(model.status)} font-medium">
                     {model.status.toUpperCase()}

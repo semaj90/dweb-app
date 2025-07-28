@@ -1,32 +1,15 @@
-<!-- Advanced Rich Text Editor with Google Slides/Photoshop-like Features -->
+<!-- Lightweight Rich Text Editor with Enhanced Image Support -->
 <script lang="ts">
   import { Editor } from "@tiptap/core";
-  import Color from "@tiptap/extension-color";
-  import FontFamily from "@tiptap/extension-font-family";
-  import Highlight from "@tiptap/extension-highlight";
   import Image from "@tiptap/extension-image";
   import Placeholder from "@tiptap/extension-placeholder";
-  import Table from "@tiptap/extension-table";
-  import TableCell from "@tiptap/extension-table-cell";
-  import TableHeader from "@tiptap/extension-table-header";
-  import TableRow from "@tiptap/extension-table-row";
   import TextAlign from "@tiptap/extension-text-align";
-  import TextStyle from "@tiptap/extension-text-style";
-  import Typography from "@tiptap/extension-typography";
   import StarterKit from "@tiptap/starter-kit";
   import {
     AlignCenter,
-    AlignJustify,
     AlignLeft,
     AlignRight,
     Bold,
-    ChevronDown,
-    Code,
-    Download,
-    Eye,
-    EyeOff,
-    Grid,
-    Highlighter,
     Image as ImageIcon,
     Italic,
     List,
@@ -34,17 +17,14 @@
     Quote,
     Redo,
     Save,
-    Strikethrough,
-    Table as TableIcon,
-    Type,
-    Underline,
     Undo,
     Upload,
-    ZoomIn,
-    ZoomOut,
+    Sparkles,
   } from "lucide-svelte";
+  import AIDropdown from '$lib/components/ui/AIDropdown.svelte';
+  import { registerShortcut, setShortcutContext } from '$lib/utils/keyboard-shortcuts';
   import { onDestroy, onMount } from "svelte";
-  import { get, writable } from "svelte/store";
+  import { writable } from "svelte/store";
 
   export let content: any = null;
   export let placeholder = "Start writing your legal report...";
@@ -54,84 +34,36 @@
 
   let editor: Editor | null = null;
   let editorElement: HTMLElement;
-  let isFullscreen = false;
-  let currentZoom = 100;
-  let showGrid = false;
-  let showRuler = true;
   let wordCount = 0;
   let characterCount = 0;
+  let dragCounter = 0;
+  let isDragging = false;
+  let uploadProgress = 0;
+  let uploading = false;
+  let aiGenerating = false;
+  let aiProgress = 0;
+  let showAIMenu = false;
+  let selectedReportType = "";
 
-  // Editor state stores
+  // AI-powered features
+  const reportTypes = [
+    { id: "case-summary", name: "Case Summary Report", icon: FileText },
+    { id: "evidence-analysis", name: "Evidence Analysis", icon: Brain },
+    { id: "legal-brief", name: "Legal Brief", icon: Wand2 },
+    { id: "investigation-report", name: "Investigation Report", icon: Sparkles },
+  ];
+
+  // Simplified editor state
   const editorState = writable({
     canUndo: false,
     canRedo: false,
     isBold: false,
     isItalic: false,
-    isUnderline: false,
-    isStrike: false,
     currentAlignment: "left",
-    currentColor: "#000000",
-    currentHighlight: "",
-    currentFontFamily: "Inter",
-    currentFontSize: 16,
-    isTable: false,
-    isCode: false,
     isList: false,
     isOrderedList: false,
     isQuote: false,
   });
-
-  // Color palettes for quick access
-  const colorPalettes = {
-    text: [
-      "#000000",
-      "#374151",
-      "#6b7280",
-      "#ef4444",
-      "#f97316",
-      "#eab308",
-      "#22c55e",
-      "#3b82f6",
-      "#8b5cf6",
-      "#ec4899",
-    ],
-    highlight: [
-      "transparent",
-      "#fef3c7",
-      "#dcfce7",
-      "#dbeafe",
-      "#e0e7ff",
-      "#f3e8ff",
-      "#fce7f3",
-      "#fed7d7",
-      "#f0f9ff",
-    ],
-    legal: [
-      "#1e40af",
-      "#7c2d12",
-      "#991b1b",
-      "#365314",
-      "#581c87",
-      "#831843",
-      "#92400e",
-      "#166534",
-    ],
-  };
-
-  // Font options
-  const fontFamilies = [
-    "Inter",
-    "Times New Roman",
-    "Arial",
-    "Helvetica",
-    "Georgia",
-    "Verdana",
-    "Courier New",
-    "Roboto",
-    "Open Sans",
-    "Lato",
-    "Merriweather",
-  ];
 
   // Auto-save functionality
   let autoSaveTimeout: NodeJS.Timeout;
@@ -139,6 +71,75 @@
   onMount(() => {
     initializeEditor();
     setupKeyboardShortcuts();
+    
+    // Set editor context for keyboard shortcuts
+    setShortcutContext('editor');
+    
+    // Register editor-specific shortcuts
+    const shortcuts = [
+      registerShortcut({
+        id: 'editor-save',
+        keys: ['ctrl', 's'],
+        description: 'Save Document',
+        category: 'editing',
+        action: saveContent,
+        contexts: ['editor'],
+      }),
+      registerShortcut({
+        id: 'ai-generate-case-summary',
+        keys: ['ctrl', 'shift', 'c'],
+        description: 'Generate Case Summary',
+        category: 'ai',
+        action: () => generateAIReport('case-summary'),
+        contexts: ['editor'],
+      }),
+      registerShortcut({
+        id: 'ai-generate-evidence-analysis', 
+        keys: ['ctrl', 'shift', 'e'],
+        description: 'Generate Evidence Analysis',
+        category: 'ai',
+        action: () => generateAIReport('evidence-analysis'),
+        contexts: ['editor'],
+      }),
+      registerShortcut({
+        id: 'ai-generate-legal-brief',
+        keys: ['ctrl', 'shift', 'l'],
+        description: 'Generate Legal Brief',
+        category: 'ai',
+        action: () => generateAIReport('legal-brief'),
+        contexts: ['editor'],
+      }),
+      registerShortcut({
+        id: 'ai-generate-investigation-report',
+        keys: ['ctrl', 'shift', 'i'],
+        description: 'Generate Investigation Report',
+        category: 'ai',
+        action: () => generateAIReport('investigation-report'),
+        contexts: ['editor'],
+      }),
+      registerShortcut({
+        id: 'ai-summarize',
+        keys: ['ctrl', 'shift', 's'],
+        description: 'Summarize Content',
+        category: 'ai',
+        action: summarizeReport,
+        contexts: ['editor'],
+      }),
+      registerShortcut({
+        id: 'ai-analyze',
+        keys: ['ctrl', 'shift', 'a'],
+        description: 'Analyze Report',
+        category: 'ai', 
+        action: analyzeReport,
+        contexts: ['editor'],
+      }),
+    ];
+    
+    return () => {
+      // Cleanup shortcuts
+      shortcuts.forEach(unregister => unregister());
+      setShortcutContext('global');
+    };
   });
 
   onDestroy(() => {
@@ -156,33 +157,21 @@
       extensions: [
         StarterKit.configure({
           history: {
-            depth: 100,
+            depth: 50,
           },
         }),
         Image.configure({
           inline: true,
           allowBase64: true,
+          HTMLAttributes: {
+            class: 'max-w-full h-auto rounded-lg border border-gray-200',
+          },
         }),
         TextAlign.configure({
           types: ["heading", "paragraph"],
         }),
-        Highlight.configure({
-          multicolor: true,
-        }),
-        Typography,
         Placeholder.configure({
           placeholder: placeholder,
-        }),
-        Table.configure({
-          resizable: true,
-        }),
-        TableRow,
-        TableHeader,
-        TableCell,
-        TextStyle,
-        Color,
-        FontFamily.configure({
-          types: ["textStyle"],
         }),
       ],
       content: content,
@@ -191,16 +180,17 @@
         updateWordCount();
         if (autosave) {
           scheduleAutoSave();
-}
+        }
       },
       editorProps: {
         attributes: {
-          class:
-            "prose prose-lg max-w-none focus:outline-none min-h-[400px] p-6",
+          class: "prose prose-lg max-w-none focus:outline-none min-h-[400px] p-6",
         },
+        handleDrop: handleDrop,
+        handlePaste: handlePaste,
       },
     });
-}
+  }
   function updateEditorState() {
     if (!editor) return;
 
@@ -209,27 +199,16 @@
       canRedo: editor.can().redo(),
       isBold: editor.isActive("bold"),
       isItalic: editor.isActive("italic"),
-      isUnderline: editor.isActive("underline"),
-      isStrike: editor.isActive("strike"),
       currentAlignment: editor.isActive({ textAlign: "center" })
         ? "center"
         : editor.isActive({ textAlign: "right" })
           ? "right"
-          : editor.isActive({ textAlign: "justify" })
-            ? "justify"
-            : "left",
-      currentColor: editor.getAttributes("textStyle").color || "#000000",
-      currentHighlight: editor.getAttributes("highlight").color || "",
-      currentFontFamily:
-        editor.getAttributes("textStyle").fontFamily || "Inter",
-      currentFontSize: editor.getAttributes("textStyle").fontSize || 16,
-      isTable: editor.isActive("table"),
-      isCode: editor.isActive("code"),
+          : "left",
       isList: editor.isActive("bulletList"),
       isOrderedList: editor.isActive("orderedList"),
       isQuote: editor.isActive("blockquote"),
     });
-}
+  }
   function updateWordCount() {
     if (!editor) return;
     const text = editor.getText();
@@ -298,471 +277,603 @@
               editor?.commands.redo();
             } else {
               editor?.commands.undo();
-}
+            }
             break;
-}}
+        }
+      }
     });
-}
-  // Toolbar actions
+  }
+
+  // Enhanced image handling functions
+  async function handleDrop(view: any, event: DragEvent) {
+    const files = Array.from(event.dataTransfer?.files || []);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length > 0) {
+      event.preventDefault();
+      await uploadImages(imageFiles);
+      return true;
+    }
+    return false;
+  }
+
+  async function handlePaste(view: any, event: ClipboardEvent) {
+    const items = Array.from(event.clipboardData?.items || []);
+    const imageItems = items.filter(item => item.type.startsWith('image/'));
+    
+    if (imageItems.length > 0) {
+      event.preventDefault();
+      const files = await Promise.all(
+        imageItems.map(item => item.getAsFile()).filter(Boolean)
+      );
+      await uploadImages(files);
+      return true;
+    }
+    return false;
+  }
+
+  async function uploadImages(files: File[]) {
+    if (!editor) return;
+    
+    uploading = true;
+    uploadProgress = 0;
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        uploadProgress = Math.round(((i + 1) / files.length) * 100);
+        
+        // For now, convert to base64 for immediate display
+        const reader = new FileReader();
+        const dataUrl = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+
+        // Insert image at current cursor position
+        editor.chain().focus().setImage({ 
+          src: dataUrl,
+          alt: file.name,
+          title: file.name 
+        }).run();
+
+        // TODO: Upload to server and replace base64 with URL
+        // const uploadedUrl = await uploadToServer(file);
+        // editor.chain().focus().setImage({ src: uploadedUrl }).run();
+      }
+    } catch (error) {
+      console.error('Image upload failed:', error);
+    } finally {
+      uploading = false;
+      uploadProgress = 0;
+    }
+  }
+
+  function handleDragEnter(e: DragEvent) {
+    e.preventDefault();
+    dragCounter++;
+    isDragging = true;
+  }
+
+  function handleDragLeave(e: DragEvent) {
+    e.preventDefault();
+    dragCounter--;
+    if (dragCounter === 0) {
+      isDragging = false;
+    }
+  }
+
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
+  // Simplified toolbar actions
   function toggleBold() {
     editor?.chain().focus().toggleBold().run();
-}
+  }
+  
   function toggleItalic() {
     editor?.chain().focus().toggleItalic().run();
-}
-  function toggleUnderline() {
-    editor?.chain().focus().toggleMark("underline").run();
-}
-  function toggleStrike() {
-    editor?.chain().focus().toggleStrike().run();
-}
+  }
+  
   function setAlignment(align: string) {
     editor?.chain().focus().setTextAlign(align).run();
-}
-  function setTextColor(color: string) {
-    editor?.chain().focus().setColor(color).run();
-}
-  function setHighlight(color: string) {
-    if (color === "transparent") {
-      editor?.chain().focus().unsetHighlight().run();
-    } else {
-      editor?.chain().focus().setHighlight({ color }).run();
-}}
-  function setFontFamily(family: string) {
-    editor?.chain().focus().setFontFamily(family).run();
-}
-  function insertTable() {
-    editor
-      ?.chain()
-      .focus()
-      .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-      .run();
-}
+  }
+  
   function insertImage() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement)?.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const src = e.target?.result as string;
-          editor?.chain().focus().setImage({ src }).run();
-        };
-        reader.readAsDataURL(file);
-}
+    input.multiple = true;
+    input.onchange = async (e) => {
+      const files = Array.from((e.target as HTMLInputElement)?.files || []);
+      if (files.length > 0) {
+        await uploadImages(files);
+      }
     };
     input.click();
-}
-  function toggleFullscreen() {
-    isFullscreen = !isFullscreen;
-    if (isFullscreen) {
-      document.documentElement.requestFullscreen?.();
-    } else {
-      document.exitFullscreen?.();
-}}
-  function adjustZoom(delta: number) {
-    currentZoom = Math.max(50, Math.min(200, currentZoom + delta));
-    if (editor?.view.dom) {
-      (editor.view.dom as HTMLElement).style.zoom = `${currentZoom}%`;
-}}
-  function exportDocument(format: "html" | "json" | "pdf") {
+  }
+
+  // AI-powered report generation
+  async function generateAIReport(reportType: string) {
     if (!editor) return;
+    
+    aiGenerating = true;
+    aiProgress = 0;
+    showAIMenu = false;
 
-    const content = format === "json" ? editor.getJSON() : editor.getHTML();
-    const blob = new Blob([JSON.stringify(content, null, 2)], {
-      type: format === "json" ? "application/json" : "text/html",
-    });
+    try {
+      // Simulate AI generation progress
+      const progressInterval = setInterval(() => {
+        aiProgress = Math.min(aiProgress + 10, 90);
+      }, 200);
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `report-${reportId}.${format}`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-  function importDocument() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json,.html";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement)?.files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const content = JSON.parse(e.target?.result as string);
-            editor?.commands.setContent(content);
-          } catch {
-            // If not JSON, treat as HTML
-            editor?.commands.setContent(e.target?.result as string);
-}
-        };
-        reader.readAsText(file);
-}
-    };
-    input.click();
-}
+      const response = await fetch('/api/ai/generate-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reportType,
+          caseId,
+          reportId,
+          existingContent: editor.getText(),
+          context: {
+            wordCount,
+            characterCount,
+          }
+        }),
+      });
+
+      clearInterval(progressInterval);
+      aiProgress = 100;
+
+      if (!response.ok) {
+        throw new Error('Failed to generate report');
+      }
+
+      const data = await response.json();
+      
+      // Insert generated content
+      if (data.content) {
+        editor.commands.setContent(data.content);
+        updateWordCount();
+      }
+
+      // Show success notification
+      showAISuccess(`${reportTypes.find(t => t.id === reportType)?.name} generated successfully!`);
+
+    } catch (error) {
+      console.error('AI generation failed:', error);
+      showAIError('Failed to generate report. Please try again.');
+    } finally {
+      aiGenerating = false;
+      aiProgress = 0;
+    }
+  }
+
+  async function summarizeReport() {
+    if (!editor || !editor.getText().trim()) return;
+
+    aiGenerating = true;
+    aiProgress = 0;
+
+    try {
+      const progressInterval = setInterval(() => {
+        aiProgress = Math.min(aiProgress + 15, 80);
+      }, 300);
+
+      const response = await fetch('/api/ai/summarize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: editor.getText(), // Use plain text instead of HTML
+          type: 'report',
+          model: 'gemma3-legal',
+        }),
+      });
+
+      clearInterval(progressInterval);
+      aiProgress = 100;
+
+      if (!response.ok) {
+        throw new Error('Failed to summarize report');
+      }
+
+      const data = await response.json();
+      
+      // Insert summary at the beginning
+      if (data.summary) {
+        const currentContent = editor.getHTML();
+        const summaryContent = `
+          <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <h3 style="color: #0369a1; margin: 0 0 12px 0; font-size: 18px; font-weight: 600;">
+              <span style="display: inline-flex; align-items: center; gap: 8px;">
+                🤖 AI Summary
+                <small style="font-size: 12px; font-weight: normal; color: #6b7280;">
+                  ${data.model} • ${data.processingTime}ms
+                </small>
+              </span>
+            </h3>
+            <p style="margin: 0; color: #374151; line-height: 1.6;">${data.summary}</p>
+          </div>
+          ${currentContent}
+        `;
+        editor.commands.setContent(summaryContent);
+        updateWordCount();
+      }
+
+      showAISuccess('Report summarized successfully!');
+
+    } catch (error) {
+      console.error('AI summarization failed:', error);
+      showAIError('Failed to summarize report. Please try again.');
+    } finally {
+      aiGenerating = false;
+      aiProgress = 0;
+    }
+  }
+
+  async function analyzeReport() {
+    if (!editor || !editor.getText().trim()) return;
+
+    aiGenerating = true;
+    aiProgress = 0;
+
+    try {
+      const progressInterval = setInterval(() => {
+        aiProgress = Math.min(aiProgress + 12, 85);
+      }, 250);
+
+      const response = await fetch('/api/ai/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: editor.getText(), // Use plain text instead of HTML
+          caseId,
+          reportId,
+          analysisType: 'comprehensive',
+          model: 'gemma3-legal',
+        }),
+      });
+
+      clearInterval(progressInterval);
+      aiProgress = 100;
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze report');
+      }
+
+      const data = await response.json();
+      
+      // Insert analysis at the end
+      if (data.analysis || data.rawAnalysis) {
+        const currentContent = editor.getHTML();
+        const analysis = data.analysis || {};
+        const analysisContent = `
+          ${currentContent}
+          <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 8px; padding: 16px; margin-top: 24px;">
+            <h3 style="color: #15803d; margin: 0 0 12px 0; font-size: 18px; font-weight: 600;">
+              <span style="display: inline-flex; align-items: center; gap: 8px;">
+                🧠 AI Analysis
+                <small style="font-size: 12px; font-weight: normal; color: #6b7280;">
+                  ${data.model} • ${data.processingTime}ms • ${Math.round((data.metadata?.confidence || 0.8) * 100)}% confidence
+                </small>
+              </span>
+            </h3>
+            <div style="color: #374151; line-height: 1.6;">
+              ${analysis.keyPoints?.length ? `
+                <p><strong>Key Points:</strong></p>
+                <ul>
+                  ${analysis.keyPoints.map(point => `<li>${point}</li>`).join('')}
+                </ul>
+              ` : ''}
+              
+              ${analysis.findings?.length ? `
+                <p><strong>Findings:</strong></p>
+                <ul>
+                  ${analysis.findings.map(finding => `<li>${finding}</li>`).join('')}
+                </ul>
+              ` : ''}
+              
+              ${analysis.recommendations?.length ? `
+                <p><strong>Recommendations:</strong></p>
+                <ul>
+                  ${analysis.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+              ` : ''}
+              
+              ${analysis.risks?.length ? `
+                <p><strong>Risk Assessment:</strong></p>
+                <ul>
+                  ${analysis.risks.map(risk => `<li style="color: #dc2626;">${risk}</li>`).join('')}
+                </ul>
+              ` : ''}
+              
+              ${data.rawAnalysis && !analysis.keyPoints?.length ? `
+                <div style="white-space: pre-wrap;">${data.rawAnalysis}</div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        editor.commands.setContent(analysisContent);
+        updateWordCount();
+      }
+
+      showAISuccess('Report analyzed successfully!');
+
+    } catch (error) {
+      console.error('AI analysis failed:', error);
+      showAIError('Failed to analyze report. Please try again.');
+    } finally {
+      aiGenerating = false;
+      aiProgress = 0;
+    }
+  }
+
+  function showAISuccess(message: string) {
+    const indicator = document.createElement('div');
+    indicator.textContent = message;
+    indicator.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg text-sm z-50 shadow-lg';
+    document.body.appendChild(indicator);
+    setTimeout(() => {
+      document.body.removeChild(indicator);
+    }, 3000);
+  }
+
+  function showAIError(message: string) {
+    const indicator = document.createElement('div');
+    indicator.textContent = message;
+    indicator.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg text-sm z-50 shadow-lg';
+    document.body.appendChild(indicator);
+    setTimeout(() => {
+      document.body.removeChild(indicator);
+    }, 4000);
+  }
+
   // Reactive statements
-  $: state = get(editorState);
+  $: state = $editorState;
 
   // Exported functions for parent component access
   export function setContent(content: string) {
     if (editor) {
       editor.commands.setContent(content);
-}}
+    }
+  }
+  
   export function getContent() {
     return editor ? editor.getHTML() : "";
-}
+  }
+  
   export function getJSON() {
     return editor ? editor.getJSON() : null;
-}
+  }
 </script>
 
-<div class="advanced-editor" class:fullscreen={isFullscreen}>
-  <!-- Main Toolbar -->
-  <div class="toolbar bg-white border-b border-gray-200 p-2 flex items-center gap-2 flex-wrap">
-    <!-- File Operations -->
-    <div class="toolbar-group">
-      <button
-        class="toolbar-btn"
-        on:click={() => saveContent()}
-        title="Save (Ctrl+S)"
-      >
-        <Save size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        on:click={() => importDocument()}
-        title="Import Document"
-      >
-        <Upload size="18" />
-      </button>
-      <div class="dropdown">
-        <button class="toolbar-btn dropdown-toggle">
-          <Download size="18" />
-          <ChevronDown size="14" />
-        </button>
-        <div class="dropdown-menu">
-          <button on:click={() => exportDocument("html")}>Export as HTML</button
-          >
-          <button on:click={() => exportDocument("json")}>Export as JSON</button
-          >
-          <button on:click={() => exportDocument("pdf")}>Export as PDF</button>
-        </div>
-      </div>
-    </div>
+<!-- Lightweight Editor Container -->
+<div 
+  class="lightweight-editor border border-gray-200 rounded-lg bg-white"
+  class:is-dragging={isDragging}
+  on:dragenter={handleDragEnter}
+  on:dragleave={handleDragLeave}
+  on:dragover={handleDragOver}
+>
+  <!-- Simplified Toolbar -->
+  <div class="toolbar bg-gray-50 border-b border-gray-200 p-2 flex items-center gap-2 flex-wrap">
+    <!-- Save -->
+    <button
+      class="toolbar-btn"
+      on:click={() => saveContent()}
+      title="Save (Ctrl+S)"
+    >
+      <Save size="16" />
+    </button>
 
     <div class="toolbar-separator"></div>
 
     <!-- Undo/Redo -->
-    <div class="toolbar-group">
-      <button
-        class="toolbar-btn"
-        class:disabled={!state.canUndo}
-        on:click={() => editor?.commands.undo()}
-        title="Undo (Ctrl+Z)"
-      >
-        <Undo size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:disabled={!state.canRedo}
-        on:click={() => editor?.commands.redo()}
-        title="Redo (Ctrl+Shift+Z)"
-      >
-        <Redo size="18" />
-      </button>
-    </div>
+    <button
+      class="toolbar-btn"
+      class:disabled={!state.canUndo}
+      on:click={() => editor?.commands.undo()}
+      title="Undo (Ctrl+Z)"
+    >
+      <Undo size="16" />
+    </button>
+    <button
+      class="toolbar-btn"
+      class:disabled={!state.canRedo}
+      on:click={() => editor?.commands.redo()}
+      title="Redo (Ctrl+Shift+Z)"
+    >
+      <Redo size="16" />
+    </button>
 
     <div class="toolbar-separator"></div>
 
     <!-- Text Formatting -->
-    <div class="toolbar-group">
-      <div class="font-selector">
-        <select
-          bind:value={state.currentFontFamily}
-          on:change={(e) =>
-            setFontFamily((e.target as HTMLSelectElement).value)}
-        >
-          {#each fontFamilies as font}
-            <option value={font}>{font}</option>
-          {/each}
-        </select>
-      </div>
-
-      <button
-        class="toolbar-btn"
-        class:active={state.isBold}
-        on:click={() => toggleBold()}
-        title="Bold (Ctrl+B)"
-      >
-        <Bold size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.isItalic}
-        on:click={() => toggleItalic()}
-        title="Italic (Ctrl+I)"
-      >
-        <Italic size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.isUnderline}
-        on:click={() => toggleUnderline()}
-        title="Underline (Ctrl+U)"
-      >
-        <Underline size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.isStrike}
-        on:click={() => toggleStrike()}
-        title="Strikethrough"
-      >
-        <Strikethrough size="18" />
-      </button>
-    </div>
-
-    <div class="toolbar-separator"></div>
-
-    <!-- Color Tools -->
-    <div class="toolbar-group">
-      <div class="color-picker toolbar-btn">
-        <input
-          type="color"
-          bind:value={state.currentColor}
-          on:change={(e) => setTextColor((e.target as HTMLInputElement).value)}
-          title="Text Color"
-        />
-        <Type size="18" />
-      </div>
-
-      <div class="dropdown">
-        <button class="toolbar-btn dropdown-toggle">
-          <Highlighter size="18" />
-          <ChevronDown size="14" />
-        </button>
-        <div class="dropdown-menu color-palette">
-          {#each colorPalettes.highlight as color}
-            <button
-              class="color-swatch"
-              style="background-color: {color}"
-              on:click={() => setHighlight(color)}
-              title={color === "transparent"
-                ? "Remove highlight"
-                : `Highlight with ${color}`}
-              aria-label={color === "transparent"
-                ? "Remove highlight"
-                : `Highlight with ${color}`}
-            ></button>
-          {/each}
-        </div>
-      </div>
-    </div>
+    <button
+      class="toolbar-btn"
+      class:active={state.isBold}
+      on:click={() => toggleBold()}
+      title="Bold (Ctrl+B)"
+    >
+      <Bold size="16" />
+    </button>
+    <button
+      class="toolbar-btn"
+      class:active={state.isItalic}
+      on:click={() => toggleItalic()}
+      title="Italic (Ctrl+I)"
+    >
+      <Italic size="16" />
+    </button>
 
     <div class="toolbar-separator"></div>
 
     <!-- Alignment -->
-    <div class="toolbar-group">
-      <button
-        class="toolbar-btn"
-        class:active={state.currentAlignment === "left"}
-        on:click={() => setAlignment("left")}
-        title="Align Left"
-      >
-        <AlignLeft size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.currentAlignment === "center"}
-        on:click={() => setAlignment("center")}
-        title="Align Center"
-      >
-        <AlignCenter size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.currentAlignment === "right"}
-        on:click={() => setAlignment("right")}
-        title="Align Right"
-      >
-        <AlignRight size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.currentAlignment === "justify"}
-        on:click={() => setAlignment("justify")}
-        title="Justify"
-      >
-        <AlignJustify size="18" />
-      </button>
-    </div>
+    <button
+      class="toolbar-btn"
+      class:active={state.currentAlignment === "left"}
+      on:click={() => setAlignment("left")}
+      title="Align Left"
+    >
+      <AlignLeft size="16" />
+    </button>
+    <button
+      class="toolbar-btn"
+      class:active={state.currentAlignment === "center"}
+      on:click={() => setAlignment("center")}
+      title="Align Center"
+    >
+      <AlignCenter size="16" />
+    </button>
+    <button
+      class="toolbar-btn"
+      class:active={state.currentAlignment === "right"}
+      on:click={() => setAlignment("right")}
+      title="Align Right"
+    >
+      <AlignRight size="16" />
+    </button>
 
     <div class="toolbar-separator"></div>
 
-    <!-- Lists and Blocks -->
-    <div class="toolbar-group">
-      <button
-        class="toolbar-btn"
-        class:active={state.isList}
-        on:click={() => editor?.chain().focus().toggleBulletList().run()}
-        title="Bullet List"
-      >
-        <List size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.isOrderedList}
-        on:click={() => editor?.chain().focus().toggleOrderedList().run()}
-        title="Numbered List"
-      >
-        <ListOrdered size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.isQuote}
-        on:click={() => editor?.chain().focus().toggleBlockquote().run()}
-        title="Quote"
-      >
-        <Quote size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        class:active={state.isCode}
-        on:click={() => editor?.chain().focus().toggleCodeBlock().run()}
-        title="Code Block"
-      >
-        <Code size="18" />
-      </button>
-    </div>
+    <!-- Lists -->
+    <button
+      class="toolbar-btn"
+      class:active={state.isList}
+      on:click={() => editor?.chain().focus().toggleBulletList().run()}
+      title="Bullet List"
+    >
+      <List size="16" />
+    </button>
+    <button
+      class="toolbar-btn"
+      class:active={state.isOrderedList}
+      on:click={() => editor?.chain().focus().toggleOrderedList().run()}
+      title="Numbered List"
+    >
+      <ListOrdered size="16" />
+    </button>
+    <button
+      class="toolbar-btn"
+      class:active={state.isQuote}
+      on:click={() => editor?.chain().focus().toggleBlockquote().run()}
+      title="Quote"
+    >
+      <Quote size="16" />
+    </button>
 
     <div class="toolbar-separator"></div>
 
-    <!-- Insert -->
-    <div class="toolbar-group">
-      <button
-        class="toolbar-btn"
-        on:click={() => insertImage()}
-        title="Insert Image"
-      >
-        <ImageIcon size="18" />
-      </button>
-      <button
-        class="toolbar-btn"
-        on:click={() => insertTable()}
-        title="Insert Table"
-      >
-        <TableIcon size="18" />
-      </button>
-    </div>
+    <!-- Image Upload -->
+    <button
+      class="toolbar-btn"
+      on:click={() => insertImage()}
+      title="Insert Image (supports drag & drop)"
+    >
+      <ImageIcon size="16" />
+    </button>
 
     <div class="toolbar-separator"></div>
 
-    <!-- View Controls -->
-    <div class="toolbar-group">
-      <button
-        class="toolbar-btn"
-        on:click={() => adjustZoom(-10)}
-        title="Zoom Out"
-      >
-        <ZoomOut size="18" />
-      </button>
-      <span class="zoom-indicator">{currentZoom}%</span>
-      <button
-        class="toolbar-btn"
-        on:click={() => adjustZoom(10)}
-        title="Zoom In"
-      >
-        <ZoomIn size="18" />
-      </button>
-
-      <button
-        class="toolbar-btn"
-        class:active={showGrid}
-        on:click={() => (showGrid = !showGrid)}
-        title="Toggle Grid"
-      >
-        <Grid size="18" />
-      </button>
-
-      <button
-        class="toolbar-btn"
-        on:click={() => toggleFullscreen()}
-        title="Toggle Fullscreen"
-      >
-        {#if isFullscreen}
-          <EyeOff size="18" />
-        {:else}
-          <Eye size="18" />
-        {/if}
-      </button>
-    </div>
-  </div>
-
-  <!-- Secondary Toolbar for Advanced Features -->
-  <div class="toolbar bg-gray-50 border-b border-gray-200 p-2 flex justify-between items-center text-sm">
-    <div class="text-gray-600">
-      Words: <span class="font-medium">{wordCount}</span> | Characters:
-      <span class="font-medium">{characterCount}</span>
-    </div>
+    <!-- AI Features -->
+    <AIDropdown
+      {disabled}
+      onReportGenerate={generateAIReport}
+      onSummarize={summarizeReport}
+      onAnalyze={analyzeReport}
+      hasContent={editor ? editor.getText().trim().length > 0 : false}
+      isGenerating={aiGenerating}
+    />
 
     <div class="flex-1"></div>
 
-    {#if autosave}
-      <div class="text-green-600 text-xs">Auto-save enabled</div>
-    {/if}
+    <!-- Word Count -->
+    <div class="text-sm text-gray-600">
+      {wordCount} words
+    </div>
   </div>
 
-  <!-- Ruler (if enabled) -->
-  {#if showRuler}
-    <div class="ruler h-6 bg-gray-100 relative border-b border-gray-200">
-      {#each Array(20) as _, i}
-        <div
-          class="ruler-mark absolute border-l border-gray-300"
-          style="left: {i * 50}px"
-        >
-          {#if i % 2 === 0}
-            <span class="text-xs text-gray-500 absolute -top-1 left-1">{i}</span>
-          {/if}
+  <!-- Upload Progress -->
+  {#if uploading}
+    <div class="upload-progress bg-blue-50 border-b border-blue-200 p-2">
+      <div class="flex items-center gap-2">
+        <Upload size="16" class="text-blue-600" />
+        <div class="flex-1">
+          <div class="text-sm text-blue-700">Uploading images...</div>
+          <div class="w-full bg-blue-200 rounded-full h-2 mt-1">
+            <div 
+              class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+              style="width: {uploadProgress}%"
+            ></div>
+          </div>
         </div>
-      {/each}
+        <span class="text-sm text-blue-600">{uploadProgress}%</span>
+      </div>
     </div>
   {/if}
 
-  <!-- Editor Container -->
-  <div class="editor-container bg-white" class:show-grid={showGrid}>
+  <!-- AI Progress -->
+  {#if aiGenerating}
+    <div class="ai-progress bg-purple-50 border-b border-purple-200 p-2">
+      <div class="flex items-center gap-2">
+        <Sparkles size="16" class="text-purple-600 animate-pulse" />
+        <div class="flex-1">
+          <div class="text-sm text-purple-700">AI is working on your request...</div>
+          <div class="w-full bg-purple-200 rounded-full h-2 mt-1">
+            <div 
+              class="bg-purple-600 h-2 rounded-full transition-all duration-300" 
+              style="width: {aiProgress}%"
+            ></div>
+          </div>
+        </div>
+        <span class="text-sm text-purple-600">{aiProgress}%</span>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Drag Overlay -->
+  {#if isDragging}
+    <div class="drag-overlay absolute inset-0 bg-blue-50 bg-opacity-90 flex items-center justify-center z-10">
+      <div class="text-center p-8">
+        <ImageIcon size="48" class="mx-auto text-blue-600 mb-4" />
+        <p class="text-lg font-medium text-blue-800">Drop images here</p>
+        <p class="text-sm text-blue-600">PNG, JPG, GIF up to 10MB each</p>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Editor Content -->
+  <div class="editor-container bg-white min-h-[400px] relative">
     <div bind:this={editorElement} class="editor-content"></div>
   </div>
+
+  <!-- Auto-save Indicator -->
+  {#if autosave}
+    <div class="status-bar bg-gray-50 border-t border-gray-200 px-3 py-1 text-xs text-gray-500 flex justify-between">
+      <span>Auto-save enabled</span>
+      <span>{characterCount} characters</span>
+    </div>
+  {/if}
 </div>
 
 <style>
   /* @unocss-include */
-  /* Remove all @apply rules. Use Tailwind/UnoCSS classes in markup instead. */
-  .advanced-editor {
-    min-height: 500px;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    background: #fff;
-}
-  .advanced-editor.fullscreen {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-}
-  .toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-  .toolbar-group {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
+  .lightweight-editor {
+    position: relative;
+    max-width: 100%;
+  }
+
+  .lightweight-editor.is-dragging {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
   .toolbar-btn {
     padding: 0.5rem;
     border-radius: 0.375rem;
@@ -772,169 +883,125 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 36px;
-    height: 36px;
-    transition: background 0.2s;
-}
+    min-width: 32px;
+    height: 32px;
+    transition: all 0.2s;
+  }
+
   .toolbar-btn:hover {
-    background: #f3f4f6;
-}
+    background: #e5e7eb;
+  }
+
   .toolbar-btn:disabled,
   .toolbar-btn.disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
-}
+  }
+
   .toolbar-btn.active {
     background: #dbeafe;
     color: #2563eb;
-}
+  }
+
+  .toolbar-btn.ai-btn:hover {
+    background: #faf5ff;
+  }
+
+  .toolbar-btn.ai-btn.active {
+    background: #f3e8ff;
+    color: #7c3aed;
+  }
+
   .toolbar-separator {
     width: 1px;
-    height: 1.5rem;
+    height: 1.25rem;
     background: #d1d5db;
     margin: 0 0.25rem;
-}
-  .dropdown {
-    position: relative;
-}
-  .dropdown-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-  .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    padding: 0.25rem 0;
-    z-index: 20;
-    min-width: 150px;
-    display: none;
-}
-  .dropdown:hover .dropdown-menu {
-    display: block;
-}
-  .dropdown-menu button {
-    width: 100%;
-    text-align: left;
-    padding: 0.5rem 0.75rem;
+  }
+
+  .ai-menu {
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  .ai-menu-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .ai-menu-item:disabled:hover {
     background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-  .dropdown-menu button:hover {
-    background: #f3f4f6;
-}
-  .color-palette {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.25rem;
-    padding: 0.5rem;
-    min-width: 200px;
-}
-  .color-swatch {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 0.375rem;
-    border: 1px solid #d1d5db;
-    cursor: pointer;
-}
-  .color-picker {
-    position: relative;
-}
-  .color-picker input[type="color"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-}
-  .font-selector select {
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-  .zoom-indicator {
-    font-size: 0.875rem;
-    color: #4b5563;
-    min-width: 40px;
-    text-align: center;
-}
-  .ruler {
-    background: repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 10px,
-      #e5e7eb 10px,
-      #e5e7eb 11px
-    );
-}
-  .ruler-mark {
-    height: 24px;
-}
-  .editor-container {
-    flex: 1;
-    overflow: auto;
-    min-height: 400px;
-}
-  .editor-container.show-grid {
-    background-image:
-      linear-gradient(to right, #f3f4f6 1px, transparent 1px),
-      linear-gradient(to bottom, #f3f4f6 1px, transparent 1px);
-    background-size: 20px 20px;
-}
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .drag-overlay {
+    border-radius: 0.5rem;
+    border: 2px dashed #3b82f6;
+  }
+
   .editor-content {
-    min-height: 100%;
-}
-  /* Tiptap specific styles */
+    padding: 1.5rem;
+    min-height: 400px;
+  }
+
+  /* TipTap Editor Styles */
   :global(.ProseMirror) {
     outline: none;
-}
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
   :global(.ProseMirror p.is-editor-empty:first-child::before) {
     color: #9ca3af;
     content: attr(data-placeholder);
     float: left;
     height: 0;
     pointer-events: none;
-}
-  :global(.ProseMirror table) {
-    border-collapse: collapse;
-    border: 1px solid #d1d5db;
-}
-  :global(.ProseMirror table td),
-  :global(.ProseMirror table th) {
-    border: 1px solid #d1d5db;
-    padding: 0.75rem 1rem;
-}
-  :global(.ProseMirror table th) {
-    background: #f3f4f6;
-    font-weight: 600;
-}
+  }
+
   :global(.ProseMirror blockquote) {
-    border-left: 4px solid #d1d5db;
+    border-left: 4px solid #e5e7eb;
     padding-left: 1rem;
+    margin: 1rem 0;
     font-style: italic;
-}
-  :global(.ProseMirror code) {
-    background: #f3f4f6;
-    padding: 0.25rem;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-}
-  :global(.ProseMirror pre) {
-    background: #f3f4f6;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-}
+    color: #6b7280;
+  }
+
+  :global(.ProseMirror ul),
+  :global(.ProseMirror ol) {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+
   :global(.ProseMirror img) {
     max-width: 100%;
     height: auto;
     border-radius: 0.5rem;
-}
+    margin: 0.5rem 0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  :global(.ProseMirror img:hover) {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Focus styles */
+  :global(.ProseMirror-focused) {
+    outline: none;
+  }
+
+  /* Selection styles */
+  :global(.ProseMirror-selectednode) {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
 </style>

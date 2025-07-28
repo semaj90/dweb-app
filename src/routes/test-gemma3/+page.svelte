@@ -28,10 +28,19 @@
   ];
 
   onMount(async () => {
-    await performSystemChecks();
+    // Progressive enhancement: Start with basic functionality
+    if (typeof window !== 'undefined') {
+      await performSystemChecks();
+    }
   });
 
   async function performSystemChecks() {
+    // Progressive enhancement: Graceful degradation for offline scenarios
+    if (typeof fetch === 'undefined') {
+      console.warn('Fetch API not available, skipping system checks');
+      return;
+    }
+    
     // Check Ollama service
     try {
       const ollamaResponse = await fetch('http://localhost:11434/api/version');
@@ -52,6 +61,7 @@
         status: 'error',
         message: 'Cannot connect to Ollama on localhost:11434'
       };
+      console.warn('Ollama connection failed:', error);
     }
 
     // Check model availability
@@ -140,10 +150,10 @@
 
   function getStatusColor(status: string) {
     switch (status) {
-      case 'connected': return 'text-green-500';
-      case 'error': return 'text-red-500';
-      case 'checking': return 'text-yellow-500';
-      default: return 'text-gray-500';
+      case 'connected': return 'text-emerald-600 dark:text-emerald-400';
+      case 'error': return 'text-red-600 dark:text-red-400';
+      case 'checking': return 'text-amber-600 dark:text-amber-400';
+      default: return 'text-muted-foreground';
     }
   }
 </script>
@@ -152,16 +162,18 @@
   <title>Gemma3 Integration Test - Legal AI Chat</title>
 </svelte:head>
 
-<div class="container mx-auto p-6 space-y-6">
-  <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold">Gemma3 Legal AI Integration Test</h1>
-    <p class="text-muted-foreground mt-2">
+<div class="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
+  <header class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-foreground mb-2">Gemma3 Legal AI Integration Test</h1>
+    <p class="text-muted-foreground text-lg">
       Complete system validation and chat interface
     </p>
-  </div>
+  </header>
 
   <!-- System Status Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <section aria-labelledby="system-status-heading" class="mb-6">
+    <h2 id="system-status-heading" class="sr-only">System Status</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     {#each Object.entries(systemChecks) as [service, check]}
       <Card>
         <CardHeader class="pb-3">
@@ -169,15 +181,17 @@
             <svelte:component
               this={getStatusIcon(check.status)}
               class="w-4 h-4 {getStatusColor(check.status)}"
+              aria-hidden="true"
             />
-            {service.toUpperCase()}
+            <span class="font-medium">{service.toUpperCase()}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Badge
             variant={check.status === 'connected' ? 'default' :
                     check.status === 'error' ? 'destructive' : 'secondary'}
-            class="mb-2"
+            class="mb-2 font-medium"
+            aria-label="{service} status: {check.status}"
           >
             {check.status}
           </Badge>
@@ -185,67 +199,78 @@
         </CardContent>
       </Card>
     {/each}
-  </div>
+    </div>
+  </section>
 
   <!-- Quick Test Messages -->
-  <Card>
-    <CardHeader>
-      <CardTitle class="flex items-center gap-2">
-        <Zap class="w-5 h-5" />
-        Quick Test Messages
-      </CardTitle>
-    </CardHeader>
+  <section aria-labelledby="quick-test-heading">
+    <Card>
+      <CardHeader>
+        <CardTitle id="quick-test-heading" class="flex items-center gap-2">
+          <Zap class="w-5 h-5" aria-hidden="true" />
+          Quick Test Messages
+        </CardTitle>
+      </CardHeader>
     <CardContent>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {#each testMessages as message}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2">
+        {#each testMessages as message, index}
           <Button
             variant="outline"
             size="sm"
-            class="text-left justify-start"
+            class="text-left justify-start hover:bg-accent hover:text-accent-foreground transition-colors"
             disabled={$state.matches('loading')}
             on:click={() => sendTestMessage(message)}
+            aria-label="Send test message: {message}"
           >
             {message}
           </Button>
         {/each}
       </div>
     </CardContent>
-  </Card>
+    </Card>
+  </section>
 
   <!-- Chat Interface -->
-  <Card class="flex flex-col h-[60vh]">
-    <CardHeader class="border-b">
-      <div class="flex items-center justify-between">
-        <CardTitle class="flex items-center gap-2">
-          Gemma3 Legal AI Chat
-          {#if $state.matches('loading')}
-            <Badge variant="secondary" class="animate-pulse">Thinking...</Badge>
-          {:else if $state.matches('error')}
-            <Badge variant="destructive">Error</Badge>
-          {:else}
-            <Badge variant="default">Ready</Badge>
-          {/if}
-        </CardTitle>
-        <Button variant="outline" size="sm" on:click={handleClear}>
-          Clear Chat
-        </Button>
-      </div>
-    </CardHeader>
+  <main aria-labelledby="chat-heading">
+    <Card class="flex flex-col h-[60vh] lg:h-[65vh] border-2">
+      <CardHeader class="border-b bg-card">
+        <div class="flex items-center justify-between">
+          <CardTitle id="chat-heading" class="flex items-center gap-2">
+            <span class="text-lg">Gemma3 Legal AI Chat</span>
+            {#if $state.matches('loading')}
+              <Badge variant="secondary" class="animate-pulse" aria-live="polite">Thinking...</Badge>
+            {:else if $state.matches('error')}
+              <Badge variant="destructive" aria-live="assertive">Error</Badge>
+            {:else}
+              <Badge variant="default" aria-live="polite">Ready</Badge>
+            {/if}
+          </CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            on:click={handleClear}
+            aria-label="Clear chat conversation"
+            class="hover:bg-destructive hover:text-destructive-foreground transition-colors"
+          >
+            Clear Chat
+          </Button>
+        </div>
+      </CardHeader>
 
-    <!-- Messages -->
-    <ScrollArea class="flex-1 p-4">
-      <div bind:this={chatContainer} class="space-y-4">
+      <!-- Messages -->
+      <ScrollArea class="flex-1 p-4" aria-label="Chat messages">
+        <div bind:this={chatContainer} class="space-y-4" role="log" aria-live="polite">
         {#each $state.context.messages as message, i (i)}
-          <div class="flex {message.role === 'user' ? 'justify-end' : 'justify-start'}">
-            <div class="max-w-[80%] rounded-lg p-3 {
+          <div class="flex {message.role === 'user' ? 'justify-end' : 'justify-start'}" role="article">
+            <div class="max-w-[80%] rounded-lg p-3 shadow-sm {
               message.role === 'user'
-                ? 'bg-primary text-primary-foreground ml-4'
-                : 'bg-muted mr-4'
+                ? 'bg-primary text-primary-foreground ml-4 border border-primary/20'
+                : 'bg-muted mr-4 border border-border'
             }">
-              <div class="text-sm mb-1 opacity-70">
+              <div class="text-sm mb-1 opacity-70 font-medium">
                 {message.role === 'user' ? 'You' : 'Gemma3 Legal AI'}
               </div>
-              <div class="whitespace-pre-wrap">
+              <div class="whitespace-pre-wrap leading-relaxed">
                 {@html message.content.replace(/\n/g, '<br>')}
               </div>
               {#if $state.matches('loading') && i === $state.context.messages.length - 1}
@@ -260,28 +285,31 @@
         {/each}
 
         {#if $state.context.messages.length === 0}
-          <div class="text-center py-8 text-muted-foreground">
-            <p class="text-lg mb-2">Welcome to Gemma3 Legal AI</p>
-            <p class="text-sm">
-              Ask questions about legal matters, contracts, case analysis, or use the quick test messages above.
-            </p>
+          <div class="text-center py-12 text-muted-foreground" role="status">
+            <div class="max-w-md mx-auto">
+              <p class="text-xl mb-3 font-medium">Welcome to Gemma3 Legal AI</p>
+              <p class="text-sm leading-relaxed">
+                Ask questions about legal matters, contracts, case analysis, or use the quick test messages above to get started.
+              </p>
+            </div>
           </div>
         {/if}
 
         {#if $state.matches('error')}
-          <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-destructive">
+          <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-destructive" role="alert" aria-live="assertive">
             <div class="flex items-center gap-2 font-medium mb-1">
-              <AlertCircle class="w-4 h-4" />
-              Error
+              <AlertCircle class="w-4 h-4" aria-hidden="true" />
+              <span>Error</span>
             </div>
-            <p class="text-sm">
+            <p class="text-sm mb-3">
               {$state.context.error?.message || 'An unknown error occurred'}
             </p>
             <Button
               variant="outline"
               size="sm"
-              class="mt-2"
+              class="mt-2 hover:bg-destructive hover:text-destructive-foreground"
               on:click={() => chatActions.clearError()}
+              aria-label="Dismiss error message"
             >
               Dismiss
             </Button>
@@ -290,36 +318,42 @@
       </div>
     </ScrollArea>
 
-    <!-- Input -->
-    <div class="border-t p-4">
-      <form on:submit|preventDefault={handleSubmit} class="flex gap-2">
-        <Input
-          type="text"
-          placeholder="Ask about legal matters, case analysis, contracts..."
-          bind:value={userInput}
-          disabled={$state.matches('loading')}
-          class="flex-1"
-        />
-        <Button
-          type="submit"
-          disabled={$state.matches('loading') || !userInput.trim()}
-        >
-          {$state.matches('loading') ? 'Sending...' : 'Send'}
-        </Button>
-      </form>
-      <p class="text-xs text-muted-foreground mt-2">
-        Powered by Gemma3 running locally via Ollama
-      </p>
-    </div>
-  </Card>
+      <!-- Input -->
+      <footer class="border-t p-4 bg-card">
+        <form on:submit|preventDefault={handleSubmit} class="flex gap-2" role="search">
+          <Input
+            type="text"
+            placeholder="Ask about legal matters, case analysis, contracts..."
+            bind:value={userInput}
+            disabled={$state.matches('loading')}
+            class="flex-1 focus:ring-2 focus:ring-primary/20"
+            aria-label="Enter your legal question"
+            autocomplete="off"
+          />
+          <Button
+            type="submit"
+            disabled={$state.matches('loading') || !userInput.trim()}
+            class="min-w-[80px] font-medium"
+            aria-label={$state.matches('loading') ? 'Sending message' : 'Send message'}
+          >
+            {$state.matches('loading') ? 'Sending...' : 'Send'}
+          </Button>
+        </form>
+        <p class="text-xs text-muted-foreground mt-2 text-center">
+          Powered by Gemma3 running locally via Ollama
+        </p>
+      </footer>
+    </Card>
+  </main>
 
   <!-- Debug Information -->
-  <Card>
-    <CardHeader>
-      <CardTitle class="text-lg">Debug Information</CardTitle>
-    </CardHeader>
+  <aside aria-labelledby="debug-heading">
+    <Card>
+      <CardHeader>
+        <CardTitle id="debug-heading" class="text-lg">Debug Information</CardTitle>
+      </CardHeader>
     <CardContent>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div>
           <h4 class="font-medium mb-2">Chat State</h4>
           <ul class="space-y-1 text-muted-foreground">
@@ -344,17 +378,40 @@
       <Button
         variant="outline"
         size="sm"
-        class="mt-4"
+        class="mt-4 hover:bg-accent hover:text-accent-foreground transition-colors"
         on:click={performSystemChecks}
+        aria-label="Refresh system status checks"
       >
         Refresh System Status
       </Button>
     </CardContent>
-  </Card>
+    </Card>
+  </aside>
 </div>
 
 <style>
   :global(.animate-bounce) {
     animation: bounce 1s infinite;
+  }
+  
+  /* Responsive grid improvements */
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+  
+  /* Focus improvements */
+  :global(.focus\:ring-2:focus) {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+  
+  /* Smooth transitions */
+  :global(.transition-colors) {
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
   }
 </style>

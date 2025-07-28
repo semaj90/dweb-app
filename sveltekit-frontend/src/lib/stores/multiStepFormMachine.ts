@@ -1,8 +1,7 @@
 // src/lib/stores/multiStepFormMachine.ts - XState v5 Multi-step Forms with Superforms & Zod
 import { setup, createActor, assign, fromPromise } from 'xstate';
 import { z } from 'zod';
-import { db } from '$lib/server/db/index.js';
-import { cases, evidence, criminals } from '$lib/server/db/schema-postgres.js';
+import { db, cases, evidence, criminals } from '$lib/server/db';
 
 // Zod Validation Schemas
 export const CaseFormSchema = z.object({
@@ -94,9 +93,7 @@ export const CriminalFormSchema = z.object({
   knownAssociates: z.array(z.string()).default([]),
   criminalHistory: z.array(z.any()).default([]),
   
-import type { Case } from '$lib/types';
-
-  // Step 6: CaseAssociation
+  // Step 6: Case Association
   associatedCases: z.array(z.string()).default([]),
   notes: z.string().optional(),
   metadata: z.record(z.any()).default({}),

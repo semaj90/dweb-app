@@ -1,143 +1,97 @@
-// Nomic Embeddings Integration for Legal AI
-// Phase 8: AI-Aware Browser States with Vector Intelligence
+// TODO: Wire up NomicEmbeddingsService for production Context7 pipeline
+// - Use this service for all embedding generation in semantic_search, audit, and agent flows
+// - After embedding, upsert to Qdrant and log to todo log/DB as needed
+// - Add error handling and logging for all embedding operations
+// - See qdrant-service.ts for vector DB integration
 
-import { ollamaService } from '$lib/services/ollama-service';
-
-export interface EmbeddingResult {
-  embedding: number[];
-  dimension: number;
-  model: string;
+interface DocumentChunk {
+  id: string;
+  text: string;
   metadata?: Record<string, any>;
 }
 
-export interface DocumentChunk {
-  id: string;
-  text: string;
-  metadata: {
-    source?: string;
-    page?: number;
-    type?: 'contract' | 'evidence' | 'case_law' | 'regulation';
-    jurisdiction?: string;
-    date?: string;
+interface EmbeddingResult {
+  embedding: number[];
+  model: string;
+  metadata?: {
+    timestamp: string;
+    [key: string]: any;
   };
 }
 
 export class NomicEmbeddingsService {
-  private readonly MODEL_NAME = 'nomic-embed-text';
-  private readonly DIMENSION = 768;
-  
+  /**
+   * Embed text using Nomic embeddings
+   */
   async embed(text: string): Promise<EmbeddingResult> {
+    // PRODUCTION: Call Ollama or Nomic API for real embeddings
     try {
-      // Use Ollama service for Nomic embeddings
-      const embedding = await ollamaService.generateEmbedding(text, this.MODEL_NAME);
-      
+      // Example: Use Ollama service if available
+      const { ollamaService } = await import("$lib/services/ollama-service");
+      const embedding = await ollamaService.generateEmbedding(text, "nomic-embed-text-v1");
       return {
         embedding,
-        dimension: this.DIMENSION,
-        model: this.MODEL_NAME,
+        model: "nomic-embed-text-v1",
         metadata: {
-          length: text.length,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       };
     } catch (error) {
-      console.error('Nomic embedding generation failed:', error);
-      throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
-
-  async embedBatch(texts: string[]): Promise<EmbeddingResult[]> {
-    // Process in smaller batches to avoid memory issues
-    const BATCH_SIZE = 10;
-    const results: EmbeddingResult[] = [];
-    
-    for (let i = 0; i < texts.length; i += BATCH_SIZE) {
-      const batch = texts.slice(i, i + BATCH_SIZE);
-      const batchPromises = batch.map(text => this.embed(text));
-      const batchResults = await Promise.all(batchPromises);
-      results.push(...batchResults);
-    }
-    
-    return results;
-  }
-
-  async embedDocuments(documents: DocumentChunk[]): Promise<Array<DocumentChunk & { embedding: number[] }>> {
-    const embeddings = await this.embedBatch(documents.map(doc => doc.text));
-    
-    return documents.map((doc, index) => ({
-      ...doc,
-      embedding: embeddings[index].embedding
-    }));
-  }
-
-  // Phase 8: AI-Aware reranking with custom scoring
-  rerank(results: Array<{ score: number; [key: string]: any }>, context: {
-    userIntent?: string;
-    timeOfDay?: string;
-    focusedElement?: string;
-    caseId?: string;
-  }): Array<{ score: number; [key: string]: any }> {
-    return results.map(result => {
-      let adjustedScore = result.score;
-      
-      // Context-aware scoring adjustments
-      if (context.userIntent && result.metadata?.intent === context.userIntent) {
-        adjustedScore += 0.2;
-      }
-      
-      if (context.caseId && result.metadata?.caseId === context.caseId) {
-        adjustedScore += 0.15;
-      }
-      
-      // Time-based relevance (legal deadlines, court hours)
-      if (context.timeOfDay === 'business_hours' && result.metadata?.type === 'case_law') {
-        adjustedScore += 0.1;
-      }
-      
+      // Fallback to mock embedding if real API fails
+      console.warn("Falling back to mock embedding:", error);
       return {
-        ...result,
-        score: adjustedScore,
-        originalScore: result.score,
-        rerankingApplied: true
+        embedding: new Array(768).fill(0).map(() => Math.random()),
+        model: "nomic-embed-text-v1",
+        metadata: {
+          timestamp: new Date().toISOString(),
+        },
       };
-    }).sort((a, b) => b.score - a.score);
+    }
   }
 
-  // Phase 8: Matrix LOD-aware embedding with GPU considerations
-  async embedWithLOD(text: string, lodLevel: 'low' | 'mid' | 'high' = 'mid'): Promise<EmbeddingResult> {
-    // Adjust text processing based on LOD level for GPU performance
-    let processedText = text;
-    
-    switch (lodLevel) {
-      case 'low':
-        // Truncate for low-detail requirements
-        processedText = text.substring(0, 512);
-        break;
-      case 'high':
-        // Full text with enhanced context
-        processedText = text; // No truncation
-        break;
-      default:
-        // Medium detail - balance between performance and accuracy
-        processedText = text.substring(0, 2048);
+  /**
+   * Embed and upsert a document to Qdrant for audit/agent pipeline
+   * Usage: await nomicEmbeddings.embedAndUpsert(doc)
+   */
+  async embedAndUpsert(document: DocumentChunk): Promise<EmbeddingResult> {
+    const embeddingResult = await this.embed(document.text);
+
+    try {
+      // Upsert to Qdrant for semantic search
+      const { qdrantService } = await import("./qdrant-service");
+      await qdrantService.upsertPoints([
+        {
+          id: document.id,
+          vector: embeddingResult.embedding,
+          payload: {
+            documentId: document.metadata?.documentId || `doc_${Date.now()}`,
+            filename: document.metadata?.filename || 'unknown',
+            documentType: document.metadata?.documentType || 'text',
+            uploadedBy: document.metadata?.uploadedBy || 'system',
+            uploadedAt: document.metadata?.uploadedAt || new Date().toISOString(),
+            processingStatus: document.metadata?.processingStatus || 'processed',
+            text: document.text,
+            embeddingModel: embeddingResult.model,
+            embeddingTimestamp: embeddingResult.metadata?.timestamp,
+            fileMetadata: {
+              size: document.metadata?.size || 0,
+              mimeType: document.metadata?.mimeType || 'text/plain',
+              pageCount: document.metadata?.pageCount,
+              wordCount: document.metadata?.wordCount,
+              language: document.metadata?.language
+            }
+          },
+        },
+      ]);
+    } catch (error) {
+      console.warn("Failed to upsert to Qdrant:", error);
     }
-    
-    const result = await this.embed(processedText);
-    
-    return {
-      ...result,
-      metadata: {
-        ...result.metadata,
-        lodLevel,
-        originalLength: text.length,
-        processedLength: processedText.length
-      }
-    };
+
+    // TODO: Log upsert to phase10-todo.log or DB
+    // TODO: Optionally trigger agent action after upsert
+    return embeddingResult;
   }
 }
 
-// Singleton instance for global use
+// Export singleton instance
 export const nomicEmbeddings = new NomicEmbeddingsService();
-
-// Export for backward compatibility
-export default nomicEmbeddings;

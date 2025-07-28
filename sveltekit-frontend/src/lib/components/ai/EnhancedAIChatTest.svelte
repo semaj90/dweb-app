@@ -344,12 +344,15 @@
         <div class="flex items-center gap-2">
           <!-- Status Indicator -->
           <div class="flex items-center gap-2 px-2 py-1 rounded-md bg-white/50">
-            {@const StatusIcon = getStatusIcon()}
-            <StatusIcon class="h-4 w-4 {getStatusColor()} {connectionStatus === 'checking' ? 'animate-spin' : ''}" />
-            <span class="text-xs {getStatusColor()}">
-              {connectionStatus === "checking" ? "Checking..." :
-               connectionStatus === "connected" ? "Connected" : "Offline"}
-            </span>
+            {#snippet statusIndicator()}
+              {@const StatusIcon = getStatusIcon()}
+              <StatusIcon class="h-4 w-4 {getStatusColor()} {connectionStatus === 'checking' ? 'animate-spin' : ''}" />
+              <span class="text-xs {getStatusColor()}">
+                {connectionStatus === "checking" ? "Checking..." :
+                 connectionStatus === "connected" ? "Connected" : "Offline"}
+              </span>
+            {/snippet}
+            {@render statusIndicator()}
           </div>
 
           <!-- Action Buttons -->

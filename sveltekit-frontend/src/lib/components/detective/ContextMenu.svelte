@@ -1,13 +1,49 @@
-import type { Case } from '$lib/types';
 
 <script lang="ts">
-  import type { Evidence } from '$lib/types';
   import DropdownMenuContent from "$lib/components/ui/dropdown-menu/DropdownMenuContent.svelte";
   import DropdownMenuItem from "$lib/components/ui/dropdown-menu/DropdownMenuItem.svelte";
   import DropdownMenuRoot from "$lib/components/ui/dropdown-menu/DropdownMenuRoot.svelte";
   import DropdownMenuSeparator from "$lib/components/ui/dropdown-menu/DropdownMenuSeparator.svelte";
   import type { Case, Evidence } from "$lib/types/index";
   import { createEventDispatcher, onMount, tick } from "svelte";
+
+
+
+  // --- Phase 10: Context7 Evidence Actions ---
+  // Trigger semantic audit, agent review, or vector search for this evidence
+  async function auditEvidence() {
+    if (!item) return;
+    try {
+      const res = await fetch('/api/audit/semantic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: `Audit evidence ${item.id}` })
+      });
+      if (!res.ok) throw new Error('Failed to audit evidence');
+      const data = await res.json();
+      dispatch('auditResults', { results: data.results, evidence: item });
+    } catch (error) {
+      dispatch('auditError', { error: (error as Error).message, evidence: item });
+    }
+    closeMenu();
+  }
+
+  async function triggerAgentReview() {
+    if (!item) return;
+    try {
+      const res = await fetch('/api/agent/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ evidenceId: item.id })
+      });
+      if (!res.ok) throw new Error('Failed to trigger agent review');
+      const data = await res.json();
+      dispatch('agentReviewResult', { result: data, evidence: item });
+    } catch (error) {
+      dispatch('agentReviewError', { error: (error as Error).message, evidence: item });
+    }
+    closeMenu();
+  }
 
   export let x: number;
   export let y: number;
@@ -16,7 +52,6 @@ import type { Case } from '$lib/types';
   const dispatch = createEventDispatcher();
   let cases: Case[] = [];
   let menuOpen = true;
-  let triggerEl: HTMLButtonElement;
 
   onMount(async () => {
     // Load available cases
@@ -30,7 +65,6 @@ import type { Case } from '$lib/types';
 }
     // Open menu after mount
     await tick();
-    triggerEl?.focus();
   });
 
   function sendToCase(caseId: string) {
@@ -71,31 +105,25 @@ import type { Case } from '$lib/types';
     dispatch("close");
 }
 </script>
-
 <DropdownMenuRoot
-  let:menu
   let:trigger
   let:states
   on:openChange={(e) => {
     if (!e.detail.open) closeMenu();
-  "
->
+  }}
   <!-- Hidden trigger for programmatic open -->
   <button
-    bind:this={triggerEl}
-    use:trigger
     style="position:fixed;left:-9999px;top:-9999px;"
     aria-label="Open context menu"
     tabindex={-1}
   ></button>
   {#if menuOpen}
     <DropdownMenuContent
-      {menu}
       class="container mx-auto px-4"
       style="position:fixed;left:{x}px;top:{y}px;"
       on:keydown={(e) => {
         if (e.detail && e.detail.key === "Escape") closeMenu();
-      "
+      }}
       aria-label="Evidence context menu"
     >
       <div class="container mx-auto px-4">
@@ -118,6 +146,14 @@ import type { Case } from '$lib/types';
       <DropdownMenuItem on:select={duplicateEvidence}>
         <i class="container mx-auto px-4"></i>
         <span class="container mx-auto px-4">Duplicate</span>
+      </DropdownMenuItem>
+      <DropdownMenuItem on:select={auditEvidence}>
+        <i class="container mx-auto px-4"></i>
+        <span class="container mx-auto px-4">Audit (Semantic/Vector)</span>
+      </DropdownMenuItem>
+      <DropdownMenuItem on:select={triggerAgentReview}>
+        <i class="container mx-auto px-4"></i>
+        <span class="container mx-auto px-4">Trigger Agent Review</span>
       </DropdownMenuItem>
       {#if cases.length > 0}
         <DropdownMenuSeparator />

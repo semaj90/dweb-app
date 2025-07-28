@@ -15,12 +15,12 @@
 
   function handleSelect() {
     dispatch("select");
-}
+  }
 </script>
 
 <button
   use:melt={$item}
-  class="container mx-auto px-4"
+  class="flex items-center w-full px-3 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none transition-colors {class_}"
   {disabled}
   on:click={() => handleSelect()}
 >

@@ -1,9 +1,3 @@
-import type { User } from '$lib/types';
-
-
-import type { User } from '$lib/types/user';
-
-
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
@@ -20,15 +14,6 @@ import type { User } from '$lib/types/user';
     Shield,
     User as UserIcon,
   } from "lucide-svelte";
-
-    
-
-
-
-
-import type { User } from '$lib/types/user';
-
-import type { User } from '$lib/types/user';
 
   export let user: User | null = null;
 
@@ -57,64 +42,86 @@ import type { User } from '$lib/types/user';
   function closeUserMenu() {
     userMenuOpen = false;
   }
+
+  // Progressive enhancement: Close menu on Escape key
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape' && userMenuOpen) {
+      closeUserMenu();
+    }
+  }
+
+  // Check if current route is active
+  function isActiveRoute(path: string): boolean {
+    return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
+  }
 </script>
 
-<header class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<svelte:window on:keydown={handleKeyDown} />
+
+<header class="app-header">
+  <div class="header-content">
     <!-- Logo and Brand -->
-    <div class="container mx-auto px-4">
+    <div class="brand-section">
       <button
-        class="container mx-auto px-4"
+        class="brand-button"
         on:click={() => handleNavigation("/")}
         aria-label="Go to homepage"
       >
-        <Palette size={24} />
-        <span class="container mx-auto px-4">Prosecutor Canvas</span>
+        <Palette size={24} aria-hidden="true" />
+        <span class="brand-text">Prosecutor Canvas</span>
       </button>
     </div>
 
     <!-- Navigation -->
-    <nav class="container mx-auto px-4" aria-label="Main navigation">
+    <nav class="main-nav" aria-label="Main navigation">
       <button
-        class="container mx-auto px-4"
+        class="nav-button"
+        class:active={isActiveRoute('/dashboard')}
         on:click={() => handleNavigation("/dashboard")}
         aria-label="Dashboard"
+        aria-current={isActiveRoute('/dashboard') ? 'page' : undefined}
       >
-        <Home size={18} />
+        <Home size={18} aria-hidden="true" />
         <span>Dashboard</span>
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="nav-button"
+        class:active={isActiveRoute('/cases')}
         on:click={() => handleNavigation("/cases")}
         aria-label="Cases"
+        aria-current={isActiveRoute('/cases') ? 'page' : undefined}
       >
-        <FolderOpen size={18} />
+        <FolderOpen size={18} aria-hidden="true" />
         <span>Cases</span>
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="nav-button"
+        class:active={isActiveRoute('/interactive-canvas')}
         on:click={() => handleNavigation("/interactive-canvas")}
         aria-label="Interactive Canvas"
+        aria-current={isActiveRoute('/interactive-canvas') ? 'page' : undefined}
       >
-        <Palette size={18} />
+        <Palette size={18} aria-hidden="true" />
         <span>Canvas</span>
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="nav-button"
+        class:active={isActiveRoute('/evidence/hash')}
         on:click={() => handleNavigation("/evidence/hash")}
         aria-label="Hash Verification"
+        aria-current={isActiveRoute('/evidence/hash') ? 'page' : undefined}
         title="Verify evidence file integrity"
       >
-        <Shield size={18} />
+        <Shield size={18} aria-hidden="true" />
         <span>Hash Verify</span>
       </button>
     </nav>
 
     <!-- Search -->
-    <div class="container mx-auto px-4">
+    <div class="search-section">
       <SearchInput
         placeholder="Search cases, evidence, notes..."
         value={searchQuery}
@@ -123,56 +130,60 @@ import type { User } from '$lib/types/user';
     </div>
 
     <!-- User Menu -->
-    <div class="container mx-auto px-4">
+    <div class="user-section">
       {#if user}
-        <div class="container mx-auto px-4">
+        <div class="user-menu-container">
           <button
-            class="container mx-auto px-4"
-            on:click={() => toggleUserMenu()}
+            class="user-button"
+            on:click={toggleUserMenu}
             aria-label="User menu"
             aria-expanded={userMenuOpen}
+            aria-haspopup="menu"
           >
-            <div class="container mx-auto px-4">
+            <div class="user-avatar">
               {#if user.avatarUrl}
-                <img src={user.avatarUrl} alt={user.name} />
+                <img src={user.avatarUrl} alt="" />
               {:else}
-                <span class="container mx-auto px-4">
+                <span class="avatar-fallback">
                   {user.name?.charAt(0)?.toUpperCase() || "U"}
                 </span>
               {/if}
             </div>
-            <span class="container mx-auto px-4">{user.name}</span>
-            <MoreVertical size={16} />
+            <span class="user-name">{user.name}</span>
+            <MoreVertical size={16} aria-hidden="true" />
           </button>
 
           {#if userMenuOpen}
-            <div class="container mx-auto px-4" role="menu">
+            <div class="user-menu" role="menu" aria-labelledby="user-button">
               <button
-                class="container mx-auto px-4"
+                class="menu-item"
                 on:click={() => handleNavigation("/profile")}
                 role="menuitem"
+                tabindex="0"
               >
-                <UserIcon size={16} />
+                <UserIcon size={16} aria-hidden="true" />
                 Profile
               </button>
 
               <button
-                class="container mx-auto px-4"
+                class="menu-item"
                 on:click={() => handleNavigation("/settings")}
                 role="menuitem"
+                tabindex="0"
               >
-                <Settings size={16} />
+                <Settings size={16} aria-hidden="true" />
                 Settings
               </button>
 
-              <hr class="container mx-auto px-4" />
+              <hr class="menu-separator" />
 
               <button
-                class="container mx-auto px-4"
-                on:click={() => handleLogout()}
+                class="menu-item"
+                on:click={handleLogout}
                 role="menuitem"
+                tabindex="0"
               >
-                <LogOut size={16} />
+                <LogOut size={16} aria-hidden="true" />
                 Sign Out
               </button>
             </div>
@@ -180,7 +191,7 @@ import type { User } from '$lib/types/user';
         </div>
       {:else}
         <button
-          class="container mx-auto px-4"
+          class="sign-in-button"
           on:click={() => handleNavigation("/login")}
           aria-label="Sign in"
         >
@@ -194,11 +205,11 @@ import type { User } from '$lib/types/user';
 <!-- Click outside to close menu -->
 {#if userMenuOpen}
   <div
-    class="container mx-auto px-4"
-    on:click={() => closeUserMenu()}
+    class="menu-overlay"
+    on:click={closeUserMenu}
     on:keydown={(e) => e.key === "Escape" && closeUserMenu()}
     role="button"
-    tabindex={-1}
+    tabindex="-1"
     aria-label="Close user menu"
   ></div>
 {/if}
@@ -206,243 +217,120 @@ import type { User } from '$lib/types/user';
 <style>
   /* @unocss-include */
   .app-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-light);
-    z-index: 30;
+    @apply fixed top-0 left-0 right-0 h-15 bg-card border-b border-border z-30;
     backdrop-filter: blur(8px);
   }
 
   .header-content {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding: 0 1rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    gap: 1rem;
+    @apply flex items-center h-full px-4 max-w-7xl mx-auto gap-4;
   }
 
   .brand-section {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
+    @apply flex items-center flex-shrink-0;
   }
 
   .brand-button {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    color: var(--harvard-crimson);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.2s ease;
-  }
-
-  .brand-button:hover {
-    background: var(--bg-tertiary);
+    @apply flex items-center gap-3 px-4 py-2 font-semibold text-primary bg-transparent border-none cursor-pointer rounded-md transition-colors duration-200 hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
   }
 
   .brand-text {
-    font-size: 1.1rem;
-    font-weight: 700;
+    @apply text-lg font-bold;
   }
 
   .main-nav {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    flex-shrink: 0;
+    @apply flex items-center gap-1 flex-shrink-0;
   }
 
   .nav-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    color: var(--text-muted);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-  }
-
-  .nav-button:hover {
-    color: var(--text-primary);
-    background: var(--bg-tertiary);
+    @apply flex items-center gap-2 px-4 py-2 text-muted-foreground bg-transparent border-none cursor-pointer rounded-md transition-all duration-200 hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
   }
 
   .nav-button.active {
-    color: var(--harvard-crimson);
-    background: var(--bg-secondary);
+    @apply text-primary bg-accent;
   }
 
   .search-section {
-    flex: 1;
-    max-width: 400px;
-    margin: 0 2rem;
+    @apply flex-1 max-w-md mx-8;
   }
 
   .user-section {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
+    @apply flex items-center flex-shrink-0;
   }
 
   .user-menu-container {
-    position: relative;
+    @apply relative;
   }
 
   .user-button {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.2s ease;
-    color: var(--text-primary);
-  }
-
-  .user-button:hover {
-    background: var(--bg-tertiary);
+    @apply flex items-center gap-3 px-4 py-2 bg-transparent border-none cursor-pointer rounded-md transition-colors duration-200 text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
   }
 
   .user-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-secondary);
-    color: var(--harvard-crimson);
+    @apply w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-secondary text-primary;
   }
 
   .user-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    @apply w-full h-full object-cover;
   }
 
   .avatar-fallback {
-    font-weight: 600;
-    font-size: 0.875rem;
+    @apply font-semibold text-sm;
   }
 
   .user-name {
-    font-weight: 500;
-    color: var(--text-primary);
+    @apply font-medium text-foreground;
   }
 
   .user-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    min-width: 180px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 0.5rem;
-    z-index: 1000;
-    margin-top: 0.5rem;
+    @apply absolute top-full right-0 min-w-45 bg-card border border-border rounded-lg shadow-lg p-2 z-1000 mt-2;
   }
 
   .menu-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem;
-    width: 100%;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-    color: var(--text-primary);
-    text-align: left;
-  }
-
-  .menu-item:hover {
-    background: var(--bg-tertiary);
+    @apply flex items-center gap-3 p-2 w-full bg-transparent border-none cursor-pointer rounded text-foreground text-left transition-colors duration-200 hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
   }
 
   .menu-separator {
-    border: none;
-    border-top: 1px solid var(--border-light);
-    margin: 0.5rem 0;
+    @apply border-none border-t border-border my-2;
   }
 
   .sign-in-button {
-    padding: 0.5rem 1rem;
-    background: transparent;
-    border: 1px solid var(--harvard-crimson);
-    color: var(--harvard-crimson);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .sign-in-button:hover {
-    background: var(--harvard-crimson);
-    color: var(--text-inverse);
+    @apply px-4 py-2 bg-transparent border border-primary text-primary rounded-md cursor-pointer transition-all duration-200 hover:bg-primary hover:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary/50;
   }
 
   .menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 999;
-    background: transparent;
+    @apply fixed top-0 left-0 right-0 bottom-0 z-999 bg-transparent;
   }
 
   /* Responsive */
   @media (max-width: 768px) {
     .header-content {
-      padding: 0 0.5rem;
-      gap: 0.5rem;
+      @apply px-2 gap-2;
     }
 
     .brand-text {
-      display: none;
+      @apply hidden;
     }
 
     .search-section {
-      margin: 0 1rem;
+      @apply mx-4;
     }
 
     .nav-button span {
-      display: none;
+      @apply hidden;
     }
 
     .user-name {
-      display: none;
+      @apply hidden;
     }
   }
 
   @media (max-width: 480px) {
     .main-nav {
-      gap: 0;
+      @apply gap-0;
     }
 
     .search-section {
-      max-width: 200px;
-      margin: 0 0.5rem;
+      @apply max-w-50 mx-2;
     }
   }
 </style>

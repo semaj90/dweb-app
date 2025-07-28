@@ -176,7 +176,7 @@
       <aside
         class="container mx-auto px-4"
         style="width: {$reportUI.sidebarWidth}px"
-        transition:fly={{ x: -300, duration: 300, easing: quintOut "
+        transition:fly={{ x: -300, duration: 300, easing: quintOut }}
       >
         <!-- Evidence Search -->
         <section class="container mx-auto px-4">
@@ -342,7 +342,7 @@
     {#if $report.settings.layout === "dual"}
       <aside
         class="container mx-auto px-4"
-        transition:fly={{ x: 300, duration: 300, easing: quintOut "
+        transition:fly={{ x: 300, duration: 300, easing: quintOut }}
       >
         <div class="container mx-auto px-4">
           <h3>Evidence</h3>
@@ -386,15 +386,15 @@
       on:success={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
-      "
+      }}
       on:error={(e) => {
         console.error("Evidence form error:", e.detail);
         alert("Error saving evidence");
-      "
+      }}
       on:cancel={() => {
         showEvidenceModal = false;
         selectedEvidence = null;
-      "
+      }}
     />
   {/if}
 </Modal>

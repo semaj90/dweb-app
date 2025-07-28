@@ -2,10 +2,10 @@
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
-  import { Checkbox } from "$lib/components/ui/checkbox";
-  import { Progress } from "$lib/components/ui/progress";
+  // import { Checkbox } from "$lib/components/ui/checkbox";
+  // import { Progress } from "$lib/components/ui/progress";
   import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-  import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+  // import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
   import { FileUp, BrainCircuit, Search, Loader2 } from "lucide-svelte";
 
   let files: FileList;
@@ -70,18 +70,18 @@
   </CardHeader>
   <CardContent class="space-y-6">
     <div class="grid w-full items-center gap-1.5">
-      <Label for="file-upload">PDF or XML Document</Label>
+      <Label for_="file-upload">PDF or XML Document</Label>
       <Input id="file-upload" type="file" bind:files accept=".pdf,.xml" />
     </div>
 
     <div class="flex items-center space-x-4">
       <div class="flex items-center gap-2">
-        <Checkbox id="verbose-mode" bind:checked={verboseMode} />
-        <Label for="verbose-mode" class="flex items-center gap-1"><BrainCircuit size={16} /> Verbose Mode</Label>
+        <input type="checkbox" id="verbose-mode" bind:checked={verboseMode} />
+        <Label for_="verbose-mode" class="flex items-center gap-1"><BrainCircuit size={16} /> Verbose Mode</Label>
       </div>
       <div class="flex items-center gap-2">
-        <Checkbox id="thinking-mode" bind:checked={thinkingMode} />
-        <Label for="thinking-mode" class="flex items-center gap-1"><Search size={16} /> Thinking Mode</Label>
+        <input type="checkbox" id="thinking-mode" bind:checked={thinkingMode} />
+        <Label for_="thinking-mode" class="flex items-center gap-1"><Search size={16} /> Thinking Mode</Label>
       </div>
     </div>
 

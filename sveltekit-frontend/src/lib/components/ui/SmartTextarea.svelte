@@ -119,9 +119,11 @@
       textarea.style.height = textarea.scrollHeight + "px";
 }}
   // Watch for value changes to auto-resize
-  $: if (value !== undefined) {
-    setTimeout(autoResize, 0);
-}
+  $effect(() => {
+    if (value !== undefined) {
+      setTimeout(autoResize, 0);
+    }
+  });
 </script>
 
 <div class="container mx-auto px-4">

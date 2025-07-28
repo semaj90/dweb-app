@@ -16,6 +16,7 @@ export interface OllamaModelInfo {
     quantization_level: string;
   };
 }
+
 export interface OllamaGenerateRequest {
   model: string;
   prompt: string;
@@ -33,6 +34,7 @@ export interface OllamaGenerateRequest {
   };
   stream?: boolean;
 }
+
 export interface OllamaGenerateResponse {
   model: string;
   created_at: string;
@@ -46,7 +48,39 @@ export interface OllamaGenerateResponse {
   eval_count?: number;
   eval_duration?: number;
 }
+
 class OllamaService {
+  /**
+   * Generate embeddings for a text input using Ollama's embedding API (if available)
+   * @param text The input text to embed
+   * @param model The embedding model name (e.g., 'nomic-embed-text-v1')
+   * @returns Promise<number[]>
+   */
+  public async generateEmbedding(
+    text: string,
+    model: string
+  ): Promise<number[]> {
+    // PRODUCTION: Call Ollama embedding API endpoint (if available)
+    // Example assumes Ollama exposes /api/embeddings endpoint (adjust as needed)
+    try {
+      const response = await fetch(`${this.baseUrl}/api/embeddings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model, input: text }),
+      });
+      if (!response.ok) {
+        throw new Error(`Ollama embedding API error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      if (Array.isArray(data.embedding)) {
+        return data.embedding;
+      }
+      throw new Error("Invalid embedding response from Ollama");
+    } catch (error) {
+      console.error("Ollama embedding generation failed:", error);
+      throw error;
+    }
+  }
   private baseUrl: string;
   private isAvailable: boolean = false;
   private availableModels: OllamaModelInfo[] = [];
@@ -55,6 +89,7 @@ class OllamaService {
   constructor(baseUrl: string = LOCAL_LLM_PATHS.ollama.baseUrl) {
     this.baseUrl = baseUrl;
   }
+
   // Initialize and check if Ollama is running
   async initialize(): Promise<boolean> {
     try {
@@ -78,9 +113,10 @@ class OllamaService {
           console.log("🔄 Attempting to import Gemma3 model...");
           await this.importGGUF(
             LOCAL_LLM_PATHS.gemmaModel.path,
-            LOCAL_LLM_PATHS.gemmaModel.name,
+            LOCAL_LLM_PATHS.gemmaModel.name
           );
         }
+
         return true;
       }
     } catch (error) {
@@ -89,6 +125,7 @@ class OllamaService {
     }
     return false;
   }
+
   // Load list of available models
   private async loadAvailableModels(): Promise<void> {
     try {
@@ -106,11 +143,12 @@ class OllamaService {
       console.error("Failed to load Ollama models:", error);
     }
   }
+
   // Detect Gemma3 model (look for custom legal model first, then fallbacks)
   private async detectGemma3Model(): Promise<void> {
     // First check for our custom legal model
     const customLegalModel = this.availableModels.find(
-      (model) => model.name === "gemma3-legal",
+      (model) => model.name === "gemma3-legal"
     );
 
     if (customLegalModel) {
@@ -118,12 +156,13 @@ class OllamaService {
       console.log(`🏛️ Using custom legal AI model: ${this.gemma3Model}`);
       return;
     }
+
     // Fallback to any Gemma models
     const gemmaModels = this.availableModels.filter(
       (model) =>
         model.name.toLowerCase().includes("gemma") ||
         model.name.toLowerCase().includes("gemma3") ||
-        model.details?.family?.toLowerCase().includes("gemma"),
+        model.details?.family?.toLowerCase().includes("gemma")
     );
 
     if (gemmaModels.length > 0) {
@@ -132,7 +171,7 @@ class OllamaService {
         (m) =>
           m.name.includes("q4") ||
           m.name.includes("Q4_K_M") ||
-          m.details?.quantization_level?.includes("Q4"),
+          m.details?.quantization_level?.includes("Q4")
       );
 
       this.gemma3Model = q4Model ? q4Model.name : gemmaModels[0].name;
@@ -140,14 +179,15 @@ class OllamaService {
     } else {
       console.warn(
         "⚠️ No Gemma3 model found in Ollama. Available models:",
-        this.availableModels.map((m) => m.name),
+        this.availableModels.map((m) => m.name)
       );
     }
   }
+
   // Import a GGUF model file into Ollama
   async importGGUF(
     modelPath: string,
-    modelName: string = "gemma3-legal",
+    modelName: string = "gemma3-legal"
   ): Promise<boolean> {
     try {
       const modelfile = `FROM ${modelPath}
@@ -188,6 +228,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       return false;
     }
   }
+
   // Generate text using Gemma3
   async generate(
     prompt: string,
@@ -199,11 +240,12 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       topK?: number;
       repeatPenalty?: number;
       stream?: boolean;
-    } = {},
+    } = {}
   ): Promise<string> {
     if (!this.isAvailable || !this.gemma3Model) {
       throw new Error("Ollama or Gemma3 model not available");
     }
+
     const requestBody: OllamaGenerateRequest = {
       model: this.gemma3Model,
       prompt: prompt,
@@ -228,6 +270,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       if (!response.ok) {
         throw new Error(`Ollama API error: ${response.statusText}`);
       }
+
       const data: OllamaGenerateResponse = await response.json();
       return data.response || "";
     } catch (error) {
@@ -235,6 +278,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       throw error;
     }
   }
+
   // Generate streaming response
   async *generateStream(
     prompt: string,
@@ -245,11 +289,12 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       topP?: number;
       topK?: number;
       repeatPenalty?: number;
-    } = {},
+    } = {}
   ): AsyncGenerator<string, void, unknown> {
     if (!this.isAvailable || !this.gemma3Model) {
       throw new Error("Ollama or Gemma3 model not available");
     }
+
     const requestBody: OllamaGenerateRequest = {
       model: this.gemma3Model,
       prompt: prompt,
@@ -274,10 +319,12 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       if (!response.ok) {
         throw new Error(`Ollama API error: ${response.statusText}`);
       }
+
       const reader = response.body?.getReader();
       if (!reader) {
         throw new Error("No readable stream available");
       }
+
       const decoder = new TextDecoder();
 
       while (true) {
@@ -308,6 +355,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       throw error;
     }
   }
+
   // Chat completion with conversation context
   async chat(
     messages: Array<{ role: "user" | "assistant" | "system"; content: string }>,
@@ -317,7 +365,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       topP?: number;
       topK?: number;
       repeatPenalty?: number;
-    } = {},
+    } = {}
   ): Promise<string> {
     const systemMessage =
       messages.find((m) => m.role === "system")?.content || "";
@@ -334,22 +382,27 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       ...options,
     });
   }
+
   // Get available models
   getAvailableModels(): OllamaModelInfo[] {
     return this.availableModels;
   }
+
   // Get current Gemma3 model name
   getGemma3Model(): string | null {
     return this.gemma3Model;
   }
+
   // Check if service is available
   getIsAvailable(): boolean {
     return this.isAvailable;
   }
+
   // Public method to check if service is available
   public checkAvailability(): boolean {
     return this.isAvailable;
   }
+
   // Health check
   async healthCheck(): Promise<boolean> {
     try {
@@ -363,6 +416,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       return false;
     }
   }
+
   // Model management
   async pullModel(modelName: string): Promise<boolean> {
     try {
@@ -377,6 +431,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       return false;
     }
   }
+
   async deleteModel(modelName: string): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseUrl}/api/delete`, {
@@ -391,6 +446,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
     }
   }
 }
+
 // Singleton instance
 export const ollamaService = new OllamaService();
 
@@ -398,4 +454,5 @@ export const ollamaService = new OllamaService();
 if (browser) {
   ollamaService.initialize().catch(console.error);
 }
+
 export default ollamaService;

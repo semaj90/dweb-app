@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { localLLM } from '$lib/ai/local-llm-service';
-import { cases, documents } from '$lib/db/schema';
+import { LocalLLMService } from '$lib/ai/local-llm-service';
+import { cases, documents } from '$lib/server/db/schema-postgres';
 import { eq, sql } from 'drizzle-orm';
 import type { GraphQLResolveInfo } from 'graphql';
 

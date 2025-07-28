@@ -243,8 +243,8 @@
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('bottom-right', e);
-}
-      "
+        }
+      }}
       role="button"
       tabindex="0"
       aria-label="Resize bottom right"
@@ -257,8 +257,8 @@
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('bottom', e);
-}
-      "
+        }
+      }}
       role="button"
       tabindex="0"
       aria-label="Resize bottom"
@@ -271,8 +271,8 @@
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('right', e);
-}
-      "
+        }
+      }}
       role="button"
       tabindex="0"
       aria-label="Resize right"

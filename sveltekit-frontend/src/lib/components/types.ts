@@ -9,7 +9,8 @@ export interface EditableNode {
   metadata?: Record<string, any>;
 }
 
-export interface Evidence {
+// Renamed to avoid conflict with Evidence from data/types.ts
+export interface ComponentEvidence {
   id: string;
   filename: string;
   content: string;

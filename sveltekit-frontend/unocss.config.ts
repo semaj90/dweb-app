@@ -62,6 +62,28 @@ export default defineConfig({
         case: "#dc2626",
         regulation: "#ea580c",
       },
+      yorha: {
+        primary: "#b8860b",
+        secondary: "#cd853f",
+        accent: "#daa520",
+        background: "#1a1a1a",
+        surface: "#2d2d2d",
+        text: "#f5f5dc",
+        border: "#8b4513",
+      },
+      // Flat versions for @apply compatibility
+      "yorha-primary": "#b8860b",
+      "yorha-secondary": "#cd853f",
+      "yorha-accent": "#daa520",
+      "yorha-bg-primary": "#1a1a1a",
+      "yorha-bg-secondary": "#2d2d2d",
+      "yorha-bg-tertiary": "#3d3d3d",
+      "yorha-text-primary": "#f5f5dc",
+      "yorha-text-secondary": "#d4d4aa",
+      "yorha-text-muted": "#a0a08b",
+      "yorha-border": "#8b4513",
+      "yorha-success": "#4ade80",
+      "yorha-error": "#f87171",
     },
     fontFamily: {
       // Use system fonts as fallbacks to prevent timeout issues
@@ -129,7 +151,8 @@ export default defineConfig({
     // Editor and WYSIWYG
     "editor-toolbar":
       "bg-white border-b border-gray-200 p-2 flex items-center space-x-2",
-    "editor-content": "prose prose-legal max-w-none p-6 focus:outline-none",
+    "editor-content": "max-w-none p-6 focus:outline-none prose-style",
+    "prose-style": "text-gray-800 leading-relaxed",
 
     // Layout utilities
     "sidebar-nav":
@@ -174,8 +197,7 @@ export default defineConfig({
   ],
   safelist: [
     // Ensure these classes are always available
-    "prose",
-    "prose-legal",
+    "prose-style",
     "legal-card",
     "legal-button-primary",
     "legal-button-secondary",

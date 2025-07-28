@@ -67,9 +67,6 @@ let dragStartY = 0;
       on:keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-      on:keydown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
           isDragging = true;
           dragStartX = 0;
           dragStartY = 0;
@@ -78,7 +75,7 @@ let dragStartY = 0;
       role="button"
       tabindex={0}
       aria-label="Drag report node"
-      </div>
+    >
       <div>
         <div>
           {report.content}

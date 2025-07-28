@@ -292,7 +292,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
         onclick={refreshStatus}
         disabled={isProcessing}
       >
-        <RefreshCw class="h-4 w-4 mr-2" class:animate-spin={isProcessing} />
+        <RefreshCw class="h-4 w-4 mr-2 {isProcessing ? 'animate-spin' : ''}" />
         Refresh
       </Button>
       

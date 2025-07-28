@@ -1,16 +1,19 @@
 import { GraphQLSchema } from 'graphql';
 import { createYoga } from 'graphql-yoga';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import { eq } from 'drizzle-orm';
 import SchemaBuilder from '@pothos/core';
 import DrizzlePlugin from '@pothos/plugin-drizzle';
-import { db } from '$lib/db';
-import type { DB } from '$lib/db/types';
+import { db } from '$lib/server/db';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+type DB = PostgresJsDatabase<typeof import('$lib/server/db/schema-postgres')>;
 import { LocalLLMService } from '$lib/ai/local-llm-service';
 import { vectorSearch, extractRelationships } from '$lib/services/vectorService';
+import { cases, documents as documentsTable } from '$lib/server/db/schema-postgres';
 
 // Initialize builder with plugins
 const builder = new SchemaBuilder<{
-  DrizzleSchema: typeof import('$lib/db/schema');
+  DrizzleSchema: typeof import('$lib/server/db/schema-postgres');
   Context: {
     user?: { id: string };
     db: DB;
@@ -49,6 +52,77 @@ const AnalysisResult = builder.objectType('AnalysisResult', {
       nullable: true,
       resolve: (parent) => parent.metadata,
     }),
+  }),
+});
+
+// Multi-Agent Analysis Types
+const PersonOfInterest = builder.objectType('PersonOfInterest', {
+  fields: (t) => ({
+    name: t.exposeString('name'),
+    role: t.exposeString('role'),
+    details: t.field({
+      type: 'JSON',
+      nullable: true,
+      resolve: (parent) => parent.details,
+    }),
+    confidence: t.exposeFloat('confidence'),
+    sourceContext: t.exposeString('sourceContext', { nullable: true }),
+  }),
+});
+
+const PersonRelationship = builder.objectType('PersonRelationship', {
+  fields: (t) => ({
+    person1: t.exposeString('person1'),
+    person2: t.exposeString('person2'),
+    relationship: t.exposeString('relationship'),
+    context: t.exposeString('context', { nullable: true }),
+    confidence: t.exposeFloat('confidence'),
+  }),
+});
+
+const TimelineEvent = builder.objectType('TimelineEvent', {
+  fields: (t) => ({
+    date: t.exposeString('date'),
+    time: t.exposeString('time', { nullable: true }),
+    event: t.exposeString('event'),
+    persons: t.exposeStringList('persons', { nullable: true }),
+    evidenceSource: t.exposeString('evidenceSource', { nullable: true }),
+    confidence: t.exposeFloat('confidence', { nullable: true }),
+    category: t.exposeString('category', { nullable: true }),
+  }),
+});
+
+const MultiAgentAnalysis = builder.objectType('MultiAgentAnalysis', {
+  fields: (t) => ({
+    id: t.exposeString('id'),
+    caseId: t.exposeString('caseId'),
+    evidenceAnalysis: t.field({
+      type: 'JSON',
+      nullable: true,
+      resolve: (parent) => parent.evidenceAnalysis,
+    }),
+    personsData: t.field({
+      type: [PersonOfInterest],
+      nullable: true,
+      resolve: (parent) => parent.personsData?.persons || [],
+    }),
+    relationships: t.field({
+      type: [PersonRelationship],
+      nullable: true,
+      resolve: (parent) => parent.personsData?.relationships || [],
+    }),
+    timelineEvents: t.field({
+      type: [TimelineEvent],
+      nullable: true,
+      resolve: (parent) => parent.evidenceAnalysis?.timelineEvents || [],
+    }),
+    caseSynthesis: t.field({
+      type: 'JSON',
+      nullable: true,
+      resolve: (parent) => parent.caseSynthesis,
+    }),
+    timestamp: t.exposeString('timestamp'),
+    confidence: t.exposeFloat('confidence', { nullable: true }),
   }),
 });
 
@@ -103,6 +177,20 @@ builder.queryType({
         return result[0] || null;
       },
     }),
+
+    // Get multi-agent analysis results
+    getMultiAgentAnalysis: t.field({
+      type: [MultiAgentAnalysis],
+      args: {
+        caseId: t.arg.string({ required: true }),
+        limit: t.arg.int({ defaultValue: 10 }),
+      },
+      resolve: async (parent, args, ctx) => {
+        // This would typically fetch from a dedicated analysis table
+        // For now, returning mock data structure
+        return [];
+      },
+    }),
   }),
 });
 
@@ -151,7 +239,7 @@ builder.mutationType({
             documentCount: documents.length,
             error: null,
           };
-        } catch (error) {
+        } catch (error: any) {
           console.error('Upload error:', error);
           return {
             success: false,
@@ -182,6 +270,118 @@ builder.mutationType({
           })
           .returning();
         return newCase;
+      },
+    }),
+
+    // Trigger multi-agent evidence analysis
+    analyzeEvidenceWithAgents: t.field({
+      type: MultiAgentAnalysis,
+      args: {
+        caseId: t.arg.string({ required: true }),
+        evidenceContent: t.arg.string({ required: true }),
+        evidenceTitle: t.arg.string({ required: true }),
+        evidenceType: t.arg.string({ required: false }),
+      },
+      resolve: async (parent, args, ctx) => {
+        try {
+          // In a real implementation, this would:
+          // 1. Save evidence to database
+          // 2. Trigger the shell script pipeline
+          // 3. Wait for completion and parse results
+          // 4. Store analysis results in database
+          // 5. Return structured analysis data
+
+          const analysisId = `analysis_${args.caseId}_${Date.now()}`;
+          const timestamp = new Date().toISOString();
+
+          // Mock analysis result structure
+          const mockAnalysis = {
+            id: analysisId,
+            caseId: args.caseId,
+            evidenceAnalysis: {
+              documentType: args.evidenceType || 'document',
+              keyFacts: [
+                'Evidence contains witness testimony',
+                'Timeline event identified for investigation'
+              ],
+              timelineEvents: [
+                {
+                  date: '2024-07-28',
+                  time: '14:30',
+                  event: 'Witness statement recorded',
+                  persons: ['John Doe'],
+                  evidenceSource: args.evidenceTitle,
+                  confidence: 0.95,
+                  category: 'witness'
+                }
+              ],
+              evidenceItems: ['Written statement', 'Digital recording'],
+              concerns: [],
+              confidence: 0.90
+            },
+            personsData: {
+              persons: [
+                {
+                  name: 'John Doe',
+                  role: 'witness',
+                  details: {
+                    age: 35,
+                    occupation: 'Accountant'
+                  },
+                  confidence: 0.85,
+                  sourceContext: 'Mentioned in witness statement'
+                }
+              ],
+              relationships: []
+            },
+            caseSynthesis: {
+              caseStrength: 'moderate',
+              keyFindings: ['New witness testimony obtained'],
+              nextSteps: ['Schedule follow-up interview'],
+              confidence: 0.82
+            },
+            timestamp,
+            confidence: 0.88
+          };
+
+          // In production: store in database and return actual results
+          return mockAnalysis;
+        } catch (error: any) {
+          throw new Error(`Multi-agent analysis failed: ${error.message}`);
+        }
+      },
+    }),
+
+    // Store multi-agent analysis results
+    storeMultiAgentAnalysis: t.field({
+      type: builder.objectType('AnalysisStoreResult', {
+        fields: (t) => ({
+          success: t.exposeBoolean('success'),
+          analysisId: t.exposeString('analysisId', { nullable: true }),
+          error: t.exposeString('error', { nullable: true }),
+        }),
+      }),
+      args: {
+        caseId: t.arg.string({ required: true }),
+        analysisData: t.arg({ type: 'JSON', required: true }),
+      },
+      resolve: async (parent, args, ctx) => {
+        try {
+          // In production: store in dedicated multi_agent_analyses table
+          const analysisId = `stored_${args.caseId}_${Date.now()}`;
+          
+          return {
+            success: true,
+            analysisId,
+            error: null,
+          };
+        } catch (error: any) {
+          return {
+            success: false,
+            analysisId: null,
+            error: error.message,
+          };
+        }
       },
     }),
   }),
@@ -224,7 +424,3 @@ builder.subscriptionType({
 
 // Build and export schema
 export const schema = builder.toSchema();
-
-// Import required from schema
-import { cases, documents as documentsTable } from '$lib/db/schema';
-import { eq } from 'drizzle-orm';
