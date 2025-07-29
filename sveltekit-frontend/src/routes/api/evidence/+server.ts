@@ -30,7 +30,7 @@ async function publishEvidenceUpdate(type: string, data: any, userId?: string) {
           timestamp: new Date().toISOString(),
           userId,
           ...data,
-        })
+        }),
       );
     } catch (error) {
       console.error("Failed to publish evidence update:", error);
@@ -75,8 +75,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
           like(evidence.title, `%${search}%`),
           like(evidence.description, `%${search}%`),
           like(evidence.fileName, `%${search}%`),
-          like(evidence.summary, `%${search}%`)
-        )
+          like(evidence.summary, `%${search}%`),
+        ),
       );
     }
     // Apply filters
@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
               : evidence.uploadedAt;
 
     query = query.orderBy(
-      sortOrder === "asc" ? orderColumn : desc(orderColumn)
+      sortOrder === "asc" ? orderColumn : desc(orderColumn),
     );
 
     // Add pagination
@@ -144,7 +144,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     if (!data.title || !data.evidenceType) {
       return json(
         { error: "Title and evidence type are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     // Map frontend data to schema fields
@@ -189,7 +189,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         evidenceId: newEvidence.id,
         data: newEvidence,
       },
-      locals.user.id
+      locals.user.id,
     );
 
     return json(newEvidence, { status: 201 });
@@ -283,7 +283,7 @@ export const PATCH: RequestHandler = async ({ request, url, locals }) => {
         changes: updateData,
         data: updatedEvidence,
       },
-      locals.user.id
+      locals.user.id,
     );
 
     return json({
@@ -295,8 +295,6 @@ export const PATCH: RequestHandler = async ({ request, url, locals }) => {
     return json({ error: "Failed to update evidence" }, { status: 500 });
   }
 };
-
-
 
 export const DELETE: RequestHandler = async ({ url, locals }) => {
   try {
@@ -334,7 +332,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
         evidenceId,
         data: deletedEvidence,
       },
-      locals.user.id
+      locals.user.id,
     );
 
     return json({

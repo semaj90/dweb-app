@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     // Check authentication
     const session = locals.session;
-    if (!session?.userId) {
+    if (!session?.user?.userId) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
     const body = await request.json();
@@ -82,16 +82,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     switch (action) {
       case "save_node":
-        return await saveEvidenceNode(data, session.userId);
+        return await saveEvidenceNode(data, session.user.userId);
 
       case "save_canvas_state":
-        return await saveCanvasState(data, session.userId);
+        return await saveCanvasState(data, session.user.userId);
 
       case "bulk_save":
-        return await bulkSaveEvidence(data, session.userId);
+        return await bulkSaveEvidence(data, session.user.userId);
 
       case "auto_save":
-        return await autoSaveCanvasState(data, session.userId);
+        return await autoSaveCanvasState(data, session.user.userId);
 
       default:
         return json({ error: "Invalid action" }, { status: 400 });
@@ -422,7 +422,7 @@ async function cleanupOldAutoSaves(userId: string, caseId?: string) {
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
     const session = locals.session;
-    if (!session?.userId) {
+    if (!session?.user?.userId) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
     const action = url.searchParams.get("action");
@@ -432,17 +432,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     switch (action) {
       case "load_evidence":
         if (evidenceId) {
-          return await loadSingleEvidence(evidenceId, session.userId);
+          return await loadSingleEvidence(evidenceId, session.user.userId);
         } else if (caseId) {
-          return await loadEvidenceByCase(caseId, session.userId);
+          return await loadEvidenceByCase(caseId, session.user.userId);
         } else {
-          return await loadAllEvidence(session.userId);
+          return await loadAllEvidence(session.user.userId);
         }
       case "load_canvas_state":
-        return await loadCanvasState(caseId || "", session.userId);
+        return await loadCanvasState(caseId || "", session.user.userId);
 
       case "get_auto_saves":
-        return await getAutoSaves(caseId || "", session.userId);
+        return await getAutoSaves(caseId || "", session.user.userId);
 
       default:
         return json({ error: "Invalid action" }, { status: 400 });

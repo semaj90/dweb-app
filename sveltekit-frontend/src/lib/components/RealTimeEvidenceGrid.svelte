@@ -2,7 +2,7 @@
 <script lang="ts">
   import type { Evidence } from '$lib/types';
   import Button from "$lib/components/ui/button";
-  import { evidenceStore, type Evidence } from "$lib/stores/evidenceStore";
+  import { evidenceStore } from "$lib/stores/evidenceStore";
   import { lokiEvidenceService } from "$lib/utils/loki-evidence";
   import {
     Archive,

@@ -436,7 +436,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         success: true,
         data: result[0],
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err) {
     console.error("POST error:", err);
@@ -555,7 +555,7 @@ async function getEnhancedContext(request: Context7Request) {
 export async function semanticCodeSearch(
   query: string,
   language?: string,
-  contextLines: number = 50
+  contextLines: number = 50,
 ) {
   try {
     // Generate query embedding
@@ -573,8 +573,8 @@ export async function semanticCodeSearch(
       .where(
         and(
           gt(cosineDistance(codeIndex.embedding, embedding), 0.7),
-          language ? eq(codeIndex.language, language) : undefined
-        )
+          language ? eq(codeIndex.language, language) : undefined,
+        ),
       )
       .orderBy(cosineDistance(codeIndex.embedding, embedding))
       .limit(10);
@@ -606,7 +606,7 @@ export class LegalAICopilotProvider
   async provideInlineCompletionItems(
     document: vscode.TextDocument,
     position: vscode.Position,
-    context: vscode.InlineCompletionContext
+    context: vscode.InlineCompletionContext,
   ): Promise<vscode.InlineCompletionItem[]> {
     const code = document.getText();
     const language = document.languageId;
@@ -617,7 +617,7 @@ export class LegalAICopilotProvider
       code,
       cursorPos,
       language,
-      true // include Context7
+      true, // include Context7
     );
 
     if (!contextResults.length) {
@@ -648,11 +648,11 @@ export class LegalAICopilotProvider
     ];
 
     const enhancedResults = results.filter(
-      (r) => r.mcp_metadata?.source === "enhanced_local_index"
+      (r) => r.mcp_metadata?.source === "enhanced_local_index",
     );
 
     const context7Results = results.filter(
-      (r) => r.mcp_metadata?.source === "context7_mcp"
+      (r) => r.mcp_metadata?.source === "context7_mcp",
     );
 
     if (enhancedResults.length) {
@@ -882,7 +882,7 @@ export class LegalAIError extends Error {
     message: string,
     public code: string,
     public severity: "low" | "medium" | "high" | "critical",
-    public context?: any
+    public context?: any,
   ) {
     super(message);
     this.name = "LegalAIError";
@@ -891,7 +891,7 @@ export class LegalAIError extends Error {
 
 export function handleAsyncError<T>(
   promise: Promise<T>,
-  context: string
+  context: string,
 ): Promise<[T | null, LegalAIError | null]> {
   return promise
     .then<[T, null]>((data: T) => [data, null])
@@ -908,7 +908,7 @@ export function handleAsyncError<T>(
 async function loadCaseData(caseId: string) {
   const [data, error] = await handleAsyncError(
     db.select().from(cases).where(eq(cases.id, caseId)),
-    "loadCaseData"
+    "loadCaseData",
   );
 
   if (error) {

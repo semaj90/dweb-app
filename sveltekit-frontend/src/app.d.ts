@@ -8,7 +8,7 @@ declare global {
       code?: string;
       id?: string;
     }
-    
+
     interface Locals {
       user?: {
         id: string;
@@ -18,13 +18,27 @@ declare global {
       session?: {
         id: string;
         expiresAt: Date;
+        user: {
+          userId: string;
+          email: string;
+          role: string;
+        };
+      };
+      auth?: {
+        sessionId: string;
+        userId: string;
+        user: {
+          id: string;
+          email: string;
+          role: string;
+        };
       };
     }
-    
+
     interface PageData {
-      user?: App.Locals['user'];
+      user?: App.Locals["user"];
     }
-    
+
     interface Platform {
       env?: {
         REDIS_URL: string;
@@ -34,10 +48,13 @@ declare global {
       };
     }
   }
-  
+
   interface Window {
     fs: {
-      readFile: (path: string, options?: { encoding?: string }) => Promise<Uint8Array | string>;
+      readFile: (
+        path: string,
+        options?: { encoding?: string },
+      ) => Promise<Uint8Array | string>;
     };
     __MATRIX_UI__: any;
   }

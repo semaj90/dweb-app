@@ -1,5 +1,9 @@
-import { setup, createActor, assign, fromPromise } from 'xstate';
-import type { CanvasNode, CanvasConnection, CanvasState } from '$lib/types/canvas';
+import { setup, createActor, assign, fromPromise } from "xstate";
+import type {
+  CanvasNode,
+  CanvasConnection,
+  CanvasState,
+} from "$lib/types/canvas";
 
 interface CanvasContext {
   nodes: CanvasNode[];
@@ -11,19 +15,19 @@ interface CanvasContext {
 }
 
 type CanvasEvent =
-  | { type: 'ADD_NODE'; node: CanvasNode }
-  | { type: 'REMOVE_NODE'; nodeId: string }
-  | { type: 'UPDATE_NODE'; nodeId: string; updates: Partial<CanvasNode> }
-  | { type: 'SELECT_NODE'; nodeId: string | null }
-  | { type: 'START_DRAG'; nodeId: string }
-  | { type: 'END_DRAG' }
-  | { type: 'ADD_CONNECTION'; connection: CanvasConnection }
-  | { type: 'REMOVE_CONNECTION'; connectionId: string }
-  | { type: 'SAVE_STATE' }
-  | { type: 'LOAD_STATE'; state: CanvasState }
-  | { type: 'CLEAR_CANVAS' }
-  | { type: 'ERROR'; error: string }
-  | { type: 'CLEAR_ERROR' };
+  | { type: "ADD_NODE"; node: CanvasNode }
+  | { type: "REMOVE_NODE"; nodeId: string }
+  | { type: "UPDATE_NODE"; nodeId: string; updates: Partial<CanvasNode> }
+  | { type: "SELECT_NODE"; nodeId: string | null }
+  | { type: "START_DRAG"; nodeId: string }
+  | { type: "END_DRAG" }
+  | { type: "ADD_CONNECTION"; connection: CanvasConnection }
+  | { type: "REMOVE_CONNECTION"; connectionId: string }
+  | { type: "SAVE_STATE" }
+  | { type: "LOAD_STATE"; state: CanvasState }
+  | { type: "CLEAR_CANVAS" }
+  | { type: "ERROR"; error: string }
+  | { type: "CLEAR_ERROR" };
 
 export const canvasSystemMachine = setup({
   types: {
@@ -33,39 +37,40 @@ export const canvasSystemMachine = setup({
   actions: {
     addNode: assign({
       nodes: ({ context, event }) => {
-        if (event.type !== 'ADD_NODE') return context.nodes;
+        if (event.type !== "ADD_NODE") return context.nodes;
         return [...context.nodes, event.node];
       },
     }),
     removeNode: assign({
       nodes: ({ context, event }) => {
-        if (event.type !== 'REMOVE_NODE') return context.nodes;
-        return context.nodes.filter(node => node.id !== event.nodeId);
+        if (event.type !== "REMOVE_NODE") return context.nodes;
+        return context.nodes.filter((node) => node.id !== event.nodeId);
       },
       connections: ({ context, event }) => {
-        if (event.type !== 'REMOVE_NODE') return context.connections;
+        if (event.type !== "REMOVE_NODE") return context.connections;
         return context.connections.filter(
-          conn => conn.sourceId !== event.nodeId && conn.targetId !== event.nodeId
+          (conn) =>
+            conn.sourceId !== event.nodeId && conn.targetId !== event.nodeId,
         );
       },
     }),
     updateNode: assign({
       nodes: ({ context, event }) => {
-        if (event.type !== 'UPDATE_NODE') return context.nodes;
-        return context.nodes.map(node =>
-          node.id === event.nodeId ? { ...node, ...event.updates } : node
+        if (event.type !== "UPDATE_NODE") return context.nodes;
+        return context.nodes.map((node) =>
+          node.id === event.nodeId ? { ...node, ...event.updates } : node,
         );
       },
     }),
     selectNode: assign({
       selectedNode: ({ event }) => {
-        if (event.type !== 'SELECT_NODE') return null;
+        if (event.type !== "SELECT_NODE") return null;
         return event.nodeId;
       },
     }),
     startDrag: assign({
       draggedNode: ({ event }) => {
-        if (event.type !== 'START_DRAG') return null;
+        if (event.type !== "START_DRAG") return null;
         return event.nodeId;
       },
     }),
@@ -74,14 +79,16 @@ export const canvasSystemMachine = setup({
     }),
     addConnection: assign({
       connections: ({ context, event }) => {
-        if (event.type !== 'ADD_CONNECTION') return context.connections;
+        if (event.type !== "ADD_CONNECTION") return context.connections;
         return [...context.connections, event.connection];
       },
     }),
     removeConnection: assign({
       connections: ({ context, event }) => {
-        if (event.type !== 'REMOVE_CONNECTION') return context.connections;
-        return context.connections.filter(conn => conn.id !== event.connectionId);
+        if (event.type !== "REMOVE_CONNECTION") return context.connections;
+        return context.connections.filter(
+          (conn) => conn.id !== event.connectionId,
+        );
       },
     }),
     clearCanvas: assign({
@@ -92,7 +99,7 @@ export const canvasSystemMachine = setup({
     }),
     setError: assign({
       error: ({ event }) => {
-        if (event.type !== 'ERROR') return null;
+        if (event.type !== "ERROR") return null;
         return event.error;
       },
     }),
@@ -109,16 +116,16 @@ export const canvasSystemMachine = setup({
       };
 
       // Save to localStorage or API
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('canvasState', JSON.stringify(state));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("canvasState", JSON.stringify(state));
       }
 
       return state;
     }),
   },
 }).createMachine({
-  id: 'canvasSystem',
-  initial: 'idle',
+  id: "canvasSystem",
+  initial: "idle",
   context: {
     nodes: [],
     connections: [],
@@ -135,42 +142,42 @@ export const canvasSystemMachine = setup({
     idle: {
       on: {
         ADD_NODE: {
-          actions: ['addNode'],
+          actions: ["addNode"],
         },
         REMOVE_NODE: {
-          actions: ['removeNode'],
+          actions: ["removeNode"],
         },
         UPDATE_NODE: {
-          actions: ['updateNode'],
+          actions: ["updateNode"],
         },
         SELECT_NODE: {
-          actions: ['selectNode'],
+          actions: ["selectNode"],
         },
         START_DRAG: {
-          target: 'dragging',
-          actions: ['startDrag'],
+          target: "dragging",
+          actions: ["startDrag"],
         },
         ADD_CONNECTION: {
-          actions: ['addConnection'],
+          actions: ["addConnection"],
         },
         REMOVE_CONNECTION: {
-          actions: ['removeConnection'],
+          actions: ["removeConnection"],
         },
         SAVE_STATE: {
-          target: 'saving',
+          target: "saving",
         },
         LOAD_STATE: {
           actions: assign({
             nodes: ({ event }) => {
-              if (event.type !== 'LOAD_STATE') return [];
+              if (event.type !== "LOAD_STATE") return [];
               return event.state.nodes;
             },
             connections: ({ event }) => {
-              if (event.type !== 'LOAD_STATE') return [];
+              if (event.type !== "LOAD_STATE") return [];
               return event.state.connections;
             },
             canvasState: ({ event }) => {
-              if (event.type !== 'LOAD_STATE') {
+              if (event.type !== "LOAD_STATE") {
                 return {
                   nodes: [],
                   connections: [],
@@ -182,40 +189,40 @@ export const canvasSystemMachine = setup({
           }),
         },
         CLEAR_CANVAS: {
-          actions: ['clearCanvas'],
+          actions: ["clearCanvas"],
         },
         ERROR: {
-          actions: ['setError'],
+          actions: ["setError"],
         },
         CLEAR_ERROR: {
-          actions: ['clearError'],
+          actions: ["clearError"],
         },
       },
     },
     dragging: {
       on: {
         END_DRAG: {
-          target: 'idle',
-          actions: ['endDrag'],
+          target: "idle",
+          actions: ["endDrag"],
         },
         UPDATE_NODE: {
-          actions: ['updateNode'],
+          actions: ["updateNode"],
         },
       },
     },
     saving: {
       invoke: {
-        src: 'saveState',
+        src: "saveState",
         input: ({ context }) => context,
         onDone: {
-          target: 'idle',
+          target: "idle",
           actions: assign({
             canvasState: ({ event }) => event.output,
           }),
         },
         onError: {
-          target: 'idle',
-          actions: ['setError'],
+          target: "idle",
+          actions: ["setError"],
         },
       },
     },

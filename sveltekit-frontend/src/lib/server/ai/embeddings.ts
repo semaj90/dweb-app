@@ -1,6 +1,6 @@
 // AI embedding generation service
 // Supports OpenAI and local models with Redis/memory caching for performance
-import { env } from "$env/dynamic/private";
+// Use process.env for server-side environment variables
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 import { eq } from "drizzle-orm";
 import type { EmbeddingOptions } from "../../types/vector";
@@ -47,7 +47,7 @@ export async function generateEmbedding(
 }
 // OpenAI embedding generation
 async function generateOpenAIEmbedding(text: string): Promise<number[]> {
-  const apiKey = env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OpenAI API key not configured");
   }
@@ -100,7 +100,7 @@ export async function generateBatchEmbeddings(
 async function generateOpenAIBatchEmbeddings(
   texts: string[],
 ): Promise<number[][]> {
-  const apiKey = env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OpenAI API key not configured");
   }

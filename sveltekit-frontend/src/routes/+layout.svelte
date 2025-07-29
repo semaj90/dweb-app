@@ -1,21 +1,23 @@
 <script>
 	import '../app.css';
+	import Navigation from '$lib/components/Navigation.svelte';
 </script>
 
-<main>
-	<slot />
-</main>
+<div class="min-h-screen bg-background">
+	<Navigation />
+	<main class="container mx-auto py-6">
+		<slot />
+	</main>
+</div>
 
 <style>
 	:global(html) {
-		background: #1a1a1a;
-		color: #f5f5f5;
+		font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	}
 	
 	:global(body) {
 		margin: 0;
 		padding: 0;
-		font-family: 'JetBrains Mono', monospace;
 		line-height: 1.6;
 		overflow-x: hidden;
 	}

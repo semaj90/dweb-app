@@ -3,12 +3,14 @@
 ## Development Setup
 
 ### Prerequisites
+
 - PostgreSQL 12+
 - Node.js 18+
 - Drizzle ORM
 - SvelteKit 5
 
 ### Quick Start
+
 ```bash
 # Clone and setup
 git clone <repo>
@@ -25,20 +27,23 @@ npm run dev
 ## Code Patterns
 
 ### Database Queries
+
 ```typescript
 // Copilot-friendly patterns
 const caseWithEvidence = await db.query.cases.findFirst({
   where: eq(cases.id, caseId),
-  with: { evidence: true, creator: true }
+  with: { evidence: true, creator: true },
 });
 
-const evidenceList = await db.select()
+const evidenceList = await db
+  .select()
   .from(evidence)
   .where(eq(evidence.caseId, caseId))
   .orderBy(desc(evidence.createdAt));
 ```
 
 ### SvelteKit API Routes
+
 ```typescript
 // src/routes/api/cases/+server.ts
 export async function GET({ url }) {
@@ -54,6 +59,7 @@ export async function POST({ request }) {
 ```
 
 ### Component Patterns
+
 ```svelte
 <!-- Cases list component -->
 <script lang="ts">
@@ -72,6 +78,7 @@ export async function POST({ request }) {
 ## Type Definitions
 
 ### Schema Types
+
 ```typescript
 // Auto-generated from Drizzle
 export type Case = typeof cases.$inferSelect;
@@ -81,6 +88,7 @@ export type NewEvidence = typeof evidence.$inferInsert;
 ```
 
 ### API Types
+
 ```typescript
 interface CaseResponse {
   success: boolean;
@@ -92,13 +100,14 @@ interface EvidenceUpload {
   caseId: string;
   title: string;
   file: File;
-  type: 'document' | 'image' | 'video';
+  type: "document" | "image" | "video";
 }
 ```
 
 ## Testing Patterns
 
 ### Database Tests
+
 ```typescript
 // CRUD test pattern
 describe('Cases CRUD', () => {
@@ -113,14 +122,15 @@ describe('Cases CRUD', () => {
 ```
 
 ### Component Tests
+
 ```typescript
 // Svelte component test
-import { render } from '@testing-library/svelte';
-import CaseCard from './CaseCard.svelte';
+import { render } from "@testing-library/svelte";
+import CaseCard from "./CaseCard.svelte";
 
-test('renders case data', () => {
+test("renders case data", () => {
   const { getByText } = render(CaseCard, {
-    props: { case: mockCase }
+    props: { case: mockCase },
   });
   expect(getByText(mockCase.title)).toBeInTheDocument();
 });
@@ -129,6 +139,7 @@ test('renders case data', () => {
 ## AI Integration
 
 ### Vector Search
+
 ```typescript
 // Document similarity
 const similarDocs = await db
@@ -139,31 +150,35 @@ const similarDocs = await db
 ```
 
 ### AI History
+
 ```typescript
 // Track AI usage
 await db.insert(aiHistory).values({
   caseId,
-  userId, 
+  userId,
   prompt: question,
   response: aiAnswer,
-  model: 'gpt-4',
-  tokensUsed: response.usage.total_tokens
+  model: "gpt-4",
+  tokensUsed: response.usage.total_tokens,
 });
 ```
 
 ## Common Copilot Prompts
 
 ### Database Queries
+
 - "Create a query to get all cases with evidence count"
 - "Write a function to update case status"
 - "Generate a complex join query for cases and users"
 
-### Components  
+### Components
+
 - "Create a Svelte component for case filtering"
 - "Build an evidence upload form"
 - "Design a responsive cases grid layout"
 
 ### API Routes
+
 - "Create REST endpoints for case management"
 - "Add file upload handling for evidence"
 - "Implement search functionality"
@@ -187,6 +202,7 @@ npm run build         # Production build
 ```
 
 ## File Structure
+
 ```
 src/
 ├── lib/

@@ -1,30 +1,30 @@
 // src/lib/stores/multiStepFormMachine.ts - XState v5 Multi-step Forms with Superforms & Zod
-import { setup, createActor, assign, fromPromise } from 'xstate';
-import { z } from 'zod';
-import { db, cases, evidence, criminals } from '$lib/server/db';
+import { setup, createActor, assign, fromPromise } from "xstate";
+import { z } from "zod";
+import { db, cases, evidence, criminals } from "$lib/server/db";
 
 // Zod Validation Schemas
 export const CaseFormSchema = z.object({
   // Step 1: Basic Information
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  caseNumber: z.string().min(1, 'Case number is required'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  caseNumber: z.string().min(1, "Case number is required"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
   incidentDate: z.string().optional(),
   location: z.string().optional(),
-  
+
   // Step 2: Classification
-  priority: z.enum(['low', 'medium', 'high', 'urgent']),
-  status: z.enum(['open', 'closed', 'pending', 'archived', 'under_review']),
-  category: z.string().min(1, 'Category is required'),
+  priority: z.enum(["low", "medium", "high", "urgent"]),
+  status: z.enum(["open", "closed", "pending", "archived", "under_review"]),
+  category: z.string().min(1, "Category is required"),
   dangerScore: z.number().min(0).max(10).default(0),
   estimatedValue: z.number().optional(),
   jurisdiction: z.string().optional(),
-  
+
   // Step 3: Assignment
   leadProsecutor: z.string().optional(),
   assignedTeam: z.array(z.string()).default([]),
   tags: z.array(z.string()).default([]),
-  
+
   // Step 4: Additional Details
   aiSummary: z.string().optional(),
   metadata: z.record(z.any()).default({}),
@@ -32,28 +32,38 @@ export const CaseFormSchema = z.object({
 
 export const EvidenceFormSchema = z.object({
   // Step 1: Evidence Details
-  title: z.string().min(3, 'Title must be at least 3 characters'),
+  title: z.string().min(3, "Title must be at least 3 characters"),
   description: z.string().optional(),
-  evidenceType: z.enum(['document', 'image', 'video', 'audio', 'physical', 'digital', 'testimony']),
+  evidenceType: z.enum([
+    "document",
+    "image",
+    "video",
+    "audio",
+    "physical",
+    "digital",
+    "testimony",
+  ]),
   subType: z.string().optional(),
-  
+
   // Step 2: File Information
   fileName: z.string().optional(),
   fileSize: z.number().optional(),
   mimeType: z.string().optional(),
   hash: z.string().optional(),
-  
+
   // Step 3: Chain of Custody
   collectedAt: z.string().optional(),
   collectedBy: z.string().optional(),
   location: z.string().optional(),
   chainOfCustody: z.array(z.any()).default([]),
-  
+
   // Step 4: Classification
   tags: z.array(z.string()).default([]),
   isAdmissible: z.boolean().default(true),
-  confidentialityLevel: z.enum(['public', 'standard', 'confidential', 'classified']).default('standard'),
-  
+  confidentialityLevel: z
+    .enum(["public", "standard", "confidential", "classified"])
+    .default("standard"),
+
   // Step 5: Analysis
   aiAnalysis: z.record(z.any()).default({}),
   aiTags: z.array(z.string()).default([]),
@@ -63,36 +73,42 @@ export const EvidenceFormSchema = z.object({
 
 export const CriminalFormSchema = z.object({
   // Step 1: Personal Information
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   middleName: z.string().optional(),
   aliases: z.array(z.string()).default([]),
   dateOfBirth: z.string().optional(),
   placeOfBirth: z.string().optional(),
-  
+
   // Step 2: Contact Information
   address: z.string().optional(),
   phone: z.string().optional(),
-  email: z.string().email().optional().or(z.literal('')),
-  
+  email: z.string().email().optional().or(z.literal("")),
+
   // Step 3: Identification
   socialSecurityNumber: z.string().optional(),
   driversLicense: z.string().optional(),
-  
+
   // Step 4: Physical Description
   height: z.number().optional(),
   weight: z.number().optional(),
   eyeColor: z.string().optional(),
   hairColor: z.string().optional(),
   distinguishingMarks: z.string().optional(),
-  
+
   // Step 5: Status & Classification
-  status: z.enum(['suspect', 'person_of_interest', 'witness', 'victim', 'defendant']),
-  dangerLevel: z.enum(['low', 'medium', 'high', 'extreme']).default('low'),
+  status: z.enum([
+    "suspect",
+    "person_of_interest",
+    "witness",
+    "victim",
+    "defendant",
+  ]),
+  dangerLevel: z.enum(["low", "medium", "high", "extreme"]).default("low"),
   currentLocation: z.string().optional(),
   knownAssociates: z.array(z.string()).default([]),
   criminalHistory: z.array(z.any()).default([]),
-  
+
   // Step 6: Case Association
   associatedCases: z.array(z.string()).default([]),
   notes: z.string().optional(),
@@ -199,98 +215,111 @@ export const CriminalFormSteps = {
 };
 
 // Database operations
-const saveToDatabase = fromPromise(async ({ input }: { input: { formType: string; data: any } }) => {
-  const { formType, data } = input;
-  
-  try {
-    switch (formType) {
-      case 'case':
-        const [newCase] = await db.insert(cases).values({
-          ...data,
-          id: crypto.randomUUID(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }).returning();
-        return { success: true, id: newCase.id, data: newCase };
-        
-      case 'evidence':
-        const [newEvidence] = await db.insert(evidence).values({
-          ...data,
-          id: crypto.randomUUID(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }).returning();
-        return { success: true, id: newEvidence.id, data: newEvidence };
-        
-      case 'criminal':
-        const [newCriminal] = await db.insert(criminals).values({
-          ...data,
-          id: crypto.randomUUID(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }).returning();
-        return { success: true, id: newCriminal.id, data: newCriminal };
-        
-      default:
-        throw new Error(`Unknown form type: ${formType}`);
+const saveToDatabase = fromPromise(
+  async ({ input }: { input: { formType: string; data: any } }) => {
+    const { formType, data } = input;
+
+    try {
+      switch (formType) {
+        case "case":
+          const [newCase] = await db
+            .insert(cases)
+            .values({
+              ...data,
+              id: crypto.randomUUID(),
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .returning();
+          return { success: true, id: newCase.id, data: newCase };
+
+        case "evidence":
+          const [newEvidence] = await db
+            .insert(evidence)
+            .values({
+              ...data,
+              id: crypto.randomUUID(),
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .returning();
+          return { success: true, id: newEvidence.id, data: newEvidence };
+
+        case "criminal":
+          const [newCriminal] = await db
+            .insert(criminals)
+            .values({
+              ...data,
+              id: crypto.randomUUID(),
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .returning();
+          return { success: true, id: newCriminal.id, data: newCriminal };
+
+        default:
+          throw new Error(`Unknown form type: ${formType}`);
+      }
+    } catch (error) {
+      console.error("Database save error:", error);
+      throw error;
     }
-  } catch (error) {
-    console.error('Database save error:', error);
-    throw error;
-  }
-});
+  },
+);
 
 // Vector embedding integration
-const generateEmbeddings = fromPromise(async ({ input }: { input: { formType: string; data: any; id: string } }) => {
-  const { formType, data, id } = input;
-  
-  try {
-    // Create searchable text content
-    let searchableContent = '';
-    
-    switch (formType) {
-      case 'case':
-        searchableContent = `${data.title} ${data.description} ${data.category} ${data.tags?.join(' ') || ''}`;
-        break;
-      case 'evidence':
-        searchableContent = `${data.title} ${data.description} ${data.evidenceType} ${data.summary || ''} ${data.tags?.join(' ') || ''}`;
-        break;
-      case 'criminal':
-        searchableContent = `${data.firstName} ${data.lastName} ${data.aliases?.join(' ') || ''} ${data.notes || ''}`;
-        break;
+const generateEmbeddings = fromPromise(
+  async ({ input }: { input: { formType: string; data: any; id: string } }) => {
+    const { formType, data, id } = input;
+
+    try {
+      // Create searchable text content
+      let searchableContent = "";
+
+      switch (formType) {
+        case "case":
+          searchableContent = `${data.title} ${data.description} ${data.category} ${data.tags?.join(" ") || ""}`;
+          break;
+        case "evidence":
+          searchableContent = `${data.title} ${data.description} ${data.evidenceType} ${data.summary || ""} ${data.tags?.join(" ") || ""}`;
+          break;
+        case "criminal":
+          searchableContent = `${data.firstName} ${data.lastName} ${data.aliases?.join(" ") || ""} ${data.notes || ""}`;
+          break;
+      }
+
+      // Generate embeddings using Ollama or other embedding service
+      const response = await fetch("/api/embeddings/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: searchableContent,
+          metadata: {
+            id,
+            type: formType,
+            timestamp: new Date().toISOString(),
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate embeddings");
+      }
+
+      const embeddings = await response.json();
+      return { success: true, embeddings };
+    } catch (error) {
+      console.error("Embedding generation error:", error);
+      return { success: false, error: error.message };
     }
-    
-    // Generate embeddings using Ollama or other embedding service
-    const response = await fetch('/api/embeddings/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        text: searchableContent,
-        metadata: {
-          id,
-          type: formType,
-          timestamp: new Date().toISOString(),
-        }
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to generate embeddings');
-    }
-    
-    const embeddings = await response.json();
-    return { success: true, embeddings };
-  } catch (error) {
-    console.error('Embedding generation error:', error);
-    return { success: false, error: error.message };
-  }
-});
+  },
+);
 
 // Multi-step form machine setup
 export const multiStepFormMachine = setup({
   types: {
     context: {} as {
-      formType: 'case' | 'evidence' | 'criminal';
+      formType: "case" | "evidence" | "criminal";
       currentStep: number;
       totalSteps: number;
       formData: Record<string, any>;
@@ -302,24 +331,24 @@ export const multiStepFormMachine = setup({
       userId: string;
     },
     events: {} as
-      | { type: 'NEXT'; stepData: Record<string, any> }
-      | { type: 'PREVIOUS' }
-      | { type: 'GOTO_STEP'; step: number }
-      | { type: 'UPDATE_STEP_DATA'; data: Record<string, any> }
-      | { type: 'VALIDATE_STEP' }
-      | { type: 'SUBMIT' }
-      | { type: 'RESET' }
-      | { type: 'SET_FORM_TYPE'; formType: 'case' | 'evidence' | 'criminal' }
+      | { type: "NEXT"; stepData: Record<string, any> }
+      | { type: "PREVIOUS" }
+      | { type: "GOTO_STEP"; step: number }
+      | { type: "UPDATE_STEP_DATA"; data: Record<string, any> }
+      | { type: "VALIDATE_STEP" }
+      | { type: "SUBMIT" }
+      | { type: "RESET" }
+      | { type: "SET_FORM_TYPE"; formType: "case" | "evidence" | "criminal" },
   },
   actors: {
     saveToDatabase,
     generateEmbeddings,
-  }
+  },
 }).createMachine({
-  id: 'multiStepForm',
-  initial: 'editing',
+  id: "multiStepForm",
+  initial: "editing",
   context: {
-    formType: 'case',
+    formType: "case",
     currentStep: 1,
     totalSteps: 4,
     formData: {},
@@ -328,36 +357,36 @@ export const multiStepFormMachine = setup({
     isValid: false,
     isSubmitting: false,
     submitResult: null,
-    userId: '',
+    userId: "",
   },
   states: {
     editing: {
       on: {
         NEXT: {
-          target: 'validating',
+          target: "validating",
           actions: assign({
-            stepData: ({ event }) => event.stepData
-          })
+            stepData: ({ event }) => event.stepData,
+          }),
         },
         PREVIOUS: {
           actions: assign({
             currentStep: ({ context }) => Math.max(1, context.currentStep - 1),
-            errors: {}
-          })
+            errors: {},
+          }),
         },
         GOTO_STEP: {
           actions: assign({
             currentStep: ({ event }) => event.step,
-            errors: {}
-          })
+            errors: {},
+          }),
         },
         UPDATE_STEP_DATA: {
           actions: assign({
             stepData: ({ context, event }) => ({
               ...context.stepData,
-              ...event.data
-            })
-          })
+              ...event.data,
+            }),
+          }),
         },
         SET_FORM_TYPE: {
           actions: assign({
@@ -365,20 +394,24 @@ export const multiStepFormMachine = setup({
             currentStep: 1,
             totalSteps: ({ event }) => {
               switch (event.formType) {
-                case 'case': return 4;
-                case 'evidence': return 5;
-                case 'criminal': return 6;
-                default: return 4;
+                case "case":
+                  return 4;
+                case "evidence":
+                  return 5;
+                case "criminal":
+                  return 6;
+                default:
+                  return 4;
               }
             },
             formData: {},
             stepData: {},
-            errors: {}
-          })
+            errors: {},
+          }),
         },
         SUBMIT: {
-          target: 'submitting',
-          guard: ({ context }) => context.currentStep === context.totalSteps
+          target: "submitting",
+          guard: ({ context }) => context.currentStep === context.totalSteps,
         },
         RESET: {
           actions: assign({
@@ -387,46 +420,46 @@ export const multiStepFormMachine = setup({
             stepData: {},
             errors: {},
             isValid: false,
-            submitResult: null
-          })
-        }
-      }
+            submitResult: null,
+          }),
+        },
+      },
     },
     validating: {
       entry: assign({
         isValid: false,
-        errors: {}
+        errors: {},
       }),
       always: [
         {
-          target: 'editing',
+          target: "editing",
           guard: ({ context }) => {
             const { formType, currentStep, stepData } = context;
-            
+
             try {
               // Validate current step data
               let stepSchema;
               switch (formType) {
-                case 'case':
+                case "case":
                   stepSchema = CaseFormSteps[`step${currentStep}`];
                   break;
-                case 'evidence':
+                case "evidence":
                   stepSchema = EvidenceFormSteps[`step${currentStep}`];
                   break;
-                case 'criminal':
+                case "criminal":
                   stepSchema = CriminalFormSteps[`step${currentStep}`];
                   break;
                 default:
                   return false;
               }
-              
+
               stepSchema.parse(stepData);
               return true;
             } catch (error) {
               if (error instanceof z.ZodError) {
                 const fieldErrors: Record<string, string[]> = {};
-                error.errors.forEach(err => {
-                  const field = err.path.join('.');
+                error.errors.forEach((err) => {
+                  const field = err.path.join(".");
                   if (!fieldErrors[field]) {
                     fieldErrors[field] = [];
                   }
@@ -442,39 +475,40 @@ export const multiStepFormMachine = setup({
             isValid: true,
             formData: ({ context }) => ({
               ...context.formData,
-              ...context.stepData
+              ...context.stepData,
             }),
-            currentStep: ({ context }) => Math.min(context.totalSteps, context.currentStep + 1),
+            currentStep: ({ context }) =>
+              Math.min(context.totalSteps, context.currentStep + 1),
             stepData: {},
-            errors: {}
-          })
+            errors: {},
+          }),
         },
         {
-          target: 'editing',
+          target: "editing",
           actions: assign(({ context }) => {
             const { formType, currentStep, stepData } = context;
-            
+
             try {
               let stepSchema;
               switch (formType) {
-                case 'case':
+                case "case":
                   stepSchema = CaseFormSteps[`step${currentStep}`];
                   break;
-                case 'evidence':
+                case "evidence":
                   stepSchema = EvidenceFormSteps[`step${currentStep}`];
                   break;
-                case 'criminal':
+                case "criminal":
                   stepSchema = CriminalFormSteps[`step${currentStep}`];
                   break;
               }
-              
+
               stepSchema.parse(stepData);
               return { isValid: true, errors: {} };
             } catch (error) {
               if (error instanceof z.ZodError) {
                 const fieldErrors: Record<string, string[]> = {};
-                error.errors.forEach(err => {
-                  const field = err.path.join('.');
+                error.errors.forEach((err) => {
+                  const field = err.path.join(".");
                   if (!fieldErrors[field]) {
                     fieldErrors[field] = [];
                   }
@@ -482,99 +516,84 @@ export const multiStepFormMachine = setup({
                 });
                 return { isValid: false, errors: fieldErrors };
               }
-              return { isValid: false, errors: { general: ['Validation failed'] } };
+              return {
+                isValid: false,
+                errors: { general: ["Validation failed"] },
+              };
             }
-          })
-        }
-      ]
+          }),
+        },
+      ],
     },
     submitting: {
       entry: assign({
-        isSubmitting: true
+        isSubmitting: true,
       }),
       invoke: {
-        src: 'saveToDatabase',
+        src: "saveToDatabase",
         input: ({ context }) => ({
           formType: context.formType,
           data: {
             ...context.formData,
             ...context.stepData,
-            userId: context.userId
-          }
+            userId: context.userId,
+          },
         }),
         onDone: {
-          target: 'generating_embeddings',
+          target: "generating_embeddings",
           actions: assign({
-            submitResult: ({ event }) => event.output
-          })
+            submitResult: ({ event }) => event.output,
+          }),
         },
         onError: {
-          target: 'submit_error',
+          target: "submit_error",
           actions: assign({
             submitResult: ({ event }) => ({
               success: false,
-              error: event.error
+              error: event.error,
             }),
-            isSubmitting: false
-          })
-        }
-      }
+            isSubmitting: false,
+          }),
+        },
+      },
     },
     generating_embeddings: {
       invoke: {
-        src: 'generateEmbeddings',
+        src: "generateEmbeddings",
         input: ({ context }) => ({
           formType: context.formType,
           data: {
             ...context.formData,
-            ...context.stepData
+            ...context.stepData,
           },
-          id: context.submitResult?.id
+          id: context.submitResult?.id,
         }),
         onDone: {
-          target: 'success',
+          target: "success",
           actions: assign({
             isSubmitting: false,
             submitResult: ({ context, event }) => ({
               ...context.submitResult,
-              embeddings: event.output
-            })
-          })
+              embeddings: event.output,
+            }),
+          }),
         },
         onError: {
-          target: 'success', // Continue even if embeddings fail
+          target: "success", // Continue even if embeddings fail
           actions: assign({
             isSubmitting: false,
             submitResult: ({ context, event }) => ({
               ...context.submitResult,
-              embeddingsError: event.error
-            })
-          })
-        }
-      }
+              embeddingsError: event.error,
+            }),
+          }),
+        },
+      },
     },
     success: {
       on: {
         RESET: {
-          target: 'editing',
-          actions: assign({
-            currentStep: 1,
-            formData: {},
-            stepData: {},
-            errors: {},
-            isValid: false,
-            submitResult: null
-          })
-        }
-      }
-    },
-    submit_error: {
-      on: {
-        SUBMIT: {
-          target: 'submitting'
-        },
-        RESET: {
-          target: 'editing',
+          target: "editing",
           actions: assign({
             currentStep: 1,
             formData: {},
@@ -582,35 +601,56 @@ export const multiStepFormMachine = setup({
             errors: {},
             isValid: false,
             submitResult: null,
-            isSubmitting: false
-          })
-        }
-      }
-    }
-  }
+          }),
+        },
+      },
+    },
+    submit_error: {
+      on: {
+        SUBMIT: {
+          target: "submitting",
+        },
+        RESET: {
+          target: "editing",
+          actions: assign({
+            currentStep: 1,
+            formData: {},
+            stepData: {},
+            errors: {},
+            isValid: false,
+            submitResult: null,
+            isSubmitting: false,
+          }),
+        },
+      },
+    },
+  },
 });
 
 // Helper functions for Svelte components
-export function createMultiStepFormActor(userId: string, formType: 'case' | 'evidence' | 'criminal' = 'case') {
+export function createMultiStepFormActor(
+  userId: string,
+  formType: "case" | "evidence" | "criminal" = "case",
+) {
   const actor = createActor(multiStepFormMachine, {
     input: {
       userId,
       formType,
-      totalSteps: formType === 'case' ? 4 : formType === 'evidence' ? 5 : 6
-    }
+      totalSteps: formType === "case" ? 4 : formType === "evidence" ? 5 : 6,
+    },
   });
-  
+
   actor.start();
   return actor;
 }
 
 export function getStepSchema(formType: string, step: number) {
   switch (formType) {
-    case 'case':
+    case "case":
       return CaseFormSteps[`step${step}`];
-    case 'evidence':
+    case "evidence":
       return EvidenceFormSteps[`step${step}`];
-    case 'criminal':
+    case "criminal":
       return CriminalFormSteps[`step${step}`];
     default:
       throw new Error(`Unknown form type: ${formType}`);
@@ -619,11 +659,11 @@ export function getStepSchema(formType: string, step: number) {
 
 export function getFullSchema(formType: string) {
   switch (formType) {
-    case 'case':
+    case "case":
       return CaseFormSchema;
-    case 'evidence':
+    case "evidence":
       return EvidenceFormSchema;
-    case 'criminal':
+    case "criminal":
       return CriminalFormSchema;
     default:
       throw new Error(`Unknown form type: ${formType}`);
@@ -632,7 +672,7 @@ export function getFullSchema(formType: string) {
 
 // Export types for TypeScript
 export type MultiStepFormContext = {
-  formType: 'case' | 'evidence' | 'criminal';
+  formType: "case" | "evidence" | "criminal";
   currentStep: number;
   totalSteps: number;
   formData: Record<string, any>;

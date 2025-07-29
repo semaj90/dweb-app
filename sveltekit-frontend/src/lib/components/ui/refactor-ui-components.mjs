@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 // Auto-refactor UI components to Svelte 5 + UnoCSS + Bits UI best practices
 
-import { readdir, readFile, writeFile, mkdir } from 'fs/promises';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readdir, readFile, writeFile, mkdir } from "fs/promises";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const uiPath = join(__dirname, '.');
+const uiPath = join(__dirname, ".");
 
 // Component templates using Svelte 5 runes and bits-ui
 const templates = {
-  'Button.svelte': `<!-- Enhanced Button with Svelte 5 runes + bits-ui + UnoCSS -->
+  "Button.svelte": `<!-- Enhanced Button with Svelte 5 runes + bits-ui + UnoCSS -->
 <script lang="ts">
   import { createButton } from 'bits-ui';
   
@@ -76,7 +76,7 @@ const templates = {
   }
 </style>`,
 
-  'Card.svelte': `<!-- Enhanced Card with Svelte 5 runes + bits-ui + UnoCSS -->
+  "Card.svelte": `<!-- Enhanced Card with Svelte 5 runes + bits-ui + UnoCSS -->
 <script lang="ts">
   interface Props {
     variant?: 'default' | 'interactive' | 'elevated';
@@ -106,7 +106,7 @@ const templates = {
   }
 </style>`,
 
-  'Input.svelte': `<!-- Enhanced Input with Svelte 5 runes + bits-ui + UnoCSS -->
+  "Input.svelte": `<!-- Enhanced Input with Svelte 5 runes + bits-ui + UnoCSS -->
 <script lang="ts">
   interface Props {
     value?: string;
@@ -161,7 +161,7 @@ const templates = {
   }
 </style>`,
 
-  'Modal.svelte': `<!-- Enhanced Modal with Svelte 5 runes + bits-ui + UnoCSS -->
+  "Modal.svelte": `<!-- Enhanced Modal with Svelte 5 runes + bits-ui + UnoCSS -->
 <script lang="ts">
   import { createDialog } from 'bits-ui';
   
@@ -239,7 +239,7 @@ const templates = {
     @apply hover:bg-nier-surface-lighter transition-colors;
     @apply flex items-center justify-center text-nier-text-muted hover:text-nier-white;
   }
-</style>`
+</style>`,
 };
 
 // UnoCSS config additions
@@ -270,43 +270,44 @@ export default defineConfig({
 });`;
 
 async function refactorComponents() {
-  console.log('🔄 Refactoring UI components...');
-  
+  console.log("🔄 Refactoring UI components...");
+
   try {
     // Create backup directory
-    const backupDir = join(__dirname, 'backup');
+    const backupDir = join(__dirname, "backup");
     await mkdir(backupDir, { recursive: true });
-    
+
     // Write new component templates
     for (const [filename, content] of Object.entries(templates)) {
       const filePath = join(__dirname, filename);
-      
+
       // Backup existing file if it exists
       try {
-        const existing = await readFile(filePath, 'utf-8');
+        const existing = await readFile(filePath, "utf-8");
         await writeFile(join(backupDir, filename), existing);
         console.log(`📦 Backed up ${filename}`);
       } catch (err) {
         // File doesn't exist, continue
       }
-      
+
       // Write new component
       await writeFile(filePath, content);
       console.log(`✅ Updated ${filename}`);
     }
-    
+
     // Write UnoCSS config reminder
-    await writeFile(join(__dirname, 'uno-config-additions.txt'), unoConfig);
-    console.log('📝 Created UnoCSS config additions');
-    
-    console.log('🎉 Component refactoring complete!');
-    console.log('Next steps:');
-    console.log('1. Add uno-config-additions.txt content to your uno.config.ts');
-    console.log('2. Run npm run check to verify types');
-    console.log('3. Run npm run dev to test components');
-    
+    await writeFile(join(__dirname, "uno-config-additions.txt"), unoConfig);
+    console.log("📝 Created UnoCSS config additions");
+
+    console.log("🎉 Component refactoring complete!");
+    console.log("Next steps:");
+    console.log(
+      "1. Add uno-config-additions.txt content to your uno.config.ts",
+    );
+    console.log("2. Run npm run check to verify types");
+    console.log("3. Run npm run dev to test components");
   } catch (error) {
-    console.error('❌ Error during refactoring:', error);
+    console.error("❌ Error during refactoring:", error);
   }
 }
 

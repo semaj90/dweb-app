@@ -1,11 +1,11 @@
 export type DashboardCard = {
-	title: string;
-	value: string | number;
-	icon?: any;
+  title: string;
+  value: string | number;
+  icon?: any;
 };
 
 export type DashboardLayout = {
-	[key: string]: {
-		cards: DashboardCard[];
-	};
+  [key: string]: {
+    cards: DashboardCard[];
+  };
 };

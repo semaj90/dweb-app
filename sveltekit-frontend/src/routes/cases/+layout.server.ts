@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
   const sortOrder = url.searchParams.get("order") || "desc";
 
   // Build where conditions
-  const whereConditions = [eq(cases.prosecutor, session.user.userId)];
+  const whereConditions = [eq(cases.leadProsecutor, session.user.userId)];
 
   if (searchQuery) {
     whereConditions.push(
@@ -40,9 +40,9 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
   // Determine sort order - safely access the cases properties
   let sortColumn;
   try {
-    sortColumn = (cases as any)[sortBy] || cases.openedAt;
+    sortColumn = (cases as any)[sortBy] || cases.createdAt;
   } catch {
-    sortColumn = cases.openedAt;
+    sortColumn = cases.createdAt;
   }
   const orderBy = sortOrder === "asc" ? sortColumn : desc(sortColumn);
 
@@ -56,14 +56,11 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
         caseNumber: cases.caseNumber,
         status: cases.status,
         priority: cases.priority,
-        openedAt: cases.openedAt,
+        openedAt: cases.createdAt,
         description: cases.description,
         jurisdiction: cases.jurisdiction,
         metadata: cases.metadata,
-        prosecutor: cases.prosecutor,
-        defendantName: cases.defendantName,
-        courtDate: cases.courtDate,
-        evidenceCount: cases.evidenceCount,
+        prosecutor: cases.leadProsecutor,
       })
       .from(cases)
       .where(and(...whereConditions))
@@ -82,7 +79,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
         count: count(cases.id),
       })
       .from(cases)
-      .where(eq(cases.prosecutor, session.user.userId))
+      .where(eq(cases.leadProsecutor, session.user.userId))
       .groupBy(cases.status);
   } catch (error) {
     console.error("Error fetching case stats:", error);

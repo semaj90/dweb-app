@@ -130,7 +130,8 @@ export interface UserWithProfile {
 }
 
 // Evidence with metadata (using intersection to avoid conflicts)
-export interface EvidenceWithMetadata extends Omit<DatabaseEvidence, "uploadedBy"> {
+export interface EvidenceWithMetadata
+  extends Omit<DatabaseEvidence, "uploadedBy"> {
   uploadedBy?: UserWithProfile; // Replace string ID with full User object
   uploadedById?: string; // Keep the original ID for reference
   case?: DatabaseCase;

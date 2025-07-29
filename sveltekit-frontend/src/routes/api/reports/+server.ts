@@ -25,33 +25,43 @@ export async function GET({ url, locals }: RequestEvent) {
     const sortBy = url.searchParams.get("sortBy") || "updatedAt";
     const sortOrder = url.searchParams.get("sortOrder") || "desc";
 
-    // Use the simpler reports table if aiReports doesn't exist, with fallback
+    // Use aiReports as primary, fallback to reports if error
+    let useAiReports = true;
     let query;
     try {
       query = db.select().from(aiReports);
     } catch (error) {
+      useAiReports = false;
       console.warn("aiReports table not found, using reports table");
       query = db.select().from(reports);
     }
     const conditions: any[] = [];
 
-    // Add filters
+    // Add filters (use correct schema)
     if (caseId) {
-      conditions.push(eq(reports.caseId, caseId));
+      conditions.push(
+        eq(useAiReports ? aiReports.caseId : reports.caseId, caseId)
+      );
     }
     if (reportType) {
-      conditions.push(eq(reports.reportType, reportType));
+      conditions.push(
+        eq(useAiReports ? aiReports.reportType : reports.reportType, reportType)
+      );
     }
-    if (status) {
+    if (status && !useAiReports) {
+      // aiReports does not have status, only filter if using reports
       conditions.push(eq(reports.status, status));
     }
     // Add search filter
     if (search) {
       conditions.push(
         or(
-          like(reports.title, `%${search}%`),
-          like(reports.content, `%${search}%`),
-        ),
+          like(useAiReports ? aiReports.title : reports.title, `%${search}%`),
+          like(
+            useAiReports ? aiReports.content : reports.content,
+            `%${search}%`
+          )
+        )
       );
     }
     // Apply filters
@@ -61,17 +71,25 @@ export async function GET({ url, locals }: RequestEvent) {
     // Add sorting
     const orderColumn =
       sortBy === "title"
-        ? reports.title
+        ? useAiReports
+          ? aiReports.title
+          : reports.title
         : sortBy === "reportType"
-          ? reports.reportType
-          : sortBy === "status"
+          ? useAiReports
+            ? aiReports.reportType
+            : reports.reportType
+          : sortBy === "status" && !useAiReports
             ? reports.status
             : sortBy === "createdAt"
-              ? reports.createdAt
-              : reports.updatedAt;
+              ? useAiReports
+                ? aiReports.createdAt
+                : reports.createdAt
+              : useAiReports
+                ? aiReports.updatedAt
+                : reports.updatedAt;
 
     query = query.orderBy(
-      sortOrder === "asc" ? orderColumn : desc(orderColumn),
+      sortOrder === "asc" ? orderColumn : desc(orderColumn)
     );
 
     // Add pagination
@@ -80,11 +98,15 @@ export async function GET({ url, locals }: RequestEvent) {
     const reportResults = await query;
 
     // Get total count for pagination
-    let countQuery = db.select({ count: sql<number>`count(*)` }).from(reports);
-    if (conditions.length > 0) {
-      countQuery = countQuery.where(and(...conditions));
-    }
-    const totalCountResult = await countQuery;
+    const baseCountQuery = db
+      .select({ count: sql<number>`count(*)` })
+      .from(useAiReports ? aiReports : reports);
+    
+    const finalCountQuery = conditions.length > 0 
+      ? baseCountQuery.where(and(...conditions))
+      : baseCountQuery;
+    
+    const totalCountResult = await finalCountQuery;
     const totalCount = totalCountResult[0]?.count || 0;
 
     // Get associated canvas states for each report
@@ -108,7 +130,7 @@ export async function GET({ url, locals }: RequestEvent) {
             canvasState: null,
           };
         }
-      }),
+      })
     );
 
     return json({
@@ -120,6 +142,10 @@ export async function GET({ url, locals }: RequestEvent) {
         offset,
         total: totalCount,
       },
+      // TODO: In future, unify aiReports and reports schemas for easier querying
+      // TODO: Add GraphQL endpoint for flexible querying
+      // TODO: Add service worker for predictive prefetching and caching
+      // TODO: Add advanced analytics and event streaming
     });
   } catch (error) {
     console.error("Error fetching reports:", error);

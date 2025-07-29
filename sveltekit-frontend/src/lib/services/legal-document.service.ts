@@ -1,5 +1,11 @@
 // Legal Document Service - Clean Architecture Implementation
-import type { LegalDocument, LegalAnalysis, AIInsights, ComplianceCheck } from '$lib/types/legal';
+import type {
+  LegalDocument,
+  LegalAnalysis,
+  AIInsights,
+  ComplianceCheck,
+  RiskFactor,
+} from "$lib/types/legal";
 
 export interface DocumentRepository {
   findById(id: string): Promise<LegalDocument>;
@@ -23,27 +29,28 @@ export class LegalDocumentService {
   constructor(
     private aiAnalysisService: AIAnalysisService,
     private documentRepository: DocumentRepository,
-    private complianceService: ComplianceService
+    private complianceService: ComplianceService,
   ) {}
 
   async analyzeDocument(documentId: string): Promise<LegalAnalysis> {
     try {
       // Fetch document
       const document = await this.documentRepository.findById(documentId);
-      
+
       if (!document) {
         throw new Error(`Document ${documentId} not found`);
       }
 
       // AI analysis
       const aiInsights = await this.aiAnalysisService.analyze(document);
-      
+
       // Compliance validation
-      const complianceChecks = await this.complianceService.validateCompliance(aiInsights);
-      
+      const complianceChecks =
+        await this.complianceService.validateCompliance(aiInsights);
+
       // Risk assessment
       const riskScore = await this.complianceService.calculateRisk(aiInsights);
-      
+
       return {
         document,
         insights: aiInsights,
@@ -51,51 +58,96 @@ export class LegalDocumentService {
         riskAssessment: {
           score: riskScore,
           level: this.getRiskLevel(riskScore),
-          recommendations: this.generateRecommendations(riskScore, complianceChecks)
+          factors: this.generateRiskFactors(riskScore, complianceChecks),
+          recommendations: this.generateRecommendations(
+            riskScore,
+            complianceChecks,
+          ),
         },
-        analyzedAt: new Date()
+        analyzedAt: new Date(),
       };
     } catch (error) {
-      console.error('Document analysis failed:', error);
+      console.error("Document analysis failed:", error);
       throw new Error(`Failed to analyze document: ${error.message}`);
     }
   }
 
   async analyzeCase(caseId: string): Promise<LegalAnalysis[]> {
     const documents = await this.documentRepository.findByCase(caseId);
-    
+
     const analyses = await Promise.all(
-      documents.map(doc => this.analyzeDocument(doc.id))
+      documents.map((doc) => this.analyzeDocument(doc.id)),
     );
-    
+
     return analyses;
   }
 
-  private getRiskLevel(score: number): 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' {
-    if (score >= 0.8) return 'CRITICAL';
-    if (score >= 0.6) return 'HIGH';
-    if (score >= 0.4) return 'MEDIUM';
-    return 'LOW';
+  private getRiskLevel(score: number): "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" {
+    if (score >= 0.8) return "CRITICAL";
+    if (score >= 0.6) return "HIGH";
+    if (score >= 0.4) return "MEDIUM";
+    return "LOW";
+  }
+
+  private generateRiskFactors(
+    riskScore: number,
+    complianceChecks: ComplianceCheck[],
+  ): RiskFactor[] {
+    const factors: RiskFactor[] = [];
+
+    // Generate risk factors based on compliance failures
+    const failedChecks = complianceChecks.filter((check) => !check.passed);
+    
+    failedChecks.forEach((check) => {
+      factors.push({
+        type: check.rule,
+        severity: check.severity,
+        description: check.description,
+        impact: check.details || "Compliance violation detected",
+        likelihood: 1 - check.confidence, // Lower confidence = higher likelihood of risk
+      });
+    });
+
+    // Add general risk factors based on score
+    if (riskScore >= 0.8) {
+      factors.push({
+        type: "CRITICAL_RISK",
+        severity: "CRITICAL",
+        description: "Document contains critical risk indicators",
+        impact: "May result in significant legal exposure",
+        likelihood: riskScore,
+      });
+    } else if (riskScore >= 0.6) {
+      factors.push({
+        type: "HIGH_RISK",
+        severity: "HIGH", 
+        description: "Document contains high-risk elements",
+        impact: "Requires immediate attention and review",
+        likelihood: riskScore,
+      });
+    }
+
+    return factors;
   }
 
   private generateRecommendations(
-    riskScore: number, 
-    complianceChecks: ComplianceCheck[]
+    riskScore: number,
+    complianceChecks: ComplianceCheck[],
   ): string[] {
     const recommendations: string[] = [];
-    
+
     // High-risk recommendations
     if (riskScore >= 0.7) {
-      recommendations.push('Immediate legal review required');
-      recommendations.push('Consider senior partner consultation');
+      recommendations.push("Immediate legal review required");
+      recommendations.push("Consider senior partner consultation");
     }
-    
+
     // Compliance-based recommendations
-    const failedChecks = complianceChecks.filter(check => !check.passed);
+    const failedChecks = complianceChecks.filter((check) => !check.passed);
     if (failedChecks.length > 0) {
       recommendations.push(`Address ${failedChecks.length} compliance issues`);
     }
-    
+
     return recommendations;
   }
 }
@@ -113,24 +165,24 @@ export class LegalAuditService {
       ...action,
       timestamp: new Date(),
       ipAddress: await this.getClientIP(),
-      userAgent: navigator.userAgent
+      userAgent: navigator.userAgent,
     };
-    
+
     // Store in database
-    await fetch('/api/audit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(auditEntry)
+    await fetch("/api/audit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(auditEntry),
     });
   }
 
   private async getClientIP(): Promise<string> {
     try {
-      const response = await fetch('https://api.ipify.org?format=json');
+      const response = await fetch("https://api.ipify.org?format=json");
       const data = await response.json();
       return data.ip;
     } catch {
-      return 'unknown';
+      return "unknown";
     }
   }
 }

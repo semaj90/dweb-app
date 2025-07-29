@@ -1,4 +1,4 @@
-import { citationPoints } from "$lib/server/db/unified-schema.ts";
+import { citationPoints } from "$lib/server/db/unified-schema";
 import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { and, desc, eq, like } from "drizzle-orm";
@@ -66,7 +66,6 @@ export async function GET({ url }: RequestEvent) {
   const offset = parseInt(url.searchParams.get("offset") || "0");
 
   try {
-
     // Handle demo cases or when database is not available
     if (!db || (caseId && isDemoCase(caseId))) {
       let filteredCitations = sampleCitations;

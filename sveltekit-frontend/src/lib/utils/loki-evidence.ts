@@ -1,6 +1,20 @@
 // Loki.js based local memory and sync service for enhanced performance
-import { browser } from "$app/environment";
+// Browser environment check
+const browser = typeof window !== 'undefined';
 import Loki from "lokijs";
+
+// Type definitions for missing Loki types
+interface Collection<T = any> {
+  insert(doc: T): T;
+  find(query?: any): T[];
+  findOne(query?: any): T | null;
+  update(doc: T): T;
+  remove(doc: T): void;
+  chain(): any;
+  count(): number;
+  clear(): void;
+  where(predicate: (obj: T) => boolean): T[];
+}
 import type { Evidence } from "../stores/evidenceStore";
 
 interface LokiEvidence extends Evidence {
@@ -370,12 +384,12 @@ class LokiEvidenceService {
     const serverMap = new Map(serverEvidence.map((e) => [e.id, e]));
 
     // Find conflicts and resolve them
-    for (const [id, serverItem] of serverMap) {
+    for (const [id, serverItem] of Array.from(serverMap)) {
       const localItem = localMap.get(id);
 
       if (!localItem) {
         // Server has item that local doesn't have - add it
-        this.evidenceCollection.insert({ ...serverItem });
+        this.evidenceCollection.insert(serverItem as LokiEvidence);
       } else {
         // Both have the item - check timestamps and resolve conflict
         const serverUpdated = new Date(serverItem.timeline?.updatedAt || 0);
@@ -385,7 +399,7 @@ class LokiEvidenceService {
 
         if (serverUpdated > localUpdated) {
           // Server is newer - update local
-          this.evidenceCollection.update({ ...localItem, ...serverItem });
+          this.evidenceCollection.update(Object.assign({}, localItem, serverItem));
         }
         // If local is newer, keep local version (it will sync to server later)
       }
@@ -395,7 +409,7 @@ class LokiEvidenceService {
       this.syncQueue?.find({ synced: false }).map((op) => op.recordId) || [],
     );
 
-    for (const [id, localItem] of localMap) {
+    for (const [id, localItem] of Array.from(localMap)) {
       if (!serverMap.has(id) && !pendingIds.has(id)) {
         this.evidenceCollection.remove(localItem);
       }

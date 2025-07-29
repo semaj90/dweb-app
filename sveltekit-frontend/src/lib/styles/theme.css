@@ -38,13 +38,18 @@
 }
 
 body {
-  font-family: 'Gothic A1', 'JetBrains Mono', system-ui, sans-serif;
+  font-family: "Gothic A1", "JetBrains Mono", system-ui, sans-serif;
   font-weight: 400;
   line-height: 1.5;
   letter-spacing: 0.025em;
 }
 
 @keyframes nier-glow {
-  0%, 100% { box-shadow: 0 0 10px hsl(var(--accent) / 0.3); }
-  50% { box-shadow: 0 0 20px hsl(var(--accent) / 0.5); }
+  0%,
+  100% {
+    box-shadow: 0 0 10px hsl(var(--accent) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.5);
+  }
 }

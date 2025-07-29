@@ -1,4 +1,5 @@
-import { env } from "$env/dynamic/private";
+// Environment variables fallback
+const env = process.env || {};
 import {
   caseActivities,
   cases,

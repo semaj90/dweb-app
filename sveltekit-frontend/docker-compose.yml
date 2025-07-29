@@ -2,7 +2,7 @@
 # Features: Advanced RAG + Data Management + Event Streaming + TTS
 # All passwords standardized: LegalRAG2024!
 
-version: '3.8'
+version: "3.8"
 
 services:
   # PostgreSQL with pgvector for document embeddings (Phase 3+4)
@@ -68,7 +68,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: legal_admin
       RABBITMQ_DEFAULT_PASS: LegalRAG2024!
-      RABBITMQ_VM_MEMORY_HIGH_WATERMARK: 0.6
     volumes:
       - rabbitmq_phase34:/var/lib/rabbitmq
     healthcheck:
@@ -155,35 +154,12 @@ services:
 
   # TTS service for text-to-speech (Phase 3+4)
   tts-service:
-    image: python:3.11-slim
+    build: ./tts-service
     container_name: legal-tts-phase34
     ports:
-      - "5002:5002"
-    command: >
-      bash -c "
-        pip install flask flask-cors requests &&
-        echo 'from flask import Flask, jsonify, request
-from flask_cors import CORS
-import json
-import time
-app = Flask(__name__)
-CORS(app)
-@app.route(\"/health\")
-def health():
-    return jsonify({\"status\": \"healthy\", \"service\": \"tts-phase34\", \"timestamp\": time.time()})
-@app.route(\"/synthesize\", methods=[\"POST\"])
-def synthesize():
-    data = request.get_json() or {}
-    text = data.get(\"text\", \"Hello from Phase 3+4 TTS\")
-    return jsonify({\"message\": \"TTS synthesis ready\", \"text\": text, \"status\": \"success\"})
-@app.route(\"/version\")
-def version():
-    return jsonify({\"version\": \"Phase3+4-v1.0\", \"features\": [\"synthesis\", \"health_check\"]})
-if __name__ == \"__main__\":
-    app.run(host=\"0.0.0.0\", port=5002, debug=False)' > /app/server.py &&
-        python /app/server.py"
+      - "10200:10200"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:10200/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -191,6 +167,17 @@ if __name__ == \"__main__\":
     restart: unless-stopped
     networks:
       - legal-ai-phase34
+    tmpfs:
+      - /tmp
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Uncomment if TTS will depend on these in the future
+    # depends_on:
+    #   - rabbitmq
+    #   - redis
 
 volumes:
   postgres_phase34:

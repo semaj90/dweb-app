@@ -1,7 +1,3 @@
-
-
-
-
 import type { RequestEvent } from "@sveltejs/kit";
 import { signJWT, verifyJWT } from "./authUtils";
 import { getUserById } from "./db/queries";

@@ -4,8 +4,8 @@ export interface LegalCase {
   caseNumber: string;
   title: string;
   description?: string;
-  status: 'active' | 'pending' | 'closed' | 'archived';
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  status: "active" | "pending" | "closed" | "archived";
+  priority: "low" | "medium" | "high" | "critical";
   confidentialityLevel: number; // 1-5, where 5 is highest clearance required
   createdAt: Date;
   updatedAt: Date;
@@ -20,7 +20,14 @@ export interface LegalDocument {
   id: string;
   title: string;
   content: string;
-  documentType: 'motion' | 'brief' | 'contract' | 'evidence' | 'correspondence' | 'pleading' | 'other';
+  documentType:
+    | "motion"
+    | "brief"
+    | "contract"
+    | "evidence"
+    | "correspondence"
+    | "pleading"
+    | "other";
   caseId?: string;
   fileName?: string;
   fileSize?: number;
@@ -35,7 +42,7 @@ export interface LegalDocument {
 
 export interface AIInsights {
   documentId: string;
-  analysisType: 'FULL_COMPLIANCE_CHECK' | 'QUICK_SCAN' | 'ENTITY_EXTRACTION';
+  analysisType: "FULL_COMPLIANCE_CHECK" | "QUICK_SCAN" | "ENTITY_EXTRACTION";
   findings: string[];
   entities: LegalEntity[];
   complianceChecks: ComplianceCheck[];
@@ -49,8 +56,17 @@ export interface AIInsights {
 }
 
 export interface LegalEntity {
-  type: 'CASE_NUMBER' | 'COURT_NAME' | 'JUDGE_NAME' | 'ATTORNEY' | 'LEGAL_CITATION' | 
-        'DATE' | 'DOLLAR_AMOUNT' | 'STATUTE_REFERENCE' | 'PERSON' | 'ORGANIZATION';
+  type:
+    | "CASE_NUMBER"
+    | "COURT_NAME"
+    | "JUDGE_NAME"
+    | "ATTORNEY"
+    | "LEGAL_CITATION"
+    | "DATE"
+    | "DOLLAR_AMOUNT"
+    | "STATUTE_REFERENCE"
+    | "PERSON"
+    | "ORGANIZATION";
   value: string;
   confidence: number;
   position: {
@@ -66,14 +82,14 @@ export interface ComplianceCheck {
   description: string;
   passed: boolean;
   confidence: number;
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   details?: string;
   recommendation?: string;
 }
 
 export interface RiskAssessment {
   score: number; // 0-1, where 1 is highest risk
-  level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  level: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   factors: RiskFactor[];
   recommendations: string[];
   mitigationSteps?: string[];
@@ -81,7 +97,7 @@ export interface RiskAssessment {
 
 export interface RiskFactor {
   type: string;
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   description: string;
   impact: string;
   likelihood: number; // 0-1
@@ -114,21 +130,21 @@ export interface AIAnalysisResult {
 export interface AuditLogEntry {
   id: string;
   action: string;
-  entityType: 'CASE' | 'DOCUMENT' | 'USER' | 'SYSTEM';
+  entityType: "CASE" | "DOCUMENT" | "USER" | "SYSTEM";
   entityId: string;
   userId: string;
   ipAddress?: string;
   userAgent?: string;
   details?: Record<string, any>;
   timestamp: Date;
-  severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+  severity: "INFO" | "WARNING" | "ERROR" | "CRITICAL";
 }
 
 export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'attorney' | 'paralegal' | 'client' | 'guest';
+  role: "admin" | "attorney" | "paralegal" | "client" | "guest";
   clearanceLevel: number; // 1-5, determines access to confidential documents
   permissions: string[];
   lastLoginAt?: Date;
@@ -146,7 +162,7 @@ export interface CacheMetrics {
 }
 
 export interface SystemHealth {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: "healthy" | "degraded" | "unhealthy";
   services: {
     database: ServiceStatus;
     ai: ServiceStatus;
@@ -164,7 +180,7 @@ export interface SystemHealth {
 }
 
 export interface ServiceStatus {
-  status: 'online' | 'offline' | 'degraded';
+  status: "online" | "offline" | "degraded";
   responseTime: number;
   lastChecked: Date;
   error?: string;
@@ -195,8 +211,8 @@ export interface SearchQuery {
     priority?: string[];
     confidentialityLevel?: number;
   };
-  sortBy?: 'relevance' | 'date' | 'priority' | 'title';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "relevance" | "date" | "priority" | "title";
+  sortOrder?: "asc" | "desc";
   limit?: number;
   offset?: number;
 }
@@ -241,8 +257,8 @@ export interface PaginatedResponse<T> {
 export interface DocumentProcessingJob {
   id: string;
   documentId: string;
-  type: 'analysis' | 'ocr' | 'classification' | 'extraction';
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  type: "analysis" | "ocr" | "classification" | "extraction";
+  status: "pending" | "processing" | "completed" | "failed";
   progress: number; // 0-100
   startedAt?: Date;
   completedAt?: Date;
@@ -262,7 +278,7 @@ export interface UploadedFile {
 // Notification Types
 export interface SystemNotification {
   id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: "info" | "success" | "warning" | "error";
   title: string;
   message: string;
   userId?: string;
@@ -276,7 +292,7 @@ export interface SystemNotification {
 export interface NotificationAction {
   label: string;
   action: string;
-  style: 'primary' | 'secondary' | 'destructive';
+  style: "primary" | "secondary" | "destructive";
 }
 
 // Configuration Types
@@ -284,7 +300,7 @@ export interface AppConfig {
   app: {
     name: string;
     version: string;
-    environment: 'development' | 'staging' | 'production';
+    environment: "development" | "staging" | "production";
   };
   database: {
     host: string;
@@ -316,7 +332,7 @@ export interface AppConfig {
 
 // Event Types for Real-time Updates
 export interface SystemEvent {
-  type: 'CASE_UPDATED' | 'DOCUMENT_ANALYZED' | 'USER_ACTION' | 'SYSTEM_ALERT';
+  type: "CASE_UPDATED" | "DOCUMENT_ANALYZED" | "USER_ACTION" | "SYSTEM_ALERT";
   payload: any;
   timestamp: Date;
   userId?: string;
@@ -346,7 +362,7 @@ export interface LegalPrecedent {
 export interface ContractClause {
   title: string;
   content: string;
-  type: 'liability' | 'payment' | 'termination' | 'confidentiality' | 'other';
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  type: "liability" | "payment" | "termination" | "confidentiality" | "other";
+  riskLevel: "LOW" | "MEDIUM" | "HIGH";
   suggestions?: string[];
 }

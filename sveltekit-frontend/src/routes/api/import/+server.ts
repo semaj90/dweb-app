@@ -37,7 +37,7 @@ export const POST: RequestHandler = async ({ request }) => {
     } catch (parseError) {
       return json(
         { error: "Invalid file format or corrupted data" },
-        { status: 400 },
+        { status: 400 }
       );
     }
     const results = {
@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request }) => {
       {
         error: error instanceof Error ? error.message : "Import failed",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -88,7 +88,7 @@ export const POST: RequestHandler = async ({ request }) => {
 async function importCases(
   casesData: any[],
   overwriteExisting: boolean,
-  results: any,
+  results: any
 ) {
   if (!Array.isArray(casesData)) {
     results.errors.push("Cases data must be an array");
@@ -99,7 +99,7 @@ async function importCases(
       // Validate required fields
       if (!caseData.title || !caseData.status) {
         results.errors.push(
-          `Case missing required fields: ${JSON.stringify(caseData)}`,
+          `Case missing required fields: ${JSON.stringify(caseData)}`
         );
         results.skipped++;
         continue;
@@ -122,7 +122,7 @@ async function importCases(
               description: caseData.description,
               status: caseData.status,
               priority: caseData.priority,
-              updated_at: new Date(),
+              updatedAt: new Date(),
             })
             .where(eq(cases.id, caseData.id));
           results.updated++;
@@ -130,16 +130,17 @@ async function importCases(
           results.skipped++;
         }
       } else {
-        // Create new case
+        // Create new case - map to correct schema fields
         const newCase = {
           title: caseData.title,
+          caseNumber: caseData.caseNumber || `CASE-${Date.now()}`,
           description: caseData.description || "",
-          status: caseData.status,
+          status: caseData.status || "open",
           priority: caseData.priority || "medium",
           createdAt: caseData.created_at
             ? new Date(caseData.created_at)
             : new Date(),
-          updated_at: new Date(),
+          updatedAt: new Date(),
         };
 
         await db.insert(cases).values(newCase);
@@ -147,7 +148,7 @@ async function importCases(
       }
     } catch (error) {
       results.errors.push(
-        `Error importing case: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Error importing case: ${error instanceof Error ? error.message : "Unknown error"}`
       );
       results.skipped++;
     }
@@ -156,7 +157,7 @@ async function importCases(
 async function importEvidence(
   evidenceData: any[],
   overwriteExisting: boolean,
-  results: any,
+  results: any
 ) {
   if (!Array.isArray(evidenceData)) {
     results.errors.push("Evidence data must be an array");
@@ -171,7 +172,7 @@ async function importEvidence(
         !evidenceItem.description
       ) {
         results.errors.push(
-          `Evidence missing required fields: ${JSON.stringify(evidenceItem)}`,
+          `Evidence missing required fields: ${JSON.stringify(evidenceItem)}`
         );
         results.skipped++;
         continue;
@@ -193,9 +194,8 @@ async function importEvidence(
               caseId: evidenceItem.case_id,
               evidenceType: evidenceItem.type,
               description: evidenceItem.description,
-              filePath: evidenceItem.file_path,
-              metadata: evidenceItem.metadata,
-              updated_at: new Date(),
+              fileUrl: evidenceItem.file_path,
+              updatedAt: new Date(),
             })
             .where(eq(evidence.id, evidenceItem.id));
           results.updated++;
@@ -203,17 +203,36 @@ async function importEvidence(
           results.skipped++;
         }
       } else {
-        // Create new evidence
+        // Create new evidence - map to correct schema fields
         const newEvidence = {
-          case_id: evidenceItem.case_id,
-          type: evidenceItem.type,
+          caseId: evidenceItem.case_id,
+          title: evidenceItem.title || "Imported Evidence",
+          evidenceType: evidenceItem.type || "document",
           description: evidenceItem.description,
-          file_path: evidenceItem.file_path || null,
-          metadata: evidenceItem.metadata || {},
+          fileUrl: evidenceItem.file_path || null,
           createdAt: evidenceItem.created_at
             ? new Date(evidenceItem.created_at)
             : new Date(),
-          updated_at: new Date(),
+          updatedAt: new Date(),
+          // Only include fields that exist in the schema
+          tags: evidenceItem.tags || [],
+          chainOfCustody: evidenceItem.chain_of_custody || [],
+          labAnalysis: evidenceItem.lab_analysis || {},
+          aiAnalysis: evidenceItem.ai_analysis || {},
+          aiTags: evidenceItem.ai_tags || [],
+          aiSummary: evidenceItem.ai_summary || null,
+          summary: evidenceItem.summary || null,
+          isAdmissible:
+            evidenceItem.is_admissible !== undefined
+              ? evidenceItem.is_admissible
+              : true,
+          confidentialityLevel:
+            evidenceItem.confidentiality_level || "standard",
+          canvasPosition: evidenceItem.canvas_position || {},
+          uploadedBy: evidenceItem.uploaded_by || null,
+          uploadedAt: evidenceItem.uploaded_at
+            ? new Date(evidenceItem.uploaded_at)
+            : new Date(),
         };
 
         await db.insert(evidence).values(newEvidence);
@@ -221,7 +240,7 @@ async function importEvidence(
       }
     } catch (error) {
       results.errors.push(
-        `Error importing evidence: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Error importing evidence: ${error instanceof Error ? error.message : "Unknown error"}`
       );
       results.skipped++;
     }
@@ -230,7 +249,7 @@ async function importEvidence(
 async function importParticipants(
   participantsData: any[],
   overwriteExisting: boolean,
-  results: any,
+  results: any
 ) {
   if (!Array.isArray(participantsData)) {
     results.errors.push("Participants data must be an array");
@@ -241,7 +260,7 @@ async function importParticipants(
       // Validate required fields
       if (!participant.case_id || !participant.name || !participant.role) {
         results.errors.push(
-          `Participant missing required fields: ${JSON.stringify(participant)}`,
+          `Participant missing required fields: ${JSON.stringify(participant)}`
         );
         results.skipped++;
         continue;
@@ -260,11 +279,14 @@ async function importParticipants(
           await db
             .update(criminals)
             .set({
-              caseId: participant.case_id,
-              name: participant.name,
-              role: participant.role,
-              contactInfo: participant.contact_info,
-              updated_at: new Date(),
+              firstName: (participant.name || "").split(" ")[0] || "Unknown",
+              lastName:
+                (participant.name || "").split(" ").slice(1).join(" ") ||
+                "Unknown",
+              notes: participant.role ? `Role: ${participant.role}` : null,
+              email: participant.contact_info?.email || null,
+              phone: participant.contact_info?.phone || null,
+              updatedAt: new Date(),
             })
             .where(eq(criminals.id, participant.id));
           results.updated++;
@@ -272,16 +294,18 @@ async function importParticipants(
           results.skipped++;
         }
       } else {
-        // Create new participant
+        // Create new participant - map to correct schema fields
+        const nameParts = (participant.name || "").split(" ");
         const newParticipant = {
-          case_id: participant.case_id,
-          name: participant.name,
-          role: participant.role,
-          contact_info: participant.contact_info || {},
+          firstName: nameParts[0] || "Unknown",
+          lastName: nameParts.slice(1).join(" ") || "Unknown",
+          email: participant.contact_info?.email || null,
+          phone: participant.contact_info?.phone || null,
+          notes: participant.role ? `Role: ${participant.role}` : null,
           createdAt: participant.created_at
             ? new Date(participant.created_at)
             : new Date(),
-          updated_at: new Date(),
+          updatedAt: new Date(),
         };
 
         await db.insert(criminals).values(newParticipant);
@@ -289,7 +313,7 @@ async function importParticipants(
       }
     } catch (error) {
       results.errors.push(
-        `Error importing participant: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Error importing participant: ${error instanceof Error ? error.message : "Unknown error"}`
       );
       results.skipped++;
     }

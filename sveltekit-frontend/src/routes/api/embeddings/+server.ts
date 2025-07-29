@@ -98,7 +98,10 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
         { status: 400 },
       );
     }
-    const embeddings = await generateBatchEmbeddings(texts, { model, batchSize });
+    const embeddings = await generateBatchEmbeddings(texts, {
+      model,
+      batchSize,
+    });
 
     return json({
       success: true,

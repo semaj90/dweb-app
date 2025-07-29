@@ -1,16 +1,16 @@
 // Phase 3: Performance Optimization - Complete File
 // #get-library-docs sveltekit2 #memory #create_entities
 
-import { db } from '$lib/server/db';
-import { sql } from 'drizzle-orm';
-import Redis from 'ioredis';
+import { db } from "$lib/server/db";
+import { sql } from "drizzle-orm";
+import Redis from "ioredis";
 
 // 1. Database Query Optimization
 export class OptimizedQueries {
   // Paginated cases with efficient counting
   static async getCasesPaginated(userId: string, page = 1, limit = 20) {
     const offset = (page - 1) * limit;
-    
+
     const result = await db.execute(sql`
       WITH case_data AS (
         SELECT 
@@ -23,18 +23,22 @@ export class OptimizedQueries {
       SELECT * FROM case_data 
       WHERE row_num > ${offset} AND row_num <= ${offset + limit}
     `);
-    
+
     return {
-      cases: result.rows,
-      totalCount: result.rows[0]?.total_count || 0,
-      hasMore: (result.rows[0]?.total_count || 0) > offset + limit
+      cases: result,
+      totalCount: result[0]?.total_count || 0,
+      hasMore: Number(result[0]?.total_count || 0) > offset + limit,
     };
   }
 
   // Efficient evidence search with vector similarity
-  static async searchEvidenceOptimized(query: string, caseId?: string, limit = 10) {
+  static async searchEvidenceOptimized(
+    query: string,
+    caseId?: string,
+    limit = 10,
+  ) {
     const embedding = await generateEmbedding(query);
-    
+
     return db.execute(sql`
       SELECT 
         e.*,
@@ -50,9 +54,9 @@ export class OptimizedQueries {
 // 2. Redis Caching Layer
 export class CacheService {
   private redis: Redis;
-  
+
   constructor() {
-    this.redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    this.redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
   }
 
   async cacheCase(caseId: string, caseData: any, ttl = 3600) {
@@ -68,8 +72,8 @@ export class CacheService {
 // 3. Performance Utilities
 export function createDebouncedSearch(delay = 300) {
   let timeoutId: NodeJS.Timeout;
-  
-  return function<T extends any[]>(fn: (...args: T) => void) {
+
+  return function <T extends any[]>(fn: (...args: T) => void) {
     return (...args: T) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => fn(...args), delay);
@@ -81,22 +85,22 @@ export class VirtualScrollManager {
   private itemHeight: number;
   private containerHeight: number;
   private scrollTop = 0;
-  
+
   constructor(itemHeight: number, containerHeight: number) {
     this.itemHeight = itemHeight;
     this.containerHeight = containerHeight;
   }
-  
+
   getVisibleRange(totalItems: number) {
     const startIndex = Math.floor(this.scrollTop / this.itemHeight);
     const endIndex = Math.min(
       startIndex + Math.ceil(this.containerHeight / this.itemHeight) + 1,
-      totalItems
+      totalItems,
     );
-    
+
     return { startIndex, endIndex };
   }
-  
+
   updateScrollTop(newScrollTop: number) {
     this.scrollTop = newScrollTop;
   }
@@ -106,20 +110,20 @@ export const performanceConfig = {
   // Database
   connectionPoolSize: 20,
   queryTimeout: 30000,
-  
+
   // Cache
   defaultTTL: 3600,
-  maxCacheSize: '256mb',
-  
-  // Frontend  
+  maxCacheSize: "256mb",
+
+  // Frontend
   virtualScrollThreshold: 100,
   debounceDelay: 300,
   batchUpdateDelay: 16,
-  
+
   // API
   rateLimitWindow: 15 * 60 * 1000, // 15 minutes
   rateLimitMax: 1000,
-  requestTimeout: 30000
+  requestTimeout: 30000,
 };
 
 function generateEmbedding(query: string): Promise<number[]> {

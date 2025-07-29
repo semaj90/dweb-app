@@ -1,5 +1,13 @@
 // Enhanced Tauri LLM Service with Gemma3 Integration
 // Extends the existing RAG system with local Rust-based LLM capabilities
+
+// Type declaration for Tauri global
+declare global {
+  interface Window {
+    __TAURI__?: any;
+  }
+}
+
 import { invoke } from "@tauri-apps/api/core";
 import {
   formatGemmaPrompt,
@@ -191,7 +199,6 @@ class TauriLLMService {
 
       // Select optimal Gemma3 model based on available memory
       const optimalModel = selectOptimalGemmaModel(
-        "general",
         0,
         this.availableMemory,
       );
@@ -324,7 +331,7 @@ class TauriLLMService {
     const queryType = this.detectQueryType(prompt);
     const systemPrompt =
       options.systemPrompt || getSystemPromptForContext(queryType, true);
-    const inferenceSettings = getInferenceSettings(queryType, "balanced");
+    const inferenceSettings = getInferenceSettings("balanced");
 
     // Format prompt for Gemma3 instruction format
     const formattedPrompt = formatGemmaPrompt(

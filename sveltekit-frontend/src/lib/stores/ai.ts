@@ -19,10 +19,10 @@ interface AIContext {
   sources: any[];
 }
 
-type AIEvent = 
-  | { type: 'SUMMARIZE'; caseId: string; evidence: any[]; userId: string }
-  | { type: 'RETRY' }
-  | { type: 'RESET' };
+type AIEvent =
+  | { type: "SUMMARIZE"; caseId: string; evidence: any[]; userId: string }
+  | { type: "RETRY" }
+  | { type: "RESET" };
 
 export const aiGlobalMachine = setup({
   types: {
@@ -31,7 +31,7 @@ export const aiGlobalMachine = setup({
   },
   actions: {
     setContext: assign(({ context, event }) => {
-      if (event.type !== 'SUMMARIZE') return {};
+      if (event.type !== "SUMMARIZE") return {};
       const cacheKey = event.caseId + ":" + hashEvidence(event.evidence);
       return {
         caseId: event.caseId,
@@ -44,31 +44,35 @@ export const aiGlobalMachine = setup({
       };
     }),
     setSuccess: assign(({ event }) => {
-      if (event.type !== 'xstate.done.actor.summarizeEvidence') return {};
-      const data = event.output;
-      return {
-        summary: data.summary,
-        sources: data.sources || [],
-        loading: false,
-        stream: "",
-        error: "",
-      };
+      if ((event as any).type === "xstate.done.actor.summarizeEvidence") {
+        const data = (event as any).output;
+        return {
+          summary: data?.summary || "",
+          sources: data?.sources || [],
+          loading: false,
+          stream: "",
+          error: "",
+        };
+      }
+      return {};
     }),
     setError: assign(({ event }) => {
-      if (event.type !== 'xstate.error.actor.summarizeEvidence') return {};
-      return {
-        error: (event.error as Error)?.message || "Error generating summary.",
-        loading: false,
-      };
+      if ((event as any).type === "xstate.error.actor.summarizeEvidence") {
+        return {
+          error: ((event as any).error as Error)?.message || "Error generating summary.",
+          loading: false,
+        };
+      }
+      return {};
     }),
   },
   actors: {
     summarizeEvidence: fromPromise(async ({ input }: { input: AIContext }) => {
       // Memoization: check cache first
       if (summaryCache.has(input.cacheKey)) {
-        return { 
-          summary: summaryCache.get(input.cacheKey)!, 
-          sources: [] 
+        return {
+          summary: summaryCache.get(input.cacheKey)!,
+          sources: [],
         };
       }
 
@@ -93,9 +97,9 @@ export const aiGlobalMachine = setup({
       // Cache the result
       summaryCache.set(input.cacheKey, data.summary);
 
-      return { 
-        summary: data.summary, 
-        sources: data.sources || [] 
+      return {
+        summary: data.summary,
+        sources: data.sources || [],
       };
     }),
   },
@@ -115,11 +119,11 @@ export const aiGlobalMachine = setup({
   },
   states: {
     idle: {
-      on: { 
-        SUMMARIZE: { 
-          target: "summarizing", 
-          actions: "setContext" 
-        } 
+      on: {
+        SUMMARIZE: {
+          target: "summarizing",
+          actions: "setContext",
+        },
       },
     },
     summarizing: {
@@ -136,18 +140,18 @@ export const aiGlobalMachine = setup({
         },
       },
     },
-    success: { 
-      on: { 
+    success: {
+      on: {
         SUMMARIZE: "summarizing",
         RESET: "idle",
-      } 
+      },
     },
-    failure: { 
-      on: { 
+    failure: {
+      on: {
         SUMMARIZE: "summarizing",
         RETRY: "summarizing",
         RESET: "idle",
-      } 
+      },
     },
   },
 });
@@ -155,11 +159,11 @@ export const aiGlobalMachine = setup({
 // Utility: hash evidence array for cache key
 function hashEvidence(evidence: any[]): string {
   // Simple hash, replace with a better hash for production
-  if (typeof btoa !== 'undefined') {
+  if (typeof btoa !== "undefined") {
     return btoa(JSON.stringify(evidence)).slice(0, 32);
   }
   // Fallback for Node.js environment
-  return Buffer.from(JSON.stringify(evidence)).toString('base64').slice(0, 32);
+  return Buffer.from(JSON.stringify(evidence)).toString("base64").slice(0, 32);
 }
 
 // Create and export the actor
@@ -167,8 +171,8 @@ export const aiGlobalActor = createActor(aiGlobalMachine);
 
 // Svelte store wrapper for reactivity
 export const aiGlobalStore = writable({
-  state: 'idle',
-  context: aiGlobalMachine.initialState.context,
+  state: "idle",
+  context: aiGlobalMachine.config.context || {},
 });
 
 // Subscribe to actor state changes
@@ -185,18 +189,18 @@ aiGlobalActor.start();
 // Export convenience functions
 export const aiGlobalActions = {
   summarize: (caseId: string, evidence: any[], userId: string) => {
-    aiGlobalActor.send({ 
-      type: 'SUMMARIZE', 
-      caseId, 
-      evidence, 
-      userId 
+    aiGlobalActor.send({
+      type: "SUMMARIZE",
+      caseId,
+      evidence,
+      userId,
     });
   },
   retry: () => {
-    aiGlobalActor.send({ type: 'RETRY' });
+    aiGlobalActor.send({ type: "RETRY" });
   },
   reset: () => {
-    aiGlobalActor.send({ type: 'RESET' });
+    aiGlobalActor.send({ type: "RESET" });
   },
 };
 

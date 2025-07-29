@@ -1,10 +1,18 @@
 // ollamaChatStream.ts - Ollama Chat Stream with Langchain integration
 import { ChatOllama } from "@langchain/ollama";
-import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
+import {
+  HumanMessage,
+  AIMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { db } from "$lib/server/db/index";
-import { chatEmbeddings, evidenceVectors, caseEmbeddings } from "$lib/server/db/schema-postgres";
+import {
+  chatEmbeddings,
+  evidenceVectors,
+  caseEmbeddings,
+} from "$lib/server/db/schema-postgres";
 import { eq, sql } from "drizzle-orm";
 
 export interface ChatStreamOptions {
@@ -22,7 +30,7 @@ export interface ChatStreamOptions {
 export interface StreamChunk {
   text: string;
   metadata?: {
-    type: 'text' | 'thinking' | 'sources' | 'final';
+    type: "text" | "thinking" | "sources" | "final";
     sources?: any[];
     confidence?: number;
   };
@@ -42,21 +50,26 @@ export class OllamaChatStreamService {
     this.outputParser = new StringOutputParser();
   }
 
-  async *streamChat(options: ChatStreamOptions): AsyncGenerator<StreamChunk, void, unknown> {
+  async *streamChat(
+    options: ChatStreamOptions,
+  ): AsyncGenerator<StreamChunk, void, unknown> {
     try {
       // Vector search for relevant context if enabled
       let vectorContext: any[] = [];
       if (options.useVectorSearch) {
-        vectorContext = await this.performVectorSearch(options.message, options.searchThreshold || 0.7);
-        
+        vectorContext = await this.performVectorSearch(
+          options.message,
+          options.searchThreshold || 0.7,
+        );
+
         if (vectorContext.length > 0) {
           yield {
             text: "",
             metadata: {
-              type: 'sources',
+              type: "sources",
               sources: vectorContext,
-              confidence: 0.85
-            }
+              confidence: 0.85,
+            },
           };
         }
       }
@@ -66,7 +79,7 @@ export class OllamaChatStreamService {
         options.message,
         vectorContext,
         options.context,
-        options.systemPrompt
+        options.systemPrompt,
       );
 
       // Configure model for this request
@@ -89,13 +102,13 @@ export class OllamaChatStreamService {
       let fullResponse = "";
       for await (const chunk of stream) {
         fullResponse += chunk;
-        
+
         yield {
           text: chunk,
           metadata: {
-            type: 'text',
-            confidence: 0.9
-          }
+            type: "text",
+            confidence: 0.9,
+          },
         };
       }
 
@@ -104,7 +117,7 @@ export class OllamaChatStreamService {
         await this.storeChatEmbedding(
           options.conversationId,
           options.message,
-          fullResponse
+          fullResponse,
         );
       }
 
@@ -112,24 +125,26 @@ export class OllamaChatStreamService {
       yield {
         text: "",
         metadata: {
-          type: 'final',
-          confidence: 0.9
-        }
+          type: "final",
+          confidence: 0.9,
+        },
       };
-
     } catch (error) {
       console.error("Chat stream error:", error);
       yield {
         text: "I apologize, but I encountered an error processing your request. Please try again.",
         metadata: {
-          type: 'text',
-          confidence: 0.0
-        }
+          type: "text",
+          confidence: 0.0,
+        },
       };
     }
   }
 
-  private async performVectorSearch(query: string, threshold: number = 0.7): Promise<any[]> {
+  private async performVectorSearch(
+    query: string,
+    threshold: number = 0.7,
+  ): Promise<any[]> {
     try {
       // Generate embedding for the query (simplified - you'd use actual embedding service)
       const queryEmbedding = await this.generateEmbedding(query);
@@ -140,7 +155,7 @@ export class OllamaChatStreamService {
         .select()
         .from(evidenceVectors)
         .where(
-          sql`1 - (${evidenceVectors.embedding}::vector <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`
+          sql`1 - (${evidenceVectors.embedding}::vector <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`,
         )
         .limit(5);
 
@@ -149,13 +164,13 @@ export class OllamaChatStreamService {
         .select()
         .from(caseEmbeddings)
         .where(
-          sql`1 - (${caseEmbeddings.embedding}::vector <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`
+          sql`1 - (${caseEmbeddings.embedding}::vector <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`,
         )
         .limit(3);
 
       return [
-        ...evidenceResults.map(r => ({ ...r, type: 'evidence' })),
-        ...caseResults.map(r => ({ ...r, type: 'case' }))
+        ...evidenceResults.map((r) => ({ ...r, type: "evidence" })),
+        ...caseResults.map((r) => ({ ...r, type: "case" })),
       ];
     } catch (error) {
       console.error("Vector search error:", error);
@@ -167,9 +182,11 @@ export class OllamaChatStreamService {
     message: string,
     vectorContext: any[],
     chatContext?: any[],
-    systemPrompt?: string
+    systemPrompt?: string,
   ): ChatPromptTemplate {
-    const baseSystemPrompt = systemPrompt || `You are a specialized legal AI assistant with expertise in criminal law, evidence analysis, and case management. 
+    const baseSystemPrompt =
+      systemPrompt ||
+      `You are a specialized legal AI assistant with expertise in criminal law, evidence analysis, and case management. 
 
 INSTRUCTIONS:
 - Provide accurate, professional legal analysis
@@ -183,16 +200,22 @@ IMPORTANT: Base your responses on the provided context when available, but clear
 
     return ChatPromptTemplate.fromMessages([
       ["system", baseSystemPrompt],
-      ["human", `Context Information:
+      [
+        "human",
+        `Context Information:
 {context}
 
 User Question: {human_input}
 
-Please provide a detailed, professional response based on the context and your legal expertise.`]
+Please provide a detailed, professional response based on the context and your legal expertise.`,
+      ],
     ]);
   }
 
-  private formatContextForPrompt(vectorContext: any[], chatContext?: any[]): string {
+  private formatContextForPrompt(
+    vectorContext: any[],
+    chatContext?: any[],
+  ): string {
     let contextText = "";
 
     if (vectorContext.length > 0) {
@@ -217,11 +240,11 @@ Please provide a detailed, professional response based on the context and your l
     try {
       // This is a placeholder - implement actual embedding generation
       // You would call your embedding service here (OpenAI, local model, etc.)
-      const response = await fetch('http://localhost:11434/api/embeddings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:11434/api/embeddings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: 'nomic-embed-text',
+          model: "nomic-embed-text",
           prompt: text,
         }),
       });
@@ -238,7 +261,7 @@ Please provide a detailed, professional response based on the context and your l
   private async storeChatEmbedding(
     conversationId: string,
     userMessage: string,
-    aiResponse: string
+    aiResponse: string,
   ): Promise<void> {
     try {
       const userEmbedding = await this.generateEmbedding(userMessage);
@@ -250,8 +273,8 @@ Please provide a detailed, professional response based on the context and your l
           messageId: `user_${Date.now()}`,
           content: userMessage,
           embedding: JSON.stringify(userEmbedding),
-          role: 'user',
-          metadata: { timestamp: new Date().toISOString() }
+          role: "user",
+          metadata: { timestamp: new Date().toISOString() },
         });
       }
 
@@ -261,8 +284,8 @@ Please provide a detailed, professional response based on the context and your l
           messageId: `assistant_${Date.now()}`,
           content: aiResponse,
           embedding: JSON.stringify(aiEmbedding),
-          role: 'assistant',
-          metadata: { timestamp: new Date().toISOString() }
+          role: "assistant",
+          metadata: { timestamp: new Date().toISOString() },
         });
       }
     } catch (error) {
@@ -272,7 +295,9 @@ Please provide a detailed, professional response based on the context and your l
 }
 
 // Export the main function for backwards compatibility
-export async function* ollamaChatStream(options: ChatStreamOptions): AsyncGenerator<StreamChunk, void, unknown> {
+export async function* ollamaChatStream(
+  options: ChatStreamOptions,
+): AsyncGenerator<StreamChunk, void, unknown> {
   const service = new OllamaChatStreamService();
   yield* service.streamChat(options);
 }

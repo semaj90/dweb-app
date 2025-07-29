@@ -558,13 +558,13 @@ class EnhancedCopilotContextProvider {
     code: string,
     cursor_position: [number, number],
     language: string,
-    include_context7: boolean = true
+    include_context7: boolean = true,
   ): Promise<Context7CompatibleResult[]> {
     // 1. Analyze current code context
     const context_analysis = this.analyzer.analyze_code_context(
       code,
       language,
-      cursor_position[0]
+      cursor_position[0],
     );
 
     // 2. Generate intelligent queries
@@ -573,14 +573,14 @@ class EnhancedCopilotContextProvider {
     // 3. Search enhanced local index (PRIORITY)
     const enhanced_results = await this.getEnhancedLocalContext(
       queries.main,
-      language
+      language,
     );
 
     // 4. Get Context7 documentation if enabled
     const context7_results = include_context7
       ? await this.getContext7Documentation(
           context_analysis.libraries,
-          queries.topic
+          queries.topic,
         )
       : [];
 
@@ -588,7 +588,7 @@ class EnhancedCopilotContextProvider {
     return this.combineAndRankResults(
       enhanced_results,
       context7_results,
-      context_analysis
+      context_analysis,
     );
   }
 }
@@ -797,7 +797,7 @@ class VSCodeContextProvider {
   async provideInlineCompletionItems(
     document: vscode.TextDocument,
     position: vscode.Position,
-    context: vscode.InlineCompletionContext
+    context: vscode.InlineCompletionContext,
   ) {
     const code = document.getText();
     const language = document.languageId;
@@ -808,7 +808,7 @@ class VSCodeContextProvider {
       code,
       cursor_pos,
       language,
-      true
+      true,
     );
 
     // Format for VS Code Copilot
@@ -887,7 +887,7 @@ class ErrorBoundary extends Error {
   constructor(
     public code: string,
     public context: any,
-    public severity: "low" | "medium" | "high" | "critical"
+    public severity: "low" | "medium" | "high" | "critical",
   ) {
     super();
   }
@@ -939,9 +939,9 @@ export const filteredEvidence = derived(
   ([$evidence, $query]) => {
     if (!$query) return $evidence;
     return $evidence.filter((item) =>
-      item.title.toLowerCase().includes($query.toLowerCase())
+      item.title.toLowerCase().includes($query.toLowerCase()),
     );
-  }
+  },
 );
 
 // Debounced search
@@ -1068,7 +1068,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.cookies.set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes
+      sessionCookie.attributes,
     );
   }
 
@@ -1077,7 +1077,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.cookies.set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes
+      sessionCookie.attributes,
     );
   }
 

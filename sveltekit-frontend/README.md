@@ -3,13 +3,15 @@
 ## 🚀 Quick Start
 
 ### Option 1: Use the Control Panel (Recommended)
+
 ```batch
 WEB-APP-CONTROL-PANEL.bat
 ```
+
 Select option 1 for complete setup, then option 4 to start the development server.
 
-
 ### Option 2: Manual Setup
+
 ```bash
 # 1. Run the complete setup
 powershell -ExecutionPolicy Bypass -File complete-setup-docker-ollama.ps1
@@ -24,6 +26,7 @@ npm run dev
 ```
 
 ### Option 3: Quick Fix for Errors
+
 ```batch
 FIX-ALL-ERRORS-NOW.bat
 ```
@@ -60,13 +63,13 @@ FIX-ALL-ERRORS-NOW.bat
 
 ## 🛠️ Services
 
-| Service | Port | Purpose | Health Check URL |
-|---------|------|---------|------------------|
-| SvelteKit | 5173 | Web Frontend | http://localhost:5173 |
-| Ollama | 11434 | LLM API | http://localhost:11434/api/tags |
-| PostgreSQL | 5432 | Main Database | - |
-| Qdrant | 6333 | Vector Search | http://localhost:6333/dashboard |
-| Redis | 6379 | Caching | - |
+| Service    | Port  | Purpose       | Health Check URL                |
+| ---------- | ----- | ------------- | ------------------------------- |
+| SvelteKit  | 5173  | Web Frontend  | http://localhost:5173           |
+| Ollama     | 11434 | LLM API       | http://localhost:11434/api/tags |
+| PostgreSQL | 5432  | Main Database | -                               |
+| Qdrant     | 6333  | Vector Search | http://localhost:6333/dashboard |
+| Redis      | 6379  | Caching       | -                               |
 
 ## 📁 Project Structure
 
@@ -111,6 +114,7 @@ REDIS_URL=redis://localhost:6379
 ## 📝 Common Commands
 
 ### Docker Management
+
 ```bash
 # Start all services
 docker-compose up -d
@@ -126,6 +130,7 @@ docker-compose down -v
 ```
 
 ### Ollama Management
+
 ```bash
 # List installed models
 docker exec prosecutor_ollama ollama list
@@ -141,6 +146,7 @@ curl http://localhost:11434/api/generate -d '{
 ```
 
 ### Database Management
+
 ```bash
 # Run migrations
 cd sveltekit-frontend && npm run db:migrate
@@ -155,23 +161,28 @@ npm run db:reset
 ## 🐛 Troubleshooting
 
 ### Docker Issues
+
 - **Docker not starting**: Ensure Docker Desktop is running and WSL2 is enabled
 - **Port conflicts**: Check if ports 5173, 11434, 5432, 6333, 6379 are free
 - **Memory issues**: Increase Docker memory limit in Docker Desktop settings
 
 ### Ollama Issues
+
 - **Models not loading**: Check Docker logs: `docker logs prosecutor_ollama`
 - **Slow responses**: Ensure adequate system memory (8GB+ recommended)
 - **GPU not detected**: Enable GPU support in docker-compose.yml
 
 ### TypeScript Errors
+
 Run the TypeScript fix script:
+
 ```bash
 cd sveltekit-frontend
 node fix-all-typescript-errors.mjs
 ```
 
 ### Database Connection Issues
+
 1. Check PostgreSQL is running: `docker ps`
 2. Verify connection string in .env
 3. Test connection: `docker exec -it prosecutor_postgres psql -U postgres`
@@ -186,6 +197,7 @@ node fix-all-typescript-errors.mjs
 ## 🔐 Security Notes
 
 ⚠️ **Development Configuration Only**
+
 - Change all passwords and secrets before production use
 - Enable authentication on all services
 - Use environment-specific .env files
@@ -201,6 +213,7 @@ node fix-all-typescript-errors.mjs
 ## 🤝 Support
 
 If you encounter issues:
+
 1. Check the logs: `docker-compose logs`
 2. Run the control panel: `WEB-APP-CONTROL-PANEL.bat`
 3. Use option 5 to check service status

@@ -40,7 +40,7 @@ export class LegalAIReranker {
   async rerank(
     annResults: RerankResult[],
     userContext: UserContext,
-    queryEmbedding?: number[]
+    queryEmbedding?: number[],
   ): Promise<RerankResult[]> {
     return annResults
       .map((result) => {
@@ -114,7 +114,7 @@ export class LegalAIReranker {
    */
   private calculateWorkflowScore(
     result: RerankResult,
-    workflowState: string
+    workflowState: string,
   ): number {
     const workflowBoosts = {
       draft: { templates: 1.5, examples: 1.3 },
@@ -133,7 +133,7 @@ export class LegalAIReranker {
    */
   private calculateRecencyScore(
     result: RerankResult,
-    recentActions: string[]
+    recentActions: string[],
   ): number {
     const resultAction = result.metadata?.lastAction as string;
     const actionIndex = recentActions.indexOf(resultAction);
@@ -151,7 +151,7 @@ export class LegalAIReranker {
    */
   async calculateSemanticBoost(
     result: RerankResult,
-    queryEmbedding: number[]
+    queryEmbedding: number[],
   ): Promise<number> {
     if (!result.metadata?.embedding || !queryEmbedding) return 0;
 
@@ -198,16 +198,19 @@ export async function enhancedSearchWithNeo4j(
   query: string,
   userContext: UserContext,
   neo4jContext?: Neo4jPathContext,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<RerankResult[]> {
   // Use existing qdrant service for initial ANN search
   const { qdrantService } = await import("./qdrant-service");
-  
+
   // Generate embedding for the query
   const { nomicEmbeddings } = await import("./nomic-embeddings");
   const embeddingResult = await nomicEmbeddings.embed(query);
-  
-  const annResults = await qdrantService.searchSimilar(embeddingResult.embedding, limit * 2); // Get more for reranking
+
+  const annResults = await qdrantService.searchSimilar(
+    embeddingResult.embedding,
+    limit * 2,
+  ); // Get more for reranking
 
   // Convert to rerank format with Neo4j enrichment
   const rerankInput: RerankResult[] = annResults.map((result: any) => ({
@@ -238,7 +241,7 @@ export async function enhancedSearchWithNeo4j(
  */
 function calculatePathScore(
   result: any,
-  neo4jContext: Neo4jPathContext
+  neo4jContext: Neo4jPathContext,
 ): number {
   let pathScore = 0;
 
@@ -268,7 +271,7 @@ function calculatePathScore(
  */
 function calculateFrequencyScore(
   result: any,
-  neo4jContext: Neo4jPathContext
+  neo4jContext: Neo4jPathContext,
 ): number {
   const nodeId = result.id || result.payload?.nodeId;
   if (!nodeId) return 0;
@@ -281,7 +284,7 @@ function calculateFrequencyScore(
 export async function enhancedSearch(
   query: string,
   userContext: UserContext,
-  limit: number = 10
+  limit: number = 10,
 ): Promise<RerankResult[]> {
   return enhancedSearchWithNeo4j(query, userContext, undefined, limit);
 }

@@ -3,7 +3,7 @@
  * Processor AI - Enhanced UI/UX with AI Foundations
  */
 
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 // Command result store
 export const aiCommandResult = writable(null);
@@ -16,11 +16,16 @@ export const aiCommandResult = writable(null);
 export async function parseAICommand(command) {
   try {
     // Basic command parsing logic
-    const words = command.toLowerCase().split(' ');
+    const words = command.toLowerCase().split(" ");
     const action = words[0];
-    const target = words.find(w => ['evidence', 'case', 'document'].includes(w)) || 'general';
-    const priority = words.find(w => ['high', 'medium', 'low'].includes(w)) || 'medium';
-    const type = words.find(w => ['document', 'image', 'video', 'audio'].includes(w)) || 'document';
+    const target =
+      words.find((w) => ["evidence", "case", "document"].includes(w)) ||
+      "general";
+    const priority =
+      words.find((w) => ["high", "medium", "low"].includes(w)) || "medium";
+    const type =
+      words.find((w) => ["document", "image", "video", "audio"].includes(w)) ||
+      "document";
 
     const result = {
       action,
@@ -28,15 +33,15 @@ export async function parseAICommand(command) {
       priority,
       type,
       timestamp: new Date().toISOString(),
-      processed: true
+      processed: true,
     };
 
     // Update store
     aiCommandResult.set(result);
-    
+
     return result;
   } catch (error) {
-    console.error('AI Command Parse Error:', error);
+    console.error("AI Command Parse Error:", error);
     throw error;
   }
 }
@@ -48,28 +53,28 @@ export async function parseAICommand(command) {
  */
 export function applyAIClasses(element, config = {}) {
   const { add = [], remove = [], toggle = [] } = config;
-  
+
   if (add.length) element.classList.add(...add);
   if (remove.length) element.classList.remove(...remove);
-  if (toggle.length) toggle.forEach(cls => element.classList.toggle(cls));
+  if (toggle.length) toggle.forEach((cls) => element.classList.toggle(cls));
 }
 
 // Simple command service for basic state management
 export const aiCommandService = {
-  state: writable('idle'),
+  state: writable("idle"),
   context: writable({}),
-  
-  send: function(event) {
-    console.log('Processing event:', event);
-    this.state.set('processing');
-    
+
+  send: function (event) {
+    console.log("Processing event:", event);
+    this.state.set("processing");
+
     setTimeout(() => {
-      this.state.set('completed');
-      this.context.update(ctx => ({ ...ctx, lastCommand: event }));
+      this.state.set("completed");
+      this.context.update((ctx) => ({ ...ctx, lastCommand: event }));
     }, 1000);
   },
-  
-  subscribe: function(callback) {
+
+  subscribe: function (callback) {
     return this.state.subscribe(callback);
-  }
+  },
 };

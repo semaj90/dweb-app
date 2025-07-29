@@ -11,8 +11,20 @@ const normalizeEmbedding = (embedding: number[] | number[][]): number[] => {
 // Enhanced AI Service with Local LLM Integration and Vector Database Support
 // Combines cloud (OpenAI/Ollama) and local (Tauri/Rust) LLM capabilities
 // Supports PostgreSQL with pgvector, Qdrant, Redis, RabbitMQ, and Neo4j
-import { env } from "$env/dynamic/private";
+import { browser } from '$app/environment';
+// Use environment variable safely
+const PUBLIC_OLLAMA_URL = typeof window !== 'undefined' 
+  ? 'http://localhost:11434' 
+  : process.env.OLLAMA_URL || 'http://localhost:11434';
 import { tauriLLM } from "./tauri-llm";
+
+// Client-safe configuration
+const AI_CONFIG = {
+  OLLAMA_URL: PUBLIC_OLLAMA_URL || 'http://localhost:11434',
+  OLLAMA_MODEL: 'llama2',
+  // Note: API keys should be handled server-side only
+  OPENAI_API_KEY: null, // Will be passed from server
+} as const;
 
 export type LLMProvider = "openai" | "ollama" | "tauri-local" | "auto";
 export type EmbeddingProvider =
@@ -364,7 +376,7 @@ class EnhancedAIService {
       }
     }
     // Check Ollama availability
-    if (env.OLLAMA_URL) {
+    if (AI_CONFIG.OLLAMA_URL) {
       return "ollama";
     }
     return "openai";
@@ -400,20 +412,17 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
 
     return fullPrompt;
   }
-  // OpenAI embeddings implementation
+  // OpenAI embeddings implementation - should be moved to server-side
   private async generateOpenAIEmbeddings(texts: string[]): Promise<number[][]> {
-    if (!env.OPENAI_API_KEY) {
-      throw new Error("OpenAI API key not configured");
-    }
-    const response = await fetch("https://api.openai.com/v1/embeddings", {
+    // Note: This should be called via API endpoint, not directly in client
+    const response = await fetch("/api/ai/embedding", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${env.OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "text-embedding-ada-002",
-        input: texts,
+        texts: texts,
+        provider: "openai"
       }),
     });
 
@@ -428,13 +437,10 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
     prompt: string,
     options: GenerationOptions,
   ): Promise<string> {
-    if (!env.OPENAI_API_KEY) {
-      throw new Error("OpenAI API key not configured");
-    }
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Use server-side API endpoint for OpenAI calls
+    const response = await fetch("/api/ai/chat", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${env.OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -456,13 +462,13 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
     prompt: string,
     options: GenerationOptions,
   ): Promise<string> {
-    const ollamaUrl = env.OLLAMA_URL || "http://localhost:11434";
+    const ollamaUrl = AI_CONFIG.OLLAMA_URL;
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: env.OLLAMA_MODEL || "llama2",
+        model: AI_CONFIG.OLLAMA_MODEL,
         prompt,
         stream: false,
         options: {

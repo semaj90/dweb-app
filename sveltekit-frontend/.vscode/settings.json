@@ -141,5 +141,8 @@
         "Write-Host 'SvelteKit Development Environment' -ForegroundColor Green; Write-Host 'Remember: Use semicolons (;) not && for PowerShell commands' -ForegroundColor Yellow"
       ]
     }
-  }
+  },
+  // MCP Context7 Assistant custom settings
+  "mcpContext7.serverPort": 40000,
+  "mcpContext7.logLevel": "debug"
 }

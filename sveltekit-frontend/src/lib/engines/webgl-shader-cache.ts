@@ -32,7 +32,7 @@ export class ShaderCache {
   private config: ShaderCacheConfig;
   private programs: Map<string, ShaderProgram> = new Map();
   private persistentCache: Map<string, string> = new Map();
-  
+
   // NVIDIA-optimized shaders for sprite operations
   private readonly spriteVertexShader = `#version 300 es
     precision highp float;
@@ -62,7 +62,7 @@ export class ShaderCache {
       v_opacity = u_opacity;
     }
   `;
-  
+
   private readonly spriteFragmentShader = `#version 300 es
     precision highp float;
     
@@ -104,29 +104,37 @@ export class ShaderCache {
   private initializeCache(): void {
     if (this.config.persistToDisk) {
       try {
-        const cached = localStorage.getItem('neural-sprite-shaders');
+        const cached = localStorage.getItem("neural-sprite-shaders");
         if (cached) {
           const parsed = JSON.parse(cached);
           this.persistentCache = new Map(parsed);
         }
       } catch (error) {
-        console.warn('Failed to load shader cache from storage:', error);
+        console.warn("Failed to load shader cache from storage:", error);
       }
     }
   }
 
   private precompileCommonShaders(): void {
     // Pre-compile essential sprite shaders for NVIDIA optimization
-    this.createProgram('sprite-basic', this.spriteVertexShader, this.spriteFragmentShader);
-    
+    this.createProgram(
+      "sprite-basic",
+      this.spriteVertexShader,
+      this.spriteFragmentShader,
+    );
+
     // Legal document specific shader (high contrast, sharp text)
     const legalFragmentShader = this.spriteFragmentShader.replace(
-      'texColor.rgb = ((texColor.rgb - 0.5) * u_contrast) + 0.5 + u_brightness;',
-      'texColor.rgb = clamp(((texColor.rgb - 0.5) * 1.5) + 0.5, 0.0, 1.0);' // Higher contrast for legal docs
+      "texColor.rgb = ((texColor.rgb - 0.5) * u_contrast) + 0.5 + u_brightness;",
+      "texColor.rgb = clamp(((texColor.rgb - 0.5) * 1.5) + 0.5, 0.0, 1.0);", // Higher contrast for legal docs
     );
-    
-    this.createProgram('sprite-legal', this.spriteVertexShader, legalFragmentShader);
-    
+
+    this.createProgram(
+      "sprite-legal",
+      this.spriteVertexShader,
+      legalFragmentShader,
+    );
+
     // Evidence annotation shader (with highlighting)
     const evidenceFragmentShader = `#version 300 es
       precision highp float;
@@ -151,11 +159,19 @@ export class ShaderCache {
         fragColor = texColor;
       }
     `;
-    
-    this.createProgram('sprite-evidence', this.spriteVertexShader, evidenceFragmentShader);
+
+    this.createProgram(
+      "sprite-evidence",
+      this.spriteVertexShader,
+      evidenceFragmentShader,
+    );
   }
 
-  public createProgram(id: string, vertexSource: string, fragmentSource: string): WebGLProgram | null {
+  public createProgram(
+    id: string,
+    vertexSource: string,
+    fragmentSource: string,
+  ): WebGLProgram | null {
     // Check cache first
     if (this.programs.has(id)) {
       const cached = this.programs.get(id)!;
@@ -171,8 +187,14 @@ export class ShaderCache {
       console.log(`Shader cache hit for ${id}`);
     }
 
-    const vertexShader = this.compileShader(vertexSource, this.gl.VERTEX_SHADER);
-    const fragmentShader = this.compileShader(fragmentSource, this.gl.FRAGMENT_SHADER);
+    const vertexShader = this.compileShader(
+      vertexSource,
+      this.gl.VERTEX_SHADER,
+    );
+    const fragmentShader = this.compileShader(
+      fragmentSource,
+      this.gl.FRAGMENT_SHADER,
+    );
 
     if (!vertexShader || !fragmentShader) {
       return null;
@@ -185,15 +207,18 @@ export class ShaderCache {
 
     this.gl.attachShader(program, vertexShader);
     this.gl.attachShader(program, fragmentShader);
-    
+
     // NVIDIA optimization: Bind attribute locations before linking
-    this.gl.bindAttribLocation(program, 0, 'a_position');
-    this.gl.bindAttribLocation(program, 1, 'a_texCoord');
-    
+    this.gl.bindAttribLocation(program, 0, "a_position");
+    this.gl.bindAttribLocation(program, 1, "a_texCoord");
+
     this.gl.linkProgram(program);
 
     if (!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)) {
-      console.error('Shader program linking failed:', this.gl.getProgramInfoLog(program));
+      console.error(
+        "Shader program linking failed:",
+        this.gl.getProgramInfoLog(program),
+      );
       this.gl.deleteProgram(program);
       return null;
     }
@@ -201,8 +226,11 @@ export class ShaderCache {
     // Cache uniform and attribute locations
     const uniforms: Record<string, WebGLUniformLocation> = {};
     const attributes: Record<string, number> = {};
-    
-    const uniformCount = this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS);
+
+    const uniformCount = this.gl.getProgramParameter(
+      program,
+      this.gl.ACTIVE_UNIFORMS,
+    );
     for (let i = 0; i < uniformCount; i++) {
       const info = this.gl.getActiveUniform(program, i);
       if (info) {
@@ -213,7 +241,10 @@ export class ShaderCache {
       }
     }
 
-    const attributeCount = this.gl.getProgramParameter(program, this.gl.ACTIVE_ATTRIBUTES);
+    const attributeCount = this.gl.getProgramParameter(
+      program,
+      this.gl.ACTIVE_ATTRIBUTES,
+    );
     for (let i = 0; i < attributeCount; i++) {
       const info = this.gl.getActiveAttrib(program, i);
       if (info) {
@@ -227,7 +258,7 @@ export class ShaderCache {
       uniforms,
       attributes,
       lastUsed: Date.now(),
-      complexity: this.calculateComplexity(vertexSource, fragmentSource)
+      complexity: this.calculateComplexity(vertexSource, fragmentSource),
     };
 
     this.programs.set(id, shaderProgram);
@@ -242,12 +273,12 @@ export class ShaderCache {
 
   public async precompileForSprite(sprite: any): Promise<void> {
     // Determine optimal shader based on sprite metadata
-    let shaderId = 'sprite-basic';
-    
-    if (sprite.metadata?.triggers?.includes('legal_document')) {
-      shaderId = 'sprite-legal';
-    } else if (sprite.metadata?.triggers?.includes('evidence_annotation')) {
-      shaderId = 'sprite-evidence';
+    let shaderId = "sprite-basic";
+
+    if (sprite.metadata?.triggers?.includes("legal_document")) {
+      shaderId = "sprite-legal";
+    } else if (sprite.metadata?.triggers?.includes("evidence_annotation")) {
+      shaderId = "sprite-evidence";
     }
 
     // Ensure shader is compiled and warmed up
@@ -259,26 +290,28 @@ export class ShaderCache {
     }
   }
 
-  public applyTransforms(transforms: NonNullable<SpriteTransforms['webgl']>): void {
+  public applyTransforms(
+    transforms: NonNullable<SpriteTransforms["webgl"]>,
+  ): void {
     const currentProgram = this.getCurrentProgram();
     if (!currentProgram) return;
 
     // Apply matrix transform
-    const matrixLocation = currentProgram.uniforms['u_transform'];
+    const matrixLocation = currentProgram.uniforms["u_transform"];
     if (matrixLocation) {
       this.gl.uniformMatrix4fv(matrixLocation, false, transforms.matrix);
     }
 
     // Apply opacity
-    const opacityLocation = currentProgram.uniforms['u_opacity'];
+    const opacityLocation = currentProgram.uniforms["u_opacity"];
     if (opacityLocation) {
       this.gl.uniform1f(opacityLocation, transforms.opacity);
     }
 
     // Set blend mode
-    if (transforms.blend === 'multiply') {
+    if (transforms.blend === "multiply") {
       this.gl.blendFunc(this.gl.DST_COLOR, this.gl.ZERO);
-    } else if (transforms.blend === 'screen') {
+    } else if (transforms.blend === "screen") {
       this.gl.blendFunc(this.gl.ONE_MINUS_DST_COLOR, this.gl.ONE);
     } else {
       this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
@@ -295,7 +328,10 @@ export class ShaderCache {
     this.gl.compileShader(shader);
 
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-      console.error('Shader compilation failed:', this.gl.getShaderInfoLog(shader));
+      console.error(
+        "Shader compilation failed:",
+        this.gl.getShaderInfoLog(shader),
+      );
       this.gl.deleteShader(shader);
       return null;
     }
@@ -315,14 +351,22 @@ export class ShaderCache {
     return null;
   }
 
-  private generateCacheKey(vertexSource: string, fragmentSource: string): string {
+  private generateCacheKey(
+    vertexSource: string,
+    fragmentSource: string,
+  ): string {
     // Simple hash for cache key
     return btoa(vertexSource + fragmentSource).substring(0, 16);
   }
 
-  private calculateComplexity(vertexSource: string, fragmentSource: string): number {
+  private calculateComplexity(
+    vertexSource: string,
+    fragmentSource: string,
+  ): number {
     // Simple complexity calculation based on shader operations
-    const operations = (vertexSource + fragmentSource).match(/(\*|\/|\+|\-|texture|mix|clamp)/g);
+    const operations = (vertexSource + fragmentSource).match(
+      /(\*|\/|\+|\-|texture|mix|clamp)/g,
+    );
     return operations ? operations.length : 1;
   }
 
@@ -332,11 +376,12 @@ export class ShaderCache {
     }
 
     // Sort by last used time and remove oldest
-    const sorted = Array.from(this.programs.entries())
-      .sort(([,a], [,b]) => a.lastUsed - b.lastUsed);
-    
+    const sorted = Array.from(this.programs.entries()).sort(
+      ([, a], [, b]) => a.lastUsed - b.lastUsed,
+    );
+
     const toRemove = sorted.slice(0, sorted.length - this.config.cacheSize);
-    
+
     for (const [id, program] of toRemove) {
       this.gl.deleteProgram(program.program);
       this.programs.delete(id);
@@ -354,19 +399,25 @@ export class ShaderCache {
     // Save persistent cache
     if (this.config.persistToDisk) {
       try {
-        localStorage.setItem('neural-sprite-shaders', 
-          JSON.stringify(Array.from(this.persistentCache.entries())));
+        localStorage.setItem(
+          "neural-sprite-shaders",
+          JSON.stringify(Array.from(this.persistentCache.entries())),
+        );
       } catch (error) {
-        console.warn('Failed to save shader cache to storage:', error);
+        console.warn("Failed to save shader cache to storage:", error);
       }
     }
   }
 
-  public getStats(): { programCount: number; cacheHits: number; memoryUsage: number } {
+  public getStats(): {
+    programCount: number;
+    cacheHits: number;
+    memoryUsage: number;
+  } {
     return {
       programCount: this.programs.size,
       cacheHits: this.persistentCache.size,
-      memoryUsage: this.programs.size * 1024 // Rough estimate
+      memoryUsage: this.programs.size * 1024, // Rough estimate
     };
   }
 }

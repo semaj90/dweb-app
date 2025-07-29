@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ params }) => {
     console.error("Error fetching POIs:", error);
     return json(
       { error: "Failed to fetch persons of interest" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -28,6 +28,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
     const caseId = params.caseId;
     const data = await request.json();
 
+    // Remove posX/posY, use position object if needed
     const [poi] = await db
       .insert(personsOfInterest)
       .values({
@@ -40,8 +41,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
           why: "",
           how: "",
         },
-        posX: data.posX || 100,
-        posY: data.posY || 100,
+        position: data.position || {},
         relationship: data.relationship,
         threatLevel: data.threatLevel || "low",
         status: data.status || "active",
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
     console.error("Error creating POI:", error);
     return json(
       { error: "Failed to create person of interest" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };

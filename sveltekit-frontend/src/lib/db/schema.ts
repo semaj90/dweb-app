@@ -1,7 +1,15 @@
 // Main Drizzle Schema - Legal AI Case Management System
 // This is the central schema file that Drizzle expects
 
-import { pgTable, text, timestamp, uuid, integer, jsonb, boolean, vector } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  integer,
+  jsonb,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // Users table
@@ -24,7 +32,9 @@ export const cases = pgTable("cases", {
   status: text("status").notNull().default("active"), // active, closed, archived
   priority: text("priority").default("medium"), // low, medium, high, urgent
   assignedTo: uuid("assigned_to").references(() => users.id),
-  createdBy: uuid("created_by").references(() => users.id).notNull(),
+  createdBy: uuid("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   metadata: jsonb("metadata"),
@@ -33,7 +43,9 @@ export const cases = pgTable("cases", {
 // Evidence table
 export const evidence = pgTable("evidence", {
   id: uuid("id").primaryKey().defaultRandom(),
-  caseId: uuid("case_id").references(() => cases.id).notNull(),
+  caseId: uuid("case_id")
+    .references(() => cases.id)
+    .notNull(),
   title: text("title").notNull(),
   description: text("description"),
   type: text("type").notNull(), // document, image, video, audio, physical, digital
@@ -42,7 +54,9 @@ export const evidence = pgTable("evidence", {
   fileSize: integer("file_size"), // File size in bytes
   mimeType: text("mime_type"), // MIME type of file
   hash: text("hash"), // File hash for integrity
-  createdBy: uuid("created_by").references(() => users.id).notNull(),
+  createdBy: uuid("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   metadata: jsonb("metadata"), // Additional metadata (tags, analysis results, etc.)
 });
@@ -55,9 +69,11 @@ export const documents = pgTable("documents", {
   filename: text("filename").notNull(),
   filePath: text("file_path").notNull(),
   extractedText: text("extracted_text"),
-  embeddings: vector("embeddings", { dimensions: 384 }), // Vector embeddings for similarity search
+  embeddings: text("embeddings"), // Vector embeddings stored as text for similarity search
   analysis: jsonb("analysis"), // AI analysis results
-  createdBy: uuid("created_by").references(() => users.id).notNull(),
+  createdBy: uuid("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -65,11 +81,15 @@ export const documents = pgTable("documents", {
 // Notes table
 export const notes = pgTable("notes", {
   id: uuid("id").primaryKey().defaultRandom(),
-  caseId: uuid("case_id").references(() => cases.id).notNull(),
+  caseId: uuid("case_id")
+    .references(() => cases.id)
+    .notNull(),
   evidenceId: uuid("evidence_id").references(() => evidence.id),
   content: text("content").notNull(),
   isPrivate: boolean("is_private").default(false),
-  createdBy: uuid("created_by").references(() => users.id).notNull(),
+  createdBy: uuid("created_by")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -78,7 +98,9 @@ export const notes = pgTable("notes", {
 export const aiHistory = pgTable("ai_history", {
   id: uuid("id").primaryKey().defaultRandom(),
   caseId: uuid("case_id").references(() => cases.id),
-  userId: uuid("user_id").references(() => users.id).notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
   prompt: text("prompt").notNull(),
   response: text("response").notNull(),
   model: text("model").notNull(),
@@ -91,8 +113,12 @@ export const aiHistory = pgTable("ai_history", {
 // Collaboration sessions (for real-time collaboration)
 export const collaborationSessions = pgTable("collaboration_sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
-  caseId: uuid("case_id").references(() => cases.id).notNull(),
-  userId: uuid("user_id").references(() => users.id).notNull(),
+  caseId: uuid("case_id")
+    .references(() => cases.id)
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
   sessionId: text("session_id").notNull(),
   isActive: boolean("is_active").default(true),
   lastActivity: timestamp("last_activity").defaultNow().notNull(),
@@ -181,16 +207,19 @@ export const aiHistoryRelations = relations(aiHistory, ({ one }) => ({
   }),
 }));
 
-export const collaborationSessionsRelations = relations(collaborationSessions, ({ one }) => ({
-  case: one(cases, {
-    fields: [collaborationSessions.caseId],
-    references: [cases.id],
+export const collaborationSessionsRelations = relations(
+  collaborationSessions,
+  ({ one }) => ({
+    case: one(cases, {
+      fields: [collaborationSessions.caseId],
+      references: [cases.id],
+    }),
+    user: one(users, {
+      fields: [collaborationSessions.userId],
+      references: [users.id],
+    }),
   }),
-  user: one(users, {
-    fields: [collaborationSessions.userId],
-    references: [users.id],
-  }),
-}));
+);
 
 // Export types for TypeScript
 export type User = typeof users.$inferSelect;

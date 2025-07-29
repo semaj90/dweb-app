@@ -6,7 +6,7 @@ import type { AgentTrigger, SemanticAuditResult } from "./types";
 
 // Mock: Trigger agent actions for audit TODOs/errors
 export async function triggerAgentActions(
-  auditResults: SemanticAuditResult[]
+  auditResults: SemanticAuditResult[],
 ): Promise<AgentTrigger[]> {
   // TODO: Replace with real agent orchestration logic
   const triggers: AgentTrigger[] = auditResults
@@ -26,11 +26,13 @@ export async function triggerAgentActions(
 // import { mcp_memory_create_relations, mcp_context7_resolve-library-id } from '#context7';
 // export async function wireUpContext7Agents(...) { ... }// Phase 10: Agent Integration (CrewAI/Autogen) - stub
 // TODO: Replace with real agent orchestration after test
-import { createMemoryRelation, resolveLibraryId } from "./mcp-helpers";
+import { resolveLibraryId } from "./mcp-helpers";
 
 export async function triggerAgentAction(auditResult: any) {
   // Example: Use Context7 helpers to relate audit result to agent action
   const libId = await resolveLibraryId(auditResult.step);
+  // Dynamic import to avoid circular dependencies
+  const { createMemoryRelation } = await import("./mcp-helpers");
   await createMemoryRelation(auditResult.id, "needs_fix", libId);
   // TODO: Call CrewAI/Autogen API to trigger code review/fix
   // e.g., await fetch('/api/agent/trigger', { ... })

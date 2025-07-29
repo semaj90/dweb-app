@@ -23,8 +23,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     const sortBy = url.searchParams.get("sortBy") || "scheduledFor";
     const sortOrder = url.searchParams.get("sortOrder") || "asc";
 
-    // Build base query
-    let queryBuilder = db.select().from(caseActivities);
+    // Build filters
     const filters: any[] = [];
 
     // Add case filter
@@ -57,11 +56,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       );
     }
 
-    // Apply filters to the query builder
-    if (filters.length > 0) {
-      queryBuilder = queryBuilder.where(and(...filters));
-    }
-
     // Determine the column for sorting
     const orderColumn =
       sortBy === "title"
@@ -76,24 +70,35 @@ export const GET: RequestHandler = async ({ locals, url }) => {
                 ? caseActivities.completedAt
                 : caseActivities.createdAt; // Default to createdAt
 
-    // Apply sorting to the query builder
-    queryBuilder = queryBuilder.orderBy(
+    // Build the main query
+    const baseQuery = db.select().from(caseActivities);
+    
+    let finalQuery;
+    if (filters.length > 0) {
+      finalQuery = baseQuery.where(and(...filters));
+    } else {
+      finalQuery = baseQuery;
+    }
+    
+    const orderedQuery = finalQuery.orderBy(
       sortOrder === "asc" ? orderColumn : desc(orderColumn),
     );
+    
+    const activityResults = await orderedQuery.limit(limit).offset(offset);
 
-    // Apply pagination to the query builder
-    queryBuilder = queryBuilder.limit(limit).offset(offset);
-
-    const activityResults = await queryBuilder;
-
-    // Get total count for pagination (using the same filters)
-    let countQuery = db
+    // Get total count for pagination
+    const baseCountQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(caseActivities);
+    
+    let finalCountQuery;
     if (filters.length > 0) {
-      countQuery = countQuery.where(and(...filters));
+      finalCountQuery = baseCountQuery.where(and(...filters));
+    } else {
+      finalCountQuery = baseCountQuery;
     }
-    const totalCountResult = await countQuery;
+    
+    const totalCountResult = await finalCountQuery;
     const totalCount = totalCountResult[0]?.count || 0;
 
     return json({

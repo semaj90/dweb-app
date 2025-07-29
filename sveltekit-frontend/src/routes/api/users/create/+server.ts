@@ -1,4 +1,6 @@
-import { createUser } from "$lib/server/db/seed";
+import { db } from '$lib/server/db';
+import { users } from '$lib/server/db/schema';
+import type { NewUser } from '$lib/server/db/schema-postgres';
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 
@@ -23,7 +25,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       );
     }
     // Create the user
-    const result = await createUser({
+    const newUser = {
       email: userData.email,
       name: userData.name,
       firstName: userData.firstName,
@@ -31,20 +33,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       role: userData.role || "prosecutor",
       password: userData.password || "password123",
       avatarUrl: userData.avatarUrl,
-    });
+    } as const;
+    
+    const result = await db.insert(users).values(newUser).returning();
 
-    if (result.success) {
+    if (result.length > 0) {
       return json({
         success: true,
-        message: result.message,
-        user: result.user,
+        message: "User created successfully",
+        user: result[0],
       });
     } else {
       return json(
         {
           success: false,
-          message: result.message,
-          error: result.error,
+          message: "Failed to create user",
+          error: "Database insertion failed",
         },
         { status: 500 },
       );

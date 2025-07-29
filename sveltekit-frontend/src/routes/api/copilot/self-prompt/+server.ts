@@ -3,22 +3,22 @@
  * Enables Copilot to leverage comprehensive AI orchestration for autonomous problem-solving
  */
 
-import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { copilotSelfPrompt } from '$lib/utils/copilot-self-prompt.js';
-import type { CopilotSelfPromptOptions } from '$lib/utils/copilot-self-prompt.js';
+import { json, error } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
+import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt.js";
+import type { CopilotSelfPromptOptions } from "$lib/utils/copilot-self-prompt.js";
 
 export const POST: RequestHandler = async ({ request, url }) => {
   try {
     const body = await request.json();
-    const { 
-      prompt, 
+    const {
+      prompt,
       options = {},
-      mode = 'comprehensive' // 'quick', 'comprehensive', 'autonomous'
+      mode = "comprehensive", // 'quick', 'comprehensive', 'autonomous'
     } = body;
 
-    if (!prompt || typeof prompt !== 'string') {
-      throw error(400, 'Invalid prompt: must be a non-empty string');
+    if (!prompt || typeof prompt !== "string") {
+      throw error(400, "Invalid prompt: must be a non-empty string");
     }
 
     // Configure options based on mode
@@ -27,11 +27,11 @@ export const POST: RequestHandler = async ({ request, url }) => {
       ...getModeConfiguration(mode),
       context: {
         projectPath: process.cwd(),
-        platform: 'webapp',
-        urgency: 'medium',
+        platform: "webapp",
+        urgency: "medium",
         includeTests: true,
-        ...options.context
-      }
+        ...options.context,
+      },
     };
 
     console.log(`🤖 Copilot self-prompt request: ${mode} mode`);
@@ -41,68 +41,73 @@ export const POST: RequestHandler = async ({ request, url }) => {
     const result = await copilotSelfPrompt(prompt, processedOptions);
 
     // Format response based on requested output format
-    const response = formatResponse(result, options.outputFormat || 'structured');
+    const response = formatResponse(
+      result,
+      options.outputFormat || "structured",
+    );
 
     return json({
       success: true,
       mode,
       timestamp: new Date().toISOString(),
-      ...response
+      ...response,
     });
-
   } catch (err) {
-    console.error('❌ Copilot self-prompt API error:', err);
-    
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    const statusCode = err && typeof err === 'object' && 'status' in err ? 
-      (err as any).status : 500;
-    
+    console.error("❌ Copilot self-prompt API error:", err);
+
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    const statusCode =
+      err && typeof err === "object" && "status" in err
+        ? (err as any).status
+        : 500;
+
     throw error(statusCode, errorMessage);
   }
 };
 
 export const GET: RequestHandler = async ({ url }) => {
   // Health check and status endpoint
-  const mode = url.searchParams.get('mode');
-  
-  if (mode === 'status') {
+  const mode = url.searchParams.get("mode");
+
+  if (mode === "status") {
     return json({
-      status: 'operational',
+      status: "operational",
       services: {
         autonomousEngineering: true,
         multiAgent: true,
         semanticSearch: true,
         memoryMCP: true,
-        serviceWorkers: true
+        serviceWorkers: true,
       },
       capabilities: [
-        'comprehensive-analysis',
-        'multi-agent-orchestration',
-        'autonomous-engineering',
-        'semantic-search',
-        'memory-integration',
-        'self-synthesis',
-        'execution-planning'
+        "comprehensive-analysis",
+        "multi-agent-orchestration",
+        "autonomous-engineering",
+        "semantic-search",
+        "memory-integration",
+        "self-synthesis",
+        "execution-planning",
       ],
-      supportedModes: ['quick', 'comprehensive', 'autonomous'],
-      outputFormats: ['json', 'markdown', 'structured']
+      supportedModes: ["quick", "comprehensive", "autonomous"],
+      outputFormats: ["json", "markdown", "structured"],
     });
   }
 
-  if (mode === 'examples') {
+  if (mode === "examples") {
     return json({
-      examples: getCopilotUsageExamples()
+      examples: getCopilotUsageExamples(),
     });
   }
 
   return json({
-    message: 'Copilot Self-Prompt API',
+    message: "Copilot Self-Prompt API",
     endpoints: {
-      'POST /api/copilot/self-prompt': 'Execute comprehensive AI analysis',
-      'GET /api/copilot/self-prompt?mode=status': 'Service status and capabilities',
-      'GET /api/copilot/self-prompt?mode=examples': 'Usage examples'
+      "POST /api/copilot/self-prompt": "Execute comprehensive AI analysis",
+      "GET /api/copilot/self-prompt?mode=status":
+        "Service status and capabilities",
+      "GET /api/copilot/self-prompt?mode=examples": "Usage examples",
     },
-    version: '1.0.0'
+    version: "1.0.0",
   });
 };
 
@@ -111,34 +116,34 @@ export const GET: RequestHandler = async ({ url }) => {
  */
 function getModeConfiguration(mode: string): Partial<CopilotSelfPromptOptions> {
   switch (mode) {
-    case 'quick':
+    case "quick":
       return {
         useSemanticSearch: true,
         useMemory: false,
         useMultiAgent: false,
         useAutonomousEngineering: false,
         enableSelfSynthesis: false,
-        outputFormat: 'structured'
+        outputFormat: "structured",
       };
 
-    case 'comprehensive':
+    case "comprehensive":
       return {
         useSemanticSearch: true,
         useMemory: true,
         useMultiAgent: true,
         useAutonomousEngineering: false,
         enableSelfSynthesis: true,
-        outputFormat: 'structured'
+        outputFormat: "structured",
       };
 
-    case 'autonomous':
+    case "autonomous":
       return {
         useSemanticSearch: true,
         useMemory: true,
         useMultiAgent: true,
         useAutonomousEngineering: true,
         enableSelfSynthesis: true,
-        outputFormat: 'structured'
+        outputFormat: "structured",
       };
 
     default:
@@ -148,7 +153,7 @@ function getModeConfiguration(mode: string): Partial<CopilotSelfPromptOptions> {
         useMultiAgent: true,
         useAutonomousEngineering: true,
         enableSelfSynthesis: true,
-        outputFormat: 'structured'
+        outputFormat: "structured",
       };
   }
 }
@@ -158,20 +163,20 @@ function getModeConfiguration(mode: string): Partial<CopilotSelfPromptOptions> {
  */
 function formatResponse(result: any, outputFormat: string) {
   switch (outputFormat) {
-    case 'json':
+    case "json":
       return {
         data: result,
-        format: 'json'
+        format: "json",
       };
 
-    case 'markdown':
+    case "markdown":
       return {
         analysis: formatAsMarkdown(result),
         data: result,
-        format: 'markdown'
+        format: "markdown",
       };
 
-    case 'structured':
+    case "structured":
     default:
       return {
         analysis: result.synthesizedOutput,
@@ -180,7 +185,7 @@ function formatResponse(result: any, outputFormat: string) {
         executionPlan: result.executionPlan,
         selfPrompt: result.selfPrompt,
         metadata: result.metadata,
-        format: 'structured'
+        format: "structured",
       };
   }
 }
@@ -196,26 +201,37 @@ function formatAsMarkdown(result: any): string {
 ${result.synthesizedOutput}
 
 ## Next Actions
-${result.nextActions.map((action: any, index: number) => 
-  `${index + 1}. **${action.description}** (${action.priority} priority, ~${action.estimatedTime}min)`
-).join('\n')}
+${result.nextActions
+  .map(
+    (action: any, index: number) =>
+      `${index + 1}. **${action.description}** (${action.priority} priority, ~${action.estimatedTime}min)`,
+  )
+  .join("\n")}
 
 ## Strategic Recommendations
-${result.recommendations.map((rec: any, index: number) => 
-  `${index + 1}. **${rec.title}**: ${rec.description} (Impact: ${rec.impact}, Effort: ${rec.effort})`
-).join('\n')}
+${result.recommendations
+  .map(
+    (rec: any, index: number) =>
+      `${index + 1}. **${rec.title}**: ${rec.description} (Impact: ${rec.impact}, Effort: ${rec.effort})`,
+  )
+  .join("\n")}
 
 ## Execution Plan
-${result.executionPlan?.phases?.map((phase: any, index: number) => 
-  `### Phase ${index + 1}: ${phase.name}
+${
+  result.executionPlan?.phases
+    ?.map(
+      (phase: any, index: number) =>
+        `### Phase ${index + 1}: ${phase.name}
 - Actions: ${phase.actions.length}
-- Parallel: ${phase.canRunInParallel ? 'Yes' : 'No'}`
-).join('\n') || 'No execution plan generated'}
+- Parallel: ${phase.canRunInParallel ? "Yes" : "No"}`,
+    )
+    .join("\n") || "No execution plan generated"
+}
 
 ## Metadata
 - **Processing Time**: ${result.metadata.processingTime}ms
 - **Confidence**: ${Math.round(result.metadata.confidence * 100)}%
-- **Sources**: ${result.metadata.sources.join(', ')}
+- **Sources**: ${result.metadata.sources.join(", ")}
 - **Tokens Used**: ${result.metadata.tokensUsed}
 
 ## Self-Prompt for Copilot
@@ -229,113 +245,121 @@ ${result.selfPrompt}
 function getCopilotUsageExamples() {
   return [
     {
-      title: 'Basic Problem Analysis',
-      description: 'Analyze a general development issue',
+      title: "Basic Problem Analysis",
+      description: "Analyze a general development issue",
       request: {
-        prompt: 'I have TypeScript errors in my SvelteKit application',
+        prompt: "I have TypeScript errors in my SvelteKit application",
         options: {
-          mode: 'comprehensive'
-        }
+          mode: "comprehensive",
+        },
       },
       curl: `curl -X POST http://localhost:5173/api/copilot/self-prompt \\
   -H "Content-Type: application/json" \\
-  -d '{"prompt": "I have TypeScript errors in my SvelteKit application", "mode": "comprehensive"}'`
+  -d '{"prompt": "I have TypeScript errors in my SvelteKit application", "mode": "comprehensive"}'`,
     },
     {
-      title: 'Autonomous Engineering',
-      description: 'Full autonomous problem-solving across all platforms',
+      title: "Autonomous Engineering",
+      description: "Full autonomous problem-solving across all platforms",
       request: {
-        prompt: 'Our application has performance issues and needs optimization',
+        prompt: "Our application has performance issues and needs optimization",
         options: {
-          mode: 'autonomous',
+          mode: "autonomous",
           context: {
-            platform: 'all',
-            urgency: 'high',
-            includeTests: true
-          }
-        }
-      },
-      curl: `curl -X POST http://localhost:5173/api/copilot/self-prompt \\
-  -H "Content-Type: application/json" \\
-  -d '{"prompt": "Our application has performance issues and needs optimization", "mode": "autonomous", "options": {"context": {"platform": "all", "urgency": "high"}}}'`
-    },
-    {
-      title: 'Quick Analysis',
-      description: 'Fast semantic search without full orchestration',
-      request: {
-        prompt: 'How do I implement authentication in SvelteKit?',
-        options: {
-          mode: 'quick',
-          outputFormat: 'markdown'
-        }
-      },
-      curl: `curl -X POST http://localhost:5173/api/copilot/self-prompt \\
-  -H "Content-Type: application/json" \\
-  -d '{"prompt": "How do I implement authentication in SvelteKit?", "mode": "quick", "options": {"outputFormat": "markdown"}}'`
-    },
-    {
-      title: 'Multi-Agent Legal Analysis',
-      description: 'Legal-specific analysis with specialized agents',
-      request: {
-        prompt: 'Analyze this contract for potential legal issues and compliance requirements',
-        options: {
-          mode: 'comprehensive',
-          context: {
-            platform: 'webapp',
-            urgency: 'medium'
+            platform: "all",
+            urgency: "high",
+            includeTests: true,
           },
-          outputFormat: 'structured'
-        }
+        },
       },
       curl: `curl -X POST http://localhost:5173/api/copilot/self-prompt \\
   -H "Content-Type: application/json" \\
-  -d '{"prompt": "Analyze this contract for potential legal issues", "mode": "comprehensive"}'`
+  -d '{"prompt": "Our application has performance issues and needs optimization", "mode": "autonomous", "options": {"context": {"platform": "all", "urgency": "high"}}}'`,
     },
     {
-      title: 'VS Code Extension Integration',
-      description: 'Integration with Cline, Roo, and other VS Code extensions',
+      title: "Quick Analysis",
+      description: "Fast semantic search without full orchestration",
       request: {
-        prompt: 'Generate a comprehensive plan to fix all errors in the current workspace',
+        prompt: "How do I implement authentication in SvelteKit?",
         options: {
-          mode: 'autonomous',
-          context: {
-            targetExtensions: ['cline', 'roo', 'copilot'],
-            platform: 'all',
-            urgency: 'critical',
-            includeTests: true
-          },
-          outputFormat: 'json'
-        }
+          mode: "quick",
+          outputFormat: "markdown",
+        },
       },
       curl: `curl -X POST http://localhost:5173/api/copilot/self-prompt \\
   -H "Content-Type: application/json" \\
-  -d '{"prompt": "Generate a comprehensive plan to fix all errors", "mode": "autonomous", "options": {"context": {"targetExtensions": ["cline", "roo", "copilot"], "urgency": "critical"}}}'`
-    }
+  -d '{"prompt": "How do I implement authentication in SvelteKit?", "mode": "quick", "options": {"outputFormat": "markdown"}}'`,
+    },
+    {
+      title: "Multi-Agent Legal Analysis",
+      description: "Legal-specific analysis with specialized agents",
+      request: {
+        prompt:
+          "Analyze this contract for potential legal issues and compliance requirements",
+        options: {
+          mode: "comprehensive",
+          context: {
+            platform: "webapp",
+            urgency: "medium",
+          },
+          outputFormat: "structured",
+        },
+      },
+      curl: `curl -X POST http://localhost:5173/api/copilot/self-prompt \\
+  -H "Content-Type: application/json" \\
+  -d '{"prompt": "Analyze this contract for potential legal issues", "mode": "comprehensive"}'`,
+    },
+    {
+      title: "VS Code Extension Integration",
+      description: "Integration with Cline, Roo, and other VS Code extensions",
+      request: {
+        prompt:
+          "Generate a comprehensive plan to fix all errors in the current workspace",
+        options: {
+          mode: "autonomous",
+          context: {
+            targetExtensions: ["cline", "roo", "copilot"],
+            platform: "all",
+            urgency: "critical",
+            includeTests: true,
+          },
+          outputFormat: "json",
+        },
+      },
+      curl: `curl -X POST http://localhost:5173/api/copilot/self-prompt \\
+  -H "Content-Type: application/json" \\
+  -d '{"prompt": "Generate a comprehensive plan to fix all errors", "mode": "autonomous", "options": {"context": {"targetExtensions": ["cline", "roo", "copilot"], "urgency": "critical"}}}'`,
+    },
   ];
 }
 
 // Helper function to validate request body
-function validateRequestBody(body: any): { isValid: boolean; errors: string[] } {
+function validateRequestBody(body: any): {
+  isValid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   if (!body.prompt) {
-    errors.push('prompt is required');
-  } else if (typeof body.prompt !== 'string') {
-    errors.push('prompt must be a string');
+    errors.push("prompt is required");
+  } else if (typeof body.prompt !== "string") {
+    errors.push("prompt must be a string");
   } else if (body.prompt.trim().length === 0) {
-    errors.push('prompt cannot be empty');
+    errors.push("prompt cannot be empty");
   }
 
-  if (body.mode && !['quick', 'comprehensive', 'autonomous'].includes(body.mode)) {
-    errors.push('mode must be one of: quick, comprehensive, autonomous');
+  if (
+    body.mode &&
+    !["quick", "comprehensive", "autonomous"].includes(body.mode)
+  ) {
+    errors.push("mode must be one of: quick, comprehensive, autonomous");
   }
 
-  if (body.options && typeof body.options !== 'object') {
-    errors.push('options must be an object');
+  if (body.options && typeof body.options !== "object") {
+    errors.push("options must be an object");
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }

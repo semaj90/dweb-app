@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import { writable, derived } from 'svelte/store';
 	import { Button } from 'bits-ui';
 	import { Card } from 'bits-ui';
@@ -11,9 +11,9 @@
 	import { Switch } from 'bits-ui';
 	import { GEMMA3_CONFIG, LEGAL_AI_PROMPTS } from '$lib/config/gemma3-legal-config';
 	import { ollamaService } from '$lib/services/ollama-service';
-	import { createMachine, interpret } from 'xstate';
+	import { createMachine } from 'xstate';
 	import { useMachine } from '@xstate/svelte';
-	import type { ChatMessage, AIModel, StreamResponse } from '$lib/types/ai';
+	import type { ChatMessage, AIModel } from '$lib/types/ai';
 
 	// Component props
 	export let modelName: string = GEMMA3_CONFIG.model.name;
@@ -21,12 +21,11 @@
 	export let enableContext: boolean = true;
 	export let maxTokens: number = 2048;
 
-	// Event dispatcher
-	const dispatch = createEventDispatcher<{
-		messagesSent: { messages: ChatMessage[] };
-		modelChanged: { model: string };
-		error: { error: string };
-	}>();
+	// Event dispatcher (use custom event dispatching to avoid deprecated createEventDispatcher)
+	function dispatchEvent(name: string, detail: any) {
+		const event = new CustomEvent(name, { detail });
+		dispatchEvent(event);
+	}
 
 	// Stores
 	const messages = writable<ChatMessage[]>([]);
@@ -47,8 +46,8 @@
 		id: 'chat',
 		initial: 'idle',
 		context: {
-			messages: [],
-			error: null,
+			messages: [] as ChatMessage[],
+			error: null as string | null,
 			model: modelName
 		},
 		states: {
@@ -75,19 +74,19 @@
 		}
 	}, {
 		actions: {
-			updateModel: (context, event) => {
+			updateModel: (context: any, event: { model: string }) => {
 				context.model = event.model;
 			},
-			clearMessages: (context) => {
+			clearMessages: (context: any) => {
 				context.messages = [];
 			},
-			addStreamToken: (context, event) => {
+			addStreamToken: (_context: any, _event: any) => {
 				// Handle streaming tokens
 			},
-			completeMessage: (context, event) => {
+			completeMessage: (context: any, event: { message: ChatMessage }) => {
 				context.messages.push(event.message);
 			},
-			setError: (context, event) => {
+			setError: (context: any, event: { error: string }) => {
 				context.error = event.error;
 			}
 		}
@@ -108,7 +107,7 @@
 		try {
 			const models = await ollamaService.listModels();
 			availableModels.set(models);
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Failed to load models:', error);
 			// Use fallback
 			availableModels.set([
@@ -120,6 +119,17 @@
 
 	// Send message function
 	async function sendMessage() {
+		let $canSend: boolean;
+		let $currentModel: string;
+		let $streamingEnabled: boolean;
+		let $contextEnabled: boolean;
+		let $messages: ChatMessage[];
+		canSend.subscribe(v => $canSend = v)();
+		currentModel.subscribe(v => $currentModel = v)();
+		streamingEnabled.subscribe(v => $streamingEnabled = v)();
+		contextEnabled.subscribe(v => $contextEnabled = v)();
+		messages.subscribe(v => $messages = v)();
+
 		if (!$canSend) return;
 
 		const userMessage: ChatMessage = {
@@ -200,12 +210,13 @@
 			}
 
 			send('MESSAGE_COMPLETE');
-			dispatch('messagesSent', { messages: $messages });
+			// Use CustomEvent for dispatching
+			dispatchEvent('messagesSent', { messages: $messages });
 
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Chat error:', error);
 			send('ERROR', { error: error.message });
-			dispatch('error', { error: error.message });
+			dispatchEvent('error', { error: error.message });
 
 			// Add error message
 			const errorMessage: ChatMessage = {
@@ -241,7 +252,7 @@
 	function changeModel(newModel: string) {
 		currentModel.set(newModel);
 		send('CHANGE_MODEL', { model: newModel });
-		dispatch('modelChanged', { model: newModel });
+		dispatchEvent('modelChanged', { model: newModel });
 	}
 
 	// Apply legal prompt template
@@ -256,7 +267,7 @@
 	<Card.Root class="mb-4">
 		<Card.Header>
 			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-4">
+						onSelectedChange={(selected: { value: string }) => changeModel(selected.value)}
 					<h3 class="text-lg font-semibold">Gemma3 Legal AI</h3>
 					<Badge variant={$state.matches('error') ? 'destructive' : 'default'}>
 						{$state.value}
@@ -306,7 +317,7 @@
 		</Card.Header>
 	</Card.Root>
 
-	<!-- Legal prompt templates -->
+						on:click={() => applyPromptTemplate(String(prompt))}
 	<Card.Root class="mb-4">
 		<Card.Header>
 			<h4 class="text-sm font-medium">Legal AI Templates</h4>
@@ -426,40 +437,73 @@
 					>
 						Clear
 					</Button>
-				</div>
-			</div>
-
-			<div class="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-				<span>{inputText.length} / {maxTokens} characters</span>
-				<span>{$messageCount} messages</span>
-			</div>
-		</Card.Content>
-	</Card.Root>
-</div>
-
 <style>
 	.legal-ai-chat {
-		@apply flex flex-col h-full max-w-4xl mx-auto p-4;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		max-width: 64rem; /* max-w-4xl */
+		margin-left: auto;
+		margin-right: auto;
+		padding: 1rem;
 	}
 
 	.user-message {
-		@apply ml-8;
+		margin-left: 2rem; /* ml-8 */
 	}
 
 	.assistant-message {
-		@apply mr-8;
+		margin-right: 2rem; /* mr-8 */
 	}
 
 	.message-content {
-		@apply prose prose-sm max-w-none;
+		max-width: none;
+	}
+	.message-content :global(p) {
+		margin: 0.5em 0;
+		font-size: 0.95em;
 	}
 
 	.typing-indicator {
-		@apply flex items-center gap-1;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem; /* gap-1 */
 	}
 
 	.typing-indicator span {
-		@apply w-1 h-1 bg-current rounded-full animate-pulse;
+		width: 0.25rem; /* w-1 */
+		height: 0.25rem; /* h-1 */
+		background-color: currentColor;
+		border-radius: 9999px;
+		animation: pulse 1s infinite;
+		display: inline-block;
+		animation-delay: calc(var(--i) * 0.2s);
+	}
+
+	.typing-indicator span:nth-child(1) { --i: 0; }
+	.typing-indicator span:nth-child(2) { --i: 1; }
+	.typing-indicator span:nth-child(3) { --i: 2; }
+
+	@keyframes pulse {
+		0%, 100% { opacity: 0.4; }
+		50% { opacity: 1; }
+	}
+
+	.loading-spinner {
+		width: 1rem; /* w-4 */
+		height: 1rem; /* h-4 */
+		border-width: 2px;
+		border-style: solid;
+		border-color: currentColor;
+		border-top-color: transparent;
+		border-radius: 9999px;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+</style>
 		animation-delay: calc(var(--i) * 0.2s);
 	}
 

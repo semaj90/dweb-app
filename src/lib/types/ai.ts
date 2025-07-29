@@ -16,7 +16,7 @@ export interface ChatMessage {
   id: string;
   role: "user" | "assistant" | "system";
   content: string;
-  timestamp: Date;
+  timestamp: Date | number;
   model?: string;
   streaming?: boolean;
   error?: boolean;
@@ -251,7 +251,7 @@ export interface ChatEvent {
   type: "message" | "typing" | "error" | "model_changed" | "session_created";
   sessionId: string;
   data: any;
-  timestamp: Date;
+  timestamp: Date | number;
 }
 
 // Configuration types
@@ -308,7 +308,7 @@ export interface APIResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
-  timestamp: Date;
+  timestamp: Date | number;
   requestId: string;
 }
 

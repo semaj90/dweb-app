@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { useChatActor, chatActions, serviceStatus } from '$lib/stores/chatStore';
-  import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Badge } from '$lib/components/ui/badge';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
+  import { useChatActor, chatActions, serviceStatus } from '$lib/stores/chatStore.js';
+  import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/Card.svelte';
+  import { Button } from '$lib/components/ui/Button.svelte';
+  import { Input } from '$lib/components/ui/Input.svelte';
+  import { Badge } from '$lib/components/ui/Badge.svelte';
+  import { ScrollArea } from '$lib/components/ui/scrollarea/index.js';
   import { AlertCircle, CheckCircle, Clock, Zap } from 'lucide-svelte';
 
   // Use the XState-compatible store
@@ -40,7 +40,7 @@
       console.warn('Fetch API not available, skipping system checks');
       return;
     }
-    
+
     // Check Ollama service
     try {
       const ollamaResponse = await fetch('http://localhost:11434/api/version');
@@ -245,9 +245,9 @@
               <Badge variant="default" aria-live="polite">Ready</Badge>
             {/if}
           </CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             on:click={handleClear}
             aria-label="Clear chat conversation"
             class="hover:bg-destructive hover:text-destructive-foreground transition-colors"
@@ -393,7 +393,7 @@
   :global(.animate-bounce) {
     animation: bounce 1s infinite;
   }
-  
+
   /* Responsive grid improvements */
   @media (max-width: 640px) {
     .container {
@@ -401,13 +401,13 @@
       padding-right: 1rem;
     }
   }
-  
+
   /* Focus improvements */
   :global(.focus\:ring-2:focus) {
     outline: 2px solid transparent;
     outline-offset: 2px;
   }
-  
+
   /* Smooth transitions */
   :global(.transition-colors) {
     transition-property: color, background-color, border-color;

@@ -1,0 +1,49 @@
+TypeScript Compilation Error Analysis - .ts files only
+=======================================================
+
+CATEGORY 1: Module Resolution Errors (Missing/Broken Imports)
+------------------------------------------------------------
+- $app/environment imports: ~15 files
+- $lib/server/db/schema-postgres imports: ~25 files  
+- $lib/server/db/index imports: ~20 files
+- $lib/types/* imports: ~20 files
+- $lib/services/* imports: ~15 files
+- ./$types imports (route types): ~15 files
+- Tauri API imports: ~3 files
+- Node.js module import issues: ~8 files
+
+CATEGORY 2: TypeScript Configuration Issues
+------------------------------------------
+- downlevelIteration flag issues (Map/Set iteration): ~25 occurrences
+- esModuleInterop flag issues (default imports): ~8 occurrences  
+- import.meta not supported: ~2 occurrences
+- Top-level await not supported: ~2 occurrences
+- Regular expression flag targeting: ~1 occurrence
+
+CATEGORY 3: Type System Errors
+-----------------------------
+- Missing properties on types: ~15 occurrences
+- Property does not exist errors: ~25 occurrences
+- Type compatibility issues: ~5 occurrences
+
+CATEGORY 4: Schema/Database Related
+----------------------------------
+- Schema import failures: ~30 files affected
+- Database connection issues: ~15 files
+- Type mismatches in queries: ~5 occurrences
+
+ESTIMATED TOTAL ERROR COUNT: ~300+ TypeScript errors across ~120+ .ts files
+
+CRITICAL BLOCKING ISSUES:
+1. Missing/broken $lib alias resolution (~80 errors)
+2. Database schema import failures (~50 errors) 
+3. TypeScript compiler configuration issues (~40 errors)
+4. Missing type declarations (~30 errors)
+5. Iterator/Map/Set usage with wrong target (~25 errors)
+
+FILES WITH HIGHEST ERROR DENSITY:
+- src/lib/services/*.ts (50+ errors)
+- src/routes/api/**/*.ts (100+ errors)
+- src/lib/stores/*.ts (25+ errors)
+- src/lib/ai/*.ts (15+ errors)
+- src/lib/server/*.ts (40+ errors)

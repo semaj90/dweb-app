@@ -1,6 +1,9 @@
 <script lang="ts">
   import type { Evidence } from "$lib/types/index";
   import { createEventDispatcher } from "svelte";
+  import { Card, CardContent, CardHeader } from "$lib/components/ui/Card";
+  import Badge from "$lib/components/ui/Badge.svelte";
+  import Button from "$lib/components/ui/button/Button.svelte";
 
   export let item: Evidence;
 
@@ -20,29 +23,34 @@
         return "i-lucide-hard-drive";
       default:
         return "i-lucide-file";
-}}
+    }
+  }
+
   function getTypeColor(type: string) {
     switch (type) {
       case "document":
-        return "bg-blue-50 text-blue-700";
+        return "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300";
       case "image":
-        return "bg-green-50 text-green-700";
+        return "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300";
       case "video":
-        return "bg-purple-50 text-purple-700";
+        return "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300";
       case "audio":
-        return "bg-red-50 text-red-700";
+        return "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300";
       case "digital":
-        return "bg-orange-50 text-orange-700";
+        return "bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300";
       default:
-        return "bg-gray-50 text-gray-700";
-}}
+        return "bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+    }
+  }
+
   function formatFileSize(bytes: number): string {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-}
+  }
+
   function formatDate(date: string | Date): string {
     return new Date(date).toLocaleDateString("en-US", {
       month: "short",
@@ -50,133 +58,101 @@
       hour: "2-digit",
       minute: "2-digit",
     });
-}
+  }
 </script>
 
-<div
-  class="container mx-auto px-4"
-  role="article"
-  aria-label={item.title}
->
-  <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div
-        class="container mx-auto px-4"
-      >
-        <i
-          class="container mx-auto px-4"
-          aria-hidden="true"
-        ></i>
+<Card class="group hover:shadow-md transition-shadow duration-200 cursor-pointer"
+      role="article"
+      aria-label={item.title}>
+  <CardHeader class="pb-3">
+    <div class="flex items-start justify-between">
+      <div class="flex items-center gap-3">
+        <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center {getTypeColor(item.evidenceType)}">
+          <i class="{getEvidenceIcon(item.evidenceType)} w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 class="font-semibold text-sm text-foreground truncate">{item.title}</h3>
+          <p class="text-xs text-muted-foreground truncate">{item.fileName || 'No filename'}</p>
+        </div>
       </div>
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">{item.title}</h3>
-        <p class="container mx-auto px-4">{item.fileName}</p>
-      </div>
-    </div>
-    <!-- Quick Actions -->
-    <div
-      class="container mx-auto px-4"
-    >
-      <button
-        class="container mx-auto px-4"
-        aria-label="View Evidence"
-        tabindex={0}
-      >
-        <i class="container mx-auto px-4" aria-hidden="true"></i>
-      </button>
-      <button
-        class="container mx-auto px-4"
-        aria-label="More Options"
-        tabindex={0}
-      >
-        <i class="container mx-auto px-4" aria-hidden="true"></i>
-      </button>
-    </div>
-  </div>
-  <!-- Preview/Thumbnail -->
-  {#if item.thumbnailUrl}
-    <div class="container mx-auto px-4">
-      <img
-        src={item.thumbnailUrl}
-        alt="Evidence preview"
-        class="container mx-auto px-4"
-        loading="lazy"
-      />
-    </div>
-  {:else if item.evidenceType === "document"}
-    <div
-      class="container mx-auto px-4"
-    >
-      <div class="container mx-auto px-4">
-        <i
-          class="container mx-auto px-4"
-          aria-hidden="true"
-        ></i>
-        <p class="container mx-auto px-4">Document</p>
+      
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button variant="ghost" size="sm" class="h-8 w-8 p-0" aria-label="View Evidence">
+          <i class="i-lucide-eye w-4 h-4" aria-hidden="true"></i>
+        </Button>
+        <Button variant="ghost" size="sm" class="h-8 w-8 p-0" aria-label="More Options">
+          <i class="i-lucide-more-horizontal w-4 h-4" aria-hidden="true"></i>
+        </Button>
       </div>
     </div>
-  {:else}
-    <div
-      class="container mx-auto px-4"
-    >
-      <div class="container mx-auto px-4">
-        <i
-          class="container mx-auto px-4"
-          aria-hidden="true"
-        ></i>
-        <p class="container mx-auto px-4">{item.evidenceType}</p>
+  </CardHeader>
+
+  <CardContent class="space-y-3">
+    <!-- Preview/Thumbnail -->
+    {#if item.thumbnailUrl}
+      <div class="aspect-video bg-muted rounded-md overflow-hidden">
+        <img 
+          src={item.thumbnailUrl} 
+          alt="Evidence preview" 
+          class="w-full h-full object-cover"
+          loading="lazy" 
+        />
       </div>
-    </div>
-  {/if}
-  <!-- AI Summary Preview -->
-  {#if item.aiSummary}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <i class="container mx-auto px-4" aria-hidden="true"></i>
-        <span class="container mx-auto px-4">AI Summary</span>
-      </div>
-      <p class="container mx-auto px-4">{item.aiSummary}</p>
-    </div>
-  {/if}
-  <!-- Metadata -->
-  <div class="container mx-auto px-4">
-    <!-- Tags -->
-    {#if item.tags && item.tags.length > 0}
-      <div class="container mx-auto px-4">
-        {#each item.tags.slice(0, 3) as tag}
-          <span
-            class="container mx-auto px-4"
-          >
-            {tag}
-          </span>
-        {/each}
-        {#if item.tags.length > 3}
-          <span
-            class="container mx-auto px-4"
-          >
-            +{item.tags.length - 3}
-          </span>
-        {/if}
+    {:else}
+      <div class="aspect-video bg-muted/30 rounded-md flex items-center justify-center border-2 border-dashed border-muted-foreground/25">
+        <div class="text-center">
+          <i class="{getEvidenceIcon(item.evidenceType)} w-8 h-8 mx-auto mb-2 text-muted-foreground" aria-hidden="true"></i>
+          <p class="text-xs text-muted-foreground capitalize">{item.evidenceType}</p>
+        </div>
       </div>
     {/if}
-    <!-- File Info -->
-    <div class="container mx-auto px-4">
-      <span>{formatFileSize(item.fileSize || 0)}</span>
-      <span>{formatDate(item.createdAt)}</span>
-    </div>
-    <!-- Hash Verification -->
-    {#if item.hash}
-      <div class="container mx-auto px-4">
-        <i
-          class="container mx-auto px-4"
-          aria-hidden="true"
-        ></i>
-        <span class="container mx-auto px-4">Verified</span>
+
+    <!-- AI Summary Preview -->
+    {#if item.aiSummary}
+      <div class="bg-muted/50 rounded-md p-3 space-y-2">
+        <div class="flex items-center gap-2">
+          <i class="i-lucide-brain w-4 h-4 text-primary" aria-hidden="true"></i>
+          <span class="text-xs font-medium text-primary">AI Summary</span>
+        </div>
+        <p class="text-xs text-muted-foreground line-clamp-2">{item.aiSummary}</p>
       </div>
     {/if}
-  </div>
-</div>
+
+    <!-- Metadata -->
+    <div class="space-y-3">
+      <!-- Tags -->
+      {#if item.tags && item.tags.length > 0}
+        <div class="flex flex-wrap gap-1">
+          {#each item.tags.slice(0, 3) as tag}
+            <Badge variant="secondary" class="text-xs px-2 py-0.5">
+              {tag}
+            </Badge>
+          {/each}
+          {#if item.tags.length > 3}
+            <Badge variant="outline" class="text-xs px-2 py-0.5">
+              +{item.tags.length - 3}
+            </Badge>
+          {/if}
+        </div>
+      {/if}
+
+      <!-- File Info -->
+      <div class="flex items-center justify-between text-xs text-muted-foreground">
+        <span>{formatFileSize(item.fileSize || 0)}</span>
+        <span>{formatDate(item.createdAt)}</span>
+      </div>
+
+      <!-- Hash Verification -->
+      {#if item.hash}
+        <div class="flex items-center gap-2">
+          <i class="i-lucide-shield-check w-4 h-4 text-green-600" aria-hidden="true"></i>
+          <span class="text-xs text-green-600 font-medium">Verified</span>
+        </div>
+      {/if}
+    </div>
+  </CardContent>
+</Card>
 
 <style>
   /* @unocss-include */
@@ -184,10 +160,6 @@
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-clamp: 2;
     overflow: hidden;
-}
-  .evidence-card:hover .group-hover\:opacity-100 {
-    opacity: 1;
-}
+  }
 </style>

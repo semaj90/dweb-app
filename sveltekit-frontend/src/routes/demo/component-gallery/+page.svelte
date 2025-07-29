@@ -538,8 +538,8 @@
 <style>
   .gallery-page {
     min-height: 100vh;
-    background: theme(colors.yorha.background);
-    color: theme(colors.yorha.text);
+    background: #f4f1ea;
+    color: #3a372f;
   }
 
   .show-grid {
@@ -552,9 +552,9 @@
   /* Hero Section */
   .gallery-hero {
     background: linear-gradient(135deg, 
-      theme(colors.yorha.background) 0%, 
-      theme(colors.yorha.surface) 100%);
-    border-bottom: 1px solid theme(colors.yorha.border);
+      #f4f1ea 0%, 
+      #faf8f3 100%);
+    border-bottom: 1px solid #ada895;
   }
 
   .hero-content {
@@ -572,7 +572,7 @@
 
   .hero-subtitle {
     font-size: 1.25rem;
-    color: theme(colors.yorha.text / 80%);
+    color: rgba(58, 55, 47, 0.8);
     margin-bottom: 3rem;
     line-height: 1.6;
   }
@@ -592,14 +592,14 @@
     display: block;
     font-size: 2.5rem;
     font-weight: 700;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
     font-family: 'Consolas', monospace;
   }
 
   .stat-label {
     display: block;
     font-size: 0.875rem;
-    color: theme(colors.yorha.text / 70%);
+    color: rgba(58, 55, 47, 0.7);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -650,7 +650,7 @@
 
   .feature-showcase:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 25px theme(colors.yorha.primary / 20%);
+    box-shadow: 0 8px 25px rgba(58, 55, 47, 0.2);
   }
 
   .feature-icon {
@@ -663,18 +663,18 @@
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .feature-description {
-    color: theme(colors.yorha.text / 80%);
+    color: rgba(58, 55, 47, 0.8);
     line-height: 1.5;
   }
 
   /* Component Showcase */
   .component-showcase {
     padding: 4rem 0;
-    background: theme(colors.yorha.surface / 30%);
+    background: rgba(250, 248, 243, 0.3);
   }
 
   .showcase-section {
@@ -688,7 +688,7 @@
     font-size: 1.875rem;
     font-weight: 600;
     margin-bottom: 2rem;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .component-grid {
@@ -699,7 +699,7 @@
   }
 
   .component-demo {
-    background: theme(colors.yorha.background);
+    background: #f4f1ea;
   }
 
   .button-group {
@@ -727,10 +727,10 @@
     font-weight: 500;
   }
 
-  .badge-success { background: theme(colors.yorha.success / 20%); color: theme(colors.yorha.success); }
-  .badge-warning { background: theme(colors.yorha.accent / 20%); color: theme(colors.yorha.accent); }
-  .badge-error { background: theme(colors.yorha.error / 20%); color: theme(colors.yorha.error); }
-  .badge-info { background: theme(colors.yorha.primary / 20%); color: theme(colors.yorha.primary); }
+  .badge-success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+  .badge-warning { background: rgba(213, 207, 183, 0.2); color: #d5cfb7; }
+  .badge-error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  .badge-info { background: rgba(58, 55, 47, 0.2); color: #3a372f; }
 
   .progress-demo {
     display: flex;
@@ -741,20 +741,20 @@
   .progress-bar {
     width: 100%;
     height: 8px;
-    background: theme(colors.yorha.surface);
+    background: #faf8f3;
     border-radius: 4px;
     overflow: hidden;
   }
 
   .progress-fill {
     height: 100%;
-    background: theme(colors.yorha.primary);
+    background: #3a372f;
     transition: width 0.3s ease;
   }
 
   .progress-text {
     font-size: 0.875rem;
-    color: theme(colors.yorha.text / 70%);
+    color: rgba(58, 55, 47, 0.7);
   }
 
   /* AI Showcase */
@@ -768,7 +768,7 @@
     max-height: 300px;
     overflow-y: auto;
     padding: 1rem;
-    background: theme(colors.yorha.surface / 50%);
+    background: rgba(250, 248, 243, 0.5);
     border-radius: 8px;
   }
 
@@ -779,12 +779,12 @@
   }
 
   .user-message {
-    background: theme(colors.yorha.primary / 20%);
+    background: rgba(58, 55, 47, 0.2);
     margin-left: 2rem;
   }
 
   .ai-message {
-    background: theme(colors.yorha.surface);
+    background: #faf8f3;
     margin-right: 2rem;
   }
 
@@ -795,7 +795,7 @@
 
   .message-meta {
     font-size: 0.75rem;
-    color: theme(colors.yorha.text / 60%);
+    color: rgba(58, 55, 47, 0.6);
   }
 
   .typing-indicator {
@@ -803,7 +803,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem;
-    color: theme(colors.yorha.text / 60%);
+    color: rgba(58, 55, 47, 0.6);
     font-size: 0.875rem;
   }
 
@@ -815,7 +815,7 @@
   .typing-dots span {
     width: 6px;
     height: 6px;
-    background: theme(colors.yorha.primary);
+    background: #3a372f;
     border-radius: 50%;
     animation: typing 1.5s infinite;
   }
@@ -840,21 +840,21 @@
     gap: 1rem;
     padding: 1rem;
     border-radius: 8px;
-    border: 1px solid theme(colors.yorha.border);
+    border: 1px solid #ada895;
   }
 
   .agent-step.completed {
-    background: theme(colors.yorha.success / 10%);
-    border-color: theme(colors.yorha.success);
+    background: rgba(16, 185, 129, 0.1);
+    border-color: #10b981;
   }
 
   .agent-step.active {
-    background: theme(colors.yorha.primary / 10%);
-    border-color: theme(colors.yorha.primary);
+    background: rgba(58, 55, 47, 0.1);
+    border-color: #3a372f;
   }
 
   .agent-step.pending {
-    background: theme(colors.yorha.surface / 30%);
+    background: rgba(250, 248, 243, 0.3);
   }
 
   .agent-icon {
@@ -868,13 +868,13 @@
   }
 
   .agent-step.completed .agent-icon {
-    background: theme(colors.yorha.success);
-    color: theme(colors.yorha.background);
+    background: #10b981;
+    color: #f4f1ea;
   }
 
   .agent-step.active .agent-icon {
-    background: theme(colors.yorha.primary);
-    color: theme(colors.yorha.background);
+    background: #3a372f;
+    color: #f4f1ea;
     animation: spin 2s linear infinite;
   }
 
@@ -890,12 +890,12 @@
 
   .agent-info p {
     font-size: 0.875rem;
-    color: theme(colors.yorha.text / 70%);
+    color: rgba(58, 55, 47, 0.7);
   }
 
   /* Editor Showcase */
   .editor-showcase {
-    background: theme(colors.yorha.background);
+    background: #f4f1ea;
   }
 
   .editor-container {
@@ -907,7 +907,7 @@
   /* Theme Documentation */
   .theme-docs {
     padding: 4rem 0;
-    background: theme(colors.yorha.background);
+    background: #f4f1ea;
   }
 
   .docs-grid {
@@ -931,7 +931,7 @@
     width: 3rem;
     height: 3rem;
     border-radius: 8px;
-    border: 1px solid theme(colors.yorha.border);
+    border: 1px solid #ada895;
   }
 
   .color-info {
@@ -941,12 +941,12 @@
 
   .color-name {
     font-weight: 600;
-    color: theme(colors.yorha.text);
+    color: #3a372f;
   }
 
   .color-hex {
     font-size: 0.875rem;
-    color: theme(colors.yorha.text / 70%);
+    color: rgba(58, 55, 47, 0.7);
     font-family: 'Consolas', monospace;
   }
 
@@ -959,13 +959,13 @@
   .type-sample.h1 {
     font-size: 2.25rem;
     font-weight: 700;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .type-sample.h2 {
     font-size: 1.875rem;
     font-weight: 600;
-    color: theme(colors.yorha.secondary);
+    color: #75726a;
   }
 
   .type-sample.h3 {
@@ -980,12 +980,12 @@
 
   .type-sample.caption {
     font-size: 0.875rem;
-    color: theme(colors.yorha.text / 70%);
+    color: rgba(58, 55, 47, 0.7);
   }
 
   .type-sample.code {
     font-family: 'Consolas', monospace;
-    background: theme(colors.yorha.surface);
+    background: #faf8f3;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-size: 0.875rem;
@@ -1006,12 +1006,12 @@
   .a11y-item h4 {
     font-weight: 600;
     margin-bottom: 0.25rem;
-    color: theme(colors.yorha.text);
+    color: #3a372f;
   }
 
   .a11y-item p {
     font-size: 0.875rem;
-    color: theme(colors.yorha.text / 70%);
+    color: rgba(58, 55, 47, 0.7);
   }
 
   /* Responsive Design */

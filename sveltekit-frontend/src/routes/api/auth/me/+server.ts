@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ locals }) => {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: (user as any).name || (user as any).firstName || user.email.split('@')[0],
         role: user.role,
       },
     });

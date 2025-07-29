@@ -2,10 +2,7 @@
 // Manages LLM state, conversation history, and settings with proper hydration
 import { writable, derived, get } from "svelte/store";
 import { browser } from "$app/environment";
-import type {
-  AIResponse,
-  LocalModel,
-} from "$lib/data/types";
+import type { AIResponse, LocalModel } from "$lib/data/types";
 import type { ConversationHistory } from "$lib/types/api";
 
 // Define Gemma3Config interface directly
@@ -322,12 +319,11 @@ export const aiStore = {
         };
 
         return {
-          ...conversation,
           id: conversation.id || `conv_${Date.now()}`,
           messages: [...conversation.messages, userMessage, assistantMessage],
           isActive: true,
           lastUpdated: Date.now(),
-        };
+        } as AIConversationState;
       });
 
       aiStatus.update((state) => ({ ...state, isLoading: false }));
@@ -372,23 +368,35 @@ export const aiStore = {
     if (conversation.messages.length === 0) return;
 
     conversationHistory.update((history) => {
-      const newHistory = [
-        {
-          id: conversation.id || `conv_${Date.now()}`,
-          title:
-            conversation.messages[0]?.content.substring(0, 50) + "..." ||
-            "Untitled Conversation",
-          messages: conversation.messages,
-          timestamp: new Date(),
-          metadata: {
-            messageCount: conversation.messages.length,
-            lastModel:
-              conversation.messages[conversation.messages.length - 1]?.metadata
-                ?.model || "unknown",
-          },
+      const newConversation: ConversationHistory = {
+        id: conversation.id || `conv_${Date.now()}`,
+        title:
+          conversation.messages[0]?.content.substring(0, 50) + "..." ||
+          "Untitled Conversation",
+        messages: conversation.messages.map(msg => ({
+          id: msg.id,
+          role: msg.role,
+          content: msg.content,
+          timestamp: msg.timestamp,
+          sources: msg.sources ? msg.sources.map(source => ({
+            id: source.id,
+            title: source.title,
+            content: source.content,
+            score: source.score,
+            type: (source.type || "document") as "case" | "evidence" | "statute" | "document"
+          })) : undefined,
+          metadata: msg.metadata
+        })),
+        timestamp: Date.now(),
+        metadata: {
+          messageCount: conversation.messages.length,
+          lastModel:
+            conversation.messages[conversation.messages.length - 1]?.metadata
+              ?.model || "unknown",
         },
-        ...history,
-      ];
+      };
+      
+      const newHistory = [newConversation, ...history];
 
       // Limit history length
       const maxLength = get(aiSettings).maxHistoryLength;

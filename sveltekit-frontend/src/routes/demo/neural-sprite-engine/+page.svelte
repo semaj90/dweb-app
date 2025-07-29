@@ -547,7 +547,7 @@
         <div class="canvas-metrics">
           <span>Frame: {frameCount}</span>
           <span>•</span>
-          <span>Load Time: <1ms</span>
+          <span>Load Time: &lt;1ms</span>
           <span>•</span>
           <span class="performance-grade">
             Grade: {$performanceStores?.performanceGrade || 'S'}

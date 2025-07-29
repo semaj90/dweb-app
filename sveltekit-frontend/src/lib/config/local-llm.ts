@@ -120,7 +120,7 @@ export const ENV_CONFIG = {
     process.env.LLAMA_CPP_BASE_URL || LOCAL_LLM_PATHS.llamaCpp.baseUrl,
 
   // Model preferences
-  DEFAULT_MODEL: process.env.DEFAULT_LLM_MODEL || "gemma2:2b",
+  DEFAULT_MODEL: process.env.DEFAULT_LLM_MODEL || "gemma3-legal",
   PREFERRED_PROVIDER:
     process.env.PREFERRED_LLM_PROVIDER || getPreferredProvider(),
 

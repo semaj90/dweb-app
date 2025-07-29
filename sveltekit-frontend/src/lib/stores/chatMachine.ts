@@ -220,7 +220,7 @@ export const chatMachine = setup({
 
             const message: ChatMessage = {
               id: crypto.randomUUID(),
-              content: event.message,
+              content: (event as any).message,
               role: "user",
               timestamp: new Date(),
               conversationId: context.currentConversation?.id,
@@ -235,8 +235,8 @@ export const chatMachine = setup({
               const conversation: Conversation = {
                 id: crypto.randomUUID(),
                 title:
-                  event.message.slice(0, 50) +
-                  (event.message.length > 50 ? "..." : ""),
+                  (event as any).message.slice(0, 50) +
+                  ((event as any).message.length > 50 ? "..." : ""),
                 messages: [],
                 created: new Date(),
                 updated: new Date(),
@@ -274,7 +274,7 @@ export const chatMachine = setup({
             target: "error",
             actions: assign({
               error: ({ event }) =>
-                new Error(event.error?.message || "Unknown error"),
+                new Error((event as any).error?.message || "Unknown error"),
             }),
           },
         },
@@ -345,7 +345,7 @@ export const chatMachine = setup({
             actions: assign({
               modelStatus: () => "error",
               error: ({ event }) =>
-                new Error(event.error?.message || "Model check failed"),
+                new Error((event as any).error?.message || "Model check failed"),
             }),
           },
         },
@@ -363,5 +363,4 @@ export const chatMachine = setup({
         },
       },
     },
-  }
 });

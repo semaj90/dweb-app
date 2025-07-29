@@ -3,7 +3,7 @@
  * Merges ai-commands.js with ai-command-parser.js
  */
 
-import { writable, derived } from 'svelte/store';
+import { writable, derived } from "svelte/store";
 
 // Core AI state interface
 interface AIState {
@@ -20,11 +20,11 @@ interface AIState {
 
 // Main AI store
 export const aiStore = writable<AIState>({
-  current: '',
+  current: "",
   history: [],
   isProcessing: false,
   lastResult: null,
-  error: null
+  error: null,
 });
 
 // Command result store for Phase 2 compatibility
@@ -36,12 +36,17 @@ export const aiCommandResult = writable(null);
 export async function parseAICommand(command: string) {
   try {
     setProcessing(true);
-    
-    const words = command.toLowerCase().split(' ');
+
+    const words = command.toLowerCase().split(" ");
     const action = words[0];
-    const target = words.find(w => ['evidence', 'case', 'document'].includes(w)) || 'general';
-    const priority = words.find(w => ['high', 'medium', 'low'].includes(w)) || 'medium';
-    const type = words.find(w => ['document', 'image', 'video', 'audio'].includes(w)) || 'document';
+    const target =
+      words.find((w) => ["evidence", "case", "document"].includes(w)) ||
+      "general";
+    const priority =
+      words.find((w) => ["high", "medium", "low"].includes(w)) || "medium";
+    const type =
+      words.find((w) => ["document", "image", "video", "audio"].includes(w)) ||
+      "document";
 
     const result = {
       action,
@@ -49,14 +54,14 @@ export async function parseAICommand(command: string) {
       priority,
       type,
       timestamp: new Date().toISOString(),
-      processed: true
+      processed: true,
     };
 
     // Update stores
     aiCommandResult.set(result);
     addCommand(command, result);
     setProcessing(false);
-    
+
     return result;
   } catch (error) {
     setError(error.message);
@@ -68,80 +73,87 @@ export async function parseAICommand(command: string) {
 /**
  * Apply AI-controlled classes to elements
  */
-export function applyAIClasses(element: HTMLElement, config: {
-  add?: string[];
-  remove?: string[];
-  toggle?: string[];
-} = {}) {
+export function applyAIClasses(
+  element: HTMLElement,
+  config: {
+    add?: string[];
+    remove?: string[];
+    toggle?: string[];
+  } = {},
+) {
   const { add = [], remove = [], toggle = [] } = config;
-  
+
   if (add.length) element.classList.add(...add);
   if (remove.length) element.classList.remove(...remove);
-  if (toggle.length) toggle.forEach(cls => element.classList.toggle(cls));
+  if (toggle.length) toggle.forEach((cls) => element.classList.toggle(cls));
 }
 
 // Store management functions
 export const addCommand = (command: string, result: any = null) => {
-  aiStore.update(store => ({
+  aiStore.update((store) => ({
     ...store,
-    history: [...store.history, { 
-      command, 
-      result, 
-      timestamp: new Date().toISOString() 
-    }],
-    lastResult: result
+    history: [
+      ...store.history,
+      {
+        command,
+        result,
+        timestamp: new Date().toISOString(),
+      },
+    ],
+    lastResult: result,
   }));
 };
 
 export const setCurrentCommand = (command: string) => {
-  aiStore.update(store => ({ ...store, current: command }));
+  aiStore.update((store) => ({ ...store, current: command }));
 };
 
 export const setProcessing = (isProcessing: boolean) => {
-  aiStore.update(store => ({ ...store, isProcessing }));
+  aiStore.update((store) => ({ ...store, isProcessing }));
 };
 
 export const setError = (error: string | null) => {
-  aiStore.update(store => ({ ...store, error }));
+  aiStore.update((store) => ({ ...store, error }));
 };
 
 export const clearHistory = () => {
-  aiStore.update(store => ({
+  aiStore.update((store) => ({
     ...store,
     history: [],
-    current: '',
+    current: "",
     lastResult: null,
-    error: null
+    error: null,
   }));
 };
 
 // Simple command service for Phase 2 compatibility
 export const aiCommandService = {
-  state: writable('idle'),
+  state: writable("idle"),
   context: writable({}),
-  
-  send: function(event: any) {
-    console.log('Processing event:', event);
-    this.state.set('processing');
-    
+
+  send: function (event: any) {
+    console.log("Processing event:", event);
+    this.state.set("processing");
+
     setTimeout(() => {
-      this.state.set('completed');
-      this.context.update(ctx => ({ ...ctx, lastCommand: event }));
+      this.state.set("completed");
+      this.context.update((ctx) => ({ ...ctx, lastCommand: event }));
     }, 1000);
   },
-  
-  subscribe: function(callback: (value: any) => void) {
+
+  subscribe: function (callback: (value: any) => void) {
     return this.state.subscribe(callback);
-  }
+  },
 };
 
 // Derived stores
-export const recentCommands = derived(aiStore, $store => 
-  $store.history.slice(-10)
+export const recentCommands = derived(aiStore, ($store) =>
+  $store.history.slice(-10),
 );
 
-export const isAIActive = derived(aiStore, $store => 
-  $store.isProcessing || $store.current.length > 0
+export const isAIActive = derived(
+  aiStore,
+  ($store) => $store.isProcessing || $store.current.length > 0,
 );
 
 // Legacy exports for backward compatibility

@@ -45,7 +45,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       filters.push(eq(criminals.status, status));
     }
     // Apply filters
-    let finalQuery = db.select().from(criminals).where(filters.length > 0 ? and(...filters) : undefined);
+    let finalQuery = db
+      .select()
+      .from(criminals)
+      .where(filters.length > 0 ? and(...filters) : undefined);
 
     // Add sorting
     const orderColumn =

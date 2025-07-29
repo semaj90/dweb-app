@@ -3,21 +3,21 @@
  * POST /api/clustering/som/train
  */
 
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { LegalDocumentSOM } from '$lib/services/som-clustering';
-import { Redis } from 'ioredis';
-import { db } from '$lib/server/db';
-import { documents } from '$lib/server/db/schema-postgres';
-import { inArray } from 'drizzle-orm';
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
+import { LegalDocumentSOM } from "$lib/services/som-clustering";
+import { Redis } from "ioredis";
+import { db } from "$lib/server/db";
+import { legalDocuments } from "$lib/server/db/schema-postgres";
+import { inArray } from "drizzle-orm";
 // Optional amqp for message queue integration
 
 // Initialize Redis connection
 const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  retryDelayOnFailover: 100,
-  maxRetriesPerRequest: 3
+  host: process.env.REDIS_HOST || "localhost",
+  port: parseInt(process.env.REDIS_PORT || "6379"),
+  retryDelayOnClusterDown: 100,
+  maxRetriesPerRequest: 3,
 });
 
 // RabbitMQ connection (optional)
@@ -30,7 +30,7 @@ async function getRabbitConnection() {
       //   rabbitConnection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
       // }
     } catch (error) {
-      console.warn('RabbitMQ not available:', error);
+      console.warn("RabbitMQ not available:", error);
     }
   }
   return rabbitConnection;
@@ -38,58 +38,71 @@ async function getRabbitConnection() {
 
 export const POST: RequestHandler = async ({ request }) => {
   const startTime = Date.now();
-  
+
   try {
     const { documentIds, config } = await request.json();
-    
-    if (!documentIds || !Array.isArray(documentIds) || documentIds.length === 0) {
-      return json({
-        success: false,
-        error: 'Document IDs array is required',
-        metadata: {
-          timestamp: new Date().toISOString(),
-          processingTime: Date.now() - startTime
-        }
-      }, { status: 400 });
+
+    if (
+      !documentIds ||
+      !Array.isArray(documentIds) ||
+      documentIds.length === 0
+    ) {
+      return json(
+        {
+          success: false,
+          error: "Document IDs array is required",
+          metadata: {
+            timestamp: new Date().toISOString(),
+            processingTime: Date.now() - startTime,
+          },
+        },
+        { status: 400 },
+      );
     }
-    
+
     // Fetch document embeddings from PostgreSQL with pgvector
     const documentRecords = await db
       .select({
         id: documents.id,
         embedding: documents.embeddings,
-        metadata: documents.metadata
+        metadata: documents.metadata,
       })
       .from(documents)
       .where(inArray(documents.id, documentIds));
-    
+
     if (documentRecords.length === 0) {
-      return json({
-        success: false,
-        error: 'No documents found with provided IDs',
-        metadata: {
-          timestamp: new Date().toISOString(),
-          processingTime: Date.now() - startTime
-        }
-      }, { status: 404 });
+      return json(
+        {
+          success: false,
+          error: "No documents found with provided IDs",
+          metadata: {
+            timestamp: new Date().toISOString(),
+            processingTime: Date.now() - startTime,
+          },
+        },
+        { status: 404 },
+      );
     }
-    
+
     // Extract embeddings (assuming they're stored as arrays)
     const embeddings: number[][] = documentRecords
-      .map(doc => doc.embedding)
-      .filter(embedding => Array.isArray(embedding) && embedding.length > 0);
-    
+      .map((doc) => doc.embedding)
+      .filter((embedding) => Array.isArray(embedding) && embedding.length > 0);
+
     if (embeddings.length === 0) {
-      return json({
-        success: false,
-        error: 'No valid embeddings found in documents',
-        metadata: {
-          timestamp: new Date().toISOString(),
-          processingTime: Date.now() - startTime
-        }
-      }, { status: 400 });
+      return json(
+        {
+          success: false,
+          error: "No valid embeddings found in documents",
+          metadata: {
+            timestamp: new Date().toISOString(),
+            processingTime: Date.now() - startTime,
+          },
+        },
+        { status: 400 },
+      );
     }
-    
+
     // Create SOM configuration
     const somConfig = {
       width: config?.width || 20,
@@ -97,121 +110,125 @@ export const POST: RequestHandler = async ({ request }) => {
       learningRate: config?.learningRate || 0.5,
       radius: config?.radius || 5,
       iterations: config?.iterations || 1000,
-      dimensions: embeddings[0].length // Infer from first embedding
+      dimensions: embeddings[0].length, // Infer from first embedding
     };
-    
+
     // Generate training ID for tracking
     const trainingId = `som_training_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     // Queue training job in RabbitMQ (optional)
     const connection = await getRabbitConnection();
     let channel: any = null;
-    
+
     if (connection) {
       try {
         channel = await connection.createChannel();
-        await channel.assertExchange('clustering', 'topic', { durable: true });
-        
+        await channel.assertExchange("clustering", "topic", { durable: true });
+
         const message = {
           messageId: trainingId,
-          type: 'som_training',
+          type: "som_training",
           payload: {
             documentIds,
             embeddings,
             config: somConfig,
             metadata: {
               requestedAt: new Date().toISOString(),
-              documentCount: embeddings.length
-            }
+              documentCount: embeddings.length,
+            },
           },
-          priority: 'high',
-          timestamp: new Date().toISOString()
+          priority: "high",
+          timestamp: new Date().toISOString(),
         };
-        
+
         await channel.publish(
-          'clustering',
-          'som.training.start',
+          "clustering",
+          "som.training.start",
           Buffer.from(JSON.stringify(message)),
-          { persistent: true }
+          { persistent: true },
         );
       } catch (error) {
-        console.warn('Failed to queue RabbitMQ message:', error);
+        console.warn("Failed to queue RabbitMQ message:", error);
       }
     }
-    
+
     // Store training status in Redis
     await redis.hset(`som:training:${trainingId}`, {
-      status: 'queued',
+      status: "queued",
       documentCount: embeddings.length,
       config: JSON.stringify(somConfig),
-      startedAt: Date.now()
+      startedAt: Date.now(),
     });
-    
+
     // Estimate training time (rough calculation)
     const estimatedTimeMs = somConfig.iterations * embeddings.length * 0.001; // 1ms per iteration per document
-    
+
     // Start background training process
     setImmediate(async () => {
       try {
-        await redis.hset(`som:training:${trainingId}`, 'status', 'processing');
-        
+        await redis.hset(`som:training:${trainingId}`, "status", "processing");
+
         const som = new LegalDocumentSOM(somConfig, redis);
         await som.train(embeddings);
-        
+
         // Analyze clusters
         const analysis = await som.analyzeLegalClusters(
-          documentRecords.map(doc => ({
+          documentRecords.map((doc) => ({
             id: doc.id,
             embedding: doc.embedding as number[],
-            metadata: doc.metadata || {}
-          }))
+            metadata: doc.metadata || {},
+          })),
         );
-        
+
         await redis.hset(`som:training:${trainingId}`, {
-          status: 'completed',
+          status: "completed",
           completedAt: Date.now(),
-          clusters: JSON.stringify(analysis.clusters)
+          clusters: JSON.stringify(analysis.clusters),
         });
-        
+
         // Publish completion event (if RabbitMQ available)
         if (channel) {
           try {
             await channel.publish(
-              'clustering',
-              'som.training.completed',
-              Buffer.from(JSON.stringify({
-                trainingId,
-                status: 'completed',
-                analysis
-              }))
+              "clustering",
+              "som.training.completed",
+              Buffer.from(
+                JSON.stringify({
+                  trainingId,
+                  status: "completed",
+                  analysis,
+                }),
+              ),
             );
           } catch (error) {
-            console.warn('Failed to publish completion event:', error);
+            console.warn("Failed to publish completion event:", error);
           }
         }
-        
       } catch (error) {
-        console.error('SOM training failed:', error);
+        console.error("SOM training failed:", error);
         await redis.hset(`som:training:${trainingId}`, {
-          status: 'failed',
-          error: error instanceof Error ? error.message : 'Unknown error',
-          failedAt: Date.now()
+          status: "failed",
+          error: error instanceof Error ? error.message : "Unknown error",
+          failedAt: Date.now(),
         });
-        
+
         // Publish failure event (if RabbitMQ available)
         if (channel) {
           try {
             await channel.publish(
-              'clustering',
-              'som.training.failed',
-              Buffer.from(JSON.stringify({
-                trainingId,
-                status: 'failed',
-                error: error instanceof Error ? error.message : 'Unknown error'
-              }))
+              "clustering",
+              "som.training.failed",
+              Buffer.from(
+                JSON.stringify({
+                  trainingId,
+                  status: "failed",
+                  error:
+                    error instanceof Error ? error.message : "Unknown error",
+                }),
+              ),
             );
           } catch (error) {
-            console.warn('Failed to publish failure event:', error);
+            console.warn("Failed to publish failure event:", error);
           }
         }
       } finally {
@@ -219,97 +236,111 @@ export const POST: RequestHandler = async ({ request }) => {
           try {
             await channel.close();
           } catch (error) {
-            console.warn('Failed to close RabbitMQ channel:', error);
+            console.warn("Failed to close RabbitMQ channel:", error);
           }
         }
       }
     });
-    
+
     return json({
       success: true,
       data: {
         trainingId,
         estimatedTime: Math.round(estimatedTimeMs / 1000), // Convert to seconds
         documentCount: embeddings.length,
-        queuePosition: 1 // Since we're processing immediately
+        queuePosition: 1, // Since we're processing immediately
       },
       metadata: {
         timestamp: new Date().toISOString(),
         processingTime: Date.now() - startTime,
-        clusterId: trainingId
-      }
+        clusterId: trainingId,
+      },
     });
-    
   } catch (error) {
-    console.error('SOM training API error:', error);
-    
-    return json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Internal server error',
-      metadata: {
-        timestamp: new Date().toISOString(),
-        processingTime: Date.now() - startTime
-      }
-    }, { status: 500 });
+    console.error("SOM training API error:", error);
+
+    return json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Internal server error",
+        metadata: {
+          timestamp: new Date().toISOString(),
+          processingTime: Date.now() - startTime,
+        },
+      },
+      { status: 500 },
+    );
   }
 };
 
 // GET endpoint to check training status
 export const GET: RequestHandler = async ({ url }) => {
-  const trainingId = url.searchParams.get('trainingId');
-  
+  const trainingId = url.searchParams.get("trainingId");
+
   if (!trainingId) {
-    return json({
-      success: false,
-      error: 'Training ID is required',
-      metadata: {
-        timestamp: new Date().toISOString(),
-        processingTime: 0
-      }
-    }, { status: 400 });
-  }
-  
-  try {
-    const status = await redis.hgetall(`som:training:${trainingId}`);
-    
-    if (Object.keys(status).length === 0) {
-      return json({
+    return json(
+      {
         success: false,
-        error: 'Training ID not found',
+        error: "Training ID is required",
         metadata: {
           timestamp: new Date().toISOString(),
-          processingTime: 0
-        }
-      }, { status: 404 });
+          processingTime: 0,
+        },
+      },
+      { status: 400 },
+    );
+  }
+
+  try {
+    const status = await redis.hgetall(`som:training:${trainingId}`);
+
+    if (Object.keys(status).length === 0) {
+      return json(
+        {
+          success: false,
+          error: "Training ID not found",
+          metadata: {
+            timestamp: new Date().toISOString(),
+            processingTime: 0,
+          },
+        },
+        { status: 404 },
+      );
     }
-    
+
     return json({
       success: true,
       data: {
         trainingId,
         status: status.status,
-        documentCount: parseInt(status.documentCount || '0'),
-        startedAt: status.startedAt ? new Date(parseInt(status.startedAt)) : null,
-        completedAt: status.completedAt ? new Date(parseInt(status.completedAt)) : null,
+        documentCount: parseInt(status.documentCount || "0"),
+        startedAt: status.startedAt
+          ? new Date(parseInt(status.startedAt))
+          : null,
+        completedAt: status.completedAt
+          ? new Date(parseInt(status.completedAt))
+          : null,
         clusters: status.clusters ? JSON.parse(status.clusters) : null,
-        error: status.error || null
+        error: status.error || null,
       },
       metadata: {
         timestamp: new Date().toISOString(),
-        processingTime: 5
-      }
+        processingTime: 5,
+      },
     });
-    
   } catch (error) {
-    console.error('SOM status check error:', error);
-    
-    return json({
-      success: false,
-      error: 'Failed to retrieve training status',
-      metadata: {
-        timestamp: new Date().toISOString(),
-        processingTime: 0
-      }
-    }, { status: 500 });
+    console.error("SOM status check error:", error);
+
+    return json(
+      {
+        success: false,
+        error: "Failed to retrieve training status",
+        metadata: {
+          timestamp: new Date().toISOString(),
+          processingTime: 0,
+        },
+      },
+      { status: 500 },
+    );
   }
 };

@@ -8,30 +8,30 @@
   --yorha-gray-medium: #333333;
   --yorha-gray-light: #666666;
   --yorha-gray-muted: #999999;
-  
+
   /* Strategic Accent Colors */
   --yorha-accent-blue: #00d4ff;
   --yorha-accent-amber: #ffcc00;
   --yorha-accent-red: #ff4444;
   --yorha-accent-green: #44ff44;
-  
+
   /* Golden Ratio Values */
   --golden-ratio: 1.618;
   --golden-ratio-inv: 0.618;
-  
+
   /* Typography */
-  --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
-  --font-display: 'Orbitron', 'JetBrains Mono', monospace;
-  
+  --font-mono: "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
+  --font-display: "Orbitron", "JetBrains Mono", monospace;
+
   /* Spacing Golden Ratio Scale */
-  --space-xs: 0.25rem;    /* 4px */
-  --space-sm: 0.5rem;     /* 8px */
-  --space-md: 0.75rem;    /* 12px */
-  --space-lg: 1.25rem;    /* 20px */
-  --space-xl: 2rem;       /* 32px */
-  --space-2xl: 3.25rem;   /* 52px */
-  --space-3xl: 5.25rem;   /* 84px */
-  
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 0.75rem; /* 12px */
+  --space-lg: 1.25rem; /* 20px */
+  --space-xl: 2rem; /* 32px */
+  --space-2xl: 3.25rem; /* 52px */
+  --space-3xl: 5.25rem; /* 84px */
+
   /* Component Sizing */
   --border-width: 2px;
   --border-radius: 0; /* Sharp, angular design */
@@ -112,13 +112,18 @@ body {
 }
 
 .yorha-panel::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -2px;
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, var(--yorha-accent-blue), transparent, var(--yorha-accent-blue));
+  background: linear-gradient(
+    45deg,
+    var(--yorha-accent-blue),
+    transparent,
+    var(--yorha-accent-blue)
+  );
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -148,13 +153,18 @@ body {
 }
 
 .yorha-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, var(--yorha-accent-blue), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--yorha-accent-blue),
+    transparent
+  );
   transition: left 0.3s ease;
 }
 
@@ -228,13 +238,13 @@ body {
 }
 
 .yorha-evidence-board::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
@@ -402,21 +412,33 @@ body {
 }
 
 .yorha-status::before {
-  content: '';
+  content: "";
   width: 8px;
   height: 8px;
   background: currentColor;
   animation: pulse 2s ease-in-out infinite alternate;
 }
 
-.yorha-status--online { color: var(--yorha-accent-green); }
-.yorha-status--offline { color: var(--yorha-accent-red); }
-.yorha-status--processing { color: var(--yorha-accent-amber); }
-.yorha-status--standby { color: var(--yorha-gray-muted); }
+.yorha-status--online {
+  color: var(--yorha-accent-green);
+}
+.yorha-status--offline {
+  color: var(--yorha-accent-red);
+}
+.yorha-status--processing {
+  color: var(--yorha-accent-amber);
+}
+.yorha-status--standby {
+  color: var(--yorha-gray-muted);
+}
 
 @keyframes pulse {
-  from { opacity: 0.5; }
-  to { opacity: 1; }
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* YoRHa Loading Animation */
@@ -431,8 +453,12 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* YoRHa Responsive Design */
@@ -446,19 +472,19 @@ body {
     z-index: 999;
     transition: left 0.3s ease;
   }
-  
+
   .yorha-sidebar.open {
     left: 0;
   }
-  
+
   .yorha-content {
     flex: 1;
   }
-  
+
   .yorha-header {
     padding: var(--space-sm) var(--space-md);
   }
-  
+
   .yorha-nav {
     gap: var(--space-sm);
   }

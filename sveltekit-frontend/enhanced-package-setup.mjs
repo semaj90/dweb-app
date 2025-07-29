@@ -7,68 +7,35 @@ try {
   // Add modern development scripts
   const enhancedScripts = {
     ...packageJson.scripts,
-ECHO is on.
     // Development
     'dev:modern': 'concurrently "npm run websocket:start" "vite dev --host localhost --port 5173"',
     'dev:bits-ui': 'vite dev --host localhost --port 5173',
     'dev:xstate': 'XSTATE_INSPECT=true npm run dev',
-ECHO is on.
     // Building and testing
-    'build:modern': 'vite build 
+    'build:modern': 'vite build',
     'test:components': 'vitest run tests/',
     'test:e2e': 'playwright test',
     'test:e2e:ui': 'playwright test --ui',
-    'test:all': 'npm run test:components 
-ECHO is on.
+    'test:all': 'npm run test:components && npm run test:e2e',
     // Type checking and linting
-    'check:modern': 'svelte-kit sync 
-    'check:xstate': 'npm run check:modern 
-"XState machines validated"',
-    'lint:fix': 'prettier --write . 
-ECHO is on.
+    'check:modern': 'svelte-kit sync && svelte-check --tsconfig ./tsconfig.json',
+    'check:xstate': 'npm run check:modern && echo "XState machines validated"',
+    'lint:fix': 'prettier --write . && eslint . --fix',
     // Database operations
-    'db:modern': 'drizzle-kit generate 
+    'db:modern': 'drizzle-kit generate && drizzle-kit migrate',
     'db:studio:modern': 'drizzle-kit studio --port 3001',
     'db:seed:modern': 'tsx src/lib/server/db/seed.ts',
-ECHO is on.
     // Modern deployment
     'preview:modern': 'vite preview --host localhost --port 4173',
-    'deploy:check': 'npm run check:modern 
-ECHO is on.
+    'deploy:check': 'npm run check:modern && npm run build:modern',
     // Debugging and development tools
     'debug:xstate': 'XSTATE_INSPECT=true XSTATE_DEVTOOLS=true npm run dev',
     'debug:components': 'npm run test:components -- --reporter=verbose',
-    'analyze:bundle': 'npm run build 
-Need to install the following packages:
-vite-bundle-analyzer@1.1.0
-Ok to proceed? (y) 
-ECHO is on.
+    'analyze:bundle': 'npm run build && npx vite-bundle-analyzer',
     // Quick fixes and maintenance
-    'fix:all:modern': 'npm run lint:fix 
+    'fix:all:modern': 'npm run lint:fix && npm run check:modern',
     'clean:modern': 'rimraf .svelte-kit dist node_modules/.vite',
-    'reset:modern': 'npm run clean:modern 
-
-> prosecutor-web-frontend@0.0.1 prepare
-> svelte-kit sync || echo ''
-
-
-up to date, audited 1381 packages in 4s
-
-273 packages are looking for funding
-  run `npm fund` for details
-
-13 vulnerabilities (6 low, 6 moderate, 1 critical)
-
-To address issues that do not require attention, run:
-  npm audit fix
-
-To address all issues possible (including breaking changes), run:
-  npm audit fix --force
-
-Some issues need review, and may require choosing
-a different dependency.
-
-Run `npm audit` for details.
+    'reset:modern': 'npm run clean:modern && npm install'
   };
 
   packageJson.scripts = enhancedScripts;

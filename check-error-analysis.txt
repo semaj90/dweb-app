@@ -1,0 +1,100 @@
+
+> yorha-legal-ai-frontend@1.0.0 check
+> svelte-kit sync && svelte-check --tsconfig ./tsconfig.json 2
+
+
+====================================
+Loading svelte-check in workspace: c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend
+Getting Svelte diagnostics...
+
+Installing @iconify-json/lucide...
+Installing @iconify-json/mdi...
+Installing @iconify-json/tabler...
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\agent-integration.ts[39m:29:10
+[31mError[39m: Module '"./mcp-helpers"' has no exported member 'createMemoryRelation'. 
+[36m// TODO: Replace with real agent orchestration after test
+import { [35mcreateMemoryRelation[36m, resolveLibraryId } from "./mcp-helpers";
+
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\som-rag-system.ts[39m:56:11
+[31mError[39m: Property 'som' has no initializer and is not definitely assigned in the constructor. 
+[36mexport class SelfOrganizingMapRAG {
+  private [35msom[36m: SOMNode[][];
+  private config: SOMConfig;
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:8:22
+[31mError[39m: Could not find a declaration file for module 'pg'. 'c:/Users/james/Desktop/deeds-web/deeds-web-app/node_modules/pg/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/pg` if it exists or add a new declaration (.d.ts) file containing `declare module 'pg';` 
+[36mimport { QdrantClient } from "@qdrant/js-client-rest";
+import { Pool } from [35m"pg"[36m;
+import { createClient } from "redis";
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:91:14
+[31mError[39m: Duplicate identifier 'EnhancedIngestionPipeline'. 
+[36m
+export class [35mEnhancedIngestionPipeline[36m {
+  // ...existing class properties and constructor...
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:99:34
+[31mError[39m: Property 'generateEmbedding' does not exist on type 'EnhancedIngestionPipeline'. 
+[36m    const extractedText = evidence.extracted_content.text || "";
+    const embedding = await this.[35mgenerateEmbedding[36m(extractedText);
+    const docEmbedding: DocumentEmbedding = {
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:104:7
+[31mError[39m: Type '{ evidence_type: string; filename: string; size: number; mime_type: string; case_id: string; upload_timestamp: string; processing_status: "pending" | "completed" | "failed" | "processing"; confidence_scores?: { ...; } | undefined; anchor_points?: AnchorPoint[] | undefined; timeline_segments?: TimelineSegment[] | und...' is missing the following properties from type '{ case_id?: string | undefined; evidence_type?: string | undefined; legal_category?: string | undefined; confidence: number; timestamp: number; }': confidence, timestamp 
+[36m      embedding,
+      [35mmetadata[36m: {
+        ...evidence.metadata,
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:109:16
+[31mError[39m: Property 'storeInQdrant' does not exist on type 'EnhancedIngestionPipeline'. 
+[36m    };
+    await this.[35mstoreInQdrant[36m(docEmbedding);
+    return docEmbedding;
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:117:34
+[31mError[39m: Property 'generateEmbedding' does not exist on type 'EnhancedIngestionPipeline'. 
+[36m    const sceneSummary = evidence.extracted_content.scene_summary || "";
+    const embedding = await this.[35mgenerateEmbedding[36m(sceneSummary);
+    const docEmbedding: DocumentEmbedding = {
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:122:7
+[31mError[39m: Type '{ evidence_type: string; filename: string; size: number; mime_type: string; case_id: string; upload_timestamp: string; processing_status: "pending" | "completed" | "failed" | "processing"; confidence_scores?: { ...; } | undefined; anchor_points?: AnchorPoint[] | undefined; timeline_segments?: TimelineSegment[] | und...' is missing the following properties from type '{ case_id?: string | undefined; evidence_type?: string | undefined; legal_category?: string | undefined; confidence: number; timestamp: number; }': confidence, timestamp 
+[36m      embedding,
+      [35mmetadata[36m: {
+        ...evidence.metadata,
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:127:16
+[31mError[39m: Property 'storeInQdrant' does not exist on type 'EnhancedIngestionPipeline'. 
+[36m    };
+    await this.[35mstoreInQdrant[36m(docEmbedding);
+    return docEmbedding;
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:135:34
+[31mError[39m: Property 'generateEmbedding' does not exist on type 'EnhancedIngestionPipeline'. 
+[36m    const transcription = evidence.extracted_content.transcription || "";
+    const embedding = await this.[35mgenerateEmbedding[36m(transcription);
+    const docEmbedding: DocumentEmbedding = {
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:140:7
+[31mError[39m: Type '{ evidence_type: string; filename: string; size: number; mime_type: string; case_id: string; upload_timestamp: string; processing_status: "pending" | "completed" | "failed" | "processing"; confidence_scores?: { ...; } | undefined; anchor_points?: AnchorPoint[] | undefined; timeline_segments?: TimelineSegment[] | und...' is missing the following properties from type '{ case_id?: string | undefined; evidence_type?: string | undefined; legal_category?: string | undefined; confidence: number; timestamp: number; }': confidence, timestamp 
+[36m      embedding,
+      [35mmetadata[36m: {
+        ...evidence.metadata,
+[39m
+
+c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\[32msrc\lib\ai\enhanced-ingestion-pipeline.ts[39m:145:16
+[31mError[39m: Property 'storeInQdrant' does not exist on type 'EnhancedIngestionPipeline'. 
+[36m    };

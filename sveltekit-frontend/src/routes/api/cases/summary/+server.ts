@@ -3,6 +3,7 @@ import type { Case } from "$lib/types";
 import {
   caseEmbeddings,
   chatEmbeddings,
+  evidence,
   evidenceVectors,
 } from "$lib/server/db/schema-postgres";
 import { json } from "@sveltejs/kit";
@@ -93,7 +94,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         .orderBy(desc(caseEmbeddings.createdAt))
         .limit(1);
 
-      if (existingSummary.length > 0 && (existingSummary[0].metadata as any)?.summary) {
+      if (
+        existingSummary.length > 0 &&
+        (existingSummary[0].metadata as any)?.summary
+      ) {
         return json({
           success: true,
           summary: (existingSummary[0].metadata as any).summary,
@@ -215,13 +219,13 @@ async function gatherCaseData(
 
   if (includeEvidence) {
     // Get evidence data
-    const evidence = await db
+    const evidenceData = await db
       .select()
       .from(evidenceVectors)
       .innerJoin(evidence, eq(evidenceVectors.evidenceId, evidence.id))
       .where(eq(evidence.caseId, caseId));
 
-    data.evidence = evidence.map((e) => ({
+    data.evidence = evidenceData.map((e) => ({
       id: e.evidenceId,
       content: e.content,
       metadata: e.metadata,
@@ -308,15 +312,15 @@ Focus on:
 
 Respond with valid JSON only.`;
 
-  const response = await ollamaService.generate(analysisPrompt, {
+  const response = await ollamaService.generateResponse(analysisPrompt, {
     model: "gemma3-legal",
-    maxTokens: 2000,
+    max_tokens: 2000,
     temperature: 0.3,
   });
 
-  if (response.success) {
+  if (response.response) {
     try {
-      const summary = JSON.parse(response.content);
+      const summary = JSON.parse(response.response);
 
       // Add calculated evidence metrics
       if (caseData.evidenceAnalytics) {

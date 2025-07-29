@@ -5,7 +5,7 @@ export interface EditableNode {
   width: number;
   height: number;
   content: string;
-  type: 'text' | 'evidence' | 'link';
+  type: "text" | "evidence" | "link";
   metadata?: Record<string, any>;
 }
 

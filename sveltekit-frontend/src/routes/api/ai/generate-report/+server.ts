@@ -1,72 +1,87 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
 
 const REPORT_TEMPLATES = {
-  'case-summary': {
-    title: 'Case Summary Report',
+  "case-summary": {
+    title: "Case Summary Report",
     sections: [
-      'Executive Summary',
-      'Case Overview',
-      'Key Facts',
-      'Evidence Summary',
-      'Legal Analysis',
-      'Conclusions and Recommendations'
+      "Executive Summary",
+      "Case Overview",
+      "Key Facts",
+      "Evidence Summary",
+      "Legal Analysis",
+      "Conclusions and Recommendations",
     ],
-    prompt: 'Generate a comprehensive case summary report based on the provided case information. Include an executive summary, key facts, evidence analysis, and legal conclusions.'
+    prompt:
+      "Generate a comprehensive case summary report based on the provided case information. Include an executive summary, key facts, evidence analysis, and legal conclusions.",
   },
-  'evidence-analysis': {
-    title: 'Evidence Analysis Report',
+  "evidence-analysis": {
+    title: "Evidence Analysis Report",
     sections: [
-      'Evidence Overview',
-      'Chain of Custody',
-      'Technical Analysis',
-      'Relevance Assessment',
-      'Admissibility Review',
-      'Conclusions'
+      "Evidence Overview",
+      "Chain of Custody",
+      "Technical Analysis",
+      "Relevance Assessment",
+      "Admissibility Review",
+      "Conclusions",
     ],
-    prompt: 'Analyze the provided evidence comprehensively. Evaluate chain of custody, technical validity, legal relevance, and admissibility in court proceedings.'
+    prompt:
+      "Analyze the provided evidence comprehensively. Evaluate chain of custody, technical validity, legal relevance, and admissibility in court proceedings.",
   },
-  'legal-brief': {
-    title: 'Legal Brief',
+  "legal-brief": {
+    title: "Legal Brief",
     sections: [
-      'Statement of Issues',
-      'Statement of Facts',
-      'Legal Arguments',
-      'Precedent Analysis',
-      'Conclusion',
-      'Prayer for Relief'
+      "Statement of Issues",
+      "Statement of Facts",
+      "Legal Arguments",
+      "Precedent Analysis",
+      "Conclusion",
+      "Prayer for Relief",
     ],
-    prompt: 'Create a structured legal brief addressing the case issues. Include fact statements, legal arguments supported by precedent, and clear conclusions.'
+    prompt:
+      "Create a structured legal brief addressing the case issues. Include fact statements, legal arguments supported by precedent, and clear conclusions.",
   },
-  'investigation-report': {
-    title: 'Investigation Report',
+  "investigation-report": {
+    title: "Investigation Report",
     sections: [
-      'Investigation Summary',
-      'Timeline of Events',
-      'Interviews Conducted',
-      'Evidence Collected',
-      'Analysis and Findings',
-      'Next Steps'
+      "Investigation Summary",
+      "Timeline of Events",
+      "Interviews Conducted",
+      "Evidence Collected",
+      "Analysis and Findings",
+      "Next Steps",
     ],
-    prompt: 'Generate a detailed investigation report documenting all activities, evidence collected, interviews conducted, and analytical findings.'
-  }
+    prompt:
+      "Generate a detailed investigation report documenting all activities, evidence collected, interviews conducted, and analytical findings.",
+  },
 };
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { reportType, caseId, reportId, existingContent, context } = await request.json();
+    const { reportType, caseId, reportId, existingContent, context } =
+      await request.json();
 
-    if (!reportType || !REPORT_TEMPLATES[reportType as keyof typeof REPORT_TEMPLATES]) {
-      return json({ error: 'Invalid report type' }, { status: 400 });
+    if (
+      !reportType ||
+      !REPORT_TEMPLATES[reportType as keyof typeof REPORT_TEMPLATES]
+    ) {
+      return json({ error: "Invalid report type" }, { status: 400 });
     }
 
-    const template = REPORT_TEMPLATES[reportType as keyof typeof REPORT_TEMPLATES];
+    const template =
+      REPORT_TEMPLATES[reportType as keyof typeof REPORT_TEMPLATES];
 
     // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Generate structured report content
-    const reportContent = generateReportContent(template, caseId, reportId, existingContent, context);
+    const reportContent = generateReportContent(
+      template,
+      caseId,
+      reportId,
+      existingContent,
+      context,
+    );
 
     return json({
       success: true,
@@ -78,24 +93,29 @@ export const POST: RequestHandler = async ({ request }) => {
         generatedAt: new Date().toISOString(),
         caseId,
         reportId,
-        wordCount: reportContent.split(' ').length,
-        aiModel: 'Legal-GPT-4',
-        confidence: 0.92
-      }
+        wordCount: reportContent.split(" ").length,
+        aiModel: "Legal-GPT-4",
+        confidence: 0.92,
+      },
     });
-
   } catch (error) {
-    console.error('AI report generation error:', error);
-    return json({ error: 'Failed to generate report' }, { status: 500 });
+    console.error("AI report generation error:", error);
+    return json({ error: "Failed to generate report" }, { status: 500 });
   }
 };
 
-function generateReportContent(template: any, caseId: string, reportId: string, existingContent?: string, context?: any): string {
+function generateReportContent(
+  template: any,
+  caseId: string,
+  reportId: string,
+  existingContent?: string,
+  context?: any,
+): string {
   const now = new Date();
-  const formattedDate = now.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const formattedDate = now.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 
   let content = `
@@ -104,7 +124,7 @@ function generateReportContent(template: any, caseId: string, reportId: string, 
         ${template.title}
       </h1>
       <p style="color: #6b7280; font-size: 16px; margin: 0;">
-        Generated on ${formattedDate} | Case ID: ${caseId || 'N/A'} | Report ID: ${reportId || 'N/A'}
+        Generated on ${formattedDate} | Case ID: ${caseId || "N/A"} | Report ID: ${reportId || "N/A"}
       </p>
     </div>
   `;
@@ -134,9 +154,14 @@ function generateReportContent(template: any, caseId: string, reportId: string, 
   return content;
 }
 
-function generateSectionContent(section: string, reportType: string, existingContent?: string, context?: any): string {
+function generateSectionContent(
+  section: string,
+  reportType: string,
+  existingContent?: string,
+  context?: any,
+): string {
   const sampleContent: { [key: string]: string } = {
-    'Executive Summary': `
+    "Executive Summary": `
       <p>This ${reportType.toLowerCase()} provides a comprehensive analysis of the case materials and evidence. 
       Based on the available information, this report identifies key findings and recommendations for further action.</p>
       <p><strong>Key Findings:</strong></p>
@@ -146,7 +171,7 @@ function generateSectionContent(section: string, reportType: string, existingCon
         <li>Recommended actions align with best practices in similar cases</li>
       </ul>
     `,
-    'Case Overview': `
+    "Case Overview": `
       <p>This section provides background information and context for the case under investigation.</p>
       <p><strong>Case Details:</strong></p>
       <ul>
@@ -156,7 +181,7 @@ function generateSectionContent(section: string, reportType: string, existingCon
         <li>Current status: Active investigation</li>
       </ul>
     `,
-    'Key Facts': `
+    "Key Facts": `
       <p>The following facts have been established through investigation and evidence analysis:</p>
       <ol>
         <li>Initial incident occurred on [Date] at approximately [Time]</li>
@@ -165,7 +190,7 @@ function generateSectionContent(section: string, reportType: string, existingCon
         <li>Witnesses identified: [Number] individuals interviewed</li>
       </ol>
     `,
-    'Evidence Summary': `
+    "Evidence Summary": `
       <p>Evidence collected and analyzed includes:</p>
       <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
         <tr style="background: #f9fafb;">
@@ -190,7 +215,7 @@ function generateSectionContent(section: string, reportType: string, existingCon
         </tr>
       </table>
     `,
-    'Legal Analysis': `
+    "Legal Analysis": `
       <p>Based on applicable laws and regulations, the following legal analysis applies:</p>
       <p><strong>Relevant Statutes:</strong></p>
       <ul>
@@ -204,7 +229,7 @@ function generateSectionContent(section: string, reportType: string, existingCon
         <li><em>[Landmark Case]</em>: Provides guidance on evidence admissibility</li>
       </ul>
     `,
-    'Conclusions and Recommendations': `
+    "Conclusions and Recommendations": `
       <p>Based on the analysis conducted, the following conclusions and recommendations are made:</p>
       <p><strong>Conclusions:</strong></p>
       <ol>
@@ -219,12 +244,15 @@ function generateSectionContent(section: string, reportType: string, existingCon
         <li>Prepare for potential challenges to evidence admissibility</li>
         <li>Schedule follow-up review in 30 days</li>
       </ol>
-    `
+    `,
   };
 
-  return sampleContent[section] || `
+  return (
+    sampleContent[section] ||
+    `
     <p>This section will contain detailed information about ${section.toLowerCase()}. 
     Please review and customize this content based on the specific case requirements.</p>
     <p><em>AI-generated content placeholder. Requires human review and customization.</em></p>
-  `;
+  `
+  );
 }

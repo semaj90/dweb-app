@@ -82,10 +82,12 @@ export const GET: RequestHandler = async ({ url }) => {
     if (reportType) {
       conditions.push(eq(aiReports.reportType, reportType));
     }
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    const reports = await query.orderBy(aiReports.createdAt);
+    
+    const finalQuery = conditions.length > 0 
+      ? query.where(and(...conditions))
+      : query;
+    
+    const reports = await finalQuery.orderBy(aiReports.createdAt);
 
     return json({
       reports,

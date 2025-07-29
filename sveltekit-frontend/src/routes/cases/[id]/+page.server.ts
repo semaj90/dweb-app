@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   try {
     const caseDetails = await db.query.cases.findFirst({
       where: eq(cases.id, caseId),
-      with: { evidence: true, criminals: { with: { criminal: true } } }, // Eager load evidence and criminals
+      with: { evidence: true, leadProsecutor: true, createdBy: true }, // Eager load evidence and user relations
     });
 
     if (!caseDetails) {

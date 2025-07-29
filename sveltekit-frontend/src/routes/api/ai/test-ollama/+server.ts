@@ -48,7 +48,7 @@ export const GET = async () => {
         error: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };
@@ -67,7 +67,7 @@ export const POST = async ({ request }) => {
           error: "Ollama service not available",
           suggestion: "Please ensure Ollama is running: ollama serve",
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
@@ -109,7 +109,7 @@ export const POST = async ({ request }) => {
               : "Unknown generation error",
           suggestion: "Check if gemma3-legal model is imported: ollama list",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
@@ -119,7 +119,7 @@ export const POST = async ({ request }) => {
         error: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

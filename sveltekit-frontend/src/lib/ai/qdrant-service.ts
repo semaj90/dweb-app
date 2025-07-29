@@ -15,7 +15,7 @@
 export async function findSimilarForAudit(
   vector: number[],
   limit = 5,
-  triggerAgent = false
+  triggerAgent = false,
 ) {
   const similar = await qdrantService.searchSimilar(vector, limit);
   // Log results to console (replace with file/db logging as needed)
@@ -107,7 +107,7 @@ export class QdrantService {
       id: string;
       vector: number[];
       payload: LegalDocumentMetadata;
-    }>
+    }>,
   ): Promise<void> {
     await this.ensureCollection();
     await this.client.upsert(this.collectionName, {
@@ -119,7 +119,7 @@ export class QdrantService {
   async searchSimilar(
     vector: number[],
     limit: number = 10,
-    filter?: Record<string, any>
+    filter?: Record<string, any>,
   ): Promise<
     Array<{ id: string; score: number; payload: LegalDocumentMetadata }>
   > {

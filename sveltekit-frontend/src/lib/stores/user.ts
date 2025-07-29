@@ -22,17 +22,17 @@ export class User implements Partial<UserType> {
   constructor(userData = {}) {
     Object.assign(this, userData);
   }
-  
+
   // Check if the user is authenticated
   get isLoggedIn() {
     return this.isAuthenticated;
   }
-  
+
   // Check if the user has an admin role
   get isAdmin() {
     return this.role === "admin";
   }
-  
+
   // Get display name
   get displayName() {
     return (

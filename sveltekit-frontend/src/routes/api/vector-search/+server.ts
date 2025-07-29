@@ -12,8 +12,7 @@ export async function POST({ request }) {
   });
 
   // 2. Search with Qdrant (advanced, for more complex queries)
-  const qdrantResults = await qdrant.search("cases", {
-    vector: embedding,
+  const qdrantResults = await qdrant.searchCases(query, {
     limit: 10,
   });
 

@@ -23,7 +23,7 @@ export {
   applyAIClasses,
   aiCommandService,
   recentCommands,
-  isAIActive
+  isAIActive,
 } from "./ai-unified";
 
 // Unified Evidence Store (merged evidence + evidenceStore)
@@ -31,7 +31,7 @@ export {
   evidenceStore,
   evidenceById,
   evidenceByCase,
-  type Evidence
+  type Evidence,
 } from "./evidence-unified";
 
 // Canvas & Visual stores
@@ -46,7 +46,11 @@ export { enhancedLokiStore } from "./enhancedLokiStore";
 
 // XState machines
 export { autoTaggingMachine } from "./autoTaggingMachine";
-export { evidenceProcessingMachine, evidenceProcessingStore, streamingStore } from "./enhancedStateMachines";
+export {
+  evidenceProcessingMachine,
+  evidenceProcessingStore,
+  streamingStore,
+} from "./enhancedStateMachines";
 export { aiCommandMachine } from "./ai-command-machine";
 
 // Error handling
@@ -63,7 +67,7 @@ export {
   runPhase2Demo,
   phase2HealthCheck,
   demoEvidenceUpload,
-  demoEnhancedButton
+  demoEnhancedButton,
 } from "./phase2-demo";
 
 // Legacy compatibility aliases

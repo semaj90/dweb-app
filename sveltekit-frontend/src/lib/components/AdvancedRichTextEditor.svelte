@@ -10,6 +10,8 @@
     AlignLeft,
     AlignRight,
     Bold,
+    Brain,
+    FileText,
     Image as ImageIcon,
     Italic,
     List,
@@ -19,6 +21,7 @@
     Save,
     Undo,
     Upload,
+    Wand2,
     Sparkles,
   } from "lucide-svelte";
   import AIDropdown from '$lib/components/ui/AIDropdown.svelte';
@@ -31,6 +34,7 @@
   export let autosave = true;
   export let reportId: string = "";
   export let caseId: string = "";
+  export let disabled = false;
 
   let editor: Editor | null = null;
   let editorElement: HTMLElement;
@@ -145,10 +149,10 @@
   onDestroy(() => {
     if (editor) {
       editor.destroy();
-}
+    }
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
-}
+    }
   });
 
   function initializeEditor() {
@@ -214,15 +218,15 @@
     const text = editor.getText();
     wordCount = text.split(/\s+/).filter((word) => word.length > 0).length;
     characterCount = text.length;
-}
+  }
   function scheduleAutoSave() {
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
-}
+    }
     autoSaveTimeout = setTimeout(() => {
       saveContent();
     }, 2000);
-}
+  }
   async function saveContent() {
     if (!editor) return;
 
@@ -247,12 +251,13 @@
 
       if (!response.ok) {
         throw new Error("Failed to save");
-}
+      }
       // Show save indicator
       showSaveIndicator();
     } catch (error) {
       console.error("Auto-save failed:", error);
-}}
+    }
+  }
   function showSaveIndicator() {
     // Implement visual save indicator
     const indicator = document.createElement("div");
@@ -263,7 +268,7 @@
     setTimeout(() => {
       document.body.removeChild(indicator);
     }, 2000);
-}
+  }
   function setupKeyboardShortcuts() {
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey || e.metaKey) {

@@ -122,7 +122,7 @@ export const filteredEvidence = derived(evidenceGrid, ($evidenceGrid) => {
     const searchResults = fuseInstance.search(searchQuery);
     filtered = searchResults.map((result) => result.item);
   }
-  
+
   // Apply sorting
   filtered.sort((a, b) => {
     let aVal: any, bVal: any;
@@ -429,7 +429,7 @@ export const uploadActions = {
           xhr.send(formData);
         });
       }
-      
+
       // Reload evidence after successful upload
       await evidenceActions.loadEvidence(state.caseId);
 

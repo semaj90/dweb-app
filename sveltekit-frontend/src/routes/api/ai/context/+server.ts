@@ -1,6 +1,7 @@
 import { ContextService } from "$lib/services/context-service";
 import { json } from "@sveltejs/kit";
-import { env } from "$env/dynamic/private";
+// Environment variables fallback
+const env = process.env || {};
 
 /**
  * AI Context API Server
@@ -20,7 +21,7 @@ export async function GET({ url }) {
     const currentContext = await ContextService.getCurrentContext();
 
     // Enhanced context for Gemma3 Legal LLM
-    const enhancedContext = {
+    const enhancedContext: any = {
       // Core application context
       application: currentContext,
 
@@ -109,7 +110,7 @@ export async function GET({ url }) {
         error: "Failed to retrieve AI context",
         message: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -139,7 +140,7 @@ export async function POST({ request }) {
         success: false,
         error: "Failed to update context",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

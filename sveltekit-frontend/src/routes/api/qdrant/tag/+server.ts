@@ -19,7 +19,7 @@ class MockQdrantClient {
     // Mock upsert
     data.points.forEach((point: any) => {
       const existingIndex = coll.points.findIndex(
-        (p: any) => p.id === point.id,
+        (p: any) => p.id === point.id
       );
       if (existingIndex >= 0) {
         coll.points[existingIndex] = point;
@@ -91,7 +91,7 @@ const COLLECTIONS = {
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     const session = locals.session;
-    if (!session?.userId) {
+    if (!session?.id) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
     const body = await request.json();
@@ -102,25 +102,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     switch (action) {
       case "tag":
-        return await tagDocument(data, session.userId);
+        return await tagDocument(data, session.id);
 
       case "search":
-        return await searchDocuments(data, session.userId);
+        return await searchDocuments(data, session.id);
 
       case "batch_tag":
-        return await batchTagDocuments(data, session.userId);
+        return await batchTagDocuments(data, session.id);
 
       case "update_tags":
-        return await updateDocumentTags(data, session.userId);
+        return await updateDocumentTags(data, session.id);
 
       case "delete":
-        return await deleteDocument(data, session.userId);
+        return await deleteDocument(data, session.id);
 
       case "get_similar":
-        return await getSimilarDocuments(data, session.userId);
+        return await getSimilarDocuments(data, session.id);
 
       case "get_stats":
-        return await getCollectionStats(session.userId);
+        return await getCollectionStats(session.id);
 
       default:
         return json({ error: "Invalid action" }, { status: 400 });
@@ -132,7 +132,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         error: "Qdrant operation failed",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -225,7 +225,7 @@ async function tagDocument(data: any, userId: string) {
     if (!id || !vector || !payload) {
       return json(
         { error: "Missing required fields: id, vector, payload" },
-        { status: 400 },
+        { status: 400 }
       );
     }
     const documentPayload = {
@@ -264,7 +264,7 @@ async function tagDocument(data: any, userId: string) {
 async function createTagEmbeddings(
   tags: string[],
   documentId: string,
-  userId: string,
+  userId: string
 ) {
   try {
     const tagEmbeddings = await Promise.all(
@@ -280,7 +280,7 @@ async function createTagEmbeddings(
                 model: "nomic-embed-text",
                 prompt: tag,
               }),
-            },
+            }
           );
 
           if (embeddingResponse.ok) {
@@ -300,7 +300,7 @@ async function createTagEmbeddings(
           console.warn(`Tag embedding failed for: ${tag}`, error);
         }
         return null;
-      }),
+      })
     );
 
     const validEmbeddings = tagEmbeddings.filter(Boolean);
@@ -329,7 +329,7 @@ async function searchDocuments(data: any, userId: string) {
     if (!queryVector) {
       return json(
         { error: "No query vector or text provided" },
-        { status: 400 },
+        { status: 400 }
       );
     }
     // Build filter conditions
@@ -338,13 +338,13 @@ async function searchDocuments(data: any, userId: string) {
     if (filters.evidenceType?.length) {
       mustConditions.push({
         key: "evidenceType",
-        match: { values: filters.evidenceType },
+        match: { value: filters.evidenceType },
       });
     }
     if (filters.legalRelevance?.length) {
       mustConditions.push({
         key: "legalRelevance",
-        match: { values: filters.legalRelevance },
+        match: { value: filters.legalRelevance },
       });
     }
     if (filters.caseId) {
@@ -356,7 +356,7 @@ async function searchDocuments(data: any, userId: string) {
     if (filters.tags?.length) {
       mustConditions.push({
         key: "tags",
-        match: { values: filters.tags },
+        match: { value: filters.tags },
       });
     }
     // Perform vector search
@@ -661,7 +661,7 @@ async function generateTextEmbedding(text: string): Promise<number[]> {
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
     const session = locals.session;
-    if (!session?.userId) {
+    if (!session?.id) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
     const action = url.searchParams.get("action");
@@ -674,13 +674,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         if (!documentId) {
           return json({ error: "Document ID required" }, { status: 400 });
         }
-        return await getDocument(documentId, session.userId);
+        return await getDocument(documentId, session.id);
 
       case "list_documents":
-        return await listDocuments(session.userId, { caseId, limit });
+        return await listDocuments(session.id, { caseId, limit });
 
       case "get_tags":
-        return await getUserTags(session.userId);
+        return await getUserTags(session.id);
 
       case "health":
         return await getHealthStatus();
@@ -695,7 +695,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         error: "Failed to retrieve data",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -720,7 +720,7 @@ async function getDocument(documentId: string, userId: string) {
 }
 async function listDocuments(
   userId: string,
-  options: { caseId?: string; limit: number },
+  options: { caseId?: string; limit: number }
 ) {
   const filter = {
     must: [{ key: "userId", match: { value: userId } }],

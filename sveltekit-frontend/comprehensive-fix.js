@@ -4,17 +4,18 @@
  * Creates backups with phase documentation before applying fixes
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const basePath = 'C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/stores';
-const backupPath = path.join(basePath, 'phase-backups');
+const basePath =
+  "C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/stores";
+const backupPath = path.join(basePath, "phase-backups");
 
 function createBackup() {
-  console.log('📦 Creating comprehensive phase backups...');
-  
+  console.log("📦 Creating comprehensive phase backups...");
+
   // Create backup directories
-  ['original', 'phase2', 'phase2-fixed', 'migration-logs'].forEach(dir => {
+  ["original", "phase2", "phase2-fixed", "migration-logs"].forEach((dir) => {
     const dirPath = path.join(backupPath, dir);
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
@@ -24,36 +25,38 @@ function createBackup() {
   // Files to backup with phase context
   const backupFiles = [
     {
-      file: 'ai-unified.ts',
-      phase: 'phase2',
-      context: 'Merged ai-commands.js + ai-command-parser.js for Phase 2 AI foundations'
+      file: "ai-unified.ts",
+      phase: "phase2",
+      context:
+        "Merged ai-commands.js + ai-command-parser.js for Phase 2 AI foundations",
     },
     {
-      file: 'evidence-unified.ts', 
-      phase: 'phase2',
-      context: 'Merged evidence.ts + evidenceStore.ts with import issues (pre-fix)'
+      file: "evidence-unified.ts",
+      phase: "phase2",
+      context:
+        "Merged evidence.ts + evidenceStore.ts with import issues (pre-fix)",
     },
     {
-      file: 'index.ts',
-      phase: 'phase2', 
-      context: 'Barrel exports after store unification'
+      file: "index.ts",
+      phase: "phase2",
+      context: "Barrel exports after store unification",
     },
     {
-      file: 'melt-ui-integration.js',
-      phase: 'phase2',
-      context: 'Phase 2 UI enhancement utilities'
+      file: "melt-ui-integration.js",
+      phase: "phase2",
+      context: "Phase 2 UI enhancement utilities",
     },
     {
-      file: 'phase2-demo.js',
-      phase: 'phase2',
-      context: 'Phase 2 integration demo and health check'
-    }
+      file: "phase2-demo.js",
+      phase: "phase2",
+      context: "Phase 2 integration demo and health check",
+    },
   ];
 
-  backupFiles.forEach(({file, phase, context}) => {
+  backupFiles.forEach(({ file, phase, context }) => {
     const sourcePath = path.join(basePath, file);
     if (fs.existsSync(sourcePath)) {
-      const content = fs.readFileSync(sourcePath, 'utf8');
+      const content = fs.readFileSync(sourcePath, "utf8");
       const backupContent = `/**
  * PHASE ${phase.toUpperCase()} BACKUP: ${file}
  * ${context}
@@ -63,7 +66,7 @@ function createBackup() {
  */
 
 ${content}`;
-      
+
       const backupFile = path.join(backupPath, phase, `${file}.backup`);
       fs.writeFileSync(backupFile, backupContent);
       console.log(`📦 Backed up ${file}`);
@@ -72,36 +75,36 @@ ${content}`;
 }
 
 function applyFixes() {
-  console.log('🔧 Applying comprehensive fixes...');
-  
+  console.log("🔧 Applying comprehensive fixes...");
+
   // 1. Fix evidence store import issues
-  const evidenceFixedPath = path.join(basePath, 'evidence-unified-fixed.ts');
-  const evidencePath = path.join(basePath, 'evidence-unified.ts');
-  
+  const evidenceFixedPath = path.join(basePath, "evidence-unified-fixed.ts");
+  const evidencePath = path.join(basePath, "evidence-unified.ts");
+
   if (fs.existsSync(evidenceFixedPath)) {
     fs.copyFileSync(evidenceFixedPath, evidencePath);
-    console.log('✅ Applied evidence store fixes');
+    console.log("✅ Applied evidence store fixes");
   }
 
   // 2. Create cases fallback if missing
-  const casesPath = path.join(basePath, 'cases.ts');
-  const casesFallbackPath = path.join(basePath, 'cases-fallback.ts');
-  
+  const casesPath = path.join(basePath, "cases.ts");
+  const casesFallbackPath = path.join(basePath, "cases-fallback.ts");
+
   if (!fs.existsSync(casesPath) && fs.existsSync(casesFallbackPath)) {
     fs.copyFileSync(casesFallbackPath, casesPath);
-    console.log('✅ Created cases store fallback');
+    console.log("✅ Created cases store fallback");
   }
 
   // 3. Update phase2-demo.js to use fixed imports
-  const demoPath = path.join(basePath, 'phase2-demo.js');
+  const demoPath = path.join(basePath, "phase2-demo.js");
   if (fs.existsSync(demoPath)) {
-    let content = fs.readFileSync(demoPath, 'utf8');
+    let content = fs.readFileSync(demoPath, "utf8");
     content = content.replace(
       "import { parseAICommand, aiCommandService } from './ai-command-parser.js';",
-      "import { parseAICommand, aiCommandService } from './ai-unified.js';"
+      "import { parseAICommand, aiCommandService } from './ai-unified.js';",
     );
     fs.writeFileSync(demoPath, content);
-    console.log('✅ Fixed demo imports');
+    console.log("✅ Fixed demo imports");
   }
 }
 
@@ -163,25 +166,29 @@ function createMigrationLog() {
 5. Build AI chat interface
 `;
 
-  const logFile = path.join(backupPath, 'migration-logs', `phase2-to-phase3-${Date.now()}.md`);
+  const logFile = path.join(
+    backupPath,
+    "migration-logs",
+    `phase2-to-phase3-${Date.now()}.md`,
+  );
   fs.writeFileSync(logFile, logContent);
-  console.log('📝 Created migration log');
+  console.log("📝 Created migration log");
 }
 
 // Execute backup and fix process
 function main() {
-  console.log('🎯 COMPREHENSIVE PHASE BACKUP & ERROR FIX');
-  console.log('==========================================');
-  
+  console.log("🎯 COMPREHENSIVE PHASE BACKUP & ERROR FIX");
+  console.log("==========================================");
+
   createBackup();
   applyFixes();
   createMigrationLog();
-  
-  console.log('==========================================');
-  console.log('✅ ALL BACKUPS CREATED & ERRORS FIXED');
-  console.log('🎯 Phase 3 ready to launch');
-  console.log('📁 Backups in: phase-backups/');
-  console.log('🚀 Run: LAUNCH-PHASE3-FIXED.bat');
+
+  console.log("==========================================");
+  console.log("✅ ALL BACKUPS CREATED & ERRORS FIXED");
+  console.log("🎯 Phase 3 ready to launch");
+  console.log("📁 Backups in: phase-backups/");
+  console.log("🚀 Run: LAUNCH-PHASE3-FIXED.bat");
 }
 
 if (require.main === module) {

@@ -4,7 +4,7 @@ import { Lucia } from "lucia";
 import { db } from "./db/index";
 import { sessions, users } from "./db/schema-postgres";
 
-const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
+const adapter = new DrizzlePostgreSQLAdapter(db, sessions as any, users as any);
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {

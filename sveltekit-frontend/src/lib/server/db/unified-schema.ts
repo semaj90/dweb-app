@@ -13,8 +13,8 @@ import {
   timestamp,
   uuid,
   varchar,
-  vector,
 } from "drizzle-orm/pg-core";
+import { vector } from "pgvector/drizzle-orm";
 import { z } from "zod";
 
 // Zod schemas for type-safe JSON fields
@@ -305,18 +305,9 @@ export const cases = pgTable(
   },
   (table) => ({
     // Vector similarity search indexes
-    titleEmbeddingIdx: index("cases_title_embedding_idx").using(
-      "hnsw",
-      table.titleEmbedding.op("vector_cosine_ops"),
-    ),
-    descriptionEmbeddingIdx: index("cases_description_embedding_idx").using(
-      "hnsw",
-      table.descriptionEmbedding.op("vector_cosine_ops"),
-    ),
-    fullTextEmbeddingIdx: index("cases_fulltext_embedding_idx").using(
-      "hnsw",
-      table.fullTextEmbedding.op("vector_cosine_ops"),
-    ),
+    titleEmbeddingIdx: index("cases_title_embedding_idx").on(table.titleEmbedding),
+    descriptionEmbeddingIdx: index("cases_description_embedding_idx").on(table.descriptionEmbedding),  
+    fullTextEmbeddingIdx: index("cases_fulltext_embedding_idx").on(table.fullTextEmbedding),
 
     // Traditional indexes for fast filtering
     statusIdx: index("cases_status_idx").on(table.status),
@@ -450,18 +441,9 @@ export const evidence = pgTable(
   },
   (table) => ({
     // Vector indexes for evidence search
-    titleEmbeddingIdx: index("evidence_title_embedding_idx").using(
-      "hnsw",
-      table.titleEmbedding.op("vector_cosine_ops"),
-    ),
-    contentEmbeddingIdx: index("evidence_content_embedding_idx").using(
-      "hnsw",
-      table.contentEmbedding.op("vector_cosine_ops"),
-    ),
-    summaryEmbeddingIdx: index("evidence_summary_embedding_idx").using(
-      "hnsw",
-      table.summaryEmbedding.op("vector_cosine_ops"),
-    ),
+    titleEmbeddingIdx: index("evidence_title_embedding_idx").on(table.titleEmbedding),
+    contentEmbeddingIdx: index("evidence_content_embedding_idx").on(table.contentEmbedding),
+    summaryEmbeddingIdx: index("evidence_summary_embedding_idx").on(table.summaryEmbedding),
 
     // Traditional indexes
     caseIdIdx: index("evidence_case_id_idx").on(table.caseId),
@@ -663,14 +645,8 @@ export const legalDocuments = pgTable(
   },
   (table) => ({
     // Vector indexes for semantic search
-    titleEmbeddingIdx: index("legal_documents_title_embedding_idx").using(
-      "hnsw",
-      table.titleEmbedding.op("vector_cosine_ops"),
-    ),
-    contentEmbeddingIdx: index("legal_documents_content_embedding_idx").using(
-      "hnsw",
-      table.contentEmbedding.op("vector_cosine_ops"),
-    ),
+    titleEmbeddingIdx: index("legal_documents_title_embedding_idx").on(table.titleEmbedding),
+    contentEmbeddingIdx: index("legal_documents_content_embedding_idx").on(table.contentEmbedding),
 
     // Traditional indexes
     caseIdIdx: index("legal_documents_case_id_idx").on(table.caseId),

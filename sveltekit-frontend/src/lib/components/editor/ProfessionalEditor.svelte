@@ -354,8 +354,8 @@
     flex-direction: column;
     height: 80vh;
     min-height: 600px;
-    background: theme(colors.yorha.background);
-    border: 1px solid theme(colors.yorha.border);
+    background: #f4f1ea;
+    border: 1px solid #ada895;
     border-radius: 8px;
     overflow: hidden;
     font-family: 'Georgia', 'Times New Roman', serif;
@@ -389,8 +389,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    background: theme(colors.yorha.surface);
-    border-bottom: 1px solid theme(colors.yorha.border);
+    background: #faf8f3;
+    border-bottom: 1px solid #ada895;
   }
 
   .title-section {
@@ -405,17 +405,17 @@
     background: transparent;
     font-size: 1.125rem;
     font-weight: 600;
-    color: theme(colors.yorha.text);
+    color: #3a372f;
     max-width: 400px;
   }
 
   .title-input:focus {
     outline: none;
-    border-bottom: 2px solid theme(colors.yorha.primary);
+    border-bottom: 2px solid #3a372f;
   }
 
   .unsaved-indicator {
-    color: theme(colors.yorha.error);
+    color: #ef4444;
     font-size: 1.5rem;
     font-weight: bold;
   }
@@ -439,8 +439,8 @@
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 1rem;
-    background: theme(colors.yorha.surface);
-    border-bottom: 1px solid theme(colors.yorha.border);
+    background: #faf8f3;
+    border-bottom: 1px solid #ada895;
   }
 
   .format-group {
@@ -463,7 +463,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 2rem;
-    background: theme(colors.yorha.background);
+    background: #f4f1ea;
   }
 
   .editor-content {
@@ -471,13 +471,13 @@
     outline: none;
     line-height: 1.8;
     font-size: 1.125rem;
-    color: theme(colors.yorha.text);
+    color: #3a372f;
     font-family: 'Georgia', 'Times New Roman', serif;
   }
 
   .editor-content:empty::before {
     content: attr(placeholder);
-    color: theme(colors.yorha.text / 50%);
+    color: rgba(58, 55, 47, 0.5);
     font-style: italic;
   }
 
@@ -486,14 +486,14 @@
     font-size: 2.25rem;
     font-weight: 700;
     margin: 2rem 0 1rem 0;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .editor-content h2 {
     font-size: 1.875rem;
     font-weight: 600;
     margin: 1.5rem 0 0.75rem 0;
-    color: theme(colors.yorha.secondary);
+    color: #75726a;
   }
 
   .editor-content h3 {
@@ -508,11 +508,11 @@
   }
 
   .editor-content blockquote {
-    border-left: 4px solid theme(colors.yorha.primary);
+    border-left: 4px solid #3a372f;
     padding-left: 1rem;
     margin: 1.5rem 0;
     font-style: italic;
-    color: theme(colors.yorha.text / 80%);
+    color: rgba(58, 55, 47, 0.8);
   }
 
   .editor-content ul, .editor-content ol {
@@ -530,10 +530,10 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1rem;
-    background: theme(colors.yorha.surface);
-    border-top: 1px solid theme(colors.yorha.border);
+    background: #faf8f3;
+    border-top: 1px solid #ada895;
     font-size: 0.875rem;
-    color: theme(colors.yorha.text / 70%);
+    color: rgba(58, 55, 47, 0.7);
   }
 
   .status-left {
@@ -547,7 +547,7 @@
 
   .auto-save-status {
     font-style: italic;
-    color: theme(colors.yorha.success);
+    color: #10b981;
   }
 
   /* Shortcuts Modal */
@@ -565,7 +565,7 @@
   }
 
   .shortcuts-modal {
-    background: theme(colors.yorha.background);
+    background: #f4f1ea;
     padding: 2rem;
     border-radius: 12px;
     max-width: 500px;
@@ -592,21 +592,21 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid theme(colors.yorha.border / 30%);
+    border-bottom: 1px solid rgba(173, 168, 149, 0.3);
   }
 
   .shortcut-key {
-    background: theme(colors.yorha.surface);
-    border: 1px solid theme(colors.yorha.border);
+    background: #faf8f3;
+    border: 1px solid #ada895;
     border-radius: 4px;
     padding: 0.25rem 0.5rem;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 0.875rem;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .shortcut-action {
-    color: theme(colors.yorha.text);
+    color: #3a372f;
   }
 
   .close-shortcuts {
@@ -646,7 +646,7 @@
   /* Focus indicators for accessibility */
   .action-btn:focus,
   .format-btn:focus {
-    outline: 2px solid theme(colors.yorha.primary);
+    outline: 2px solid #3a372f;
     outline-offset: 2px;
   }
 

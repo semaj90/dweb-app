@@ -65,8 +65,8 @@
           if (currentSelectedNode) {
             currentSelectedNode.aiTags = e.detail;
             selectedNode.update(n => ({ ...n, aiTags: e.detail }));
-}
-        "
+          }
+        }}
       />
     </div>
     

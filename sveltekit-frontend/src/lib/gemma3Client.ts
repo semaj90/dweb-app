@@ -71,7 +71,7 @@ export class Gemma3Client {
   constructor(
     baseUrl: string = "http://localhost:8001",
     timeout: number = 60000,
-    defaultModel: string = "gemma3-legal"
+    defaultModel: string = "gemma3-legal",
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, ""); // Remove trailing slash
     this.timeout = timeout;
@@ -130,7 +130,7 @@ export class Gemma3Client {
    * Create a chat completion
    */
   async createChatCompletion(
-    request: ChatCompletionRequest
+    request: ChatCompletionRequest,
   ): Promise<ChatCompletionResponse> {
     const payload = {
       model: request.model || this.defaultModel,
@@ -153,7 +153,7 @@ export class Gemma3Client {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        `Chat completion request failed: ${response.status} - ${errorText}`
+        `Chat completion request failed: ${response.status} - ${errorText}`,
       );
     }
 
@@ -164,7 +164,7 @@ export class Gemma3Client {
    * Create a text completion
    */
   async createCompletion(
-    request: CompletionRequest
+    request: CompletionRequest,
   ): Promise<CompletionResponse> {
     const payload = {
       model: request.model || this.defaultModel,
@@ -187,7 +187,7 @@ export class Gemma3Client {
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        `Completion request failed: ${response.status} - ${errorText}`
+        `Completion request failed: ${response.status} - ${errorText}`,
       );
     }
 
@@ -223,7 +223,7 @@ export class Gemma3Client {
    */
   async analyzeDocument(
     documentText: string,
-    analysisType: string = "general"
+    analysisType: string = "general",
   ): Promise<string> {
     const messages: ChatMessage[] = [
       {
@@ -250,7 +250,7 @@ export class Gemma3Client {
    */
   async reviewContract(
     contractText: string,
-    reviewFocus?: string
+    reviewFocus?: string,
   ): Promise<string> {
     const messages: ChatMessage[] = [
       {
@@ -277,7 +277,7 @@ export class Gemma3Client {
    */
   async generateDocumentTemplate(
     documentType: string,
-    requirements: string
+    requirements: string,
   ): Promise<string> {
     const messages: ChatMessage[] = [
       {
@@ -304,7 +304,7 @@ export class Gemma3Client {
    */
   async summarizeContent(
     content: string,
-    type: string = "general"
+    type: string = "general",
   ): Promise<string> {
     const messages: ChatMessage[] = [
       {

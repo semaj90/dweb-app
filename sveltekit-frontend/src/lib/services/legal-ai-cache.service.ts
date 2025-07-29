@@ -1,5 +1,5 @@
 // Legal AI Cache Service - Performance Optimization
-import type { AIAnalysisResult, LegalDocument } from '$lib/types/legal';
+import type { AIAnalysisResult, LegalDocument } from "$lib/types/legal";
 
 interface CacheEntry<T> {
   data: T;
@@ -23,7 +23,7 @@ export class LegalAICache {
     hits: 0,
     misses: 0,
     totalRequests: 0,
-    averageResponseTime: 0
+    averageResponseTime: 0,
   };
 
   constructor() {
@@ -38,15 +38,17 @@ export class LegalAICache {
     const content = `${document.id}-${document.title}-${document.content}-${document.lastModified}`;
     const encoder = new TextEncoder();
     const data = encoder.encode(content);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
   /**
    * Get cached analysis result if available and not expired
    */
-  async getCachedAnalysis(document: LegalDocument): Promise<AIAnalysisResult | null> {
+  async getCachedAnalysis(
+    document: LegalDocument,
+  ): Promise<AIAnalysisResult | null> {
     const startTime = performance.now();
     this.metrics.totalRequests++;
 
@@ -58,11 +60,13 @@ export class LegalAICache {
         // Update access count and metrics
         cached.accessCount++;
         this.metrics.hits++;
-        
+
         const responseTime = performance.now() - startTime;
         this.updateAverageResponseTime(responseTime);
 
-        console.log(`Cache HIT for document ${document.id} (hash: ${documentHash})`);
+        console.log(
+          `Cache HIT for document ${document.id} (hash: ${documentHash})`,
+        );
         return cached.data;
       }
 
@@ -70,9 +74,8 @@ export class LegalAICache {
       this.metrics.misses++;
       console.log(`Cache MISS for document ${document.id}`);
       return null;
-
     } catch (error) {
-      console.error('Cache lookup failed:', error);
+      console.error("Cache lookup failed:", error);
       this.metrics.misses++;
       return null;
     }
@@ -81,10 +84,13 @@ export class LegalAICache {
   /**
    * Store analysis result in cache
    */
-  async setCachedAnalysis(document: LegalDocument, result: AIAnalysisResult): Promise<void> {
+  async setCachedAnalysis(
+    document: LegalDocument,
+    result: AIAnalysisResult,
+  ): Promise<void> {
     try {
       const documentHash = await this.generateDocumentHash(document);
-      
+
       // Enforce cache size limit
       if (this.cache.size >= this.MAX_CACHE_SIZE) {
         this.evictLeastUsed();
@@ -94,18 +100,19 @@ export class LegalAICache {
         data: result,
         timestamp: Date.now(),
         accessCount: 1,
-        documentHash
+        documentHash,
       };
 
       this.cache.set(documentHash, cacheEntry);
-      
-      console.log(`Cached analysis for document ${document.id} (hash: ${documentHash})`);
+
+      console.log(
+        `Cached analysis for document ${document.id} (hash: ${documentHash})`,
+      );
 
       // Store in IndexedDB for persistence
       await this.persistToIndexedDB(documentHash, cacheEntry);
-
     } catch (error) {
-      console.error('Failed to cache analysis:', error);
+      console.error("Failed to cache analysis:", error);
     }
   }
 
@@ -132,13 +139,16 @@ export class LegalAICache {
    * Evict least recently used entry when cache is full
    */
   private evictLeastUsed(): void {
-    let leastUsedKey = '';
+    let leastUsedKey = "";
     let leastAccessCount = Infinity;
     let oldestTimestamp = Infinity;
 
     for (const [key, entry] of this.cache.entries()) {
-      if (entry.accessCount < leastAccessCount || 
-          (entry.accessCount === leastAccessCount && entry.timestamp < oldestTimestamp)) {
+      if (
+        entry.accessCount < leastAccessCount ||
+        (entry.accessCount === leastAccessCount &&
+          entry.timestamp < oldestTimestamp)
+      ) {
         leastUsedKey = key;
         leastAccessCount = entry.accessCount;
         oldestTimestamp = entry.timestamp;
@@ -156,21 +166,25 @@ export class LegalAICache {
    */
   private updateAverageResponseTime(responseTime: number): void {
     const total = this.metrics.averageResponseTime * this.metrics.hits;
-    this.metrics.averageResponseTime = (total + responseTime) / (this.metrics.hits + 1);
+    this.metrics.averageResponseTime =
+      (total + responseTime) / (this.metrics.hits + 1);
   }
 
   /**
    * Persist cache entry to IndexedDB for longer-term storage
    */
-  private async persistToIndexedDB(key: string, entry: CacheEntry<AIAnalysisResult>): Promise<void> {
+  private async persistToIndexedDB(
+    key: string,
+    entry: CacheEntry<AIAnalysisResult>,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open('LegalAICache', 1);
+      const request = indexedDB.open("LegalAICache", 1);
 
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const db = request.result;
-        const transaction = db.transaction(['cache'], 'readwrite');
-        const store = transaction.objectStore('cache');
+        const transaction = db.transaction(["cache"], "readwrite");
+        const store = transaction.objectStore("cache");
 
         const putRequest = store.put({ key, ...entry });
         putRequest.onsuccess = () => resolve();
@@ -179,9 +193,9 @@ export class LegalAICache {
 
       request.onupgradeneeded = () => {
         const db = request.result;
-        if (!db.objectStoreNames.contains('cache')) {
-          const store = db.createObjectStore('cache', { keyPath: 'key' });
-          store.createIndex('timestamp', 'timestamp');
+        if (!db.objectStoreNames.contains("cache")) {
+          const store = db.createObjectStore("cache", { keyPath: "key" });
+          store.createIndex("timestamp", "timestamp");
         }
       };
     });
@@ -192,13 +206,13 @@ export class LegalAICache {
    */
   async loadFromIndexedDB(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open('LegalAICache', 1);
+      const request = indexedDB.open("LegalAICache", 1);
 
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const db = request.result;
-        const transaction = db.transaction(['cache'], 'readonly');
-        const store = transaction.objectStore('cache');
+        const transaction = db.transaction(["cache"], "readonly");
+        const store = transaction.objectStore("cache");
 
         const getAllRequest = store.getAll();
         getAllRequest.onsuccess = () => {
@@ -212,7 +226,7 @@ export class LegalAICache {
                 data: entry.data,
                 timestamp: entry.timestamp,
                 accessCount: entry.accessCount,
-                documentHash: entry.documentHash
+                documentHash: entry.documentHash,
               });
             }
           }
@@ -234,23 +248,24 @@ export class LegalAICache {
       hits: 0,
       misses: 0,
       totalRequests: 0,
-      averageResponseTime: 0
+      averageResponseTime: 0,
     };
-    console.log('Cache cleared');
+    console.log("Cache cleared");
   }
 
   /**
    * Get cache statistics
    */
   getMetrics(): CacheMetrics & { cacheSize: number; hitRate: string } {
-    const hitRate = this.metrics.totalRequests > 0 
-      ? ((this.metrics.hits / this.metrics.totalRequests) * 100).toFixed(1)
-      : '0.0';
+    const hitRate =
+      this.metrics.totalRequests > 0
+        ? ((this.metrics.hits / this.metrics.totalRequests) * 100).toFixed(1)
+        : "0.0";
 
     return {
       ...this.metrics,
       cacheSize: this.cache.size,
-      hitRate: `${hitRate}%`
+      hitRate: `${hitRate}%`,
     };
   }
 
@@ -259,7 +274,7 @@ export class LegalAICache {
    */
   async preloadCommonAnalyses(documents: LegalDocument[]): Promise<void> {
     console.log(`Preloading ${documents.length} common legal analyses...`);
-    
+
     // This would typically load from a background service
     // For now, we'll just prepare the cache structure
     for (const document of documents) {

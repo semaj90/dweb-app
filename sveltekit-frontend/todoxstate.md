@@ -3,7 +3,9 @@
 ## 📋 Implementation Roadmap
 
 ### Phase 1: Foundation Setup (Days 1-2)
+
 - [ ] **Install Dependencies**
+
   ```bash
   npm install xstate @xstate/svelte lokijs @types/lokijs
   npm install --save-dev @xstate/inspect
@@ -33,6 +35,7 @@
   - [ ] Verify all existing pages load correctly
 
 ### Phase 2: Core State Machines (Days 3-4)
+
 - [ ] **Case Management Machine**
   - [ ] Create `src/lib/machines/caseManagementMachine.ts` from artifacts
   - [ ] Implement search, filter, and pagination logic
@@ -63,6 +66,7 @@
   - [ ] Verify cache performance improvements
 
 ### Phase 3: Advanced Features (Days 5-6)
+
 - [ ] **AI Assistant Machine**
   - [ ] Create `src/lib/machines/aiAssistantMachine.ts` from artifacts
   - [ ] Set up AI context management
@@ -94,6 +98,7 @@
   - [ ] Add offline indicators
 
 ### Phase 4: Polish & Production (Day 7)
+
 - [ ] **Testing Suite**
   - [ ] Write unit tests for critical machines
   - [ ] Write integration tests for API endpoints
@@ -121,6 +126,7 @@
 ## 🔧 Configuration Checklist
 
 ### Environment Variables
+
 - [ ] `OLLAMA_API_URL="http://localhost:11434"`
 - [ ] `AI_MODEL_DEFAULT="gemma3-legal"`
 - [ ] `XSTATE_DEVTOOLS="true"` (dev only)
@@ -128,11 +134,13 @@
 - [ ] `WEBSOCKET_PORT="3001"`
 
 ### Package.json Scripts
+
 - [ ] Add `"xstate:inspect": "xstate-inspect"`
 - [ ] Add `"cache:clear": "node scripts/clear-cache.js"`
 - [ ] Add `"ws:test": "curl -H 'Upgrade: websocket' http://localhost:5173/api/ws"`
 
 ### Development Tools
+
 - [ ] Install XState VS Code extension
 - [ ] Configure XState Inspector
 - [ ] Set up cache debugging tools
@@ -141,6 +149,7 @@
 ## 🧪 Testing Checklist
 
 ### Functionality Tests
+
 - [ ] Search works instantly (cached results)
 - [ ] Filters apply in real-time
 - [ ] New cases can be created
@@ -151,6 +160,7 @@
 - [ ] Profile pictures still work perfectly
 
 ### Performance Tests
+
 - [ ] Page loads <2 seconds (first time)
 - [ ] Page loads <500ms (cached)
 - [ ] Search responses <100ms
@@ -159,6 +169,7 @@
 - [ ] Memory usage stays stable
 
 ### Integration Tests
+
 - [ ] Lucia v3 auth works perfectly
 - [ ] GitHub OAuth still works
 - [ ] Database operations work
@@ -169,6 +180,7 @@
 ## 📊 Success Metrics
 
 Track these improvements:
+
 - [ ] **Page Load Time**: 70% faster (3-5s → 0.5-1s)
 - [ ] **Search Response**: 80% faster (500ms-1s → <100ms)
 - [ ] **User Interactions**: Real-time vs limited
@@ -179,6 +191,7 @@ Track these improvements:
 ## 🚨 Rollback Plan
 
 If issues occur:
+
 - [ ] **Git Rollback**: `git stash push -m "XState implementation"`
 - [ ] **Selective Rollback**: Revert individual files
 - [ ] **Feature Flags**: Disable XState features selectively
@@ -187,6 +200,7 @@ If issues occur:
 ## 🎯 Definition of Done
 
 Implementation is complete when:
+
 - [ ] All existing functionality preserved
 - [ ] Search results appear instantly
 - [ ] Real-time updates work across tabs
@@ -199,21 +213,25 @@ Implementation is complete when:
 ## 📝 Notes & Learnings
 
 ### Day 1 Notes:
+
 - [ ] Record setup issues and solutions
 - [ ] Note performance baseline measurements
 - [ ] Document any schema migration challenges
 
 ### Day 2 Notes:
+
 - [ ] Cache hit/miss ratios
 - [ ] State machine debugging insights
 - [ ] API performance improvements
 
 ### Day 3 Notes:
+
 - [ ] User feedback on new interface
 - [ ] Performance metrics achieved
 - [ ] Any unexpected issues
 
 ### Final Notes:
+
 - [ ] Overall success metrics
 - [ ] Lessons learned
 - [ ] Recommendations for future
@@ -224,6 +242,7 @@ Implementation is complete when:
 ## 🎊 Completion Celebration
 
 When all items are checked:
+
 - [ ] 🎉 **Celebrate the achievement!**
 - [ ] 📊 **Document performance gains**
 - [ ] 📚 **Share learnings with team**

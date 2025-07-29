@@ -9,16 +9,16 @@ security_config:
     password_min_length: 12
     max_login_attempts: 5
     lockout_duration: "15m"
-  
+
   encryption:
     algorithm: "aes-256-gcm"
     key_rotation_interval: "30d"
-  
+
   headers:
     csp: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
     hsts: "max-age=31536000; includeSubDomains"
     referrer_policy: "strict-origin-when-cross-origin"
-    
+
   rate_limiting:
     api: "100/15m"
     auth: "5/15m"
@@ -35,14 +35,14 @@ monitoring:
     - app_active_users
     - app_case_operations
     - app_ai_requests
-  
+
   alerts:
     error_rate_threshold: 5%
     response_time_threshold: 2000ms
     memory_usage_threshold: 80%
     disk_usage_threshold: 85%
     database_connection_threshold: 90%
-  
+
   dashboards:
     - name: "Application Overview"
       panels:
@@ -50,7 +50,7 @@ monitoring:
         - response_times
         - error_rates
         - active_users
-    
+
     - name: "Legal AI Metrics"
       panels:
         - case_operations
@@ -58,12 +58,12 @@ monitoring:
         - ai_query_performance
         - vector_search_latency
 
-# Logging Configuration  
+# Logging Configuration
 logging:
   level: "info"
   format: "json"
   retention: "30d"
-  
+
   structured_fields:
     - user_id
     - request_id
@@ -81,7 +81,7 @@ security_middleware:
     methods: ["GET", "POST", "PUT", "DELETE"]
     allowed_headers: ["Content-Type", "Authorization"]
     credentials: true
-  
+
   helmet:
     content_security_policy: true
     cross_origin_embedder_policy: true
@@ -111,12 +111,12 @@ database_security:
   query_logging: true
   sensitive_data_masking: true
   backup_encryption: true
-  
+
   access_control:
     read_only_user: "legal_ai_read"
     app_user: "legal_ai_app"
     admin_user: "legal_ai_admin"
-  
+
   audit_log:
     enabled: true
     log_connections: true
@@ -129,16 +129,16 @@ api_security:
   authentication:
     required: true
     methods: ["jwt", "api_key"]
-  
+
   authorization:
     rbac_enabled: true
     resource_based: true
-  
+
   input_validation:
     max_request_size: "10MB"
     sanitize_inputs: true
     validate_schemas: true
-  
+
   output_security:
     sensitive_data_filtering: true
     response_compression: true
@@ -152,7 +152,7 @@ file_upload_security:
   content_type_validation: true
   file_name_sanitization: true
   quarantine_suspicious_files: true
-  
+
   storage:
     encryption_at_rest: true
     access_logging: true
@@ -166,12 +166,12 @@ env_security:
     - ENCRYPTION_KEY
     - REDIS_URL
     - QDRANT_URL
-  
+
   validation:
     jwt_secret_min_length: 32
     encryption_key_length: 32
     database_ssl_required: true
-  
+
   rotation_schedule:
     jwt_secret: "monthly"
     encryption_key: "quarterly"
@@ -185,13 +185,13 @@ compliance:
     right_to_erasure: true
     data_portability: true
     consent_management: true
-  
+
   hipaa:
     enabled: true
     audit_logs: true
     encryption_requirements: true
     access_controls: true
-  
+
   audit_trail:
     user_actions: true
     data_access: true

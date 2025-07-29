@@ -1,15 +1,15 @@
 // Context7 + Phase 8 Unified Recommendation System
 // Integrates MCP tools with AI-aware matrix UI and XState machines
 
-import { type StateValue } from 'xstate';
-import { type LegalFormContext } from '$lib/state/legalFormMachine';
-import { type MatrixUINode } from '$lib/ui/matrix-compiler';
-import { type UserContext, type RerankResult } from '$lib/ai/custom-reranker';
+import { type StateValue } from "xstate";
+import { type LegalFormContext } from "$lib/state/legalFormMachine";
+import { type MatrixUINode } from "$lib/ui/matrix-compiler";
+import { type UserContext, type RerankResult } from "$lib/ai/custom-reranker";
 
 export interface Context7Phase8Query {
   component: string;
-  context: 'legal-ai' | 'gaming-ui' | 'performance';
-  area?: 'performance' | 'security' | 'ui-ux';
+  context: "legal-ai" | "gaming-ui" | "performance";
+  area?: "performance" | "security" | "ui-ux";
   feature?: string;
   requirements?: string;
   xstateContext?: LegalFormContext;
@@ -19,8 +19,12 @@ export interface Context7Phase8Query {
 
 export interface Phase8Recommendation {
   id: string;
-  type: 'ui-optimization' | 'workflow-improvement' | 'performance-boost' | 'ai-enhancement';
-  priority: 'critical' | 'high' | 'medium' | 'low';
+  type:
+    | "ui-optimization"
+    | "workflow-improvement"
+    | "performance-boost"
+    | "ai-enhancement";
+  priority: "critical" | "high" | "medium" | "low";
   title: string;
   description: string;
   context7Source: string;
@@ -37,132 +41,153 @@ export interface Phase8Recommendation {
 }
 
 export class Context7Phase8Integrator {
-  private mcpEndpoint = 'http://localhost:8000/api';
-  private ragEndpoint = 'http://localhost:8000/api/rag';
-  
+  private mcpEndpoint = "http://localhost:8000/api";
+  private ragEndpoint = "http://localhost:8000/api/rag";
+
   /**
    * Generate unified recommendations using Context7 MCP + Phase 8 AI
    */
-  async generateUnifiedRecommendations(query: Context7Phase8Query): Promise<Phase8Recommendation[]> {
+  async generateUnifiedRecommendations(
+    query: Context7Phase8Query,
+  ): Promise<Phase8Recommendation[]> {
     const recommendations: Phase8Recommendation[] = [];
-    
+
     try {
       // 1. Get Context7 stack analysis
       const stackAnalysis = await this.getContext7StackAnalysis(query);
-      
+
       // 2. Get RAG-powered legal AI insights
       const ragInsights = await this.getRagLegalInsights(query);
-      
+
       // 3. Get XState workflow recommendations
       const workflowRecs = await this.getXStateWorkflowRecommendations(query);
-      
+
       // 4. Get Matrix UI performance suggestions
-      const performanceRecs = await this.getMatrixUIPerformanceRecommendations(query);
-      
+      const performanceRecs =
+        await this.getMatrixUIPerformanceRecommendations(query);
+
       // 5. Merge and rank all recommendations
       recommendations.push(
-        ...this.mergeRecommendations(stackAnalysis, ragInsights, workflowRecs, performanceRecs)
+        ...this.mergeRecommendations(
+          stackAnalysis,
+          ragInsights,
+          workflowRecs,
+          performanceRecs,
+        ),
       );
-      
+
       // 6. Apply AI reranking based on current context
       return this.rerankRecommendations(recommendations, query);
-      
     } catch (error) {
-      console.error('Context7 Phase 8 integration error:', error);
+      console.error("Context7 Phase 8 integration error:", error);
       return this.getFallbackRecommendations(query);
     }
   }
-  
+
   /**
    * Get Context7 MCP stack analysis recommendations
    */
-  private async getContext7StackAnalysis(query: Context7Phase8Query): Promise<Partial<Phase8Recommendation>[]> {
+  private async getContext7StackAnalysis(
+    query: Context7Phase8Query,
+  ): Promise<Partial<Phase8Recommendation>[]> {
     const response = await fetch(`${this.mcpEndpoint}/mcp/analyze-stack`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         component: query.component,
-        context: query.context
-      })
+        context: query.context,
+      }),
     });
-    
-    if (!response.ok) throw new Error('Context7 MCP request failed');
-    
+
+    if (!response.ok) throw new Error("Context7 MCP request failed");
+
     const analysis = await response.json();
-    
-    return analysis.recommendations?.map((rec: any) => ({
-      type: 'ui-optimization' as const,
-      priority: rec.priority || 'medium',
-      title: rec.title,
-      description: rec.description,
-      context7Source: 'stack-analysis',
-      aiConfidence: rec.confidence || 75,
-      implementation: {
-        component: query.component,
-        code: rec.code,
-        dependencies: rec.dependencies,
-        timeEstimate: rec.timeEstimate
-      },
-      benefits: rec.benefits || [],
-      risks: rec.risks || []
-    })) || [];
+
+    return (
+      analysis.recommendations?.map((rec: any) => ({
+        type: "ui-optimization" as const,
+        priority: rec.priority || "medium",
+        title: rec.title,
+        description: rec.description,
+        context7Source: "stack-analysis",
+        aiConfidence: rec.confidence || 75,
+        implementation: {
+          component: query.component,
+          code: rec.code,
+          dependencies: rec.dependencies,
+          timeEstimate: rec.timeEstimate,
+        },
+        benefits: rec.benefits || [],
+        risks: rec.risks || [],
+      })) || []
+    );
   }
-  
+
   /**
    * Get RAG-powered legal AI insights
    */
-  private async getRagLegalInsights(query: Context7Phase8Query): Promise<Partial<Phase8Recommendation>[]> {
+  private async getRagLegalInsights(
+    query: Context7Phase8Query,
+  ): Promise<Partial<Phase8Recommendation>[]> {
     const ragQuery = this.buildRagQuery(query);
-    
+
     const response = await fetch(`${this.ragEndpoint}/query`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         query: ragQuery,
-        context: 'legal-ai',
-        limit: 5
-      })
+        context: "legal-ai",
+        limit: 5,
+      }),
     });
-    
-    if (!response.ok) throw new Error('RAG query failed');
-    
+
+    if (!response.ok) throw new Error("RAG query failed");
+
     const insights = await response.json();
-    
-    return insights.results?.map((result: any) => ({
-      type: 'ai-enhancement' as const,
-      priority: this.calculatePriorityFromScore(result.score),
-      title: `Legal AI Enhancement: ${result.title}`,
-      description: result.content,
-      context7Source: 'rag-legal',
-      aiConfidence: Math.round(result.score * 100),
-      implementation: {
-        component: query.component,
-        timeEstimate: '2-4 hours'
-      },
-      benefits: this.extractBenefits(result.content),
-      risks: []
-    })) || [];
+
+    return (
+      insights.results?.map((result: any) => ({
+        type: "ai-enhancement" as const,
+        priority: this.calculatePriorityFromScore(result.score),
+        title: `Legal AI Enhancement: ${result.title}`,
+        description: result.content,
+        context7Source: "rag-legal",
+        aiConfidence: Math.round(result.score * 100),
+        implementation: {
+          component: query.component,
+          timeEstimate: "2-4 hours",
+        },
+        benefits: this.extractBenefits(result.content),
+        risks: [],
+      })) || []
+    );
   }
-  
+
   /**
    * Get XState workflow recommendations based on current state
    */
-  private async getXStateWorkflowRecommendations(query: Context7Phase8Query): Promise<Partial<Phase8Recommendation>[]> {
+  private async getXStateWorkflowRecommendations(
+    query: Context7Phase8Query,
+  ): Promise<Partial<Phase8Recommendation>[]> {
     if (!query.xstateContext || !query.currentState) return [];
-    
+
     const recommendations: Partial<Phase8Recommendation>[] = [];
-    
+
     // Analyze current state for optimization opportunities
-    if (query.currentState === 'evidenceUpload' && query.xstateContext.evidenceFiles.length === 0) {
+    if (
+      query.currentState === "evidenceUpload" &&
+      query.xstateContext.evidenceFiles.length === 0
+    ) {
       recommendations.push({
-        type: 'workflow-improvement',
-        priority: 'high',
-        title: 'Streamline Evidence Upload UX',
-        description: 'Current evidence upload requires multiple clicks. Consider drag-and-drop or bulk upload.',
-        context7Source: 'xstate-analysis',
+        type: "workflow-improvement",
+        priority: "high",
+        title: "Streamline Evidence Upload UX",
+        description:
+          "Current evidence upload requires multiple clicks. Consider drag-and-drop or bulk upload.",
+        context7Source: "xstate-analysis",
         aiConfidence: 85,
         implementation: {
-          component: 'EvidenceUpload',
+          component: "EvidenceUpload",
           code: `
 // Enhanced drag-and-drop evidence upload
 <div 
@@ -173,61 +198,73 @@ export class Context7Phase8Integrator {
   <FileUploadIcon />
   <p>Drag evidence files here or click to browse</p>
 </div>`,
-          dependencies: ['@uppy/core', '@uppy/drag-drop'],
-          timeEstimate: '1-2 hours'
+          dependencies: ["@uppy/core", "@uppy/drag-drop"],
+          timeEstimate: "1-2 hours",
         },
-        benefits: ['Faster evidence upload', 'Better user experience', 'Reduced form abandonment'],
-        risks: ['Browser compatibility'],
-        relatedStates: ['evidenceUpload']
+        benefits: [
+          "Faster evidence upload",
+          "Better user experience",
+          "Reduced form abandonment",
+        ],
+        risks: ["Browser compatibility"],
+        relatedStates: ["evidenceUpload"],
       });
     }
-    
+
     // Check for AI confidence optimization
     if (query.xstateContext.confidence < 70) {
       recommendations.push({
-        type: 'ai-enhancement',
-        priority: 'medium',
-        title: 'Boost AI Confidence Scoring',
-        description: 'Current AI confidence is below optimal. Add validation rules and user feedback loops.',
-        context7Source: 'confidence-analysis',
+        type: "ai-enhancement",
+        priority: "medium",
+        title: "Boost AI Confidence Scoring",
+        description:
+          "Current AI confidence is below optimal. Add validation rules and user feedback loops.",
+        context7Source: "confidence-analysis",
         aiConfidence: 78,
         implementation: {
-          component: 'ConfidenceBooster',
-          timeEstimate: '3-4 hours'
+          component: "ConfidenceBooster",
+          timeEstimate: "3-4 hours",
         },
-        benefits: ['Higher AI accuracy', 'Better recommendations', 'Improved user trust'],
-        risks: ['Increased complexity'],
-        relatedStates: ['caseDetails', 'review']
+        benefits: [
+          "Higher AI accuracy",
+          "Better recommendations",
+          "Improved user trust",
+        ],
+        risks: ["Increased complexity"],
+        relatedStates: ["caseDetails", "review"],
       });
     }
-    
+
     return recommendations;
   }
-  
+
   /**
    * Get Matrix UI performance recommendations
    */
-  private async getMatrixUIPerformanceRecommendations(query: Context7Phase8Query): Promise<Partial<Phase8Recommendation>[]> {
+  private async getMatrixUIPerformanceRecommendations(
+    query: Context7Phase8Query,
+  ): Promise<Partial<Phase8Recommendation>[]> {
     if (!query.matrixNodes || query.matrixNodes.length === 0) return [];
-    
+
     const recommendations: Partial<Phase8Recommendation>[] = [];
-    
+
     // Analyze matrix complexity
-    const highComplexityNodes = query.matrixNodes.filter(node => 
-      node.metadata?.priority === 'critical' || 
-      node.metadata?.confidence && node.metadata.confidence > 90
+    const highComplexityNodes = query.matrixNodes.filter(
+      (node) =>
+        node.metadata?.priority === "critical" ||
+        (node.metadata?.confidence && node.metadata.confidence > 90),
     );
-    
+
     if (highComplexityNodes.length > 5) {
       recommendations.push({
-        type: 'performance-boost',
-        priority: 'high',
-        title: 'Optimize Matrix UI LOD System',
+        type: "performance-boost",
+        priority: "high",
+        title: "Optimize Matrix UI LOD System",
         description: `Detected ${highComplexityNodes.length} high-complexity nodes. Consider LOD optimization.`,
-        context7Source: 'matrix-performance',
+        context7Source: "matrix-performance",
         aiConfidence: 82,
         implementation: {
-          component: 'MatrixLODSystem',
+          component: "MatrixLODSystem",
           code: `
 // Enhanced LOD with adaptive quality
 const adaptiveLOD = {
@@ -235,17 +272,21 @@ const adaptiveLOD = {
   mid: { vertexCount: 500, shaderComplexity: 'standard' },
   high: { vertexCount: 1000, shaderComplexity: 'advanced' }
 };`,
-          timeEstimate: '4-6 hours'
+          timeEstimate: "4-6 hours",
         },
-        benefits: ['60% performance improvement', 'Smoother animations', 'Better mobile experience'],
-        risks: ['Visual quality trade-offs'],
-        relatedStates: ['review', 'submitting']
+        benefits: [
+          "60% performance improvement",
+          "Smoother animations",
+          "Better mobile experience",
+        ],
+        risks: ["Visual quality trade-offs"],
+        relatedStates: ["review", "submitting"],
       });
     }
-    
+
     return recommendations;
   }
-  
+
   /**
    * Merge recommendations from different sources
    */
@@ -254,154 +295,165 @@ const adaptiveLOD = {
   ): Phase8Recommendation[] {
     const merged: Phase8Recommendation[] = [];
     let idCounter = 1;
-    
-    sources.forEach(source => {
-      source.forEach(rec => {
+
+    sources.forEach((source) => {
+      source.forEach((rec) => {
         if (rec.title && rec.description) {
           merged.push({
             id: `rec-${idCounter++}`,
-            type: rec.type || 'ui-optimization',
-            priority: rec.priority || 'medium',
+            type: rec.type || "ui-optimization",
+            priority: rec.priority || "medium",
             title: rec.title,
             description: rec.description,
-            context7Source: rec.context7Source || 'unknown',
+            context7Source: rec.context7Source || "unknown",
             aiConfidence: rec.aiConfidence || 50,
             implementation: rec.implementation || {},
             benefits: rec.benefits || [],
             risks: rec.risks || [],
-            relatedStates: rec.relatedStates || []
+            relatedStates: rec.relatedStates || [],
           });
         }
       });
     });
-    
+
     return merged;
   }
-  
+
   /**
    * Rerank recommendations using AI context
    */
   private async rerankRecommendations(
     recommendations: Phase8Recommendation[],
-    query: Context7Phase8Query
+    query: Context7Phase8Query,
   ): Promise<Phase8Recommendation[]> {
     // Convert to rerank format
-    const rerankInput: RerankResult[] = recommendations.map(rec => ({
+    const rerankInput: RerankResult[] = recommendations.map((rec) => ({
       id: rec.id,
       content: `${rec.title}: ${rec.description}`,
       metadata: {
         type: rec.type,
         priority: rec.priority,
         confidence: rec.aiConfidence,
-        component: query.component
+        component: query.component,
       },
       originalScore: rec.aiConfidence / 100,
       rerankScore: 0,
-      confidence: rec.aiConfidence
+      confidence: rec.aiConfidence,
     }));
-    
+
     const userContext: UserContext = {
-      intent: 'review',
+      intent: "review",
       timeOfDay: this.getTimeOfDay(),
       focusedElement: query.component,
-      currentCase: 'PHASE8_OPTIMIZATION',
-      recentActions: ['analyze_component', 'request_recommendations'],
-      userRole: 'admin',
-      workflowState: query.currentState === 'review' ? 'review' : 'draft'
+      currentCase: "PHASE8_OPTIMIZATION",
+      recentActions: ["analyze_component", "request_recommendations"],
+      userRole: "admin",
+      workflowState: query.currentState === "review" ? "review" : "draft",
     };
-    
+
     try {
-      const { LegalAIReranker } = await import('$lib/ai/custom-reranker');
+      const { LegalAIReranker } = await import("$lib/ai/custom-reranker");
       const reranker = new LegalAIReranker();
       const reranked = await reranker.rerank(rerankInput, userContext);
-      
+
       // Apply rerank scores back to recommendations
       return recommendations
-        .map(rec => {
-          const rerankedItem = reranked.find(r => r.id === rec.id);
+        .map((rec) => {
+          const rerankedItem = reranked.find((r) => r.id === rec.id);
           return {
             ...rec,
-            aiConfidence: rerankedItem ? Math.round(rerankedItem.rerankScore * 100) : rec.aiConfidence
+            aiConfidence: rerankedItem
+              ? Math.round(rerankedItem.rerankScore * 100)
+              : rec.aiConfidence,
           };
         })
         .sort((a, b) => b.aiConfidence - a.aiConfidence);
-        
     } catch (error) {
-      console.warn('Reranking failed, using original order:', error);
+      console.warn("Reranking failed, using original order:", error);
       return recommendations.sort((a, b) => b.aiConfidence - a.aiConfidence);
     }
   }
-  
+
   /**
    * Helper functions
    */
   private buildRagQuery(query: Context7Phase8Query): string {
     let ragQuery = `${query.component} optimization`;
-    
-    if (query.context === 'legal-ai') {
-      ragQuery += ' legal AI case management evidence';
+
+    if (query.context === "legal-ai") {
+      ragQuery += " legal AI case management evidence";
     }
-    
+
     if (query.xstateContext?.evidenceType) {
       ragQuery += ` ${query.xstateContext.evidenceType} evidence`;
     }
-    
+
     if (query.currentState) {
       ragQuery += ` workflow state ${query.currentState}`;
     }
-    
+
     return ragQuery;
   }
-  
-  private calculatePriorityFromScore(score: number): 'critical' | 'high' | 'medium' | 'low' {
-    if (score > 0.9) return 'critical';
-    if (score > 0.7) return 'high';
-    if (score > 0.5) return 'medium';
-    return 'low';
+
+  private calculatePriorityFromScore(
+    score: number,
+  ): "critical" | "high" | "medium" | "low" {
+    if (score > 0.9) return "critical";
+    if (score > 0.7) return "high";
+    if (score > 0.5) return "medium";
+    return "low";
   }
-  
+
   private extractBenefits(content: string): string[] {
     // Simple keyword extraction for benefits
     const benefitKeywords = [
-      'improve', 'optimize', 'enhance', 'faster', 'better', 'reduce', 'increase'
+      "improve",
+      "optimize",
+      "enhance",
+      "faster",
+      "better",
+      "reduce",
+      "increase",
     ];
-    
+
     const benefits: string[] = [];
-    benefitKeywords.forEach(keyword => {
+    benefitKeywords.forEach((keyword) => {
       if (content.toLowerCase().includes(keyword)) {
         benefits.push(`May ${keyword} system performance`);
       }
     });
-    
+
     return benefits.slice(0, 3); // Limit to top 3
   }
-  
-  private getTimeOfDay(): 'morning' | 'afternoon' | 'evening' | 'night' {
+
+  private getTimeOfDay(): "morning" | "afternoon" | "evening" | "night" {
     const hour = new Date().getHours();
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
-    if (hour < 21) return 'evening';
-    return 'night';
+    if (hour < 12) return "morning";
+    if (hour < 17) return "afternoon";
+    if (hour < 21) return "evening";
+    return "night";
   }
-  
-  private getFallbackRecommendations(query: Context7Phase8Query): Phase8Recommendation[] {
+
+  private getFallbackRecommendations(
+    query: Context7Phase8Query,
+  ): Phase8Recommendation[] {
     return [
       {
-        id: 'fallback-1',
-        type: 'ui-optimization',
-        priority: 'medium',
-        title: 'Basic Component Optimization',
+        id: "fallback-1",
+        type: "ui-optimization",
+        priority: "medium",
+        title: "Basic Component Optimization",
         description: `Consider optimizing ${query.component} for better performance.`,
-        context7Source: 'fallback',
+        context7Source: "fallback",
         aiConfidence: 60,
         implementation: {
           component: query.component,
-          timeEstimate: '1-2 hours'
+          timeEstimate: "1-2 hours",
         },
-        benefits: ['Improved performance'],
+        benefits: ["Improved performance"],
         risks: [],
-        relatedStates: []
-      }
+        relatedStates: [],
+      },
     ];
   }
 }
@@ -411,44 +463,51 @@ export const commonContext7Phase8Queries = {
   /**
    * Analyze Phase 8 component with legal AI context
    */
-  analyzePhase8Component: (component: string, xstateContext?: LegalFormContext, currentState?: StateValue) => ({
+  analyzePhase8Component: (
+    component: string,
+    xstateContext?: LegalFormContext,
+    currentState?: StateValue,
+  ) => ({
     component,
-    context: 'legal-ai' as const,
-    area: 'performance' as const,
+    context: "legal-ai" as const,
+    area: "performance" as const,
     xstateContext,
-    currentState
+    currentState,
   }),
-  
+
   /**
    * Get performance recommendations for Matrix UI
    */
   optimizeMatrixUI: (matrixNodes: MatrixUINode[]) => ({
-    component: 'MatrixUICompiler',
-    context: 'performance' as const,
-    area: 'performance' as const,
-    matrixNodes
+    component: "MatrixUICompiler",
+    context: "performance" as const,
+    area: "performance" as const,
+    matrixNodes,
   }),
-  
+
   /**
    * Get workflow improvement suggestions
    */
-  improveWorkflow: (xstateContext: LegalFormContext, currentState: StateValue) => ({
-    component: 'LegalFormMachine',
-    context: 'legal-ai' as const,
-    area: 'ui-ux' as const,
+  improveWorkflow: (
+    xstateContext: LegalFormContext,
+    currentState: StateValue,
+  ) => ({
+    component: "LegalFormMachine",
+    context: "legal-ai" as const,
+    area: "ui-ux" as const,
     xstateContext,
-    currentState
+    currentState,
   }),
-  
+
   /**
    * Get AI enhancement recommendations
    */
   enhanceAIFeatures: (component: string, requirements: string) => ({
     component,
-    context: 'legal-ai' as const,
-    feature: 'ai-enhancement',
-    requirements
-  })
+    context: "legal-ai" as const,
+    feature: "ai-enhancement",
+    requirements,
+  }),
 };
 
 // Export singleton instance

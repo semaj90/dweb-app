@@ -106,11 +106,10 @@
 }
 </script>
 <DropdownMenuRoot
-  let:trigger
-  let:states
   on:openChange={(e) => {
     if (!e.detail.open) closeMenu();
   }}
+>
   <!-- Hidden trigger for programmatic open -->
   <button
     style="position:fixed;left:-9999px;top:-9999px;"
@@ -119,6 +118,7 @@
   ></button>
   {#if menuOpen}
     <DropdownMenuContent
+      menu={menuOpen}
       class="container mx-auto px-4"
       style="position:fixed;left:{x}px;top:{y}px;"
       on:keydown={(e) => {

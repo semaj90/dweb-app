@@ -5,36 +5,41 @@
  * Ensures proper database initialization for Legal AI Case Management System
  */
 
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import postgres from 'postgres';
-import { existsSync } from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import postgres from "postgres";
+import { existsSync } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Database configuration
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3';
+const DATABASE_URL =
+  process.env.DATABASE_URL ||
+  "postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3";
 
-console.log('🗄️ Legal AI Database Setup Starting...');
-console.log('📍 Database URL:', DATABASE_URL.replace(/\/\/.*@/, '//[credentials]@'));
+console.log("🗄️ Legal AI Database Setup Starting...");
+console.log(
+  "📍 Database URL:",
+  DATABASE_URL.replace(/\/\/.*@/, "//[credentials]@"),
+);
 
 async function setupDatabase() {
   let client;
-  
+
   try {
     // Create PostgreSQL connection
     client = postgres(DATABASE_URL, { max: 1 });
     const db = drizzle(client);
 
-    console.log('🔌 Testing database connection...');
+    console.log("🔌 Testing database connection...");
     await client`SELECT 1 as test`;
-    console.log('✅ Database connection successful!');
+    console.log("✅ Database connection successful!");
 
     // Check and install pgvector extension
-    console.log('🧩 Checking pgvector extension...');
+    console.log("🧩 Checking pgvector extension...");
     const vectorCheck = await client`
       SELECT EXISTS (
         SELECT 1 FROM pg_extension WHERE extname = 'vector'
@@ -42,26 +47,28 @@ async function setupDatabase() {
     `;
 
     if (!vectorCheck[0].has_vector) {
-      console.log('📦 Installing pgvector extension...');
+      console.log("📦 Installing pgvector extension...");
       await client`CREATE EXTENSION IF NOT EXISTS vector`;
-      console.log('✅ pgvector extension installed!');
+      console.log("✅ pgvector extension installed!");
     } else {
-      console.log('✅ pgvector extension already installed!');
+      console.log("✅ pgvector extension already installed!");
     }
 
     // Run migrations if they exist
-    const migrationsPath = path.join(__dirname, 'drizzle');
+    const migrationsPath = path.join(__dirname, "drizzle");
     if (existsSync(migrationsPath)) {
-      console.log('🚀 Running database migrations...');
+      console.log("🚀 Running database migrations...");
       try {
         await migrate(db, { migrationsFolder: migrationsPath });
-        console.log('✅ Database migrations completed!');
+        console.log("✅ Database migrations completed!");
       } catch (migrationError) {
-        console.log('ℹ️ No new migrations to run or migrations already applied');
+        console.log(
+          "ℹ️ No new migrations to run or migrations already applied",
+        );
       }
     } else {
-      console.log('ℹ️ No migrations folder found, creating basic tables...');
-      
+      console.log("ℹ️ No migrations folder found, creating basic tables...");
+
       // Create basic tables if no migrations exist
       await client`
         CREATE TABLE IF NOT EXISTS users (
@@ -100,11 +107,11 @@ async function setupDatabase() {
         CREATE INDEX IF NOT EXISTS idx_cases_created_by ON cases(created_by);
         CREATE INDEX IF NOT EXISTS idx_evidence_case_id ON evidence(case_id);
       `;
-      console.log('✅ Basic tables created!');
+      console.log("✅ Basic tables created!");
     }
 
     // Verify tables
-    console.log('🔍 Verifying table creation...');
+    console.log("🔍 Verifying table creation...");
     const tables = await client`
       SELECT table_name 
       FROM information_schema.tables 
@@ -113,25 +120,24 @@ async function setupDatabase() {
       ORDER BY table_name
     `;
 
-    console.log('📋 Created tables:');
-    tables.forEach(table => {
+    console.log("📋 Created tables:");
+    tables.forEach((table) => {
       console.log(`  ✓ ${table.table_name}`);
     });
 
-    console.log('');
-    console.log('🎉 Database setup completed successfully!');
-    console.log('🔗 You can now connect to your Legal AI database.');
-    
+    console.log("");
+    console.log("🎉 Database setup completed successfully!");
+    console.log("🔗 You can now connect to your Legal AI database.");
+
     return db;
-    
   } catch (error) {
-    console.error('❌ Database setup failed:', error);
-    console.error('');
-    console.error('🔧 Troubleshooting steps:');
-    console.error('  1. Ensure PostgreSQL is running');
-    console.error('  2. Check database credentials in .env file');
-    console.error('  3. Verify database exists and is accessible');
-    console.error('  4. Run: npm run db:reset to start fresh');
+    console.error("❌ Database setup failed:", error);
+    console.error("");
+    console.error("🔧 Troubleshooting steps:");
+    console.error("  1. Ensure PostgreSQL is running");
+    console.error("  2. Check database credentials in .env file");
+    console.error("  3. Verify database exists and is accessible");
+    console.error("  4. Run: npm run db:reset to start fresh");
     process.exit(1);
   } finally {
     if (client) {
@@ -143,25 +149,25 @@ async function setupDatabase() {
 // Seed basic data
 async function seedDatabase() {
   let client;
-  
+
   try {
     client = postgres(DATABASE_URL, { max: 1 });
 
-    console.log('🌱 Seeding initial data...');
+    console.log("🌱 Seeding initial data...");
 
     // Check if admin user exists
     const existingAdmin = await client`
       SELECT * FROM users WHERE email = 'admin@legal-ai.local'
     `;
-    
+
     if (existingAdmin.length === 0) {
       const adminResult = await client`
         INSERT INTO users (email, name, role, password_hash) 
         VALUES ('admin@legal-ai.local', 'System Administrator', 'admin', '$2a$10$defaulthash')
         RETURNING id
       `;
-      console.log('  ✓ Created admin user');
-      
+      console.log("  ✓ Created admin user");
+
       // Create sample case with the admin user ID
       const adminId = adminResult[0].id;
       await client`
@@ -174,15 +180,15 @@ async function seedDatabase() {
           ${adminId}
         )
       `;
-      console.log('  ✓ Created sample case');
+      console.log("  ✓ Created sample case");
     } else {
-      console.log('  ℹ️ Admin user already exists');
-      
+      console.log("  ℹ️ Admin user already exists");
+
       // Check for sample case
       const existingCase = await client`
         SELECT * FROM cases WHERE title LIKE '%Sample Legal Case%'
       `;
-      
+
       if (existingCase.length === 0) {
         await client`
           INSERT INTO cases (title, description, status, priority, created_by) 
@@ -194,16 +200,15 @@ async function seedDatabase() {
             ${existingAdmin[0].id}
           )
         `;
-        console.log('  ✓ Created sample case');
+        console.log("  ✓ Created sample case");
       } else {
-        console.log('  ℹ️ Sample case already exists');
+        console.log("  ℹ️ Sample case already exists");
       }
     }
 
-    console.log('✅ Initial data seeded successfully!');
-
+    console.log("✅ Initial data seeded successfully!");
   } catch (error) {
-    console.log('⚠️ Seeding completed with some warnings:', error.message);
+    console.log("⚠️ Seeding completed with some warnings:", error.message);
   } finally {
     if (client) {
       await client.end();
@@ -214,17 +219,17 @@ async function seedDatabase() {
 // Main execution
 async function main() {
   await setupDatabase();
-  
+
   // Only seed if this is a fresh setup
-  if (process.argv.includes('--seed')) {
+  if (process.argv.includes("--seed")) {
     await seedDatabase();
   }
-  
-  console.log('');
-  console.log('🚀 Ready to launch Legal AI Case Management System!');
-  console.log('📖 Next steps:');
-  console.log('  1. npm run dev (start development server)');
-  console.log('  2. Open http://localhost:5173');
+
+  console.log("");
+  console.log("🚀 Ready to launch Legal AI Case Management System!");
+  console.log("📖 Next steps:");
+  console.log("  1. npm run dev (start development server)");
+  console.log("  2. Open http://localhost:5173");
   console.log('  3. Click "Demo Login" to access the system');
 }
 

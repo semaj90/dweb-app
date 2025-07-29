@@ -34,10 +34,10 @@ function createAvatarStore() {
       if (cachedAvatar && cachedTimestamp) {
         const timestamp = parseInt(cachedTimestamp);
         if (Date.now() - timestamp < cacheExpiry) {
-          update((state) => ({ 
-            ...state, 
-            url: cachedAvatar, 
-            lastUpdated: timestamp 
+          update((state) => ({
+            ...state,
+            url: cachedAvatar,
+            lastUpdated: timestamp,
           }));
         }
       }
@@ -45,25 +45,26 @@ function createAvatarStore() {
       // Always fetch from API for up-to-date data
       try {
         const response = await fetch("/api/user/profile", {
-          credentials: 'include', // Important for SSR session handling
+          credentials: "include", // Important for SSR session handling
           headers: {
-            'Accept': 'application/json',
-          }
+            Accept: "application/json",
+          },
         });
-        
+
         if (response.ok) {
           const data = await response.json();
-          const avatarUrl = data.user?.avatarUrl || "/images/default-avatar.svg";
+          const avatarUrl =
+            data.user?.avatarUrl || "/images/default-avatar.svg";
           const now = Date.now();
 
           // Update store and cache
-          update((state) => ({ 
-            ...state, 
-            url: avatarUrl, 
+          update((state) => ({
+            ...state,
+            url: avatarUrl,
             error: null,
-            lastUpdated: now
+            lastUpdated: now,
           }));
-          
+
           // Update local storage with timestamp
           localStorage.setItem("user_avatar_url", avatarUrl);
           localStorage.setItem("user_avatar_timestamp", now.toString());
@@ -71,18 +72,18 @@ function createAvatarStore() {
           // User not authenticated - clear cache
           localStorage.removeItem("user_avatar_url");
           localStorage.removeItem("user_avatar_timestamp");
-          update((state) => ({ 
-            ...state, 
+          update((state) => ({
+            ...state,
             url: "/images/default-avatar.svg",
-            error: null
+            error: null,
           }));
         }
       } catch (error) {
         console.error("Failed to load avatar:", error);
         // Only show error if we don't have a cached avatar
-        update((state) => ({ 
-          ...state, 
-          error: !state.url ? "Failed to load avatar" : null 
+        update((state) => ({
+          ...state,
+          error: !state.url ? "Failed to load avatar" : null,
         }));
       }
     },
@@ -109,7 +110,7 @@ function createAvatarStore() {
         const response = await fetch("/api/user/avatar/upload", {
           method: "POST",
           body: formData,
-          credentials: 'include', // Important for session handling
+          credentials: "include", // Important for session handling
         });
 
         const data = await response.json();
@@ -117,7 +118,7 @@ function createAvatarStore() {
         if (response.ok) {
           const newAvatarUrl = data.avatarUrl;
           const now = Date.now();
-          
+
           update((state) => ({
             ...state,
             url: newAvatarUrl,
@@ -129,13 +130,14 @@ function createAvatarStore() {
           // Update local storage with timestamp
           localStorage.setItem("user_avatar_url", newAvatarUrl);
           localStorage.setItem("user_avatar_timestamp", now.toString());
-          
+
           return { success: true, url: newAvatarUrl };
         } else {
           throw new Error(data.error || "Upload failed");
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Upload failed";
+        const errorMessage =
+          error instanceof Error ? error.message : "Upload failed";
         update((state) => ({
           ...state,
           isUploading: false,
@@ -154,13 +156,13 @@ function createAvatarStore() {
       try {
         const response = await fetch("/api/user/avatar/upload", {
           method: "DELETE",
-          credentials: 'include',
+          credentials: "include",
         });
 
         if (response.ok) {
           const defaultAvatar = "/images/default-avatar.svg";
           const now = Date.now();
-          
+
           update((state) => ({
             ...state,
             url: defaultAvatar,
@@ -171,13 +173,14 @@ function createAvatarStore() {
           // Update local storage
           localStorage.setItem("user_avatar_url", defaultAvatar);
           localStorage.setItem("user_avatar_timestamp", now.toString());
-          
+
           return { success: true };
         } else {
           throw new Error("Failed to remove avatar");
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Removal failed";
+        const errorMessage =
+          error instanceof Error ? error.message : "Removal failed";
         update((state) => ({ ...state, error: errorMessage }));
         return { success: false, error: errorMessage };
       }
@@ -186,14 +189,14 @@ function createAvatarStore() {
     // Preload avatar for given user (useful for SSR)
     preloadAvatar: (avatarUrl: string | null) => {
       if (!browser) return;
-      
+
       const url = avatarUrl || "/images/default-avatar.svg";
-      update((state) => ({ 
-        ...state, 
+      update((state) => ({
+        ...state,
         url,
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
       }));
-      
+
       // Cache the preloaded avatar
       localStorage.setItem("user_avatar_url", url);
       localStorage.setItem("user_avatar_timestamp", Date.now().toString());
@@ -216,11 +219,11 @@ function createAvatarStore() {
     // Force refresh from server
     refresh: async () => {
       if (!browser) return;
-      
+
       // Clear cache first
       localStorage.removeItem("user_avatar_url");
       localStorage.removeItem("user_avatar_timestamp");
-      
+
       // Then reload
       await createAvatarStore().loadAvatar();
     },
@@ -230,33 +233,33 @@ function createAvatarStore() {
 // File validation helper
 function validateFile(file: File): { valid: boolean; error?: string } {
   const allowedTypes = [
-    'image/jpeg', 
-    'image/png', 
-    'image/gif', 
-    'image/svg+xml', 
-    'image/webp'
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/svg+xml",
+    "image/webp",
   ];
-  
+
   const maxSize = 5 * 1024 * 1024; // 5MB
 
   if (!allowedTypes.includes(file.type)) {
     return {
       valid: false,
-      error: 'Invalid file type. Please use JPEG, PNG, GIF, SVG, or WebP.',
+      error: "Invalid file type. Please use JPEG, PNG, GIF, SVG, or WebP.",
     };
   }
 
   if (file.size > maxSize) {
     return {
       valid: false,
-      error: 'File too large. Maximum size is 5MB.',
+      error: "File too large. Maximum size is 5MB.",
     };
   }
 
   if (file.size === 0) {
     return {
       valid: false,
-      error: 'File is empty. Please select a valid image.',
+      error: "File is empty. Please select a valid image.",
     };
   }
 

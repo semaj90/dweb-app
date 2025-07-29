@@ -6,15 +6,13 @@
     ],
     "description": "Analyze stack component with context"
   },
-  
+
   "MCP Generate Best Practices": {
     "prefix": "mcp-practices",
-    "body": [
-      "generate best practices for ${1|performance,security,ui-ux|}"
-    ],
+    "body": ["generate best practices for ${1|performance,security,ui-ux|}"],
     "description": "Generate best practices for specific area"
   },
-  
+
   "MCP Suggest Integration": {
     "prefix": "mcp-integrate",
     "body": [
@@ -22,7 +20,7 @@
     ],
     "description": "Get integration suggestions for new features"
   },
-  
+
   "MCP Get Library Docs": {
     "prefix": "mcp-docs",
     "body": [
@@ -30,7 +28,7 @@
     ],
     "description": "Get library documentation for specific topic"
   },
-  
+
   "MCP JSON Request": {
     "prefix": "mcp-json",
     "body": [
@@ -47,7 +45,7 @@
     ],
     "description": "Generate MCP JSON request structure"
   },
-  
+
   "MCP TypeScript Helper": {
     "prefix": "mcp-helper",
     "body": [
@@ -57,7 +55,7 @@
     ],
     "description": "Import and use MCP helper functions"
   },
-  
+
   "MCP Common Queries": {
     "prefix": "mcp-common",
     "body": [
@@ -65,7 +63,7 @@
     ],
     "description": "Use pre-built common MCP queries"
   },
-  
+
   "MCP Stack Analysis": {
     "prefix": "mcp-stack",
     "body": [
@@ -73,12 +71,82 @@
     ],
     "description": "Detailed stack analysis request"
   },
-  
+
   "MCP Resource Access": {
     "prefix": "mcp-resource",
     "body": [
       "show me the ${1|stack overview,integration guide,performance tips|} resource from context7"
     ],
     "description": "Access Context7 MCP resources"
+  },
+
+  "MCP Semantic Search": {
+    "prefix": "mcp-search",
+    "body": [
+      "import { semanticSearch } from '$lib/ai/mcp-helpers';",
+      "",
+      "const results = await semanticSearch('${1:query}');",
+      "console.log('Search results:', results);"
+    ],
+    "description": "Perform semantic search using Context7 MCP"
+  },
+
+  "MCP Copilot Orchestrator": {
+    "prefix": "mcp-copilot",
+    "body": [
+      "import { copilotOrchestrator } from '$lib/utils/mcp-helpers';",
+      "",
+      "const results = await copilotOrchestrator('${1:prompt}', {",
+      "  useSemanticSearch: ${2|true,false|},",
+      "  useMemory: ${3|true,false|},",
+      "  useCodebase: ${4|true,false|},",
+      "  useMultiAgent: ${5|true,false|},",
+      "  logErrors: true,",
+      "  synthesizeOutputs: true",
+      "});",
+      "",
+      "console.log('Orchestration results:', results.selfPrompt);"
+    ],
+    "description": "Use Copilot orchestrator with MCP tools"
+  },
+
+  "MCP Library Resolution": {
+    "prefix": "mcp-resolve",
+    "body": [
+      "import { resolveLibraryId, getLibraryDocs } from '$lib/ai/mcp-helpers';",
+      "",
+      "const libId = await resolveLibraryId('${1:library_name}');",
+      "const docs = await getLibraryDocs(libId, '${2:topic}');",
+      "console.log('Library docs:', docs);"
+    ],
+    "description": "Resolve library ID and fetch documentation"
+  },
+
+  "MCP Agent Trigger": {
+    "prefix": "mcp-agent",
+    "body": [
+      "import { triggerAgentAction } from '$lib/ai/agent-integration';",
+      "",
+      "const result = await triggerAgentAction({",
+      "  id: '${1:audit_id}',",
+      "  step: '${2:pipeline_step}',",
+      "  status: '${3|error,missing,improvement|}',",
+      "  message: '${4:description}'",
+      "});",
+      "",
+      "console.log('Agent action result:', result);"
+    ],
+    "description": "Trigger agent action for audit results"
+  },
+
+  "MCP Enhanced Context": {
+    "prefix": "mcp-context",
+    "body": [
+      "import { getEnhancedContext } from '$lib/utils/copilot-self-prompt';",
+      "",
+      "const context = await getEnhancedContext('${1:query}');",
+      "console.log('Enhanced context:', context);"
+    ],
+    "description": "Get enhanced context with Redis cache and embeddings"
   }
 }

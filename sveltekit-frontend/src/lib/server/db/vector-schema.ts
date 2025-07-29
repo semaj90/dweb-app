@@ -1,7 +1,6 @@
 // Extension to unified-schema.ts for vector search capabilities
 import {
   pgTable,
-  vector,
   index,
   text,
   uuid,
@@ -10,6 +9,7 @@ import {
   integer,
   real,
 } from "drizzle-orm/pg-core";
+import { vector } from "pgvector/drizzle-orm";
 import { relations } from "drizzle-orm";
 
 // Document embeddings for semantic search
@@ -42,16 +42,11 @@ export const documentEmbeddings = pgTable(
       .default({}),
     modelUsed: text("model_used").default("nomic-embed-text"),
     createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => new Date()),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
     // Vector similarity search index
-    embeddingIdx: index("idx_embedding_ivfflat").using(
-      "ivfflat",
-      table.embedding.op("vector_cosine_ops"),
-    ),
+    embeddingIdx: index("idx_embedding_ivfflat").on(table.embedding),
     // Regular indexes
     documentIdx: index("idx_document_lookup").on(
       table.documentId,
@@ -97,10 +92,7 @@ export const searchQueries = pgTable(
   },
   (table) => ({
     userIdx: index("idx_search_user").on(table.userId),
-    queryEmbeddingIdx: index("idx_query_embedding").using(
-      "ivfflat",
-      table.queryEmbedding.op("vector_cosine_ops"),
-    ),
+    queryEmbeddingIdx: index("idx_query_embedding").on(table.queryEmbedding),
     createdAtIdx: index("idx_search_created").on(table.createdAt),
   }),
 );
@@ -135,9 +127,7 @@ export const aiModels = pgTable(
       .default({}),
     isActive: integer("is_active").notNull().default(1),
     createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => new Date()),
+    updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
     nameIdx: index("idx_model_name").on(table.name),

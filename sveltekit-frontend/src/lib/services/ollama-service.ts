@@ -58,7 +58,7 @@ class OllamaService {
    */
   public async generateEmbedding(
     text: string,
-    model: string
+    model: string,
   ): Promise<number[]> {
     // PRODUCTION: Call Ollama embedding API endpoint (if available)
     // Example assumes Ollama exposes /api/embeddings endpoint (adjust as needed)
@@ -113,7 +113,7 @@ class OllamaService {
           console.log("🔄 Attempting to import Gemma3 model...");
           await this.importGGUF(
             LOCAL_LLM_PATHS.gemmaModel.path,
-            LOCAL_LLM_PATHS.gemmaModel.name
+            LOCAL_LLM_PATHS.gemmaModel.name,
           );
         }
 
@@ -148,7 +148,7 @@ class OllamaService {
   private async detectGemma3Model(): Promise<void> {
     // First check for our custom legal model
     const customLegalModel = this.availableModels.find(
-      (model) => model.name === "gemma3-legal"
+      (model) => model.name === "gemma3-legal",
     );
 
     if (customLegalModel) {
@@ -162,7 +162,7 @@ class OllamaService {
       (model) =>
         model.name.toLowerCase().includes("gemma") ||
         model.name.toLowerCase().includes("gemma3") ||
-        model.details?.family?.toLowerCase().includes("gemma")
+        model.details?.family?.toLowerCase().includes("gemma"),
     );
 
     if (gemmaModels.length > 0) {
@@ -171,7 +171,7 @@ class OllamaService {
         (m) =>
           m.name.includes("q4") ||
           m.name.includes("Q4_K_M") ||
-          m.details?.quantization_level?.includes("Q4")
+          m.details?.quantization_level?.includes("Q4"),
       );
 
       this.gemma3Model = q4Model ? q4Model.name : gemmaModels[0].name;
@@ -179,7 +179,7 @@ class OllamaService {
     } else {
       console.warn(
         "⚠️ No Gemma3 model found in Ollama. Available models:",
-        this.availableModels.map((m) => m.name)
+        this.availableModels.map((m) => m.name),
       );
     }
   }
@@ -187,7 +187,7 @@ class OllamaService {
   // Import a GGUF model file into Ollama
   async importGGUF(
     modelPath: string,
-    modelName: string = "gemma3-legal"
+    modelName: string = "gemma3-legal",
   ): Promise<boolean> {
     try {
       const modelfile = `FROM ${modelPath}
@@ -240,7 +240,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       topK?: number;
       repeatPenalty?: number;
       stream?: boolean;
-    } = {}
+    } = {},
   ): Promise<string> {
     if (!this.isAvailable || !this.gemma3Model) {
       throw new Error("Ollama or Gemma3 model not available");
@@ -289,7 +289,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       topP?: number;
       topK?: number;
       repeatPenalty?: number;
-    } = {}
+    } = {},
   ): AsyncGenerator<string, void, unknown> {
     if (!this.isAvailable || !this.gemma3Model) {
       throw new Error("Ollama or Gemma3 model not available");
@@ -365,7 +365,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       topP?: number;
       topK?: number;
       repeatPenalty?: number;
-    } = {}
+    } = {},
   ): Promise<string> {
     const systemMessage =
       messages.find((m) => m.role === "system")?.content || "";
@@ -414,6 +414,40 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
       return response.ok;
     } catch {
       return false;
+    }
+  }
+
+  // Generate response method
+  async generateResponse(prompt: string, options: any = {}): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: options.model || "gemma3-legal",
+          prompt,
+          system: options.system,
+          stream: false,
+          options: {
+            temperature: options.temperature || 0.1,
+            top_p: options.top_p || 0.9,
+            top_k: options.top_k || 40,
+            repeat_penalty: options.repeat_penalty || 1.05,
+            num_predict: options.max_tokens || 1024,
+          }
+        }),
+      });
+      
+      const data = await response.json();
+      return {
+        response: data.response,
+        model: data.model,
+        done: data.done,
+        context: data.context,
+      };
+    } catch (error) {
+      console.error("Generate response failed:", error);
+      throw error;
     }
   }
 

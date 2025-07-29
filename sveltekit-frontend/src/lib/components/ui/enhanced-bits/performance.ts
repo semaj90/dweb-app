@@ -1,11 +1,11 @@
 /**
  * Performance Optimizations for Enhanced Bits UI Components
- * 
+ *
  * This module provides tree-shaking support, lazy loading, virtualization,
  * and other performance optimizations for legal AI applications.
  */
 
-import type { ComponentType } from 'svelte';
+import type { ComponentType } from "svelte";
 
 // Tree-shaking utilities
 export interface ComponentModule {
@@ -34,7 +34,7 @@ const performanceMetrics = new Map<string, PerformanceMetrics>();
  */
 export function registerComponent(
   name: string,
-  loader: () => Promise<ComponentModule>
+  loader: () => Promise<ComponentModule>,
 ): void {
   componentRegistry.set(name, loader);
 }
@@ -49,18 +49,18 @@ export async function loadComponent(name: string): Promise<ComponentModule> {
   }
 
   const startTime = performance.now();
-  
+
   try {
     const module = await loader();
     const loadTime = performance.now() - startTime;
-    
+
     // Track performance metrics
     performanceMetrics.set(name, {
       componentLoadTime: loadTime,
       renderTime: 0, // Will be updated during render
       memoryUsage: getMemoryUsage(),
       bundleSize: module.size || 0,
-      dependencies: module.dependencies || []
+      dependencies: module.dependencies || [],
     });
 
     return module;
@@ -74,7 +74,7 @@ export async function loadComponent(name: string): Promise<ComponentModule> {
  * Get current memory usage (if available)
  */
 function getMemoryUsage(): number {
-  if ('memory' in performance && performance.memory) {
+  if ("memory" in performance && performance.memory) {
     return (performance.memory as any).usedJSHeapSize;
   }
   return 0;
@@ -153,7 +153,7 @@ export class VirtualScrollManager {
       bufferSize: 5,
       overscan: 3,
       scrollElement: document.documentElement,
-      ...options
+      ...options,
     };
   }
 
@@ -168,11 +168,11 @@ export class VirtualScrollManager {
 
   getVisibleRange(): { start: number; end: number; offset: number } {
     const { itemHeight, bufferSize, overscan } = this.options;
-    
+
     const startIndex = Math.floor(this.scrollTop / itemHeight);
     const endIndex = Math.min(
       startIndex + Math.ceil(this.containerHeight / itemHeight) + bufferSize,
-      this.totalItems
+      this.totalItems,
     );
 
     const visibleStart = Math.max(0, startIndex - overscan);
@@ -182,7 +182,7 @@ export class VirtualScrollManager {
     return {
       start: visibleStart,
       end: visibleEnd,
-      offset
+      offset,
     };
   }
 
@@ -196,7 +196,7 @@ export class VirtualScrollManager {
  */
 export function createDebouncedSearch<T>(
   searchFn: (query: string) => Promise<T>,
-  delay: number = 300
+  delay: number = 300,
 ): (query: string) => Promise<T> {
   let timeoutId: NodeJS.Timeout;
   let currentPromise: Promise<T> | null = null;
@@ -204,15 +204,15 @@ export function createDebouncedSearch<T>(
   return (query: string): Promise<T> => {
     return new Promise((resolve, reject) => {
       clearTimeout(timeoutId);
-      
+
       timeoutId = setTimeout(async () => {
         try {
           // Cancel previous request if still pending
           if (currentPromise) {
             // Note: This would need to be implemented based on your API client
-            console.log('Cancelling previous search request');
+            console.log("Cancelling previous search request");
           }
-          
+
           currentPromise = searchFn(query);
           const result = await currentPromise;
           currentPromise = null;
@@ -231,17 +231,17 @@ export function createDebouncedSearch<T>(
  */
 export function memoize<Args extends any[], Return>(
   fn: (...args: Args) => Return,
-  keyFn?: (...args: Args) => string
+  keyFn?: (...args: Args) => string,
 ): (...args: Args) => Return {
   const cache = new Map<string, Return>();
-  
+
   return (...args: Args): Return => {
     const key = keyFn ? keyFn(...args) : JSON.stringify(args);
-    
+
     if (cache.has(key)) {
       return cache.get(key)!;
     }
-    
+
     const result = fn(...args);
     cache.set(key, result);
     return result;
@@ -259,15 +259,15 @@ export class LazyLoadManager {
     this.observer = new IntersectionObserver(
       this.handleIntersection.bind(this),
       {
-        rootMargin: '50px',
+        rootMargin: "50px",
         threshold: 0.1,
-        ...options
-      }
+        ...options,
+      },
     );
   }
 
   private handleIntersection(entries: IntersectionObserverEntry[]): void {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const callback = this.loadingCallbacks.get(entry.target);
         if (callback) {
@@ -307,7 +307,7 @@ export class ResourcePool<T> {
   constructor(
     factory: () => T,
     maxSize: number = 10,
-    destructor?: (resource: T) => void
+    destructor?: (resource: T) => void,
   ) {
     this.factory = factory;
     this.maxSize = maxSize;
@@ -346,7 +346,7 @@ export class ResourcePool<T> {
     if (this.destructor) {
       this.available.forEach(this.destructor);
     }
-    
+
     this.available = [];
     this.inUse.clear();
   }
@@ -356,7 +356,7 @@ export class ResourcePool<T> {
       available: this.available.length,
       inUse: this.inUse.size,
       total: this.available.length + this.inUse.size,
-      maxSize: this.maxSize
+      maxSize: this.maxSize,
     };
   }
 }
@@ -389,42 +389,42 @@ export function analyzeBundleSize(): BundleAnalysis {
     gzippedSize: 89000, // 89KB
     components: [
       {
-        name: 'Button',
+        name: "Button",
         size: 12000,
-        dependencies: ['bits-ui', 'lucide-svelte'],
-        critical: true
+        dependencies: ["bits-ui", "lucide-svelte"],
+        critical: true,
       },
       {
-        name: 'Dialog',
+        name: "Dialog",
         size: 18000,
-        dependencies: ['bits-ui', 'svelte/transition'],
-        critical: true
+        dependencies: ["bits-ui", "svelte/transition"],
+        critical: true,
       },
       {
-        name: 'Select',
+        name: "Select",
         size: 15000,
-        dependencies: ['bits-ui', 'lucide-svelte'],
-        critical: false
+        dependencies: ["bits-ui", "lucide-svelte"],
+        critical: false,
       },
       {
-        name: 'VectorIntelligenceDemo',
+        name: "VectorIntelligenceDemo",
         size: 45000,
-        dependencies: ['Button', 'Select', 'Input', 'Card'],
-        critical: false
-      }
+        dependencies: ["Button", "Select", "Input", "Card"],
+        critical: false,
+      },
     ],
     duplicates: [
       {
-        module: 'lucide-svelte',
+        module: "lucide-svelte",
         count: 3,
-        size: 8000
-      }
+        size: 8000,
+      },
     ],
     recommendations: [
-      'Consider lazy loading VectorIntelligenceDemo component',
-      'Optimize lucide-svelte imports to reduce duplication',
-      'Use dynamic imports for non-critical components'
-    ]
+      "Consider lazy loading VectorIntelligenceDemo component",
+      "Optimize lucide-svelte imports to reduce duplication",
+      "Use dynamic imports for non-critical components",
+    ],
   };
 }
 
@@ -437,31 +437,31 @@ export class PerformanceMonitor {
 
   startMonitoring(): void {
     // Monitor long tasks
-    if ('PerformanceObserver' in window) {
-      const longTaskObserver = new PerformanceObserver(list => {
-        list.getEntries().forEach(entry => {
-          this.recordMetric('longTask', entry.duration);
+    if ("PerformanceObserver" in window) {
+      const longTaskObserver = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          this.recordMetric("longTask", entry.duration);
         });
       });
-      
+
       try {
-        longTaskObserver.observe({ entryTypes: ['longtask'] });
+        longTaskObserver.observe({ entryTypes: ["longtask"] });
         this.observers.push(longTaskObserver);
       } catch (e) {
         // Long task API not supported
       }
 
       // Monitor layout shifts
-      const layoutShiftObserver = new PerformanceObserver(list => {
-        list.getEntries().forEach(entry => {
-          if ('value' in entry) {
-            this.recordMetric('layoutShift', (entry as any).value);
+      const layoutShiftObserver = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          if ("value" in entry) {
+            this.recordMetric("layoutShift", (entry as any).value);
           }
         });
       });
 
       try {
-        layoutShiftObserver.observe({ entryTypes: ['layout-shift'] });
+        layoutShiftObserver.observe({ entryTypes: ["layout-shift"] });
         this.observers.push(layoutShiftObserver);
       } catch (e) {
         // Layout shift API not supported
@@ -482,11 +482,13 @@ export class PerformanceMonitor {
 
   getAverageMetric(name: string): number {
     const values = this.getMetrics(name);
-    return values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+    return values.length > 0
+      ? values.reduce((a, b) => a + b, 0) / values.length
+      : 0;
   }
 
   stopMonitoring(): void {
-    this.observers.forEach(observer => observer.disconnect());
+    this.observers.forEach((observer) => observer.disconnect());
     this.observers = [];
   }
 
@@ -500,10 +502,31 @@ export const componentFactory = new OptimizedComponentFactory();
 export const performanceMonitor = new PerformanceMonitor();
 
 // Register enhanced Bits UI components for lazy loading
-registerComponent('Button', () => import('./Button.svelte'));
-registerComponent('Dialog', () => import('./Dialog.svelte'));
-registerComponent('Select', () => import('./Select.svelte'));
-registerComponent('Input', () => import('./Input.svelte'));
-registerComponent('Card', () => import('./Card.svelte'));
-registerComponent('EnhancedBitsDemo', () => import('./EnhancedBitsDemo.svelte'));
-registerComponent('VectorIntelligenceDemo', () => import('./VectorIntelligenceDemo.svelte'));
+registerComponent("Button", async () => ({
+  name: "Button",
+  default: (await import("./Button.svelte")).default
+}));
+registerComponent("Dialog", async () => ({
+  name: "Dialog", 
+  default: (await import("./Dialog.svelte")).default
+}));
+registerComponent("Select", async () => ({
+  name: "Select",
+  default: (await import("./Select.svelte")).default
+}));
+registerComponent("Input", async () => ({
+  name: "Input",
+  default: (await import("./Input.svelte")).default
+}));
+registerComponent("Card", async () => ({
+  name: "Card",
+  default: (await import("./Card.svelte")).default
+}));
+registerComponent("EnhancedBitsDemo", async () => ({
+  name: "EnhancedBitsDemo",
+  default: (await import("./EnhancedBitsDemo.svelte")).default
+}));
+registerComponent("VectorIntelligenceDemo", async () => ({
+  name: "VectorIntelligenceDemo", 
+  default: (await import("./VectorIntelligenceDemo.svelte")).default
+}));

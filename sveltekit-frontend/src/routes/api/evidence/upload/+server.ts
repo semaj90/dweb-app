@@ -1,18 +1,18 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     if (!locals.user) {
-      return json({ error: 'Unauthorized' }, { status: 401 });
+      return json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const userId = formData.get('userId') as string;
+    const file = formData.get("file") as File;
+    const userId = formData.get("userId") as string;
 
     if (!file) {
-      return json({ error: 'No file provided' }, { status: 400 });
+      return json({ error: "No file provided" }, { status: 400 });
     }
 
     // Simple file handling - in production, use proper file storage
@@ -26,18 +26,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       metadata: {
         size: file.size,
         type: file.type,
-        uploadedAt: new Date().toISOString()
+        uploadedAt: new Date().toISOString(),
       },
       uploadedAt: new Date().toISOString(),
-      userId
+      userId,
     };
 
     // In production, save to database here
-    console.log('Evidence uploaded:', evidence.filename);
+    console.log("Evidence uploaded:", evidence.filename);
 
     return json(evidence);
   } catch (error) {
-    console.error('Upload error:', error);
-    return json({ error: 'Upload failed' }, { status: 500 });
+    console.error("Upload error:", error);
+    return json({ error: "Upload failed" }, { status: 500 });
   }
 };

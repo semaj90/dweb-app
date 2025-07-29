@@ -1,4 +1,4 @@
-import Fuse from "fuse";
+import Fuse from "fuse.js";
 import Loki from "lokijs";
 
 // 1. Initialize LokiJS Database

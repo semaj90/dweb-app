@@ -3,7 +3,7 @@
  * Provides distraction-free writing experience by dimming non-essential UI elements
  */
 
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 export interface FocusSettings {
   dimOpacity: number;
@@ -16,19 +16,15 @@ export interface FocusSettings {
 
 export const defaultFocusSettings: FocusSettings = {
   dimOpacity: 0.3,
-  transitionDuration: '0.3s',
+  transitionDuration: "0.3s",
   hideElements: [
-    '.toolbar',
-    '.sidebar',
-    '.status-bar',
-    '.header-actions',
-    '.footer',
+    ".toolbar",
+    ".sidebar",
+    ".status-bar",
+    ".header-actions",
+    ".footer",
   ],
-  exemptElements: [
-    '.editor-content',
-    '.shortcuts-modal',
-    '.save-indicator',
-  ],
+  exemptElements: [".editor-content", ".shortcuts-modal", ".save-indicator"],
   enableFullscreen: false,
   enableZenMode: false,
 };
@@ -68,10 +64,10 @@ export class FocusManager {
     }
 
     // Add focus mode class to body
-    document.body.classList.add('focus-mode-active');
+    document.body.classList.add("focus-mode-active");
 
     // Dispatch custom event
-    window.dispatchEvent(new CustomEvent('focusModeActivated'));
+    window.dispatchEvent(new CustomEvent("focusModeActivated"));
   }
 
   /**
@@ -98,10 +94,10 @@ export class FocusManager {
     }
 
     // Remove focus mode class from body
-    document.body.classList.remove('focus-mode-active');
+    document.body.classList.remove("focus-mode-active");
 
     // Dispatch custom event
-    window.dispatchEvent(new CustomEvent('focusModeDeactivated'));
+    window.dispatchEvent(new CustomEvent("focusModeDeactivated"));
   }
 
   /**
@@ -141,11 +137,11 @@ export class FocusManager {
    */
   private applyFocusStyles(): void {
     // Get all elements in the document
-    const allElements = document.querySelectorAll('*');
+    const allElements = document.querySelectorAll("*");
 
-    allElements.forEach(element => {
+    allElements.forEach((element) => {
       const htmlElement = element as HTMLElement;
-      
+
       // Skip if element should be exempt
       if (this.shouldExemptElement(htmlElement)) {
         return;
@@ -156,14 +152,14 @@ export class FocusManager {
 
       // Apply dimming or hiding based on settings
       if (this.shouldHideElement(htmlElement)) {
-        htmlElement.style.display = 'none';
+        htmlElement.style.display = "none";
       } else if (this.shouldDimElement(htmlElement)) {
         htmlElement.style.opacity = this.settings.dimOpacity.toString();
         htmlElement.style.transition = `opacity ${this.settings.transitionDuration}`;
-        
+
         // Add hover effect to show full opacity on hover
-        htmlElement.addEventListener('mouseenter', this.handleMouseEnter);
-        htmlElement.addEventListener('mouseleave', this.handleMouseLeave);
+        htmlElement.addEventListener("mouseenter", this.handleMouseEnter);
+        htmlElement.addEventListener("mouseleave", this.handleMouseLeave);
       }
     });
   }
@@ -175,10 +171,10 @@ export class FocusManager {
     this.originalStyles.forEach((originalStyle, element) => {
       const htmlElement = element as HTMLElement;
       htmlElement.style.cssText = originalStyle;
-      
+
       // Remove event listeners
-      htmlElement.removeEventListener('mouseenter', this.handleMouseEnter);
-      htmlElement.removeEventListener('mouseleave', this.handleMouseLeave);
+      htmlElement.removeEventListener("mouseenter", this.handleMouseEnter);
+      htmlElement.removeEventListener("mouseleave", this.handleMouseLeave);
     });
 
     this.originalStyles.clear();
@@ -188,8 +184,8 @@ export class FocusManager {
    * Check if element should be exempt from focus mode effects
    */
   private shouldExemptElement(element: HTMLElement): boolean {
-    return this.settings.exemptElements.some(selector => 
-      element.matches(selector) || element.closest(selector)
+    return this.settings.exemptElements.some(
+      (selector) => element.matches(selector) || element.closest(selector),
     );
   }
 
@@ -198,8 +194,8 @@ export class FocusManager {
    */
   private shouldHideElement(element: HTMLElement): boolean {
     if (this.settings.enableZenMode) {
-      return this.settings.hideElements.some(selector => 
-        element.matches(selector) || element.closest(selector)
+      return this.settings.hideElements.some(
+        (selector) => element.matches(selector) || element.closest(selector),
       );
     }
     return false;
@@ -216,15 +212,15 @@ export class FocusManager {
 
     // Dim elements that are not content areas
     const contentSelectors = [
-      '.editor-content',
+      ".editor-content",
       '[contenteditable="true"]',
-      'textarea',
+      "textarea",
       'input[type="text"]',
-      '.writing-area',
+      ".writing-area",
     ];
 
-    const isContentElement = contentSelectors.some(selector => 
-      element.matches(selector) || element.closest(selector)
+    const isContentElement = contentSelectors.some(
+      (selector) => element.matches(selector) || element.closest(selector),
     );
 
     return !isContentElement && !this.shouldExemptElement(element);
@@ -235,7 +231,7 @@ export class FocusManager {
    */
   private handleMouseEnter = (event: Event): void => {
     const element = event.target as HTMLElement;
-    element.style.opacity = '1';
+    element.style.opacity = "1";
   };
 
   /**
@@ -279,13 +275,13 @@ export class FocusManager {
     this.originalStyles.set(element, element.style.cssText);
 
     if (this.shouldHideElement(element)) {
-      element.style.display = 'none';
+      element.style.display = "none";
     } else if (this.shouldDimElement(element)) {
       element.style.opacity = this.settings.dimOpacity.toString();
       element.style.transition = `opacity ${this.settings.transitionDuration}`;
-      
-      element.addEventListener('mouseenter', this.handleMouseEnter);
-      element.addEventListener('mouseleave', this.handleMouseLeave);
+
+      element.addEventListener("mouseenter", this.handleMouseEnter);
+      element.addEventListener("mouseleave", this.handleMouseLeave);
     }
   }
 
@@ -303,7 +299,7 @@ export class FocusManager {
 export const globalFocusManager = new FocusManager();
 
 // Svelte action for focus mode
-export function focusMode(node: HTMLElement, enabled: boolean = false) {
+export function focusModeAction(node: HTMLElement, enabled: boolean = false) {
   const manager = new FocusManager();
 
   function update(enabled: boolean) {
@@ -320,7 +316,7 @@ export function focusMode(node: HTMLElement, enabled: boolean = false) {
     update,
     destroy() {
       manager.deactivate();
-    }
+    },
   };
 }
 
@@ -383,29 +379,32 @@ export const focusModeStyles = `
 // Utility functions for Svelte components
 export function createFocusMode(initialSettings?: Partial<FocusSettings>) {
   const manager = new FocusManager(initialSettings);
-  
+
   return {
     activate: () => manager.activate(),
     deactivate: () => manager.deactivate(),
     toggle: () => manager.toggle(),
     isActive: () => manager.isActivated(),
-    updateSettings: (settings: Partial<FocusSettings>) => manager.updateSettings(settings),
+    updateSettings: (settings: Partial<FocusSettings>) =>
+      manager.updateSettings(settings),
   };
 }
 
 // Keyboard shortcut integration
-export function setupFocusModeShortcut(manager: FocusManager = globalFocusManager) {
+export function setupFocusModeShortcut(
+  manager: FocusManager = globalFocusManager,
+) {
   function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'F10') {
+    if (event.key === "F10") {
       event.preventDefault();
       manager.toggle();
     }
   }
 
-  document.addEventListener('keydown', handleKeydown);
+  document.addEventListener("keydown", handleKeydown);
 
   return () => {
-    document.removeEventListener('keydown', handleKeydown);
+    document.removeEventListener("keydown", handleKeydown);
   };
 }
 
@@ -419,17 +418,17 @@ export const focusPresets = {
   moderate: {
     dimOpacity: 0.5,
     enableZenMode: false,
-    hideElements: ['.sidebar'],
+    hideElements: [".sidebar"],
   },
   intense: {
     dimOpacity: 0.3,
     enableZenMode: true,
-    hideElements: ['.toolbar', '.sidebar', '.status-bar'],
+    hideElements: [".toolbar", ".sidebar", ".status-bar"],
   },
   zen: {
     dimOpacity: 0.1,
     enableZenMode: true,
     enableFullscreen: true,
-    hideElements: ['.toolbar', '.sidebar', '.status-bar', '.header-actions'],
+    hideElements: [".toolbar", ".sidebar", ".status-bar", ".header-actions"],
   },
 };

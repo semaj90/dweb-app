@@ -47,7 +47,7 @@ import NierAIAssistant from './NierAIAssistant.svelte'
 
   let {
     caseContext,
-    isVisible = $bindable(true)
+    isVisible = true
   }: Props = $props()
 
   // Component States
@@ -292,8 +292,8 @@ let isTyping = $state(false)
   bind:isVisible={isVisible}
   bind:aiMode={aiMode}
   {isConnected}
-  onToggle={toggleInterface}
-  onSettingsClick={() => terminalMode = !terminalMode}
+  on:toggle={toggleInterface}
+  on:settingsClick={() => terminalMode = !terminalMode}
 />
 
 <!-- Gaming AI Interface -->

@@ -251,6 +251,57 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     process.exit(result.success ? 0 : 1);
   });
 }
+// Create single user function
+export async function createUser(userData: {
+  email: string;
+  name: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  password: string;
+}) {
+  const connectionString =
+    process.env.DATABASE_URL ||
+    "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
+  const sql = postgres(connectionString);
+  const db = drizzle(sql);
+
+  try {
+    const hashedPassword = await hash(userData.password, 12);
+    
+    const newUser = {
+      id: createId(),
+      email: userData.email,
+      name: userData.name,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      role: userData.role,
+      hashedPassword,
+      settings: {
+        theme: "system",
+        notifications: true,
+        language: "en",
+        timezone: "America/New_York",
+      },
+      avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=3b82f6&color=fff`,
+    };
+
+    const result = await db.insert(users).values(newUser as any).returning();
+    await sql.end();
+    
+    return {
+      success: true,
+      user: result[0],
+    };
+  } catch (error) {
+    await sql.end();
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
 // Export functions for programmatic use
 export { seedDatabase };
 export default seedDatabase;

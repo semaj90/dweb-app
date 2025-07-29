@@ -86,7 +86,7 @@ function createAIService() {
             if (isHealthy) {
               const summary = await currentClient.summarizeContent(
                 request.content,
-                request.type || "general"
+                request.type || "general",
               );
 
               // Update state with successful result
@@ -103,7 +103,7 @@ function createAIService() {
           } catch (directError) {
             console.warn(
               "Direct Gemma3 client failed, falling back to API:",
-              directError
+              directError,
             );
           }
         }
@@ -128,7 +128,8 @@ function createAIService() {
             .json()
             .catch(() => ({ error: "Unknown error" }));
           throw new Error(
-            errorData.error || `HTTP ${response.status}: ${response.statusText}`
+            errorData.error ||
+              `HTTP ${response.status}: ${response.statusText}`,
           );
         }
         const data: SummarizeResponse = await response.json();
@@ -165,7 +166,7 @@ function createAIService() {
     summarizeReport: async (
       reportContent: any,
       reportId?: string,
-      caseId?: string
+      caseId?: string,
     ): Promise<string | null> => {
       // Extract plain text from Slate.js content structure
       const plainText = extractTextFromSlateContent(reportContent);
@@ -184,7 +185,7 @@ function createAIService() {
     summarizeEvidence: async (
       evidence: { title: string; description?: string; aiAnalysis?: any },
       evidenceId?: string,
-      caseId?: string
+      caseId?: string,
     ): Promise<string | null> => {
       let content = evidence.title;
       if (evidence.description) {
@@ -208,7 +209,7 @@ function createAIService() {
     summarizePOI: async (
       poiData: { name: string; profileData: any },
       poiId?: string,
-      caseId?: string
+      caseId?: string,
     ): Promise<string | null> => {
       const profileData = poiData.profileData || {};
       let content = `Person of Interest: ${poiData.name}\n\n`;
@@ -283,7 +284,7 @@ function createAIService() {
      */
     askLegalQuestion: async (
       question: string,
-      context?: string
+      context?: string,
     ): Promise<string | null> => {
       update((state) => ({
         ...state,
@@ -303,7 +304,7 @@ function createAIService() {
 
         const response = await currentClient.askLegalQuestion(
           question,
-          context
+          context,
         );
 
         update((state) => ({
@@ -336,7 +337,7 @@ function createAIService() {
      */
     analyzeDocument: async (
       documentText: string,
-      analysisType: string = "general"
+      analysisType: string = "general",
     ): Promise<string | null> => {
       update((state) => ({
         ...state,
@@ -356,7 +357,7 @@ function createAIService() {
 
         const response = await currentClient.analyzeDocument(
           documentText,
-          analysisType
+          analysisType,
         );
 
         update((state) => ({
@@ -389,7 +390,7 @@ function createAIService() {
      */
     reviewContract: async (
       contractText: string,
-      reviewFocus?: string
+      reviewFocus?: string,
     ): Promise<string | null> => {
       update((state) => ({
         ...state,
@@ -409,7 +410,7 @@ function createAIService() {
 
         const response = await currentClient.reviewContract(
           contractText,
-          reviewFocus
+          reviewFocus,
         );
 
         update((state) => ({

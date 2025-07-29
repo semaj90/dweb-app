@@ -1,4 +1,5 @@
-import { env } from "$env/dynamic/private";
+// Environment variables fallback
+const env = process.env || {};
 import { caseActivities, cases } from "$lib/server/db/schema-postgres";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import type { RequestHandler } from "@sveltejs/kit";

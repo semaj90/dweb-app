@@ -1,20 +1,45 @@
+// --- Qdrant passthroughs for admin API ---
+export async function getCollections() {
+  const client = getQdrantClient();
+  if (!client) throw new Error("Qdrant not configured");
+  return client.getCollections();
+}
+
+export async function getCollection(collection: string) {
+  const client = getQdrantClient();
+  if (!client) throw new Error("Qdrant not configured");
+  return client.getCollection(collection);
+}
+
+export async function createCollection(name: string, config: any) {
+  const client = getQdrantClient();
+  if (!client) throw new Error("Qdrant not configured");
+  return client.createCollection(name, config);
+}
+
+export async function deleteCollection(name: string) {
+  const client = getQdrantClient();
+  if (!client) throw new Error("Qdrant not configured");
+  return client.deleteCollection(name);
+}
 // Qdrant vector search service
 // High-performance vector search with memory optimization
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { env } from "$env/dynamic/private";
+// Use process.env instead of SvelteKit env for server-side code
+// import { env } from "$env/dynamic/private";
 import { generateEmbedding } from "../ai/embeddings-simple";
 
 let qdrantClient: QdrantClient | null = null;
 
 // Initialize Qdrant client
 function getQdrantClient(): QdrantClient | null {
-  if (!env.QDRANT_URL) {
+  if (!process.env.QDRANT_URL) {
     return null;
   }
   if (!qdrantClient) {
     qdrantClient = new QdrantClient({
-      url: env.QDRANT_URL,
-      apiKey: env.QDRANT_API_KEY || undefined,
+      url: process.env.QDRANT_URL,
+      apiKey: process.env.QDRANT_API_KEY || undefined,
     });
   }
   return qdrantClient;
@@ -87,7 +112,7 @@ interface SearchOptions {
 // Search cases in Qdrant
 export async function searchCases(
   query: string,
-  options: SearchOptions = {},
+  options: SearchOptions = {}
 ): Promise<any[]> {
   const client = getQdrantClient();
   if (!client) {
@@ -120,7 +145,7 @@ export async function searchCases(
 // Search evidence in Qdrant
 export async function searchEvidence(
   query: string,
-  options: SearchOptions = {},
+  options: SearchOptions = {}
 ): Promise<any[]> {
   const client = getQdrantClient();
   if (!client) {
@@ -154,7 +179,7 @@ export async function searchEvidence(
 export async function upsertCase(
   id: string,
   embedding: number[],
-  payload: any,
+  payload: any
 ): Promise<void> {
   const client = getQdrantClient();
   if (!client) {
@@ -179,7 +204,7 @@ export async function upsertCase(
 export async function upsertEvidence(
   id: string,
   embedding: number[],
-  payload: any,
+  payload: any
 ): Promise<void> {
   const client = getQdrantClient();
   if (!client) {
@@ -203,7 +228,7 @@ export async function upsertEvidence(
 // Delete a point from Qdrant
 export async function deletePoint(
   collection: string,
-  id: string,
+  id: string
 ): Promise<void> {
   const client = getQdrantClient();
   if (!client) {
@@ -241,4 +266,8 @@ export const qdrant = {
   isHealthy: isQdrantHealthy,
   initializeCollections,
   collections: COLLECTIONS,
+  getCollections,
+  getCollection,
+  createCollection,
+  deleteCollection,
 };

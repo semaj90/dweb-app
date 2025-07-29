@@ -10,4 +10,16 @@ export class ContextService {
       urgency: 0.1,
     };
   }
+
+  static async updateChatContext(contextData: any) {
+    // TODO: Implement chat context update
+    console.log("Updating chat context:", contextData);
+    return { success: true };
+  }
+
+  static async updateCaseContext(contextData: any) {
+    // TODO: Implement case context update
+    console.log("Updating case context:", contextData);
+    return { success: true };
+  }
 }

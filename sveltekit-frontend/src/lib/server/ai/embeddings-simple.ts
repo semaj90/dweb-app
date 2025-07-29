@@ -1,6 +1,6 @@
 // Simplified AI embedding service - Production ready
 // Supports OpenAI embeddings with Redis/memory caching
-import { env } from "$env/dynamic/private";
+// Use process.env for server-side environment variables
 import { getCachedEmbedding, cacheEmbedding } from "$lib/server/cache/redis";
 
 interface EmbeddingOptions {
@@ -52,7 +52,7 @@ export async function generateEmbedding(
 }
 // OpenAI embedding generation
 async function generateOpenAIEmbedding(text: string): Promise<number[]> {
-  const apiKey = env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OpenAI API key not configured");
   }
@@ -113,7 +113,7 @@ export async function generateBatchEmbeddings(
 async function generateOpenAIBatchEmbeddings(
   texts: string[],
 ): Promise<(number[] | null)[]> {
-  const apiKey = env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OpenAI API key not configured");
   }

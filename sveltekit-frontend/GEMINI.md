@@ -11,29 +11,29 @@ This to-do list outlines the steps to get the application to a stable, working s
 ## Phase 2: Database and Data (Drizzle-kit, PostgreSQL, pg_vector)
 
 1.  [ ] **Fix Drizzle Schema & Migrations:**
-    *   Analyze `drizzle.config.ts` and schema files in `src/lib/db/schema` to ensure they accurately reflect the desired PostgreSQL schema.
-    *   Use `drizzle-kit generate` and `drizzle-kit migrate` to manage schema changes. Resolve any migration conflicts or errors using `check-migrations.mjs` and `fix-migration.mjs`.
-    *   Ensure `pg_vector` extension is enabled and correctly utilized for vector embeddings in the schema, if applicable.
+    - Analyze `drizzle.config.ts` and schema files in `src/lib/db/schema` to ensure they accurately reflect the desired PostgreSQL schema.
+    - Use `drizzle-kit generate` and `drizzle-kit migrate` to manage schema changes. Resolve any migration conflicts or errors using `check-migrations.mjs` and `fix-migration.mjs`.
+    - Ensure `pg_vector` extension is enabled and correctly utilized for vector embeddings in the schema, if applicable.
 2.  [ ] **PostgreSQL Configuration & Performance:**
-    *   Review PostgreSQL configurations within Docker for best practices (e.g., connection pooling, resource allocation).
-    *   Optimize database queries and ensure proper indexing for performance, especially for vector searches using `pg_vector`.
+    - Review PostgreSQL configurations within Docker for best practices (e.g., connection pooling, resource allocation).
+    - Optimize database queries and ensure proper indexing for performance, especially for vector searches using `pg_vector`.
 3.  [ ] **Validate Seeding:** Check `seed.ts` and `seed-enhanced.ts` for errors. Ensure the database can be seeded with consistent, valid data, including any necessary vector data.
 
 ## Phase 3: Backend and API (SvelteKit 2, Drizzle)
 
 1.  [ ] **Fix TypeScript Errors & Type Safety:** Systematically address all TypeScript errors across the backend and frontend. Ensure strict type checking is enabled and adhered to, especially for Drizzle ORM interactions.
 2.  [ ] **SvelteKit 2 Routing & Endpoints:**
-    *   Review `src/routes` for adherence to SvelteKit 2 routing conventions.
-    *   Resolve any API route conflicts (as indicated by `fix-route-conflict-and-db.ps1`) and ensure API endpoints (`+server.ts`) are correctly implemented and handle data fetching/mutations efficiently.
-    *   Implement proper error handling and data validation for all API endpoints.
+    - Review `src/routes` for adherence to SvelteKit 2 routing conventions.
+    - Resolve any API route conflicts (as indicated by `fix-route-conflict-and-db.ps1`) and ensure API endpoints (`+server.ts`) are correctly implemented and handle data fetching/mutations efficiently.
+    - Implement proper error handling and data validation for all API endpoints.
 3.  [ ] **Drizzle ORM Integration:** Ensure all database interactions use Drizzle ORM correctly, leveraging its type safety and query builder for efficient and secure data operations.
 4.  [ ] **Review Backend Logic:** Inspect all backend code for potential bugs, security vulnerabilities, and performance bottlenecks.
 
 ## Phase 4: Frontend/UI (SvelteKit 2)
 
 1.  [ ] **SvelteKit 2 Component Best Practices:**
-    *   Review Svelte components (`.svelte` files) for adherence to SvelteKit 2 best practices (e.g., proper use of `load` functions, stores, actions, and component lifecycle).
-    *   Address any component-related issues, including export conflicts (`UI_EXPORT_CONFLICTS_RESOLVED.md`).
+    - Review Svelte components (`.svelte` files) for adherence to SvelteKit 2 best practices (e.g., proper use of `load` functions, stores, actions, and component lifecycle).
+    - Address any component-related issues, including export conflicts (`UI_EXPORT_CONFLICTS_RESOLVED.md`).
 2.  [ ] **Resolve UI/CSS Errors:** Fix any styling or CSS-related problems, ensuring a consistent and responsive user interface.
 3.  [ ] **Client-Side Data Handling:** Ensure efficient client-side data fetching and state management, leveraging SvelteKit's built-in features.
 4.  [ ] **Ensure Proper Component Rendering:** Verify that all UI components render correctly without errors in the browser across different devices and browsers.

@@ -2,6 +2,8 @@
 // Handles "Ask AI" requests with vector search and hybrid LLM integration
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
+// Environment variables fallback
+const env = process.env || {};
 import { ollamaService } from "$lib/services/ollama-service";
 
 // Fallback imports with error handling
@@ -433,15 +435,7 @@ function generateFallbackResponse(query: string, sources: any[]): string {
 
   return response;
 }
-// Environment variable fallback
-let env: any = {};
-try {
-  const envModule = await import("$env/dynamic/private");
-  env = envModule.env || {};
-} catch (error) {
-  console.warn("Environment variables not available:", error);
-  env = {};
-}
+
 // Autocomplete endpoint for citations
 export const GET: RequestHandler = async ({ url }) => {
   try {

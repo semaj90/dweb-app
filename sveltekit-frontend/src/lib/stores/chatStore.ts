@@ -71,12 +71,12 @@ export const messages = derived(chatStore, ($store) => $store.messages);
 
 export const currentConversation = derived(
   chatStore,
-  ($store) => $store.currentConversation
+  ($store) => $store.currentConversation,
 );
 
 export const conversations = derived(
   chatStore,
-  ($store) => $store.conversations
+  ($store) => $store.conversations,
 );
 
 export const isLoading = derived(chatStore, ($store) => $store.isLoading);
@@ -93,16 +93,16 @@ export const modelStatus = derived(chatStore, ($store) => $store.modelStatus);
 
 export const contextInjection = derived(
   chatStore,
-  ($store) => $store.contextInjection
+  ($store) => $store.contextInjection,
 );
 
 export const conversationsList = derived(conversations, ($conversations) =>
-  $conversations.sort((a, b) => b.updated.getTime() - a.updated.getTime())
+  $conversations.sort((a, b) => b.updated.getTime() - a.updated.getTime()),
 );
 
 export const isActiveChat = derived(
   currentConversation,
-  ($conversation) => !!$conversation
+  ($conversation) => !!$conversation,
 );
 
 // === ACTIONS ===
@@ -131,7 +131,7 @@ export const chatActions = {
   loadConversation: (conversationId: string) => {
     chatStore.update((state) => {
       const conversation = state.conversations.find(
-        (c) => c.id === conversationId
+        (c) => c.id === conversationId,
       );
       return {
         ...state,
@@ -245,7 +245,7 @@ export const chatActions = {
   deleteConversation: (conversationId: string) => {
     chatStore.update((state) => {
       const conversations = state.conversations.filter(
-        (c) => c.id !== conversationId
+        (c) => c.id !== conversationId,
       );
       const currentConversation =
         state.currentConversation?.id === conversationId
@@ -348,7 +348,7 @@ export const chatActions = {
 export const serviceActions = {
   updateStatus: (
     service: keyof ServiceStatus,
-    status: ServiceStatus[keyof ServiceStatus]
+    status: ServiceStatus[keyof ServiceStatus],
   ) => {
     serviceStatus.update((current) => ({ ...current, [service]: status }));
   },
@@ -359,7 +359,7 @@ export const serviceActions = {
       const ollamaResponse = await fetch("/api/ai/test-ollama");
       serviceActions.updateStatus(
         "ollama",
-        ollamaResponse.ok ? "connected" : "error"
+        ollamaResponse.ok ? "connected" : "error",
       );
     } catch {
       serviceActions.updateStatus("ollama", "error");
@@ -383,7 +383,7 @@ export const serviceActions = {
       const dbResponse = await fetch("/api/health/database");
       serviceActions.updateStatus(
         "database",
-        dbResponse.ok ? "connected" : "error"
+        dbResponse.ok ? "connected" : "error",
       );
     } catch {
       serviceActions.updateStatus("database", "error");
@@ -394,7 +394,7 @@ export const serviceActions = {
       const qdrantResponse = await fetch("/api/health/qdrant");
       serviceActions.updateStatus(
         "qdrant",
-        qdrantResponse.ok ? "connected" : "error"
+        qdrantResponse.ok ? "connected" : "error",
       );
     } catch {
       serviceActions.updateStatus("qdrant", "error");
@@ -504,7 +504,7 @@ export const xstateCompatibleStore = derived(
           return false;
       }
     },
-  })
+  }),
 );
 
 export function useChatActor() {
@@ -522,7 +522,7 @@ export const persistenceHelpers = {
       try {
         localStorage.setItem(
           "chat-conversations",
-          JSON.stringify(state.conversations)
+          JSON.stringify(state.conversations),
         );
         localStorage.setItem("chat-settings", JSON.stringify(state.settings));
       } catch (error) {

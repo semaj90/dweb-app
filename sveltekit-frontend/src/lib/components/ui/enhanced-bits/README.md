@@ -5,6 +5,7 @@ A comprehensive integration of Bits UI v2 components enhanced with Svelte 5 rune
 ## Features
 
 ### 🚀 Core Technologies
+
 - **Svelte 5 Runes**: Modern reactive state management with `$state`, `$derived`, `$effect`
 - **Bits UI v2.8.13**: Headless, accessible component primitives
 - **UnoCSS 66.3.3**: Atomic CSS with custom NieR theme shortcuts
@@ -12,6 +13,7 @@ A comprehensive integration of Bits UI v2 components enhanced with Svelte 5 rune
 - **Legal AI Context**: Specialized components for evidence management and case analysis
 
 ### 🎨 NieR Theming
+
 - Custom color palette inspired by NieR: Automata
 - Gothic typography with MS Gothic and JetBrains Mono fonts
 - Evidence board styling with grid patterns
@@ -19,6 +21,7 @@ A comprehensive integration of Bits UI v2 components enhanced with Svelte 5 rune
 - AI status indicators with animations
 
 ### ⚡ Performance Optimizations
+
 - Tree-shaking support for optimal bundle sizes
 - Lazy loading for non-critical components
 - Virtual scrolling for large evidence lists
@@ -28,15 +31,17 @@ A comprehensive integration of Bits UI v2 components enhanced with Svelte 5 rune
 ## Quick Start
 
 ### Installation
+
 ```bash
 npm install bits-ui@^2.8.13 unocss@^66.3.3
 ```
 
 ### Basic Usage
+
 ```svelte
 <script>
   import { Button, Dialog, Select, Input, Card } from '$lib/components/ui/enhanced-bits';
-  
+
   let dialogOpen = $state(false);
   let selectedCase = $state('');
 </script>
@@ -58,6 +63,7 @@ npm install bits-ui@^2.8.13 unocss@^66.3.3
 ## Component Reference
 
 ### Button Component
+
 Enhanced button with legal AI features and NieR theming.
 
 ```svelte
@@ -83,6 +89,7 @@ Enhanced button with legal AI features and NieR theming.
 **Confidence**: `high`, `medium`, `low`
 
 ### Dialog Component
+
 Modal dialogs optimized for legal workflows.
 
 ```svelte
@@ -103,6 +110,7 @@ Modal dialogs optimized for legal workflows.
 **Sizes**: `sm`, `md`, `lg`, `xl`, `full`
 
 ### Select Component
+
 Enhanced select with categorized options and AI recommendations.
 
 ```svelte
@@ -126,6 +134,7 @@ Enhanced select with categorized options and AI recommendations.
 ```
 
 ### Input Component
+
 Smart inputs with AI assistance and legal validation.
 
 ```svelte
@@ -145,6 +154,7 @@ Smart inputs with AI assistance and legal validation.
 **Variants**: `default`, `search`, `password`, `email`, `legal`, `evidence`
 
 ### Card Component
+
 Interactive cards for evidence and case management.
 
 ```svelte
@@ -167,6 +177,7 @@ Interactive cards for evidence and case management.
 ## Advanced Features
 
 ### Vector Intelligence Integration
+
 ```svelte
 <script>
   import { VectorIntelligenceDemo } from '$lib/components/ui/enhanced-bits';
@@ -178,16 +189,17 @@ Interactive cards for evidence and case management.
 Features semantic search, entity extraction, and confidence scoring for legal documents.
 
 ### Performance Optimization
+
 ```typescript
-import { 
-  componentFactory, 
+import {
+  componentFactory,
   performanceMonitor,
   createDebouncedSearch,
-  VirtualScrollManager 
-} from '$lib/components/ui/enhanced-bits/performance';
+  VirtualScrollManager,
+} from "$lib/components/ui/enhanced-bits/performance";
 
 // Lazy load components
-const Button = await componentFactory.getComponent('Button');
+const Button = await componentFactory.getComponent("Button");
 
 // Debounced search
 const debouncedSearch = createDebouncedSearch(searchAPI, 300);
@@ -195,18 +207,19 @@ const debouncedSearch = createDebouncedSearch(searchAPI, 300);
 // Virtual scrolling for large lists
 const virtualScroll = new VirtualScrollManager({
   itemHeight: 100,
-  bufferSize: 5
+  bufferSize: 5,
 });
 ```
 
 ### Custom Theming
+
 ```typescript
-import { cn, legalClasses, getAIConfidenceClass } from '$lib/utils/cn';
+import { cn, legalClasses, getAIConfidenceClass } from "$lib/utils/cn";
 
 // Use predefined legal classes
 const buttonClass = cn(
   legalClasses.yorha.button,
-  legalClasses.priority.critical
+  legalClasses.priority.critical,
 );
 
 // Dynamic confidence classes
@@ -216,6 +229,7 @@ const confidenceClass = getAIConfidenceClass(85); // ai-confidence-80
 ## UnoCSS Shortcuts
 
 ### NieR/YoRHa Components
+
 - `yorha-button` - Basic YoRHa button styling
 - `yorha-button-primary` - Primary YoRHa button
 - `yorha-card` - YoRHa card container
@@ -223,12 +237,14 @@ const confidenceClass = getAIConfidenceClass(85); // ai-confidence-80
 - `yorha-input` - YoRHa input field
 
 ### Evidence Management
+
 - `yorha-evidence-board` - Evidence board background
 - `yorha-evidence-item` - Evidence card styling
 - `yorha-drop-zone` - File drop zone
 - `yorha-priority-critical` - Critical priority indicator
 
 ### AI System
+
 - `ai-status-indicator` - AI status dot
 - `ai-status-online` - Online status (green)
 - `ai-status-processing` - Processing status (animated)
@@ -236,6 +252,7 @@ const confidenceClass = getAIConfidenceClass(85); // ai-confidence-80
 - `vector-confidence-high` - High confidence badge
 
 ### Hybrid Classes
+
 - `nier-bits-card` - Combined NieR + Bits UI card
 - `nier-bits-button` - Combined NieR + Bits UI button
 - `nier-bits-input` - Combined NieR + Bits UI input
@@ -243,15 +260,16 @@ const confidenceClass = getAIConfidenceClass(85); // ai-confidence-80
 ## Type Definitions
 
 ### Core Types
+
 ```typescript
-export type LegalPriority = 'critical' | 'high' | 'medium' | 'low';
-export type AIConfidence = 'high' | 'medium' | 'low';
-export type ComponentSize = 'sm' | 'md' | 'lg' | 'xl';
+export type LegalPriority = "critical" | "high" | "medium" | "low";
+export type AIConfidence = "high" | "medium" | "low";
+export type ComponentSize = "sm" | "md" | "lg" | "xl";
 
 export interface EvidenceItem {
   id: string;
   title: string;
-  type: 'document' | 'image' | 'video' | 'audio' | 'transcript';
+  type: "document" | "image" | "video" | "audio" | "transcript";
   priority: LegalPriority;
   confidence?: AIConfidence;
   tags: string[];
@@ -264,7 +282,7 @@ export interface VectorSearchResult {
   score: number;
   highlights: string[];
   source: {
-    type: 'document' | 'case' | 'precedent';
+    type: "document" | "case" | "precedent";
     name: string;
     url?: string;
   };
@@ -274,45 +292,51 @@ export interface VectorSearchResult {
 ## Configuration
 
 ### Theme Configuration
+
 ```typescript
 export const DEFAULT_THEME_CONFIG = {
-  mode: 'light',
+  mode: "light",
   legal: true,
-  nierTheme: true
+  nierTheme: true,
 };
 ```
 
 ### Performance Configuration
+
 ```typescript
 export const DEFAULT_PERFORMANCE_CONFIG = {
   enableTreeShaking: true,
   lazyLoadComponents: true,
   enableVirtualization: false,
-  debounceDelay: 300
+  debounceDelay: 300,
 };
 ```
 
 ## Best Practices
 
 ### Component Usage
+
 1. Always use `legal={true}` for legal context components
 2. Provide appropriate `priority` and `confidence` props
 3. Use `bind:` for two-way data binding with Svelte 5 runes
 4. Implement proper error handling with `error` and `errorMessage` props
 
 ### Performance
+
 1. Use lazy loading for heavy components like `VectorIntelligenceDemo`
 2. Implement virtual scrolling for lists > 100 items
 3. Debounce search inputs with 300ms delay
 4. Monitor performance metrics in development
 
 ### Accessibility
+
 1. All components include proper ARIA attributes
 2. Keyboard navigation is fully supported
 3. Screen reader optimizations are included
 4. High contrast mode support available
 
 ### Styling
+
 1. Use UnoCSS shortcuts instead of custom CSS when possible
 2. Follow NieR theming conventions for consistency
 3. Implement proper dark mode support
@@ -321,10 +345,11 @@ export const DEFAULT_PERFORMANCE_CONFIG = {
 ## Examples
 
 ### Complete Evidence Management Interface
+
 ```svelte
 <script>
   import { Button, Dialog, Select, Input, Card } from '$lib/components/ui/enhanced-bits';
-  
+
   let evidenceItems = $state([]);
   let searchQuery = $state('');
   let selectedFilter = $state('all');
@@ -342,14 +367,14 @@ export const DEFAULT_PERFORMANCE_CONFIG = {
       legal
       class="flex-1"
     />
-    
+
     <Select
       bind:value={selectedFilter}
       options={filterOptions}
       evidenceCategory
       legal
     />
-    
+
     <Button
       variant="yorha"
       legal
@@ -389,13 +414,14 @@ export const DEFAULT_PERFORMANCE_CONFIG = {
 ## Browser Support
 
 - **Chrome/Edge**: Full support
-- **Firefox**: Full support  
+- **Firefox**: Full support
 - **Safari**: Full support (with CSS custom properties polyfill for older versions)
 - **Mobile**: Responsive design with touch support
 
 ## Dependencies
 
 ### Required
+
 - `svelte: ^5.14.2`
 - `bits-ui: ^2.8.13`
 - `unocss: ^66.3.3`
@@ -403,6 +429,7 @@ export const DEFAULT_PERFORMANCE_CONFIG = {
 - `tailwind-merge: ^2.2.0`
 
 ### Recommended
+
 - `lucide-svelte: ^0.474.0` (for icons)
 - `@unocss/transformer-compile-class: ^66.3.3`
 - `@unocss/svelte-scoped: ^66.3.3`

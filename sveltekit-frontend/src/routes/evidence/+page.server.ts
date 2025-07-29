@@ -1,7 +1,8 @@
 import { evidence } from "$lib/server/db/schema-postgres";
 import { error, fail } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import { superValidate } from "sveltekit-superforms/server";
+import { eq, and } from "drizzle-orm";
+import { superValidate } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
 import { z } from "zod";
 import { db } from "$lib/server/db/index";
 import { createRedisClient } from "$lib/server/redis";
@@ -10,6 +11,7 @@ import type { PageServerLoad } from "./$types";
 // Schema for validating evidence form data
 const evidenceSchema = z.object({
   id: z.string().optional(),
+  caseId: z.string().uuid(),
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   type: z.enum(["document", "image", "video", "audio", "other"]),
@@ -47,18 +49,20 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     }
     // If not in cache, fetch from database
     if (!evidenceData) {
-      let query = db.select().from(evidence);
-    const conditions = [];
+      const conditions = [];
 
-    if (caseId) {
-      conditions.push(eq(evidence.caseId, caseId));
-    }
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    query = query.limit(limit).offset(offset);
+      if (caseId) {
+        conditions.push(eq(evidence.caseId, caseId));
+      }
+      
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    evidenceData = await query.execute();
+      evidenceData = await db
+        .select()
+        .from(evidence)
+        .where(whereClause)
+        .limit(limit)
+        .offset(offset);
 
       // Cache the result for 5 minutes
       try {
@@ -84,30 +88,35 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 export const actions = {
   // CREATE and UPDATE evidence
   save: async ({ request }) => {
-    const form = await superValidate(request, evidenceSchema);
+    const form = await superValidate(request, zod(evidenceSchema));
 
     if (!form.valid) {
       return fail(400, { form });
     }
-    const { id, ...data } = form.data;
+    const { id, ...formData } = form.data;
+    
+    // Transform form data to match database schema
+    const evidenceData = {
+      caseId: formData.caseId as string,
+      title: formData.title as string,
+      description: formData.description as string,
+      evidenceType: formData.type as string,
+      tags: formData.tags as string[],
+      fileUrl: formData.url as string,
+      fileSize: formData.fileSize as number,
+      mimeType: formData.mimeType as string,
+    };
 
     try {
       if (id) {
         // UPDATE existing evidence
         await db
           .update(evidence)
-          .set({
-            ...data,
-            updatedAt: new Date(),
-          })
-          .where(eq(evidence.id, id));
+          .set(evidenceData)
+          .where(eq(evidence.id, id as string));
       } else {
         // CREATE new evidence
-        await db.insert(evidence).values({
-          ...data,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+        await db.insert(evidence).values(evidenceData);
       }
       return { form };
     } catch (error) {

@@ -100,7 +100,7 @@ class NotesManager {
     }
     return NotesManager.instance;
   }
-  
+
   // Save note to both store and IndexedDB
   async saveNote(note: Omit<SavedNote, "savedAt">): Promise<void> {
     const noteWithTimestamp: SavedNote = {
@@ -128,7 +128,7 @@ class NotesManager {
       }
     }
   }
-  
+
   // Remove note from store and IndexedDB
   async removeNote(noteId: string): Promise<void> {
     savedNotes.update((notes) => notes.filter((n) => n.id !== noteId));
@@ -141,7 +141,7 @@ class NotesManager {
       }
     }
   }
-  
+
   // Load all notes from IndexedDB on app start
   async loadSavedNotes(): Promise<void> {
     if (!browser) return;
@@ -175,7 +175,7 @@ class NotesManager {
       console.warn("Failed to load notes from IndexedDB:", error);
     }
   }
-  
+
   // Sync with server
   async syncWithServer(apiEndpoint: string = "/api/notes"): Promise<void> {
     try {
@@ -217,7 +217,7 @@ class NotesManager {
       console.warn("Failed to sync with server:", error);
     }
   }
-  
+
   // Utility to check if object is a valid note
   private isValidNote(obj: any): obj is SavedNote {
     return (
@@ -228,7 +228,7 @@ class NotesManager {
       Array.isArray(obj.tags)
     );
   }
-  
+
   // Export notes to file
   async exportNotes(format: "json" | "markdown" = "json"): Promise<void> {
     if (!browser) return;

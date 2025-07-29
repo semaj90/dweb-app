@@ -51,8 +51,8 @@ export const load: PageServerLoad = async ({ url, parent }) => {
 export const actions: Actions = {
   // Add evidence to case
   addEvidence: async ({ request, locals }) => {
-    const session = await locals.auth.validate();
-    if (!session) {
+    const session = locals.session;
+    if (!session || !session.user) {
       return fail(401, { message: "Unauthorized" });
     }
     const formData = await request.formData();
@@ -71,9 +71,8 @@ export const actions: Actions = {
           caseId,
           title,
           description,
-          type,
+          evidenceType: type,
           collectedAt: new Date(),
-          metadata: {},
         })
         .returning();
 
@@ -86,8 +85,8 @@ export const actions: Actions = {
 
   // Update evidence
   updateEvidence: async ({ request, locals }) => {
-    const session = await locals.auth.validate();
-    if (!session) {
+    const session = locals.session;
+    if (!session || !session.user) {
       return fail(401, { message: "Unauthorized" });
     }
     const formData = await request.formData();
@@ -105,7 +104,7 @@ export const actions: Actions = {
         .set({
           title,
           description,
-          type,
+          evidenceType: type,
           updatedAt: new Date(),
         })
         .where(eq(evidence.id, evidenceId))
@@ -120,8 +119,8 @@ export const actions: Actions = {
 
   // Delete evidence
   deleteEvidence: async ({ request, locals }) => {
-    const session = await locals.auth.validate();
-    if (!session) {
+    const session = locals.session;
+    if (!session || !session.user) {
       return fail(401, { message: "Unauthorized" });
     }
     const formData = await request.formData();

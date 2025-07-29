@@ -1,7 +1,3 @@
-
-
-
-
 import {
   canvasStates,
   cases,

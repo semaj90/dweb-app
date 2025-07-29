@@ -486,13 +486,24 @@ export async function getCaseWithAI(caseId: number) {
     const app = express();
     app.use(bodyParser.json());
 
-    const embeddings = new OpenAIEmbeddings({
-      modelName: "nomic-embed-text",
-      openAIApiKey: "N/A",
-      baseURL: "http://localhost:8000/v1",
-    });
-    // You must provide your actual pool config here
-    // const vectorStore = new PGVectorStore({ pool });
+    // --- Vector Store Integration ---
+    // You must provide your actual PostgreSQL pool config here
+    // Example: const pool = new Pool({ connectionString: process.env.PG_VECTOR_URL });
+    let vectorStore;
+    try {
+      // Replace with your real pool config
+      // const pool = new Pool({ connectionString: process.env.PG_VECTOR_URL });
+      // vectorStore = new PGVectorStore(new OpenAIEmbeddings({
+      //   modelName: "nomic-embed-text",
+      //   openAIApiKey: process.env.OPENAI_API_KEY,
+      //   baseURL: "http://localhost:8000/v1",
+      // }), { pool });
+      // For demo, use a mock or throw if not configured
+      vectorStore = null;
+    } catch (err) {
+      console.error("Vector store initialization failed:", err);
+      vectorStore = null;
+    }
 
     app.post("/api/semantic-search", async (req, res) => {
       const { query } = req.body;
@@ -500,10 +511,12 @@ export async function getCaseWithAI(caseId: number) {
         return res.status(400).json({ error: "Query is required" });
       }
       try {
-        // Uncomment and configure vectorStore before using
-        // const results = await vectorStore.similaritySearch(query, 4);
-        // res.json({ results });
-        res.json({ results: [] }); // Placeholder
+        if (!vectorStore) {
+          return res.status(503).json({ error: "Vector store not configured" });
+        }
+        // Use the real vector store for semantic search
+        const results = await vectorStore.similaritySearch(query, 4);
+        res.json({ results });
       } catch (err) {
         res.status(500).json({ error: err.message });
       }

@@ -6,7 +6,7 @@
 
 import { autonomousEngineeringSystem } from "../services/autonomous-engineering-system.js";
 import { autoGenService } from "../services/autogen-service.js";
-import { crewAIService } from "../services/crewai-service.js";
+import { analyzeLegalCaseWithCrew } from "../services/crewai-service.js";
 import { aiWorkerManager } from "../services/ai-worker-manager.js";
 import type { AITask } from "$lib/types/ai-worker.js";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
@@ -44,10 +44,11 @@ export async function getEnhancedContext(query: string) {
     }
     // 2. If not in cache, fetch and compute the data
     console.log("CACHE MISS for:", query);
-    // Use LangChain to embed the query
+    // Use LangChain to embed the query with local Nomic embed LLM (no baseURL property)
     const embeddings = new OpenAIEmbeddings({
       modelName: "nomic-embed-text",
       openAIApiKey: "N/A",
+      // baseURL property removed; using local LLM per best practices
     });
     // PGVectorStore expects (embeddings, config)
     const vectorStore = new PGVectorStore(embeddings, {
@@ -277,6 +278,15 @@ export async function copilotSelfPrompt(
       },
     };
   } catch (error) {
+    // Log error to MCP_TODO_LOG.md for productionization
+    try {
+      const { mcpLogErrorOrContextLoss } = await import("./mcp-helpers.js");
+      await mcpLogErrorOrContextLoss(
+        `Copilot self-prompt failed: ${error?.message || error}`
+      );
+    } catch (logErr) {
+      console.error("Failed to log error to MCP_TODO_LOG.md:", logErr);
+    }
     console.error("❌ Copilot self-prompt failed:", error);
     throw error;
   }
@@ -322,7 +332,10 @@ async function performSemanticSearch(
 /**
  * Access memory MCP servers for context and history
  */
-async function accessMemoryMCP(prompt: string, context: any): Promise<any[]> {
+export async function accessMemoryMCP(
+  prompt: string,
+  context: any
+): Promise<any[]> {
   try {
     // Use MCP memory graph endpoint (production)
     const response = await fetch("http://localhost:8000/api/memory/query", {
@@ -372,7 +385,7 @@ async function orchestrateMultiAgentAnalysis(
       ...autogenResult,
     });
     // CrewAI analysis (production)
-    const crewaiResult = await crewAIService.analyzeLegalCaseWithCrew(
+    const crewaiResult = await analyzeLegalCaseWithCrew(
       prompt,
       [],
       context.jurisdiction || "federal"
@@ -707,7 +720,7 @@ export class CopilotSelfPrompt {
     this.embeddings = new OpenAIEmbeddings({
       modelName: "nomic-embed-text",
       openAIApiKey: "N/A",
-      baseURL: "http://localhost:8000/v1",
+      // baseURL property removed for local LLM compatibility
     });
     // this.redisClient = Redis.createClient();
   }

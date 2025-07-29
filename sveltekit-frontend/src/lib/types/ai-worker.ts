@@ -6,10 +6,10 @@ export interface LLMModel {
   id: string;
   name: string;
   displayName: string;
-  provider: 'ollama' | 'vllm' | 'autogen' | 'crewai' | 'langchain';
+  provider: "ollama" | "vllm" | "autogen" | "crewai" | "langchain";
   size: string;
-  specialization: 'general' | 'legal' | 'code' | 'reasoning' | 'embedding';
-  status: 'online' | 'offline' | 'loading' | 'error';
+  specialization: "general" | "legal" | "code" | "reasoning" | "embedding";
+  status: "online" | "offline" | "loading" | "error";
   performance: {
     tokensPerSecond: number;
     memoryUsage: string;
@@ -21,27 +21,27 @@ export interface LLMModel {
 
 export interface AITask {
   taskId: string;
-  type: 'generate' | 'analyze' | 'embed' | 'chat' | 'agent_workflow';
+  type: "generate" | "analyze" | "embed" | "chat" | "agent_workflow" | "legal_analysis";
   providerId: string;
   model: string;
   prompt: string;
   systemPrompt?: string;
   context?: Record<string, any>;
   timestamp: number;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  
+  priority: "low" | "medium" | "high" | "critical";
+
   // Generation parameters
   temperature?: number;
   topP?: number;
   topK?: number;
   maxTokens?: number;
   repeatPenalty?: number;
-  
+
   // Agent-specific parameters
   agents?: string[];
   maxRounds?: number;
   crewId?: string;
-  
+
   // Metadata
   userId?: string;
   caseId?: string;
@@ -64,18 +64,18 @@ export interface AIResponse {
 }
 
 export interface WorkerMessage {
-  type: 
-    | 'PROCESS_AI_TASK'
-    | 'CANCEL_TASK'
-    | 'GET_STATUS'
-    | 'UPDATE_PROVIDER_CONFIG'
-    | 'TASK_STARTED'
-    | 'TASK_COMPLETED'
-    | 'TASK_ERROR'
-    | 'TASK_CANCELLED'
-    | 'TASK_QUEUED'
-    | 'STATUS_UPDATE'
-    | 'WORKER_READY';
+  type:
+    | "PROCESS_AI_TASK"
+    | "CANCEL_TASK"
+    | "GET_STATUS"
+    | "UPDATE_PROVIDER_CONFIG"
+    | "TASK_STARTED"
+    | "TASK_COMPLETED"
+    | "TASK_ERROR"
+    | "TASK_CANCELLED"
+    | "TASK_QUEUED"
+    | "STATUS_UPDATE"
+    | "WORKER_READY";
   taskId: string;
   payload: any;
 }
@@ -92,7 +92,7 @@ export interface WorkerStatus {
 
 export interface AIProviderConfig {
   id: string;
-  type: 'ollama' | 'vllm' | 'autogen' | 'crewai';
+  type: "ollama" | "vllm" | "autogen" | "crewai";
   endpoint: string;
   timeout: number;
   retries: number;
@@ -131,42 +131,46 @@ export interface WorkflowStep {
 }
 
 export interface LegalAnalysisTask extends AITask {
-  type: 'legal_analysis';
+  type: "legal_analysis";
   documentId?: string;
   evidenceId?: string;
-  analysisType: 'summarization' | 'fact_extraction' | 'legal_opinion' | 'case_law_research';
+  analysisType:
+    | "summarization"
+    | "fact_extraction"
+    | "legal_opinion"
+    | "case_law_research";
   jurisdiction?: string;
   lawAreas?: string[];
 }
 
 export interface EmbeddingTask extends AITask {
-  type: 'embed';
+  type: "embed";
   texts: string[];
-  model: 'nomic-embed-text' | 'sentence-transformers';
+  model: "nomic-embed-text" | "sentence-transformers";
   dimensions: number;
   normalize?: boolean;
 }
 
 export interface ChatTask extends AITask {
-  type: 'chat';
+  type: "chat";
   conversationId: string;
   history: ChatMessage[];
   streamResponse?: boolean;
 }
 
 export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   content: string;
   timestamp: number;
   metadata?: Record<string, any>;
 }
 
 export interface AgentWorkflowTask extends AITask {
-  type: 'agent_workflow';
+  type: "agent_workflow";
   workflowId: string;
   inputs: Record<string, any>;
   agents: string[];
-  coordination: 'sequential' | 'parallel' | 'hierarchical';
+  coordination: "sequential" | "parallel" | "hierarchical";
 }
 
 export interface MultiLLMOrchestrationConfig {
@@ -176,7 +180,7 @@ export interface MultiLLMOrchestrationConfig {
   };
   consensusThreshold: number;
   maxIterations: number;
-  votingStrategy: 'majority' | 'weighted' | 'expert';
+  votingStrategy: "majority" | "weighted" | "expert";
 }
 
 export interface ProcessingMetrics {
@@ -196,7 +200,7 @@ export interface ProcessingMetrics {
 
 export interface WorkerPool {
   workers: Worker[];
-  taskDistribution: 'round-robin' | 'least-loaded' | 'priority-based';
+  taskDistribution: "round-robin" | "least-loaded" | "priority-based";
   maxWorkers: number;
   currentLoad: number[];
   totalTasks: number;
@@ -210,43 +214,43 @@ export interface AIServiceWorkerManager {
   cancelTask(taskId: string): Promise<void>;
   getStatus(): Promise<WorkerStatus>;
   shutdown(): Promise<void>;
-  
+
   // Event handlers
   onTaskComplete?: (taskId: string, response: AIResponse) => void;
   onTaskError?: (taskId: string, error: Error) => void;
   onStatusUpdate?: (status: WorkerStatus) => void;
 }
 
-export type AITaskType = 
-  | 'generate'
-  | 'analyze'
-  | 'embed'
-  | 'chat'
-  | 'agent_workflow'
-  | 'legal_analysis'
-  | 'document_summary'
-  | 'evidence_analysis'
-  | 'case_research';
+export type AITaskType =
+  | "generate"
+  | "analyze"
+  | "embed"
+  | "chat"
+  | "agent_workflow"
+  | "legal_analysis"
+  | "document_summary"
+  | "evidence_analysis"
+  | "case_research";
 
-export type AIProviderType = 
-  | 'ollama'
-  | 'vllm'
-  | 'autogen'
-  | 'crewai'
-  | 'langchain'
-  | 'openai'
-  | 'anthropic';
+export type AIProviderType =
+  | "ollama"
+  | "vllm"
+  | "autogen"
+  | "crewai"
+  | "langchain"
+  | "openai"
+  | "anthropic";
 
-export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
+export type TaskPriority = "low" | "medium" | "high" | "critical";
 
-export type TaskStatus = 
-  | 'pending'
-  | 'queued'
-  | 'processing'
-  | 'completed'
-  | 'failed'
-  | 'cancelled'
-  | 'timeout';
+export type TaskStatus =
+  | "pending"
+  | "queued"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "cancelled"
+  | "timeout";
 
 export interface TaskResult {
   taskId: string;

@@ -1,5 +1,5 @@
 // Redis caching service for embeddings and search results
-import { env } from "$env/dynamic/private";
+// Use process.env for server-side environment variables
 
 // Simple in-memory cache fallback
 const memoryCache = new Map<string, any>();
@@ -19,7 +19,7 @@ class CacheService {
     this.initializeRedis();
   }
   private async initializeRedis() {
-    if (!env.REDIS_URL) {
+    if (!process.env.REDIS_URL) {
       console.log("📝 Using memory cache (Redis not configured)");
       return;
     }
@@ -28,7 +28,7 @@ class CacheService {
       const { createClient } = await import("redis");
 
       this.redisClient = createClient({
-        url: env.REDIS_URL,
+        url: process.env.REDIS_URL,
         socket: {
           connectTimeout: 5000,
           reconnectStrategy: (retries) => Math.min(retries * 50, 500),

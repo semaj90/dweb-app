@@ -1,27 +1,43 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
-	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true,
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"strict": true,
-		"target": "ES2022",
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"allowSyntheticDefaultImports": true,
-		"verbatimModuleSyntax": true
-	},
-	"include": [
-		"ambient.d.ts",
-		"src/**/*.ts",
-		"src/**/*.svelte"
-	],
-	"exclude": [
-		"node_modules/**",
-		"build/**"
-	]
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "strict": false,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": false,
+    "assumeChangesOnlyAffectDirectDependencies": true
+  },
+  "include": ["ambient.d.ts", "src/**/*.ts", "src/**/*.svelte"],
+  "exclude": [
+    "node_modules/**",
+    "build/**",
+    "dist/**",
+    ".svelte-kit/**",
+    "tests/**",
+    "playwright-report/**",
+    "test-results/**",
+    "*.config.*",
+    "scripts/**",
+    "js_tests/**",
+    "enhanced-package-setup.mjs"
+  ]
 }

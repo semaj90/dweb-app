@@ -14,14 +14,26 @@ export default defineConfig({
     presetAttributify(),
     presetIcons({
       scale: 1.2,
-      cdn: 'https://esm.sh/',
+      cdn: "https://esm.sh/",
       collections: {
-        lucide: () => import('@iconify-json/lucide/icons.json').then(i => i.default).catch(() => ({})),
-        mdi: () => import('@iconify-json/mdi/icons.json').then(i => i.default).catch(() => ({})),
-        tabler: () => import('@iconify-json/tabler/icons.json').then(i => i.default).catch(() => ({})),
-        heroicons: () => import('@iconify-json/heroicons/icons.json').then(i => i.default).catch(() => ({}))
+        lucide: () =>
+          import("@iconify-json/lucide/icons.json")
+            .then((i) => i.default)
+            .catch(() => ({})),
+        mdi: () =>
+          import("@iconify-json/mdi/icons.json")
+            .then((i) => i.default)
+            .catch(() => ({})),
+        tabler: () =>
+          import("@iconify-json/tabler/icons.json")
+            .then((i) => i.default)
+            .catch(() => ({})),
+        heroicons: () =>
+          import("@iconify-json/heroicons/icons.json")
+            .then((i) => i.default)
+            .catch(() => ({})),
       },
-      autoInstall: true
+      autoInstall: true,
     }),
     // REMOVED presetWebFonts to fix timeout error
     // presetWebFonts({

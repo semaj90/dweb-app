@@ -48,7 +48,7 @@
   {#if loading}
     <span class="loader mr-2"></span>
   {/if}
-  <slot />
+  {@render children?.()}
   {#if icon && iconPosition === 'right'}
     <i class={icon} aria-hidden="true"></i>
   {/if}

@@ -3,13 +3,25 @@
 
 import { dev } from "$app/environment";
 import { tauriLLM } from "$lib/services/tauri-llm";
-import {
-  createDir,
-  writeTextFile,
-  readTextFile,
-  exists,
-} from "@tauri-apps/api/fs";
-import { join, appLocalDataDir } from "@tauri-apps/api/path";
+// Optional Tauri imports - fallback for web environments
+let createDir: any, writeTextFile: any, readTextFile: any, exists: any, join: any, appLocalDataDir: any;
+
+async function initializeTauriAPI() {
+  try {
+    const fsModule = await import("@tauri-apps/api/fs");
+    const pathModule = await import("@tauri-apps/api/path");
+    ({ createDir, writeTextFile, readTextFile, exists } = fsModule);
+    ({ join, appLocalDataDir } = pathModule);
+  } catch {
+    // Fallback implementations for web environment
+    createDir = () => Promise.resolve();
+    writeTextFile = () => Promise.resolve();
+    readTextFile = () => Promise.resolve("");
+    exists = () => Promise.resolve(false);
+    join = (...paths: string[]) => paths.join("/");
+    appLocalDataDir = () => Promise.resolve("./data");
+  }
+}
 
 export interface LocalLLMConfig {
   models: {
@@ -93,6 +105,9 @@ class LocalLLMManager {
     if (this.isInitialized) return;
 
     try {
+      // Initialize Tauri API first
+      await initializeTauriAPI();
+      
       // Set up paths based on environment
       if (dev) {
         this.modelsPath = "./local-llms";

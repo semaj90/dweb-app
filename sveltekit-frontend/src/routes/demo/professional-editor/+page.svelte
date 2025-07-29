@@ -205,17 +205,17 @@
 <style>
   .demo-page {
     min-height: 100vh;
-    background: theme(colors.yorha.background);
-    color: theme(colors.yorha.text);
+    background: #f4f1ea;
+    color: #3a372f;
   }
 
   /* Hero Section */
   .demo-header {
     padding: 4rem 0;
     background: linear-gradient(135deg, 
-      theme(colors.yorha.background) 0%, 
-      theme(colors.yorha.surface) 100%);
-    border-bottom: 1px solid theme(colors.yorha.border);
+      #f4f1ea 0%, 
+      #faf8f3 100%);
+    border-bottom: 1px solid #ada895;
   }
 
   .hero-content {
@@ -231,7 +231,7 @@
 
   .hero-subtitle {
     font-size: 1.25rem;
-    color: theme(colors.yorha.text / 80%);
+    color: rgba(58, 55, 47, 0.8);
     max-width: 600px;
     margin: 0 auto 3rem auto;
     line-height: 1.6;
@@ -252,7 +252,7 @@
 
   .feature-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 25px theme(colors.yorha.primary / 20%);
+    box-shadow: 0 8px 25px rgba(58, 55, 47, 0.2);
   }
 
   .feature-icon {
@@ -265,11 +265,11 @@
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .feature-card p {
-    color: theme(colors.yorha.text / 80%);
+    color: rgba(58, 55, 47, 0.8);
     line-height: 1.5;
   }
 
@@ -295,15 +295,15 @@
 
   .section-subtitle {
     font-size: 1.125rem;
-    color: theme(colors.yorha.text / 80%);
+    color: rgba(58, 55, 47, 0.8);
     max-width: 600px;
     margin: 0 auto 2rem auto;
     line-height: 1.6;
   }
 
   .shortcuts-reminder {
-    background: theme(colors.yorha.surface);
-    border: 1px solid theme(colors.yorha.border);
+    background: #faf8f3;
+    border: 1px solid #ada895;
     border-radius: 8px;
     padding: 1.5rem;
     margin: 2rem auto;
@@ -311,7 +311,7 @@
   }
 
   .shortcuts-reminder h4 {
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
     margin-bottom: 1rem;
     font-weight: 600;
   }
@@ -324,13 +324,13 @@
   }
 
   .shortcuts-list kbd {
-    background: theme(colors.yorha.background);
-    border: 1px solid theme(colors.yorha.border);
+    background: #f4f1ea;
+    border: 1px solid #ada895;
     border-radius: 4px;
     padding: 0.25rem 0.5rem;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 0.875rem;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .editor-wrapper {
@@ -353,7 +353,7 @@
   }
 
   .instruction-card h3 {
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
@@ -367,7 +367,7 @@
   .instruction-card li {
     margin-bottom: 0.75rem;
     line-height: 1.6;
-    color: theme(colors.yorha.text / 90%);
+    color: rgba(58, 55, 47, 0.9);
   }
 
   .shortcuts-table {
@@ -380,21 +380,21 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid theme(colors.yorha.border / 30%);
+    border-bottom: 1px solid rgba(173, 168, 149, 0.3);
   }
 
   .shortcut-row kbd {
-    background: theme(colors.yorha.surface);
-    border: 1px solid theme(colors.yorha.border);
+    background: #faf8f3;
+    border: 1px solid #ada895;
     border-radius: 4px;
     padding: 0.25rem 0.5rem;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 0.875rem;
-    color: theme(colors.yorha.primary);
+    color: #3a372f;
   }
 
   .shortcut-row span {
-    color: theme(colors.yorha.text / 90%);
+    color: rgba(58, 55, 47, 0.9);
   }
 
   /* Responsive Design */

@@ -377,18 +377,39 @@ Return only a JSON array of strings, no other text:
     }));
   }
 
-  async syncFromPostgreSQL(options: { collection: string; limit?: number; }): Promise<{ success: boolean; message?: string; }> {
-    console.warn(`syncFromPostgreSQL is a stub - implement with actual synchronization logic for collection: ${options.collection}`);
+  async syncFromPostgreSQL(options: {
+    collection: string;
+    limit?: number;
+  }): Promise<{ success: boolean; message?: string }> {
+    console.warn(
+      `syncFromPostgreSQL is a stub - implement with actual synchronization logic for collection: ${options.collection}`,
+    );
     return { success: true, message: "Synchronization initiated (stub)" };
   }
 
   async healthCheck(): Promise<boolean> {
     try {
-      const response = await this.client.health();
-      return response.ok;
+      // Use getCollections as a health check since health() method doesn't exist
+      await this.client.getCollections();
+      return true;
     } catch (error) {
       console.error("Qdrant health check failed:", error);
       return false;
+    }
+  }
+
+  async searchSimilar(query: string, options: any = {}): Promise<SearchResult[]> {
+    try {
+      const collection = options.collection || "legal_documents";
+      
+      // First get embedding for the query (you'd need to implement this)
+      // For now, return empty results
+      console.warn("searchSimilar is a stub - implement with actual similarity search");
+      
+      return [];
+    } catch (error) {
+      console.error("Similarity search failed:", error);
+      return [];
     }
   }
 }

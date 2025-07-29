@@ -1,11 +1,34 @@
-import { invoke } from "@tauri-apps/api/tauri";
+// Optional Tauri import - fallback for web environments
+let invoke: any;
+
+async function initializeTauri() {
+  try {
+    const tauriModule = await import("@tauri-apps/api/tauri");
+    invoke = tauriModule.invoke;
+  } catch (error) {
+    console.warn("Tauri not available - using fallback implementations");
+    invoke = () => Promise.reject(new Error("Tauri not available"));
+  }
+}
+
+// Initialize on first use
+let tauriInitialized = false;
 
 export async function getAvailableModels(): Promise<string[]> {
-  return await invoke<string[]>("list_llm_models");
+  if (!tauriInitialized) {
+    await initializeTauri();
+    tauriInitialized = true;
+  }
+  return await invoke("list_llm_models") as Promise<string[]>;
 }
+
 export async function runInference(
   model: string,
   prompt: string,
 ): Promise<string> {
-  return await invoke<string>("run_llm_inference", { model, prompt });
+  if (!tauriInitialized) {
+    await initializeTauri();  
+    tauriInitialized = true;
+  }
+  return await invoke("run_llm_inference", { model, prompt }) as Promise<string>;
 }

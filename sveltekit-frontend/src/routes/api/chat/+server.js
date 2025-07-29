@@ -51,7 +51,7 @@ export async function POST({ request }) {
     console.error(err);
     return json(
       { error: "There was an error processing your request." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

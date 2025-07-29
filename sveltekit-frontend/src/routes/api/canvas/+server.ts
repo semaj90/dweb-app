@@ -15,7 +15,7 @@ export const POST: RequestHandler = async ({ request }) => {
         { status: 400 },
       );
     }
-    
+
     // Check if canvas state already exists for this case
     const existing = await db
       .select()
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request }) => {
         })
         .returning();
     }
-    
+
     return json({
       success: true,
       canvasState: result,
@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ url }) => {
     if (!caseId) {
       return json({ error: "Case ID is required" }, { status: 400 });
     }
-    
+
     const canvasState = await db
       .select()
       .from(canvasStates)

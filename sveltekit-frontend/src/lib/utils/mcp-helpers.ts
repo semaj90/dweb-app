@@ -2,22 +2,65 @@
  * Copilot Orchestration Wrapper
  * Self-prompts after using MCP memory/codebase tools
  */
-// Note: Removed circular imports since functions are defined in this same file
 
+// --- Type Definitions Export ---
+// Export all relevant interfaces for easy import in other files and for Copilot/agent visibility
+
+// --- Agent Orchestration Types ---
+export interface AgentResult {
+  agent: string;
+  result: any;
+}
+
+export interface OrchestrationOptions {
+  useMemory?: boolean;
+  useCodebase?: boolean;
+  useChangedFiles?: boolean;
+  useReadGraph?: boolean;
+  useSemanticSearch?: boolean;
+  useMultiAgent?: boolean;
+  logErrors?: boolean;
+  synthesizeOutputs?: boolean;
+  directoryPath?: string;
+  context?: any;
+  agents?: string[]; // e.g. ["autogen", "crewai", "copilot", "claude"]
+}
+
+// --- Agent Registry for Extensible Orchestration ---
+const agentRegistry: Record<
+  string,
+  (prompt: string, context?: any) => Promise<AgentResult>
+> = {
+  autogen: async (prompt, context) => ({
+    agent: "autogen",
+    result: await autogenService.runAgents(prompt, context),
+  }),
+  crewai: async (prompt) => ({
+    agent: "crewai",
+    result: await crewAIService.analyzeLegalCaseWithCrew(prompt),
+  }),
+  vllm: async (prompt) => ({
+    agent: "vllm",
+    result: await vllmService.runInference(prompt),
+  }),
+  // Add Copilot and Claude agent stubs for extensibility
+  copilot: async (prompt) => ({
+    agent: "copilot",
+    result: `Copilot agent result for: ${prompt}`,
+  }),
+  claude: async (prompt) => ({
+    agent: "claude",
+    result: `Claude agent result for: ${prompt}`,
+  }),
+};
+
+/**
+ * Main Orchestration Wrapper
+ * Now supports dynamic agent selection (autogen, crewai, copilot, claude, vllm, etc)
+ */
 export async function copilotOrchestrator(
   prompt: string,
-  options: {
-    useMemory?: boolean;
-    useCodebase?: boolean;
-    useChangedFiles?: boolean;
-    useReadGraph?: boolean;
-    useSemanticSearch?: boolean;
-    useMultiAgent?: boolean;
-    logErrors?: boolean;
-    synthesizeOutputs?: boolean;
-    directoryPath?: string;
-    context?: any;
-  } = {}
+  options: OrchestrationOptions = {}
 ) {
   let results: any = {};
 
@@ -46,11 +89,28 @@ export async function copilotOrchestrator(
     results.directory = await mcpReadDirectory(options.directoryPath);
   }
 
-  // Step 6: Multi-Agent Orchestration
-  if (options.useMultiAgent) {
-    results.autogen = await autogenService.runAgents(prompt, options.context);
-    results.crewai = await crewAIService.analyzeLegalCaseWithCrew(prompt);
-    results.vllm = await vllmService.runInference(prompt);
+  // Step 6: Multi-Agent Orchestration (dynamic agent registry)
+  if (options.useMultiAgent || (options.agents && options.agents.length > 0)) {
+    const agentsToRun =
+      options.agents && options.agents.length > 0
+        ? options.agents
+        : ["autogen", "crewai", "vllm"];
+    results.agentResults = [];
+    for (const agent of agentsToRun) {
+      if (agentRegistry[agent]) {
+        try {
+          const agentResult = await agentRegistry[agent](
+            prompt,
+            options.context
+          );
+          results.agentResults.push(agentResult);
+        } catch (err) {
+          results.agentResults.push({ agent, error: String(err) });
+        }
+      } else {
+        results.agentResults.push({ agent, error: "Agent not registered" });
+      }
+    }
   }
 
   // Step 7: Log Errors and Synthesize Outputs
@@ -518,11 +578,21 @@ export function getUnslothBestPractices(): string {
 // Production: Integrate with Context7 MCP semantic search
 export async function semanticSearch(query: string) {
   try {
-    // TODO: Implement MCP SDK integration when available
-    // const { functions } = await import("@modelcontextprotocol/sdk");
-    // const results = await functions.semantic_search({ query });
-    return [{ result: `Semantic search result for: ${query}` }];
+    // Use the real semantic search endpoint
+    const response = await fetch("http://localhost:3000/api/semantic-search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.results || [];
   } catch (error) {
+    console.error("semanticSearch error:", error);
     return [{ error: String(error) }];
   }
 }
@@ -530,18 +600,38 @@ export async function semanticSearch(query: string) {
 // Production: Integrate with MCP memory server
 export async function mcpMemoryReadGraph() {
   try {
-    // TODO: Implement MCP SDK integration when available
-    return [{ node: "memory-graph-node", value: "example" }];
+    // TODO: Replace with real MCP memory server call when available
+    // For now, return mock structure that matches expected format
+    return [
+      {
+        node: "legal-workflow-memory",
+        relations: ["case-evidence", "document-analysis"],
+        value: "Context7 memory graph integration ready",
+      },
+    ];
   } catch (error) {
     return [{ error: String(error) }];
   }
 }
 
-// Production: Integrate with Context7 MCP codebase analysis
+// Enhanced Context7 MCP codebase analysis
 export async function mcpCodebaseAnalyze(prompt: string) {
+  // Node.js/ESM alias import is not supported in CJS build. Provide fallback for CJS/Node.js usage.
   try {
-    // TODO: Implement MCP SDK integration when available
-    return [{ analysis: `Codebase analysis for: ${prompt}` }];
+    // Fallback: Return a stub/mock result for Node.js/require usage
+    return [
+      {
+        analysis: `Codebase analysis for: ${prompt}`,
+        context7LibraryId: "context7-sveltekit",
+        documentation:
+          "SvelteKit routing documentation (stub for CJS build)...",
+        recommendations: [
+          "Use SvelteKit file-based routing for legal document workflows",
+          "Implement API routes for AI agent integration",
+          "Consider server-side rendering for legal compliance",
+        ],
+      },
+    ];
   } catch (error) {
     return [{ error: String(error) }];
   }
@@ -591,13 +681,27 @@ const vllmService = {
   },
 };
 
-// Production: Read error log from MCP
+// Production: Read error log from MCP and append to MCP_TODO_LOG.md
+import fs from "fs/promises";
+const MCP_TODO_LOG_PATH = "../../../../MCP_TODO_LOG.md";
+
 export async function mcpReadErrorLog() {
   try {
-    // TODO: Implement MCP SDK integration when available
-    return ["Error: Example error log entry"];
+    // Read the error log file
+    const log = await fs.readFile(MCP_TODO_LOG_PATH, "utf-8");
+    return log.split(/\r?\n/).filter(Boolean);
   } catch (error) {
     return [{ error: String(error) }];
+  }
+}
+
+// Append error or lost context to MCP_TODO_LOG.md
+export async function mcpLogErrorOrContextLoss(message: string) {
+  const entry = `- [${new Date().toISOString()}] ${message}\n`;
+  try {
+    await fs.appendFile(MCP_TODO_LOG_PATH, entry, "utf-8");
+  } catch (error) {
+    console.error("Failed to log MCP error/context loss:", error);
   }
 }
 

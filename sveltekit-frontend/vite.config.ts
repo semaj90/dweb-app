@@ -14,7 +14,14 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['amqplib', 'ioredis', '@qdrant/js-client-rest', 'neo4j-driver', '@xstate/svelte', 'xstate'],
+      external: [
+        "amqplib",
+        "ioredis",
+        "@qdrant/js-client-rest",
+        "neo4j-driver",
+        "@xstate/svelte",
+        "xstate",
+      ],
     },
   },
 });

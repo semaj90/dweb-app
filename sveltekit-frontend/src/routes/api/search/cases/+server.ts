@@ -28,13 +28,13 @@ export const GET: RequestHandler = async ({ url }) => {
         message: "Query too short",
       });
     }
-    
+
     const startTime = Date.now();
     let results = [];
 
     // For now, use text search only until vector search is properly configured
     results = await searchCasesText(query, limit + offset, filters);
-    
+
     const executionTime = Date.now() - startTime;
 
     return json({
@@ -84,7 +84,7 @@ async function searchCasesText(
     if (filters.category) {
       whereConditions.push(sql`${cases.category} = ${filters.category}`);
     }
-    
+
     const results = await db
       .select()
       .from(cases)

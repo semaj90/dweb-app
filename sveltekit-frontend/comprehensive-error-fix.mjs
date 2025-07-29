@@ -3,49 +3,52 @@
 // Detects and fixes all SvelteKit, TypeScript, and runtime errors
 // ============================================================================
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
-console.log('🔍 COMPREHENSIVE ERROR DETECTION & FIX');
-console.log('=====================================\n');
+console.log("🔍 COMPREHENSIVE ERROR DETECTION & FIX");
+console.log("=====================================\n");
 
 const errors = [];
 const fixes = [];
 
 // 1. CHECK FOR CRITICAL IMPORT/EXPORT ISSUES
-console.log('📦 Checking import/export issues...');
+console.log("📦 Checking import/export issues...");
 
 // Fix hooks.server.ts import issue
-const hooksServerPath = 'src/hooks.server.ts';
+const hooksServerPath = "src/hooks.server.ts";
 if (fs.existsSync(hooksServerPath)) {
-  let hooksContent = fs.readFileSync(hooksServerPath, 'utf8');
-  
+  let hooksContent = fs.readFileSync(hooksServerPath, "utf8");
+
   // Fix database import - use proper schema import
-  if (hooksContent.includes('drizzle(sqlite)') && !hooksContent.includes('import * as schema')) {
-    console.log('❌ Found: Missing schema import in hooks.server.ts');
-    errors.push('Missing database schema import');
-    
+  if (
+    hooksContent.includes("drizzle(sqlite)") &&
+    !hooksContent.includes("import * as schema")
+  ) {
+    console.log("❌ Found: Missing schema import in hooks.server.ts");
+    errors.push("Missing database schema import");
+
     hooksContent = hooksContent.replace(
-      'import { eq } from \'drizzle-orm\';',
-      'import { eq } from \'drizzle-orm\';\nimport * as schema from \'$lib/server/db/schema\';'
+      "import { eq } from 'drizzle-orm';",
+      "import { eq } from 'drizzle-orm';\nimport * as schema from '$lib/server/db/schema';",
     );
-    
+
     hooksContent = hooksContent.replace(
-      'db = drizzle(sqlite);',
-      'db = drizzle(sqlite, { schema });'
+      "db = drizzle(sqlite);",
+      "db = drizzle(sqlite, { schema });",
     );
-    
+
     fs.writeFileSync(hooksServerPath, hooksContent);
-    fixes.push('Fixed database schema import in hooks.server.ts');
+    fixes.push("Fixed database schema import in hooks.server.ts");
   }
 }
 
 // 2. CHECK FOR MISSING TYPE DEFINITIONS
-console.log('🔷 Checking TypeScript types...');
+console.log("🔷 Checking TypeScript types...");
 
 // Fix app.d.ts if missing or incomplete
-const appDtsPath = 'src/app.d.ts';
+const appDtsPath = "src/app.d.ts";
 const correctAppDts = `declare global {
   namespace App {
     interface Error {}
@@ -76,25 +79,30 @@ const correctAppDts = `declare global {
 export {};`;
 
 if (!fs.existsSync(appDtsPath)) {
-  console.log('❌ Found: Missing app.d.ts');
-  errors.push('Missing app.d.ts file');
+  console.log("❌ Found: Missing app.d.ts");
+  errors.push("Missing app.d.ts file");
   fs.writeFileSync(appDtsPath, correctAppDts);
-  fixes.push('Created app.d.ts with proper type definitions');
+  fixes.push("Created app.d.ts with proper type definitions");
 }
 
 // 3. CHECK FOR COMPONENT ERRORS
-console.log('🎯 Checking component issues...');
+console.log("🎯 Checking component issues...");
 
 // Fix EditableCanvasSystem reactive subscription issue
-const canvasSystemPath = 'src/lib/components/EditableCanvasSystem.svelte';
+const canvasSystemPath = "src/lib/components/EditableCanvasSystem.svelte";
 if (fs.existsSync(canvasSystemPath)) {
-  let canvasContent = fs.readFileSync(canvasSystemPath, 'utf8');
-  
+  let canvasContent = fs.readFileSync(canvasSystemPath, "utf8");
+
   // Fix the canvas.subscribe issue - it's called incorrectly
-  if (canvasContent.includes('canvas.subscribe(canvasState => {') && canvasContent.includes('})();')) {
-    console.log('❌ Found: Incorrect store subscription in EditableCanvasSystem');
-    errors.push('Incorrect reactive store subscription');
-    
+  if (
+    canvasContent.includes("canvas.subscribe(canvasState => {") &&
+    canvasContent.includes("})();")
+  ) {
+    console.log(
+      "❌ Found: Incorrect store subscription in EditableCanvasSystem",
+    );
+    errors.push("Incorrect reactive store subscription");
+
     canvasContent = canvasContent.replace(
       /canvas\.subscribe\(canvasState => \{[\s\S]*?\}\)\(\);/,
       `// Get current canvas state
@@ -115,25 +123,25 @@ if (fs.existsSync(canvasSystemPath)) {
       ctx.fillStyle = '#2d3748';
       ctx.font = '14px system-ui, sans-serif';
       ctx.fillText(node.content, node.x + 12, node.y + 24);
-    });`
+    });`,
     );
-    
+
     fs.writeFileSync(canvasSystemPath, canvasContent);
-    fixes.push('Fixed reactive store subscription in EditableCanvasSystem');
+    fixes.push("Fixed reactive store subscription in EditableCanvasSystem");
   }
 }
 
 // 4. CHECK FOR MISSING API ROUTES
-console.log('🌐 Checking API routes...');
+console.log("🌐 Checking API routes...");
 
 // Ensure evidence upload API exists
-const evidenceApiDir = 'src/routes/api/evidence/upload';
+const evidenceApiDir = "src/routes/api/evidence/upload";
 if (!fs.existsSync(evidenceApiDir)) {
-  console.log('❌ Found: Missing evidence upload API');
-  errors.push('Missing evidence upload API route');
-  
+  console.log("❌ Found: Missing evidence upload API");
+  errors.push("Missing evidence upload API route");
+
   fs.mkdirSync(evidenceApiDir, { recursive: true });
-  
+
   const evidenceApiContent = `import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -175,24 +183,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     return json({ error: 'Upload failed' }, { status: 500 });
   }
 };`;
-  
-  fs.writeFileSync(path.join(evidenceApiDir, '+server.ts'), evidenceApiContent);
-  fixes.push('Created evidence upload API route');
+
+  fs.writeFileSync(path.join(evidenceApiDir, "+server.ts"), evidenceApiContent);
+  fixes.push("Created evidence upload API route");
 }
 
 // 5. CHECK FOR DATABASE SCHEMA ISSUES
-console.log('🗄️ Checking database schema...');
+console.log("🗄️ Checking database schema...");
 
-const dbSchemaPath = 'src/lib/server/db/schema.ts';
+const dbSchemaPath = "src/lib/server/db/schema.ts";
 if (!fs.existsSync(dbSchemaPath)) {
-  console.log('❌ Found: Missing database schema');
-  errors.push('Missing database schema file');
-  
+  console.log("❌ Found: Missing database schema");
+  errors.push("Missing database schema file");
+
   const schemaDir = path.dirname(dbSchemaPath);
   if (!fs.existsSync(schemaDir)) {
     fs.mkdirSync(schemaDir, { recursive: true });
   }
-  
+
   const schemaContent = `import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
@@ -221,19 +229,19 @@ export const evidence = sqliteTable('evidence', {
   metadata: text('metadata'),
   createdAt: text('created_at').default('CURRENT_TIMESTAMP')
 });`;
-  
+
   fs.writeFileSync(dbSchemaPath, schemaContent);
-  fixes.push('Created database schema file');
+  fixes.push("Created database schema file");
 }
 
 // 6. CHECK FOR WEBSOCKET SERVER
-console.log('🔌 Checking WebSocket server...');
+console.log("🔌 Checking WebSocket server...");
 
-const wsServerPath = 'websocket-server.js';
+const wsServerPath = "websocket-server.js";
 if (!fs.existsSync(wsServerPath)) {
-  console.log('❌ Found: Missing WebSocket server');
-  errors.push('Missing WebSocket server');
-  
+  console.log("❌ Found: Missing WebSocket server");
+  errors.push("Missing WebSocket server");
+
   const wsServerContent = `// WebSocket server for real-time collaboration
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
@@ -287,25 +295,25 @@ const PORT = process.env.WS_PORT || 8080;
 server.listen(PORT, () => {
   console.log(\`WebSocket server running on port \${PORT}\`);
 });`;
-  
+
   fs.writeFileSync(wsServerPath, wsServerContent);
-  fixes.push('Created WebSocket server');
+  fixes.push("Created WebSocket server");
 }
 
 // 7. CHECK FOR VITE CONFIG ISSUES
-console.log('⚡ Checking Vite configuration...');
+console.log("⚡ Checking Vite configuration...");
 
-const viteConfigPath = 'vite.config.ts';
+const viteConfigPath = "vite.config.ts";
 if (fs.existsSync(viteConfigPath)) {
-  let viteContent = fs.readFileSync(viteConfigPath, 'utf8');
-  
+  let viteContent = fs.readFileSync(viteConfigPath, "utf8");
+
   // Check if optimizeDeps includes necessary packages
-  if (!viteContent.includes('better-sqlite3')) {
-    console.log('❌ Found: Missing optimizeDeps in vite.config.ts');
-    errors.push('Incomplete Vite optimization configuration');
-    
+  if (!viteContent.includes("better-sqlite3")) {
+    console.log("❌ Found: Missing optimizeDeps in vite.config.ts");
+    errors.push("Incomplete Vite optimization configuration");
+
     viteContent = viteContent.replace(
-      'optimizeDeps: {',
+      "optimizeDeps: {",
       `optimizeDeps: {
     include: [
       "lucide-svelte", 
@@ -332,22 +340,22 @@ if (fs.existsSync(viteConfigPath)) {
     noExternal: ['@auth/core', '@auth/sveltekit']
   },
   
-  optimizeDepsBackup: {`
+  optimizeDepsBackup: {`,
     );
-    
+
     fs.writeFileSync(viteConfigPath, viteContent);
-    fixes.push('Enhanced Vite configuration with proper optimizations');
+    fixes.push("Enhanced Vite configuration with proper optimizations");
   }
 }
 
 // 8. CHECK FOR MISSING ENVIRONMENT VARIABLES
-console.log('🔧 Checking environment configuration...');
+console.log("🔧 Checking environment configuration...");
 
-const envExamplePath = '.env.example';
+const envExamplePath = ".env.example";
 if (!fs.existsSync(envExamplePath)) {
-  console.log('❌ Found: Missing .env.example');
-  errors.push('Missing environment example file');
-  
+  console.log("❌ Found: Missing .env.example");
+  errors.push("Missing environment example file");
+
   const envContent = `# Database
 DATABASE_URL="./dev.db"
 
@@ -363,39 +371,39 @@ JWT_SECRET="your-jwt-secret-here"
 
 # API URLs
 PUBLIC_API_URL="http://localhost:5173"`;
-  
+
   fs.writeFileSync(envExamplePath, envContent);
-  fixes.push('Created .env.example file');
+  fixes.push("Created .env.example file");
 }
 
 // 9. FINAL SUMMARY
-console.log('\n📊 ERROR DETECTION SUMMARY');
-console.log('===========================');
+console.log("\n📊 ERROR DETECTION SUMMARY");
+console.log("===========================");
 console.log(`❌ Errors Found: ${errors.length}`);
 console.log(`✅ Fixes Applied: ${fixes.length}\n`);
 
 if (errors.length > 0) {
-  console.log('🔍 ERRORS DETECTED:');
+  console.log("🔍 ERRORS DETECTED:");
   errors.forEach((error, i) => console.log(`${i + 1}. ${error}`));
-  console.log('');
+  console.log("");
 }
 
 if (fixes.length > 0) {
-  console.log('🔧 FIXES APPLIED:');
+  console.log("🔧 FIXES APPLIED:");
   fixes.forEach((fix, i) => console.log(`${i + 1}. ${fix}`));
-  console.log('');
+  console.log("");
 }
 
 if (errors.length === 0) {
-  console.log('🎉 NO CRITICAL ERRORS FOUND!');
-  console.log('Your application appears to be in good shape.');
+  console.log("🎉 NO CRITICAL ERRORS FOUND!");
+  console.log("Your application appears to be in good shape.");
 } else {
-  console.log('✅ ALL DETECTED ERRORS HAVE BEEN FIXED!');
+  console.log("✅ ALL DETECTED ERRORS HAVE BEEN FIXED!");
   console.log('Run "npm run check" to verify the fixes.');
 }
 
-console.log('\n🚀 NEXT STEPS:');
-console.log('1. Run: npm run check');
-console.log('2. Run: npm run dev');
-console.log('3. Test the application functionality');
-console.log('4. Check browser console for any runtime errors');
+console.log("\n🚀 NEXT STEPS:");
+console.log("1. Run: npm run check");
+console.log("2. Run: npm run dev");
+console.log("3. Test the application functionality");
+console.log("4. Check browser console for any runtime errors");

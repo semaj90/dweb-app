@@ -1,8 +1,7 @@
-import { join } from 'path';
+import { join } from "path";
 
 // Gemma3 Model Configuration for Legal AI Assistant
 // Optimized configurations for your local Gemma3 model
-
 
 export interface Gemma3ModelConfig {
   modelId: string;
@@ -43,7 +42,7 @@ export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
       "case_review",
       "contract_analysis",
       "document_summarization",
-      "quick_queries"
+      "quick_queries",
     ],
     promptTemplate: `<bos><start_of_turn>user
 {system_prompt}
@@ -54,8 +53,8 @@ export const GEMMA3_MODELS: Gemma3ModelConfig[] = [
     ollamaModel: "gemma3-legal",
     fallbackModel: "gemma3:12b",
     format: "gguf",
-    size: "8B"
-  }
+    size: "8B",
+  },
 ];
 
 export const LEGAL_SYSTEM_PROMPTS = {

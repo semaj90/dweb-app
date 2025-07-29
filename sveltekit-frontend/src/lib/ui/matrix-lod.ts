@@ -44,7 +44,7 @@ export class MatrixLODSystem {
   private viewportFocus: ViewportFocus | null = null;
   private gpuMetrics: GPULoadMetrics;
   private aiAwarenessEnabled = true;
-  
+
   // GLSL Shaders for cubic filter blending
   private vertexShaderSource = `#version 300 es
     in vec4 a_position;
@@ -71,7 +71,7 @@ export class MatrixLODSystem {
       v_focusDistance = distance / u_focus.z; // Normalize by focus radius
     }
   `;
-  
+
   private fragmentShaderSource = `#version 300 es
     precision highp float;
     
@@ -139,107 +139,117 @@ export class MatrixLODSystem {
       #endif
     }
   `;
-  
+
   constructor(canvas: HTMLCanvasElement) {
-    const gl = canvas.getContext('webgl2');
+    const gl = canvas.getContext("webgl2");
     if (!gl) {
-      throw new Error('WebGL2 not supported');
+      throw new Error("WebGL2 not supported");
     }
-    
+
     this.gl = gl;
     this.initializeShaders();
     this.initializeGPUMetrics();
     this.startPerformanceMonitoring();
   }
-  
+
   /**
    * Initialize GLSL shaders for LOD blending
    */
   private initializeShaders(): void {
-    const vertexShader = this.createShader(this.gl.VERTEX_SHADER, this.vertexShaderSource);
-    const fragmentShader = this.createShader(this.gl.FRAGMENT_SHADER, this.fragmentShaderSource);
-    
+    const vertexShader = this.createShader(
+      this.gl.VERTEX_SHADER,
+      this.vertexShaderSource,
+    );
+    const fragmentShader = this.createShader(
+      this.gl.FRAGMENT_SHADER,
+      this.fragmentShaderSource,
+    );
+
     if (!vertexShader || !fragmentShader) {
-      throw new Error('Failed to create shaders');
+      throw new Error("Failed to create shaders");
     }
-    
+
     this.shaderProgram = this.gl.createProgram();
     if (!this.shaderProgram) {
-      throw new Error('Failed to create shader program');
+      throw new Error("Failed to create shader program");
     }
-    
+
     this.gl.attachShader(this.shaderProgram, vertexShader);
     this.gl.attachShader(this.shaderProgram, fragmentShader);
     this.gl.linkProgram(this.shaderProgram);
-    
+
     if (!this.gl.getProgramParameter(this.shaderProgram, this.gl.LINK_STATUS)) {
       const error = this.gl.getProgramInfoLog(this.shaderProgram);
       throw new Error(`Shader program linking failed: ${error}`);
     }
   }
-  
+
   private createShader(type: number, source: string): WebGLShader | null {
     const shader = this.gl.createShader(type);
     if (!shader) return null;
-    
+
     this.gl.shaderSource(shader, source);
     this.gl.compileShader(shader);
-    
+
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
       const error = this.gl.getShaderInfoLog(shader);
       console.error(`Shader compilation failed: ${error}`);
       this.gl.deleteShader(shader);
       return null;
     }
-    
+
     return shader;
   }
-  
+
   /**
    * Build LOD cache for component
    */
-  buildLODCache(componentId: string, baseVertices: Float32Array, metadata: Record<string, unknown>): void {
+  buildLODCache(
+    componentId: string,
+    baseVertices: Float32Array,
+    metadata: Record<string, unknown>,
+  ): void {
     const priority = this.calculateAIPriority(metadata);
-    
+
     // Low LOD: Simplified geometry (25% vertices)
     const lowVertices = this.simplifyGeometry(baseVertices, 0.25);
-    
+
     // Mid LOD: Medium detail (60% vertices)
     const midVertices = this.simplifyGeometry(baseVertices, 0.6);
-    
+
     // High LOD: Full detail (100% vertices)
     const highVertices = baseVertices;
-    
+
     this.lodCache[componentId] = {
       low: {
         vertices: lowVertices,
         cssClasses: this.generateLowLODClasses(metadata),
-        priority: priority * 0.3
+        priority: priority * 0.3,
       },
       mid: {
         vertices: midVertices,
         cssClasses: this.generateMidLODClasses(metadata),
-        priority: priority * 0.7
+        priority: priority * 0.7,
       },
       high: {
         vertices: highVertices,
         cssClasses: this.generateHighLODClasses(metadata),
-        priority: priority
-      }
+        priority: priority,
+      },
     };
   }
-  
+
   /**
    * Calculate AI-based priority for components
    */
   private calculateAIPriority(metadata: Record<string, unknown>): number {
     let priority = 1.0;
-    
+
     // Boost for AI-generated content
     if (metadata.aiGenerated) {
       priority += 0.5;
     }
-    
+
     // Boost based on AI confidence
     const confidence = metadata.confidence as number;
     if (confidence && confidence > 80) {
@@ -247,162 +257,160 @@ export class MatrixLODSystem {
     } else if (confidence && confidence > 60) {
       priority += 0.1;
     }
-    
+
     // Boost for legal evidence
     if (metadata.evidenceType) {
       priority += 0.4;
     }
-    
+
     // Boost for critical priority
-    if (metadata.priority === 'critical') {
+    if (metadata.priority === "critical") {
       priority += 0.6;
     }
-    
+
     return Math.min(priority, 3.0); // Cap at 3.0
   }
-  
+
   /**
    * Simplify geometry for lower LOD levels
    */
-  private simplifyGeometry(vertices: Float32Array, ratio: number): Float32Array {
+  private simplifyGeometry(
+    vertices: Float32Array,
+    ratio: number,
+  ): Float32Array {
     const targetVertexCount = Math.floor((vertices.length / 5) * ratio) * 5; // 5 components per vertex
     const simplified = new Float32Array(targetVertexCount);
-    
+
     const step = vertices.length / targetVertexCount;
-    
+
     for (let i = 0; i < targetVertexCount; i += 5) {
       const sourceIndex = Math.floor((i / 5) * step) * 5;
       for (let j = 0; j < 5; j++) {
         simplified[i + j] = vertices[sourceIndex + j];
       }
     }
-    
+
     return simplified;
   }
-  
+
   /**
    * Generate LOD-specific CSS classes
    */
   private generateLowLODClasses(metadata: Record<string, unknown>): string[] {
-    return [
-      'lod-low',
-      'yorha-simplified',
-      'opacity-80',
-      'transform-scale-95'
-    ];
+    return ["lod-low", "yorha-simplified", "opacity-80", "transform-scale-95"];
   }
-  
+
   private generateMidLODClasses(metadata: Record<string, unknown>): string[] {
-    return [
-      'lod-mid',
-      'yorha-standard',
-      'opacity-90',
-      'transform-scale-95'
-    ];
+    return ["lod-mid", "yorha-standard", "opacity-90", "transform-scale-95"];
   }
-  
+
   private generateHighLODClasses(metadata: Record<string, unknown>): string[] {
     const classes = [
-      'lod-high',
-      'yorha-enhanced',
-      'opacity-100',
-      'transform-scale-100'
+      "lod-high",
+      "yorha-enhanced",
+      "opacity-100",
+      "transform-scale-100",
     ];
-    
+
     // Add AI-specific enhancements
     if (metadata.aiGenerated) {
-      classes.push('ai-enhanced', 'glow-subtle');
+      classes.push("ai-enhanced", "glow-subtle");
     }
-    
+
     if (metadata.confidence && (metadata.confidence as number) > 80) {
-      classes.push('high-confidence', 'border-success');
+      classes.push("high-confidence", "border-success");
     }
-    
+
     return classes;
   }
-  
+
   /**
    * Update viewport focus based on user interaction and AI suggestions
    */
   updateViewportFocus(focus: ViewportFocus): void {
     this.viewportFocus = focus;
-    
+
     // Adjust LOD levels based on focus area
     this.recalculateLODLevels();
   }
-  
+
   /**
    * Recalculate LOD levels based on current state
    */
   private recalculateLODLevels(): void {
     if (!this.viewportFocus) return;
-    
-    Object.keys(this.lodCache).forEach(componentId => {
+
+    Object.keys(this.lodCache).forEach((componentId) => {
       const element = document.getElementById(componentId);
       if (!element) return;
-      
+
       const rect = element.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      
+
       const distance = Math.sqrt(
         Math.pow(centerX - this.viewportFocus!.centerX, 2) +
-        Math.pow(centerY - this.viewportFocus!.centerY, 2)
+          Math.pow(centerY - this.viewportFocus!.centerY, 2),
       );
-      
+
       const normalizedDistance = distance / this.viewportFocus!.radius;
-      
+
       // Determine LOD level based on distance and AI factors
-      let lodLevel: 'low' | 'mid' | 'high' = 'low';
-      
+      let lodLevel: "low" | "mid" | "high" = "low";
+
       if (normalizedDistance < 0.3) {
-        lodLevel = 'high';
+        lodLevel = "high";
       } else if (normalizedDistance < 0.7) {
-        lodLevel = 'mid';
+        lodLevel = "mid";
       }
-      
+
       // AI boost for suggested elements
       if (this.viewportFocus!.aiSuggestions.includes(componentId)) {
-        if (lodLevel === 'low') lodLevel = 'mid';
-        else if (lodLevel === 'mid') lodLevel = 'high';
+        if (lodLevel === "low") lodLevel = "mid";
+        else if (lodLevel === "mid") lodLevel = "high";
       }
-      
+
       // Apply LOD level
       this.applyLODLevel(componentId, lodLevel);
     });
   }
-  
+
   /**
    * Apply specific LOD level to component
    */
-  private applyLODLevel(componentId: string, level: 'low' | 'mid' | 'high'): void {
+  private applyLODLevel(
+    componentId: string,
+    level: "low" | "mid" | "high",
+  ): void {
     const element = document.getElementById(componentId);
     const cache = this.lodCache[componentId];
-    
+
     if (!element || !cache) return;
-    
+
     // Remove existing LOD classes
-    element.classList.remove('lod-low', 'lod-mid', 'lod-high');
-    
+    element.classList.remove("lod-low", "lod-mid", "lod-high");
+
     // Apply new LOD classes
     const lodData = cache[level];
-    lodData.cssClasses.forEach(className => {
+    lodData.cssClasses.forEach((className) => {
       element.classList.add(className);
     });
-    
+
     // Update WebGL buffer if needed
     this.updateWebGLBuffer(componentId, lodData.vertices);
   }
-  
+
   /**
    * Update WebGL buffer with new vertex data
    */
   private updateWebGLBuffer(componentId: string, vertices: Float32Array): void {
     // Implementation would update the GPU buffer
     // This is a simplified version
-    console.log(`Updated WebGL buffer for ${componentId} with ${vertices.length} vertices`);
+    console.log(
+      `Updated WebGL buffer for ${componentId} with ${vertices.length} vertices`,
+    );
   }
-  
+
   /**
    * Initialize GPU performance metrics
    */
@@ -412,43 +420,43 @@ export class MatrixLODSystem {
       gpuUtilization: 0,
       memoryUsage: 0,
       renderTime: 0,
-      activeBuffers: 0
+      activeBuffers: 0,
     };
   }
-  
+
   /**
    * Start performance monitoring loop
    */
   private startPerformanceMonitoring(): void {
     let lastTime = performance.now();
     let frameCount = 0;
-    
+
     const monitor = () => {
       const currentTime = performance.now();
       frameCount++;
-      
+
       // Update frame rate every second
       if (currentTime - lastTime >= 1000) {
         this.gpuMetrics.frameRate = frameCount;
         frameCount = 0;
         lastTime = currentTime;
-        
+
         // Adjust quality based on performance
         this.adaptiveQualityControl();
       }
-      
+
       requestAnimationFrame(monitor);
     };
-    
+
     requestAnimationFrame(monitor);
   }
-  
+
   /**
    * Adaptive quality control based on performance
    */
   private adaptiveQualityControl(): void {
     const { frameRate, gpuUtilization } = this.gpuMetrics;
-    
+
     // Reduce quality if performance is poor
     if (frameRate < 30 || gpuUtilization > 90) {
       this.degradeQuality();
@@ -458,38 +466,38 @@ export class MatrixLODSystem {
       this.enhanceQuality();
     }
   }
-  
+
   private degradeQuality(): void {
     // Force more components to lower LOD levels
-    Object.keys(this.lodCache).forEach(componentId => {
+    Object.keys(this.lodCache).forEach((componentId) => {
       const element = document.getElementById(componentId);
-      if (element?.classList.contains('lod-high')) {
-        this.applyLODLevel(componentId, 'mid');
-      } else if (element?.classList.contains('lod-mid')) {
-        this.applyLODLevel(componentId, 'low');
+      if (element?.classList.contains("lod-high")) {
+        this.applyLODLevel(componentId, "mid");
+      } else if (element?.classList.contains("lod-mid")) {
+        this.applyLODLevel(componentId, "low");
       }
     });
   }
-  
+
   private enhanceQuality(): void {
     // Allow components to use higher LOD levels
-    Object.keys(this.lodCache).forEach(componentId => {
+    Object.keys(this.lodCache).forEach((componentId) => {
       const element = document.getElementById(componentId);
-      if (element?.classList.contains('lod-low')) {
-        this.applyLODLevel(componentId, 'mid');
-      } else if (element?.classList.contains('lod-mid')) {
-        this.applyLODLevel(componentId, 'high');
+      if (element?.classList.contains("lod-low")) {
+        this.applyLODLevel(componentId, "mid");
+      } else if (element?.classList.contains("lod-mid")) {
+        this.applyLODLevel(componentId, "high");
       }
     });
   }
-  
+
   /**
    * Get current performance metrics
    */
   getPerformanceMetrics(): GPULoadMetrics {
     return { ...this.gpuMetrics };
   }
-  
+
   /**
    * Toggle AI awareness features
    */
@@ -500,7 +508,7 @@ export class MatrixLODSystem {
       this.recalculateLODLevels();
     }
   }
-  
+
   /**
    * Cleanup resources
    */
@@ -508,7 +516,7 @@ export class MatrixLODSystem {
     if (this.shaderProgram) {
       this.gl.deleteProgram(this.shaderProgram);
     }
-    
+
     // Clear cache
     this.lodCache = {};
   }

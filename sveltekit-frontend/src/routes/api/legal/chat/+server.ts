@@ -1,14 +1,23 @@
 // Legal AI Chat API - Context7 Enhanced with Gemma3 Legal
 import { db } from "$lib/server/db/index";
 import { type RequestHandler, json } from "@sveltejs/kit";
-import { legalAnalysisSessions, legalDocuments, legalPrecedents } from "$lib/server/db/schema-postgres";
+import {
+  legalAnalysisSessions,
+  legalDocuments,
+  legalPrecedents,
+} from "$lib/server/db/schema-postgres";
 import { eq, desc, and, like } from "drizzle-orm";
+import { type InsertLegalAnalysisSession } from "$lib/server/db/types";
 
 interface LegalChatRequest {
   prompt: string;
   caseId?: string;
   userId: string;
-  sessionType?: "case_analysis" | "legal_research" | "document_review" | "precedent_search";
+  sessionType?:
+    | "case_analysis"
+    | "legal_research"
+    | "document_review"
+    | "precedent_search";
   context?: {
     caseDetails?: any;
     evidenceIds?: string[];
@@ -33,57 +42,78 @@ interface LegalChatResponse {
 
 export const POST: RequestHandler = async ({ request }) => {
   const startTime = Date.now();
-  
+
   try {
-    const { prompt, caseId, userId, sessionType = "case_analysis", context }: LegalChatRequest = await request.json();
+    const {
+      prompt,
+      caseId,
+      userId,
+      sessionType = "case_analysis",
+      context,
+    }: LegalChatRequest = await request.json();
 
     if (!prompt || !userId) {
-      return json({ error: "Missing required fields: prompt, userId" }, { status: 400 });
+      return json(
+        { error: "Missing required fields: prompt, userId" },
+        { status: 400 }
+      );
     }
 
     // 1. Search for relevant legal documents and precedents
     const relevantSources = await findRelevantLegalSources(prompt, caseId);
 
     // 2. Generate legal analysis using Gemma3 Legal model
-    const analysisResult = await generateLegalAnalysis(prompt, relevantSources, context);
+    const analysisResult = await generateLegalAnalysis(
+      prompt,
+      relevantSources,
+      context
+    );
 
     // 3. Create analysis session record
-    const [session] = await db
-      .insert(legalAnalysisSessions)
-      .values({
-        caseId,
-        userId,
-        sessionType,
-        analysisPrompt: prompt,
-        analysisResult: analysisResult.analysis,
-        confidenceLevel: analysisResult.confidence,
-        sourcesUsed: relevantSources,
-        model: "gemma3-legal",
-        processingTime: Date.now() - startTime,
-        isActive: true,
-      })
-      .returning();
-
-    const response: LegalChatResponse = {
-      sessionId: session.id,
-      analysis: analysisResult.analysis,
-      confidence: analysisResult.confidence,
-      sources: relevantSources.map(source => ({
+    const sessionInsert: InsertLegalAnalysisSession = {
+      caseId: caseId || null,
+      userId,
+      sessionType,
+      analysisPrompt: prompt,
+      analysisResult: analysisResult.analysis,
+      confidenceLevel: String(analysisResult.confidence),
+      sourcesUsed: relevantSources.map((source) => ({
         type: source.type,
         id: source.id,
         title: source.title || source.caseTitle || source.citation,
         relevance: source.relevanceScore || 0.85,
-        excerpt: source.summary || source.content?.substring(0, 200) + "..."
+      })),
+      model: "gemma3-legal",
+      processingTime: Date.now() - startTime,
+      isActive: true,
+    };
+    const [session] = await db
+      .insert(legalAnalysisSessions)
+      .values(sessionInsert)
+      .returning();
+
+    const response: LegalChatResponse = {
+      sessionId: session?.id || "",
+      analysis: analysisResult.analysis,
+      confidence: analysisResult.confidence,
+      sources: relevantSources.map((source) => ({
+        type: source.type,
+        id: source.id,
+        title: source.title || source.caseTitle || source.citation,
+        relevance: source.relevanceScore || 0.85,
+        excerpt: source.summary || source.content?.substring(0, 200) + "...",
       })),
       recommendations: analysisResult.recommendations,
-      processingTime: Date.now() - startTime,
+      processingTime: session?.processingTime ?? 0,
     };
 
     return json(response);
-
   } catch (error) {
     console.error("Legal chat error:", error);
-    return json({ error: "Failed to process legal analysis request" }, { status: 500 });
+    return json(
+      { error: "Failed to process legal analysis request" },
+      { status: 500 }
+    );
   }
 };
 
@@ -98,7 +128,8 @@ export const GET: RequestHandler = async ({ url }) => {
     const conditions = [];
     if (caseId) conditions.push(eq(legalAnalysisSessions.caseId, caseId));
     if (userId) conditions.push(eq(legalAnalysisSessions.userId, userId));
-    if (sessionType) conditions.push(eq(legalAnalysisSessions.sessionType, sessionType));
+    if (sessionType)
+      conditions.push(eq(legalAnalysisSessions.sessionType, sessionType));
 
     const sessions = await db
       .select()
@@ -108,10 +139,12 @@ export const GET: RequestHandler = async ({ url }) => {
       .limit(limit);
 
     return json(sessions);
-
   } catch (error) {
     console.error("Error fetching legal analysis sessions:", error);
-    return json({ error: "Failed to fetch analysis sessions" }, { status: 500 });
+    return json(
+      { error: "Failed to fetch analysis sessions" },
+      { status: 500 }
+    );
   }
 };
 
@@ -125,7 +158,7 @@ async function findRelevantLegalSources(prompt: string, caseId?: string) {
       .select()
       .from(legalDocuments)
       .where(
-        caseId 
+        caseId
           ? and(
               eq(legalDocuments.caseId, caseId),
               like(legalDocuments.content, `%${prompt}%`)
@@ -134,19 +167,16 @@ async function findRelevantLegalSources(prompt: string, caseId?: string) {
       )
       .limit(5);
 
-    sources.push(...documents.map(doc => ({ ...doc, type: "document" })));
+    sources.push(...documents.map((doc) => ({ ...doc, type: "document" })));
 
     // Search legal precedents (vector similarity would be ideal here)
     const precedents = await db
       .select()
       .from(legalPrecedents)
-      .where(
-        like(legalPrecedents.summary, `%${prompt}%`)
-      )
+      .where(like(legalPrecedents.summary, `%${prompt}%`))
       .limit(3);
 
-    sources.push(...precedents.map(prec => ({ ...prec, type: "precedent" })));
-
+    sources.push(...precedents.map((prec) => ({ ...prec, type: "precedent" })));
   } catch (error) {
     console.warn("Error searching legal sources:", error);
   }
@@ -155,7 +185,11 @@ async function findRelevantLegalSources(prompt: string, caseId?: string) {
 }
 
 // Helper function to generate legal analysis using Gemma3
-async function generateLegalAnalysis(prompt: string, sources: any[], context?: any) {
+async function generateLegalAnalysis(
+  prompt: string,
+  sources: any[],
+  context?: any
+) {
   try {
     // Construct analysis prompt with legal context
     const legalPrompt = `
@@ -164,13 +198,17 @@ As a legal AI assistant specialized in prosecutor case analysis, analyze the fol
 QUERY: ${prompt}
 
 RELEVANT SOURCES:
-${sources.map(source => `
+${sources
+  .map(
+    (source) => `
 - ${source.type.toUpperCase()}: ${source.title || source.caseTitle || source.citation}
   Summary: ${source.summary || source.content?.substring(0, 300)}
-`).join('\n')}
+`
+  )
+  .join("\n")}
 
 CASE CONTEXT:
-${context ? JSON.stringify(context, null, 2) : 'No additional context provided'}
+${context ? JSON.stringify(context, null, 2) : "No additional context provided"}
 
 Please provide:
 1. Legal Analysis (comprehensive analysis of the query)
@@ -195,15 +233,14 @@ The case appears to have merit based on the documented evidence and applicable l
       confidence: 0.87,
       recommendations: [
         "Review all evidence for chain of custody documentation",
-        "Verify compliance with procedural notification requirements", 
+        "Verify compliance with procedural notification requirements",
         "Prepare responses to anticipated defense challenges",
         "Consider additional expert witness testimony if needed",
-        "Document all procedural steps for appellate protection"
-      ]
+        "Document all procedural steps for appellate protection",
+      ],
     };
 
     return analysisResult;
-
   } catch (error) {
     console.error("Error generating legal analysis:", error);
     throw new Error("Failed to generate legal analysis");

@@ -210,6 +210,14 @@ export class VectorService {
     return { summary: "Analysis placeholder" };
   }
   /**
+   * Search method for vector similarity
+   */
+  static async search(query: string, options: any = {}): Promise<any[]> {
+    console.warn("search is a stub - implement with full functionality");
+    return [];
+  }
+
+  /**
    * TODO: Re-implement similar document search with full functionality
    * This is a temporary stub to resolve compilation errors
    */

@@ -1,7 +1,8 @@
-import { env } from "$env/dynamic/private";
+// Use process.env instead of SvelteKit env for server-side code
+// import { env } from "$env/dynamic/private";
 import { QdrantClient } from "@qdrant/js-client-rest";
 
-export const qdrant = new QdrantClient({ url: env.QDRANT_URL });
+export const qdrant = new QdrantClient({ url: process.env.QDRANT_URL || "http://localhost:6333" });
 
 export const EVIDENCE_COLLECTION_NAME = "evidence_v1";
 

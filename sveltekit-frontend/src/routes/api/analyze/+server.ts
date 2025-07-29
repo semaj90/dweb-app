@@ -2,7 +2,12 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { db } from "$lib/server/db/index";
-import { evidence, cases, aiReports, users } from "$lib/server/db/schema-postgres";
+import {
+  evidence,
+  cases,
+  aiReports,
+  users,
+} from "$lib/server/db/schema-postgres";
 import { eq } from "drizzle-orm";
 import { createHash } from "crypto";
 
@@ -450,11 +455,11 @@ export const GET: RequestHandler = async ({ url }) => {
 
     if (evidenceId || caseId) {
       // Query ai_reports table for analysis history
-      const query = caseId
-        ? db.select().from(aiReports).where(eq(aiReports.caseId, caseId))
-        : db.select().from(aiReports).limit(limit);
-
-      analyses = await query.limit(limit);
+      if (caseId) {
+        analyses = await db.select().from(aiReports).where(eq(aiReports.caseId, caseId)).limit(limit);
+      } else {
+        analyses = await db.select().from(aiReports).limit(limit);
+      }
     }
 
     return json({

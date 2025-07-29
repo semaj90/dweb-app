@@ -58,10 +58,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     if (isActive !== null) {
       filters.push(eq(users.isActive, isActive === "true"));
     }
-    // Apply filters
-    if (filters.length > 0) {
-      query = query.where(and(...filters));
-    }
+    // Build query with filters
+    const whereClause = filters.length > 0 ? and(...filters) : undefined;
     // Add sorting
     const orderColumn =
       sortBy === "name"
@@ -74,21 +72,30 @@ export const GET: RequestHandler = async ({ locals, url }) => {
               ? users.updatedAt
               : users.createdAt;
 
-    query = query.orderBy(
-      sortOrder === "asc" ? orderColumn : desc(orderColumn),
-    );
-
-    // Add pagination
-    query = query.limit(limit).offset(offset);
-
-    const userResults = await query;
+    const userResults = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+        role: users.role,
+        isActive: users.isActive,
+        avatarUrl: users.avatarUrl,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .where(whereClause)
+      .orderBy(sortOrder === "asc" ? orderColumn : desc(orderColumn))
+      .limit(limit)
+      .offset(offset);
 
     // Get total count for pagination
-    let countQuery = db.select({ count: sql<number>`count(*)` }).from(users);
-    if (filters.length > 0) {
-      countQuery = countQuery.where(and(...filters));
-    }
-    const totalCountResult = await countQuery;
+    const totalCountResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(whereClause);
     const totalCount = totalCountResult[0]?.count || 0;
 
     return json({

@@ -1,4 +1,5 @@
-import { env } from "$env/dynamic/private";
+// Use process.env instead of SvelteKit env for server-side code
+// import { env } from "$env/dynamic/private";
 
 export interface EmbeddingProvider {
   name: string;
@@ -77,7 +78,7 @@ async function getOpenAIEmbedding(
   text: string,
   config: EmbeddingProvider,
 ): Promise<number[]> {
-  const apiKey = env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY environment variable not set");
   }

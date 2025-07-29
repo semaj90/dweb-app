@@ -1,7 +1,7 @@
 /**
  * COMPREHENSIVE PHASE BACKUP & ERROR FIX SYSTEM
  * =============================================
- * 
+ *
  * This system creates full backups before fixes and documents
  * each phase's evolution with detailed comments.
  */
@@ -82,27 +82,23 @@ All original files backed up to:
 
 */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 class PhaseBackupSystem {
   constructor() {
-    this.basePath = 'C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/stores';
-    this.backupPath = path.join(this.basePath, 'phase-backups');
-    this.timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    
+    this.basePath =
+      "C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend/src/lib/stores";
+    this.backupPath = path.join(this.basePath, "phase-backups");
+    this.timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
     this.ensureDirectories();
   }
 
   ensureDirectories() {
-    const dirs = [
-      'original',
-      'phase2', 
-      'phase2-fixed',
-      'migration-logs'
-    ];
-    
-    dirs.forEach(dir => {
+    const dirs = ["original", "phase2", "phase2-fixed", "migration-logs"];
+
+    dirs.forEach((dir) => {
       const dirPath = path.join(this.backupPath, dir);
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
@@ -113,7 +109,7 @@ class PhaseBackupSystem {
   createPhaseBackup(phase, description) {
     const phasePath = path.join(this.backupPath, phase);
     const backupFile = path.join(phasePath, `backup-${this.timestamp}.md`);
-    
+
     const backupDoc = `# Phase ${phase.toUpperCase()} Backup
 ## ${description}
 **Created:** ${new Date().toISOString()}
@@ -132,24 +128,24 @@ ${this.getPhaseContext(phase)}
 
   getPhaseStatus(phase) {
     const statuses = {
-      'original': '✅ Foundation complete',
-      'phase2': '🔧 Enhanced UI with conflicts',
-      'phase2-fixed': '✅ Enhanced UI conflicts resolved'
+      original: "✅ Foundation complete",
+      phase2: "🔧 Enhanced UI with conflicts",
+      "phase2-fixed": "✅ Enhanced UI conflicts resolved",
     };
-    return statuses[phase] || '📋 In progress';
+    return statuses[phase] || "📋 In progress";
   }
 
   getPhaseContext(phase) {
     const contexts = {
-      'original': `
+      original: `
 Phase 1 established the foundation:
 - Basic SvelteKit structure
 - Simple stores for auth, cases, evidence  
 - CRUD operations
 - Core UI components
 - Database integration`,
-      
-      'phase2': `
+
+      phase2: `
 Phase 2 enhanced the UI and added AI foundations:
 - Melt UI + Bits UI v2 integration
 - AI command parsing system
@@ -157,29 +153,30 @@ Phase 2 enhanced the UI and added AI foundations:
 - Real-time WebSocket infrastructure
 - Enhanced component system
 - Store conflicts emerged during integration`,
-      
-      'phase2-fixed': `
+
+      "phase2-fixed": `
 Phase 2 conflicts resolved:
 - Unified AI stores (ai-commands + ai-command-parser)
 - Unified Evidence stores (evidence + evidenceStore)
 - Safe import dependencies with fallbacks
 - Proper SSR compatibility
 - Dynamic WebSocket URLs
-- Exponential backoff reconnection`
+- Exponential backoff reconnection`,
     };
-    return contexts[phase] || 'Phase in development';
+    return contexts[phase] || "Phase in development";
   }
 
   listStoreFiles() {
     try {
-      const files = fs.readdirSync(this.basePath)
-        .filter(f => f.endsWith('.ts') || f.endsWith('.js'))
-        .filter(f => !f.includes('backup'))
-        .map(f => `- ${f}`)
-        .join('\n');
+      const files = fs
+        .readdirSync(this.basePath)
+        .filter((f) => f.endsWith(".ts") || f.endsWith(".js"))
+        .filter((f) => !f.includes("backup"))
+        .map((f) => `- ${f}`)
+        .join("\n");
       return files;
     } catch (error) {
-      return '- Error reading directory';
+      return "- Error reading directory";
     }
   }
 
@@ -187,9 +184,9 @@ Phase 2 conflicts resolved:
     const sourcePath = path.join(this.basePath, filename);
     const phasePath = path.join(this.backupPath, phase);
     const backupPath = path.join(phasePath, `${filename}.backup`);
-    
+
     if (fs.existsSync(sourcePath)) {
-      const content = fs.readFileSync(sourcePath, 'utf8');
+      const content = fs.readFileSync(sourcePath, "utf8");
       const backupContent = `/**
  * PHASE ${phase.toUpperCase()} BACKUP: ${filename}
  * ${comments}
@@ -199,7 +196,7 @@ Phase 2 conflicts resolved:
  */
 
 ${content}`;
-      
+
       fs.writeFileSync(backupPath, backupContent);
       console.log(`📦 Backed up ${filename} to ${phase}/`);
       return true;
@@ -208,13 +205,17 @@ ${content}`;
   }
 
   createMigrationLog(changes) {
-    const logFile = path.join(this.backupPath, 'migration-logs', `migration-${this.timestamp}.md`);
+    const logFile = path.join(
+      this.backupPath,
+      "migration-logs",
+      `migration-${this.timestamp}.md`,
+    );
     const logContent = `# Migration Log
 **Date:** ${new Date().toISOString()}
 **Status:** Phase 2 → Phase 3 Ready
 
 ## Changes Applied:
-${changes.map(change => `- ${change}`).join('\n')}
+${changes.map((change) => `- ${change}`).join("\n")}
 
 ## Error Fixes:
 - PowerShell syntax corrected
@@ -244,4 +245,4 @@ ${changes.map(change => `- ${change}`).join('\n')}
 // Export for use
 module.exports = PhaseBackupSystem;
 
-console.log('📦 Phase Backup System Ready');
+console.log("📦 Phase Backup System Ready");

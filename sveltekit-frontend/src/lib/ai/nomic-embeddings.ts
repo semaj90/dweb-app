@@ -28,7 +28,10 @@ export class NomicEmbeddingsService {
     try {
       // Example: Use Ollama service if available
       const { ollamaService } = await import("$lib/services/ollama-service");
-      const embedding = await ollamaService.generateEmbedding(text, "nomic-embed-text-v1");
+      const embedding = await ollamaService.generateEmbedding(
+        text,
+        "nomic-embed-text-v1",
+      );
       return {
         embedding,
         model: "nomic-embed-text-v1",
@@ -65,21 +68,23 @@ export class NomicEmbeddingsService {
           vector: embeddingResult.embedding,
           payload: {
             documentId: document.metadata?.documentId || `doc_${Date.now()}`,
-            filename: document.metadata?.filename || 'unknown',
-            documentType: document.metadata?.documentType || 'text',
-            uploadedBy: document.metadata?.uploadedBy || 'system',
-            uploadedAt: document.metadata?.uploadedAt || new Date().toISOString(),
-            processingStatus: document.metadata?.processingStatus || 'processed',
+            filename: document.metadata?.filename || "unknown",
+            documentType: document.metadata?.documentType || "text",
+            uploadedBy: document.metadata?.uploadedBy || "system",
+            uploadedAt:
+              document.metadata?.uploadedAt || new Date().toISOString(),
+            processingStatus:
+              document.metadata?.processingStatus || "processed",
             text: document.text,
             embeddingModel: embeddingResult.model,
             embeddingTimestamp: embeddingResult.metadata?.timestamp,
             fileMetadata: {
               size: document.metadata?.size || 0,
-              mimeType: document.metadata?.mimeType || 'text/plain',
+              mimeType: document.metadata?.mimeType || "text/plain",
               pageCount: document.metadata?.pageCount,
               wordCount: document.metadata?.wordCount,
-              language: document.metadata?.language
-            }
+              language: document.metadata?.language,
+            },
           },
         },
       ]);

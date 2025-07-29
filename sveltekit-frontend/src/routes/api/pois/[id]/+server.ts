@@ -19,7 +19,7 @@ export const GET: RequestHandler = async ({ params }) => {
     console.error("Error fetching POI:", error);
     return json(
       { error: "Failed to fetch person of interest" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -28,14 +28,14 @@ export const PUT: RequestHandler = async ({ request, params }) => {
   try {
     const data = await request.json();
 
+    // Remove posX/posY, use position object if needed
     const [poi] = await db
       .update(personsOfInterest)
       .set({
         name: data.name,
         aliases: data.aliases,
         profileData: data.profileData,
-        posX: data.posX,
-        posY: data.posY,
+        position: data.position || {},
         relationship: data.relationship,
         threatLevel: data.threatLevel,
         status: data.status,
@@ -53,7 +53,7 @@ export const PUT: RequestHandler = async ({ request, params }) => {
     console.error("Error updating POI:", error);
     return json(
       { error: "Failed to update person of interest" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -73,7 +73,7 @@ export const DELETE: RequestHandler = async ({ params }) => {
     console.error("Error deleting POI:", error);
     return json(
       { error: "Failed to delete person of interest" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };

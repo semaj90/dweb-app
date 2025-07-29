@@ -3,6 +3,7 @@
 ## Quick PostgreSQL Setup
 
 ### 1. Install PostgreSQL
+
 ```bash
 # Windows (using Chocolatey)
 choco install postgresql
@@ -11,6 +12,7 @@ choco install postgresql
 ```
 
 ### 2. Create Database and User
+
 ```sql
 -- Connect to PostgreSQL as superuser
 psql -U postgres
@@ -30,12 +32,15 @@ GRANT CREATE ON SCHEMA public TO legal_admin;
 ```
 
 ### 3. Environment Configuration
+
 Create `.env` file in project root:
+
 ```env
 DATABASE_URL=postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3
 ```
 
 ### 4. Test Connection
+
 ```bash
 # Test connection
 psql -U legal_admin -d legal_ai_v3 -h localhost
@@ -46,6 +51,7 @@ psql -U legal_admin -d legal_ai_v3 -h localhost
 ## Alternative: Docker PostgreSQL
 
 ### Quick Docker Setup
+
 ```bash
 # Create and start PostgreSQL container
 docker run --name legal-postgres \
@@ -60,6 +66,7 @@ docker ps
 ```
 
 ### Docker Environment
+
 ```env
 DATABASE_URL=postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v3
 ```
@@ -67,11 +74,13 @@ DATABASE_URL=postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v
 ## Troubleshooting
 
 ### Connection Issues
+
 1. **PostgreSQL not running**:
+
    ```bash
    # Windows
    net start postgresql-x64-15
-   
+
    # Linux/Mac
    sudo systemctl start postgresql
    ```
@@ -81,6 +90,7 @@ DATABASE_URL=postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v
    - Check `pg_hba.conf` for authentication method
 
 3. **Database doesn't exist**:
+
    ```sql
    CREATE DATABASE legal_ai_v3;
    ```
@@ -91,6 +101,7 @@ DATABASE_URL=postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v
    ```
 
 ### Port Issues
+
 - Default PostgreSQL port: 5432
 - Change in `.env` if using different port:
   ```env
@@ -100,6 +111,7 @@ DATABASE_URL=postgresql://legal_admin:LegalSecure2024!@localhost:5432/legal_ai_v
 ## Database Schema
 
 The setup script creates these tables:
+
 - `users` - User accounts and authentication
 - `cases` - Legal cases and case management
 - `evidence` - Evidence files and metadata

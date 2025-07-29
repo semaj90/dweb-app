@@ -195,7 +195,7 @@ Only return the queries, one per line.`),
           collectionName: this.config.collectionName,
           contentPayloadKey: "content",
           metadataPayloadKey: "metadata",
-        }
+        },
       );
       console.log("✅ Legal RAG vector store initialized");
     } catch (error) {
@@ -209,7 +209,7 @@ Only return the queries, one per line.`),
    */
   async query(
     question: string,
-    options: RAGQueryOptions = {}
+    options: RAGQueryOptions = {},
   ): Promise<RAGResult> {
     const startTime = Date.now();
 
@@ -235,7 +235,7 @@ Only return the queries, one per line.`),
         filter: this.buildMetadataFilter(
           documentType,
           jurisdiction,
-          practiceArea
+          practiceArea,
         ),
       });
 
@@ -301,7 +301,7 @@ Only return the queries, one per line.`),
       // Calculate confidence based on document relevance scores
       const confidence = this.calculateConfidence(
         retrievedDocs,
-        confidenceThreshold
+        confidenceThreshold,
       );
 
       const processingTime = Date.now() - startTime;
@@ -323,7 +323,7 @@ Only return the queries, one per line.`),
     } catch (error) {
       console.error("Error in RAG query:", error);
       throw new Error(
-        `RAG query failed: ${error instanceof Error ? error.message : "Unknown error"}`
+        `RAG query failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -333,7 +333,7 @@ Only return the queries, one per line.`),
    */
   async indexDocument(
     text: string,
-    metadata: LegalDocumentMetadata
+    metadata: LegalDocumentMetadata,
   ): Promise<string[]> {
     if (!this.vectorStore) {
       throw new Error("Vector store not initialized");
@@ -358,13 +358,13 @@ Only return the queries, one per line.`),
       const ids = await this.vectorStore.addDocuments(documents);
 
       console.log(
-        `✅ Indexed ${chunks.length} chunks for document ${metadata.documentId}`
+        `✅ Indexed ${chunks.length} chunks for document ${metadata.documentId}`,
       );
-      return ids ?? [];
+      return (ids as unknown as string[]) || [];
     } catch (error) {
       console.error("Error indexing document:", error);
       throw new Error(
-        `Document indexing failed: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Document indexing failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
@@ -374,7 +374,7 @@ Only return the queries, one per line.`),
    */
   async summarizeWithContext(
     documentId: string,
-    options: RAGQueryOptions = {}
+    options: RAGQueryOptions = {},
   ): Promise<string> {
     const summaryQuery = `Provide a comprehensive summary of the key legal points, parties, obligations, and risks in this document.`;
 
@@ -393,7 +393,7 @@ Only return the queries, one per line.`),
   async compareDocuments(
     documentIds: string[],
     comparisonFocus: string,
-    options: RAGQueryOptions = {}
+    options: RAGQueryOptions = {},
   ): Promise<RAGResult> {
     const query = `Compare and contrast the following aspects across the provided documents: ${comparisonFocus}.
     Identify similarities, differences, and any potential conflicts or inconsistencies.`;
@@ -415,7 +415,7 @@ Only return the queries, one per line.`),
   async extractLegalEntities(
     query: string,
     documentType?: string,
-    options: RAGQueryOptions = {}
+    options: RAGQueryOptions = {},
   ): Promise<RAGResult> {
     const entityQuery = `Extract and list all ${query} mentioned in the legal documents.
     Provide specific references to where each item is mentioned.`;
@@ -433,7 +433,7 @@ Only return the queries, one per line.`),
   private buildMetadataFilter(
     documentType?: string,
     jurisdiction?: string,
-    practiceArea?: string
+    practiceArea?: string,
   ): Record<string, any> {
     const filter: Record<string, any> = {};
 
@@ -457,7 +457,7 @@ Only return the queries, one per line.`),
    */
   private calculateConfidence(
     documents: Document[],
-    threshold: number
+    threshold: number,
   ): number {
     if (documents.length === 0) return 0;
 
@@ -486,7 +486,7 @@ Only return the queries, one per line.`),
   }> {
     try {
       const collectionExists = await this.qdrantClient.getCollection(
-        this.config.collectionName
+        this.config.collectionName,
       );
       const info = await this.qdrantClient.getCollections();
 
@@ -517,4 +517,3 @@ export const legalRAG = new LegalRAGService({
   collectionName: "legal_documents",
   embeddingDimensions: 768,
 });
-

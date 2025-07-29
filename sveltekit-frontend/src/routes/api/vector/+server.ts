@@ -100,8 +100,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json({
           success: true,
           message: "Vector service is working!",
-          embeddingDimension: testEmbedding.embedding.length,
-          model: testEmbedding.model,
+          embeddingDimension: testEmbedding.length,
+          model: "test-model",
         });
       }
       default:

@@ -18,8 +18,6 @@ import type { User } from '$lib/types/user';
 
 import type { User } from '$lib/types/user';
 
-import type { User } from '$lib/types/user';
-
   export let user: User | null = null;
 
   let searchQuery = "";

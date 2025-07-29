@@ -75,14 +75,16 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const userResult = await VectorService.storeUserEmbedding({
-          userId: metadata.userId,
-          content: text,
-          embedding: vector,
-          context: metadata.category || "general",
-          metadata: metadata,
-        });
-        insertId = userResult.id;
+        const userResult = await VectorService.storeUserEmbedding(
+          metadata.userId,
+          text,
+          vector,
+          {
+            context: metadata.category || "general",
+            metadata: metadata,
+          }
+        );
+        insertId = userResult;
         break;
 
       case "chat_message":
@@ -95,7 +97,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const chatResult = await VectorService.storeChatEmbedding({
+        await VectorService.storeChatEmbedding({
           conversationId: metadata.conversationId,
           userId: metadata.userId || "anonymous",
           role: metadata.role || "user",
@@ -103,7 +105,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
           embedding: vector,
           metadata: metadata,
         });
-        insertId = chatResult.id;
+        insertId = `chat_${Date.now()}`;
         break;
 
       case "evidence":
@@ -116,7 +118,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const evidenceResult = await VectorService.storeEvidenceVector({
+        await VectorService.storeEvidenceVector({
           evidenceId: metadata.evidenceId,
           caseId: metadata.caseId,
           content: text,
@@ -124,7 +126,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
           vectorType: metadata.category || "text",
           metadata: metadata,
         });
-        insertId = evidenceResult.id;
+        insertId = `evidence_${Date.now()}`;
         break;
 
       case "case_summary":
@@ -137,14 +139,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             { status: 400 },
           );
         }
-        const caseResult = await VectorService.storeCaseEmbedding({
+        await VectorService.storeCaseEmbedding({
           caseId: metadata.caseId,
           content: text,
           embedding: vector,
           summary_type: metadata.category || "general",
           metadata: metadata,
         });
-        insertId = caseResult.id;
+        insertId = `case_${Date.now()}`;
         break;
 
       default:

@@ -12,19 +12,22 @@ import type {
   AIServiceWorkerManager,
   TaskResult,
   ProcessingMetrics,
-  WorkerConfiguration
-} from '$lib/types/ai-worker.js';
+  WorkerConfiguration,
+} from "$lib/types/ai-worker.js";
 
 export class AIWorkerManager implements AIServiceWorkerManager {
   private workerPool: WorkerPool;
-  private activeTasks: Map<string, {
-    task: AITask;
-    workerId: number;
-    startTime: number;
-    resolve: (result: TaskResult) => void;
-    reject: (error: Error) => void;
-  }> = new Map();
-  
+  private activeTasks: Map<
+    string,
+    {
+      task: AITask;
+      workerId: number;
+      startTime: number;
+      resolve: (result: TaskResult) => void;
+      reject: (error: Error) => void;
+    }
+  > = new Map();
+
   private config: WorkerConfiguration;
   private metrics: Map<string, ProcessingMetrics> = new Map();
   private isInitialized = false;
@@ -42,17 +45,17 @@ export class AIWorkerManager implements AIServiceWorkerManager {
       enableMetrics: true,
       enableLogging: true,
       providers: [],
-      ...config
+      ...config,
     };
 
     this.workerPool = {
       workers: [],
-      taskDistribution: 'least-loaded',
+      taskDistribution: "least-loaded",
       maxWorkers: Math.min(navigator.hardwareConcurrency || 4, 6),
       currentLoad: [],
       totalTasks: 0,
       completedTasks: 0,
-      failedTasks: 0
+      failedTasks: 0,
     };
   }
 
@@ -65,8 +68,8 @@ export class AIWorkerManager implements AIServiceWorkerManager {
       // Create worker pool
       for (let i = 0; i < this.workerPool.maxWorkers; i++) {
         const worker = new Worker(
-          new URL('../workers/ai-service-worker.ts', import.meta.url),
-          { type: 'module' }
+          new URL("../workers/ai-service-worker.ts", import.meta.url),
+          { type: "module" },
         );
 
         this.setupWorkerEventHandlers(worker, i);
@@ -75,41 +78,43 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
         // Send initial configuration
         worker.postMessage({
-          type: 'UPDATE_PROVIDER_CONFIG',
+          type: "UPDATE_PROVIDER_CONFIG",
           taskId: `init-${i}`,
-          payload: this.config.providers
+          payload: this.config.providers,
         });
       }
 
       this.isInitialized = true;
-      
+
       if (this.config.enableLogging) {
-        console.log(`AI Worker Manager initialized with ${this.workerPool.maxWorkers} workers`);
+        console.log(
+          `AI Worker Manager initialized with ${this.workerPool.maxWorkers} workers`,
+        );
       }
     } catch (error) {
-      console.error('Failed to initialize AI Worker Manager:', error);
+      console.error("Failed to initialize AI Worker Manager:", error);
       throw error;
     }
   }
 
   private setupWorkerEventHandlers(worker: Worker, workerId: number) {
-    worker.addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
+    worker.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
       const { type, taskId, payload } = event.data;
 
       switch (type) {
-        case 'TASK_STARTED':
+        case "TASK_STARTED":
           this.handleTaskStarted(taskId, workerId);
           break;
-        case 'TASK_COMPLETED':
+        case "TASK_COMPLETED":
           this.handleTaskCompleted(taskId, payload as AIResponse, workerId);
           break;
-        case 'TASK_ERROR':
+        case "TASK_ERROR":
           this.handleTaskError(taskId, payload, workerId);
           break;
-        case 'TASK_CANCELLED':
+        case "TASK_CANCELLED":
           this.handleTaskCancelled(taskId, workerId);
           break;
-        case 'STATUS_UPDATE':
+        case "STATUS_UPDATE":
           this.handleStatusUpdate(payload);
           break;
         default:
@@ -119,7 +124,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
       }
     });
 
-    worker.addEventListener('error', (error) => {
+    worker.addEventListener("error", (error) => {
       console.error(`Worker ${workerId} error:`, error);
       this.handleWorkerError(workerId, error);
     });
@@ -134,7 +139,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
     const enhancedTask: AITask = {
       ...task,
       taskId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     return new Promise((resolve, reject) => {
@@ -142,7 +147,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
       const worker = this.workerPool.workers[workerId];
 
       if (!worker) {
-        reject(new Error('No available workers'));
+        reject(new Error("No available workers"));
         return;
       }
 
@@ -152,7 +157,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
         workerId,
         startTime: Date.now(),
         resolve: (result: TaskResult) => resolve(result.taskId),
-        reject
+        reject,
       });
 
       // Update worker load
@@ -161,9 +166,9 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
       // Send task to worker
       worker.postMessage({
-        type: 'PROCESS_AI_TASK',
+        type: "PROCESS_AI_TASK",
         taskId,
-        payload: enhancedTask
+        payload: enhancedTask,
       });
 
       // Set timeout
@@ -182,24 +187,24 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
   private selectWorker(task: AITask): number {
     switch (this.workerPool.taskDistribution) {
-      case 'round-robin':
+      case "round-robin":
         return this.workerPool.totalTasks % this.workerPool.maxWorkers;
-      
-      case 'least-loaded':
+
+      case "least-loaded":
         return this.workerPool.currentLoad.indexOf(
-          Math.min(...this.workerPool.currentLoad)
+          Math.min(...this.workerPool.currentLoad),
         );
-      
-      case 'priority-based':
+
+      case "priority-based":
         // High priority tasks go to least loaded worker
-        if (task.priority === 'high' || task.priority === 'critical') {
+        if (task.priority === "high" || task.priority === "critical") {
           return this.workerPool.currentLoad.indexOf(
-            Math.min(...this.workerPool.currentLoad)
+            Math.min(...this.workerPool.currentLoad),
           );
         }
         // Low priority tasks use round-robin
         return this.workerPool.totalTasks % this.workerPool.maxWorkers;
-      
+
       default:
         return 0;
     }
@@ -214,9 +219,9 @@ export class AIWorkerManager implements AIServiceWorkerManager {
     const worker = this.workerPool.workers[activeTask.workerId];
     if (worker) {
       worker.postMessage({
-        type: 'CANCEL_TASK',
+        type: "CANCEL_TASK",
         taskId,
-        payload: null
+        payload: null,
       });
     }
 
@@ -225,23 +230,29 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
   async getStatus(): Promise<WorkerStatus> {
     const workerStatuses = await Promise.all(
-      this.workerPool.workers.map((worker, index) => 
-        this.getWorkerStatus(worker, index)
-      )
+      this.workerPool.workers.map((worker, index) =>
+        this.getWorkerStatus(worker, index),
+      ),
     );
 
     return {
       activeRequests: this.activeTasks.size,
-      queueLength: workerStatuses.reduce((sum, status) => sum + status.queueLength, 0),
+      queueLength: workerStatuses.reduce(
+        (sum, status) => sum + status.queueLength,
+        0,
+      ),
       providers: [], // Aggregated from workers
       maxConcurrent: this.config.maxConcurrentTasks,
       uptime: Date.now(),
       totalProcessed: this.workerPool.completedTasks,
-      errors: this.workerPool.failedTasks
+      errors: this.workerPool.failedTasks,
     };
   }
 
-  private async getWorkerStatus(worker: Worker, workerId: number): Promise<WorkerStatus> {
+  private async getWorkerStatus(
+    worker: Worker,
+    workerId: number,
+  ): Promise<WorkerStatus> {
     return new Promise((resolve) => {
       const timeoutId = setTimeout(() => {
         resolve({
@@ -251,37 +262,37 @@ export class AIWorkerManager implements AIServiceWorkerManager {
           maxConcurrent: this.config.maxConcurrentTasks,
           uptime: 0,
           totalProcessed: 0,
-          errors: 0
+          errors: 0,
         });
       }, 1000);
 
       const messageHandler = (event: MessageEvent<WorkerMessage>) => {
-        if (event.data.type === 'STATUS_UPDATE') {
+        if (event.data.type === "STATUS_UPDATE") {
           clearTimeout(timeoutId);
-          worker.removeEventListener('message', messageHandler);
+          worker.removeEventListener("message", messageHandler);
           resolve(event.data.payload);
         }
       };
 
-      worker.addEventListener('message', messageHandler);
+      worker.addEventListener("message", messageHandler);
       worker.postMessage({
-        type: 'GET_STATUS',
+        type: "GET_STATUS",
         taskId: `status-${workerId}`,
-        payload: null
+        payload: null,
       });
     });
   }
 
   async shutdown(): Promise<void> {
     // Cancel all active tasks
-    const cancelPromises = Array.from(this.activeTasks.keys()).map(taskId => 
-      this.cancelTask(taskId)
+    const cancelPromises = Array.from(this.activeTasks.keys()).map((taskId) =>
+      this.cancelTask(taskId),
     );
     await Promise.all(cancelPromises);
 
     // Terminate all workers
-    this.workerPool.workers.forEach(worker => worker.terminate());
-    
+    this.workerPool.workers.forEach((worker) => worker.terminate());
+
     // Clear state
     this.workerPool.workers = [];
     this.workerPool.currentLoad = [];
@@ -290,7 +301,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
     this.isInitialized = false;
 
     if (this.config.enableLogging) {
-      console.log('AI Worker Manager shutdown completed');
+      console.log("AI Worker Manager shutdown completed");
     }
   }
 
@@ -305,21 +316,25 @@ export class AIWorkerManager implements AIServiceWorkerManager {
         provider: activeTask.task.providerId,
         model: activeTask.task.model,
         tokensProcessed: 0,
-        success: false
+        success: false,
       };
       this.metrics.set(taskId, metrics);
     }
   }
 
-  private handleTaskCompleted(taskId: string, response: AIResponse, workerId: number) {
+  private handleTaskCompleted(
+    taskId: string,
+    response: AIResponse,
+    workerId: number,
+  ) {
     const activeTask = this.activeTasks.get(taskId);
     if (!activeTask) return;
 
     const result: TaskResult = {
       taskId,
-      status: 'completed',
+      status: "completed",
       response,
-      metrics: this.updateMetrics(taskId, response, true)
+      metrics: this.updateMetrics(taskId, response, true),
     };
 
     activeTask.resolve(result);
@@ -335,12 +350,12 @@ export class AIWorkerManager implements AIServiceWorkerManager {
     const activeTask = this.activeTasks.get(taskId);
     if (!activeTask) return;
 
-    const errorObj = new Error(error.message || 'Unknown worker error');
+    const errorObj = new Error(error.message || "Unknown worker error");
     const result: TaskResult = {
       taskId,
-      status: 'failed',
+      status: "failed",
       error: errorObj,
-      metrics: this.updateMetrics(taskId, null, false, error.message)
+      metrics: this.updateMetrics(taskId, null, false, error.message),
     };
 
     activeTask.reject(errorObj);
@@ -358,11 +373,11 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
     const result: TaskResult = {
       taskId,
-      status: 'cancelled',
-      metrics: this.updateMetrics(taskId, null, false, 'Cancelled')
+      status: "cancelled",
+      metrics: this.updateMetrics(taskId, null, false, "Cancelled"),
     };
 
-    activeTask.reject(new Error('Task was cancelled'));
+    activeTask.reject(new Error("Task was cancelled"));
     this.cleanupTask(taskId, workerId);
   }
 
@@ -374,16 +389,16 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
   private handleWorkerError(workerId: number, error: ErrorEvent) {
     console.error(`Worker ${workerId} encountered an error:`, error);
-    
+
     // Restart worker if needed
     if (this.workerPool.workers[workerId]) {
       this.workerPool.workers[workerId].terminate();
-      
+
       const newWorker = new Worker(
-        new URL('../workers/ai-service-worker.ts', import.meta.url),
-        { type: 'module' }
+        new URL("../workers/ai-service-worker.ts", import.meta.url),
+        { type: "module" },
       );
-      
+
       this.setupWorkerEventHandlers(newWorker, workerId);
       this.workerPool.workers[workerId] = newWorker;
       this.workerPool.currentLoad[workerId] = 0;
@@ -398,10 +413,10 @@ export class AIWorkerManager implements AIServiceWorkerManager {
   }
 
   private updateMetrics(
-    taskId: string, 
-    response: AIResponse | null, 
+    taskId: string,
+    response: AIResponse | null,
     success: boolean,
-    error?: string
+    error?: string,
   ): ProcessingMetrics {
     const existing = this.metrics.get(taskId);
     if (!existing) {
@@ -412,11 +427,11 @@ export class AIWorkerManager implements AIServiceWorkerManager {
         processingTime: 0,
         queueTime: 0,
         retries: 0,
-        provider: 'unknown',
-        model: 'unknown',
+        provider: "unknown",
+        model: "unknown",
         tokensProcessed: response?.tokensUsed || 0,
         success,
-        error
+        error,
       };
     }
 
@@ -426,7 +441,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
       processingTime: Date.now() - existing.startTime,
       tokensProcessed: response?.tokensUsed || 0,
       success,
-      error
+      error,
     };
 
     this.metrics.set(taskId, updated);
@@ -436,13 +451,13 @@ export class AIWorkerManager implements AIServiceWorkerManager {
   // Public methods for configuration and monitoring
   updateConfiguration(config: Partial<WorkerConfiguration>) {
     this.config = { ...this.config, ...config };
-    
+
     // Update workers with new config
     this.workerPool.workers.forEach((worker, index) => {
       worker.postMessage({
-        type: 'UPDATE_PROVIDER_CONFIG',
+        type: "UPDATE_PROVIDER_CONFIG",
         taskId: `config-update-${index}`,
-        payload: this.config.providers
+        payload: this.config.providers,
       });
     });
   }
@@ -457,7 +472,7 @@ export class AIWorkerManager implements AIServiceWorkerManager {
 
   // Helper method to submit multiple tasks in parallel
   async submitBatchTasks(tasks: AITask[]): Promise<string[]> {
-    const promises = tasks.map(task => this.submitTask(task));
+    const promises = tasks.map((task) => this.submitTask(task));
     return Promise.all(promises);
   }
 
@@ -470,8 +485,8 @@ export class AIWorkerManager implements AIServiceWorkerManager {
           clearInterval(checkInterval);
           resolve({
             taskId,
-            status: metrics.success ? 'completed' : 'failed',
-            metrics
+            status: metrics.success ? "completed" : "failed",
+            metrics,
           });
         }
       }, 100);
@@ -493,17 +508,17 @@ export function createGenerationTask(
   prompt: string,
   model: string,
   providerId: string,
-  options: Partial<AITask> = {}
+  options: Partial<AITask> = {},
 ): AITask {
   return {
     taskId: crypto.randomUUID(),
-    type: 'generate',
+    type: "generate",
     providerId,
     model,
     prompt,
     timestamp: Date.now(),
-    priority: 'medium',
-    ...options
+    priority: "medium",
+    ...options,
   };
 }
 
@@ -512,34 +527,34 @@ export function createAnalysisTask(
   analysisType: string,
   model: string,
   providerId: string,
-  options: Partial<AITask> = {}
+  options: Partial<AITask> = {},
 ): AITask {
   return {
     taskId: crypto.randomUUID(),
-    type: 'analyze',
+    type: "analyze",
     providerId,
     model,
     prompt: `Analyze the following content for ${analysisType}:\n\n${content}`,
     timestamp: Date.now(),
-    priority: 'medium',
-    ...options
+    priority: "medium",
+    ...options,
   };
 }
 
 export function createEmbeddingTask(
   text: string,
-  model: string = 'nomic-embed-text',
-  providerId: string = 'ollama',
-  options: Partial<AITask> = {}
+  model: string = "nomic-embed-text",
+  providerId: string = "ollama",
+  options: Partial<AITask> = {},
 ): AITask {
   return {
     taskId: crypto.randomUUID(),
-    type: 'embed',
+    type: "embed",
     providerId,
     model,
     prompt: text,
     timestamp: Date.now(),
-    priority: 'low',
-    ...options
+    priority: "low",
+    ...options,
   };
 }
