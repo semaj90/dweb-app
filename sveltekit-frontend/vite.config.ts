@@ -6,11 +6,20 @@ export default defineConfig({
   plugins: [UnoCSS(), sveltekit()],
   server: {
     port: 5173,
-    host: "127.0.0.1",
+    host: "0.0.0.0",
+    cors: true,
+    hmr: {
+      port: 5174,
+      clientPort: 5174
+    },
+    fs: {
+      allow: ['..']
+    }
   },
   preview: {
     port: 4173,
-    host: true,
+    host: "0.0.0.0",
+    cors: true
   },
   build: {
     rollupOptions: {

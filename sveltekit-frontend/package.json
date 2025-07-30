@@ -22,6 +22,7 @@
     "context7:mcp": "node ../SETUP-CLAUDE-MCP-CONTEXT7.bat"
   },
   "devDependencies": {
+    "@iconify-json/tabler": "^1.2.20",
     "@sveltejs/adapter-auto": "^3.3.1",
     "@sveltejs/kit": "^2.26.1",
     "@types/amqplib": "^0.10.7",
@@ -29,7 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "autoprefixer": "^10.4.16",
-    "drizzle-kit": "0.20.17",
+    "drizzle-kit": "^0.29.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.35.1",
@@ -70,6 +71,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@unocss/vite": "^66.3.3",
     "@xstate/svelte": "^5.0.0",
+    "amqplib": "^0.10.8",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "bits-ui": "^2.8.13",

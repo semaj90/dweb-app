@@ -88,24 +88,16 @@
   }
 </script>
 
-<BitsDialog.Root {open} onOpenChange={handleOpenChange} {modal}>
+<BitsDialog.Root {open} onOpenChange={handleOpenChange}>
   {@render children?.()}
 
   {#snippet portal()}
     <BitsDialog.Portal>
       <BitsDialog.Overlay 
         class={overlayClasses()}
-        transition={fade}
-        transitionConfig={{ duration: 200 }}
       />
       <BitsDialog.Content 
         class={dialogContentClasses()}
-        transition={fly}
-        transitionConfig={{ 
-          duration: 300, 
-          y: -20,
-          opacity: 0 
-        }}
       >
         {@render content?.()}
       </BitsDialog.Content>
@@ -122,11 +114,13 @@
   export const DialogPortal = BitsDialog.Portal;
   export const DialogOverlay = BitsDialog.Overlay;
   export const DialogContent = BitsDialog.Content;
-  export const DialogHeader = BitsDialog.Header;
   export const DialogTitle = BitsDialog.Title;
   export const DialogDescription = BitsDialog.Description;
   export const DialogClose = BitsDialog.Close;
-  export const DialogFooter = BitsDialog.Footer;
+  
+  // Create custom header and footer components since they don't exist in newer Bits UI
+  export const DialogHeader = 'div';
+  export const DialogFooter = 'div';
 </script>
 
 <style>

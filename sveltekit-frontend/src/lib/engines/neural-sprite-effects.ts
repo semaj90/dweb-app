@@ -3,7 +3,7 @@
  * Advanced visual effects for the NES-inspired sprite engine
  */
 
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 
 export interface SpriteEffect {
   id: string;
@@ -47,7 +47,7 @@ export class NeuralSpriteEffects {
 
   // NES-style pixelation effect
   async applyPixelation(pixelSize: number = 8): Promise<void> {
-    const filter = new fabric.Image.filters.Pixelate({
+    const filter = new (fabric as any).Image.filters.Pixelate({
       blocksize: pixelSize,
     });
 
@@ -250,7 +250,10 @@ export class NeuralSpriteEffects {
 
       // Animate highlight pulse
       const animateHighlight = () => {
-        glow.animate("opacity", glow.opacity === 0 ? 0.8 : 0, {
+        const targetOpacity = glow.opacity === 0 ? 0.8 : 0;
+        (glow as any).animate({
+          opacity: targetOpacity
+        }, {
           duration: 1000,
           onChange: () => this.canvas.renderAll(),
           onComplete: animateHighlight,

@@ -176,38 +176,41 @@ import type { User } from '$lib/types/user';
     },
   ];
 
-  // Command palette state
+  import { keyboardShortcuts, loadShortcutsFromAI } from '$lib/stores';
+  import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
+
   let searchQuery = "";
   let selectedIndex = 0;
-  let filteredCommands: any[] = [];
+  let filteredShortcuts = [];
   let commandInput: HTMLInputElement;
 
-  // All available commands
-  const commands = [
-    // Navigation
-    {
-      title: "Dashboard",
-      description: "Go to dashboard",
-      icon: Command,
-      action: () => goto("/dashboard"),
-      keywords: ["home", "overview"],
-    },
-    {
-      title: "Cases",
-      description: "View all cases",
-      icon: FileText,
-      action: () => goto("/cases"),
-      keywords: ["case", "investigation"],
-    },
-    {
-      title: "Evidence",
-      description: "Manage evidence",
-      icon: Search,
-      action: () => goto("/evidence"),
-      keywords: ["files", "documents"],
-    },
-    {
-      title: "Persons",
+  // Subscribe to keyboardShortcuts store for dynamic/AI-driven shortcuts
+  let allShortcuts = get(keyboardShortcuts);
+  const unsubscribeShortcuts = keyboardShortcuts.subscribe((shortcuts) => {
+    allShortcuts = shortcuts;
+    filterShortcuts();
+  });
+
+  function filterShortcuts() {
+    if (searchQuery.trim()) {
+      filteredShortcuts = allShortcuts.filter(
+        (s) =>
+          s.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          s.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    } else {
+      filteredShortcuts = allShortcuts;
+    }
+    selectedIndex = 0;
+  }
+
+  $: filterShortcuts();
+
+  // Optionally, load AI-driven shortcuts on mount
+  onMount(async () => {
+    await loadShortcutsFromAI();
+  });
       description: "Persons of interest",
       icon: Users,
       action: () => goto("/criminals"),
@@ -547,34 +550,39 @@ import type { User } from '$lib/types/user';
       </div>
 
       <div class="command-palette-body">
-        {#if filteredCommands.length > 0}
+        {#if filteredShortcuts.length > 0}
           <ul
             class="command-list"
             role="listbox"
             aria-label="Available commands"
           >
-            {#each filteredCommands as command, index}
+            {#each filteredShortcuts as shortcut, index}
               <li
                 class="command-item"
                 class:selected={index === selectedIndex}
                 role="option"
                 aria-selected={index === selectedIndex}
                 tabindex={0}
-                on:click={() => executeCommand(command)}
+                on:click={() => shortcut.action && shortcut.action()}
                 on:keydown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    executeCommand(command);
+                    shortcut.action && shortcut.action();
                   }
                 }}
                 on:mouseenter={() => (selectedIndex = index)}
               >
-                <div class="command-icon">
-                  <svelte:component this={command.icon} class="w-4 h-4" />
-                </div>
                 <div class="command-content">
-                  <div class="command-title">{command.title}</div>
-                  <div class="command-description">{command.description}</div>
+                  <div class="command-title flex items-center gap-2">
+                    {shortcut.description}
+                    {#if shortcut.aiScore !== undefined}
+                      <span class="ml-2 px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold" title="AI Score">AI: {(shortcut.aiScore * 100).toFixed(0)}%</span>
+                    {/if}
+                  </div>
+                  {#if shortcut.aiSummary}
+                    <div class="command-description text-xs text-gray-500 mt-1">{shortcut.aiSummary}</div>
+                  {/if}
+                  <div class="command-key text-xs text-gray-400 mt-1">{shortcut.key}</div>
                 </div>
               </li>
             {/each}
@@ -582,7 +590,7 @@ import type { User } from '$lib/types/user';
         {:else}
           <div class="empty-state">
             <Search class="w-8 h-8" />
-            <p>No commands found for "{searchQuery}"</p>
+            <p>No shortcuts found for "{searchQuery}"</p>
           </div>
         {/if}
       </div>

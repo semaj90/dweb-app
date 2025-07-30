@@ -134,14 +134,14 @@
 </script>
 
 <div class="select-wrapper" class:w-full={fullWidth}>
-  <BitsSelect.Root {value} onValueChange={handleValueChange} {disabled}>
+  <BitsSelect.Root {value} onValueChange={handleValueChange} {disabled} type="single">
     <BitsSelect.Trigger class={triggerClasses()}>
-      <BitsSelect.Value>
+      <div class="select-value">
         {selectedLabel}
-      </BitsSelect.Value>
-      <BitsSelect.Icon>
+      </div>
+      <div class="select-icon">
         <ChevronDown class="h-4 w-4 opacity-50" />
-      </BitsSelect.Icon>
+      </div>
     </BitsSelect.Trigger>
 
     <BitsSelect.Portal>
@@ -212,19 +212,21 @@
 <script lang="ts" context="module">
   export { BitsSelect as Select };
   
-  // Re-export commonly used sub-components
+  // Re-export commonly used sub-components (only those that exist)
   export const SelectTrigger = BitsSelect.Trigger;
-  export const SelectValue = BitsSelect.Value;
-  export const SelectIcon = BitsSelect.Icon;
   export const SelectPortal = BitsSelect.Portal;
   export const SelectContent = BitsSelect.Content;
   export const SelectViewport = BitsSelect.Viewport;
   export const SelectItem = BitsSelect.Item;
-  export const SelectItemText = BitsSelect.ItemText;
-  export const SelectItemIndicator = BitsSelect.ItemIndicator;
   export const SelectGroup = BitsSelect.Group;
-  export const SelectLabel = BitsSelect.Label;
-  export const SelectSeparator = BitsSelect.Separator;
+  
+  // For compatibility, create fallback components for missing exports
+  export const SelectValue = 'div';
+  export const SelectIcon = 'div'; 
+  export const SelectItemText = 'span';
+  export const SelectItemIndicator = 'div';
+  export const SelectLabel = 'div';
+  export const SelectSeparator = 'div';
 </script>
 
 <style>

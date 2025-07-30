@@ -98,11 +98,7 @@
   {#if loading}
     <div class="ai-status-indicator ai-status-processing w-4 h-4 mr-2"></div>
   {/if}
-  {#if children}
-    {@render children()}
-  {:else}
-    <slot />
-  {/if}
+  {@render children?.()}
 </BitsButton.Root>
 
 <style>

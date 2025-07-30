@@ -12,6 +12,8 @@
     iconPosition = 'left',
     fullWidth = false,
     class: className = '',
+    children,
+    ref = $bindable(),
     ...rest
   }: {
     variant?: ButtonVariant;
@@ -21,9 +23,9 @@
     iconPosition?: 'left' | 'right';
     fullWidth?: boolean;
     class?: string;
+    children?: any;
+    ref?: HTMLButtonElement;
   } & HTMLButtonAttributes = $props();
-
-  let ref: HTMLButtonElement | undefined = undefined;
 
   let classes = $derived([
     'nier-btn',
@@ -36,7 +38,7 @@
 </script>
 
 <BitsButton.Root
-  bind:ref
+  bind:ref={ref}
   class={classes}
   disabled={loading || Boolean(rest.disabled)}
   {...rest}

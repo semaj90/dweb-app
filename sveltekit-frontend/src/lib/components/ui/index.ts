@@ -2,6 +2,10 @@ import Badge from "./Badge.svelte";
 import BitsUnoDemo from "./BitsUnoDemo.svelte";
 import Button from "./Button.svelte";
 import Card from "./Card.svelte";
+
+// Layout Components - Golden Ratio Grid System
+export * as Layout from './layout';
+export { GoldenRatioGrid } from './layout';
 import CardContent from "./CardContent.svelte";
 import CardFooter from "./CardFooter.svelte";
 import CardHeader from "./CardHeader.svelte";

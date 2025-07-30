@@ -31,6 +31,7 @@ export interface Evidence {
   thumbnailUrl?: string;
   aiSummary?: string;
   hash?: string;
+  collectedBy?: string;
 }
 
 export interface Report {
@@ -103,7 +104,11 @@ export type ButtonVariant =
   | "crimson"
   | "nier"
   | "gold"
-  | "destructive";
+  | "destructive"
+  | "success"
+  | "warning"
+  | "info"
+  | "link";
 
 export type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
 

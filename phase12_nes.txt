@@ -80,3 +80,5 @@ WebAssembly (Wasm): Enables running high-performance code (e.g., from C/C++ comp
 Trained with "content" of web page elements:
 This indicates that the AI models within the system are specifically trained on the textual and structural content of web pages, suggesting applications like content analysis, recommendation engines, or intelligent search.
 This architecture aims to deliver a highly performant, scalable, and intelligent web application experience by integrating low-level optimization with modern web development practices and distributed AI capabilities.
+
+https://grafana.com/docs/loki/latest/operations/caching/

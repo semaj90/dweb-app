@@ -74,9 +74,9 @@ export async function POST({ params, request }: RequestEvent) {
         message: "Document auto-saved successfully",
         document: {
           id: updatedDocument[0].id,
-          lastSavedAt: updatedDocument[0].lastSavedAt,
+          lastSavedAt: updatedDocument[0].updatedAt,
           wordCount: updatedDocument[0].wordCount,
-          isDirty: updatedDocument[0].isDirty,
+          isDirty: false, // Set as clean after save
         },
       });
     } catch (dbError) {
@@ -126,8 +126,8 @@ export async function GET({ params }: RequestEvent) {
       const document = await db
         .select({
           id: legalDocuments.id,
-          isDirty: legalDocuments.isDirty,
-          lastSavedAt: legalDocuments.lastSavedAt,
+          // isDirty field removed - not in schema
+          lastSavedAt: legalDocuments.updatedAt, // Use updatedAt instead
           autoSaveData: legalDocuments.autoSaveData,
         })
         .from(legalDocuments)
@@ -146,7 +146,7 @@ export async function GET({ params }: RequestEvent) {
       return json({
         success: true,
         autoSaveStatus: {
-          isDirty: document[0].isDirty,
+          isDirty: !!(document[0].autoSaveData as any)?.isDirty,
           lastSavedAt: document[0].lastSavedAt,
           hasAutoSaveData: !!document[0].autoSaveData,
           autoSaveData: document[0].autoSaveData,

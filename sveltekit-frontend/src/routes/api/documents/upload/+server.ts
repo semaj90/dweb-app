@@ -43,11 +43,6 @@ async function processPdf(buffer: Buffer): Promise<string> {
   return xss(data.text); // sanitize output
 }
 
-async function processPdf(buffer: Buffer): Promise<string> {
-  const data = await pdf(buffer);
-  return data.text;
-}
-
 // Enhanced RAG: synthesize outputs, high-score ranking, and voice output (TODO: connect to local LLM/Ollama)
 async function getAiSummary(
   text: string,
@@ -122,12 +117,11 @@ export const POST: RequestHandler = async ({ request }) => {
     const embedding = await embeddings.embedQuery(textContent);
     const docId = uuidv4();
 
-    await db.insert(legalDocs).values({
-      id: docId,
+    await db.insert(legalDocuments).values({
+      title: safeFileName || "Uploaded Document",
+      documentType: "document", // Default type since required
       content: textContent,
       embedding: embedding,
-      fileName: safeFileName,
-      createdAt: new Date(),
     });
 
     // Enhanced RAG + LLM analysis

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/ui/button/Button.svelte';
-	import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '$lib/components/ui/Card';
+	import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Label from '$lib/components/ui/Label.svelte';
 	import Badge from '$lib/components/ui/Badge.svelte';
@@ -93,7 +93,7 @@
 			// Read file content
 			const reader = new FileReader();
 			reader.onload = (e) => {
-				evidenceContent = e.target?.result;
+				evidenceContent = e.target?.result as string;
 			};
 			reader.readAsText(evidenceFile);
 		}
@@ -223,7 +223,7 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<!-- Case ID -->
 				<div class="space-y-2">
-					<Label for="caseId">Case ID *</Label>
+					<Label for_="caseId">Case ID *</Label>
 					<Input
 						id="caseId"
 						bind:value={caseId}
@@ -266,7 +266,7 @@
 			
 			<!-- File Upload -->
 			<div class="space-y-2">
-				<Label for="evidenceFile">Evidence File (Optional)</Label>
+				<Label for_="evidenceFile">Evidence File (Optional)</Label>
 				<Input
 					id="evidenceFile"
 					type="file"
@@ -286,7 +286,7 @@
 			
 			<!-- Evidence Content -->
 			<div class="space-y-2">
-				<Label for="evidenceContent">Evidence Content *</Label>
+				<Label for_="evidenceContent">Evidence Content *</Label>
 				<Textarea
 					id="evidenceContent"
 					bind:value={evidenceContent}

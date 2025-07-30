@@ -6,6 +6,7 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { LegalDocumentSOM } from "$lib/services/som-clustering";
+import { wasmClusteringService } from "$lib/wasm/clustering-wasm";
 import { Redis } from "ioredis";
 import { db } from "$lib/server/db";
 import { legalDocuments } from "$lib/server/db/schema-postgres";
@@ -13,12 +14,10 @@ import { inArray } from "drizzle-orm";
 // Optional amqp for message queue integration
 
 // Initialize Redis connection
-const redis = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
-  retryDelayOnClusterDown: 100,
-  maxRetriesPerRequest: 3,
-});
+const redis = new Redis(
+  parseInt(process.env.REDIS_PORT || "6379"),
+  process.env.REDIS_HOST || "localhost"
+);
 
 // RabbitMQ connection (optional)
 let rabbitConnection: any | null = null;
@@ -63,12 +62,12 @@ export const POST: RequestHandler = async ({ request }) => {
     // Fetch document embeddings from PostgreSQL with pgvector
     const documentRecords = await db
       .select({
-        id: documents.id,
-        embedding: documents.embeddings,
-        metadata: documents.metadata,
+        id: legalDocuments.id,
+        embedding: legalDocuments.embedding,
+        metadata: legalDocuments.keywords, // Use keywords as metadata
       })
-      .from(documents)
-      .where(inArray(documents.id, documentIds));
+      .from(legalDocuments)
+      .where(inArray(legalDocuments.id, documentIds));
 
     if (documentRecords.length === 0) {
       return json(
@@ -110,7 +109,16 @@ export const POST: RequestHandler = async ({ request }) => {
       learningRate: config?.learningRate || 0.5,
       radius: config?.radius || 5,
       iterations: config?.iterations || 1000,
+      maxIterations: config?.maxIterations || 1000, // Required property
+      tolerance: config?.tolerance || 0.001, // Required property
       dimensions: embeddings[0].length, // Infer from first embedding
+      // Required properties for SOMConfig
+      algorithm: "som" as const,
+      gridWidth: config?.width || 20,
+      gridHeight: config?.height || 20,
+      k: config?.k || 10, // Number of clusters
+      distanceMetric: "euclidean" as const,
+      topology: "hexagonal" as const,
     };
 
     // Generate training ID for tracking

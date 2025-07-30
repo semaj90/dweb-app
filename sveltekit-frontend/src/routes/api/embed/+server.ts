@@ -80,9 +80,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
           text,
           vector,
           {
-            context: metadata.category || "general",
             metadata: metadata,
-          }
+          } as any
         );
         insertId = userResult;
         break;

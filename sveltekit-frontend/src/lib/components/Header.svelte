@@ -230,7 +230,7 @@
   }
 
   .brand-button {
-    @apply flex items-center gap-3 px-4 py-2 font-semibold text-primary bg-transparent border-none cursor-pointer rounded-md transition-colors duration-200 hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
+    @apply flex items-center gap-3 px-4 py-2 font-semibold text-blue-600 bg-transparent border-none cursor-pointer rounded-md transition-colors duration-200 hover:bg-accent focus:outline-none focus:ring-2 focus:ring-blue-600/50;
   }
 
   .brand-text {
@@ -242,11 +242,11 @@
   }
 
   .nav-button {
-    @apply flex items-center gap-2 px-4 py-2 text-muted-foreground bg-transparent border-none cursor-pointer rounded-md transition-all duration-200 hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
+    @apply flex items-center gap-2 px-4 py-2 text-muted-foreground bg-transparent border-none cursor-pointer rounded-md transition-all duration-200 hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-blue-600/50;
   }
 
   .nav-button.active {
-    @apply text-primary bg-accent;
+    @apply text-blue-600 bg-accent;
   }
 
   .search-section {
@@ -262,11 +262,11 @@
   }
 
   .user-button {
-    @apply flex items-center gap-3 px-4 py-2 bg-transparent border-none cursor-pointer rounded-md transition-colors duration-200 text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
+    @apply flex items-center gap-3 px-4 py-2 bg-transparent border-none cursor-pointer rounded-md transition-colors duration-200 text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-blue-600/50;
   }
 
   .user-avatar {
-    @apply w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-secondary text-primary;
+    @apply w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-secondary text-blue-600;
   }
 
   .user-avatar img {
@@ -286,7 +286,7 @@
   }
 
   .menu-item {
-    @apply flex items-center gap-3 p-2 w-full bg-transparent border-none cursor-pointer rounded text-foreground text-left transition-colors duration-200 hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary/50;
+    @apply flex items-center gap-3 p-2 w-full bg-transparent border-none cursor-pointer rounded text-foreground text-left transition-colors duration-200 hover:bg-accent focus:outline-none focus:ring-2 focus:ring-blue-600/50;
   }
 
   .menu-separator {
@@ -294,7 +294,7 @@
   }
 
   .sign-in-button {
-    @apply px-4 py-2 bg-transparent border border-primary text-primary rounded-md cursor-pointer transition-all duration-200 hover:bg-primary hover:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary/50;
+    @apply px-4 py-2 bg-transparent border border-blue-600 text-blue-600 rounded-md cursor-pointer transition-all duration-200 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-600/50;
   }
 
   .menu-overlay {

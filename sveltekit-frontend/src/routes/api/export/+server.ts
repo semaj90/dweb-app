@@ -1,7 +1,7 @@
 import { db } from "$lib/server/db/index";
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 import { json } from "@sveltejs/kit";
-import { count, desc, sql } from "drizzle-orm";
+import { count, desc, sql, inArray, gte, lte, and } from "drizzle-orm";
 import { z } from "zod";
 import type { RequestHandler } from "./$types";
 
@@ -54,44 +54,44 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
     // Export cases
     if (includeCases) {
-      let caseQuery = db.select().from(cases);
+      const caseFilters = [];
 
       if (caseIds?.length) {
-        caseQuery = caseQuery.where(sql`${cases.id} IN (${caseIds.join(",")})`);
+        caseFilters.push(inArray(cases.id, caseIds));
       }
       if (dateRange?.from) {
-        caseQuery = caseQuery.where(
-          sql`${cases.createdAt} >= ${dateRange.from}`,
-        );
+        caseFilters.push(gte(cases.createdAt, new Date(dateRange.from)));
       }
       if (dateRange?.to) {
-        caseQuery = caseQuery.where(sql`${cases.createdAt} <= ${dateRange.to}`);
+        caseFilters.push(lte(cases.createdAt, new Date(dateRange.to)));
       }
-      const casesData = await caseQuery.orderBy(desc(cases.createdAt));
+
+      const casesData = await db
+        .select()
+        .from(cases)
+        .where(caseFilters.length > 0 ? and(...caseFilters) : undefined)
+        .orderBy(desc(cases.createdAt));
       exportData.cases = casesData;
     }
     // Export evidence
     if (includeEvidence) {
-      let evidenceQuery = db.select().from(evidence);
+      const evidenceFilters = [];
 
       if (caseIds?.length) {
-        evidenceQuery = evidenceQuery.where(
-          sql`${evidence.caseId} IN (${caseIds.join(",")})`,
-        );
+        evidenceFilters.push(inArray(evidence.caseId, caseIds));
       }
       if (dateRange?.from) {
-        evidenceQuery = evidenceQuery.where(
-          sql`${evidence.uploadedAt} >= ${dateRange.from}`,
-        );
+        evidenceFilters.push(gte(evidence.uploadedAt, new Date(dateRange.from)));
       }
       if (dateRange?.to) {
-        evidenceQuery = evidenceQuery.where(
-          sql`${evidence.uploadedAt} <= ${dateRange.to}`,
-        );
+        evidenceFilters.push(lte(evidence.uploadedAt, new Date(dateRange.to)));
       }
-      const evidenceData = await evidenceQuery.orderBy(
-        desc(evidence.uploadedAt),
-      );
+
+      const evidenceData = await db
+        .select()
+        .from(evidence)
+        .where(evidenceFilters.length > 0 ? and(...evidenceFilters) : undefined)
+        .orderBy(desc(evidence.uploadedAt));
       exportData.evidence = evidenceData;
     }
     // Export analytics

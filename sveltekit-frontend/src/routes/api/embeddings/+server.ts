@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         { status: 400 },
       );
     }
-    const embedding = await generateEmbedding(text, { model });
+    const embedding = await generateEmbedding(text, { model: model as "local" | "openai" });
 
     return json({
       success: true,
@@ -99,8 +99,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
       );
     }
     const embeddings = await generateBatchEmbeddings(texts, {
-      model,
-      batchSize,
+      model: model as "local" | "openai",
     });
 
     return json({

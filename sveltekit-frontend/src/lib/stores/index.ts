@@ -1,3 +1,7 @@
+// Context menu store and actions
+export { contextMenuStore, contextMenuActions } from "./ui";
+// Keyboard shortcuts store (auto-populating)
+export * from "./keyboardShortcuts";
 // Enhanced Store Barrel Exports for Phase 2 - Unified
 // Prosecutor AI - Clean merged stores
 

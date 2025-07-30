@@ -43,12 +43,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       whereConditions.push(eq(cases.priority, priority));
     }
 
-    let finalQuery = db.select().from(cases);
-    if (whereConditions.length > 0) {
-      finalQuery = finalQuery.where(and(...whereConditions));
-    }
-
-    // Add sorting
+    // Build the query with proper typing to avoid TypeScript issues
     const orderColumn =
       sortBy === "title"
         ? cases.title
@@ -62,19 +57,19 @@ export const GET: RequestHandler = async ({ locals, url }) => {
                 ? cases.createdAt
                 : cases.updatedAt;
 
-    finalQuery = finalQuery.orderBy(
-      sortOrder === "asc" ? orderColumn : desc(orderColumn),
-    );
-
-    // Add pagination
-    finalQuery = finalQuery.limit(limit).offset(offset);
-
-    const caseResults = await finalQuery;
+    const caseResults = await db
+      .select()
+      .from(cases)
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
+      .orderBy(sortOrder === "asc" ? orderColumn : desc(orderColumn))
+      .limit(limit)
+      .offset(offset);
 
     // Get total count for pagination
     const totalCountResult = await db
       .select({ count: sql<number>`count(*)` })
-      .from(cases);
+      .from(cases)
+      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
 
     const totalCount = totalCountResult[0]?.count || 0;
 

@@ -8,7 +8,7 @@
 
 import Loki, { type Collection } from "lokijs";
 import { writable, derived, type Readable } from "svelte/store";
-import { fabric } from "fabric";
+import * as fabric from "fabric";
 import { ShaderCache } from "./webgl-shader-cache";
 import { BrowserCacheManager } from "./browser-cache-manager";
 import { MatrixTransformLib } from "./matrix-transform-lib";

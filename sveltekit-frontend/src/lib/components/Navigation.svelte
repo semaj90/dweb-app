@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { cn } from '$lib/utils';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import Button from '$lib/components/ui/button/Button.svelte';
@@ -14,6 +15,14 @@
 	];
 	
 	$: currentPath = $page.url.pathname;
+	
+	// Optimized navigation with instant transitions
+	function handleNavigation(href: string, event?: Event) {
+		event?.preventDefault();
+		// Use replaceState for instant visual feedback, then navigate
+		history.pushState(null, '', href);
+		goto(href, { replaceState: false, noScroll: false, keepFocus: false, invalidateAll: false });
+	}
 </script>
 
 <nav class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -28,9 +37,9 @@
 						<Button
 							variant={currentPath === item.href ? 'default' : 'ghost'}
 							size="sm"
-							href={item.href}
+							onclick={() => handleNavigation(item.href)}
 							class={cn(
-								"justify-start gap-2",
+								"justify-start gap-2 cursor-pointer transition-all duration-100",
 								currentPath === item.href && "bg-muted"
 							)}
 						>
@@ -42,6 +51,24 @@
 			</div>
 			
 			<div class="flex items-center space-x-4">
+				<!-- AI Search Button -->
+				<Button
+					variant="outline"
+					size="sm"
+					onclick={() => {
+						// Trigger global FindModal via Ctrl+K event
+						window.dispatchEvent(new KeyboardEvent('keydown', {
+							key: 'k',
+							ctrlKey: true,
+							bubbles: true
+						}));
+					}}
+					class="gap-2"
+				>
+					<span>🔍</span>
+					AI Search
+				</Button>
+				
 				<Badge variant="outline" class="gap-2">
 					<span>🤖</span>
 					Multi-Agent Pipeline

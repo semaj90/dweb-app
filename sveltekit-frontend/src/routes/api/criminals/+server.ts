@@ -64,10 +64,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
     finalQuery = finalQuery.orderBy(
       sortOrder === "asc" ? orderColumn : desc(orderColumn),
-    );
+    ) as any;
 
     // Add pagination
-    finalQuery = finalQuery.limit(limit).offset(offset);
+    finalQuery = finalQuery.limit(limit).offset(offset) as any;
 
     const criminalResults = await finalQuery;
 
@@ -76,7 +76,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       .select({ count: sql<number>`count(*)` })
       .from(criminals);
     if (filters.length > 0) {
-      countQuery = countQuery.where(and(...filters));
+      countQuery = countQuery.where(and(...filters)) as any;
     }
     const totalCountResult = await countQuery;
     const totalCount = totalCountResult[0]?.count || 0;

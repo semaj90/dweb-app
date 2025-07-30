@@ -3,7 +3,7 @@ import type { Case } from "$lib/types";
 import {
   caseEmbeddings,
   chatEmbeddings,
-  evidence,
+  evidence as evidenceTable,
   evidenceVectors,
 } from "$lib/server/db/schema-postgres";
 import { json } from "@sveltejs/kit";
@@ -222,14 +222,14 @@ async function gatherCaseData(
     const evidenceData = await db
       .select()
       .from(evidenceVectors)
-      .innerJoin(evidence, eq(evidenceVectors.evidenceId, evidence.id))
-      .where(eq(evidence.caseId, caseId));
+      .innerJoin(evidenceTable, eq(evidenceVectors.evidenceId, evidenceTable.id))
+      .where(eq(evidenceTable.caseId, caseId));
 
     data.evidence = evidenceData.map((e) => ({
-      id: e.evidenceId,
-      content: e.content,
-      metadata: e.metadata,
-      createdAt: e.createdAt,
+      id: e.evidence.id,
+      content: e.evidence.description,
+      metadata: e.evidence.aiAnalysis,
+      createdAt: e.evidence.uploadedAt,
     }));
 
     // Get evidence analytics from Qdrant
@@ -383,8 +383,8 @@ async function calculateCaseAnalytics(caseId: string) {
   const evidenceCount = await db
     .select({ count: count() })
     .from(evidenceVectors)
-    .innerJoin(evidence, eq(evidenceVectors.evidenceId, evidence.id))
-    .where(eq(evidence.caseId, caseId));
+    .innerJoin(evidenceTable, eq(evidenceVectors.evidenceId, evidenceTable.id))
+    .where(eq(evidenceTable.caseId, caseId));
 
   // Get interaction count (as proxy for documents reviewed)
   const interactionCount = await db

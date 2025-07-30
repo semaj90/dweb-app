@@ -6,7 +6,7 @@
   import Button from "$lib/components/ui/button/Button.svelte";
   import Badge from "$lib/components/ui/Badge.svelte";
   import EvidenceNode from "../canvas/EvidenceNode.svelte";
-  import ContextMenu from "./ContextMenu.svelte";
+import * as ContextMenu from "$lib/components/ui/context-menu";
   import EvidenceCard from "./EvidenceCard.svelte";
   import UploadZone from "./UploadZone.svelte";
 
@@ -62,18 +62,14 @@
     { id: "approved", title: "Case Ready", items: [] },
   ];
 
-  // Context menu state
-  let contextMenu: {
-    show: boolean;
-    x: number;
-    y: number;
-    item: EvidenceType | null;
-  } = {
-    show: false,
-    x: 0,
-    y: 0,
-    item: null,
-  };
+
+  // Import context menu store and actions
+  import { contextMenuStore, contextMenuActions } from "$lib/stores";
+  import { get } from "svelte/store";
+
+  // Subscribe to context menu state
+  let contextMenu = get(contextMenuStore);
+  const unsubscribeContextMenu = contextMenuStore.subscribe((v) => (contextMenu = v));
 
   // WebSocket for real-time updates
   let ws: WebSocket | null = null;
@@ -94,11 +90,11 @@
       ws = new WebSocket(
         `${protocol}//${window.location.host}/ws/cases/${caseId}`
       );
-      
+
       ws.onopen = () => {
         console.log("Connected to real-time case updates");
       };
-      
+
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -107,11 +103,11 @@
           console.error("Failed to parse WebSocket message:", error);
         }
       };
-      
+
       ws.onerror = (error) => {
         console.error("WebSocket error:", error);
       };
-      
+
       ws.onclose = () => {
         console.log("Disconnected from real-time updates");
         setTimeout(() => {
@@ -160,18 +156,15 @@
     ];
   }
 
+
   function handleRightClick(event: MouseEvent, item: EvidenceType) {
     event.preventDefault();
-    contextMenu = {
-      show: true,
-      x: event.clientX,
-      y: event.clientY,
-      item,
-    };
+    contextMenuActions.open(event.clientX, event.clientY, item);
   }
 
+
   function closeContextMenu() {
-    contextMenu.show = false;
+    contextMenuActions.close();
   }
 
   async function sendToCase(evidenceId: string, targetCaseId: string) {
@@ -318,7 +311,69 @@
   }
 </script>
 
-<svelte:window on:click={() => closeContextMenu()} />
+<svelte:window on:click={() => closeContextMenu()} on:keydown={handleGlobalKeydown} />
+import { keyboardShortcuts } from "$lib/stores";
+import { get as getStore } from "svelte/store";
+
+// Listen for global keyboard shortcuts (AI-driven)
+function handleGlobalKeydown(event: KeyboardEvent) {
+  // Ignore if typing in input/textarea
+  const target = event.target as HTMLElement;
+  if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+
+  // Format key combo (e.g., Ctrl+I)
+  const parts = [];
+  if (event.ctrlKey || event.metaKey) parts.push("Ctrl");
+  if (event.altKey) parts.push("Alt");
+  if (event.shiftKey) parts.push("Shift");
+  const key = event.key.length === 1 ? event.key.toUpperCase() : event.key;
+  parts.push(key);
+  const combo = parts.join("+");
+
+  // Find matching shortcut
+  const shortcuts = getStore(keyboardShortcuts);
+  const shortcut = shortcuts.find(s => s.key === combo && s.global);
+  if (shortcut && typeof shortcut.action === "function") {
+    event.preventDefault();
+    shortcut.action();
+  }
+}
+import { onMount as onMountShortcuts } from "svelte";
+// Wire up shortcut actions on mount
+onMountShortcuts(() => {
+  // Example: Attach context menu open to Ctrl+I shortcut
+  keyboardShortcuts.update(shortcuts =>
+    shortcuts.map(s =>
+      s.key === "Ctrl+I"
+        ? {
+            ...s,
+            action: () => {
+              // Open context menu for first evidence in current view (or selected)
+              let item = null;
+              if (viewMode === "columns") {
+                for (const col of columns) {
+                  if (col.items.length > 0) { item = col.items[0]; break; }
+                }
+              } else if (canvasEvidence.length > 0) {
+                item = canvasEvidence[0];
+              }
+              if (item) {
+                const x = window.innerWidth / 2;
+                const y = window.innerHeight / 2;
+                contextMenuActions.open(x, y, item);
+              }
+            }
+          }
+        : s
+    )
+  );
+});
+onDestroy(() => {
+  if (ws) {
+    ws.close();
+  }
+  unsubscribeContextMenu();
+});
 
 <div class="w-full h-full min-h-screen bg-background">
   <!-- Header -->
@@ -334,7 +389,7 @@
             <p class="text-muted-foreground">Case Evidence Management System</p>
           </div>
         </div>
-        
+
         <div class="flex items-center gap-4">
           <!-- View Mode Switcher -->
           <div class="flex gap-2">
@@ -355,7 +410,7 @@
               Canvas
             </Button>
           </div>
-          
+
           <!-- Active Users -->
           {#if $activeUsers.length > 0}
             <div class="flex items-center gap-2">
@@ -374,7 +429,7 @@
               <Badge variant="outline">{$activeUsers.length} online</Badge>
             </div>
           {/if}
-          
+
           <Button size="sm">
             <span class="mr-2">➕</span>
             New Case
@@ -402,7 +457,7 @@
                 </Badge>
               </div>
             </CardHeader>
-            
+
             <CardContent class="space-y-4">
               <!-- Upload Zone for first column -->
               {#if column.id === "new"}
@@ -410,7 +465,7 @@
                   on:upload={(e) => handleFileUpload(e.detail, column.id)}
                 />
               {/if}
-              
+
               <!-- Evidence Items -->
               <div
                 class="space-y-3 min-h-[200px]"
@@ -466,7 +521,7 @@
             <span>🔗</span>
           </Button>
         </div>
-        
+
         <!-- Evidence Nodes on Canvas -->
         <div class="absolute inset-0">
           {#each canvasEvidence as evidence (evidence.id)}
@@ -484,7 +539,7 @@
             </div>
           {/each}
         </div>
-        
+
         <!-- Canvas Upload Zone -->
         <div class="absolute bottom-4 right-4">
           <UploadZone
@@ -499,20 +554,216 @@
 
 <!-- Context Menu -->
 {#if contextMenu.show}
-  <ContextMenu
-    x={contextMenu.x}
-    y={contextMenu.y}
-    item={contextMenu.item}
-    on:sendToCase={(e) => sendToCase(contextMenu.item?.id || '', e.detail.caseId)}
-    on:close={closeContextMenu}
-  />
+  <ContextMenu.Root>
+    <ContextMenu.Content style={`position:fixed;left:${contextMenu.x}px;top:${contextMenu.y}px;`} menu={true}>
+      <div class="container mx-auto px-4">
+        <p class="container mx-auto px-4">Evidence Actions</p>
+      </div>
+      <ContextMenu.Item on:select={() => window.open(`/evidence/${contextMenu.item?.id}`, "_blank")}>View Details</ContextMenu.Item>
+      <ContextMenu.Item on:select={() => window.location.href = `/evidence/${contextMenu.item?.id}/edit`}>Edit</ContextMenu.Item>
+      <ContextMenu.Item on:select={() => contextMenu.item?.fileUrl && (() => { const link = document.createElement('a'); link.href = contextMenu.item.fileUrl; link.download = contextMenu.item.fileName || 'evidence'; link.click(); })()}>Download</ContextMenu.Item>
+      <ContextMenu.Item on:select={() => console.log('Duplicate evidence:', contextMenu.item?.id)}>Duplicate</ContextMenu.Item>
+      <ContextMenu.Item on:select={() => {/* TODO: Audit evidence logic */}}>Audit (Semantic/Vector)</ContextMenu.Item>
+      <ContextMenu.Item on:select={() => {/* TODO: Trigger agent review logic */}}>Trigger Agent Review</ContextMenu.Item>
+      <ContextMenu.Separator />
+      <div class="container mx-auto px-4"><p class="container mx-auto px-4">Save/Link</p></div>
+      <ContextMenu.Item on:mouseenter={() => showMiniModal('citation')} on:mouseleave={hideMiniModal} on:select={() => saveTo('savedcitations')}>Add to /savedcitations</ContextMenu.Item>
+      <ContextMenu.Item on:mouseenter={() => showMiniModal('aisummary')} on:mouseleave={hideMiniModal} on:select={() => saveTo('savedaisummaries')}>Add to /savedaisummaries</ContextMenu.Item>
+      <ContextMenu.Item on:mouseenter={() => showMiniModal('userreport')} on:mouseleave={hideMiniModal} on:select={() => saveTo('saveduserreports')}>Add to /saveduserreports</ContextMenu.Item>
+      <ContextMenu.Item on:mouseenter={() => showMiniModal('mcpcontext')} on:mouseleave={hideMiniModal} on:select={() => saveTo('mcpcontext')}>Add to MCP Context (LLM)</ContextMenu.Item>
+      <ContextMenu.Separator />
+      <div class="container mx-auto px-4"><p class="container mx-auto px-4">Send to Case</p></div>
+      <ContextMenu.Item on:select={() => {/* TODO: Show case selection and call sendToCase */}}>Send to /casesid</ContextMenu.Item>
+      <ContextMenu.Separator />
+      <ContextMenu.Item on:mouseenter={() => showMiniModal('find')} on:mouseleave={hideMiniModal} on:select={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item>
+      {#if findModal.show}
+        <div class="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border border-primary rounded-lg shadow-lg p-6 w-full max-w-lg">
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center gap-2">
+              <input
+                class="flex-1 border rounded px-3 py-2 text-base bg-muted text-foreground focus:outline-none focus:ring focus:border-primary"
+                type="text"
+                bind:value={findModal.query}
+                placeholder="Enter keywords or question..."
+                on:keydown={(e) => { if (e.key === 'Enter') runFindSearch(); }}
+                autofocus
+              />
+              <Button size="sm" on:click={runFindSearch} disabled={findModal.loading}>Search</Button>
+              <Button size="sm" variant="outline" on:click={closeFindModal}>Close</Button>
+            </div>
+            {#if findModal.loading}
+              <div class="text-primary">Searching...</div>
+            {/if}
+            {#if findModal.error}
+              <div class="text-red-500">{findModal.error}</div>
+            {/if}
+            {#if findModal.results.length > 0}
+              <div>
+                <div class="font-semibold mb-2">Results:</div>
+                <ul class="space-y-2 max-h-48 overflow-y-auto">
+                  {#each findModal.results as result, i}
+                    <li class="p-2 rounded hover:bg-muted cursor-pointer border-b border-muted-foreground/10">
+                      {result.item ? result.item.title : (result.title || result.text || JSON.stringify(result))}
+                    </li>
+                  {/each}
+                </ul>
+              </div>
+            {/if}
+            {#if findModal.suggestions.length > 0}
+              <div>
+                <div class="font-semibold mb-2">AI Suggestions:</div>
+                <ul class="space-y-2">
+                  {#each findModal.suggestions as suggestion}
+                    <li class="p-2 rounded bg-muted/50 border border-primary/10">
+                      <div class="font-medium">{suggestion.expectedOutput}</div>
+                      <div class="text-xs text-muted-foreground">{suggestion.reasoning}</div>
+                    </li>
+                  {/each}
+                </ul>
+              </div>
+            {/if}
+          </div>
+        </div>
+      {/if}
+    </ContextMenu.Content>
+  </ContextMenu.Root>
 {/if}
 
-<style>
-  :global(.dnd-item) {
-    cursor: grab;
-  }
-  :global(.dnd-item:active) {
-    cursor: grabbing;
-  }
-</style>
+<!-- Mini-modal for context menu hover -->
+{#if miniModal.show}
+  <div class="fixed z-50 p-2 bg-gray-900 text-white rounded shadow-lg" style="left: {miniModal.x}px; top: {miniModal.y}px; min-width: 180px;">
+    {#if miniModal.type === 'citation'}
+      <div>Save this evidence as a citation. Will be available for search and LLM context.</div>
+    {:else if miniModal.type === 'aisummary'}
+      <div>Save an AI-generated summary for this evidence. Used for quick reference and LLM context.</div>
+    {:else if miniModal.type === 'userreport'}
+      <div>Save a user report or annotation for this evidence. Used for personalization and LLM context.</div>
+    {:else if miniModal.type === 'mcpcontext'}
+      <div>Add this evidence to the MCP context for the local LLM. Used for personalized completions and search.</div>
+    {:else if miniModal.type === 'find'}
+      <div>Find related items using keywords, Fuse.js fuzzy search, and LLM autocomplete from your activity store.</div>
+    {/if}
+  </div>
+{/if}
+
+<script lang="ts">
+// ...existing code...
+
+// Mini-modal state
+let miniModal: { show: boolean; x: number; y: number; type: string } = { show: false, x: 0, y: 0, type: '' };
+
+function showMiniModal(type: string) {
+  miniModal = { show: true, x: contextMenu.x + 180, y: contextMenu.y, type };
+}
+function hideMiniModal() {
+  miniModal = { show: false, x: 0, y: 0, type: '' };
+}
+
+// Save to logic: update user activity store, backend, Qdrant, Loki.js, MCP, LLM
+import { getContextAwareSuggestions, callContext7Tool } from "$lib/ai/mcp-helpers";
+import { page } from '$app/stores';
+import Fuse from 'fuse.js';
+
+async function saveTo(target: string) {
+  if (!contextMenu.item) return closeContextMenu();
+  // 1. Update user activity store (local)
+  // (Assume a store or API exists, e.g., /api/user-activity)
+  try {
+    await fetch('/api/user-activity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: $page.data.user?.id,
+        evidenceId: contextMenu.item.id,
+        action: 'save',
+        target
+      })
+    });
+  } catch (e) { console.warn('User activity store update failed', e); }
+
+  // 2. Qdrant/Loki.js: (stub, replace with real integration)
+  try {
+    await fetch('/api/vector-store', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        evidence: contextMenu.item,
+        target
+      })
+    });
+  } catch (e) { console.warn('Qdrant/Loki.js update failed', e); }
+
+  // 3. MCP/Context7: add to memory/context
+  try {
+    await callContext7Tool('mcp_memory2_add_observations', {
+      observations: [{
+        contents: [JSON.stringify(contextMenu.item)],
+        entityName: target
+      }]
+    });
+  } catch (e) { console.warn('MCP memory add failed', e); }
+
+  // 4. Optionally trigger LLM retrain or context update
+  try {
+    await callContext7Tool('call-llm-context-update', {
+      evidenceId: contextMenu.item.id,
+      target
+    });
+  } catch (e) { /* ignore if not implemented */ }
+
+  closeContextMenu();
+}
+
+// Find/search logic: Fuse.js, Qdrant, MCP, LLM autocomplete
+async function findWithLLM() {
+  openFindModal();
+}
+
+import { onMount as onMountModal } from 'svelte';
+let findModal = { show: false, query: '', results: [], loading: false, error: '', suggestions: [] };
+
+function openFindModal() {
+  findModal = { show: true, query: contextMenu.item?.title || '', results: [], loading: false, error: '', suggestions: [] };
+}
+function closeFindModal() {
+  findModal = { ...findModal, show: false };
+  closeContextMenu();
+}
+
+async function runFindSearch() {
+  if (!contextMenu.item) return closeFindModal();
+  findModal.loading = true;
+  findModal.error = '';
+  findModal.results = [];
+  findModal.suggestions = [];
+  // 1. Local fuzzy search (Fuse.js)
+  try {
+    const items = $evidenceStore;
+    const fuse = new Fuse(items, { keys: ['title', 'description', 'tags'] });
+    findModal.results = fuse.search(findModal.query || contextMenu.item.title || '');
+  } catch (e) { findModal.error = 'Local search failed'; }
+  // 2. Qdrant/Vector search
+  try {
+    const resp = await fetch('/api/vector-search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: findModal.query || contextMenu.item.title })
+    });
+    const vectorResults = await resp.json();
+    findModal.results = [...findModal.results, ...vectorResults];
+  } catch (e) { findModal.error += ' Qdrant search failed.'; }
+  // 3. MCP/LLM autocomplete
+  try {
+    const suggestions = await getContextAwareSuggestions({
+      workspaceRoot: '',
+      activeFiles: [],
+      errors: [],
+      userIntent: 'feature-development',
+      recentPrompts: [findModal.query || contextMenu.item.title],
+      projectType: 'sveltekit-legal-ai'
+    });
+    findModal.suggestions = suggestions;
+  } catch (e) { findModal.error += ' LLM autocomplete failed.'; }
+  findModal.loading = false;
+}
+</script>

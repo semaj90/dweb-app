@@ -1,0 +1,43 @@
+# Docker Compose for vLLM (Linux/WSL/Ubuntu)
+# Use this file for advanced LLM serving with GPU (Linux/WSL only)
+
+version: "3.8"
+
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: legal-vllm
+    ports:
+      - "8000:8000"
+    volumes:
+      - vllm_data:/root/.cache/vllm
+      - ./models:/models:ro
+    environment:
+      - MODEL_NAME=meta-llama/Llama-2-7b-chat-hf
+      - VLLM_USE_GPU=1
+      - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+          cpus: "4.0"
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/models"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - legal-network
+
+volumes:
+  vllm_data:
+
+networks:
+  legal-network:
+    driver: bridge

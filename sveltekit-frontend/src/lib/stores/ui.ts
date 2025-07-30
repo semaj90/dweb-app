@@ -1,10 +1,42 @@
+// Context menu state and store
+import type { Writable } from "svelte/store";
 import { writable, derived } from "svelte/store";
 import { browser } from "$app/environment";
+
+export interface ContextMenuState {
+  show: boolean;
+  x: number;
+  y: number;
+  item: any | null;
+}
+
+const defaultContextMenuState: ContextMenuState = {
+  show: false,
+  x: 0,
+  y: 0,
+  item: null,
+};
+
+export const contextMenuStore: Writable<ContextMenuState> = writable({
+  ...defaultContextMenuState,
+});
+
+export const contextMenuActions = {
+  open: (x: number, y: number, item: any) => {
+    contextMenuStore.set({ show: true, x, y, item });
+  },
+  close: () => {
+    contextMenuStore.set({ ...defaultContextMenuState });
+  },
+  update: (state: Partial<ContextMenuState>) => {
+    contextMenuStore.update((s) => ({ ...s, ...state }));
+  },
+};
 
 // Theme system
 export const theme = writable<"light" | "dark" | "auto">("auto");
 export const colorScheme = writable<"blue" | "green" | "purple" | "orange">(
-  "blue",
+  "blue"
 );
 
 export type NotificationData = {

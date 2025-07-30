@@ -204,10 +204,12 @@ export async function POST({ request }: RequestEvent) {
           documentType,
           caseId: caseId || null,
           userId,
-          citations: JSON.stringify(citations),
-          tags: JSON.stringify(tags),
-          metadata,
-          wordCount: content.split(/\s+/).length,
+          citations: JSON.stringify(citations) as any,
+          metadata: {
+            ...metadata,
+            keywords: tags || [],
+            wordCount: content.split(/\s+/).length,
+          },
           status: "draft",
           version: 1,
         })

@@ -12,6 +12,21 @@ export interface AgentResult {
   result: any;
 }
 
+export interface MCPContextAnalysis {
+  query: string;
+  context: any;
+  suggestions: string[];
+  confidence: number;
+}
+
+export interface AutoMCPSuggestion {
+  type: 'enhancement' | 'correction' | 'alternative';
+  original: string;
+  suggested: string;
+  reasoning: string;
+  confidence: number;
+}
+
 export interface OrchestrationOptions {
   useMemory?: boolean;
   useCodebase?: boolean;

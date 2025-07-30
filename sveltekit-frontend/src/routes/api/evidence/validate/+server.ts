@@ -29,9 +29,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const evidenceRecord = evidenceRecords[0];
 
     // Parse existing AI analysis
-    let aiAnalysis = {};
+    let aiAnalysis: any = {};
     try {
-      aiAnalysis = JSON.parse(evidenceRecord.aiAnalysis || "{}");
+      aiAnalysis = JSON.parse(evidenceRecord.aiAnalysis as string || "{}");
     } catch (e) {
       console.warn("Failed to parse AI analysis JSON");
     }
@@ -146,19 +146,19 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     }
     const evidenceRecord = evidenceRecords[0];
 
-    let aiAnalysis = {};
+    let aiAnalysis: any = {};
     try {
-      aiAnalysis = JSON.parse(evidenceRecord.aiAnalysis || "{}");
+      aiAnalysis = JSON.parse(evidenceRecord.aiAnalysis as string || "{}");
     } catch (e) {
       console.warn("Failed to parse AI analysis JSON");
     }
-    const validations = aiAnalysis.validations || [];
+    const validations = (aiAnalysis as any).validations || [];
 
     return json({
       success: true,
       evidenceId,
       validations,
-      validationScore: aiAnalysis.validationScore || 0,
+      validationScore: (aiAnalysis as any).validationScore || 0,
       totalValidations: validations.length,
       validValidations: validations.filter((v) => v.valid).length,
     });

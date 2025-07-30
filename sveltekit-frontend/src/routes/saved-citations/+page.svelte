@@ -107,6 +107,8 @@
         id: crypto.randomUUID(),
         isFavorite: false,
         savedAt: new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       // In a real app, this would POST to /api/user/saved-citations
@@ -153,8 +155,9 @@
     try {
       const updated = {
         ...editingCitation,
-        tags: editingCitation.tags
-          .split(",")
+        tags: Array.isArray(editingCitation.tags) 
+          ? editingCitation.tags 
+          : (editingCitation.tags as any as string)?.split(",")
           .map((tag: string) => tag.trim())
           .filter((tag: string) => tag.length > 0),
       };
@@ -236,38 +239,38 @@
   <!-- Citations Grid -->
   <div class="container mx-auto px-4">
     {#each filteredCitations as citation (citation.id)}
-      <CardRoot class="citation-card">
-        <CardHeader class="citation-header">
+      <CardRoot className="citation-card">
+        <CardHeader className="citation-header">
           <div class="container mx-auto px-4">
             <h3 class="container mx-auto px-4">{citation.title}</h3>
 
             <DropdownMenuRoot let:trigger let:menu>
               <DropdownMenuTrigger {trigger}>
                 <Button variant="ghost" size="sm">
-                  <MoreVertical class="container mx-auto px-4" />
+                  <MoreVertical className="container mx-auto px-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent {menu}>
                 <DropdownMenuItem on:click={() => toggleFavorite(citation)}>
-                  <Star class="container mx-auto px-4" />
+                  <Star className="container mx-auto px-4" />
                   {citation.isFavorite
                     ? "Remove from favorites"
                     : "Add to favorites"}
                 </DropdownMenuItem>
                 <DropdownMenuItem on:click={() => copyCitation(citation)}>
-                  <Copy class="container mx-auto px-4" />
+                  <Copy className="container mx-auto px-4" />
                   Copy citation
                 </DropdownMenuItem>
                 <DropdownMenuItem on:click={() => editCitation(citation)}>
-                  <Edit class="container mx-auto px-4" />
+                  <Edit className="container mx-auto px-4" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   on:click={() => deleteCitation(citation.id)}
-                  class="container mx-auto px-4"
+                  className="container mx-auto px-4"
                 >
-                  <Trash2 class="container mx-auto px-4" />
+                  <Trash2 className="container mx-auto px-4" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -275,11 +278,11 @@
           </div>
 
           <div class="container mx-auto px-4">
-            <Badge variant="secondary" class="container mx-auto px-4">
+            <Badge variant="secondary" className="container mx-auto px-4">
               {citation.category}
             </Badge>
             {#if citation.isFavorite}
-              <Badge variant="secondary" class="container mx-auto px-4">
+              <Badge variant="secondary" className="container mx-auto px-4">
                 <Star class="container mx-auto px-4" />
                 Favorite
               </Badge>
@@ -300,8 +303,8 @@
           {#if citation.tags.length > 0}
             <div class="container mx-auto px-4">
               {#each citation.tags as tag}
-                <Badge variant="secondary" class="container mx-auto px-4">
-                  <Tag class="container mx-auto px-4" />
+                <Badge variant="secondary" className="container mx-auto px-4">
+                  <Tag className="container mx-auto px-4" />
                   {tag}
                 </Badge>
               {/each}
@@ -314,7 +317,7 @@
             </span>
 
             {#if citation.contextData?.caseId}
-              <Badge variant="secondary" class="container mx-auto px-4">
+              <Badge variant="secondary" className="container mx-auto px-4">
                 Case: {citation.contextData.caseId}
               </Badge>
             {/if}
@@ -360,7 +363,7 @@
 <!-- Add Citation Dialog -->
 <DialogRoot bind:open={showAddDialog}>
   <DialogContent
-    class="container mx-auto px-4"
+    className="container mx-auto px-4"
   >
     <DialogHeader>
       <DialogTitle title="Add New Citation" />
@@ -447,7 +450,7 @@
 {#if editingCitation}
   <DialogRoot open={true} onOpenChange={() => (editingCitation = null)}>
     <DialogContent
-      class="container mx-auto px-4"
+      className="container mx-auto px-4"
     >
       <DialogHeader>
         <DialogTitle title="Edit Citation" />

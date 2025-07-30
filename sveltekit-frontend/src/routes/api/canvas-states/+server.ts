@@ -1,4 +1,4 @@
-import { canvasStates } from "$lib/server/db/schema-postgres";
+import { canvasLayouts } from "$lib/server/db/schema-canvas";
 import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { and, desc, eq, like, sql } from "drizzle-orm";
@@ -25,8 +25,8 @@ export async function GET({ url, locals }: RequestEvent) {
       // Get specific canvas state
       const [canvasState] = await db
         .select()
-        .from(canvasStates)
-        .where(eq(canvasStates.id, canvasId))
+        .from(canvasLayouts)
+        .where(eq(canvasLayouts.id, canvasId))
         .limit(1);
 
       if (!canvasState) {
@@ -39,48 +39,39 @@ export async function GET({ url, locals }: RequestEvent) {
 
       // Add case filter
       if (caseId) {
-        filters.push(eq(canvasStates.caseId, caseId));
+        filters.push(eq(canvasLayouts.caseId, caseId));
       }
       // Add search filter
       if (search) {
-        filters.push(like(canvasStates.name, `%${search}%`));
+        filters.push(like(canvasLayouts.name, `%${search}%`));
       }
       // Add template filter
       if (isTemplate !== null) {
-        filters.push(eq(canvasStates.isDefault, isTemplate === "true"));
+        filters.push(eq(canvasLayouts.isDefault, isTemplate === "true"));
       }
 
       // Determine the column for sorting
       const orderColumn =
         sortBy === "name"
-          ? canvasStates.name
-          : sortBy === "version"
-            ? canvasStates.version
-            : canvasStates.createdAt; // Default to createdAt
+          ? canvasLayouts.name
+          : sortBy === "createdAt"
+            ? canvasLayouts.createdAt
+            : canvasLayouts.updatedAt; // Default to updatedAt
 
-      // Build the main query
-      let query = db.select().from(canvasStates);
-      
-      if (filters.length > 0) {
-        query = query.where(and(...filters));
-      }
-      
-      query = query.orderBy(
-        sortOrder === "asc" ? orderColumn : desc(orderColumn),
-      ).limit(limit).offset(offset);
-
-      const canvasStateList = await query;
+      // Build the main query properly to avoid TypeScript issues
+      const canvasStateList = await db
+        .select()
+        .from(canvasLayouts)
+        .where(filters.length > 0 ? and(...filters) : undefined)
+        .orderBy(sortOrder === "asc" ? orderColumn : desc(orderColumn))
+        .limit(limit)
+        .offset(offset);
 
       // Get total count for pagination
-      let countQuery = db
+      const totalCountResult = await db
         .select({ count: sql<number>`count(*)` })
-        .from(canvasStates);
-      
-      if (filters.length > 0) {
-        countQuery = countQuery.where(and(...filters));
-      }
-      
-      const totalCountResult = await countQuery;
+        .from(canvasLayouts)
+        .where(filters.length > 0 ? and(...filters) : undefined);
       const totalCount = totalCountResult[0]?.count || 0;
 
       return json({
@@ -110,23 +101,23 @@ export async function POST({ request, locals }: RequestEvent) {
     const data = await request.json();
 
     // Validate required fields
-    if (!data.name || !data.canvasData) {
+    if (!data.name || !data.layoutData) {
       return json(
-        { error: "Name and canvas data are required" },
+        { error: "Name and layout data are required" },
         { status: 400 },
       );
     }
     const canvasStateData = {
       caseId: data.caseId || null,
       name: data.name.trim(),
-      canvasData: data.canvasData,
-      version: data.version || 1,
+      layoutData: data.layoutData,
+      description: data.description || null,
       isDefault: data.isDefault || false,
       createdBy: locals.user.id,
     };
 
     const [newCanvasState] = await db
-      .insert(canvasStates)
+      .insert(canvasLayouts)
       .values(canvasStateData)
       .returning();
 
@@ -152,8 +143,8 @@ export async function PUT({ request, locals }: RequestEvent) {
     // Check if canvas state exists
     const existingCanvasState = await db
       .select()
-      .from(canvasStates)
-      .where(eq(canvasStates.id, data.id))
+      .from(canvasLayouts)
+      .where(eq(canvasLayouts.id, data.id))
       .limit(1);
 
     if (!existingCanvasState.length) {
@@ -165,14 +156,14 @@ export async function PUT({ request, locals }: RequestEvent) {
 
     // Only update provided fields
     if (data.name !== undefined) updateData.name = data.name.trim();
-    if (data.canvasData !== undefined) updateData.canvasData = data.canvasData;
-    if (data.version !== undefined) updateData.version = data.version;
+    if (data.layoutData !== undefined) updateData.layoutData = data.layoutData;
+    if (data.description !== undefined) updateData.description = data.description;
     if (data.isDefault !== undefined) updateData.isDefault = data.isDefault;
 
     const [updatedCanvasState] = await db
-      .update(canvasStates)
+      .update(canvasLayouts)
       .set(updateData)
-      .where(eq(canvasStates.id, data.id))
+      .where(eq(canvasLayouts.id, data.id))
       .returning();
 
     return json(updatedCanvasState);
@@ -196,8 +187,8 @@ export async function DELETE({ url, locals }: RequestEvent) {
     // Check if canvas state exists
     const existingCanvasState = await db
       .select()
-      .from(canvasStates)
-      .where(eq(canvasStates.id, canvasId))
+      .from(canvasLayouts)
+      .where(eq(canvasLayouts.id, canvasId))
       .limit(1);
 
     if (!existingCanvasState.length) {
@@ -205,8 +196,8 @@ export async function DELETE({ url, locals }: RequestEvent) {
     }
     // Delete the canvas state
     const [deletedCanvasState] = await db
-      .delete(canvasStates)
-      .where(eq(canvasStates.id, canvasId))
+      .delete(canvasLayouts)
+      .where(eq(canvasLayouts.id, canvasId))
       .returning();
 
     return json({ success: true, deletedCanvasState });
@@ -233,8 +224,8 @@ export async function PATCH({ request, url, locals }: RequestEvent) {
     // Check if canvas state exists
     const existingCanvasState = await db
       .select()
-      .from(canvasStates)
-      .where(eq(canvasStates.id, canvasId))
+      .from(canvasLayouts)
+      .where(eq(canvasLayouts.id, canvasId))
       .limit(1);
 
     if (!existingCanvasState.length) {
@@ -245,20 +236,17 @@ export async function PATCH({ request, url, locals }: RequestEvent) {
     };
 
     // Handle specific patch operations
-    if (data.operation === "incrementVersion") {
-      updateData.version = (existingCanvasState[0].version || 1) + 1;
-    } else if (data.operation === "setAsDefault") {
+    if (data.operation === "setAsDefault") {
       // First, unset all other default canvases for this case
       if (existingCanvasState[0].caseId) {
         await db
-          .update(canvasStates)
+          .update(canvasLayouts)
           .set({ isDefault: false })
-          .where(eq(canvasStates.caseId, existingCanvasState[0].caseId));
+          .where(eq(canvasLayouts.caseId, existingCanvasState[0].caseId));
       }
       updateData.isDefault = true;
     } else if (data.operation === "updateData") {
-      updateData.canvasData = data.canvasData;
-      updateData.version = (existingCanvasState[0].version || 1) + 1;
+      updateData.layoutData = data.layoutData;
     } else {
       // Regular field updates
       Object.keys(data).forEach((key) => {
@@ -268,9 +256,9 @@ export async function PATCH({ request, url, locals }: RequestEvent) {
       });
     }
     const [updatedCanvasState] = await db
-      .update(canvasStates)
+      .update(canvasLayouts)
       .set(updateData)
-      .where(eq(canvasStates.id, canvasId))
+      .where(eq(canvasLayouts.id, canvasId))
       .returning();
 
     return json(updatedCanvasState);

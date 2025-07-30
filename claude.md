@@ -260,3 +260,11 @@ See `frontendshadunocss.md` for up-to-date best practices on integrating shadcn-
 - **See Also:**
   - TODOs and type definitions in `src/lib/ai/types.ts` for extending orchestration and prompt logic.
   - Example prompt patterns and memory/graph usage in `context7-utils.js`.
+
+## Memory: Debugging Workflow
+
+- `npm run check` entire app, attempt to read log file of errors and then prioritize critical to easiest to fix and solve iteratively using:
+  - Systematic log file parsing
+  - Error triage and categorization
+  - Incremental troubleshooting approach
+  - Focus on resolving critical path issues first

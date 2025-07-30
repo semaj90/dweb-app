@@ -55,7 +55,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     const sortOrder = url.searchParams.get("sortOrder") || "desc";
 
     // Build query with filters
-    let query = db.select().from(evidence);
     const filters = [];
 
     // Add filters if provided
@@ -79,10 +78,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         ),
       );
     }
-    // Apply filters
-    if (filters.length > 0) {
-      query = query.where(and(...filters));
-    }
+
     // Add sorting
     const orderColumn =
       sortBy === "title"
@@ -95,21 +91,19 @@ export const GET: RequestHandler = async ({ url, locals }) => {
               ? evidence.collectedAt
               : evidence.uploadedAt;
 
-    query = query.orderBy(
-      sortOrder === "asc" ? orderColumn : desc(orderColumn),
-    );
-
-    // Add pagination
-    query = query.limit(limit).offset(offset);
-
-    const evidenceResults = await query;
+    const evidenceResults = await db
+      .select()
+      .from(evidence)
+      .where(filters.length > 0 ? and(...filters) : undefined)
+      .orderBy(sortOrder === "asc" ? orderColumn : desc(orderColumn))
+      .limit(limit)
+      .offset(offset);
 
     // Get total count for pagination
-    let countQuery = db.select({ count: sql<number>`count(*)` }).from(evidence);
-    if (filters.length > 0) {
-      countQuery = countQuery.where(and(...filters));
-    }
-    const totalCountResult = await countQuery;
+    const totalCountResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(evidence)
+      .where(filters.length > 0 ? and(...filters) : undefined);
     const totalCount = totalCountResult[0]?.count || 0;
 
     return json({

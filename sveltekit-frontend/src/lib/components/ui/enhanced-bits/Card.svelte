@@ -147,11 +147,7 @@
     </div>
   {/if}
 
-  {#if children}
-    {@render children()}
-  {:else}
-    <slot />
-  {/if}
+  {@render children?.()}
 
   <!-- Priority indicator for evidence cards -->
   {#if evidenceCard && priority}

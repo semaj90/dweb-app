@@ -127,6 +127,14 @@ export default defineConfig({
       "yorha-success": "#10b981",
       "yorha-warning": "#f59e0b",
       "yorha-error": "#ef4444",
+      // YoRHa Background Colors
+      "yorha-bg-primary": "#f4f1ea",
+      "yorha-bg-secondary": "#faf8f3",
+      "yorha-bg-tertiary": "#ffffff",
+      // YoRHa Text Colors
+      "yorha-text-primary": "#3a372f",
+      "yorha-text-secondary": "#75726a",
+      "yorha-text-muted": "#ada895",
 
       // Multi-Agent Colors
       "agent-autogen": "#8b5cf6",

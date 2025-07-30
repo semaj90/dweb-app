@@ -133,19 +133,36 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       documentMetadata,
     );
 
-    // Call AI analysis service (simplified for now)
+    // Call AI analysis service with Ollama
     console.log(`🤖 Analyzing with ${modelName}...`);
 
     let response: any;
     try {
-      // Simulate AI analysis call - replace with actual Ollama integration
+      const ollamaResponse = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gemma3-legal:latest",
+          prompt: analysisPrompt,
+          stream: false,
+          options: {
+            temperature: 0.3,
+            top_p: 0.9,
+            max_tokens: 2048,
+          },
+        }),
+      });
+
+      if (!ollamaResponse.ok) {
+        throw new Error(`Ollama API error: ${ollamaResponse.status}`);
+      }
+
+      const ollamaData = await ollamaResponse.json();
       response = {
         message: {
-          content: generateFallbackAnalysis(
-            documentText,
-            body.analysisType || "classification",
-            body.useThinkingStyle || false,
-          ),
+          content: ollamaData.response,
         },
       };
     } catch (aiError) {

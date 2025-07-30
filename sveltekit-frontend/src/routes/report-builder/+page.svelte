@@ -283,7 +283,7 @@
 					{#each evidence as item}
 						<div class="container mx-auto px-4">
 							<div class="container mx-auto px-4">{item.title}</div>
-							<div class="container mx-auto px-4">{item.fileType}</div>
+							<div class="container mx-auto px-4">{item.evidenceType || item.type || 'unknown'}</div>
 						</div>
 					{/each}
 				</div>

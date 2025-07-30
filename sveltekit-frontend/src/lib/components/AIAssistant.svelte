@@ -17,9 +17,13 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gemma3:latest',
+          model: 'gemma3-legal:latest',
           prompt,
-          stream: false
+          stream: false,
+          options: {
+            temperature: 0.7,
+            max_tokens: 1024
+          }
         })
       });
       const data = await res.json();
