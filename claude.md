@@ -188,6 +188,35 @@ You can automate advanced flows (evidence analysis, memory graph updates, multi-
 
 ---
 
+## 📚 Reference: Enhanced RAG Self-Organizing Loop System
+
+**COMPREHENSIVE DOCUMENTATION**: See `sveltekit-frontend/src/docs/enhanced-rag-self-organizing-loop-system.md` for complete technical documentation covering:
+
+### 🏗️ Architecture Components
+- **CompilerFeedbackLoop**: AI-driven compiler event processing with vector embeddings and SOM clustering
+- **EnhancedRAGEngine**: PageRank-enhanced retrieval system with real-time feedback loops
+- **ComprehensiveCachingArchitecture**: 7-layer caching (Loki.js + Redis + Qdrant + PostgreSQL PGVector + RabbitMQ + Neo4j + Fuse.js)
+
+### 🧠 AI & Machine Learning
+- **Self-Organizing Map (SOM) Clustering**: Kohonen networks for error pattern recognition
+- **Multi-Agent Patch Generation**: AutoGen + CrewAI + Local LLM + Claude orchestration
+- **Vector Embeddings**: 384-dimensional semantic search with cosine similarity
+
+### ⚡ Performance & Optimization
+- **WebGL Shader Caching**: GPU-accelerated attention visualization with pre-compiled shaders
+- **Node.js Clustering**: Horizontal scaling for SvelteKit 2 with intelligent load balancing
+- **Cache Layer Intelligence**: Automatic layer selection with propagation to faster layers
+
+### 📊 Monitoring & Observability
+- **Real-time Metrics**: Query performance, cache hit rates, patch success rates
+- **Grafana Dashboards**: Visual monitoring with SOM cluster heatmaps
+- **Health Check APIs**: Component status monitoring with automatic failover
+
+### 🎯 Integration Patterns
+- **Phase 13 State Machine**: XState integration with compiler event handling
+- **Demo Interface**: Real-time visualization of AI feedback loops and patch generation
+- **API Endpoints**: RESTful interfaces for system health and performance metrics
+
 ## Reference: Shadcn-Svelte + UnoCSS Styling Guide
 
 See `frontendshadunocss.md` for up-to-date best practices on integrating shadcn-svelte and UnoCSS, shared UI patterns, and SSR/hydration with SvelteKit 2, XState, Superforms, Drizzle ORM, and pgvector.

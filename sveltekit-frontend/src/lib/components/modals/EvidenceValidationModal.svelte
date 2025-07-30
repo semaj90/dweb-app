@@ -229,7 +229,7 @@
                   bind:value={feedback}
                   placeholder="Add any additional comments or context..."
                   class="container mx-auto px-4"
-                  rows={${1"
+                  rows={4}
                 ></textarea>
               </div>
             </div>

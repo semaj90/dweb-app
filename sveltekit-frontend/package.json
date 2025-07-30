@@ -19,7 +19,18 @@
     "context7:setup": "node ../scripts/context7-integration.js",
     "context7:legal-chat": "node ../scripts/legal-ai-chat.js",
     "context7:document-search": "node ../scripts/legal-document-search.js",
-    "context7:mcp": "node ../SETUP-CLAUDE-MCP-CONTEXT7.bat"
+    "context7:mcp": "node ../SETUP-CLAUDE-MCP-CONTEXT7.bat",
+    "cluster:start": "chmod +x scripts/start-cluster.sh && scripts/start-cluster.sh",
+    "cluster:stop": "chmod +x scripts/stop-cluster.sh && scripts/stop-cluster.sh",
+    "cluster:restart": "npm run cluster:stop && npm run cluster:start",
+    "cluster:status": "chmod +x scripts/start-cluster.sh && scripts/start-cluster.sh status",
+    "cluster:health": "chmod +x scripts/start-cluster.sh && scripts/start-cluster.sh health",
+    "cluster:force-stop": "chmod +x scripts/stop-cluster.sh && scripts/stop-cluster.sh force",
+    "cluster:clean": "chmod +x scripts/stop-cluster.sh && scripts/stop-cluster.sh clean",
+    "cluster:dev": "node cluster.js",
+    "cluster:scale-up": "kill -USR1 $(cat cluster.pid 2>/dev/null || echo '')",
+    "cluster:scale-down": "kill -USR2 $(cat cluster.pid 2>/dev/null || echo '')",
+    "cluster:reload": "kill -HUP $(cat cluster.pid 2>/dev/null || echo '')"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.20",

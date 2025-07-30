@@ -77,7 +77,11 @@
       "Bash(taskkill:*)",
       "Bash(docker-compose up:*)",
       "Bash(docker exec:*)",
-      "Bash(docker restart:*)"
+      "Bash(docker restart:*)",
+      "Bash(python:*)",
+      "Bash(docker volume:*)",
+      "Bash(docker run:*)",
+      "Bash(docker start:*)"
     ],
     "deny": []
   }

@@ -13,7 +13,7 @@
     fullWidth = false,
     class: className = '',
     children,
-    ref = $bindable(),
+    ref = $bindable(undefined),
     ...rest
   }: {
     variant?: ButtonVariant;
@@ -38,7 +38,7 @@
 </script>
 
 <BitsButton.Root
-  bind:ref={ref}
+  bind:ref
   class={classes}
   disabled={loading || Boolean(rest.disabled)}
   {...rest}

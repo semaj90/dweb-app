@@ -469,8 +469,8 @@
           on:click={() => {
             if (confirm(`Delete ${selectedEvidence.size} selected items?`)) {
               selectedEvidence.forEach((id) => deleteEvidence(id));
-}
-          "
+            }
+          }
         >
           <Trash2 class="container mx-auto px-4" />
           Delete

@@ -11,15 +11,22 @@ import { db, sql } from "$lib/server/db/drizzle.js";
 export async function GET() {
   try {
     const ollamaUrl = env.OLLAMA_URL || "http://ollama:11434";
+    console.log(`[System Check] Starting health check with Ollama URL: ${ollamaUrl}`);
 
     // Check Ollama service
     let ollamaStatus;
     try {
+      console.log(`[System Check] Checking Ollama at ${ollamaUrl}/api/version`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
       const response = await fetch(`${ollamaUrl}/api/version`, {
         method: "GET",
         headers: { Accept: "application/json" },
-        timeout: 3000,
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const data = await response.json();
@@ -44,19 +51,21 @@ export async function GET() {
     // Check PostgreSQL/Drizzle connection
     let dbStatus;
     try {
+      console.log(`[System Check] Checking database connection`);
       // Simple query to verify connection works
-      await db.execute(sql`SELECT 1 as connected`);
+      const result = await db.execute(sql`SELECT 1 as connected`);
+      console.log(`[System Check] Database query result:`, result);
       dbStatus = { status: "connected" };
     } catch (error) {
-      console.error("Database check error:", error);
+      console.error("[System Check] Database check error:", error);
       dbStatus = {
         status: "error",
-        message: error.message,
+        error: error.message,
       };
     }
 
     // Return combined status
-    return json({
+    const result = {
       timestamp: new Date().toISOString(),
       services: {
         ollama: ollamaStatus,
@@ -65,9 +74,16 @@ export async function GET() {
       environment: {
         ollamaUrl: ollamaUrl.replace(/:[^:]+@/, ":***@"), // Hide password if present
       },
-    });
+    };
+    
+    console.log(`[System Check] Returning result:`, JSON.stringify(result, null, 2));
+    return json(result);
   } catch (error) {
-    console.error("System check error:", error);
-    return json({ error: "System check failed" }, { status: 500 });
+    console.error("[System Check] Top-level error:", error);
+    return json({ 
+      error: "System check failed", 
+      details: error.message,
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }

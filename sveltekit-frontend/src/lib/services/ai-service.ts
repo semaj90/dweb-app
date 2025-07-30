@@ -11,17 +11,46 @@ const normalizeEmbedding = (embedding: number[] | number[][]): number[] => {
 // Enhanced AI Service with Local LLM Integration and Vector Database Support
 // Combines cloud (OpenAI/Ollama) and local (Tauri/Rust) LLM capabilities
 // Supports PostgreSQL with pgvector, Qdrant, Redis, RabbitMQ, and Neo4j
-import { browser } from '$app/environment';
+import { browser } from "$app/environment";
 // Use environment variable safely
-const PUBLIC_OLLAMA_URL = typeof window !== 'undefined' 
-  ? 'http://localhost:11434' 
-  : process.env.OLLAMA_URL || 'http://localhost:11434';
+const PUBLIC_OLLAMA_URL =
+  typeof window !== "undefined"
+    ? "http://localhost:11434"
+    : process.env.OLLAMA_URL || "http://localhost:11434";
 import { tauriLLM } from "./tauri-llm";
+import { getHealthyLlmEndpoint } from "./llm-endpoint";
+
+// Endpoint cache for LLM backend switching
+let cachedLlmEndpoint: string | null = null;
+let endpointCacheTime = 0;
+const ENDPOINT_CACHE_TTL = 30000; // 30 seconds
+
+async function getCachedHealthyLlmEndpoint(
+  forceRefresh = false
+): Promise<string> {
+  const now = Date.now();
+  if (
+    !forceRefresh &&
+    cachedLlmEndpoint &&
+    now - endpointCacheTime < ENDPOINT_CACHE_TTL
+  ) {
+    return cachedLlmEndpoint;
+  }
+  try {
+    const endpoint = await getHealthyLlmEndpoint();
+    cachedLlmEndpoint = endpoint;
+    endpointCacheTime = now;
+    return endpoint;
+  } catch (err) {
+    cachedLlmEndpoint = null;
+    throw err;
+  }
+}
 
 // Client-safe configuration
 const AI_CONFIG = {
-  OLLAMA_URL: PUBLIC_OLLAMA_URL || 'http://localhost:11434',
-  OLLAMA_MODEL: 'llama2',
+  OLLAMA_URL: PUBLIC_OLLAMA_URL || "http://localhost:11434",
+  OLLAMA_MODEL: "llama2",
   // Note: API keys should be handled server-side only
   OPENAI_API_KEY: null, // Will be passed from server
 } as const;
@@ -55,6 +84,10 @@ export interface EmbeddingOptions {
   legalDomain?: boolean;
 }
 class EnhancedAIService {
+  // Expose current LLM endpoint for diagnostics/UI
+  getCurrentLlmEndpoint(): string | null {
+    return cachedLlmEndpoint;
+  }
   private config: AIServiceConfig;
   private isInitialized = false;
 
@@ -80,7 +113,7 @@ class EnhancedAIService {
   // Generate embeddings with intelligent provider selection
   async generateEmbedding(
     text: string | string[],
-    options: EmbeddingOptions = {},
+    options: EmbeddingOptions = {}
   ): Promise<number[] | number[][]> {
     await this.initialize();
 
@@ -110,7 +143,7 @@ class EnhancedAIService {
             console.log("Using local BERT for embeddings");
             result = (await tauriLLM.generateEmbedding(
               inputs,
-              options,
+              options
             )) as number[][];
           } else {
             throw new Error("Local BERT not available");
@@ -139,7 +172,7 @@ class EnhancedAIService {
   // Generate AI responses with intelligent provider selection
   async generateResponse(
     prompt: string,
-    options: GenerationOptions = {},
+    options: GenerationOptions = {}
   ): Promise<string> {
     await this.initialize();
 
@@ -148,7 +181,7 @@ class EnhancedAIService {
     const fullPrompt = this.buildFullPrompt(
       prompt,
       systemPrompt,
-      options.context,
+      options.context
     );
 
     try {
@@ -211,11 +244,11 @@ class EnhancedAIService {
       const [classification, summary] = await Promise.all([
         this.generateResponse(
           `Classify this legal document type and return only the classification (e.g., "Contract", "Brief", "Motion"): ${text.substring(0, 500)}...`,
-          { provider: "tauri-local", legalContext: true },
+          { provider: "tauri-local", legalContext: true }
         ),
         this.generateResponse(
           `Provide a concise summary of this legal document: ${text.substring(0, 1000)}...`,
-          { provider: "tauri-local", legalContext: true },
+          { provider: "tauri-local", legalContext: true }
         ),
       ]);
 
@@ -225,7 +258,7 @@ class EnhancedAIService {
       // Risk assessment
       const riskAssessment = await this.generateResponse(
         `Assess the legal risks in this document: ${text.substring(0, 800)}...`,
-        { provider: "tauri-local", legalContext: true },
+        { provider: "tauri-local", legalContext: true }
       );
 
       return {
@@ -242,7 +275,7 @@ class EnhancedAIService {
   }
   // Batch processing for large document sets
   async batchAnalyzeDocuments(
-    documents: Array<{ id: string; text: string; type?: string }>,
+    documents: Array<{ id: string; text: string; type?: string }>
   ): Promise<
     Array<{
       id: string;
@@ -268,11 +301,11 @@ class EnhancedAIService {
           const embedding = await this.generateEmbedding(doc.text);
           const classification = await this.generateResponse(
             `Classify this document type: ${doc.text.substring(0, 200)}...`,
-            { provider: "tauri-local" },
+            { provider: "tauri-local" }
           );
           const summary = await this.generateResponse(
             `Summarize: ${doc.text.substring(0, 500)}...`,
-            { provider: "tauri-local" },
+            { provider: "tauri-local" }
           );
 
           results.push({
@@ -306,7 +339,7 @@ class EnhancedAIService {
           })) as number[];
           const summary = await this.generateResponse(
             `Summarize this document: ${doc.text.substring(0, 500)}...`,
-            { maxTokens: 100 },
+            { maxTokens: 100 }
           );
 
           results.push({
@@ -327,7 +360,7 @@ class EnhancedAIService {
   }
   // Smart provider selection for embeddings
   private selectEmbeddingProvider(
-    options: EmbeddingOptions,
+    options: EmbeddingOptions
   ): EmbeddingProvider {
     if (options.provider && options.provider !== "auto") {
       return options.provider;
@@ -340,14 +373,14 @@ class EnhancedAIService {
     ) {
       const models = tauriLLM.getAvailableModels();
       const hasLegalBERT = models.some(
-        (m) => m.architecture === "legal-bert" && m.type === "embedding",
+        (m) => m.architecture === "legal-bert" && m.type === "embedding"
       );
 
       if (hasLegalBERT) {
         return "tauri-legal-bert";
       }
       const hasBERT = models.some(
-        (m) => m.architecture === "bert" && m.type === "embedding",
+        (m) => m.architecture === "bert" && m.type === "embedding"
       );
       if (hasBERT) {
         return "tauri-bert";
@@ -368,14 +401,23 @@ class EnhancedAIService {
     ) {
       const models = tauriLLM.getAvailableModels();
       const hasLegalLLM = models.some(
-        (m) => m.type === "chat" && m.domain === "legal",
+        (m) => m.type === "chat" && m.domain === "legal"
       );
 
       if (hasLegalLLM) {
         return "tauri-local";
       }
     }
-    // Check Ollama availability
+    // Check healthy LLM endpoint (Ollama or vLLM)
+    // This will prefer vLLM if available, else Ollama
+    // (We still return "ollama" for compatibility, but endpoint is dynamic)
+    try {
+      const endpoint = cachedLlmEndpoint || null;
+      if (endpoint) {
+        if (endpoint.includes(":11434")) return "ollama";
+        if (endpoint.includes(":8000")) return "ollama"; // treat vLLM as ollama for now
+      }
+    } catch {}
     if (AI_CONFIG.OLLAMA_URL) {
       return "ollama";
     }
@@ -398,7 +440,7 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
   private buildFullPrompt(
     prompt: string,
     systemPrompt: string,
-    context?: string[],
+    context?: string[]
   ): string {
     let fullPrompt = "";
 
@@ -422,7 +464,7 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
       },
       body: JSON.stringify({
         texts: texts,
-        provider: "openai"
+        provider: "openai",
       }),
     });
 
@@ -435,7 +477,7 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
   // OpenAI chat completion implementation
   private async generateOpenAIResponse(
     prompt: string,
-    options: GenerationOptions,
+    options: GenerationOptions
   ): Promise<string> {
     // Use server-side API endpoint for OpenAI calls
     const response = await fetch("/api/ai/chat", {
@@ -460,29 +502,61 @@ Consider jurisdiction-specific laws and regulations. Always clarify if you need 
   // Ollama implementation
   private async generateOllamaResponse(
     prompt: string,
-    options: GenerationOptions,
+    options: GenerationOptions
   ): Promise<string> {
-    const ollamaUrl = AI_CONFIG.OLLAMA_URL;
-
-    const response = await fetch(`${ollamaUrl}/api/generate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: AI_CONFIG.OLLAMA_MODEL,
-        prompt,
-        stream: false,
-        options: {
-          temperature: options.temperature || 0.7,
-          max_tokens: options.maxTokens || 512,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.statusText}`);
+    let endpoint: string;
+    let triedRefresh = false;
+    let lastError: any = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        endpoint = await getCachedHealthyLlmEndpoint(triedRefresh);
+        // Determine if endpoint is Ollama or vLLM (for future extensibility)
+        let apiPath = endpoint.includes(":11434")
+          ? "/api/generate"
+          : "/chat/completions";
+        let body: any = endpoint.includes(":11434")
+          ? {
+              model: AI_CONFIG.OLLAMA_MODEL,
+              prompt,
+              stream: false,
+              options: {
+                temperature: options.temperature || 0.7,
+                max_tokens: options.maxTokens || 512,
+              },
+            }
+          : {
+              model: "gemma-3b-legal", // or another default for vLLM
+              messages: [{ role: "user", content: prompt }],
+              max_tokens: options.maxTokens || 512,
+              temperature: options.temperature || 0.7,
+            };
+        const response = await fetch(`${endpoint}${apiPath}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+          throw new Error(`LLM API error: ${response.statusText}`);
+        }
+        const data = await response.json();
+        // Ollama returns { response }, vLLM returns { choices: [{ message: { content } }] }
+        if (endpoint.includes(":11434")) {
+          return data.response || "No response generated";
+        } else {
+          return data.choices?.[0]?.message?.content || "No response generated";
+        }
+      } catch (err) {
+        lastError = err;
+        // On first error, force endpoint refresh and retry
+        if (!triedRefresh) {
+          triedRefresh = true;
+          cachedLlmEndpoint = null;
+          continue;
+        }
+        break;
+      }
     }
-    const data = await response.json();
-    return data.response || "No response generated";
+    throw lastError || new Error("Failed to get LLM response");
   }
   // Simple legal entity extraction (placeholder for NER model)
   private extractLegalEntities(text: string): string[] {

@@ -1,7 +1,7 @@
 <!-- AI Chat Test Page - Showcasing Svelte 5 + bits-ui + Docker Ollama Integration -->
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Button } from "$lib/components/ui/button";
+  import Button from "$lib/components/ui/button/Button.svelte";
   import Card from "$lib/components/ui/Card.svelte";
   import Badge from "$lib/components/ui/Badge.svelte";
   import EnhancedAIChatTest from "$lib/components/ai/EnhancedAIChatTest.svelte";
@@ -20,9 +20,14 @@
 
   // State using Svelte 5 runes
   let systemStatus = $state<{
-    ollama: { status: string; version?: string; error?: string };
-    database: { status: string; error?: string };
-    environment: { ollamaUrl: string };
+    services?: {
+      ollama: { status: string; version?: string; error?: string };
+      database: { status: string; error?: string };
+    };
+    environment?: { ollamaUrl: string };
+    // Legacy structure for compatibility
+    ollama?: { status: string; version?: string; error?: string };
+    database?: { status: string; error?: string };
   } | null>(null);
 
   let chatOpen = $state(false);
@@ -37,13 +42,30 @@
     try {
       isLoading = true;
       const response = await fetch("/api/system/check");
-      systemStatus = await response.json();
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      
+      // Normalize the response structure for compatibility
+      systemStatus = {
+        services: data.services,
+        environment: data.environment,
+        // Legacy compatibility
+        ollama: data.services?.ollama || data.ollama,
+        database: data.services?.database || data.database
+      };
     } catch (error) {
       console.error("Failed to check system status:", error);
       systemStatus = {
+        services: {
+          ollama: { status: "error", error: "Failed to connect" },
+          database: { status: "error", error: "Failed to connect" }
+        },
+        environment: { ollamaUrl: "unknown" },
+        // Legacy compatibility
         ollama: { status: "error", error: "Failed to connect" },
-        database: { status: "error", error: "Failed to connect" },
-        environment: { ollamaUrl: "unknown" }
+        database: { status: "error", error: "Failed to connect" }
       };
     } finally {
       isLoading = false;
@@ -283,7 +305,7 @@
     <div class="text-center mt-8">
       <Button
         variant="outline"
-        on:click={checkSystemStatus}
+        onclick={checkSystemStatus}
         disabled={isLoading}
         class="gap-2"
       >

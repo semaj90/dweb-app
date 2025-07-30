@@ -295,7 +295,7 @@
 				{#each sampleQueries as query, i}
 					<button
 						type="button"
-						on:click={() => handleSampleQuery(query.query)}
+						onclick={() => handleSampleQuery(query.query)}
 						class="text-left bg-white border border-gray-200 p-6 hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10 group rounded-lg"
 						in:fly={{ x: i % 2 === 0 ? -50 : 50, duration: 600, delay: i * 150, easing: quintOut }}
 					>
@@ -387,7 +387,7 @@
 		<div class="flex justify-between items-center mb-4">
 			<h3 class="font-semibold">Legal AI Chat</h3>
 			<button 
-				on:click={closeChat}
+				onclick={closeChat}
 				class="text-gray-500 hover:text-gray-800"
 			>
 				✕
