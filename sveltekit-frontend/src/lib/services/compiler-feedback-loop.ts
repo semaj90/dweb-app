@@ -314,15 +314,13 @@ export class CompilerFeedbackLoop {
       const results = await this.ragEngine.performRAGQuery({
         query,
         maxResults: 5,
-        includePageRank: true,
-        includeFeedback: true,
-        contextWindow: 1000
+        minConfidence: 0.3
       });
 
-      return results.documents.map(doc => ({
-        content: doc.content,
-        relevance: doc.relevance,
-        source: doc.metadata?.source || 'unknown'
+      return results.map(result => ({
+        content: result.document.content,
+        relevance: result.finalScore,
+        source: (result.document.metadata as any)?.source || 'unknown'
       }));
     } catch (error) {
       console.warn('⚠️ RAG query failed:', error);

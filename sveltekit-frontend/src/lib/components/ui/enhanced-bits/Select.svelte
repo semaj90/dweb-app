@@ -63,7 +63,7 @@
   }: SelectProps = $props();
 
   // Group options by category if they have categories
-  const groupedOptions = $derived(() => {
+  const groupedOptions = $derived((() => {
     const hasCategories = options.some(option => option.category);
     
     if (!hasCategories) {
@@ -78,47 +78,37 @@
       acc[category].push(option);
       return acc;
     }, {} as Record<string, SelectOption[]>);
-  });
+  })());
 
   // Reactive trigger classes using $derived
-  const triggerClasses = $derived(() => {
-    const base = 'bits-select-trigger';
-    
-    const sizes = {
-      sm: 'h-8 px-3 text-xs',
-      md: 'h-10 px-3 text-sm',
-      lg: 'h-12 px-4 text-base'
-    };
-
-    return cn(
-      base,
-      sizes[size],
-      {
-        'w-full': fullWidth,
-        'nier-bits-select': legal,
-        'yorha-input': evidenceCategory || caseType,
-        'border-red-500 bg-red-50': error,
-        'border-green-500 bg-green-50': aiRecommendations && value,
-        'font-gothic tracking-wide': legal,
-        'cursor-not-allowed opacity-50': disabled
-      },
-      triggerClass
-    );
-  });
+  const triggerClasses = $derived(cn(
+    'bits-select-trigger',
+    {
+      'h-8 px-3 text-xs': size === 'sm',
+      'h-10 px-3 text-sm': size === 'md',
+      'h-12 px-4 text-base': size === 'lg',
+      'w-full': fullWidth,
+      'nier-bits-select': legal,
+      'yorha-input': evidenceCategory || caseType,
+      'border-red-500 bg-red-50': error,
+      'border-green-500 bg-green-50': aiRecommendations && value,
+      'font-gothic tracking-wide': legal,
+      'cursor-not-allowed opacity-50': disabled
+    },
+    triggerClass
+  ));
 
   // Reactive content classes using $derived
-  const selectContentClasses = $derived(() => {
-    return cn(
-      'bits-select-content',
-      {
-        'nier-panel-elevated shadow-xl': legal,
-        'border-2 border-nier-border-primary': evidenceCategory,
-        'yorha-card': caseType,
-        'bg-gradient-to-b from-nier-bg-primary to-nier-bg-secondary': legal
-      },
-      contentClass
-    );
-  });
+  const selectContentClasses = $derived(cn(
+    'bits-select-content',
+    {
+      'nier-panel-elevated shadow-xl': legal,
+      'border-2 border-nier-border-primary': evidenceCategory,
+      'yorha-card': caseType,
+      'bg-gradient-to-b from-nier-bg-primary to-nier-bg-secondary': legal
+    },
+    contentClass
+  ));
 
   // Handle value change
   function handleValueChange(newValue: string) {
@@ -127,15 +117,14 @@
   }
 
   // Get selected option label
-  const selectedLabel = $derived(() => {
-    const selectedOption = options.find(option => option.value === value);
-    return selectedOption?.label || placeholder;
-  });
+  const selectedLabel = $derived(
+    options.find(option => option.value === value)?.label || placeholder
+  );
 </script>
 
 <div class="select-wrapper" class:w-full={fullWidth}>
   <BitsSelect.Root {value} onValueChange={handleValueChange} {disabled} type="single">
-    <BitsSelect.Trigger class={triggerClasses()}>
+    <BitsSelect.Trigger class={triggerClasses}>
       <div class="select-value">
         {selectedLabel}
       </div>
@@ -145,7 +134,7 @@
     </BitsSelect.Trigger>
 
     <BitsSelect.Portal>
-      <BitsSelect.Content class={selectContentClasses()}>
+      <BitsSelect.Content class={selectContentClasses}>
         <BitsSelect.Viewport class="p-1">
           {#each Object.entries(groupedOptions) as [category, categoryOptions]}
             {#if category && Object.keys(groupedOptions).length > 1}

@@ -62,6 +62,71 @@
         "command": "mcp.analyzeFullStack",
         "title": "🔍 Analyze Full Tech Stack",
         "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.runAgentOrchestrator",
+        "title": "🤖 Run Agent Orchestrator",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.openRAGStudio",
+        "title": "🎛️ Open EnhancedRAG Studio",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.generateBestPractices",
+        "title": "📋 Generate Best Practices Report",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.uploadDocument",
+        "title": "📄 Upload Document to Knowledge Base",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.crawlWebsite",
+        "title": "🌐 Crawl Website for Knowledge Base",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.syncLibraries",
+        "title": "🔄 Sync Library Metadata",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.viewAgentLogs",
+        "title": "📝 View Agent Call Logs",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.searchLibraries",
+        "title": "🔍 Search Libraries",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.createWorkflow",
+        "title": "⚡ Create Multi-Agent Workflow",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.viewWorkflows",
+        "title": "📊 View Active Workflows",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.recordFeedback",
+        "title": "⭐ Record User Feedback",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.viewMetrics",
+        "title": "📈 View Performance Metrics",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.getBenchmarks",
+        "title": "🎯 Get Benchmark Results",
+        "category": "Context7 MCP"
       }
     ],
     "menus": {
@@ -93,6 +158,12 @@
         "priority": 100
       }
     ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "enhancedRAGServer",
+        "label": "Enhanced RAG & Multi-Agent Server"
+      }
+    ],
     "configuration": {
       "title": "Context7 MCP Assistant",
       "properties": {
@@ -115,7 +186,7 @@
           "type": "number",
           "default": 0.7,
           "minimum": 0.1,
-          "maximum": 1.0,
+          "maximum": 1,
           "description": "Minimum confidence threshold for MCP suggestions"
         },
         "mcpContext7.maxSuggestions": {
@@ -127,7 +198,12 @@
         },
         "mcpContext7.logLevel": {
           "type": "string",
-          "enum": ["error", "warn", "info", "debug"],
+          "enum": [
+            "error",
+            "warn",
+            "info",
+            "debug"
+          ],
           "default": "info",
           "description": "Logging level for MCP extension"
         }

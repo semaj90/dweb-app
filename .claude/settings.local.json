@@ -81,7 +81,13 @@
       "Bash(python:*)",
       "Bash(docker volume:*)",
       "Bash(docker run:*)",
-      "Bash(docker start:*)"
+      "Bash(docker start:*)",
+      "mcp__filesystem__list_directory",
+      "Bash(npm search:*)",
+      "Bash(npm search canvas-types)",
+      "Bash(timeout 10 npm run dev)",
+      "Bash(realpath:*)",
+      "Bash(powershell.exe:*)"
     ],
     "deny": []
   }

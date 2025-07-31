@@ -85,7 +85,7 @@
       <h3 class="text-lg font-semibold text-yellow-800 mb-2">Next Steps</h3>
       <ol class="list-decimal list-inside space-y-2 text-yellow-700">
         <li>Run <code class="bg-yellow-100 px-2 py-1 rounded">TEST-MCP-SERVER.bat</code> to verify all integrations</li>
-        <li>Start vLLM server: <code class="bg-yellow-100 px-2 py-1 rounded">python vllm-legal-server.py</code></li>
+        <li>Start Ollama server: <code class="bg-yellow-100 px-2 py-1 rounded">ollama serve</code></li>
         <li>Configure Claude Desktop with <code class="bg-yellow-100 px-2 py-1 rounded">SETUP-CLAUDE-MCP-CONTEXT7.bat</code></li>
         <li>Test MCP tools in Claude Desktop or VS Code with Context7 integration</li>
         <li>Use tools for legal AI development guidance and best practices</li>

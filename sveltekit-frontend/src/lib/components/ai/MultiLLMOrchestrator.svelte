@@ -47,7 +47,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
     autoStart = true,
     showMetrics = true,
     maxConcurrentTasks = 3,
-    enabledProviders = ['ollama', 'vllm', 'autogen', 'crewai']
+    enabledProviders = ['ollama', 'autogen', 'crewai']
   }: Props = $props();
 
   // Component state
@@ -76,15 +76,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
       status: 'unknown',
       models: ['gemma3-legal', 'llama3:8b-instruct', 'nomic-embed-text']
     },
-    {
-      id: 'vllm',
-      name: 'vLLM',
-      icon: Zap,
-      endpoint: 'http://localhost:8000',
-      enabled: true,
-      status: 'unknown',
-      models: ['vllm-gemma3-legal']
-    },
+    
     {
       id: 'autogen',
       name: 'AutoGen',
@@ -106,16 +98,12 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
   ]);
 
   // Derived stores
-  let totalTasks = $derived(() => activeTasks.size + completedTasks.size + taskErrors.size);
-  let successRate = $derived(() => {
-    const total = totalTasks;
-    return total > 0 ? Math.round((completedTasks.size / total) * 100) : 0;
-  });
-  let averageResponseTime = $derived(() => {
-    if (processingMetrics.length === 0) return 0;
-    const total = processingMetrics.reduce((sum, m) => sum + (m.processingTime || 0), 0);
-    return Math.round(total / processingMetrics.length);
-  });
+  let totalTasks = $derived(activeTasks.size + completedTasks.size + taskErrors.size);
+  let successRate = $derived(totalTasks > 0 ? Math.round((completedTasks.size / totalTasks) * 100) : 0);
+  let averageResponseTime = $derived(
+    processingMetrics.length === 0 ? 0 : 
+    Math.round(processingMetrics.reduce((sum, m) => sum + (m.processingTime || 0), 0) / processingMetrics.length)
+  );
 
   onMount(async () => {
     if (autoStart) {

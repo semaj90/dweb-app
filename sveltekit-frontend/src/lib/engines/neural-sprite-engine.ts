@@ -153,6 +153,7 @@ export class NeuralSpriteEngine {
   });
 
   // Performance metrics (NES-inspired)
+  private startTime: number;
   private frameCount = 0;
   private cacheHits = 0;
   private cacheMisses = 0;

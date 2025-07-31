@@ -192,8 +192,6 @@ class AIServiceWorker {
       switch (provider.type) {
         case "ollama":
           return await this.callOllama(provider, task, signal);
-        case "vllm":
-          return await this.callVLLM(provider, task, signal);
         case "autogen":
           return await this.callAutoGen(provider, task, signal);
         case "crewai":
@@ -254,47 +252,7 @@ class AIServiceWorker {
     };
   }
 
-  private async callVLLM(
-    provider: AIProviderConfig,
-    task: AITask,
-    signal: AbortSignal,
-  ): Promise<AIResponse> {
-    const response = await fetch(`${provider.endpoint}/v1/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: task.model,
-        prompt: task.prompt,
-        max_tokens: task.maxTokens || 1024,
-        temperature: task.temperature || 0.1,
-        top_p: task.topP || 0.9,
-        stream: false,
-      }),
-      signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `vLLM API error: ${response.status} ${response.statusText}`,
-      );
-    }
-
-    const data = await response.json();
-    const choice = data.choices[0];
-
-    return {
-      id: crypto.randomUUID(),
-      content: choice.text,
-      providerId: provider.id,
-      model: task.model,
-      tokensUsed: data.usage?.total_tokens || 0,
-      responseTime: Date.now() - task.timestamp,
-      metadata: {
-        finishReason: choice.finish_reason,
-        usage: data.usage,
-      },
-    };
-  }
+  
 
   private async callAutoGen(
     provider: AIProviderConfig,

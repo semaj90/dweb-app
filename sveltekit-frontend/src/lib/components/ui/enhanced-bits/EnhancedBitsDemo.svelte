@@ -84,15 +84,17 @@
   }
 
   // Reactive computed values using $derived
-  const tabClasses = $derived((tab: string) => cn(
-    'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
-    {
-      'border-nier-border-primary text-nier-text-primary bg-nier-bg-tertiary': currentTab === tab,
-      'border-transparent text-nier-text-secondary hover:text-nier-text-primary hover:border-nier-border-secondary': currentTab !== tab
-    }
-  ));
+  function tabClasses(tab: string) {
+    return cn(
+      'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+      {
+        'border-nier-border-primary text-nier-text-primary bg-nier-bg-tertiary': currentTab === tab,
+        'border-transparent text-nier-text-secondary hover:text-nier-text-primary hover:border-nier-border-secondary': currentTab !== tab
+      }
+    );
+  }
 
-  const demoSections = $derived(() => [
+  const demoSections = $derived([
     { id: 'buttons', label: 'Enhanced Buttons', icon: FileText },
     { id: 'inputs', label: 'Smart Inputs', icon: Search },
     { id: 'dialogs', label: 'Legal Dialogs', icon: Scale },
@@ -114,7 +116,7 @@
   <!-- Tab Navigation -->
   <div class="border-b border-nier-border-secondary mb-6">
     <nav class="flex space-x-8">
-      {#each demoSections() as section (section.id)}
+      {#each demoSections as section (section.id)}
         <button
           class={tabClasses(section.id)}
           on:click={() => currentTab = section.id}

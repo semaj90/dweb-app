@@ -4,10 +4,12 @@
  */
 
 import cluster from 'node:cluster';
+import type { Worker } from 'node:cluster';
 import { cpus } from 'node:os';
 import { EventEmitter } from 'node:events';
 import { createServer } from 'node:http';
-import { handler } from '../../../build/handler.js';
+// Handler will be imported dynamically when build is available
+let handler: any;
 import { writable, type Writable } from 'svelte/store';
 
 // Cluster configuration interfaces
@@ -64,6 +66,8 @@ export interface ClusterHealth {
 export class SvelteKitClusterManager extends EventEmitter {
   private config: ClusterConfig;
   private workers = new Map<number, WorkerMetrics>();
+  private workerInstances = new Map<number, Worker>();
+  private connectionCounts = new Map<number, number>();
   private requestCounter = 0;
   private startTime = Date.now();
   
@@ -73,7 +77,6 @@ export class SvelteKitClusterManager extends EventEmitter {
   
   // Load balancing state
   private roundRobinIndex = 0;
-  private connectionCounts = new Map<number, number>();
 
   constructor(config: Partial<ClusterConfig> = {}) {
     super();
@@ -175,6 +178,8 @@ export class SvelteKitClusterManager extends EventEmitter {
   private createWorker(): void {
     const worker = cluster.fork();
     
+    // Add to both worker maps
+    this.workerInstances.set(worker.id, worker);
     this.workers.set(worker.id, {
       workerId: worker.id,
       pid: worker.process.pid!,
@@ -194,8 +199,9 @@ export class SvelteKitClusterManager extends EventEmitter {
   /**
    * Handle worker process exit and restart
    */
-  private handleWorkerExit(worker: cluster.Worker): void {
+  private handleWorkerExit(worker: Worker): void {
     this.workers.delete(worker.id);
+    this.workerInstances.delete(worker.id);
     this.connectionCounts.delete(worker.id);
     
     // Restart worker unless shutting down
@@ -211,9 +217,10 @@ export class SvelteKitClusterManager extends EventEmitter {
   private createLoadBalancer(): void {
     const server = createServer((req, res) => {
       const workerId = this.selectWorker(req);
-      const worker = cluster.workers![workerId];
+      const worker = this.workerInstances.get(workerId);
+      const workerMetrics = this.workers.get(workerId);
       
-      if (worker && worker.isDead() === false) {
+      if (worker && workerMetrics && workerMetrics.status !== 'dead') {
         this.forwardRequest(worker, req, res);
       } else {
         // Fallback to any available worker
@@ -236,8 +243,12 @@ export class SvelteKitClusterManager extends EventEmitter {
    * Select worker based on load balancing strategy
    */
   private selectWorker(req: any): number {
-    const availableWorkers = Array.from(this.workers.keys()).filter(
-      id => cluster.workers![id] && !cluster.workers![id]!.isDead()
+    const availableWorkers = Array.from(this.workerInstances.keys()).filter(
+      id => {
+        const worker = this.workerInstances.get(id);
+        const workerMetrics = this.workers.get(id);
+        return worker && workerMetrics && workerMetrics.status !== 'dead';
+      }
     );
 
     if (availableWorkers.length === 0) {
@@ -299,7 +310,7 @@ export class SvelteKitClusterManager extends EventEmitter {
   /**
    * Forward request to selected worker
    */
-  private forwardRequest(worker: cluster.Worker, req: any, res: any): void {
+  private forwardRequest(worker: Worker, req: any, res: any): void {
     // Track connection count
     const connections = this.connectionCounts.get(worker.id) || 0;
     this.connectionCounts.set(worker.id, connections + 1);
@@ -327,8 +338,8 @@ export class SvelteKitClusterManager extends EventEmitter {
   /**
    * Get any available worker
    */
-  private getAvailableWorker(): cluster.Worker | null {
-    for (const worker of Object.values(cluster.workers!)) {
+  private getAvailableWorker(): Worker | null {
+    for (const [workerId, worker] of this.workerInstances) {
       if (worker && !worker.isDead()) {
         return worker;
       }
@@ -535,7 +546,7 @@ export class SvelteKitClusterManager extends EventEmitter {
    * Get cluster health information
    */
   public getHealth(): ClusterHealth {
-    return this.health;
+    return this.getInitialHealth(); // Return actual health data, not the store
   }
 
   /**

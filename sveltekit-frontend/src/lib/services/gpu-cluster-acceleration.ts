@@ -6,7 +6,8 @@
 
 import { EventEmitter } from 'node:events';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
-import { createCanvas, Canvas } from 'canvas';
+// Canvas types - will be dynamically imported when needed
+type Canvas = any;
 import { JSDOM } from 'jsdom';
 import cluster from 'node:cluster';
 import { writable, type Writable } from 'svelte/store';
@@ -158,6 +159,46 @@ export class GPUClusterManager extends EventEmitter {
   }
 
   /**
+   * Handle messages from GPU workers
+   */
+  private handleWorkerMessage(workerId: string, message: any): void {
+    try {
+      switch (message.type) {
+        case 'workload_complete':
+          this.emit('workloadComplete', {
+            workerId,
+            workloadId: message.workloadId,
+            result: message.result,
+            executionTime: message.executionTime
+          });
+          break;
+        
+        case 'context_ready':
+          console.log(`✅ GPU context ready on worker ${workerId}: ${message.contextId}`);
+          break;
+        
+        case 'shader_compiled':
+          console.log(`🔥 Shader compiled on worker ${workerId}: ${message.shaderId}`);
+          break;
+        
+        case 'error':
+          console.error(`❌ GPU worker ${workerId} error:`, message.error);
+          this.emit('workerError', { workerId, error: message.error });
+          break;
+        
+        case 'metrics':
+          this.emit('workerMetrics', { workerId, metrics: message.metrics });
+          break;
+        
+        default:
+          console.warn(`⚠️ Unknown message type from worker ${workerId}:`, message.type);
+      }
+    } catch (error) {
+      console.error(`Failed to handle worker message from ${workerId}:`, error);
+    }
+  }
+
+  /**
    * Create GPU contexts (WebGL/WebGPU) for a worker
    */
   private async createGPUContexts(workerId: number): Promise<void> {
@@ -214,8 +255,15 @@ export class GPUClusterManager extends EventEmitter {
     }
 
     if (!device) {
-      // Create WebGL context using node-canvas
-      canvas = createCanvas(1, 1); // Offscreen canvas
+      // Create WebGL context using node-canvas (dynamic import)
+      try {
+        // @ts-ignore - Optional canvas module for Node.js environments
+        const canvasModule = await import('canvas');
+        canvas = canvasModule.createCanvas(1, 1); // Offscreen canvas
+      } catch {
+        // Fallback to browser OffscreenCanvas if available
+        canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(1, 1) : null;
+      }
       
       try {
         if (contextType === 'webgl2') {
@@ -751,14 +799,14 @@ export class GPUClusterManager extends EventEmitter {
       });
     } else {
       // Worker process: handle GPU work locally
-      process.on('message', (message) => {
-        if (message.type === 'gpu-workload') {
+      process.on('message', (message: any) => {
+        if (message?.type === 'gpu-workload') {
           this.executeWorkload(message.workload)
             .then(result => {
-              process.send?.({ type: 'gpu-result', result, workloadId: message.workload.id });
+              process.send?.({ type: 'gpu-result', result, workloadId: message.workload?.id });
             })
             .catch(error => {
-              process.send?.({ type: 'gpu-error', error: error.message, workloadId: message.workload.id });
+              process.send?.({ type: 'gpu-error', error: error.message, workloadId: message.workload?.id });
             });
         }
       });
@@ -1011,7 +1059,14 @@ export async function checkGPUCapabilities(): Promise<{
 
   try {
     // Check WebGL support in Node.js
-    const canvas = createCanvas(1, 1);
+    let canvas: any;
+    try {
+      // @ts-ignore - Optional canvas module for Node.js environments
+      const canvasModule = await import('canvas');
+      canvas = canvasModule.createCanvas(1, 1);
+    } catch {
+      return capabilities; // Return default if canvas not available
+    }
     
     const webglContext = canvas.getContext('webgl');
     if (webglContext) {

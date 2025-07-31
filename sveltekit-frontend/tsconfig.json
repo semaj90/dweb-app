@@ -38,6 +38,8 @@
     "*.config.*",
     "scripts/**",
     "js_tests/**",
-    "enhanced-package-setup.mjs"
+    "enhanced-package-setup.mjs",
+    "../vscode-llm-extension/**",
+    "../rag/**"
   ]
 }

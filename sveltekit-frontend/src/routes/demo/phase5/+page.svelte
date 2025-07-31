@@ -487,7 +487,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                   <CheckCircle class="h-4 w-4" />
-                  <span>Use multi-processor setup for VLLM inference acceleration</span>
+                  <span>Use multi-processor setup for Ollama inference acceleration</span>
                 </div>
                 <div class="flex items-center gap-2">
                   <CheckCircle class="h-4 w-4" />

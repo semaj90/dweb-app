@@ -126,22 +126,22 @@
   ];
 
   // Reactive filtering of results based on confidence
-  const filteredResults = $derived(() => {
-    if (selectedConfidence === 'all') return searchResults;
-    
-    const thresholds = {
-      high: 0.9,
-      medium: 0.7,
-      low: 0.0
-    };
-    
-    const minScore = thresholds[selectedConfidence as keyof typeof thresholds];
-    const maxScore = selectedConfidence === 'low' ? 0.7 : 1.0;
-    
-    return searchResults.filter(result => 
-      result.score >= minScore && result.score < maxScore
-    );
-  });
+  const filteredResults = $derived(
+    selectedConfidence === 'all' ? searchResults : (() => {
+      const thresholds = {
+        high: 0.9,
+        medium: 0.7,
+        low: 0.0
+      };
+      
+      const minScore = thresholds[selectedConfidence as keyof typeof thresholds];
+      const maxScore = selectedConfidence === 'low' ? 0.7 : 1.0;
+      
+      return searchResults.filter(result => 
+        result.score >= minScore && result.score < maxScore
+      );
+    })()
+  );
 
   // Entity type icons mapping
   const entityIcons = {
@@ -350,7 +350,7 @@
     <div class="demo-results-section">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-gothic text-nier-text-primary">
-          Search Results ({filteredResults().length})
+          Search Results ({filteredResults.length})
         </h2>
         <div class="text-sm text-nier-text-muted">
           Showing {selectedConfidence} confidence results
@@ -358,7 +358,7 @@
       </div>
       
       <div class="space-y-4">
-        {#each filteredResults() as result (result.id)}
+        {#each filteredResults as result (result.id)}
           <Card
             variant="default"
             evidenceCard
@@ -459,7 +459,7 @@
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div class="agent-card p-3">
           <div class="text-lg font-bold text-nier-text-primary">
-            {filteredResults().length}
+            {filteredResults.length}
           </div>
           <div class="text-xs text-nier-text-muted">Results Found</div>
         </div>

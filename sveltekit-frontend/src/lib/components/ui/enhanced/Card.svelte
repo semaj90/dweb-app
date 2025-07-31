@@ -16,13 +16,12 @@
 		...props
 	}: Props = $props();
 
-	const cardClasses = $derived(() => {
-		let classes = 'yorha-card shadcn-card';
-		if (elevated) classes += ' yorha-card-elevated';
-		if (interactive) classes += ' cursor-pointer hover:scale-[1.02] transition-transform duration-200';
-		if (className) classes += ` ${className}`;
-		return classes;
-	});
+	const cardClasses = $derived([
+		'yorha-card shadcn-card',
+		elevated && 'yorha-card-elevated',
+		interactive && 'cursor-pointer hover:scale-[1.02] transition-transform duration-200',
+		className
+	].filter(Boolean).join(' '));
 </script>
 
 <div

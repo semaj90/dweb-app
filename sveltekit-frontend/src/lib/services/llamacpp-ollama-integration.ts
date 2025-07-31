@@ -6,7 +6,7 @@
 
 import { writable, derived, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import { createFlashAttention2Service, type FlashAttention2Config } from './flashattention2-rtx3060';
+// FlashAttention2 support (disabled - module was removed)
 
 // Llama.cpp Configuration
 export interface LlamaCppConfig {
@@ -94,7 +94,7 @@ export class LlamaCppOllamaService {
   private llamaConfig: LlamaCppConfig;
   private ollamaConfig: OllamaConfig;
   private flashAttentionConfig: FlashAttention2Config;
-  private flashAttentionService: ReturnType<typeof createFlashAttention2Service>;
+  public flashAttentionService: any; // Disabled - service not available
   private isInitialized = false;
   private ollamaProcess?: any;
 
@@ -210,17 +210,17 @@ export class LlamaCppOllamaService {
       ...flashAttentionConfig
     };
 
-    // Initialize FlashAttention2 service
-    this.flashAttentionService = createFlashAttention2Service({
-      enabled: this.flashAttentionConfig.enabled,
-      blockSize: this.flashAttentionConfig.blockSize,
-      headDim: this.flashAttentionConfig.headDim,
-      maxSeqLen: this.flashAttentionConfig.maxSeqLen,
-      splitKv: this.flashAttentionConfig.splitKv,
-      useTensorCores: true,
-      numericalPrecision: 'fp16', // RTX 3060 optimized
-      approximationLevel: 'fast'
-    });
+    // FlashAttention2 service disabled (module removed)
+    this.flashAttentionService = {
+      stores: {
+        configStatus: writable('disabled'),
+        performanceMetrics: writable({ throughput: 0, latency: 0 })
+      },
+      derived: {
+        isReady: false
+      },
+      cleanup: async () => {}
+    };
 
     this.initialize();
   }
@@ -706,10 +706,10 @@ export function createLlamaCppOllamaService(
         [service.performanceMetrics, service.flashAttentionService.stores.performanceMetrics], 
         ([$metrics, $flashMetrics]) => ({
           overall: Math.round(($metrics.tokensPerSecond / 100) * $metrics.successRate),
-          flashAttention: $flashMetrics.tensorCoreUtilization || $metrics.flashAttentionEfficiency,
-          rtx3060Usage: $flashMetrics.computeUtilization || $metrics.rtx3060Utilization,
-          memoryEfficiency: Math.max(0, 100 - ($flashMetrics.memoryUtilization || $metrics.memoryUsage / 8192) * 100),
-          thermalEfficiency: $flashMetrics.gpuTemperatureC < 80 ? 100 : Math.max(0, 100 - ($flashMetrics.gpuTemperatureC - 80) * 5)
+          flashAttention: ($flashMetrics as any)?.tensorCoreUtilization || $metrics.flashAttentionEfficiency,
+          rtx3060Usage: ($flashMetrics as any)?.computeUtilization || $metrics.rtx3060Utilization,
+          memoryEfficiency: Math.max(0, 100 - (($flashMetrics as any)?.memoryUtilization || $metrics.memoryUsage / 8192) * 100),
+          thermalEfficiency: (($flashMetrics as any)?.gpuTemperatureC || 70) < 80 ? 100 : Math.max(0, 100 - ((($flashMetrics as any)?.gpuTemperatureC || 70) - 80) * 5)
         })
       )
     },

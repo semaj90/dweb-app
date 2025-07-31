@@ -813,3 +813,160 @@ function extractSources(
 
   return Array.from(sources);
 }
+
+// RL Ranking Datastore Implementation
+export interface RLRankingSummary {
+  id: string;
+  timestamp: number;
+  prompt: string;
+  confidence: number;
+  tokensUsed: number;
+  processingTime: number;
+  successful: boolean;
+  agentsUsed: string[];
+  userFeedback?: 'positive' | 'negative' | 'neutral';
+  effectiveness: number; // 0-1 score
+  nextActions: NextAction[];
+  recommendations: Recommendation[];
+}
+
+export class RLRankingDatastore {
+  private redisClient: any;
+  private summariesKey = 'copilot:rl:summaries';
+  private userActivityKey = 'copilot:rl:user_activity';
+  private rankingModelKey = 'copilot:rl:ranking_model';
+
+  constructor() {
+    this.initializeRedis();
+  }
+
+  private async initializeRedis() {
+    try {
+      this.redisClient = await getRedisClient();
+    } catch (error) {
+      console.error('Failed to initialize Redis for RL ranking:', error);
+    }
+  }
+
+  async storeSummary(result: CopilotSelfPromptResult, prompt: string): Promise<void> {
+    if (!this.redisClient) return;
+
+    const summary: RLRankingSummary = {
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      prompt,
+      confidence: result.metadata.confidence,
+      tokensUsed: result.metadata.tokensUsed,
+      processingTime: result.metadata.processingTime,
+      successful: result.nextActions.length > 0 && result.recommendations.length > 0,
+      agentsUsed: result.metadata.sources,
+      effectiveness: this.calculateEffectiveness(result),
+      nextActions: result.nextActions,
+      recommendations: result.recommendations
+    };
+
+    try {
+      // Store summary with score-based ranking
+      await this.redisClient.zadd(
+        this.summariesKey, 
+        summary.effectiveness, 
+        JSON.stringify(summary)
+      );
+      
+      // Keep only top 10 summaries
+      await this.redisClient.zremrangebyrank(this.summariesKey, 0, -11);
+      
+      console.log(`✅ Stored RL summary with effectiveness: ${summary.effectiveness}`);
+    } catch (error) {
+      console.error('Failed to store RL summary:', error);
+    }
+  }
+
+  async getTopSummaries(limit: number = 10): Promise<RLRankingSummary[]> {
+    if (!this.redisClient) return [];
+
+    try {
+      const summaries = await this.redisClient.zrevrange(
+        this.summariesKey, 0, limit - 1
+      );
+      
+      return summaries.map((s: string) => JSON.parse(s));
+    } catch (error) {
+      console.error('Failed to get top summaries:', error);
+      return [];
+    }
+  }
+
+  async updateUserFeedback(summaryId: string, feedback: 'positive' | 'negative' | 'neutral'): Promise<void> {
+    if (!this.redisClient) return;
+
+    try {
+      const summaries = await this.redisClient.zrevrange(this.summariesKey, 0, -1);
+      
+      for (const summaryStr of summaries) {
+        const summary: RLRankingSummary = JSON.parse(summaryStr);
+        
+        if (summary.id === summaryId) {
+          summary.userFeedback = feedback;
+          
+          // Adjust effectiveness based on feedback
+          if (feedback === 'positive') {
+            summary.effectiveness = Math.min(1.0, summary.effectiveness + 0.1);
+          } else if (feedback === 'negative') {
+            summary.effectiveness = Math.max(0.0, summary.effectiveness - 0.2);
+          }
+          
+          // Re-store with updated score
+          await this.redisClient.zrem(this.summariesKey, summaryStr);
+          await this.redisClient.zadd(
+            this.summariesKey, 
+            summary.effectiveness, 
+            JSON.stringify(summary)
+          );
+          
+          console.log(`✅ Updated feedback for summary ${summaryId}: ${feedback}`);
+          break;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update user feedback:', error);
+    }
+  }
+
+  private calculateEffectiveness(result: CopilotSelfPromptResult): number {
+    let effectiveness = 0.5; // Base score
+
+    // Confidence bonus
+    effectiveness += result.metadata.confidence * 0.2;
+
+    // Action count bonus
+    if (result.nextActions.length > 0) effectiveness += 0.1;
+    if (result.nextActions.length > 3) effectiveness += 0.1;
+
+    // Recommendation bonus
+    if (result.recommendations.length > 0) effectiveness += 0.1;
+    if (result.recommendations.length > 3) effectiveness += 0.1;
+
+    // Processing efficiency bonus (faster is better, up to 30 seconds)
+    const timeBonus = Math.max(0, (30000 - result.metadata.processingTime) / 30000) * 0.1;
+    effectiveness += timeBonus;
+
+    return Math.min(1.0, effectiveness);
+  }
+}
+
+// Singleton instance
+export const rlRankingDatastore = new RLRankingDatastore();
+
+// Update copilotSelfPrompt to use RL ranking
+export async function enhancedCopilotSelfPromptWithRL(
+  prompt: string,
+  options: CopilotSelfPromptOptions = {}
+): Promise<CopilotSelfPromptResult> {
+  const result = await copilotSelfPrompt(prompt, options);
+  
+  // Store for RL ranking
+  await rlRankingDatastore.storeSummary(result, prompt);
+  
+  return result;
+}

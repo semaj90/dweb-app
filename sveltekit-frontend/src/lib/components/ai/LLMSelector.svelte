@@ -20,7 +20,7 @@
     id: string
     name: string
     displayName: string
-    provider: 'ollama' | 'vllm' | 'autogen' | 'crewai' | 'langchain'
+    provider: 'ollama' | 'autogen' | 'crewai' | 'langchain'
     size: string
     specialization: 'general' | 'legal' | 'code' | 'reasoning' | 'embedding'
     status: 'online' | 'offline' | 'loading' | 'error'
@@ -100,22 +100,6 @@
       endpoint: 'http://localhost:11434'
     },
     {
-      id: 'vllm-gemma3',
-      name: 'vllm-gemma3-legal',
-      displayName: 'vLLM Gemma3 (High Performance)',
-      provider: 'vllm',
-      size: '7.3GB',
-      specialization: 'legal',
-      status: 'loading',
-      performance: {
-        tokensPerSecond: 150,
-        memoryUsage: '8.1GB',
-        responseTime: 300
-      },
-      capabilities: ['batch-processing', 'high-throughput', 'legal-analysis'],
-      endpoint: 'http://localhost:8000'
-    },
-    {
       id: 'nomic-embed',
       name: 'nomic-embed-text',
       displayName: 'Nomic Embeddings',
@@ -134,10 +118,10 @@
   ])
   
   // Filter models based on criteria
-  let filteredModels = $derived(() => {
-    if (filterBy === 'all') return availableModels
-    return availableModels.filter(model => model.specialization === filterBy)
-  })
+  let filteredModels = $derived(
+    filterBy === 'all' ? availableModels : 
+    availableModels.filter(model => model.specialization === filterBy)
+  )
   
   // Melt UI Select Setup
   const {
@@ -157,7 +141,6 @@
   const getProviderIcon = (provider: string) => {
     switch (provider) {
       case 'ollama': return Cpu
-      case 'vllm': return Zap
       case 'autogen': return Brain
       case 'crewai': return Database
       case 'langchain': return Globe

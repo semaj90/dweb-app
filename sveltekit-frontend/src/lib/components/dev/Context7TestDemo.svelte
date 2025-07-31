@@ -337,7 +337,7 @@
         <h4 class="font-medium text-green-700 mb-2">✅ Implemented Features</h4>
         <ul class="space-y-1 text-green-600">
           <li>• Real semantic search with Context7 MCP</li>
-          <li>• Agent orchestration (AutoGen, CrewAI, vLLM, Claude)</li>
+          <li>• Agent orchestration (AutoGen, CrewAI, Claude)</li>
           <li>• Self-prompting workflow automation</li>
           <li>• Comprehensive audit logging</li>
           <li>• Context7 MCP tools integration</li>

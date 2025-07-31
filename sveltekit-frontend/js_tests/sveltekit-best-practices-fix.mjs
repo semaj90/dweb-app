@@ -407,20 +407,32 @@ function fixSecurityPatterns(content, filePath) {
 }
 
 /**
- * Apply all fixes to a file
+ * Apply fixes to a file (supports targeted area fixing)
  */
-function fixFile(filePath) {
+function fixFile(filePath, targetArea = null) {
   try {
     let content = fs.readFileSync(filePath, "utf-8");
     const originalContent = content;
 
-    // Apply all fixes
-    content = fixImportsExports(content, filePath);
-    content = fixSvelte5Patterns(content, filePath);
-    content = fixTypeScriptPatterns(content, filePath);
-    content = fixPerformancePatterns(content, filePath);
-    content = fixAccessibilityPatterns(content, filePath);
-    content = fixSecurityPatterns(content, filePath);
+    // Apply fixes based on target area
+    if (!targetArea || targetArea === 'imports') {
+      content = fixImportsExports(content, filePath);
+    }
+    if (!targetArea || targetArea === 'svelte5') {
+      content = fixSvelte5Patterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'typescript') {
+      content = fixTypeScriptPatterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'performance') {
+      content = fixPerformancePatterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'accessibility') {
+      content = fixAccessibilityPatterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'security') {
+      content = fixSecurityPatterns(content, filePath);
+    }
 
     // Write back if changed
     if (content !== originalContent) {
@@ -477,7 +489,216 @@ function generateConfigImprovements() {
 }
 
 /**
- * Main execution
+ * Programmatic API for auto-fix functionality
+ * @param {Object} options - Auto-fix options
+ * @param {string[]} options.files - Specific files to fix (optional, auto-discovers if not provided)
+ * @param {boolean} options.dryRun - If true, returns analysis without making changes
+ * @param {string} options.area - Target specific area: 'imports', 'svelte5', 'typescript', 'performance', 'accessibility', 'security'
+ * @returns {Object} Auto-fix result summary
+ */
+export async function runAutoFix(options = {}) {
+  const { files: targetFiles, dryRun = false, area = null } = options;
+  
+  // Reset fixes state
+  Object.assign(fixes, {
+    imports: [],
+    exports: [],
+    svelte5: [],
+    typeScript: [],
+    performance: [],
+    accessibility: [],
+    security: [],
+    filesFixed: 0,
+    totalIssues: 0,
+  });
+
+  const files = targetFiles || findFilesToFix();
+  
+  for (const file of files) {
+    if (dryRun) {
+      // Analyze without making changes
+      analyzeFile(file, area);
+    } else {
+      fixFile(file, area);
+    }
+  }
+
+  // Count total issues
+  const allFixes = [
+    ...fixes.imports,
+    ...fixes.svelte5,
+    ...fixes.typeScript,
+    ...fixes.performance,
+    ...fixes.accessibility,
+    ...fixes.security,
+  ];
+
+  fixes.totalIssues = allFixes.reduce(
+    (sum, fix) => sum + fix.changes.length,
+    0,
+  );
+
+  const configImprovements = generateConfigImprovements();
+
+  return {
+    success: true,
+    timestamp: new Date().toISOString(),
+    summary: {
+      filesProcessed: files.length,
+      filesFixed: fixes.filesFixed,
+      totalIssues: fixes.totalIssues,
+      dryRun,
+      area: area || 'all'
+    },
+    fixes: {
+      imports: fixes.imports,
+      svelte5: fixes.svelte5,
+      typeScript: fixes.typeScript,
+      performance: fixes.performance,
+      accessibility: fixes.accessibility,
+      security: fixes.security,
+    },
+    configImprovements,
+    recommendations: [
+      "Run npm run check to verify TypeScript compilation",
+      "Run npm run lint to check code style",
+      "Run npm run test to ensure functionality",
+      "Review performance recommendations",
+      "Test accessibility with screen readers"
+    ]
+  };
+}
+
+/**
+ * Analyze file without making changes (for dry run)
+ */
+function analyzeFile(filePath, targetArea = null) {
+  try {
+    const content = fs.readFileSync(filePath, "utf-8");
+    
+    // Apply analysis based on target area
+    if (!targetArea || targetArea === 'imports') {
+      analyzeImportsExports(content, filePath);
+    }
+    if (!targetArea || targetArea === 'svelte5') {
+      analyzeSvelte5Patterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'typescript') {
+      analyzeTypeScriptPatterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'performance') {
+      analyzePerformancePatterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'accessibility') {
+      analyzeAccessibilityPatterns(content, filePath);
+    }
+    if (!targetArea || targetArea === 'security') {
+      analyzeSecurityPatterns(content, filePath);
+    }
+  } catch (error) {
+    console.error(`❌ Error analyzing ${filePath}:`, error.message);
+  }
+}
+
+/**
+ * Analysis-only versions of fix functions
+ */
+function analyzeImportsExports(content, filePath) {
+  let changes = [];
+  
+  const barrelImportRegex = /import\s+{([^}]+)}\s+from\s+['"](\$lib\/[^'"]*\/?)['"];?/g;
+  let match;
+  while ((match = barrelImportRegex.exec(content)) !== null) {
+    const [, imports, importPath] = match;
+    if (importPath.endsWith("/") || importPath.includes("/index")) {
+      changes.push(`Would fix barrel import: ${importPath}`);
+    }
+  }
+  
+  const relativeImportRegex = /import\s+[^'"]*from\s+['"]\.\.\/\.\.\//g;
+  if (relativeImportRegex.test(content)) {
+    changes.push("Would fix relative imports to use $lib alias");
+  }
+  
+  if (changes.length > 0) {
+    fixes.imports.push({ file: filePath, changes });
+  }
+}
+
+function analyzeSvelte5Patterns(content, filePath) {
+  if (!filePath.endsWith(".svelte")) return;
+  
+  let changes = [];
+  
+  if (/\$:\s*([^=\n]+)\s*=\s*([^;\n]+);?/.test(content)) {
+    changes.push("Would convert $: to $derived");
+  }
+  
+  if (/\$:\s*{\s*([^}]+)\s*}/.test(content)) {
+    changes.push("Would convert $: side effect to $effect");
+  }
+  
+  if (changes.length > 0) {
+    fixes.svelte5.push({ file: filePath, changes });
+  }
+}
+
+function analyzeTypeScriptPatterns(content, filePath) {
+  if (!filePath.endsWith(".ts") && !filePath.endsWith(".svelte")) return;
+  
+  let changes = [];
+  
+  if (/:\s*any(\s|[,;\]\)}])/.test(content)) {
+    changes.push("Found any types - would suggest specific types");
+  }
+  
+  if (changes.length > 0) {
+    fixes.typeScript.push({ file: filePath, changes });
+  }
+}
+
+function analyzePerformancePatterns(content, filePath) {
+  let changes = [];
+  
+  if (filePath.endsWith(".svelte")) {
+    if (/\$:\s*[^=]*\.(?:map|filter|reduce|sort|find)/.test(content)) {
+      changes.push("Would optimize expensive operations in reactive statements");
+    }
+  }
+  
+  if (changes.length > 0) {
+    fixes.performance.push({ file: filePath, changes });
+  }
+}
+
+function analyzeAccessibilityPatterns(content, filePath) {
+  if (!filePath.endsWith(".svelte")) return;
+  
+  let changes = [];
+  
+  if (/<img[^>]*(?!alt=)[^>]*>/.test(content)) {
+    changes.push("Would add missing alt attributes");
+  }
+  
+  if (changes.length > 0) {
+    fixes.accessibility.push({ file: filePath, changes });
+  }
+}
+
+function analyzeSecurityPatterns(content, filePath) {
+  let changes = [];
+  
+  if (/\.innerHTML\s*=/.test(content)) {
+    changes.push("Would fix innerHTML usage");
+  }
+  
+  if (changes.length > 0) {
+    fixes.security.push({ file: filePath, changes });
+  }
+}
+
+/**
+ * Main execution (CLI mode)
  */
 async function main() {
   console.log("🔍 Finding files to fix...");

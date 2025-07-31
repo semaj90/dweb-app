@@ -234,7 +234,6 @@ export type AITaskType =
 
 export type AIProviderType =
   | "ollama"
-  | "vllm"
   | "autogen"
   | "crewai"
   | "langchain"

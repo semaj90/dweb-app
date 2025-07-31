@@ -26,21 +26,18 @@
     ...restProps
   }: Props = $props();
 
-  const classes = $derived(() => {
-    const base = [
-      'nier-btn',
-      `nier-btn-${variant}`,
-      `nier-btn-${size}`,
-      fullWidth && 'w-full',
-      loading && 'nier-btn-loading',
-      className
-    ];
-    return base.filter(Boolean).join(' ');
-  });
+  const classes = $derived([
+    'nier-btn',
+    `nier-btn-${variant}`,
+    `nier-btn-${size}`,
+    fullWidth && 'w-full',
+    loading && 'nier-btn-loading',
+    className
+  ].filter(Boolean).join(' '));
 </script>
 
 <Button.Root
-  class={classes()}
+  class={classes}
   disabled={loading || disabled}
   {...restProps}
   data-button-root

@@ -57,82 +57,56 @@
   const INVERSE_PHI = 0.618033988749; // 1/φ
 
   // Reactive grid classes using $derived
-  const gridClasses = $derived(() => {
-    const base = 'golden-ratio-grid';
-    
-    const variants = {
-      sidebar: 'grid-template-areas-sidebar',
-      dashboard: 'grid-template-areas-dashboard', 
-      split: 'grid-template-areas-split',
-      content: 'grid-template-areas-content',
-      'legal-document': 'grid-template-areas-legal-document'
-    };
-
-    const directions = {
-      horizontal: 'golden-horizontal',
-      vertical: 'golden-vertical',
-      both: 'golden-both'
-    };
-
-    const sizes = {
-      sm: 'max-w-3xl',
-      md: 'max-w-5xl', 
-      lg: 'max-w-7xl',
-      xl: 'max-w-full',
-      full: 'w-full h-full'
-    };
-
-    const gaps = {
-      none: 'gap-0',
-      xs: 'gap-2',
-      sm: 'gap-4',
-      md: 'gap-6',
-      lg: 'gap-8',
-      xl: 'gap-12'
-    };
-
-    return cn(
-      base,
-      variants[variant],
-      directions[direction],
-      sizes[size],
-      gaps[gap],
-      {
-        'golden-responsive': responsive,
-        'nier-golden-grid': legal,
-        'yorha-evidence-grid': evidenceLayout,
-        'yorha-case-grid': caseLayout,
-        'ai-analysis-grid': aiPanels,
-        'min-h-screen': size === 'full'
-      },
-      className
-    );
-  });
+  const gridClasses = $derived(cn(
+    'golden-ratio-grid',
+    {
+      'grid-template-areas-sidebar': variant === 'sidebar',
+      'grid-template-areas-dashboard': variant === 'dashboard',
+      'grid-template-areas-split': variant === 'split',
+      'grid-template-areas-content': variant === 'content',
+      'grid-template-areas-legal-document': variant === 'legal-document',
+      'golden-horizontal': direction === 'horizontal',
+      'golden-vertical': direction === 'vertical',
+      'golden-both': direction === 'both',
+      'max-w-3xl': size === 'sm',
+      'max-w-5xl': size === 'md',
+      'max-w-7xl': size === 'lg',
+      'max-w-full': size === 'xl',
+      'w-full h-full': size === 'full',
+      'gap-0': gap === 'none',
+      'gap-2': gap === 'xs',
+      'gap-4': gap === 'sm',
+      'gap-6': gap === 'md',
+      'gap-8': gap === 'lg',
+      'gap-12': gap === 'xl',
+      'golden-responsive': responsive,
+      'nier-golden-grid': legal,
+      'yorha-evidence-grid': evidenceLayout,
+      'yorha-case-grid': caseLayout,
+      'ai-analysis-grid': aiPanels,
+      'min-h-screen': size === 'full'
+    },
+    className
+  ));
 
   // Calculate golden ratio proportions
-  const goldenProportions = $derived(() => {
-    if (direction === 'horizontal') {
-      return {
-        primary: `${PHI}fr`,
-        secondary: '1fr'
-      };
-    } else if (direction === 'vertical') {
-      return {
-        primary: `${PHI}fr`,
-        secondary: '1fr'
-      };
-    } else {
-      return {
-        primary: `${PHI}fr`,
-        secondary: '1fr',
-        tertiary: `${INVERSE_PHI}fr`
-      };
+  const goldenProportions = $derived(
+    direction === 'horizontal' ? {
+      primary: `${PHI}fr`,
+      secondary: '1fr'
+    } : direction === 'vertical' ? {
+      primary: `${PHI}fr`,
+      secondary: '1fr'
+    } : {
+      primary: `${PHI}fr`,
+      secondary: '1fr',
+      tertiary: `${INVERSE_PHI}fr`
     }
-  });
+  );
 </script>
 
 <div 
-  class={gridClasses()}
+  class={gridClasses}
   style="
     --golden-ratio: {PHI};
     --inverse-golden-ratio: {INVERSE_PHI};

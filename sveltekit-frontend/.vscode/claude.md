@@ -1,5 +1,28 @@
 # Claude.md - Comprehensive Legal AI System Context
 
+## 🧠 Multi-Agent Orchestration & VS Code Integration
+
+- The Context7 MCP extension now auto-registers the local agent orchestrator (Claude, CrewAI, AutoGen, RAG, etc.) as an MCP server.
+- You can trigger multi-agent workflows from VS Code using the `mcp.runAgentOrchestrator` command, which prompts for approval in a Claude Code-style window.
+- The orchestrator endpoint `/api/agent-orchestrate` is called, and the best output is shown in the editor.
+- The orchestrator uses `runClaudeAgent` (see `src/lib/utils/mcp-helpers.ts` and `agent-orchestrator/agents/claude.js`) for Claude sub-agent logic.
+- All orchestration, best practices, and TODO/code quality automation is now accessible from VS Code, CLI, and API.
+
+### How to Use
+
+1. Start VS Code with the Context7 MCP extension enabled.
+2. Use the command palette (`Ctrl+Shift+P`) and run `MCP: Run Agent Orchestrator`.
+3. Approve the prompt to launch multi-agent orchestration (Claude, CrewAI, etc.).
+4. Results will be displayed in the editor window.
+
+### Agent Orchestrator Details
+
+- Orchestrator logic is in `agent-orchestrator/index.js`.
+- Claude agent logic is in `agent-orchestrator/agents/claude.js` and registered as `runClaudeAgent`.
+- The agent registry in `src/lib/utils/mcp-helpers.ts` supports dynamic agent selection and orchestration.
+
+---
+
 ## 🎯 Context Overview for Claude & AI Assistants
 
 This document provides comprehensive context for Claude and other AI assistants working with the Legal AI VS Code Remote Indexing System. It includes Context7 MCP integration, codebase structure, search capabilities, and all necessary information for effective AI assistance.
@@ -558,13 +581,13 @@ class EnhancedCopilotContextProvider {
     code: string,
     cursor_position: [number, number],
     language: string,
-    include_context7: boolean = true,
+    include_context7: boolean = true
   ): Promise<Context7CompatibleResult[]> {
     // 1. Analyze current code context
     const context_analysis = this.analyzer.analyze_code_context(
       code,
       language,
-      cursor_position[0],
+      cursor_position[0]
     );
 
     // 2. Generate intelligent queries
@@ -573,14 +596,14 @@ class EnhancedCopilotContextProvider {
     // 3. Search enhanced local index (PRIORITY)
     const enhanced_results = await this.getEnhancedLocalContext(
       queries.main,
-      language,
+      language
     );
 
     // 4. Get Context7 documentation if enabled
     const context7_results = include_context7
       ? await this.getContext7Documentation(
           context_analysis.libraries,
-          queries.topic,
+          queries.topic
         )
       : [];
 
@@ -588,7 +611,7 @@ class EnhancedCopilotContextProvider {
     return this.combineAndRankResults(
       enhanced_results,
       context7_results,
-      context_analysis,
+      context_analysis
     );
   }
 }
@@ -797,7 +820,7 @@ class VSCodeContextProvider {
   async provideInlineCompletionItems(
     document: vscode.TextDocument,
     position: vscode.Position,
-    context: vscode.InlineCompletionContext,
+    context: vscode.InlineCompletionContext
   ) {
     const code = document.getText();
     const language = document.languageId;
@@ -808,7 +831,7 @@ class VSCodeContextProvider {
       code,
       cursor_pos,
       language,
-      true,
+      true
     );
 
     // Format for VS Code Copilot
@@ -887,7 +910,7 @@ class ErrorBoundary extends Error {
   constructor(
     public code: string,
     public context: any,
-    public severity: "low" | "medium" | "high" | "critical",
+    public severity: "low" | "medium" | "high" | "critical"
   ) {
     super();
   }
@@ -939,9 +962,9 @@ export const filteredEvidence = derived(
   ([$evidence, $query]) => {
     if (!$query) return $evidence;
     return $evidence.filter((item) =>
-      item.title.toLowerCase().includes($query.toLowerCase()),
+      item.title.toLowerCase().includes($query.toLowerCase())
     );
-  },
+  }
 );
 
 // Debounced search
@@ -1068,7 +1091,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.cookies.set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes,
+      sessionCookie.attributes
     );
   }
 
@@ -1077,7 +1100,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.cookies.set(
       sessionCookie.name,
       sessionCookie.value,
-      sessionCookie.attributes,
+      sessionCookie.attributes
     );
   }
 

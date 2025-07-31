@@ -64,20 +64,22 @@ This document lists all stubbed functions, files, and service placeholders in th
 
 ## [Automated Stub/TODO Detection]
 
-This section is reserved for future automation. The goal is to automatically scan the codebase for:
+Automated detection is now available via `scripts/detect-stubs-todos.js`.
 
-- Stubbed functions (e.g., `throw new Error('Not implemented')`, `return null`, `TODO`, `FIXME` comments)
-- Placeholder files and mock data
-- Technical debt markers in code and documentation
+**How to use:**
 
-**Planned Automation Steps:**
+1. Run the script from the project root:
+   ```sh
+   node scripts/detect-stubs-todos.js
+   ```
+2. The script scans for:
+   - `throw new Error('Not implemented')`
+   - TODO, FIXME, stub, mock, and placeholder comments
+   - Known stubbed files and methods (from this doc)
+3. Results are output to `stub_todo_report.md` in the project root.
+4. Review the report and cross-link results to phase docs and checklists as needed.
 
-1. Use scripts or CI to grep for common stub patterns and TODOs across all source files.
-2. Output results to this section or a separate report file.
-3. Cross-reference with manual tracking above for completeness.
-4. Update checklist and documentation automatically as stubs are resolved.
-
-_Status: Manual tracking in place. Automation planned for future phases._
+_Status: Automated detection script implemented. Manual and automated tracking should be kept in sync._
 
 ---
 

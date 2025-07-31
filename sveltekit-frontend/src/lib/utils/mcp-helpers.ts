@@ -3,6 +3,13 @@
  * Self-prompts after using MCP memory/codebase tools
  */
 
+// Service imports
+import { autoGenService } from '$lib/services/autogen-service';
+import { AutogenLegalTeam } from '$lib/ai/autogen-legal-agents';
+
+// Initialize legal team and services
+const legalTeam = new AutogenLegalTeam();
+
 // --- Type Definitions Export ---
 // Export all relevant interfaces for easy import in other files and for Copilot/agent visibility
 
@@ -48,15 +55,15 @@ const agentRegistry: Record<
 > = {
   autogen: async (prompt, context) => ({
     agent: "autogen",
-    result: await autogenService.runAgents(prompt, context),
+    result: await autoGenService.executeLegalWorkflow("legal_research", prompt, context || {}),
   }),
   crewai: async (prompt) => ({
     agent: "crewai",
-    result: await crewAIService.analyzeLegalCaseWithCrew(prompt),
-  }),
-  vllm: async (prompt) => ({
-    agent: "vllm",
-    result: await vllmService.runInference(prompt),
+    result: await legalTeam.analyzeCase({
+      query: prompt,
+      analysisType: "legal_research",
+      priority: "medium"
+    }),
   }),
   // Add Copilot and Claude agent stubs for extensibility
   copilot: async (prompt) => ({
@@ -71,7 +78,7 @@ const agentRegistry: Record<
 
 /**
  * Main Orchestration Wrapper
- * Now supports dynamic agent selection (autogen, crewai, copilot, claude, vllm, etc)
+ * Now supports dynamic agent selection (autogen, crewai, copilot, claude, etc)
  */
 export async function copilotOrchestrator(
   prompt: string,
@@ -109,7 +116,7 @@ export async function copilotOrchestrator(
     const agentsToRun =
       options.agents && options.agents.length > 0
         ? options.agents
-        : ["autogen", "crewai", "vllm"];
+        : ["autogen", "crewai"];
     results.agentResults = [];
     for (const agent of agentsToRun) {
       if (agentRegistry[agent]) {
@@ -162,7 +169,6 @@ export interface MCPToolRequest {
     | "suggest-integration"
     | "resolve-library-id"
     | "get-library-docs"
-    | "vllm-best-practices"
     | "unsloth-best-practices"
     | "rag-query"
     | "rag-upload-document"
@@ -175,7 +181,6 @@ export interface MCPToolRequest {
     | "gaming-ui"
     | "performance"
     | "llm"
-    | "vllm"
     | "unsloth";
   area?: "performance" | "security" | "ui-ux" | "gpu" | "low-memory";
   feature?: string;
@@ -431,9 +436,7 @@ export const commonMCPQueries = {
     area: "ui-ux",
   }),
 
-  vllmBestPractices: (): MCPToolRequest => ({
-    tool: "vllm-best-practices",
-  }),
+  
 
   unslothBestPractices: (): MCPToolRequest => ({
     tool: "unsloth-best-practices",
@@ -579,10 +582,7 @@ export function generateClaudePrompt(request: MCPToolRequest): string {
   return `Please use the Context7 MCP tools to ${prompt}.`;
 }
 
-// vLLM Best Practices
-export function getVLLMBestPractices(): string {
-  return `# vLLM Best Practices\n\n- Use GPU for high-throughput inference (set --gpu flag)\n- Batch requests for maximum efficiency\n- Use quantized models for low memory\n- Monitor GPU memory usage\n- Use OpenAI API compatibility for easy integration\n- For multiple models, run separate vLLM instances\n- Use context7 to resolve library IDs and fetch docs\n- Integrate with SvelteKit via REST or WebSocket endpoints\n`;
-}
+
 
 // Unsloth Best Practices
 export function getUnslothBestPractices(): string {
@@ -673,7 +673,7 @@ export async function mcpReadDirectory(path: string) {
 }
 
 // Production: Autogen agent orchestration (stub, replace with real API integration if available)
-const autogenService = {
+const autogenServiceFallback = {
   async runAgents(prompt: string, context?: any) {
     // TODO: Replace with real Autogen API call
     return { agent: "autogen", result: `AutoGen agent result for: ${prompt}` };
@@ -688,13 +688,7 @@ const crewAIService = {
   },
 };
 
-// Production: vLLM agent orchestration (stub, replace with real API integration if available)
-const vllmService = {
-  async runInference(prompt: string) {
-    // TODO: Replace with real vLLM API call
-    return { agent: "vllm", result: `vLLM inference result for: ${prompt}` };
-  },
-};
+
 
 // Production: Read error log from MCP and append to MCP_TODO_LOG.md
 import fs from "fs/promises";

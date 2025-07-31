@@ -4,6 +4,8 @@ import { ContextAnalyzer } from './contextAnalyzer';
 import { StatusBarManager } from './statusBarManager';
 import { DiagnosticWatcher } from './diagnosticWatcher';
 import { StackAnalyzer } from './stackAnalyzer';
+import { RAGBackendClient } from './ragBackendClient';
+import { RAGCommandProvider } from './ragCommands';
 import { VSCodeMCPContext, AutoMCPSuggestion, ProjectType, TechStack } from './types';
 
 let mcpServerManager: MCPServerManager;
@@ -11,6 +13,8 @@ let contextAnalyzer: ContextAnalyzer;
 let statusBarManager: StatusBarManager;
 let diagnosticWatcher: DiagnosticWatcher;
 let stackAnalyzer: StackAnalyzer;
+let ragClient: RAGBackendClient;
+let ragCommandProvider: RAGCommandProvider;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('🚀 Context7 MCP Assistant extension is now active!');
@@ -22,21 +26,43 @@ export function activate(context: vscode.ExtensionContext) {
     statusBarManager = new StatusBarManager();
     diagnosticWatcher = new DiagnosticWatcher();
     stackAnalyzer = new StackAnalyzer(workspaceRoot);
+    
+    // Initialize Enhanced RAG Backend Integration
+    const config = vscode.workspace.getConfiguration('mcpContext7');
+    ragClient = new RAGBackendClient({
+        baseUrl: config.get('ragBackendUrl', 'http://localhost:8000'),
+        timeout: config.get('ragTimeout', 30000),
+        retries: config.get('ragRetries', 3)
+    });
+    ragCommandProvider = new RAGCommandProvider(ragClient);
 
     // Register commands
     registerCommands(context);
+    
+    // Register RAG commands
+    ragCommandProvider.registerCommands(context);
 
     // Setup event listeners
     setupEventListeners(context);
 
     // Auto-start server if enabled
-    const config = vscode.workspace.getConfiguration('mcpContext7');
     if (config.get('autoStart', true)) {
         mcpServerManager.startServer();
     }
-
-    // Update status bar
-    statusBarManager.updateStatus('ready', 'Context7 MCP Ready');
+    
+    // Check RAG backend health
+    ragClient.healthCheck().then(isHealthy => {
+        if (isHealthy) {
+            console.log('✅ Enhanced RAG Backend is healthy');
+            statusBarManager.updateStatus('ready', 'Context7 MCP + Enhanced RAG Ready');
+        } else {
+            console.log('❌ Enhanced RAG Backend is not available');
+            statusBarManager.updateStatus('ready', 'Context7 MCP Ready (RAG Offline)');
+        }
+    }).catch(error => {
+        console.log('⚠️ Could not connect to Enhanced RAG Backend:', error);
+        statusBarManager.updateStatus('ready', 'Context7 MCP Ready (RAG Offline)');
+    });
 }
 
 export function deactivate() {
@@ -53,22 +79,90 @@ export function deactivate() {
     if (diagnosticWatcher) {
         diagnosticWatcher.dispose();
     }
+    
+    if (ragClient) {
+        ragClient.dispose();
+    }
 }
 
 function registerCommands(context: vscode.ExtensionContext) {
-    // Analyze Current Context
+    // Enhanced Analyze Current Context with RAG Integration
     const analyzeContextCommand = vscode.commands.registerCommand('mcp.analyzeCurrentContext', async () => {
         try {
-            statusBarManager.updateStatus('analyzing', 'Analyzing context...');
+            statusBarManager.updateStatus('analyzing', 'Enhanced RAG context analysis...');
             
+            // Step 1: Build VS Code context
             const vsCodeContext = await buildVSCodeContext();
+            
+            // Step 2: Get enhanced context-aware suggestions
             const suggestions = await contextAnalyzer.getContextAwareSuggestions(vsCodeContext);
             
-            await showSuggestionsPanel(suggestions);
-            statusBarManager.updateStatus('ready', `Found ${suggestions.length} suggestions`);
+            // Step 3: Use Enhanced RAG for deeper analysis
+            const activeEditor = vscode.window.activeTextEditor;
+            if (activeEditor) {
+                const currentText = activeEditor.document.getText();
+                const fileName = activeEditor.document.fileName;
+                
+                // Enhanced RAG query for current context
+                const ragResult = await mcpServerManager.callMCPTool('enhanced_rag_query', {
+                    query: `Analyze this ${fileName} file context and suggest improvements: ${currentText.substring(0, 1000)}`,
+                    caseId: 'context_analysis',
+                    maxResults: 10,
+                    includeContext7: true
+                });
+                
+                // Memory graph update for context tracking
+                await mcpServerManager.callMCPTool('mcp_memory2_create_relations', {
+                    entities: [
+                        {
+                            type: 'file',
+                            id: fileName,
+                            properties: { 
+                                language: activeEditor.document.languageId,
+                                lines: activeEditor.document.lineCount,
+                                analyzed_at: new Date().toISOString()
+                            }
+                        },
+                        {
+                            type: 'analysis',
+                            id: `analysis_${Date.now()}`,
+                            properties: {
+                                suggestions_count: suggestions.length,
+                                rag_enhanced: ragResult.success
+                            }
+                        }
+                    ]
+                });
+                
+                // Enhanced suggestions with RAG insights
+                if (ragResult.success && ragResult.data.sources.length > 0) {
+                    const ragSuggestions = ragResult.data.sources.map((source: any, index: number) => ({
+                        tool: 'enhanced-rag-insight',
+                        reasoning: `RAG-enhanced suggestion: ${source.content.substring(0, 100)}...`,
+                        confidence: source.similarity || 0.8,
+                        priority: 'high' as const,
+                        expectedOutput: 'Context-aware code improvement',
+                        args: {
+                            insight: source.content,
+                            relevance: source.similarity,
+                            enhanced_rag: true
+                        }
+                    }));
+                    
+                    suggestions.push(...ragSuggestions);
+                }
+            }
+            
+            await showSuggestionsPanel(suggestions, '🤖 Enhanced RAG Context Analysis');
+            statusBarManager.updateStatus('ready', `Enhanced analysis: ${suggestions.length} insights`);
+            
+            // Show performance metrics
+            const metrics = mcpServerManager.getEnhancedMetrics();
+            console.log('🔍 Enhanced RAG Analysis Metrics:', metrics);
+            
         } catch (error) {
-            vscode.window.showErrorMessage(`Context analysis failed: ${error}`);
-            statusBarManager.updateStatus('error', 'Analysis failed');
+            vscode.window.showErrorMessage(`Enhanced context analysis failed: ${error}`);
+            statusBarManager.updateStatus('error', 'Enhanced analysis failed');
         }
     });
 
@@ -172,6 +266,118 @@ function registerCommands(context: vscode.ExtensionContext) {
         }
     });
 
+    // Enhanced RAG Commands
+    const enhancedRAGQueryCommand = vscode.commands.registerCommand('mcp.enhancedRAGQuery', async () => {
+        try {
+            const query = await vscode.window.showInputBox({
+                prompt: 'Enter your enhanced RAG query',
+                placeHolder: 'e.g., "How to implement SvelteKit forms with Drizzle ORM?"'
+            });
+            
+            if (query) {
+                statusBarManager.updateStatus('processing', 'Processing Enhanced RAG query...');
+                
+                const result = await mcpServerManager.callMCPTool('enhanced_rag_query', {
+                    query,
+                    caseId: 'user_query',
+                    maxResults: 10,
+                    includeContext7: true
+                });
+                
+                await showResultPanel(`🤖 Enhanced RAG Query: ${query}`, result.data);
+                statusBarManager.updateStatus('ready', 'Enhanced RAG query completed');
+            }
+        } catch (error) {
+            vscode.window.showErrorMessage(`Enhanced RAG query failed: ${error}`);
+        }
+    });
+
+    const agentOrchestrationCommand = vscode.commands.registerCommand('mcp.agentOrchestration', async () => {
+        try {
+            const agentType = await vscode.window.showQuickPick(
+                ['claude', 'crewai', 'autogen'],
+                { placeHolder: 'Select agent for orchestration' }
+            );
+            
+            if (agentType) {
+                const prompt = await vscode.window.showInputBox({
+                    prompt: `Enter prompt for ${agentType} agent`,
+                    placeHolder: 'e.g., "Analyze this codebase for performance improvements"'
+                });
+                
+                if (prompt) {
+                    statusBarManager.updateStatus('processing', `Orchestrating ${agentType} agent...`);
+                    
+                    const result = await mcpServerManager.callMCPTool(`agent_orchestrate_${agentType}`, {
+                        prompt,
+                        context: 'vscode_extension',
+                        autoFix: true
+                    });
+                    
+                    await showResultPanel(`🤖 ${agentType} Agent Result`, result.data);
+                    statusBarManager.updateStatus('ready', `${agentType} agent completed`);
+                }
+            }
+        } catch (error) {
+            vscode.window.showErrorMessage(`Agent orchestration failed: ${error}`);
+        }
+    });
+
+    const memoryGraphCommand = vscode.commands.registerCommand('mcp.memoryGraph', async () => {
+        try {
+            const action = await vscode.window.showQuickPick(
+                ['Read Graph', 'Search Nodes', 'Create Relations'],
+                { placeHolder: 'Select memory graph action' }
+            );
+            
+            if (action) {
+                let result;
+                switch (action) {
+                    case 'Read Graph':
+                        result = await mcpServerManager.callMCPTool('mcp_memory2_read_graph', {});
+                        break;
+                    case 'Search Nodes':
+                        const searchQuery = await vscode.window.showInputBox({
+                            prompt: 'Enter search query for memory nodes',
+                            placeHolder: 'e.g., "files related to authentication"'
+                        });
+                        if (searchQuery) {
+                            result = await mcpServerManager.callMCPTool('mcp_memory2_search_nodes', {
+                                query: searchQuery
+                            });
+                        }
+                        break;
+                    case 'Create Relations':
+                        result = await mcpServerManager.callMCPTool('mcp_memory2_create_relations', {
+                            entities: [
+                                {
+                                    type: 'command',
+                                    id: 'memory_graph_demo',
+                                    properties: { created_from: 'vscode_extension' }
+                                }
+                            ]
+                        });
+                        break;
+                }
+                
+                if (result) {
+                    await showResultPanel(`🧠 Memory Graph: ${action}`, result.data);
+                }
+            }
+        } catch (error) {
+            vscode.window.showErrorMessage(`Memory graph operation failed: ${error}`);
+        }
+    });
+
+    const enhancedMetricsCommand = vscode.commands.registerCommand('mcp.enhancedMetrics', async () => {
+        try {
+            const metrics = mcpServerManager.getEnhancedMetrics();
+            await showResultPanel('📊 Enhanced RAG System Metrics', metrics);
+        } catch (error) {
+            vscode.window.showErrorMessage(`Metrics retrieval failed: ${error}`);
+        }
+    });
+
     // Start/Stop Server Commands
     const startServerCommand = vscode.commands.registerCommand('mcp.startServer', () => {
         mcpServerManager.startServer();
@@ -188,6 +394,10 @@ function registerCommands(context: vscode.ExtensionContext) {
         getContextAwareDocsCommand,
         analyzeErrorsCommand,
         analyzeStackCommand,
+        enhancedRAGQueryCommand,
+        agentOrchestrationCommand,
+        memoryGraphCommand,
+        enhancedMetricsCommand,
         startServerCommand,
         stopServerCommand
     );

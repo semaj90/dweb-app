@@ -4,6 +4,7 @@
  */
 
 import { writable } from "svelte/store";
+import { runAutoFix } from "../../../js_tests/sveltekit-best-practices-fix.mjs";
 
 export interface Context7Tool {
   name: string;
@@ -26,6 +27,28 @@ export interface VectorIntelligence {
     metadata: Record<string, any>;
   }>;
   suggestions: string[];
+}
+
+export interface AutoFixResult {
+  success: boolean;
+  timestamp: string;
+  summary: {
+    filesProcessed: number;
+    filesFixed: number;
+    totalIssues: number;
+    dryRun: boolean;
+    area: string;
+  };
+  fixes: {
+    imports: Array<{file: string; changes: string[]}>;
+    svelte5: Array<{file: string; changes: string[]}>;
+    typeScript: Array<{file: string; changes: string[]}>;
+    performance: Array<{file: string; changes: string[]}>;
+    accessibility: Array<{file: string; changes: string[]}>;
+    security: Array<{file: string; changes: string[]}>;
+  };
+  configImprovements: string[];
+  recommendations: string[];
 }
 
 class Context7Service {
@@ -207,6 +230,148 @@ class Context7Service {
     } catch (error) {
       console.error("Vector search failed:", error);
       return this.getFallbackVectorResults(query);
+    }
+  }
+
+  /**
+   * Auto-fix codebase issues with Context7 best practices integration
+   */
+  async autoFixCodebase(options?: {
+    area?: 'imports' | 'svelte5' | 'typescript' | 'performance' | 'accessibility' | 'security';
+    dryRun?: boolean;
+    files?: string[];
+  }): Promise<AutoFixResult> {
+    try {
+      console.log(`🔧 Running auto-fix${options?.dryRun ? ' (dry run)' : ''} for area: ${options?.area || 'all'}`);
+      
+      const result = await runAutoFix({
+        area: options?.area || null,
+        dryRun: options?.dryRun || false,
+        files: options?.files || undefined,
+      });
+
+      // Enhance result with Context7 best practices recommendations
+      if (!options?.dryRun && result.summary.totalIssues > 0) {
+        const area = options?.area || 'performance';
+        const contextualPractices = await this.generateBestPractices(
+          area as 'performance' | 'security' | 'ui-ux'
+        );
+        
+        result.recommendations = [
+          ...result.recommendations,
+          ...contextualPractices.map(practice => `Context7: ${practice}`)
+        ];
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Auto-fix failed:", error);
+      return {
+        success: false,
+        timestamp: new Date().toISOString(),
+        summary: {
+          filesProcessed: 0,
+          filesFixed: 0,
+          totalIssues: 0,
+          dryRun: options?.dryRun || false,
+          area: options?.area || 'all'
+        },
+        fixes: {
+          imports: [],
+          svelte5: [],
+          typeScript: [],
+          performance: [],
+          accessibility: [],
+          security: []
+        },
+        configImprovements: [],
+        recommendations: [`Error: ${error instanceof Error ? error.message : 'Unknown error'}`]
+      };
+    }
+  }
+
+  /**
+   * Auto-fix targeted to specific best practices area
+   */
+  async autoFixArea(area: 'performance' | 'security' | 'ui-ux', dryRun = false): Promise<AutoFixResult> {
+    // Map best practices areas to auto-fix areas
+    const areaMapping = {
+      'performance': 'performance',
+      'security': 'security', 
+      'ui-ux': 'accessibility'
+    } as const;
+
+    return this.autoFixCodebase({
+      area: areaMapping[area] as any,
+      dryRun
+    });
+  }
+
+  /**
+   * Get auto-fix recommendations based on Context7 analysis
+   */
+  async getAutoFixRecommendations(component?: string): Promise<{
+    area: string;
+    priority: 'high' | 'medium' | 'low';
+    description: string;
+    command: string;
+  }[]> {
+    try {
+      // Analyze component if provided
+      let analysis: Context7Analysis | null = null;
+      if (component) {
+        analysis = await this.analyzeComponent(component);
+      }
+
+      // Generate recommendations based on analysis
+      const recommendations = [
+        {
+          area: 'typescript',
+          priority: 'high' as const,
+          description: 'Fix TypeScript type safety issues and add proper types',
+          command: 'context7Service.autoFixArea("performance", false)'
+        },
+        {
+          area: 'svelte5',
+          priority: 'high' as const,
+          description: 'Update to Svelte 5 reactive patterns ($derived, $effect)',
+          command: 'context7Service.autoFixCodebase({ area: "svelte5" })'
+        },
+        {
+          area: 'performance',
+          priority: 'medium' as const,
+          description: 'Optimize performance bottlenecks and expensive operations',
+          command: 'context7Service.autoFixArea("performance", false)'
+        },
+        {
+          area: 'accessibility',
+          priority: 'medium' as const,
+          description: 'Improve accessibility compliance and ARIA attributes',
+          command: 'context7Service.autoFixArea("ui-ux", false)'
+        },
+        {
+          area: 'security',
+          priority: 'low' as const,
+          description: 'Address security concerns and input validation',
+          command: 'context7Service.autoFixArea("security", false)'
+        }
+      ];
+
+      // Filter based on analysis if available
+      if (analysis?.recommendations.length) {
+        return recommendations.filter(rec => 
+          analysis.recommendations.some(r => 
+            r.toLowerCase().includes(rec.area) || 
+            rec.description.toLowerCase().includes('typescript') ||
+            rec.description.toLowerCase().includes('svelte')
+          )
+        );
+      }
+
+      return recommendations;
+    } catch (error) {
+      console.error("Failed to get auto-fix recommendations:", error);
+      return [];
     }
   }
 

@@ -1,0 +1,73 @@
+﻿{
+    "results":  {
+                    "ComponentTests":  {
+                                           "Ollama":  "SUCCESS - Models: 3",
+                                           "SvelteKitFrontend":  "FAILED: \u003e Cannot find package \u0027@sveltejs/vite-plugin-svelte\u0027 imported from C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\svelte.config.js     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:256:9)     at packageResolve (node:internal/modules/esm/resolve:768:81)     at moduleResolve (node:internal/modules/esm/resolve:854:18)     at defaultResolve (node:internal/modules/esm/resolve:984:11)     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)     at #cachedDefaultResolve (node:internal/modules/esm/loader:704:25)     at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)     at ModuleJob._link (node:internal/modules/esm/module_job:175:49)",
+                                           "AgentOrchestrator":  "FAILED: ERROR: missing ) after argument list",
+                                           "PostgreSQL":  "FAILED: ERROR: ",
+                                           "RAGBackend":  "SUCCESS - Structure validated",
+                                           "Context7Config":  "SUCCESS - Servers: 0"
+                                       },
+                    "BestPractices":  {
+                                          "Context7BestPractices":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\best-practices\\context7-integration-best-practices.md",
+                                          "BestPracticesGenerated":  "SUCCESS",
+                                          "RAGBestPractices":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\best-practices\\enhanced-rag-best-practices.md"
+                                      },
+                    "DocsStructure":  {
+                                          "docs\\src\\routes":  "EXISTS",
+                                          "docs\\svelte.config.js":  "CREATED",
+                                          "docs\\src\\lib":  "EXISTS",
+                                          "docs\\src\\lib\\components":  "EXISTS",
+                                          "docs\\content\\components":  "EXISTS",
+                                          "docs\\content\\utilities":  "EXISTS",
+                                          "docs\\content":  "EXISTS",
+                                          "docs\\content\\policies":  "EXISTS",
+                                          "docs\\vite.config.ts":  "CREATED",
+                                          "docs\\src":  "EXISTS",
+                                          "docs\\package.json":  "CREATED",
+                                          "docs":  "EXISTS"
+                                      },
+                    "Prerequisites":  "SUCCESS",
+                    "Context7Config":  {
+                                           "ConfigPath":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\context7-mcp-config.json",
+                                           "ServersConfigured":  4,
+                                           "ConfigUpdate":  "SUCCESS"
+                                       },
+                    "NPMErrors":  {
+                                      "FrontendCheck":  "FAILED",
+                                      "BackendTest":  "FAILED"
+                                  },
+                    "AgentRefactor":  {
+                                          "AgentOrchestrator":  "SUCCESS",
+                                          "CrewAIAgent":  "SUCCESS",
+                                          "ClaudeAgent":  "SUCCESS",
+                                          "GemmaAgent":  "SUCCESS",
+                                          "OllamaAgent":  "SUCCESS"
+                                      },
+                    "Dependencies":  {
+                                         "Context7MCP":  "SUCCESS",
+                                         "PythonRAG":  "SUCCESS",
+                                         "Backend":  "SUCCESS",
+                                         "Root":  "SUCCESS",
+                                         "MCP":  "SUCCESS",
+                                         "Frontend":  "SUCCESS"
+                                     }
+                },
+    "summary":  {
+                    "failedTests":  5,
+                    "errorTests":  0,
+                    "successRate":  "44.74%",
+                    "totalTests":  38,
+                    "successfulTests":  17
+                },
+    "nextActions":  [
+
+                    ],
+    "timestamp":  "2025-07-30 19:36:56",
+    "recommendations":  [
+                            "Review failed components and address configuration issues",
+                            "Check service dependencies (PostgreSQL, Ollama, etc.)",
+                            "Verify network connectivity and port availability",
+                            "Review log files for detailed error messages"
+                        ]
+}

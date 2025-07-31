@@ -658,7 +658,7 @@ export class UnslothFinetuningService {
         const stepsPerEpoch = Math.ceil(job.dataset.samples.length / job.config.batchSize);
         
         for (let step = 0; step < stepsPerEpoch; step++) {
-          if (job.status === 'cancelled') {
+          if ((job.status as any) === 'cancelled') {
             return;
           }
 

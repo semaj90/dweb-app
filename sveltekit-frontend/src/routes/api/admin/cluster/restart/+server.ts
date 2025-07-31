@@ -6,6 +6,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import cluster from 'node:cluster';
+import type { Worker } from 'node:cluster';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -207,7 +208,7 @@ async function performRollingRestart(
 /**
  * Wait for a worker to exit
  */
-function waitForWorkerExit(worker: cluster.Worker): Promise<void> {
+function waitForWorkerExit(worker: Worker): Promise<void> {
   return new Promise((resolve) => {
     const checkExit = () => {
       if (worker.isDead()) {

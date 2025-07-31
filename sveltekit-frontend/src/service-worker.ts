@@ -4,6 +4,8 @@
  * Optimized for Windows RTX 3060 without SentencePiece/Triton dependencies
  */
 
+/// <reference types="@webgpu/types" />
+
 import { build, files, version } from '$service-worker';
 
 // Cache configuration

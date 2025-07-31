@@ -254,7 +254,7 @@ const apiCoordinationService = fromCallback(({ sendBack, receive }) => {
         natsChannels = ["legal.events", "ai.recommendations", "performance.metrics"];
         
         sendBack({ 
-          type: "COORDINATION_STARTED", 
+          type: "API_COORDINATION_START", 
           connections: redisConnections.length,
           channels: natsChannels.length
         });
@@ -457,6 +457,20 @@ export const phase13StateMachine = setup({
       suggestions: [],
       nextActions: [],
     },
+    compilerFeedback: {
+      isActive: false,
+      currentEvents: [],
+      activePatches: [],
+      clusters: [],
+      attentionWeights: undefined,
+      focusAreas: [],
+      performance: {
+        totalEvents: 0,
+        successfulPatches: 0,
+        averageProcessingTime: 0,
+        clusterCount: 0,
+      },
+    },
   },
 
   states: {
@@ -537,12 +551,12 @@ export const phase13StateMachine = setup({
       },
       
       on: {
-        COORDINATION_STARTED: {
+        API_COORDINATION_START: {
           actions: assign({
             apiCoordination: ({ event }) => ({
               redisNodes: [`redis://localhost:6379`],
               natsChannels: [`legal.events`, `ai.recommendations`],
-              activeConnections: event.connections || 0,
+              activeConnections: 0, // Set default value since connections property doesn't exist
               queueDepth: 0,
             }),
           }),

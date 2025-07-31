@@ -48,17 +48,14 @@ interface LegalAnalysisResult {
 class AutogenLegalTeam {
   private agents: Map<string, AgentConfig>;
   private ollamaEndpoint: string;
-  private vllmEndpoint?: string;
 
   constructor(
     config: {
       ollamaEndpoint?: string;
-      vllmEndpoint?: string;
       useGPU?: boolean;
     } = {},
   ) {
     this.ollamaEndpoint = config.ollamaEndpoint || "http://localhost:11434";
-    this.vllmEndpoint = config.vllmEndpoint;
     this.agents = new Map();
     this.initializeLegalAgents();
   }
@@ -327,10 +324,7 @@ Identify any compliance issues and provide mitigation strategies.`,
     conversations.push(message);
 
     try {
-      // Try vLLM first for better performance, fallback to Ollama
-      const response = this.vllmEndpoint
-        ? await this.queryVLLM(agent, prompt)
-        : await this.queryOllama(agent, prompt);
+      const response = await this.queryOllama(agent, prompt);
 
       const responseMessage: ConversationMessage = {
         role: "assistant",
@@ -378,31 +372,7 @@ Identify any compliance issues and provide mitigation strategies.`,
     return data.response;
   }
 
-  private async queryVLLM(agent: AgentConfig, prompt: string): Promise<string> {
-    if (!this.vllmEndpoint) {
-      throw new Error("vLLM endpoint not configured");
-    }
-
-    const response = await fetch(`${this.vllmEndpoint}/v1/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: agent.model,
-        prompt: `${agent.systemMessage}\n\nUser: ${prompt}\n\nAssistant:`,
-        max_tokens: agent.maxTokens,
-        temperature: agent.temperature,
-        top_p: 0.9,
-        stop: ["\nUser:", "\nHuman:"],
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`vLLM request failed: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.choices[0].text;
-  }
+  
 
   private extractRecommendations(analysis: string): string[] {
     // Extract recommendations from analysis using regex patterns

@@ -43,43 +43,46 @@
   }: DialogProps = $props();
 
   // Reactive size classes using $derived
-  const sizeClasses = $derived(() => {
-    const sizes = {
-      sm: 'max-w-md',
-      md: 'max-w-lg',
-      lg: 'max-w-2xl',
-      xl: 'max-w-4xl',
-      full: 'max-w-[95vw] max-h-[95vh]'
-    };
-    return sizes[size];
-  });
+  const sizeClasses = $derived({
+    'max-w-md': size === 'sm',
+    'max-w-lg': size === 'md',
+    'max-w-2xl': size === 'lg',
+    'max-w-4xl': size === 'xl',
+    'max-w-[95vw] max-h-[95vh]': size === 'full'
+  }[size] ? {
+    'max-w-md': size === 'sm',
+    'max-w-lg': size === 'md',
+    'max-w-2xl': size === 'lg',
+    'max-w-4xl': size === 'xl',
+    'max-w-[95vw] max-h-[95vh]': size === 'full'
+  } : 'max-w-lg');
 
   // Reactive content classes using $derived
-  const dialogContentClasses = $derived(() => {
-    return cn(
-      'bits-dialog-content',
-      sizeClasses(),
-      {
-        'nier-bits-dialog': legal,
-        'yorha-panel border-2 border-nier-border-primary': evidenceAnalysis,
-        'yorha-card-elevated shadow-2xl': caseManagement,
-        'font-gothic': legal
-      },
-      contentClass
-    );
-  });
+  const dialogContentClasses = $derived(cn(
+    'bits-dialog-content',
+    {
+      'max-w-md': size === 'sm',
+      'max-w-lg': size === 'md',
+      'max-w-2xl': size === 'lg',
+      'max-w-4xl': size === 'xl',
+      'max-w-[95vw] max-h-[95vh]': size === 'full',
+      'nier-bits-dialog': legal,
+      'yorha-panel border-2 border-nier-border-primary': evidenceAnalysis,
+      'yorha-card-elevated shadow-2xl': caseManagement,
+      'font-gothic': legal
+    },
+    contentClass
+  ));
 
   // Reactive overlay classes using $derived
-  const overlayClasses = $derived(() => {
-    return cn(
-      'bits-dialog-overlay',
-      {
-        'backdrop-blur-md': legal,
-        'bg-nier-overlay': evidenceAnalysis || caseManagement
-      },
-      overlayClass
-    );
-  });
+  const overlayClasses = $derived(cn(
+    'bits-dialog-overlay',
+    {
+      'backdrop-blur-md': legal,
+      'bg-nier-overlay': evidenceAnalysis || caseManagement
+    },
+    overlayClass
+  ));
 
   // Handle open change
   function handleOpenChange(newOpen: boolean) {
@@ -94,10 +97,10 @@
   {#snippet portal()}
     <BitsDialog.Portal>
       <BitsDialog.Overlay 
-        class={overlayClasses()}
+        class={overlayClasses}
       />
       <BitsDialog.Content 
-        class={dialogContentClasses()}
+        class={dialogContentClasses}
       >
         {@render content?.()}
       </BitsDialog.Content>

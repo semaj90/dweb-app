@@ -76,58 +76,39 @@
   const isPassword = $derived(variant === 'password' || type === 'password');
   
   // Actual input type to use
-  const inputType = $derived(() => {
-    if (isPassword) {
-      return showPassword ? 'text' : 'password';
-    }
-    return type;
-  });
+  const inputType = $derived(
+    isPassword ? (showPassword ? 'text' : 'password') : type
+  );
 
   // Character count
-  const charCount = $derived(() => {
-    return typeof value === 'string' ? value.length : 0;
-  });
+  const charCount = $derived(typeof value === 'string' ? value.length : 0);
 
   // Reactive input classes using $derived
-  const inputClasses = $derived(() => {
-    const base = 'bits-input';
-    
-    const variants = {
-      default: '',
-      search: 'pl-10',
-      password: 'pr-10',
-      email: '',
-      legal: 'yorha-input font-gothic tracking-wide',
-      evidence: 'yorha-input border-2 border-nier-border-secondary'
-    };
-
-    const sizes = {
-      sm: 'h-8 px-3 text-xs',
-      md: 'h-10 px-3 text-sm',
-      lg: 'h-12 px-4 text-base'
-    };
-
-    return cn(
-      base,
-      variants[variant],
-      sizes[size],
-      {
-        'w-full': fullWidth,
-        'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500': error,
-        'border-green-500 bg-green-50 focus:border-green-500 focus:ring-green-500': success,
-        'nier-bits-input': legal,
-        'vector-search-input': evidenceSearch,
-        'border-gothic-border-primary bg-gothic-bg-primary': caseNumber,
-        'border-blue-500 bg-blue-50': aiAssisted,
-        'animate-pulse': loading,
-        'pr-16': showCharCount && maxLength,
-        'pl-10': icon && iconPosition === 'left',
-        'pr-10': icon && iconPosition === 'right',
-        'pr-20': isPassword || (icon && iconPosition === 'right' && showCharCount)
-      },
-      className
-    );
-  });
+  const inputClasses = $derived(cn(
+    'bits-input',
+    {
+      'pl-10': variant === 'search',
+      'pr-10': variant === 'password',
+      'yorha-input font-gothic tracking-wide': variant === 'legal',
+      'yorha-input border-2 border-nier-border-secondary': variant === 'evidence',
+      'h-8 px-3 text-xs': size === 'sm',
+      'h-10 px-3 text-sm': size === 'md',
+      'h-12 px-4 text-base': size === 'lg',
+      'w-full': fullWidth,
+      'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500': error,
+      'border-green-500 bg-green-50 focus:border-green-500 focus:ring-green-500': success,
+      'nier-bits-input': legal,
+      'vector-search-input': evidenceSearch,
+      'border-gothic-border-primary bg-gothic-bg-primary': caseNumber,
+      'border-blue-500 bg-blue-50': aiAssisted,
+      'animate-pulse': loading,
+      'pr-16': showCharCount && maxLength,
+      'pl-10': icon && iconPosition === 'left',
+      'pr-10': icon && iconPosition === 'right',
+      'pr-20': isPassword || (icon && iconPosition === 'right' && showCharCount)
+    },
+    className
+  ));
 
   // Focus the input programmatically
   export function focus() {
@@ -180,8 +161,8 @@
     <input
       bind:this={inputElement}
       bind:value
-      type={inputType()}
-      class={inputClasses()}
+      type={inputType}
+      class={inputClasses}
       {maxLength}
       {...restProps}
     />

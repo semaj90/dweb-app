@@ -811,6 +811,75 @@ export class EnhancedRAGEngine {
     };
   }
 
+  // Missing methods required by compiler-feedback-loop.ts
+  public async createEmbedding(text: string): Promise<number[]> {
+    try {
+      // Simulate embedding creation with a simple hash-based approach
+      // In production, this would call an actual embedding service like OpenAI or Ollama
+      const normalized = text.toLowerCase().trim();
+      const hash = this.simpleHash(normalized);
+      
+      // Create a 384-dimensional embedding (common size for sentence transformers)
+      const embedding = new Array(384).fill(0).map((_, i) => {
+        const seed = hash + i;
+        return Math.sin(seed * 0.1) * Math.cos(seed * 0.2) + Math.random() * 0.1 - 0.05;
+      });
+      
+      return embedding;
+    } catch (error) {
+      console.error('Failed to create embedding:', error);
+      // Return zero vector as fallback
+      return new Array(384).fill(0);
+    }
+  }
+
+  public async performRAGQuery(queryParams: {
+    query: string;
+    maxResults?: number;
+    includePageRank?: boolean;
+    documentTypes?: RAGDocument["type"][];
+    minConfidence?: number;
+  }): Promise<RAGResult[]> {
+    try {
+      const ragQuery: RAGQuery = {
+        id: `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        text: queryParams.query,
+        type: "HYBRID",
+        filters: {
+          documentTypes: queryParams.documentTypes,
+          maxResults: queryParams.maxResults || 5,
+          minConfidence: queryParams.minConfidence || 0.3
+        },
+        timestamp: Date.now(),
+        sessionId: `session_${Date.now()}`
+      };
+
+      // Create embedding for the query
+      const embedding = await this.createEmbedding(queryParams.query);
+      ragQuery.embedding = new Float32Array(embedding);
+
+      // Perform the actual query
+      const results = await this.queryDocuments(ragQuery);
+      
+      return results;
+    } catch (error) {
+      console.error('Failed to perform RAG query:', error);
+      return [];
+    }
+  }
+
+  // Helper method for simple hash generation
+  private simpleHash(str: string): number {
+    let hash = 0;
+    if (str.length === 0) return hash;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
+  }
+
   // Cleanup
   public destroy(): void {
     this.documents.clear();

@@ -481,10 +481,6 @@ Showcases the service worker-based AI orchestration system
                 <span><strong>Ollama:</strong> Local LLM hosting (Gemma3, Llama3)</span>
               </li>
               <li class="flex items-center gap-2">
-                <Zap class="h-4 w-4 text-yellow-500" />
-                <span><strong>vLLM:</strong> High-throughput inference server</span>
-              </li>
-              <li class="flex items-center gap-2">
                 <Brain class="h-4 w-4 text-green-500" />
                 <span><strong>AutoGen:</strong> Multi-agent conversation system</span>
               </li>

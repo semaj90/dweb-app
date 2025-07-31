@@ -93,7 +93,6 @@ function initializeAISystems(memoryProfile: string, useVLLM: boolean = false) {
   if (!autogenTeam) {
     autogenTeam = new AutogenLegalTeam({
       ollamaEndpoint,
-      vllmEndpoint,
       useGPU: true,
     });
   }
@@ -464,7 +463,7 @@ export const GET: RequestHandler = async ({ url }) => {
           "trial_preparation",
           "appeal_analysis",
         ],
-        available_analysis_types: ["autogen", "crewai", "hybrid", "vllm_only"],
+        available_analysis_types: ["autogen", "crewai", "hybrid"],
       });
 
     case "memory_profiles":

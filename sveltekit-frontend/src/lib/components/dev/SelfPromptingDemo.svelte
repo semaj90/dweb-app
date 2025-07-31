@@ -743,7 +743,6 @@
         <ul class="text-sm text-gray-600 space-y-1">
           <li>• AutoGen multi-agent framework coordination</li>
           <li>• CrewAI workflow orchestration</li>
-          <li>• vLLM high-performance inference</li>
           <li>• Claude reasoning and analysis</li>
           <li>• Context7 MCP tool integration</li>
         </ul>

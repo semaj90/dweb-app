@@ -15,18 +15,15 @@
     ...restProps
   }: Props & { children?: any } = $props();
 
-  const classes = $derived(() => {
-    const base = [
-      'nier-card',
-      `nier-card-${variant}`,
-      padding !== 'none' && `nier-card-padding-${padding}`,
-      className
-    ];
-    return base.filter(Boolean).join(' ');
-  });
+  const classes = $derived([
+    'nier-card',
+    `nier-card-${variant}`,
+    padding !== 'none' && `nier-card-padding-${padding}`,
+    className
+  ].filter(Boolean).join(' '));
 </script>
 
-<div class={classes()} {...restProps} data-card-root>
+<div class={classes} {...restProps} data-card-root>
   {@render children?.()}
 </div>
 

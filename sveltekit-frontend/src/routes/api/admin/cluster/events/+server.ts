@@ -5,6 +5,7 @@
 
 import type { RequestHandler } from './$types';
 import cluster from 'node:cluster';
+import type { Worker } from 'node:cluster';
 
 export const GET: RequestHandler = async ({ request }) => {
   // Check if client accepts text/event-stream
@@ -189,7 +190,7 @@ function setupClusterEventListeners(controller: ReadableStreamDefaultController)
   const handlers: { [key: string]: (...args: any[]) => void } = {};
 
   // Worker online event
-  handlers.online = (worker: cluster.Worker) => {
+  handlers.online = (worker: Worker) => {
     sendSSEEvent(controller, 'worker_online', {
       workerId: worker.id,
       pid: worker.process.pid,
@@ -198,7 +199,7 @@ function setupClusterEventListeners(controller: ReadableStreamDefaultController)
   };
 
   // Worker disconnect event
-  handlers.disconnect = (worker: cluster.Worker) => {
+  handlers.disconnect = (worker: Worker) => {
     sendSSEEvent(controller, 'worker_disconnect', {
       workerId: worker.id,
       pid: worker.process.pid,
@@ -207,7 +208,7 @@ function setupClusterEventListeners(controller: ReadableStreamDefaultController)
   };
 
   // Worker exit event
-  handlers.exit = (worker: cluster.Worker, code: number, signal: string) => {
+  handlers.exit = (worker: Worker, code: number, signal: string) => {
     sendSSEEvent(controller, 'worker_exit', {
       workerId: worker.id,
       pid: worker.process.pid,
@@ -218,7 +219,7 @@ function setupClusterEventListeners(controller: ReadableStreamDefaultController)
   };
 
   // Worker fork event
-  handlers.fork = (worker: cluster.Worker) => {
+  handlers.fork = (worker: Worker) => {
     sendSSEEvent(controller, 'worker_fork', {
       workerId: worker.id,
       pid: worker.process.pid,

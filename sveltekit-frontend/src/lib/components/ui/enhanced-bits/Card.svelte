@@ -56,62 +56,41 @@
   }: CardProps = $props();
 
   // Reactive card classes using $derived
-  const cardClasses = $derived(() => {
-    const base = 'shadcn-card';
-    
-    const variants = {
-      default: '',
-      elevated: 'yorha-card-elevated shadow-lg',
-      outline: 'border-2',
-      ghost: 'border-none shadow-none bg-transparent',
-      yorha: 'yorha-card',
-      evidence: 'yorha-evidence-item',
-      case: 'yorha-card yorha-panel'
-    };
-
-    const sizes = {
-      sm: 'p-4',
-      md: 'p-6',
-      lg: 'p-8',
-      xl: 'p-10'
-    };
-
-    const priorityStyles = {
-      critical: 'yorha-priority-critical shadow-red-200 border-red-500',
-      high: 'yorha-priority-high shadow-orange-200 border-orange-500',
-      medium: 'yorha-priority-medium shadow-yellow-200 border-yellow-500',
-      low: 'yorha-priority-low shadow-gray-200 border-gray-300'
-    };
-
-    const confidenceStyles = {
-      high: 'ai-confidence-90 border-green-500',
-      medium: 'ai-confidence-70 border-yellow-500',
-      low: 'ai-confidence-40 border-red-500'
-    };
-
-    return cn(
-      base,
-      variants[variant],
-      sizes[size],
-      {
-        'w-full': fullWidth,
-        'cursor-pointer': clickable,
-        'hover:shadow-lg hover:-translate-y-1 transition-all duration-200': hoverable,
-        'yorha-evidence-item-selected': selected && evidenceCard,
-        'border-2 border-nier-border-primary': selected,
-        'nier-bits-card': legal,
-        'animate-pulse': loading,
-        'font-gothic': legal,
-        'vector-result-item': evidenceCard,
-        'agent-card': aiAnalysis,
-        'result-card': aiAnalysis,
-        'recommendation-card': aiAnalysis && confidence
-      },
-      priority && priorityStyles[priority],
-      confidence && confidenceStyles[confidence],
-      className
-    );
-  });
+  const cardClasses = $derived(cn(
+    'shadcn-card',
+    {
+      'yorha-card-elevated shadow-lg': variant === 'elevated',
+      'border-2': variant === 'outline',
+      'border-none shadow-none bg-transparent': variant === 'ghost',
+      'yorha-card': variant === 'yorha',
+      'yorha-evidence-item': variant === 'evidence',
+      'yorha-card yorha-panel': variant === 'case',
+      'p-4': size === 'sm',
+      'p-6': size === 'md',
+      'p-8': size === 'lg',
+      'p-10': size === 'xl',
+      'w-full': fullWidth,
+      'cursor-pointer': clickable,
+      'hover:shadow-lg hover:-translate-y-1 transition-all duration-200': hoverable,
+      'yorha-evidence-item-selected': selected && evidenceCard,
+      'border-2 border-nier-border-primary': selected,
+      'nier-bits-card': legal,
+      'animate-pulse': loading,
+      'font-gothic': legal,
+      'vector-result-item': evidenceCard,
+      'agent-card': aiAnalysis,
+      'result-card': aiAnalysis,
+      'recommendation-card': aiAnalysis && confidence,
+      'yorha-priority-critical shadow-red-200 border-red-500': priority === 'critical',
+      'yorha-priority-high shadow-orange-200 border-orange-500': priority === 'high',
+      'yorha-priority-medium shadow-yellow-200 border-yellow-500': priority === 'medium',
+      'yorha-priority-low shadow-gray-200 border-gray-300': priority === 'low',
+      'ai-confidence-90 border-green-500': confidence === 'high',
+      'ai-confidence-70 border-yellow-500': confidence === 'medium',
+      'ai-confidence-40 border-red-500': confidence === 'low'
+    },
+    className
+  ));
 
   // Handle click events
   function handleClick() {
@@ -130,7 +109,7 @@
 </script>
 
 <div
-  class={cardClasses()}
+  class={cardClasses}
   role={clickable ? 'button' : undefined}
   tabindex={clickable ? 0 : undefined}
   on:click={handleClick}

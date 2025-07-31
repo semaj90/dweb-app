@@ -7,7 +7,7 @@
 import Loki from 'lokijs';
 import Fuse from 'fuse.js';
 import { createClient as createRedisClient } from 'redis';
-import { QdrantClient } from '@qdrant/js-client-v1';
+import { QdrantClient } from '@qdrant/js-client-rest';
 import pkg from 'pg';
 const { Pool } = pkg;
 import amqp from 'amqplib';
@@ -154,10 +154,10 @@ export class ComprehensiveCachingArchitecture {
    */
   private async initializeRedis(): Promise<void> {
     this.redisClient = createRedisClient({
-      host: this.config.redis.host,
-      port: this.config.redis.port,
-      db: this.config.redis.db,
-      retryStrategy: (times) => Math.min(times * 50, 2000)
+      url: `redis://${this.config.redis.host}:${this.config.redis.port}/${this.config.redis.db}`,
+      socket: {
+        reconnectStrategy: (retries) => Math.min(retries * 50, 2000)
+      }
     });
 
     await this.redisClient.connect();
@@ -589,7 +589,7 @@ export class ComprehensiveCachingArchitecture {
 
     if (cached) {
       console.log('🎯 RAG query cache hit');
-      return cached.data;
+      return Array.isArray(cached.data) ? cached.data : [cached.data];
     }
 
     // Execute multi-modal search

@@ -21,14 +21,13 @@
 		...props
 	}: Props = $props();
 
-	const inputClasses = $derived(() => {
-		let classes = 'yorha-input bits-input';
-		if (error) classes += ' border-destructive focus:border-destructive';
-		if (icon) classes += ' pl-10';
-		if (loading) classes += ' pr-10';
-		if (className) classes += ` ${className}`;
-		return classes;
-	});
+	const inputClasses = $derived([
+		'yorha-input bits-input',
+		error && 'border-destructive focus:border-destructive',
+		icon && 'pl-10',
+		loading && 'pr-10',
+		className
+	].filter(Boolean).join(' '));
 </script>
 
 <div class="space-y-2">

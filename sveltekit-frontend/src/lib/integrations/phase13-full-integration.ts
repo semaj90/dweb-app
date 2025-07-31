@@ -320,7 +320,7 @@ export class Phase13IntegrationManager {
           indexing: 'auto'
         },
         ai: {
-          vllm: this.serviceHealth.ollama ? 'optimized' : 'mock',
+          ollama: this.serviceHealth.ollama ? 'optimized' : 'mock',
           caching: this.serviceHealth.redis ? 'redis' : 'memory',
           embedding: 'efficient'
         },

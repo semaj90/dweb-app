@@ -10,15 +10,25 @@
     "test": "node test.mjs",
     "status": "docker ps",
     "logs": "docker-compose logs",
-    "check": "npx svelte-kit check || npx tsc --noEmit",
-    "dev": "cd sveltekit-frontend && npm run dev"
+    "check": "npx svelte-kit check || npx tsc --noEmit; node scripts/detect-stubs-todos.js; node agent-orchestrator/index.js --startup-check",
+    "dev": "cd sveltekit-frontend && npm run dev",
+    "integration-setup": "node integration-setup-simple.mjs",
+    "enhanced-start": "npm run integration-setup && npm run start && npm run dev"
   },
   "dependencies": {
     "@langchain/community": "^0.3.49",
+    "@langchain/core": "^0.3.66",
     "@langchain/openai": "^0.6.3",
     "@modelcontextprotocol/sdk": "^1.17.0",
     "@pothos/core": "^4.8.0",
+    "@qdrant/js-client-rest": "^1.15.0",
+    "@types/node": "^24.1.0",
+    "@types/redis": "^4.0.10",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "fabric": "^6.7.1",
+    "glob": "^11.0.3",
     "graphql": "^16.11.0",
     "graphql-yoga": "^5.15.1",
     "langchain": "^0.3.30",
@@ -27,7 +37,10 @@
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "pg": "^8.11.3",
+    "playwright": "^1.54.1",
+    "puppeteer": "^24.15.0",
     "redis": "^4.7.1",
+    "ws": "^8.18.3",
     "xml2js": "^0.6.2"
   },
   "engines": {

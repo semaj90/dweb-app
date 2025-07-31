@@ -1,0 +1,62 @@
+﻿{
+    "results":  {
+                    "ComponentTests":  {
+                                           "Ollama":  "SUCCESS - Models: 0",
+                                           "SvelteKitFrontend":  "SUCCESS",
+                                           "AgentOrchestrator":  "FAILED: ERROR: missing ) after argument list",
+                                           "PostgreSQL":  "FAILED: ERROR: password authentication failed for user \"postgres\"",
+                                           "RAGBackend":  "SUCCESS - Structure validated",
+                                           "Context7Config":  "SUCCESS - Servers: 0"
+                                       },
+                    "BestPractices":  {
+                                          "Context7BestPractices":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\best-practices\\context7-integration-best-practices.md",
+                                          "BestPracticesGenerated":  "SUCCESS",
+                                          "RAGBestPractices":  "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\best-practices\\enhanced-rag-best-practices.md"
+                                      },
+                    "DocsStructure":  {
+                                          "docs\\src\\routes":  "EXISTS",
+                                          "docs\\svelte.config.js":  "CREATED",
+                                          "docs\\src\\lib":  "EXISTS",
+                                          "docs\\src\\lib\\components":  "EXISTS",
+                                          "docs\\content\\components":  "EXISTS",
+                                          "docs\\content\\utilities":  "EXISTS",
+                                          "docs\\content":  "EXISTS",
+                                          "docs\\content\\policies":  "EXISTS",
+                                          "docs\\vite.config.ts":  "CREATED",
+                                          "docs\\src":  "EXISTS",
+                                          "docs\\package.json":  "CREATED",
+                                          "docs":  "EXISTS"
+                                      },
+                    "Prerequisites":  "SUCCESS",
+                    "Context7Config":  "SKIPPED",
+                    "NPMErrors":  {
+                                      "FrontendCheck":  "FAILED",
+                                      "BackendTest":  "FAILED"
+                                  },
+                    "AgentRefactor":  {
+                                          "AgentOrchestrator":  "SUCCESS",
+                                          "CrewAIAgent":  "SUCCESS",
+                                          "ClaudeAgent":  "SUCCESS",
+                                          "GemmaAgent":  "SUCCESS",
+                                          "OllamaAgent":  "SUCCESS"
+                                      },
+                    "Dependencies":  "SKIPPED"
+                },
+    "summary":  {
+                    "failedTests":  4,
+                    "errorTests":  0,
+                    "successRate":  "35.48%",
+                    "totalTests":  31,
+                    "successfulTests":  11
+                },
+    "nextActions":  [
+
+                    ],
+    "timestamp":  "2025-07-30 19:51:23",
+    "recommendations":  [
+                            "Review failed components and address configuration issues",
+                            "Check service dependencies (PostgreSQL, Ollama, etc.)",
+                            "Verify network connectivity and port availability",
+                            "Review log files for detailed error messages"
+                        ]
+}

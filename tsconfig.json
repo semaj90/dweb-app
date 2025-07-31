@@ -1,6 +1,8 @@
 {
   "files": [],
   "references": [
-    { "path": "./sveltekit-frontend" }
+    { "path": "./sveltekit-frontend" },
+    { "path": "./rag" },
+    { "path": "./vscode-llm-extension" }
   ]
 }

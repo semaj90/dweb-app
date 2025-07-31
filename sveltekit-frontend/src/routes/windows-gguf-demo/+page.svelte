@@ -36,11 +36,11 @@
   let device: GPUDevice | null = null;
   let animationFrame: number;
 
-  // Store subscriptions
-  $: modelStatus = $ggufRuntime.stores.modelStatus;
-  $: runtimeStats = $ggufRuntime.stores.runtimeStats;
-  $: metrics = $orchestrator.stores.metrics;
-  $: systemHealth = $orchestrator.derived.systemHealth;
+  // Access stores directly from the service objects
+  $: modelStatus = ggufRuntime.stores.modelStatus;
+  $: runtimeStats = ggufRuntime.stores.runtimeStats;
+  $: metrics = orchestrator.stores.metrics;
+  $: systemHealth = orchestrator.derived.systemHealth;
 
   onMount(async () => {
     // Initialize WebGPU for visualization
@@ -170,7 +170,7 @@
   }
 
   async function runGGUFInference() {
-    if (!$ggufRuntime.runtime.isReady()) {
+    if (!ggufRuntime.runtime.isReady()) {
       alert('GGUF Runtime not ready yet. Please wait...');
       return;
     }

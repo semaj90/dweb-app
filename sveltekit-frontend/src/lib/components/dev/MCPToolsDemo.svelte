@@ -228,7 +228,7 @@ ${request.area === 'performance' ? `
 - Use server-side rendering for legal document pages
 - Implement progressive enhancement for offline access
 - Optimize database queries with proper indexing
-- Use vLLM for high-throughput AI inference
+- Use Ollama for high-throughput AI inference
 - Cache frequently accessed legal precedents
 - Implement efficient vector similarity searches
 ` : request.area === 'security' ? `

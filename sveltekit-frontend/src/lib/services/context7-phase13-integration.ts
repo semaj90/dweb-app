@@ -58,7 +58,7 @@ export interface MCPMemoryNode {
 
 export interface MCPAgentRecommendation {
   id: string;
-  agent: "context7" | "autogen" | "crewai" | "copilot" | "claude" | "vllm";
+  agent: "context7" | "autogen" | "crewai" | "copilot" | "claude";
   recommendation: string;
   confidence: number;
   reasoning: string;

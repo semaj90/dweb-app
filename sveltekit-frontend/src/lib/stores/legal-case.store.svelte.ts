@@ -27,23 +27,21 @@ export function createLegalCaseStore() {
   });
 
   // Derived state for filtered cases based on user clearance
-  const filteredCases = $derived(() => {
-    if (!currentUser) return [];
-
-    return cases.filter(
+  const filteredCases = $derived(
+    !currentUser ? [] : cases.filter(
       (legalCase) =>
         legalCase.confidentialityLevel <= currentUser.clearanceLevel,
-    );
-  });
+    )
+  );
 
   // Derived state for case statistics
-  const caseStats = $derived(() => ({
-    total: filteredCases().length,
-    active: filteredCases().filter((c) => c.status === "active").length,
-    pending: filteredCases().filter((c) => c.status === "pending").length,
-    closed: filteredCases().filter((c) => c.status === "closed").length,
-    highPriority: filteredCases().filter((c) => c.priority === "high").length,
-  }));
+  const caseStats = $derived({
+    total: filteredCases.length,
+    active: filteredCases.filter((c) => c.status === "active").length,
+    pending: filteredCases.filter((c) => c.status === "pending").length,
+    closed: filteredCases.filter((c) => c.status === "closed").length,
+    highPriority: filteredCases.filter((c) => c.priority === "high").length,
+  });
 
   // Audit service instance
   const auditService = new LegalAuditService();
@@ -219,7 +217,7 @@ export function createLegalCaseStore() {
   // Search functionality
   function searchCases(query: string) {
     const searchTerm = query.toLowerCase();
-    return filteredCases().filter(
+    return filteredCases.filter(
       (legalCase) =>
         legalCase.title.toLowerCase().includes(searchTerm) ||
         legalCase.caseNumber.toLowerCase().includes(searchTerm) ||
