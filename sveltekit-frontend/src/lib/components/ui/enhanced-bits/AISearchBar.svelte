@@ -3,8 +3,6 @@
   import { createEventDispatcher } from 'svelte';
   import { Input, Button } from './index.js';
   import { Search } from 'lucide-svelte';
-  import { $state } from 'svelte';
-
   export let placeholder = 'Ask AI...';
   export let userContext: any = {};
   export let neo4jContext: any = {};

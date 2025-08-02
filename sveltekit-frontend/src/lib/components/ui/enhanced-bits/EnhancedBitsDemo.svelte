@@ -234,7 +234,7 @@
                 label="Evidence Description"
                 helpText="AI will suggest tags and categorization"
                 showCharCount
-                maxLength={200}
+                maxlength={200}
               />
             </div>
           </div>

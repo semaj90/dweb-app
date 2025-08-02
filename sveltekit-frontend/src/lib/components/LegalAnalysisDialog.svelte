@@ -96,15 +96,15 @@ import { Progress } from 'bits-ui/components/progress';
       <!-- Case Selection -->
       <div class="space-y-3">
         <label class="text-sm font-medium text-gray-700">Select Case for Analysis</label>
-        <Select.Root bind:value={selectedCaseForAnalysis} disabled={loading.analysis}>
-          <Select.Trigger class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <Select.Value placeholder="Choose a case to analyze..." let:value>
+        <SelectRoot bind:value={selectedCaseForAnalysis} disabled={loading.analysis}>
+          <SelectTrigger class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <SelectValue placeholder="Choose a case to analyze..." let:value>
               {value ? value.title : ''}
-            </Select.Value>
-          </Select.Trigger>
-          <Select.Content class="bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent class="bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
             {#each filteredCases() as legalCase}
-              <Select.Item 
+              <SelectItem 
                 value={legalCase.id} 
                 class="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
               >
@@ -120,10 +120,10 @@ import { Progress } from 'bits-ui/components/progress';
                     <Badge variant="outline">{legalCase.status}</Badge>
                   </div>
                 </div>
-              </Select.Item>
+              </SelectItem>
             {/each}
-          </Select.Content>
-        </Select.Root>
+          </SelectContent>
+        </SelectRoot>
       </div>
 
       <!-- Analysis Progress -->

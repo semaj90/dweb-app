@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Select, Input, Card } from './index.js';
-  import type { SelectOption, VectorSearchResult, SemanticEntity } from './index.js';
+  import type { SelectOption } from './index.js';
+  import type { VectorSearchResult, SemanticEntity } from '$lib/types/ai';
   import { cn } from '$lib/utils/cn';
   import { Search, Brain, FileText, Users, MapPin, Calendar, Scale, Zap } from 'lucide-svelte';
 
@@ -15,33 +16,33 @@
 
   // Mock vector search configuration
   const searchTypes: SelectOption[] = [
-    { 
-      value: 'semantic', 
-      label: 'Semantic Search', 
+    {
+      value: 'semantic',
+      label: 'Semantic Search',
       description: 'AI-powered contextual understanding',
       category: 'AI-Powered'
     },
-    { 
-      value: 'vector', 
-      label: 'Vector Similarity', 
+    {
+      value: 'vector',
+      label: 'Vector Similarity',
       description: 'Embedding-based similarity matching',
       category: 'AI-Powered'
     },
-    { 
-      value: 'hybrid', 
-      label: 'Hybrid Search', 
+    {
+      value: 'hybrid',
+      label: 'Hybrid Search',
       description: 'Combined semantic and keyword search',
       category: 'AI-Powered'
     },
-    { 
-      value: 'legal', 
-      label: 'Legal Precedent', 
+    {
+      value: 'legal',
+      label: 'Legal Precedent',
       description: 'Case law and precedent matching',
       category: 'Legal-Specific'
     },
-    { 
-      value: 'citation', 
-      label: 'Citation Analysis', 
+    {
+      value: 'citation',
+      label: 'Citation Analysis',
       description: 'Legal citation and reference tracking',
       category: 'Legal-Specific'
     }
@@ -133,11 +134,11 @@
         medium: 0.7,
         low: 0.0
       };
-      
+
       const minScore = thresholds[selectedConfidence as keyof typeof thresholds];
       const maxScore = selectedConfidence === 'low' ? 0.7 : 1.0;
-      
-      return searchResults.filter(result => 
+
+      return searchResults.filter(result =>
         result.score >= minScore && result.score < maxScore
       );
     })()
@@ -156,7 +157,7 @@
   // Entity type colors
   const entityColors = {
     person: 'semantic-entity-person',
-    organization: 'semantic-entity-organization', 
+    organization: 'semantic-entity-organization',
     location: 'semantic-entity-location',
     date: 'semantic-entity-date',
     legal_term: 'semantic-entity-legal',
@@ -166,25 +167,25 @@
   // Search functionality
   async function performVectorSearch() {
     if (!searchQuery.trim()) return;
-    
+
     isSearching = true;
-    
+
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Mock results based on search type
       searchResults = mockSearchResults.map(result => ({
         ...result,
         score: Math.random() * 0.3 + 0.7, // Random score between 0.7-1.0
         highlights: result.highlights.filter(() => Math.random() > 0.3) // Random highlights
       }));
-      
+
       // Mock entity extraction
       if (analysisDepth !== 'quick') {
         semanticEntities = mockEntities;
       }
-      
+
     } catch (error) {
       console.error('Search failed:', error);
     } finally {
@@ -229,7 +230,7 @@
   <!-- Search Configuration -->
   <div class="demo-config-section mb-6">
     <h2 class="text-lg font-gothic mb-4 text-nier-text-primary">Search Configuration</h2>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <Select
         bind:value={selectedSearchType}
@@ -239,7 +240,7 @@
         aiRecommendations
         label="Search Algorithm"
       />
-      
+
       <Select
         bind:value={selectedConfidence}
         options={confidenceFilters}
@@ -247,7 +248,7 @@
         legal
         label="Confidence Filter"
       />
-      
+
       <Select
         bind:value={analysisDepth}
         options={analysisOptions}
@@ -261,7 +262,7 @@
   <!-- Search Interface -->
   <div class="demo-config-section mb-6">
     <h2 class="text-lg font-gothic mb-4 text-nier-text-primary">Vector Search Interface</h2>
-    
+
     <div class="flex gap-3 mb-4">
       <Input
         variant="search"
@@ -274,7 +275,7 @@
         disabled={isSearching}
         class="flex-1"
       />
-      
+
       <Button
         variant="primary"
         legal
@@ -290,7 +291,7 @@
           Search
         {/if}
       </Button>
-      
+
       {#if searchResults.length > 0}
         <Button
           variant="outline"
@@ -318,15 +319,15 @@
   {#if semanticEntities.length > 0}
     <div class="demo-results-section mb-6">
       <h2 class="text-lg font-gothic mb-4 text-nier-text-primary">Extracted Entities</h2>
-      
+
       <Card variant="yorha" legal class="p-4">
         <div class="semantic-entity-container">
           {#each semanticEntities as entity (entity.text)}
             <div class={cn('semantic-entity-tag', entityColors[entity.type])}>
               <div class="flex items-center gap-1">
-                <svelte:component 
-                  this={entityIcons[entity.type]} 
-                  class="w-3 h-3" 
+                <svelte:component
+                  this={entityIcons[entity.type]}
+                  class="w-3 h-3"
                 />
                 <span class="text-xs font-medium">{entity.text}</span>
                 <span class="text-xs opacity-75">
@@ -336,9 +337,9 @@
             </div>
           {/each}
         </div>
-        
+
         <div class="mt-3 text-xs text-nier-text-muted">
-          <strong>{semanticEntities.length}</strong> entities extracted with 
+          <strong>{semanticEntities.length}</strong> entities extracted with
           <strong>{analysisDepth}</strong> analysis depth
         </div>
       </Card>
@@ -346,7 +347,7 @@
   {/if}
 
   <!-- Search Results -->
-  {#if filteredResults().length > 0}
+  {#if filteredResults.length > 0}
     <div class="demo-results-section">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-gothic text-nier-text-primary">
@@ -356,7 +357,7 @@
           Showing {selectedConfidence} confidence results
         </div>
       </div>
-      
+
       <div class="space-y-4">
         {#each filteredResults as result (result.id)}
           <Card
@@ -370,22 +371,22 @@
               <!-- Result Header -->
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-2">
-                  <svelte:component 
-                    this={result.source.type === 'case' ? Scale : 
-                          result.source.type === 'precedent' ? FileText : 
-                          FileText} 
-                    class="w-4 h-4 text-nier-text-muted" 
+                  <svelte:component
+                    this={result.source.type === 'case' ? Scale :
+                          result.source.type === 'precedent' ? FileText :
+                          FileText}
+                    class="w-4 h-4 text-nier-text-muted"
                   />
                   <span class="text-sm font-medium text-nier-text-primary">
                     {result.source.name}
                   </span>
                 </div>
-                
+
                 <div class={cn('vector-confidence-badge', getConfidenceBadgeClass(result.score))}>
                   {formatConfidence(result.score)}
                 </div>
               </div>
-              
+
               <!-- Result Content -->
               <div class="text-sm text-nier-text-secondary leading-relaxed">
                 {@html result.content.replace(
@@ -393,7 +394,7 @@
                   '<span class="vector-highlight">$1</span>'
                 )}
               </div>
-              
+
               <!-- Result Metadata -->
               <div class="vector-metadata-grid">
                 {#each Object.entries(result.metadata) as [key, value]}
@@ -407,7 +408,7 @@
                   </div>
                 {/each}
               </div>
-              
+
               <!-- Action Buttons -->
               <div class="flex items-center justify-between pt-2 border-t border-nier-border-muted">
                 <div class="flex gap-2">
@@ -417,7 +418,7 @@
                     </span>
                   {/each}
                 </div>
-                
+
                 <div class="flex gap-2">
                   <Button size="sm" variant="outline">
                     View Full
@@ -443,8 +444,8 @@
         Enter a search query to demonstrate advanced semantic analysis and vector similarity matching.
       </p>
       <div class="flex justify-center gap-2">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           on:click={() => searchQuery = 'contract breach non-disclosure agreement'}
         >
           Try Sample Query
@@ -463,21 +464,21 @@
           </div>
           <div class="text-xs text-nier-text-muted">Results Found</div>
         </div>
-        
+
         <div class="agent-card p-3">
           <div class="text-lg font-bold text-nier-text-primary">
             {Math.round(Math.max(...searchResults.map(r => r.score)) * 100)}%
           </div>
           <div class="text-xs text-nier-text-muted">Max Confidence</div>
         </div>
-        
+
         <div class="agent-card p-3">
           <div class="text-lg font-bold text-nier-text-primary">
             {semanticEntities.length}
           </div>
           <div class="text-xs text-nier-text-muted">Entities</div>
         </div>
-        
+
         <div class="agent-card p-3">
           <div class="text-lg font-bold text-nier-text-primary">
             1.2s
@@ -491,7 +492,7 @@
 
 <style>
   /* @unocss-include */
-  
+
   /* Vector Intelligence specific styling */
   .vector-intelligence-demo {
     background: linear-gradient(

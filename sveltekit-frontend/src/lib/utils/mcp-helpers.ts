@@ -3,12 +3,28 @@
  * Self-prompts after using MCP memory/codebase tools
  */
 
-// Service imports
-import { autoGenService } from '$lib/services/autogen-service';
-import { AutogenLegalTeam } from '$lib/ai/autogen-legal-agents';
+// Service imports with fallbacks
+let autoGenService: any = null;
+let legalTeam: any = null;
 
-// Initialize legal team and services
-const legalTeam = new AutogenLegalTeam();
+// Initialize services with fallbacks
+try {
+  const { autoGenService: autoGenSvc } = await import(
+    "$lib/services/autogen-service"
+  ).catch(() => ({ autoGenService: null }));
+  autoGenService = autoGenSvc;
+} catch {
+  // Service not available
+}
+
+try {
+  const { AutogenLegalTeam } = await import(
+    "$lib/ai/autogen-legal-agents"
+  ).catch(() => ({ AutogenLegalTeam: null }));
+  legalTeam = AutogenLegalTeam ? new AutogenLegalTeam() : null;
+} catch {
+  // Team not available
+}
 
 // --- Type Definitions Export ---
 // Export all relevant interfaces for easy import in other files and for Copilot/agent visibility
@@ -27,7 +43,7 @@ export interface MCPContextAnalysis {
 }
 
 export interface AutoMCPSuggestion {
-  type: 'enhancement' | 'correction' | 'alternative';
+  type: "enhancement" | "correction" | "alternative";
   original: string;
   suggested: string;
   reasoning: string;
@@ -53,27 +69,157 @@ const agentRegistry: Record<
   string,
   (prompt: string, context?: any) => Promise<AgentResult>
 > = {
-  autogen: async (prompt, context) => ({
-    agent: "autogen",
-    result: await autoGenService.executeLegalWorkflow("legal_research", prompt, context || {}),
-  }),
-  crewai: async (prompt) => ({
-    agent: "crewai",
-    result: await legalTeam.analyzeCase({
-      query: prompt,
-      analysisType: "legal_research",
-      priority: "medium"
-    }),
-  }),
-  // Add Copilot and Claude agent stubs for extensibility
-  copilot: async (prompt) => ({
-    agent: "copilot",
-    result: `Copilot agent result for: ${prompt}`,
-  }),
-  claude: async (prompt) => ({
-    agent: "claude",
-    result: `Claude agent result for: ${prompt}`,
-  }),
+  autogen: async (prompt, context) => {
+    try {
+      if (autoGenService) {
+        return {
+          agent: "autogen",
+          result: await autoGenService.executeLegalWorkflow(
+            "legal_research",
+            prompt,
+            context || {}
+          ),
+        };
+      } else {
+        return {
+          agent: "autogen",
+          result: `AutoGen agent (mock): Analyzed "${prompt}" - would provide legal research workflow results`,
+        };
+      }
+    } catch (error) {
+      return {
+        agent: "autogen",
+        result: `AutoGen agent error: ${error}`,
+      };
+    }
+  },
+  crewai: async (prompt) => {
+    try {
+      if (legalTeam) {
+        return {
+          agent: "crewai",
+          result: await legalTeam.analyzeCase({
+            query: prompt,
+            analysisType: "legal_research",
+            priority: "medium",
+          }),
+        };
+      } else {
+        return {
+          agent: "crewai",
+          result: `CrewAI agent (mock): Analyzed "${prompt}" - would provide multi-agent legal analysis`,
+        };
+      }
+    } catch (error) {
+      return {
+        agent: "crewai",
+        result: `CrewAI agent error: ${error}`,
+      };
+    }
+  },
+  // Add Copilot and Claude agent implementations
+  copilot: async (prompt, context) => {
+    try {
+      // Use Ollama for copilot-style responses
+      const ollamaUrl =
+        typeof window !== "undefined"
+          ? "http://localhost:11434"
+          : process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+
+      const response = await fetch(`${ollamaUrl}/api/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "gemma2:2b",
+          prompt: `As a coding assistant, analyze and provide suggestions for: ${prompt}`,
+          stream: false,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          agent: "copilot",
+          result: data.response || `Copilot analysis for: ${prompt}`,
+        };
+      } else {
+        throw new Error("Ollama request failed");
+      }
+    } catch (error) {
+      return {
+        agent: "copilot",
+        result: `Copilot agent (mock): Code analysis for "${prompt}" - would provide coding suggestions and optimizations`,
+      };
+    }
+  },
+  claude: async (prompt, context) => {
+    try {
+      // Use legal-optimized model for Claude-style responses
+      const ollamaUrl =
+        typeof window !== "undefined"
+          ? "http://localhost:11434"
+          : process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+
+      const response = await fetch(`${ollamaUrl}/api/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "gemma2-legal",
+          prompt: `As a legal AI assistant, provide detailed analysis for: ${prompt}`,
+          stream: false,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          agent: "claude",
+          result: data.response || `Claude legal analysis for: ${prompt}`,
+        };
+      } else {
+        throw new Error("Legal model request failed");
+      }
+    } catch (error) {
+      return {
+        agent: "claude",
+        result: `Claude agent (mock): Legal analysis for "${prompt}" - would provide detailed legal insights and case analysis`,
+      };
+    }
+  },
+  // RAG agent for enhanced retrieval
+  rag: async (prompt, context) => {
+    try {
+      const ragUrl =
+        typeof window !== "undefined"
+          ? "http://localhost:5173"
+          : "http://localhost:5173";
+
+      const response = await fetch(`${ragUrl}/api/rag`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "query",
+          query: prompt,
+          context: context,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          agent: "rag",
+          result: data.result || `RAG analysis for: ${prompt}`,
+        };
+      } else {
+        throw new Error("RAG request failed");
+      }
+    } catch (error) {
+      return {
+        agent: "rag",
+        result: `RAG agent (mock): Enhanced retrieval for "${prompt}" - would provide context-aware document analysis`,
+      };
+    }
+  },
 };
 
 /**
@@ -176,12 +322,7 @@ export interface MCPToolRequest {
     | "rag-analyze-relevance"
     | "rag-integration-guide";
   component?: string;
-  context?:
-    | "legal-ai"
-    | "gaming-ui"
-    | "performance"
-    | "llm"
-    | "unsloth";
+  context?: "legal-ai" | "gaming-ui" | "performance" | "llm" | "unsloth";
   area?: "performance" | "security" | "ui-ux" | "gpu" | "low-memory";
   feature?: string;
   requirements?: string;
@@ -436,8 +577,6 @@ export const commonMCPQueries = {
     area: "ui-ux",
   }),
 
-  
-
   unslothBestPractices: (): MCPToolRequest => ({
     tool: "unsloth-best-practices",
   }),
@@ -582,8 +721,6 @@ export function generateClaudePrompt(request: MCPToolRequest): string {
   return `Please use the Context7 MCP tools to ${prompt}.`;
 }
 
-
-
 // Unsloth Best Practices
 export function getUnslothBestPractices(): string {
   return `# Unsloth Best Practices\n\n- Use Unsloth for ultra-fast, low-memory fine-tuning\n- Supports LoRA, QLoRA, and quantized models\n- Use with vLLM for efficient serving\n- Monitor training logs for memory spikes\n- Use context7 to fetch Unsloth docs and integration patterns\n- Integrate with SvelteKit backend for custom training workflows\n`;
@@ -687,8 +824,6 @@ const crewAIService = {
     return { agent: "crewai", result: `CrewAI agent result for: ${prompt}` };
   },
 };
-
-
 
 // Production: Read error log from MCP and append to MCP_TODO_LOG.md
 import fs from "fs/promises";

@@ -5,7 +5,7 @@ Compact searchable component for embedding in other interfaces
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
-  import { Badge } from '$lib/components/ui/Badge';
+  import { Badge } from "$lib/components/ui/badge";
   import { 
     Search,
     Loader2,

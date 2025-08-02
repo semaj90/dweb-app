@@ -1,69 +1,15 @@
-# Ignore high MB files and folders
-Ollama/ollama.exe
-Ollama/ollama app.exe
-Ollama/unins000.exe
-Ollama/lib/ollama/cuda_v12/ggml-cuda.dll
-Ollama/lib/ollama/cuda_v12/cublasLt64_12.dll
-Ollama/lib/ollama/cuda_v12/cublas64_12.dll
+# Legal AI System - Git Ignore File
 
-# Add TIO files and folders
-tio/
-tio*
-tio.*
-tio_*
-tio-*
-tio.log
-tio.json
-tio.db
-tio.sqlite
-
-# Existing rules
-node_modules
-
-# Local LLM Models and Data
-models/
-local-llms/
-llm-models/
-gemma3Q4_K_M/
-legal-bert/
-melt-ui-develop/
-pico-main/
-*.bin
-*.ot
-*.safetensors
-*.pt
-*.pth
-*.gguf
-*.ggml
-*.model
-huggingface_cache/
-transformers_cache/
-legal-bert*/
-llama*/
-ollama_models/
-
-# Environment variables and secrets
+# Environment files
 .env
 .env.local
-.env.development
-.env.test
-.env.production
 .env.*.local
+*.env
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-dev.db
-test.db
-
-# Cache and temporary files
-.cache/
-.temp/
-.tmp/
-*.log
-*.logs
-logs/
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
 # Build outputs
 dist/
@@ -71,15 +17,42 @@ build/
 .svelte-kit/
 .vercel/
 .netlify/
+.turbo/
 
-# IDE and editor files
-.vscode/settings.json
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Test outputs
+test-results/
+test-results*.json
+test-results*.xml
+coverage/
+.nyc_output/
+health-report-*.json
+update-log-*.json
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 *.swp
 *.swo
 *~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-# OS generated files
+# OS files
 .DS_Store
 .DS_Store?
 ._*
@@ -87,51 +60,80 @@ build/
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# Rust/Tauri specific
-src-tauri/target/
-src-tauri/Cargo.lock
+# Docker
+docker-compose.override.yml
+.docker/
 
-# Vector embeddings cache
-embeddings_cache/
-vector_cache/
+# Database
+*.sqlite
+*.sqlite3
+*.db
+database/migrations/*
+!database/migrations/.gitkeep
+postgres_data/
+redis_data/
+qdrant_data/
+neo4j_data/
+ollama_data/
 
-# Analytics and metrics data
-analytics/
-metrics/
-performance_logs/
-node_modules
-node_modules
-
-# Ignore large files and artifacts
-*.log
+# Backups
+backups/
+*.backup
 *.bak
 *.tmp
-*.sqlite
-*.db
-*.mp4
-*.zip
-*.tar
-*.gz
-*.7z
-*.exe
-*.dll
+
+# Models (large files)
+gemma3Q4_K_M/
+*.gguf
 *.bin
-*.pdf
-*.jpg
-*.png
-*.csv
-*.jsonl
-*.pt
-*.onnx
-*.h5
-*.ckpt
-*.model
-*.weights
-node_modules/
+models/
+
+# Uploads
+uploads/
+temp/
+cache/
+
+# Secrets
+*.key
+*.pem
+*.cert
+*.crt
+private/
+
+# Python
 __pycache__/
-dist/
-build/
-coverage/
-*.ipynb_checkpoints
-nul
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# Misc
+.cache/
+.parcel-cache/
+.next/
+out/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Production
+/public/build/
+
+# Local development
+TODO.md.local
+NOTES.md
+scratch/

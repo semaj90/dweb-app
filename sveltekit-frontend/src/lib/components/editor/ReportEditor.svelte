@@ -134,7 +134,7 @@
   };
 
   // Keyboard shortcuts
-  const handleKeydown = (e: KeyboardEvent) => {
+  const handleKeydown = (e: CustomEvent<any>) => {
     if (e.ctrlKey || e.metaKey) {
       switch (e.key) {
         case "s":

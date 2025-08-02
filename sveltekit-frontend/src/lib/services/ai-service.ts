@@ -12,11 +12,7 @@ const normalizeEmbedding = (embedding: number[] | number[][]): number[] => {
 // Combines cloud (OpenAI/Ollama) and local (Tauri/Rust) LLM capabilities
 // Supports PostgreSQL with pgvector, Qdrant, Redis, RabbitMQ, and Neo4j
 import { browser } from "$app/environment";
-// Use environment variable safely
-const PUBLIC_OLLAMA_URL =
-  typeof window !== "undefined"
-    ? "http://localhost:11434"
-    : process.env.OLLAMA_URL || "http://localhost:11434";
+import { CLIENT_ENV } from '$lib/config/env';
 import { tauriLLM } from "./tauri-llm";
 import { getHealthyLlmEndpoint } from "./llm-endpoint";
 
@@ -49,7 +45,7 @@ async function getCachedHealthyLlmEndpoint(
 
 // Client-safe configuration
 const AI_CONFIG = {
-  OLLAMA_URL: PUBLIC_OLLAMA_URL || "http://localhost:11434",
+  OLLAMA_URL: CLIENT_ENV.OLLAMA_URL,
   OLLAMA_MODEL: "llama2",
   // Note: API keys should be handled server-side only
   OPENAI_API_KEY: null, // Will be passed from server

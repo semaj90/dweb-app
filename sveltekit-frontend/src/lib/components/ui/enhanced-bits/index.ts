@@ -6,6 +6,11 @@ export { default as Dialog } from "./Dialog.svelte";
 export { default as Select } from "./Select.svelte";
 export { default as Input } from "./Input.svelte";
 export { default as Card } from "./Card.svelte";
+export { default as CardHeader } from "./CardHeader.svelte";
+export { default as CardTitle } from "./CardTitle.svelte";
+export { default as CardDescription } from "./CardDescription.svelte";
+export { default as CardContent } from "./CardContent.svelte";
+export { default as CardFooter } from "./CardFooter.svelte";
 
 // Demo components
 export { default as EnhancedBitsDemo } from "./EnhancedBitsDemo.svelte";
@@ -50,6 +55,36 @@ export interface AIAnalysis {
     weight: number;
   }>;
   summary: string;
+}
+
+// Missing interfaces for compatibility
+export interface SelectOption {
+  value: string;
+  label: string;
+  description?: string;
+  disabled?: boolean;
+  category?: string;
+}
+
+export interface VectorSearchResult {
+  id: string;
+  score: number;
+  content: string;
+  metadata?: Record<string, any>;
+  embedding?: number[];
+  highlights?: string[];
+}
+
+export interface SemanticEntity {
+  id: string;
+  type: string;
+  text?: string;
+  properties: Record<string, any>;
+  relationships?: Array<{
+    target: string;
+    type: string;
+    properties?: Record<string, any>;
+  }>;
 }
 
 // Legal domain constants

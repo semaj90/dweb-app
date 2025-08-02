@@ -78,7 +78,7 @@ export class FocusManager {
           !element.hidden &&
           window.getComputedStyle(element).visibility !== "hidden"
         );
-      },
+      }
     ) as HTMLElement[];
   }
   static setFocus(selector: string): void {
@@ -93,7 +93,7 @@ export class FocusManager {
   }
   static announceToScreenReader(
     message: string,
-    priority: "polite" | "assertive" = "polite",
+    priority: "polite" | "assertive" = "polite"
   ) {
     const announcement = document.createElement("div");
     announcement.setAttribute("aria-live", priority);
@@ -119,7 +119,7 @@ export class KeyboardNavigation {
     elements: HTMLElement[],
     currentIndex: number,
     key: string,
-    orientation: "horizontal" | "vertical" = "horizontal",
+    orientation: "horizontal" | "vertical" = "horizontal"
   ): number {
     let newIndex = currentIndex;
 
@@ -160,7 +160,7 @@ export class KeyboardNavigation {
   }
   static createRovingTabIndex(container: HTMLElement, selector: string) {
     const elements = Array.from(
-      container.querySelectorAll(selector),
+      container.querySelectorAll(selector)
     ) as HTMLElement[];
     let currentIndex = 0;
 
@@ -230,7 +230,7 @@ export class ColorContrast {
   static meetsWCAG(
     color1: string,
     color2: string,
-    level: "AA" | "AAA" = "AA",
+    level: "AA" | "AAA" = "AA"
   ): boolean {
     const ratio = this.getContrastRatio(color1, color2);
     return level === "AA" ? ratio >= 4.5 : ratio >= 7;
@@ -238,7 +238,7 @@ export class ColorContrast {
   static suggestAccessibleColor(
     baseColor: string,
     backgroundColor: string,
-    level: "AA" | "AAA" = "AA",
+    level: "AA" | "AAA" = "AA"
   ): string {
     if (this.meetsWCAG(baseColor, backgroundColor, level)) {
       return baseColor;
@@ -251,7 +251,7 @@ export class ColorContrast {
       const darkerColor = this.rgbToHex(
         Math.round(rgb.r * (1 - i)),
         Math.round(rgb.g * (1 - i)),
-        Math.round(rgb.b * (1 - i)),
+        Math.round(rgb.b * (1 - i))
       );
       if (this.meetsWCAG(darkerColor, backgroundColor, level)) {
         return darkerColor;
@@ -262,7 +262,7 @@ export class ColorContrast {
       const lighterColor = this.rgbToHex(
         Math.min(255, Math.round(rgb.r + (255 - rgb.r) * i)),
         Math.min(255, Math.round(rgb.g + (255 - rgb.g) * i)),
-        Math.min(255, Math.round(rgb.b + (255 - rgb.b) * i)),
+        Math.min(255, Math.round(rgb.b + (255 - rgb.b) * i))
       );
       if (this.meetsWCAG(lighterColor, backgroundColor, level)) {
         return lighterColor;
@@ -282,7 +282,7 @@ export class AriaUtils {
   static linkElements(
     trigger: HTMLElement,
     target: HTMLElement,
-    relationship: string,
+    relationship: string
   ) {
     const id = target.id || this.generateId();
     target.id = id;
@@ -292,14 +292,14 @@ export class AriaUtils {
         const describedBy = trigger.getAttribute("aria-describedby");
         trigger.setAttribute(
           "aria-describedby",
-          describedBy ? `${describedBy} ${id}` : id,
+          describedBy ? `${describedBy} ${id}` : id
         );
         break;
       case "labelledby":
         const labelledBy = trigger.getAttribute("aria-labelledby");
         trigger.setAttribute(
           "aria-labelledby",
-          labelledBy ? `${labelledBy} ${id}` : id,
+          labelledBy ? `${labelledBy} ${id}` : id
         );
         break;
       case "controls":
@@ -334,7 +334,7 @@ export class MotionUtils {
   static createResponsiveAnimation(
     element: HTMLElement,
     animation: Keyframe[] | PropertyIndexedKeyframes,
-    options: KeyframeAnimationOptions,
+    options: KeyframeAnimationOptions
   ): Animation | null {
     if (this.prefersReducedMotion()) {
       // Apply only the final state without animation
@@ -374,7 +374,7 @@ export class AccessibilityValidator {
 
       if (!hasLabel && !hasAriaLabel) {
         errors.push(
-          `Input ${element.id || (element as any).name || "unknown"} is missing a label`,
+          `Input ${element.id || (element as any).name || "unknown"} is missing a label`
         );
       }
     });
@@ -390,7 +390,7 @@ export class AccessibilityValidator {
 
       if (!hasAriaRequired && !hasVisualIndicator) {
         errors.push(
-          `Required field ${element.id || (element as any).name || "unknown"} is missing proper indication`,
+          `Required field ${element.id || (element as any).name || "unknown"} is missing proper indication`
         );
       }
     });
@@ -404,11 +404,11 @@ export class AccessibilityValidator {
     );
   }
   static validateHeadingStructure(
-    container: HTMLElement = document.body,
+    container: HTMLElement = document.body
   ): string[] {
     const errors: string[] = [];
     const headings = Array.from(
-      container.querySelectorAll("h1, h2, h3, h4, h5, h6"),
+      container.querySelectorAll("h1, h2, h3, h4, h5, h6")
     );
 
     let previousLevel = 0;
@@ -419,7 +419,7 @@ export class AccessibilityValidator {
         errors.push("Page should start with an h1 heading");
       } else if (level > previousLevel + 1) {
         errors.push(
-          `Heading level skipped: ${heading.tagName} follows h${previousLevel}`,
+          `Heading level skipped: ${heading.tagName} follows h${previousLevel}`
         );
       }
       previousLevel = level;
@@ -428,7 +428,7 @@ export class AccessibilityValidator {
     return errors;
   }
   static validateColorContrast(
-    container: HTMLElement = document.body,
+    container: HTMLElement = document.body
   ): string[] {
     const errors: string[] = [];
     const elements = container.querySelectorAll("*");
@@ -446,7 +446,7 @@ export class AccessibilityValidator {
       ) {
         if (!ColorContrast.meetsWCAG(color, backgroundColor)) {
           errors.push(
-            `Poor color contrast in element: ${element.tagName}${element.id ? "#" + element.id : ""}${element.className ? "." + element.className.split(" ").join(".") : ""}`,
+            `Poor color contrast in element: ${element.tagName}${element.id ? "#" + element.id : ""}${element.className ? "." + element.className.split(" ").join(".") : ""}`
           );
         }
       }

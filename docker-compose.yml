@@ -1,92 +1,169 @@
-version: '3.8'
+# Legal AI System - Production Docker Stack
+# Fixed: Platform compatibility + Vector dimensions + GPU optimization
+version: "3.8"
 
 services:
-  # PostgreSQL with pgvector for document embeddings
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: legal-ai-postgres
+    container_name: legal_ai_postgres
+    platform: linux/amd64
     environment:
-      POSTGRES_DB: legal_ai
-      POSTGRES_USER: legal_admin
-      POSTGRES_PASSWORD: LegalRAG2024!
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      POSTGRES_DB: prosecutor_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_SHARED_BUFFERS: 256MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 1GB
+      POSTGRES_WORK_MEM: 64MB
+      POSTGRES_MAX_CONNECTIONS: 200
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U legal_admin -d legal_ai"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
-    networks:
-      - legal-ai-network
-
-  # Redis for caching and session management
-  redis:
-    image: redis:7-alpine
-    container_name: legal-ai-redis
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d prosecutor_db"]
       interval: 30s
       timeout: 10s
       retries: 3
-    restart: unless-stopped
     networks:
-      - legal-ai-network
+      - legal_ai_network
 
-  # Qdrant vector database
+  redis:
+    image: redis/redis-stack:latest
+    container_name: legal_ai_redis
+    platform: linux/amd64
+    command: >
+      redis-stack-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --save 300 10
+      --loadmodule /opt/redis-stack/lib/redisearch.so
+      --loadmodule /opt/redis-stack/lib/redisjson.so
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - legal_ai_network
+
+  # FIXED: Removed duplicate indexing_threshold fields
   qdrant:
-    image: qdrant/qdrant:v1.7.0
-    container_name: legal-ai-qdrant
+    image: qdrant/qdrant:v1.9.0
+    container_name: legal_ai_qdrant
+    platform: linux/amd64
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: 6333
+      QDRANT__SERVICE__GRPC_PORT: 6334
+      QDRANT__LOG_LEVEL: INFO
+      QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS: 4
+      QDRANT__STORAGE__PERFORMANCE__MAX_OPTIMIZATION_THREADS: 2
+      QDRANT__SERVICE__ENABLE_CORS: true
+      # Pre-configure collection for 384-dim nomic-embed vectors
+      QDRANT__COLLECTION__DEFAULT_VECTOR_SIZE: 384
+      QDRANT__COLLECTION__DEFAULT_DISTANCE: Cosine
     ports:
       - "6333:6333"
       - "6334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
-    environment:
-      QDRANT__SERVICE__HTTP_PORT: 6333
-      QDRANT__SERVICE__GRPC_PORT: 6334
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "2.0"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:6333/health"]
       interval: 30s
       timeout: 10s
-      retries: 3
-    restart: unless-stopped
+      retries: 5
+      start_period: 40s
     networks:
-      - legal-ai-network
+      - legal_ai_network
 
-  # Ollama for local AI models
+  # GPU-optimized Ollama with legal models
   ollama:
     image: ollama/ollama:latest
-    container_name: legal-ai-ollama
+    container_name: legal_ai_ollama
+    platform: linux/amd64
     ports:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-      - ./gemma3Q4_K_M:/models:ro
+      - ./gemma3Q4_K_M:/models/gemma3:ro
+      - ./local-models:/local-models:ro
     environment:
-      - OLLAMA_HOST=0.0.0.0
-      - OLLAMA_ORIGINS=*
-      - OLLAMA_NUM_PARALLEL=2
-      - OLLAMA_MAX_LOADED_MODELS=1
+      OLLAMA_KEEP_ALIVE: "15m"
+      OLLAMA_NUM_PARALLEL: "2"
+      OLLAMA_MAX_LOADED_MODELS: "3"
+      OLLAMA_ORIGINS: "*"
+      OLLAMA_HOST: "0.0.0.0:11434"
+      OLLAMA_MAX_VRAM: "8GB"
+      OLLAMA_NUM_THREAD: "8"
+      OLLAMA_FLASH_ATTENTION: "true"
+    # GPU support - uncomment if NVIDIA GPU available
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      test: ["CMD", "ollama", "list"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 30s
-    restart: unless-stopped
     networks:
-      - legal-ai-network
+      - legal_ai_network
+
+  # Neo4j for knowledge graph relationships
+  neo4j:
+    image: neo4j:5.16
+    container_name: legal_ai_neo4j
+    platform: linux/amd64
+    environment:
+      NEO4J_AUTH: neo4j/legal-ai-2024
+      NEO4J_PLUGINS: '["graph-data-science", "apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: gds.*,apoc.*
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 1G
+      NEO4J_dbms_memory_pagecache_size: 512m
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_plugins:/plugins
+      - ./database/neo4j-init.cypher:/var/lib/neo4j/import/init.cypher
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "cypher-shell",
+          "-u",
+          "neo4j",
+          "-p",
+          "legal-ai-2024",
+          "RETURN 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - legal_ai_network
 
 volumes:
   postgres_data:
@@ -97,9 +174,15 @@ volumes:
     driver: local
   ollama_data:
     driver: local
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  neo4j_plugins:
+    driver: local
 
 networks:
-  legal-ai-network:
+  legal_ai_network:
     driver: bridge
     ipam:
       config:

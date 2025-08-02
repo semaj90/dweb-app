@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from "svelte";
   import { dndzone } from "svelte-dnd-action";
   import { writable } from "svelte/store";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/Card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
   import Button from "$lib/components/ui/button/Button.svelte";
   import Badge from "$lib/components/ui/Badge.svelte";
   import EvidenceNode from "../canvas/EvidenceNode.svelte";

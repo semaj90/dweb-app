@@ -101,20 +101,20 @@
   <!-- Bits UI Select -->
   <div class="container mx-auto px-4">
     <label class="container mx-auto px-4" for="practice-area-select">Legal Practice Area</label>
-    <Select.Root type="single" onValueChange={() => showWarningNotification()}>
-      <Select.Trigger class="container mx-auto px-4" id="practice-area-select">
+    <SelectRoot type="single" onValueChange={() => showWarningNotification()}>
+      <SelectTrigger class="container mx-auto px-4" id="practice-area-select">
         Select practice area...
-      </Select.Trigger>
+      </SelectTrigger>
       <Select.Portal>
-        <Select.Content class="container mx-auto px-4">
+        <SelectContent class="container mx-auto px-4">
           {#each caseTypes as type}
-            <Select.Item value={type.value} class="container mx-auto px-4">
+            <SelectItem value={type.value} class="container mx-auto px-4">
               {type.label}
-            </Select.Item>
+            </SelectItem>
           {/each}
-        </Select.Content>
+        </SelectContent>
       </Select.Portal>
-    </Select.Root>
+    </SelectRoot>
   </div>
 
   <!-- Bits UI Dialog -->

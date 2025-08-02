@@ -1,340 +1,107 @@
-import { evidence } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
-import { createClient } from "redis";
-import { db } from "$lib/server/db/index";
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
-// Redis client for real-time updates
-let redisClient: any = null;
+// Mock evidence data
+const mockEvidence = [
+  {
+    id: 'EVD-001',
+    caseId: 'CASE-2024-001',
+    title: 'Software License Agreement',
+    type: 'document',
+    content: 'Software licensing agreement between parties...',
+    uploadedAt: '2024-01-15T10:30:00Z',
+    fileSize: '2.4 MB',
+    tags: ['contract', 'software', 'licensing']
+  },
+  {
+    id: 'EVD-002',
+    caseId: 'CASE-2024-001',
+    title: 'Email Correspondence',
+    type: 'communication',
+    content: 'Email chain regarding contract terms...',
+    uploadedAt: '2024-01-16T14:15:00Z',
+    fileSize: '156 KB',
+    tags: ['email', 'communication', 'negotiation']
+  },
+  {
+    id: 'EVD-003',
+    caseId: 'CASE-2024-002',
+    title: 'Employment Contract',
+    type: 'document',
+    content: 'Original employment agreement...',
+    uploadedAt: '2024-01-10T09:45:00Z',
+    fileSize: '1.8 MB',
+    tags: ['employment', 'contract', 'terms']
+  }
+];
 
-async function initRedis() {
-  if (!redisClient) {
-    try {
-      redisClient = createClient({
-        url: process.env.REDIS_URL || "redis://localhost:6379",
-      });
-      await redisClient.connect();
-    } catch (error) {
-      console.error("Redis connection failed:", error);
-    }
-  }
-}
-async function publishEvidenceUpdate(type: string, data: any, userId?: string) {
-  if (redisClient) {
-    try {
-      await redisClient.publish(
-        "evidence_update",
-        JSON.stringify({
-          type,
-          timestamp: new Date().toISOString(),
-          userId,
-          ...data,
-        }),
-      );
-    } catch (error) {
-      console.error("Failed to publish evidence update:", error);
-    }
-  }
-}
-export const GET: RequestHandler = async ({ url, locals }) => {
+export const GET: RequestHandler = async ({ url }) => {
   try {
-    if (!locals.user) {
-      return json({ error: "Not authenticated" }, { status: 401 });
-    }
-    if (!db) {
-      return json({ error: "Database not available" }, { status: 500 });
-    }
-    const caseId = url.searchParams.get("caseId");
-    const criminalId = url.searchParams.get("criminalId");
-    const evidenceType = url.searchParams.get("evidenceType");
-    const search = url.searchParams.get("search") || "";
-    const limit = parseInt(url.searchParams.get("limit") || "100");
-    const offset = parseInt(url.searchParams.get("offset") || "0");
-    const sortBy = url.searchParams.get("sortBy") || "uploadedAt";
-    const sortOrder = url.searchParams.get("sortOrder") || "desc";
-
-    // Build query with filters
-    const filters = [];
-
-    // Add filters if provided
+    const caseId = url.searchParams.get('caseId');
+    const type = url.searchParams.get('type');
+    const search = url.searchParams.get('search');
+    
+    let filteredEvidence = [...mockEvidence];
+    
     if (caseId) {
-      filters.push(eq(evidence.caseId, caseId));
+      filteredEvidence = filteredEvidence.filter(e => e.caseId === caseId);
     }
-    if (criminalId) {
-      filters.push(eq(evidence.criminalId, criminalId));
+    
+    if (type) {
+      filteredEvidence = filteredEvidence.filter(e => e.type === type);
     }
-    if (evidenceType) {
-      filters.push(eq(evidence.evidenceType, evidenceType));
-    }
-    // Add search filter
+    
     if (search) {
-      filters.push(
-        or(
-          like(evidence.title, `%${search}%`),
-          like(evidence.description, `%${search}%`),
-          like(evidence.fileName, `%${search}%`),
-          like(evidence.summary, `%${search}%`),
-        ),
+      const searchLower = search.toLowerCase();
+      filteredEvidence = filteredEvidence.filter(e => 
+        e.title.toLowerCase().includes(searchLower) ||
+        e.content.toLowerCase().includes(searchLower) ||
+        e.tags.some(tag => tag.toLowerCase().includes(searchLower))
       );
     }
-
-    // Add sorting
-    const orderColumn =
-      sortBy === "title"
-        ? evidence.title
-        : sortBy === "evidenceType"
-          ? evidence.evidenceType
-          : sortBy === "fileSize"
-            ? evidence.fileSize
-            : sortBy === "collectedAt"
-              ? evidence.collectedAt
-              : evidence.uploadedAt;
-
-    const evidenceResults = await db
-      .select()
-      .from(evidence)
-      .where(filters.length > 0 ? and(...filters) : undefined)
-      .orderBy(sortOrder === "asc" ? orderColumn : desc(orderColumn))
-      .limit(limit)
-      .offset(offset);
-
-    // Get total count for pagination
-    const totalCountResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(evidence)
-      .where(filters.length > 0 ? and(...filters) : undefined);
-    const totalCount = totalCountResult[0]?.count || 0;
 
     return json({
-      evidence: evidenceResults,
-      totalCount,
-      hasMore: offset + limit < totalCount,
-      pagination: {
-        limit,
-        offset,
-        total: totalCount,
-      },
+      evidence: filteredEvidence,
+      total: filteredEvidence.length,
+      filters: { caseId, type, search }
     });
   } catch (error) {
-    console.error("Error fetching evidence:", error);
-    return json({ error: "Failed to fetch evidence" }, { status: 500 });
+    return json(
+      { error: 'Failed to fetch evidence' },
+      { status: 500 }
+    );
   }
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request }) => {
   try {
-    await initRedis();
-
-    if (!locals.user) {
-      return json({ error: "Not authenticated" }, { status: 401 });
-    }
-    if (!db) {
-      return json({ error: "Database not available" }, { status: 500 });
-    }
-    const data = await request.json();
-
-    // Validate required fields
-    if (!data.title || !data.evidenceType) {
+    const { caseId, title, type, content, tags = [] } = await request.json();
+    
+    if (!caseId || !title || !type) {
       return json(
-        { error: "Title and evidence type are required" },
-        { status: 400 },
+        { error: 'Case ID, title, and type are required' },
+        { status: 400 }
       );
     }
-    // Map frontend data to schema fields
-    const evidenceData = {
-      title: data.title,
-      description: data.description || "",
-      caseId: data.caseId || null,
-      criminalId: data.criminalId || null,
-      evidenceType: data.evidenceType,
-      fileType: data.fileType || null,
-      subType: data.subType || null,
-      fileUrl: data.fileUrl || null,
-      fileName: data.fileName || null,
-      fileSize: data.fileSize || null,
-      mimeType: data.mimeType || null,
-      hash: data.hash || null,
-      tags: data.tags || [],
-      chainOfCustody: data.chainOfCustody || [],
-      collectedAt: data.collectedAt ? new Date(data.collectedAt) : null,
-      collectedBy: data.collectedBy || null,
-      location: data.location || null,
-      labAnalysis: data.labAnalysis || {},
-      aiAnalysis: data.aiAnalysis || {},
-      aiTags: data.aiTags || [],
-      aiSummary: data.aiSummary || null,
-      summary: data.summary || null,
-      isAdmissible: data.isAdmissible !== undefined ? data.isAdmissible : true,
-      confidentialityLevel: data.confidentialityLevel || "standard",
-      canvasPosition: data.canvasPosition || {},
-      uploadedBy: locals.user.id,
+
+    const newEvidence = {
+      id: `EVD-${String(mockEvidence.length + 1).padStart(3, '0')}`,
+      caseId,
+      title,
+      type,
+      content: content || '',
+      uploadedAt: new Date().toISOString(),
+      fileSize: '0 KB',
+      tags
     };
 
-    const [newEvidence] = await db
-      .insert(evidence)
-      .values(evidenceData)
-      .returning();
-
-    // Publish real-time update
-    await publishEvidenceUpdate(
-      "EVIDENCE_CREATED",
-      {
-        evidenceId: newEvidence.id,
-        data: newEvidence,
-      },
-      locals.user.id,
-    );
-
+    mockEvidence.push(newEvidence);
+    
     return json(newEvidence, { status: 201 });
   } catch (error) {
-    console.error("Error creating evidence:", error);
-    return json({ error: "Failed to create evidence" }, { status: 500 });
-  }
-};
-
-export const PATCH: RequestHandler = async ({ request, url, locals }) => {
-  try {
-    await initRedis();
-
-    const evidenceId = url.searchParams.get("id");
-    if (!evidenceId) {
-      return json({ error: "Evidence ID is required" }, { status: 400 });
-    }
-    if (!locals.user) {
-      return json({ error: "Not authenticated" }, { status: 401 });
-    }
-    if (!db) {
-      return json({ error: "Database not available" }, { status: 500 });
-    }
-    const data = await request.json();
-
-    // Check if evidence exists
-    const existingEvidence = await db
-      .select()
-      .from(evidence)
-      .where(eq(evidence.id, evidenceId))
-      .limit(1);
-
-    if (!existingEvidence.length) {
-      return json({ error: "Evidence not found" }, { status: 404 });
-    }
-    const updateData: Record<string, any> = {
-      updatedAt: new Date(),
-    };
-
-    // Map frontend fields to schema fields - only update provided fields
-    if (data.title !== undefined) updateData.title = data.title;
-    if (data.description !== undefined)
-      updateData.description = data.description;
-    if (data.caseId !== undefined) updateData.caseId = data.caseId;
-    if (data.criminalId !== undefined) updateData.criminalId = data.criminalId;
-    if (data.evidenceType !== undefined)
-      updateData.evidenceType = data.evidenceType;
-    if (data.fileType !== undefined) updateData.fileType = data.fileType;
-    if (data.subType !== undefined) updateData.subType = data.subType;
-    if (data.fileUrl !== undefined) updateData.fileUrl = data.fileUrl;
-    if (data.fileName !== undefined) updateData.fileName = data.fileName;
-    if (data.fileSize !== undefined) updateData.fileSize = data.fileSize;
-    if (data.mimeType !== undefined) updateData.mimeType = data.mimeType;
-    if (data.hash !== undefined) updateData.hash = data.hash;
-    if (data.tags !== undefined) updateData.tags = data.tags;
-    if (data.chainOfCustody !== undefined)
-      updateData.chainOfCustody = data.chainOfCustody;
-    if (data.collectedAt !== undefined) {
-      updateData.collectedAt = data.collectedAt
-        ? new Date(data.collectedAt)
-        : null;
-    }
-    if (data.collectedBy !== undefined)
-      updateData.collectedBy = data.collectedBy;
-    if (data.location !== undefined) updateData.location = data.location;
-    if (data.labAnalysis !== undefined)
-      updateData.labAnalysis = data.labAnalysis;
-    if (data.aiAnalysis !== undefined) updateData.aiAnalysis = data.aiAnalysis;
-    if (data.aiTags !== undefined) updateData.aiTags = data.aiTags;
-    if (data.aiSummary !== undefined) updateData.aiSummary = data.aiSummary;
-    if (data.summary !== undefined) updateData.summary = data.summary;
-    if (data.isAdmissible !== undefined)
-      updateData.isAdmissible = data.isAdmissible;
-    if (data.confidentialityLevel !== undefined)
-      updateData.confidentialityLevel = data.confidentialityLevel;
-    if (data.canvasPosition !== undefined)
-      updateData.canvasPosition = data.canvasPosition;
-
-    // Update evidence in database
-    const [updatedEvidence] = await db
-      .update(evidence)
-      .set(updateData)
-      .where(eq(evidence.id, evidenceId))
-      .returning();
-
-    // Publish real-time update
-    await publishEvidenceUpdate(
-      "EVIDENCE_UPDATED",
-      {
-        evidenceId,
-        changes: updateData,
-        data: updatedEvidence,
-      },
-      locals.user.id,
+    return json(
+      { error: 'Failed to create evidence' },
+      { status: 500 }
     );
-
-    return json({
-      success: true,
-      evidence: updatedEvidence,
-    });
-  } catch (error) {
-    console.error("Error updating evidence:", error);
-    return json({ error: "Failed to update evidence" }, { status: 500 });
-  }
-};
-
-export const DELETE: RequestHandler = async ({ url, locals }) => {
-  try {
-    await initRedis();
-
-    const evidenceId = url.searchParams.get("id");
-    if (!evidenceId) {
-      return json({ error: "Evidence ID is required" }, { status: 400 });
-    }
-    if (!locals.user) {
-      return json({ error: "Not authenticated" }, { status: 401 });
-    }
-    if (!db) {
-      return json({ error: "Database not available" }, { status: 500 });
-    }
-    // Get evidence before deletion for real-time update
-    const [existingEvidence] = await db
-      .select()
-      .from(evidence)
-      .where(eq(evidence.id, evidenceId));
-
-    if (!existingEvidence) {
-      return json({ error: "Evidence not found" }, { status: 404 });
-    }
-    // Delete evidence from database
-    const [deletedEvidence] = await db
-      .delete(evidence)
-      .where(eq(evidence.id, evidenceId))
-      .returning();
-
-    // Publish real-time update
-    await publishEvidenceUpdate(
-      "EVIDENCE_DELETED",
-      {
-        evidenceId,
-        data: deletedEvidence,
-      },
-      locals.user.id,
-    );
-
-    return json({
-      success: true,
-      deletedEvidence,
-    });
-  } catch (error) {
-    console.error("Error deleting evidence:", error);
-    return json({ error: "Failed to delete evidence" }, { status: 500 });
   }
 };

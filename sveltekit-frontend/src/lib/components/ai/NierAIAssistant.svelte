@@ -53,10 +53,10 @@
     }
   ])
   
-  let inputValue = $state('')
-  let isTyping = $state(false)
-  let isExpanded = $state(false)
-  let showSettings = $state(false)
+  let inputValue = $state('');
+  let isTyping = $state(false);
+  let isExpanded = $state(false);
+  let showSettings = $state(false);
   let messageContainer: HTMLDivElement
   
   // AI Modes
@@ -67,7 +67,7 @@
     { id: 'quick', label: 'Quick', icon: Zap, description: 'Fast responses' }
   ]
   
-  let selectedMode = $state('analyze')
+  let selectedMode = $state('analyze');
   
   // Simulated AI response
   const simulateAIResponse = async (userMessage: string) => {

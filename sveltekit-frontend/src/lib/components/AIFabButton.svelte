@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { aiStore } from "../stores/canvas";
-	import { Dialog } from './Dialog.svelte';
-	
+	import Dialog from './Dialog.svelte';
+
 	import { Sparkles, Bot } from 'lucide-svelte';
 
 	const dispatch = createEventDispatcher();
@@ -37,7 +37,7 @@
 			<Sparkles size={24} />
 		{/if}
 	</div>
-	
+
 	<div class="container mx-auto px-4"></div>
 </button>
 

@@ -3,7 +3,7 @@
   import { cn } from '$lib/utils/cn';
   import { Search, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-svelte';
 
-  interface InputProps extends HTMLInputAttributes {
+  interface InputProps extends Omit<HTMLInputAttributes, 'size'> {
     /** Input variant */
     variant?: 'default' | 'search' | 'password' | 'email' | 'legal' | 'evidence';
     /** Input size */
@@ -35,7 +35,7 @@
     /** Show character count */
     showCharCount?: boolean;
     /** Maximum character count */
-    maxLength?: number;
+    maxlength?: number;
     /** Icon to display */
     icon?: any;
     /** Icon position */
@@ -59,7 +59,7 @@
     aiAssisted = false,
     fullWidth = false,
     showCharCount = false,
-    maxLength,
+    maxlength,
     icon,
     iconPosition = 'left',
     class: className = '',
@@ -87,8 +87,8 @@
   const inputClasses = $derived(cn(
     'bits-input',
     {
-      'pl-10': variant === 'search',
-      'pr-10': variant === 'password',
+      'pl-10': variant === 'search' || (icon && iconPosition === 'left'),
+      'pr-10': variant === 'password' || (icon && iconPosition === 'right'),
       'yorha-input font-gothic tracking-wide': variant === 'legal',
       'yorha-input border-2 border-nier-border-secondary': variant === 'evidence',
       'h-8 px-3 text-xs': size === 'sm',
@@ -102,9 +102,7 @@
       'border-gothic-border-primary bg-gothic-bg-primary': caseNumber,
       'border-blue-500 bg-blue-50': aiAssisted,
       'animate-pulse': loading,
-      'pr-16': showCharCount && maxLength,
-      'pl-10': icon && iconPosition === 'left',
-      'pr-10': icon && iconPosition === 'right',
+      'pr-16': showCharCount && maxlength,
       'pr-20': isPassword || (icon && iconPosition === 'right' && showCharCount)
     },
     className
@@ -163,7 +161,7 @@
       bind:value
       type={inputType}
       class={inputClasses}
-      {maxLength}
+      {maxlength}
       {...restProps}
     />
 
@@ -202,17 +200,17 @@
     {/if}
 
     <!-- Character count -->
-    {#if showCharCount && maxLength}
+    {#if showCharCount && maxlength}
       <div class={cn(
         'absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs',
         {
-          'text-red-500': charCount > maxLength * 0.9,
-          'text-yellow-600': charCount > maxLength * 0.8,
-          'text-muted-foreground': charCount <= maxLength * 0.8,
+          'text-red-500': charCount > maxlength * 0.9,
+          'text-yellow-600': charCount > maxlength * 0.8,
+          'text-muted-foreground': charCount <= maxlength * 0.8,
           'pr-12': isPassword
         }
       )}>
-        {charCount}/{maxLength}
+        {charCount}/{maxlength}
       </div>
     {/if}
 

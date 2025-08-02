@@ -1,11 +1,11 @@
 <!-- EnhancedRAG:Studio UI - Complete RAG Management Dashboard -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/Card';
+  import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Textarea } from '$lib/components/ui/textarea';
-  import { Badge } from '$lib/components/ui/Badge';
+  import { Badge } from '$lib/components/ui/badge';
   import {
     Upload,
     Globe,
@@ -20,8 +20,6 @@
     Pause,
     RefreshCw
   } from 'lucide-svelte';
-  import { $state } from 'svelte';
-
   // State management
   let activeTab = $state<'upload' | 'crawl' | 'search' | 'logs' | 'settings'>('search');
   let isLoading = $state(false);

@@ -5,9 +5,9 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { derived, writable } from 'svelte/store';
-  import { Badge } from '$lib/components/ui/Badge';
+  import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Progress } from '$lib/components/ui/progress';
   import { 
     Play, 

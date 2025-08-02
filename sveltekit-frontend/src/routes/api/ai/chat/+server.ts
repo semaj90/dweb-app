@@ -1,68 +1,53 @@
-import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-
-const OLLAMA_BASE_URL = "http://localhost:11434";
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
+  const startTime = Date.now();
+  
   try {
-    const { message, conversationId, settings, contextInjection } =
-      await request.json();
-
-    if (!message || message.trim() === "") {
-      return json({ error: "Message is required" }, { status: 400 });
+    const { message, model = 'gemma3-legal', temperature = 0.1 } = await request.json();
+    
+    if (!message) {
+      return json({ error: 'Message required' }, { status: 400 });
     }
 
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch('http://localhost:11434/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: settings?.model || "gemma3-legal",
+        model,
         prompt: message,
         stream: false,
+        options: {
+          temperature,
+          num_predict: 512,
+          top_p: 0.9,
+        }
       }),
+      signal: AbortSignal.timeout(30000)
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      return json(
-        { error: "AI service unavailable", details: errorText },
-        { status: 503 },
-      );
+      throw new Error(`Ollama API error: ${response.status}`);
     }
 
     const data = await response.json();
-
+    
     return json({
       response: data.response,
-      model: "gemma3-legal",
-      conversationId,
-      timestamp: new Date().toISOString(),
+      model,
+      metadata: {
+        provider: 'ollama',
+        executionTime: Date.now() - startTime,
+        done: data.done,
+        tokens: data.eval_count || 0
+      }
     });
-  } catch (error) {
-    console.error("Chat API error:", error);
-    return json({ error: "Internal server error" }, { status: 500 });
-  }
-};
-
-export const GET: RequestHandler = async () => {
-  try {
-    const response = await fetch(`${OLLAMA_BASE_URL}/api/version`);
-    const isHealthy = response.ok;
-
-    return json({
-      status: isHealthy ? "healthy" : "unhealthy",
-      service: "ollama",
-      model: "gemma3-legal",
-      timestamp: new Date().toISOString(),
-    });
+    
   } catch (error) {
     return json(
-      {
-        status: "error",
-        error: error.message,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 503 },
+      { error: `Chat failed: ${error.message}` },
+      { status: 500 }
     );
   }
 };

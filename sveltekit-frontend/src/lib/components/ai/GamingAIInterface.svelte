@@ -51,17 +51,17 @@ import NierAIAssistant from './NierAIAssistant.svelte'
   }: Props = $props()
 
   // Component States
-  let showAIInterface = $state(false)
-  let showNierAssistant = $state(false)
-  let isExpanded = $state(false)
+  let showAIInterface = $state(false);
+  let showNierAssistant = $state(false);
+  let isExpanded = $state(false);
   let aiMode = $state<'idle' | 'thinking' | 'active'>('idle')
-  let isConnected = $state(true)
+  let isConnected = $state(true);
   let systemStatus = $state<'online' | 'processing' | 'offline'>('online')
 
   // Gaming UI States
   let scanlinePosition = spring(0, { stiffness: 0.1, damping: 0.8 })
-  let glitchEffect = $state(false)
-  let terminalMode = $state(false)
+  let glitchEffect = $state(false);
+  let terminalMode = $state(false);
 
   // AI Messages
   let messages = $state<AIMessage[]>([
@@ -74,8 +74,8 @@ import NierAIAssistant from './NierAIAssistant.svelte'
     }
   ])
 
-  let inputValue = $state('')
-let isTyping = $state(false)
+  let inputValue = $state('');
+let isTyping = $state(false);
 
   // Real AI Integration
   async function sendMessage(content?: string) {
@@ -191,7 +191,7 @@ let isTyping = $state(false)
     }
   }
 
-  let currentTheme = $state('yorha')
+  let currentTheme = $state('yorha');
   let theme = $derived(themes[currentTheme as keyof typeof themes])
 
   // System monitoring data
@@ -200,7 +200,7 @@ let isTyping = $state(false)
     memoryUsage: 67,
     aiProcessing: 12,
     caseAnalysis: 89
-  })
+  });
 
   // Gaming-style AI responses
   const processAICommand = async (command: string) => {

@@ -2,8 +2,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Card, CardHeader, CardTitle, CardContent } from '../index.js';
-  import { $state } from 'svelte';
-
   export let userContext: any = {};
   export let neo4jContext: any = {};
   export let analyticsLog: (event: any) => void = () => {};

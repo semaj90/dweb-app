@@ -410,7 +410,7 @@ import type { User } from '$lib/types';
                     on:click={() => {
                       selectedMode = mode.id;
                       showModeSelector = false;
-                    "
+                    }}
                   >
                     <svelte:component this={mode.icon} size={16} />
                     <div class="container mx-auto px-4">

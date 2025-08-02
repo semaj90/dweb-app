@@ -58,21 +58,21 @@
     <Separator orientation="vertical" class="nier-toolbar-separator" />
     
     <div class="nier-toolbar-group">
-      <Select.Root>
-        <Select.Trigger class="nier-select">
-          <Select.Value placeholder="Font" />
-        </Select.Trigger>
-        <Select.Content class="nier-dropdown-content">
+      <SelectRoot>
+        <SelectTrigger class="nier-select">
+          <SelectValue placeholder="Font" />
+        </SelectTrigger>
+        <SelectContent class="nier-dropdown-content">
           {#each fontOptions as font}
-            <Select.Item 
+            <SelectItem 
               value={font.value} 
               class="nier-dropdown-item"
             >
               {font.label}
-            </Select.Item>
+            </SelectItem>
           {/each}
-        </Select.Content>
-      </Select.Root>
+        </SelectContent>
+      </SelectRoot>
     </div>
     
     <Separator orientation="vertical" class="nier-toolbar-separator" />

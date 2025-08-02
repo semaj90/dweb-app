@@ -138,7 +138,7 @@ export const citations = pgTable("citations", {
   annotation: text("annotation"),
   legalPrinciple: text("legal_principle"),
   citationFormat: varchar("citation_format", { length: 20 }).default(
-    "bluebook",
+    "bluebook"
   ), // bluebook, apa, mla, chicago
   formattedCitation: text("formatted_citation"),
   shepardsTreatment: varchar("shepards_treatment", { length: 50 }), // good_law, questioned, criticized, overruled
@@ -459,7 +459,7 @@ export const hashVerifications = pgTable("hash_verifications", {
   storedHash: varchar("stored_hash", { length: 64 }),
   result: boolean("result").notNull(),
   verificationMethod: varchar("verification_method", { length: 50 }).default(
-    "manual",
+    "manual"
   ),
   verifiedBy: uuid("verified_by").references(() => users.id),
   verifiedAt: timestamp("verified_at", { mode: "date" }).defaultNow(),
@@ -576,6 +576,45 @@ export const caseEmbeddings = pgTable("case_embeddings", {
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
 
+// === TYPE EXPORTS ===
+
+export type Case = typeof cases.$inferSelect;
+export type NewCase = typeof cases.$inferInsert;
+
+export type Evidence = typeof evidence.$inferSelect;
+export type NewEvidence = typeof evidence.$inferInsert;
+
+export type Report = typeof reports.$inferSelect;
+export type NewReport = typeof reports.$inferInsert;
+
+export type Criminal = typeof criminals.$inferSelect;
+export type NewCriminal = typeof criminals.$inferInsert;
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type RagSession = typeof ragSessions.$inferSelect;
+export type NewRagSession = typeof ragSessions.$inferInsert;
+
+export type RagMessage = typeof ragMessages.$inferSelect;
+export type NewRagMessage = typeof ragMessages.$inferInsert;
+
+export type LegalDocument = typeof legalDocuments.$inferSelect;
+export type NewLegalDocument = typeof legalDocuments.$inferInsert;
+
+export type CaseActivity = typeof caseActivities.$inferSelect;
+export type NewCaseActivity = typeof caseActivities.$inferInsert;
+
+export type CanvasAnnotation = typeof canvasAnnotations.$inferSelect;
+export type NewCanvasAnnotation = typeof canvasAnnotations.$inferInsert;
+
+export type PersonOfInterest = typeof personsOfInterest.$inferSelect;
+export type NewPersonOfInterest = typeof personsOfInterest.$inferInsert;
+
+// === RELATIONS ===
+
+// (Relations are defined using the `relations` function from "drizzle-orm" and are not explicitly listed here)
+
 // === ADDITIONAL RELATIONS ===
 
 export const reportsRelations = relations(reports, ({ one }) => ({
@@ -622,7 +661,7 @@ export const personsOfInterestRelations = relations(
       fields: [personsOfInterest.createdBy],
       references: [users.id],
     }),
-  }),
+  })
 );
 
 export const hashVerificationsRelations = relations(
@@ -636,36 +675,8 @@ export const hashVerificationsRelations = relations(
       fields: [hashVerifications.verifiedBy],
       references: [users.id],
     }),
-  }),
+  })
 );
-
-export const userEmbeddingsRelations = relations(userEmbeddings, ({ one }) => ({
-  user: one(users, {
-    fields: [userEmbeddings.userId],
-    references: [users.id],
-  }),
-}));
-
-export const chatEmbeddingsRelations = relations(chatEmbeddings, ({ one }) => ({
-  // No direct relations as conversationId may not have a table
-}));
-
-export const evidenceVectorsRelations = relations(
-  evidenceVectors,
-  ({ one }) => ({
-    evidence: one(evidence, {
-      fields: [evidenceVectors.evidenceId],
-      references: [evidence.id],
-    }),
-  }),
-);
-
-export const caseEmbeddingsRelations = relations(caseEmbeddings, ({ one }) => ({
-  case: one(cases, {
-    fields: [caseEmbeddings.caseId],
-    references: [cases.id],
-  }),
-}));
 
 // === CONTEXT7 LEGAL AI RELATIONS ===
 
@@ -684,7 +695,7 @@ export const legalPrecedentsRelations = relations(
   legalPrecedents,
   ({ many }) => ({
     // No direct foreign key relations but used via vector similarity
-  }),
+  })
 );
 
 export const legalAnalysisSessionsRelations = relations(
@@ -698,7 +709,7 @@ export const legalAnalysisSessionsRelations = relations(
       fields: [legalAnalysisSessions.userId],
       references: [users.id],
     }),
-  }),
+  })
 );
 
 // === RELATIONSHIPS ===
@@ -778,7 +789,7 @@ export const attachmentVerificationsRelations = relations(
       fields: [attachmentVerifications.verifiedBy],
       references: [users.id],
     }),
-  }),
+  })
 );
 
 export const themesRelations = relations(themes, ({ one }) => ({
@@ -795,7 +806,7 @@ export const contentEmbeddingsRelations = relations(
       fields: [contentEmbeddings.contentId],
       references: [cases.id],
     }),
-  }),
+  })
 );
 
 export const ragSessionsRelations = relations(ragSessions, ({ one }) => ({
@@ -831,8 +842,3 @@ export const vectorMetadata = pgTable("vector_metadata", {
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
 });
-
-// === TYPE EXPORTS ===
-
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;

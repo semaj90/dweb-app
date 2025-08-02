@@ -3,12 +3,12 @@
   // ENHANCED LEGAL AI DEMO COMPONENT
   // Demonstrating real-time AI processing with XState + Loki.js integration
   // ======================================================================
-  
+
   import { onMount, onDestroy } from 'svelte';
   import { writable, derived } from 'svelte/store';
-  
+
   // Enhanced stores and machines
-  import { 
+  import {
     evidenceProcessingStore,
     streamingStore,
     currentlyProcessingStore,
@@ -19,30 +19,30 @@
     systemHealthStore,
     initializeEnhancedMachines
   } from '$lib/stores/enhancedStateMachines';
-  
-  import { 
+
+  import {
     enhancedLoki,
     enhancedLokiStore,
     cacheStatsStore,
     cacheHealthStore
   } from '$lib/stores/enhancedLokiStore';
-  
+
   // UI Components
   import { Button } from '$lib/components/ui/button';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card';
-  import { Badge } from '$lib/components/ui/Badge';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Badge } from '$lib/components/ui/badge';
   import { Textarea } from '$lib/components/ui/textarea';
-  
+
   // ======================================================================
   // COMPONENT STATE
   // ======================================================================
-  
+
   let machines: any = null;
   let evidenceText = '';
   let selectedCaseId = 'demo-case-001';
   let processingActive = false;
   let realTimeUpdates: any[] = [];
-  
+
   // Demo evidence samples
   const demoEvidences = [
     {
@@ -67,11 +67,11 @@
       caseId: selectedCaseId
     }
   ];
-  
+
   // ======================================================================
   // REACTIVE STATEMENTS
   // ======================================================================
-  
+
   $: currentProcessing = $currentlyProcessingStore;
   $: processingResults = $processingResultsStore;
   $: aiRecommendations = $aiRecommendationsStore;
@@ -81,19 +81,19 @@
   $: cacheStats = $cacheStatsStore;
   $: cacheHealth = $cacheHealthStore;
   $: streamingConnected = $streamingStore.connected;
-  
+
   // ======================================================================
   // INITIALIZATION
   // ======================================================================
-  
+
   onMount(async () => {
     try {
       // Initialize enhanced Loki database
       await enhancedLoki.init();
-      
+
       // Initialize state machines
       machines = await initializeEnhancedMachines();
-      
+
       // Subscribe to real-time updates
       if (machines?.streamingActor) {
         machines.streamingActor.subscribe((state: any) => {
@@ -102,13 +102,13 @@
           }
         });
       }
-      
+
       console.log('Enhanced Legal AI system initialized successfully');
     } catch (error) {
       console.error('Failed to initialize enhanced system:', error);
     }
   });
-  
+
   onDestroy(() => {
     if (machines) {
       machines.evidenceActor?.stop();
@@ -116,14 +116,14 @@
     }
     enhancedLoki.destroy();
   });
-  
+
   // ======================================================================
   // EVENT HANDLERS
   // ======================================================================
-  
+
   async function addCustomEvidence() {
     if (!evidenceText.trim() || !machines?.evidenceActor) return;
-    
+
     const evidence = {
       id: `evidence-${Date.now()}`,
       fileName: 'custom-evidence.txt',
@@ -134,62 +134,62 @@
       aiTags: [],
       relationships: []
     };
-    
+
     // Add to state machine for processing
     machines.evidenceActor.send({
       type: 'ADD_EVIDENCE',
       evidence
     });
-    
+
     // Cache in Loki
     await enhancedLoki.evidence.add(evidence);
-    
+
     evidenceText = '';
     processingActive = true;
   }
-  
+
   async function addDemoEvidence(demoEvidence: any) {
     if (!machines?.evidenceActor) return;
-    
+
     machines.evidenceActor.send({
       type: 'ADD_EVIDENCE',
       evidence: demoEvidence
     });
-    
+
     await enhancedLoki.evidence.add(demoEvidence);
     processingActive = true;
   }
-  
+
   function checkSystemHealth() {
     if (machines?.evidenceActor) {
       machines.evidenceActor.send({ type: 'HEALTH_CHECK' });
     }
   }
-  
+
   function syncCache() {
     if (machines?.evidenceActor) {
       machines.evidenceActor.send({ type: 'SYNC_CACHE' });
     }
   }
-  
+
   function clearErrors() {
     if (machines?.evidenceActor) {
       machines.evidenceActor.send({ type: 'CLEAR_ERRORS' });
     }
   }
-  
+
   function clearCache() {
     enhancedLoki.clearCache();
   }
-  
+
   // ======================================================================
   // UTILITY FUNCTIONS
   // ======================================================================
-  
+
   function formatTimestamp(date: Date | string) {
     return new Date(date).toLocaleTimeString();
   }
-  
+
   function getHealthBadgeColor(health: string) {
     switch (health) {
       case 'healthy': return 'bg-green-500';
@@ -198,7 +198,7 @@
       default: return 'bg-gray-500';
     }
   }
-  
+
   function getCacheHealthColor(health: string) {
     switch (health) {
       case 'excellent': return 'text-green-600';
@@ -216,7 +216,7 @@
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
   <div class="max-w-7xl mx-auto space-y-6">
-    
+
     <!-- Header with System Status -->
     <div class="bg-white rounded-lg shadow-sm border p-6">
       <div class="flex items-center justify-between">
@@ -239,10 +239,10 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
+
       <!-- Left Column: Evidence Input & Processing -->
       <div class="space-y-6">
-        
+
         <!-- Evidence Input -->
         <Card>
           <CardHeader>
@@ -255,7 +255,7 @@
               rows={4}
               class="w-full"
             />
-            <Button 
+            <Button
               on:click={addCustomEvidence}
               disabled={!evidenceText.trim() || processingActive}
               class="w-full"
@@ -280,8 +280,8 @@
                 <p class="text-xs text-gray-600 mb-3">
                   {demo.content.slice(0, 100)}...
                 </p>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   variant="outline"
                   on:click={() => addDemoEvidence(demo)}
                   disabled={processingActive}
@@ -318,7 +318,7 @@
 
       <!-- Middle Column: Processing Results -->
       <div class="space-y-6">
-        
+
         <!-- Currently Processing -->
         {#if currentProcessing}
           <Card>
@@ -401,7 +401,7 @@
 
       <!-- Right Column: Vector Search & Graph -->
       <div class="space-y-6">
-        
+
         <!-- Vector Similarity Matches -->
         <Card>
           <CardHeader>
@@ -537,31 +537,31 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
   }
-  
+
   .processing-indicator {
     animation: pulse-processing 2s infinite;
   }
-  
+
   /* Smooth transitions for dynamic content */
   .transition-all {
     transition: all 0.3s ease-in-out;
   }
-  
+
   /* Custom scrollbar for better UX */
   .overflow-y-auto::-webkit-scrollbar {
     width: 4px;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 2px;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 2px;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-thumb:hover {
     background: #555;
   }

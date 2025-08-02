@@ -6,8 +6,8 @@ Manages AutoGen and CrewAI multi-agent workflows
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
   import { Button } from '$lib/components/ui/button';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card';
-  import { Badge } from '$lib/components/ui/Badge';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Badge } from '$lib/components/ui/badge';
   import { Textarea } from '$lib/components/ui/textarea';
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '$lib/components/ui/select';
   import { 

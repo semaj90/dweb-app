@@ -1,5 +1,68 @@
 # Legal AI Case Management - Phase 12 & 13 Full AI Integration System
 
+## SvelteKit 2 & Svelte 5 Best Practices
+
+### Modern Component Patterns
+- **Props**: Use `let { prop = 'default' } = $props()` (never `export let`)
+- **Two-way Binding**: Use `let { value = $bindable() } = $props()` for bindable props
+- **State**: Use `$state()` for reactive local state, `$state.raw()` for non-reactive
+- **Computed**: Use `$derived()` for computed values
+- **Effects**: Use `$effect()` for side effects, `$effect.pre()` for pre-DOM, `$effect.root()` for cleanup
+- **Styling**: Prefer Tailwind utility classes over `<style>` blocks
+
+### Data Loading Excellence
+- **Server-only**: `+page.server.js` for database/auth operations
+- **Universal**: `+page.js` for client-safe data fetching
+- **Streaming**: Return promises directly for progressive loading
+- **Invalidation**: Use `depends()` and `invalidate()` for cache control
+- **Parallel**: Load data concurrently with `Promise.all()`
+
+### Form Handling Best Practices
+- **Progressive Enhancement**: Use `use:enhance` for better UX
+- **Form Actions**: Use `$app/forms` for server actions integration
+- **Validation**: Implement server-side validation with Zod
+- **Error Handling**: Use `fail()` to return validation errors
+- **Type Safety**: Leverage TypeScript for form schemas
+- **Loading States**: Show proper feedback during submission
+
+### Performance & Optimization
+- **Code Splitting**: Use dynamic imports for heavy components
+- **Caching**: Implement proper cache headers and strategies
+- **Streaming**: Load essential content first, stream secondary data
+- **Prefetching**: Use `data-sveltekit-preload-data` for navigation
+- **Bundle Optimization**: Configure Vite for optimal chunking
+
+### Error Handling
+- **Custom Error Pages**: Create `+error.svelte` for graceful failures
+- **Error Boundaries**: Wrap components with error handling logic
+- **Graceful Degradation**: Ensure functionality without JavaScript
+- **User Feedback**: Provide clear error messages and recovery options
+
+### TypeScript Integration
+- **Type Generation**: Leverage SvelteKit's auto-generated `$types`
+- **Page Data Types**: Use `PageData`, `PageServerData`, `LayoutData`, `LayoutServerData`
+- **Form Types**: Type form actions and validation schemas
+- **API Types**: Share types between client and server code
+
+### Testing Strategy
+- **Unit Tests**: Test components with `@testing-library/svelte` (ensure Svelte 5 compatibility)
+- **Integration Tests**: Use Playwright for end-to-end scenarios
+- **Type Safety**: Ensure tests match production type constraints
+- **Accessibility**: Include a11y testing in your test suite
+
+### Key Patterns to Remember
+1. Always use SvelteKit's provided `fetch` in load functions
+2. Implement proper loading and error states for async operations
+3. Use server actions for all data mutations
+4. Prefer `<a href>` over `<button onclick>` for navigation
+5. Stream non-essential data for better perceived performance
+6. Implement proper TypeScript types for better DX
+7. Test both JavaScript-enabled and disabled scenarios
+8. Use `$state.raw()` for large objects that don't need reactivity
+9. Leverage `$effect.pre()` for DOM measurements before updates
+
+---
+
 ## 🚀 Phase 12 COMPLETE: AI-Powered Legal Search & Context7 MCP Integration
 
 **Status**: ✅ COMPLETE (July 30, 2025)  

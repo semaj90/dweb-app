@@ -1,144 +1,111 @@
-import { cases } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { desc, like, or, eq, and, sql } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ locals, url }) => {
+// Mock data for development - replace with real database in production
+const mockCases = [
+  {
+    id: 'CASE-2024-001',
+    title: 'Contract Dispute - Smith vs. Tech Corp',
+    description: 'Breach of contract claim regarding software licensing agreement',
+    status: 'active',
+    priority: 'high',
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-01-20T14:30:00Z',
+    evidenceCount: 12,
+    documentsCount: 8
+  },
+  {
+    id: 'CASE-2024-002', 
+    title: 'Employment Dispute - Johnson vs. Manufacturing Inc',
+    description: 'Wrongful termination and workplace harassment claims',
+    status: 'pending',
+    priority: 'medium',
+    createdAt: '2024-01-10T09:15:00Z',
+    updatedAt: '2024-01-18T16:45:00Z',
+    evidenceCount: 6,
+    documentsCount: 15
+  },
+  {
+    id: 'CASE-2024-003',
+    title: 'Intellectual Property - Patent Infringement',
+    description: 'Technology patent dispute in mobile app development',
+    status: 'closed',
+    priority: 'high',
+    createdAt: '2024-01-05T11:30:00Z',
+    updatedAt: '2024-01-25T10:00:00Z',
+    evidenceCount: 20,
+    documentsCount: 25
+  }
+];
+
+export const GET: RequestHandler = async ({ url }) => {
   try {
-    if (!locals.user) {
-      return json({ error: "Not authenticated" }, { status: 401 });
-    }
-    if (!db) {
-      return json({ error: "Database not available" }, { status: 500 });
-    }
-    const limit = parseInt(url.searchParams.get("limit") || "50");
-    const offset = parseInt(url.searchParams.get("offset") || "0");
-    const search = url.searchParams.get("search") || "";
-    const status = url.searchParams.get("status") || "";
-    const priority = url.searchParams.get("priority") || "";
-    const sortBy = url.searchParams.get("sortBy") || "updatedAt";
-    const sortOrder = url.searchParams.get("sortOrder") || "desc";
-
-    // Build query with filters
-    const whereConditions = [];
-
-    // Add search filter
+    const search = url.searchParams.get('search');
+    const status = url.searchParams.get('status');
+    const priority = url.searchParams.get('priority');
+    
+    let filteredCases = [...mockCases];
+    
+    // Apply filters
     if (search) {
-      whereConditions.push(
-        or(
-          like(cases.title, `%${search}%`),
-          like(cases.description, `%${search}%`),
-          like(cases.caseNumber, `%${search}%`),
-          like(cases.location, `%${search}%`),
-        ),
+      const searchLower = search.toLowerCase();
+      filteredCases = filteredCases.filter(c => 
+        c.title.toLowerCase().includes(searchLower) ||
+        c.description.toLowerCase().includes(searchLower)
       );
     }
-    // Add status filter
+    
     if (status) {
-      whereConditions.push(eq(cases.status, status));
+      filteredCases = filteredCases.filter(c => c.status === status);
     }
-    // Add priority filter
+    
     if (priority) {
-      whereConditions.push(eq(cases.priority, priority));
+      filteredCases = filteredCases.filter(c => c.priority === priority);
     }
-
-    // Build the query with proper typing to avoid TypeScript issues
-    const orderColumn =
-      sortBy === "title"
-        ? cases.title
-        : sortBy === "caseNumber"
-          ? cases.caseNumber
-          : sortBy === "priority"
-            ? cases.priority
-            : sortBy === "status"
-              ? cases.status
-              : sortBy === "createdAt"
-                ? cases.createdAt
-                : cases.updatedAt;
-
-    const caseResults = await db
-      .select()
-      .from(cases)
-      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-      .orderBy(sortOrder === "asc" ? orderColumn : desc(orderColumn))
-      .limit(limit)
-      .offset(offset);
-
-    // Get total count for pagination
-    const totalCountResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(cases)
-      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined);
-
-    const totalCount = totalCountResult[0]?.count || 0;
 
     return json({
-      cases: caseResults,
-      totalCount,
-      hasMore: offset + limit < totalCount,
+      cases: filteredCases,
+      total: filteredCases.length,
+      filters: { search, status, priority }
     });
   } catch (error) {
-    console.error("Error fetching cases:", error);
-    return json({ error: "Failed to fetch cases" }, { status: 500 });
+    return json(
+      { error: 'Failed to fetch cases' },
+      { status: 500 }
+    );
   }
 };
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request }) => {
   try {
-    if (!locals.user) {
-      return json({ error: "Not authenticated" }, { status: 401 });
-    }
-    if (!db) {
-      return json({ error: "Database not available" }, { status: 500 });
-    }
-    const data = await request.json();
-
-    // Validate required fields
-    if (!data.title || !data.caseNumber) {
+    const { title, description, priority = 'medium' } = await request.json();
+    
+    if (!title || !description) {
       return json(
-        { error: "Title and case number are required" },
-        { status: 400 },
+        { error: 'Title and description are required' },
+        { status: 400 }
       );
     }
-    // Check if case number already exists
-    const existingCase = await db
-      .select()
-      .from(cases)
-      .where(eq(cases.caseNumber, data.caseNumber))
-      .limit(1);
 
-    if (existingCase.length > 0) {
-      return json({ error: "Case number already exists" }, { status: 409 });
-    }
-    // Map frontend data to schema fields
-    const caseData = {
-      title: data.title,
-      description: data.description || "",
-      caseNumber: data.caseNumber,
-      name: data.name || data.title, // Use title as fallback for name
-      incidentDate: data.incidentDate ? new Date(data.incidentDate) : null,
-      location: data.location || "",
-      status: data.status || "open",
-      priority: data.priority || "medium",
-      category: data.category || "",
-      dangerScore: data.dangerScore || 0,
-      estimatedValue: data.estimatedValue || null,
-      jurisdiction: data.jurisdiction || "",
-      leadProsecutor: data.leadProsecutor || locals.user.id,
-      assignedTeam: data.assignedTeam || [],
-      tags: data.tags || [],
-      aiSummary: data.aiSummary || null,
-      aiTags: data.aiTags || [],
-      metadata: data.metadata || {},
-      createdBy: locals.user.id,
+    const newCase = {
+      id: `CASE-2024-${String(mockCases.length + 1).padStart(3, '0')}`,
+      title,
+      description,
+      status: 'active',
+      priority,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      evidenceCount: 0,
+      documentsCount: 0
     };
 
-    const [newCase] = await db.insert(cases).values(caseData).returning();
-
+    mockCases.push(newCase);
+    
     return json(newCase, { status: 201 });
   } catch (error) {
-    console.error("Error creating case:", error);
-    return json({ error: "Failed to create case" }, { status: 500 });
+    return json(
+      { error: 'Failed to create case' },
+      { status: 500 }
+    );
   }
 };

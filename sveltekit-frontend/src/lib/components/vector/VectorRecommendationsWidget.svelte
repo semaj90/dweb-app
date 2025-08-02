@@ -5,8 +5,8 @@ Compact AI recommendations component for sidebar/dashboard use
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
-  import { Badge } from '$lib/components/ui/Badge';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card';
+  import { Badge } from '$lib/components/ui/badge';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { 
     Lightbulb,
     Target,

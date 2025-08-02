@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { writable, derived } from 'svelte/store';
-  import type { EditableNode, Evidence, CanvasState } from './types';
+  import type { EditableNode, Evidence, CanvasState } from '$lib/types';
 
   // Component props with validation
   export let userId: string;

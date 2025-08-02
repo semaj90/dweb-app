@@ -404,3 +404,26 @@ export class AutoSaveManager {
     this.isDirty = false;
   }
 }
+
+// Global instance for backward compatibility
+const globalShortcutManager = new KeyboardShortcutManager();
+
+/**
+ * Register a global keyboard shortcut (backward compatibility)
+ */
+export function registerShortcut(config: ShortcutConfig): void {
+  globalShortcutManager.register(config);
+}
+
+/**
+ * Set shortcut context (backward compatibility)
+ */
+export function setShortcutContext(context: string): void {
+  // For backward compatibility, this could be implemented as groups
+  console.log(`Setting shortcut context: ${context}`);
+}
+
+// Start global listening by default
+if (typeof window !== "undefined") {
+  globalShortcutManager.startListening();
+}

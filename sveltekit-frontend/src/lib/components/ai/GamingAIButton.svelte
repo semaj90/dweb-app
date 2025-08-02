@@ -27,9 +27,9 @@
     aiMode = $bindable('idle')
   }: Props = $props()
   
-  let isExpanded = $state(false)
-  let isHovered = $state(false)
-  let pulseAnimation = $state(true)
+  let isExpanded = $state(false);
+  let isHovered = $state(false);
+  let pulseAnimation = $state(true);
   
   // Gaming UI inspiration - pulse effect for AI activity
   const pulseClasses = {

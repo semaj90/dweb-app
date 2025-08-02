@@ -167,41 +167,7 @@
   {/if}
 </div>
 
-<!-- Sub-components for structured card content -->
-{#snippet CardHeader(headerChildren)}
-  <div class="shadcn-card-header">
-    {@render headerChildren?.()}
-  </div>
-{/snippet}
 
-{#snippet CardTitle(titleChildren)}
-  <h3 class="shadcn-card-title">
-    {@render titleChildren?.()}
-  </h3>
-{/snippet}
-
-{#snippet CardDescription(descriptionChildren)}
-  <p class="shadcn-card-description">
-    {@render descriptionChildren?.()}
-  </p>
-{/snippet}
-
-{#snippet CardContent(contentChildren)}
-  <div class="shadcn-card-content">
-    {@render contentChildren?.()}
-  </div>
-{/snippet}
-
-{#snippet CardFooter(footerChildren)}
-  <div class="shadcn-card-footer">
-    {@render footerChildren?.()}
-  </div>
-{/snippet}
-
-<script lang="ts" context="module">
-  // Export card sub-components for structured usage
-  export { CardHeader, CardTitle, CardDescription, CardContent, CardFooter };
-</script>
 
 <style>
   /* @unocss-include */

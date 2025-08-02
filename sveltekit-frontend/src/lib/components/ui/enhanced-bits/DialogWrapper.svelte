@@ -1,7 +1,5 @@
 <!-- Dialog Wrapper: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
-  import { createDialog } from 'bits-ui';
-  import { $state } from 'svelte';
   export let open = $state(false);
   export let title: string = '';
   export let description: string = '';

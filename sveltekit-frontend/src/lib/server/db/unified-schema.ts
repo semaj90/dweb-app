@@ -287,6 +287,7 @@ export const cases = pgTable(
     estimatedValue: decimal("estimated_value", { precision: 12, scale: 2 }), // monetary value involved
     jurisdiction: varchar("jurisdiction", { length: 100 }),
     leadProsecutor: uuid("lead_prosecutor").references(() => users.id),
+    userId: uuid("user_id").references(() => users.id), // Missing field
     assignedTeam: jsonb("assigned_team").default([]).notNull(), // user IDs
     tags: jsonb("tags").default([]).notNull(), // case tags
     aiSummary: text("ai_summary"),
@@ -567,7 +568,8 @@ export const reports = pgTable("reports", {
   isDirty: boolean("is_dirty").default(false).notNull(),
   lastModifiedBy: uuid("last_modified_by").references(() => users.id),
   templateId: uuid("template_id"),
-  createdBy: uuid("created_by").references(() => users.id),
+  userId: uuid("user_id").references(() => users.id), // Missing field
+    createdBy: uuid("created_by").references(() => users.id),
   lastEditedBy: uuid("last_edited_by").references(() => users.id),
   publishedAt: timestamp("published_at", { mode: "date" }),
   archivedAt: timestamp("archived_at", { mode: "date" }),

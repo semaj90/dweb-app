@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import Button from "$lib/components/ui/button";
+  import { Button } from "$lib/components/ui/button";
   import { notifications } from "$lib/stores/notification";
   import {
     AlertTriangle,

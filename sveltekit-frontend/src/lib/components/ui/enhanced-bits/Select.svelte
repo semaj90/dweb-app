@@ -1,7 +1,25 @@
+<script module>
+  // Re-export Select components for external use
+  export { Select as BitsSelect } from 'bits-ui';
+</script>
+
 <script lang="ts">
   import { Select as BitsSelect } from 'bits-ui';
   import { cn } from '$lib/utils/cn';
   import { ChevronDown, Check } from 'lucide-svelte';
+
+  // Extract available components from BitsSelect
+  const {
+    Root: SelectRoot,
+    Trigger: SelectTrigger,
+    Content: SelectContent,
+    Item: SelectItem,
+    Value: SelectValue,
+    Portal: SelectPortal,
+    Group: SelectGroup,
+    Label: SelectLabel,
+    Separator: SelectSeparator
+  } = BitsSelect;
 
   interface SelectOption {
     value: string;
@@ -20,6 +38,8 @@
     options: SelectOption[];
     /** Placeholder text */
     placeholder?: string;
+    /** Label for the select */
+    label?: string;
     /** Disabled state */
     disabled?: boolean;
     /** Legal context styling */
@@ -65,7 +85,7 @@
   // Group options by category if they have categories
   const groupedOptions = $derived((() => {
     const hasCategories = options.some(option => option.category);
-    
+
     if (!hasCategories) {
       return { '': options };
     }
@@ -123,31 +143,31 @@
 </script>
 
 <div class="select-wrapper" class:w-full={fullWidth}>
-  <BitsSelect.Root {value} onValueChange={handleValueChange} {disabled} type="single">
-    <BitsSelect.Trigger class={triggerClasses}>
+  <SelectRoot {value} onValueChange={handleValueChange} {disabled} type="single">
+    <SelectTrigger class={triggerClasses}>
       <div class="select-value">
         {selectedLabel}
       </div>
       <div class="select-icon">
         <ChevronDown class="h-4 w-4 opacity-50" />
       </div>
-    </BitsSelect.Trigger>
+    </SelectTrigger>
 
     <BitsSelect.Portal>
-      <BitsSelect.Content class={selectContentClasses}>
+      <SelectContent class={selectContentClasses}>
         <BitsSelect.Viewport class="p-1">
           {#each Object.entries(groupedOptions) as [category, categoryOptions]}
             {#if category && Object.keys(groupedOptions).length > 1}
               <BitsSelect.Group>
-                <BitsSelect.Label class="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <div class="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {category}
-                </BitsSelect.Label>
+                </div>
                 {#each categoryOptions as option (option.value)}
                   {@render selectItem(option)}
                 {/each}
               </BitsSelect.Group>
               {#if category !== Object.keys(groupedOptions)[Object.keys(groupedOptions).length - 1]}
-                <BitsSelect.Separator class="h-px bg-border my-1" />
+                <div class="h-px bg-border my-1"></div>
               {/if}
             {:else}
               {#each categoryOptions as option (option.value)}
@@ -156,9 +176,9 @@
             {/if}
           {/each}
         </BitsSelect.Viewport>
-      </BitsSelect.Content>
+      </SelectContent>
     </BitsSelect.Portal>
-  </BitsSelect.Root>
+  </SelectRoot>
 
   {#if error && errorMessage}
     <div class="mt-1 text-xs text-red-600 font-medium">
@@ -168,7 +188,7 @@
 </div>
 
 {#snippet selectItem(option: SelectOption)}
-  <BitsSelect.Item
+  <SelectItem
     value={option.value}
     disabled={option.disabled}
     class={cn(
@@ -181,42 +201,22 @@
       }
     )}
   >
-    <BitsSelect.ItemIndicator class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <div class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <Check class="h-4 w-4" />
-    </BitsSelect.ItemIndicator>
-    
+    </div>
+
     <div class="pl-6">
-      <BitsSelect.ItemText class="font-medium">
+      <div class="font-medium">
         {option.label}
-      </BitsSelect.ItemText>
+      </div>
       {#if option.description}
         <div class="text-xs text-muted-foreground mt-0.5">
           {option.description}
         </div>
       {/if}
     </div>
-  </BitsSelect.Item>
+  </SelectItem>
 {/snippet}
-
-<script lang="ts" context="module">
-  export { BitsSelect as Select };
-  
-  // Re-export commonly used sub-components (only those that exist)
-  export const SelectTrigger = BitsSelect.Trigger;
-  export const SelectPortal = BitsSelect.Portal;
-  export const SelectContent = BitsSelect.Content;
-  export const SelectViewport = BitsSelect.Viewport;
-  export const SelectItem = BitsSelect.Item;
-  export const SelectGroup = BitsSelect.Group;
-  
-  // For compatibility, create fallback components for missing exports
-  export const SelectValue = 'div';
-  export const SelectIcon = 'div'; 
-  export const SelectItemText = 'span';
-  export const SelectItemIndicator = 'div';
-  export const SelectLabel = 'div';
-  export const SelectSeparator = 'div';
-</script>
 
 <style>
   /* @unocss-include */
@@ -257,7 +257,7 @@
   }
 
   :global(.nier-panel-elevated) {
-    box-shadow: 
+    box-shadow:
       0 10px 15px -3px rgba(0, 0, 0, 0.1),
       0 4px 6px -2px rgba(0, 0, 0, 0.05),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -288,7 +288,7 @@
 
   /* Case type specific styling */
   :global([data-case-type] .bits-select-content) {
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 80%, rgba(58, 55, 47, 0.05) 0%, transparent 50%),
       radial-gradient(circle at 80% 20%, rgba(58, 55, 47, 0.05) 0%, transparent 50%);
   }

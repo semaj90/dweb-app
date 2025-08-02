@@ -1,4 +1,66 @@
-r
+## SvelteKit 2 & Svelte 5 Best Practices
+
+### Modern Component Patterns
+- **Props**: Use `let { prop = 'default' } = $props()` (never `export let`)
+- **Bindable Props**: Use `let { value = $bindable() } = $props()` for two-way binding
+- **State**: Use `$state()` for reactive local state, `$state.raw()` for non-reactive data
+- **Computed**: Use `$derived()` for computed values and `$derived.by()` for complex derivations
+- **Effects**: Use `$effect()` for side effects, `$effect.pre()` for DOM updates, `$effect.root()` for cleanup
+- **Styling**: Prefer Tailwind utility classes over `<style>` blocks
+
+### Data Loading Excellence
+- **Server-only**: `+page.server.ts` for database/auth operations with `PageServerLoad`
+- **Universal**: `+page.ts` for client-safe data fetching with `PageLoad`
+- **Streaming**: Return promises directly for progressive loading
+- **Invalidation**: Use `depends()` and `invalidate()` for cache control
+- **Parallel**: Load data concurrently with `Promise.all()`
+- **Type Safety**: Use generated `PageData`, `PageServerData`, `LayoutData`, `LayoutServerData`
+
+### Form Handling Best Practices
+- **Progressive Enhancement**: Use `use:enhance` from `$app/forms` for better UX
+- **Actions**: Define server actions in `+page.server.ts` with proper typing
+- **Validation**: Implement server-side validation with Zod schemas
+- **Error Handling**: Use `fail()` to return validation errors with proper status codes
+- **Type Safety**: Leverage TypeScript for form schemas and action return types
+- **Loading States**: Show proper feedback during submission with form state
+
+### Performance & Optimization
+- **Code Splitting**: Use dynamic imports for heavy components
+- **Caching**: Implement proper cache headers and strategies
+- **Streaming**: Load essential content first, stream secondary data
+- **Prefetching**: Use `data-sveltekit-preload-data` for navigation optimization
+- **Bundle Optimization**: Configure Vite for optimal chunking strategies
+
+### Error Handling & Boundaries
+- **Custom Error Pages**: Create `+error.svelte` for graceful failure handling
+- **Error Boundaries**: Wrap components with proper error handling logic
+- **Graceful Degradation**: Ensure core functionality works without JavaScript
+- **User Feedback**: Provide clear error messages and recovery options
+- **Logging**: Implement proper error logging and monitoring
+
+### TypeScript Integration
+- **Type Generation**: Leverage SvelteKit's auto-generated `$types` from `.svelte-kit/types`
+- **Strict Typing**: Use `PageProps`, `LayoutProps` for component props
+- **Form Types**: Type form actions and validation schemas properly
+- **API Types**: Share types between client and server code
+- **Component Types**: Use `ComponentProps<ComponentName>` for component prop inference
+
+### Testing Strategy
+- **Unit Tests**: Test components with `@testing-library/svelte` and Vitest
+- **Integration Tests**: Use Playwright for end-to-end scenarios
+- **Type Safety**: Ensure tests match production type constraints
+- **Accessibility**: Include a11y testing with `@testing-library/jest-dom`
+- **Mocking**: Mock external dependencies and API calls appropriately
+
+### Key Patterns to Remember
+1. Always use SvelteKit's provided `fetch` in load functions for SSR compatibility
+2. Implement proper loading and error states for all async operations
+3. Use server actions for all data mutations instead of API routes when possible
+4. Prefer `<a href>` over `<button onclick>` for navigation (progressive enhancement)
+5. Stream non-essential data for better perceived performance
+6. Implement comprehensive TypeScript types for better developer experience
+7. Test both JavaScript-enabled and disabled scenarios for accessibility
+8. Use `$inspect()` for debugging reactive state during development
 
 ---
 

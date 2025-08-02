@@ -5,11 +5,11 @@
   import { writable } from 'svelte/store'
   
   // Demo states
-  let isDarkMode = $state(false)
-  let showModal = $state(false)
-  let activeTab = $state('overview')
-  let inputValue = $state('')
-  let selectedStatus = $state('active')
+  let isDarkMode = $state(false);
+  let showModal = $state(false);
+  let activeTab = $state('overview');
+  let inputValue = $state('');
+  let selectedStatus = $state('active');
   
   // Create melt-ui dialog
   const {

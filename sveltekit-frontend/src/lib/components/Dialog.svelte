@@ -3,7 +3,7 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
 	import { fade, fly } from 'svelte/transition';
-	
+
 	import { Bot, Send, User as UserIcon, X } from "lucide-svelte";
 
 	export let title = 'AI Assistant';
@@ -121,7 +121,7 @@
 
 		} catch (error) {
 			console.error('AI request failed:', error);
-			
+
 			const errorMessage = {
 				id: crypto.randomUUID(),
 				role: 'assistant',
@@ -165,17 +165,17 @@
 </script>
 
 {#if open}
-	<div 
+	<div
 		class="container mx-auto px-4"
 		transition:fade={{ duration: 200 }}
-		on:click={() => handleBackdropClick()}
+		on:click={handleBackdropClick}
 		on:keydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="dialog-title"
 		tabindex={-1}
 	>
-		<div 
+		<div
 			class="container mx-auto px-4"
 			bind:this={dialogElement}
 			transition:fly={{ y: 50, duration: 300, easing: quintOut }}
@@ -273,21 +273,19 @@
 
 			<!-- Input -->
 			<div class="container mx-auto px-4">
-				<div class="container mx-auto px-4">
-					<textarea
-						bind:this={promptInput}
-						bind:value={currentPrompt}
-						placeholder="Ask the AI assistant anything about your case..."
-						rows="4"
-						disabled={isGenerating}
-						on:keydown={(e) => {
-							if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-								e.preventDefault();
-								handleSubmit();
-							}
-						}}
-						"
-					></textarea>
+				<div class="container mx-auto px-4">				<textarea
+					bind:this={promptInput}
+					bind:value={currentPrompt}
+					placeholder="Ask the AI assistant anything about your case..."
+					rows="4"
+					disabled={isGenerating}
+					on:keydown={(e) => {
+						if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+							e.preventDefault();
+							handleSubmit();
+						}
+					}}
+				></textarea>
 					<button
 						class="container mx-auto px-4"
 						on:click={() => handleSubmit()}
@@ -625,3 +623,8 @@
 			font-size: 0.75rem;
 }}
 </style>
+
+
+<script lang="ts" context="module">
+  export { default as Dialog } from "./Dialog.svelte";
+</script>

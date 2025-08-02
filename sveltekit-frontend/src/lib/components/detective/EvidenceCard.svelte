@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Evidence } from "$lib/types/index";
   import { createEventDispatcher } from "svelte";
-  import { Card, CardContent, CardHeader } from "$lib/components/ui/Card";
+  import { Card, CardContent, CardHeader } from "$lib/components/ui/card";
   import Badge from "$lib/components/ui/Badge.svelte";
   import Button from "$lib/components/ui/button/Button.svelte";
 

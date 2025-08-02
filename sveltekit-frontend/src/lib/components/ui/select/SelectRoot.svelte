@@ -1,31 +1,15 @@
 <script lang="ts">
-  import { createSelect, melt } from '@melt-ui/svelte';
-  import { setContext } from 'svelte';
-  
-  export let selected = undefined;
-  
-  const {
-    elements: { trigger, menu, option },
-    states: { selectedLabel, open },
-    helpers: { isSelected }
-  } = createSelect({
-    defaultSelected: selected
-  });
-  
-  // Provide context for child components
-  setContext('select', {
-    trigger,
-    menu,
-    option,
-    selectedLabel,
-    open,
-    isSelected,
-    select: (value: any) => {
-      selected = value;
-}
-  });
-  
-  export { trigger, menu, option, selectedLabel, open, isSelected };
+  import { Select } from 'bits-ui';
+
+  interface Props {
+    value?: string;
+    onValueChange?: (value: string) => void;
+    children?: any;
+  }
+
+  let { value = $bindable(), onValueChange, children, ...restProps }: Props = $props();
 </script>
 
-<slot {trigger} {menu} {option} {selectedLabel} {open} {isSelected} />
+<Select.Root bind:value {onValueChange} {...restProps}>
+  {@render children?.()}
+</Select.Root>

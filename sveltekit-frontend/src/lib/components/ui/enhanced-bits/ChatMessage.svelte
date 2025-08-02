@@ -1,7 +1,6 @@
 <!-- Chat Message: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
   import { User, Bot, AlertTriangle } from 'lucide-svelte';
-  import { $state } from 'svelte';
   export let message: { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string };
   export let analyticsLog: (event: any) => void = () => {};
 

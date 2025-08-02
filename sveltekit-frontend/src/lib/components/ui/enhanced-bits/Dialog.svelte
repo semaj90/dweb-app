@@ -94,24 +94,23 @@
 <BitsDialog.Root {open} onOpenChange={handleOpenChange}>
   {@render children?.()}
 
-  {#snippet portal()}
-    <BitsDialog.Portal>
-      <BitsDialog.Overlay 
-        class={overlayClasses}
-      />
-      <BitsDialog.Content 
-        class={dialogContentClasses}
-      >
-        {@render content?.()}
-      </BitsDialog.Content>
-    </BitsDialog.Portal>
-  {/snippet}
+  <!-- Portal rendering for dialog content -->
+  <BitsDialog.Portal>
+    <BitsDialog.Overlay
+      class={overlayClasses}
+    />
+    <BitsDialog.Content
+      class={dialogContentClasses}
+    >
+      {@render content?.()}
+    </BitsDialog.Content>
+  </BitsDialog.Portal>
 </BitsDialog.Root>
 
 <!-- Export sub-components for easy use -->
 <script lang="ts" context="module">
   export { BitsDialog as Dialog };
-  
+
   // Re-export commonly used sub-components
   export const DialogTrigger = BitsDialog.Trigger;
   export const DialogPortal = BitsDialog.Portal;
@@ -120,7 +119,7 @@
   export const DialogTitle = BitsDialog.Title;
   export const DialogDescription = BitsDialog.Description;
   export const DialogClose = BitsDialog.Close;
-  
+
   // Create custom header and footer components since they don't exist in newer Bits UI
   export const DialogHeader = 'div';
   export const DialogFooter = 'div';
@@ -184,7 +183,7 @@
 
   /* Evidence analysis specific styling */
   :global([data-evidence-analysis] .bits-dialog-content) {
-    background-image: 
+    background-image:
       linear-gradient(45deg, transparent 25%, rgba(0,0,0,0.02) 25%),
       linear-gradient(-45deg, transparent 25%, rgba(0,0,0,0.02) 25%),
       linear-gradient(45deg, rgba(0,0,0,0.02) 75%, transparent 75%),
@@ -195,7 +194,7 @@
 
   /* Case management specific styling */
   :global([data-case-management] .bits-dialog-content) {
-    box-shadow: 
+    box-shadow:
       0 20px 25px -5px rgba(0, 0, 0, 0.1),
       0 10px 10px -5px rgba(0, 0, 0, 0.04),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
