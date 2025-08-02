@@ -1,10 +1,10 @@
-import PDFDocument from 'pdfkit';
-import fs from 'fs';
-import path from 'path';
-import { Readable } from 'stream';
-import Tesseract from 'tesseract.js';
-import pdf2pic from 'pdf2pic';
-import sharp from 'sharp';
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
+import { Readable } from "stream";
+import Tesseract from "tesseract.js";
+import pdf2pic from "pdf2pic";
+import sharp from "sharp";
 
 export interface OCRResult {
   text: string;
@@ -32,7 +32,7 @@ export interface TextBlock {
 
 export interface ImageRegion {
   bbox: BoundingBox;
-  type: 'figure' | 'table' | 'diagram' | 'signature';
+  type: "figure" | "table" | "diagram" | "signature";
 }
 
 export interface BoundingBox {
@@ -55,10 +55,17 @@ export interface DocumentMetadata {
 }
 
 export class EnhancedOCRProcessor {
-  private readonly supportedFormats = ['.pdf', '.png', '.jpg', '.jpeg', '.tiff', '.bmp'];
+  private readonly supportedFormats = [
+    ".pdf",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".tiff",
+    ".bmp",
+  ];
   private readonly ocrOptions = {
     logger: (m: any) => console.log(m),
-    errorHandler: (err: any) => console.error(err)
+    errorHandler: (err: any) => console.error(err),
   };
 
   constructor() {
@@ -67,10 +74,13 @@ export class EnhancedOCRProcessor {
 
   private async initializeTesseract(): Promise<void> {
     try {
-      await Tesseract.recognize('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'eng');
-      console.log('✅ Tesseract initialized successfully');
+      await Tesseract.recognize(
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+        "eng"
+      );
+      console.log("✅ Tesseract initialized successfully");
     } catch (error) {
-      console.error('❌ Failed to initialize Tesseract:', error);
+      console.error("❌ Failed to initialize Tesseract:", error);
     }
   }
 
@@ -85,7 +95,7 @@ export class EnhancedOCRProcessor {
     try {
       let result: OCRResult;
 
-      if (fileExtension === '.pdf') {
+      if (fileExtension === ".pdf") {
         result = await this.processPDF(filePath);
       } else {
         result = await this.processImage(filePath);
@@ -94,7 +104,7 @@ export class EnhancedOCRProcessor {
       result.processing_time = Date.now() - startTime;
       return result;
     } catch (error) {
-      console.error('❌ Document processing failed:', error);
+      console.error("❌ Document processing failed:", error);
       throw error;
     }
   }
@@ -109,16 +119,16 @@ export class EnhancedOCRProcessor {
     // Convert PDF pages to images for OCR
     const convert = pdf2pic.fromBuffer(fileBuffer, {
       density: 300,
-      saveFilename: 'page',
-      savePath: '/tmp',
-      format: 'png',
+      saveFilename: "page",
+      savePath: "/tmp",
+      format: "png",
       width: 2480,
-      height: 3508
+      height: 3508,
     });
 
     const pages: PageResult[] = [];
     let totalConfidence = 0;
-    let totalText = '';
+    let totalText = "";
 
     try {
       // Process each page
@@ -132,25 +142,30 @@ export class EnhancedOCRProcessor {
         const enhancedImagePath = await this.enhanceImageForOCR(imagePath);
 
         // Perform OCR on the page
-        const ocrResult = await Tesseract.recognize(enhancedImagePath, 'eng', this.ocrOptions);
+        const ocrResult = await Tesseract.recognize(
+          enhancedImagePath,
+          "eng",
+          this.ocrOptions
+        );
 
         const pageResult: PageResult = {
           page_number: pageNum,
           text: ocrResult.data.text,
           confidence: ocrResult.data.confidence,
           blocks: this.extractTextBlocks(ocrResult.data),
-          images: this.detectImageRegions(ocrResult.data)
+          images: this.detectImageRegions(ocrResult.data),
         };
 
         pages.push(pageResult);
-        totalText += pageResult.text + '\\n';
+        totalText += pageResult.text + "\\n";
         totalConfidence += pageResult.confidence;
 
         // Clean up temporary files
         this.cleanupTempFiles([imagePath, enhancedImagePath]);
       }
 
-      const avgConfidence = pages.length > 0 ? totalConfidence / pages.length : 0;
+      const avgConfidence =
+        pages.length > 0 ? totalConfidence / pages.length : 0;
 
       return {
         text: totalText.trim(),
@@ -159,13 +174,12 @@ export class EnhancedOCRProcessor {
         metadata: {
           ...metadata,
           file_size: fileStats.size,
-          content_type: 'application/pdf'
+          content_type: "application/pdf",
         },
-        processing_time: 0 // Will be set by caller
+        processing_time: 0, // Will be set by caller
       };
-
     } catch (error) {
-      console.error('❌ PDF processing error:', error);
+      console.error("❌ PDF processing error:", error);
       throw error;
     }
   }
@@ -177,14 +191,18 @@ export class EnhancedOCRProcessor {
     const enhancedImagePath = await this.enhanceImageForOCR(filePath);
 
     // Perform OCR
-    const ocrResult = await Tesseract.recognize(enhancedImagePath, 'eng', this.ocrOptions);
+    const ocrResult = await Tesseract.recognize(
+      enhancedImagePath,
+      "eng",
+      this.ocrOptions
+    );
 
     const pageResult: PageResult = {
       page_number: 1,
       text: ocrResult.data.text,
       confidence: ocrResult.data.confidence,
       blocks: this.extractTextBlocks(ocrResult.data),
-      images: this.detectImageRegions(ocrResult.data)
+      images: this.detectImageRegions(ocrResult.data),
     };
 
     // Clean up enhanced image if it's different from original
@@ -199,25 +217,25 @@ export class EnhancedOCRProcessor {
       metadata: {
         page_count: 1,
         file_size: fileStats.size,
-        content_type: `image/${path.extname(filePath).slice(1)}`
+        content_type: `image/${path.extname(filePath).slice(1)}`,
       },
-      processing_time: 0
+      processing_time: 0,
     };
   }
 
   private async extractPDFMetadata(buffer: Buffer): Promise<DocumentMetadata> {
     try {
       // Use a simple PDF parser for metadata
-      const pdfText = buffer.toString('binary');
+      const pdfText = buffer.toString("binary");
 
       // Extract basic metadata patterns
-      const titleMatch = pdfText.match(/\\/Title\\s*\\((.*?)\\)/);
-      const authorMatch = pdfText.match(/\\/Author\\s*\\((.*?)\\)/);
-      const subjectMatch = pdfText.match(/\\/Subject\\s*\\((.*?)\\)/);
-      const creatorMatch = pdfText.match(/\\/Creator\\s*\\((.*?)\\)/);
+      const titleMatch = pdfText.match(/\/Title\s*\((.*?)\)/);
+      const authorMatch = pdfText.match(/\/Author\s*\((.*?)\)/);
+      const subjectMatch = pdfText.match(/\/Subject\s*\((.*?)\)/);
+      const creatorMatch = pdfText.match(/\/Creator\s*\((.*?)\)/);
 
       // Count pages by looking for page objects
-      const pageMatches = pdfText.match(/\\/Type\\s*\\/Page[^s]/g);
+      const pageMatches = pdfText.match(/\/Type\s*\/Page[^s]/g);
       const pageCount = pageMatches ? pageMatches.length : 1;
 
       return {
@@ -227,21 +245,21 @@ export class EnhancedOCRProcessor {
         creator: creatorMatch ? creatorMatch[1] : undefined,
         page_count: pageCount,
         file_size: buffer.length,
-        content_type: 'application/pdf'
+        content_type: "application/pdf",
       };
     } catch (error) {
-      console.warn('⚠️ Could not extract PDF metadata:', error);
+      console.warn("⚠️ Could not extract PDF metadata:", error);
       return {
         page_count: 1,
         file_size: buffer.length,
-        content_type: 'application/pdf'
+        content_type: "application/pdf",
       };
     }
   }
 
   private async enhanceImageForOCR(imagePath: string): Promise<string> {
     try {
-      const enhancedPath = imagePath.replace(/\\.(\\w+)$/, '_enhanced.$1');
+      const enhancedPath = imagePath.replace(/\\.(\\w+)$/, "_enhanced.$1");
 
       await sharp(imagePath)
         .greyscale()
@@ -252,7 +270,7 @@ export class EnhancedOCRProcessor {
 
       return enhancedPath;
     } catch (error) {
-      console.warn('⚠️ Image enhancement failed, using original:', error);
+      console.warn("⚠️ Image enhancement failed, using original:", error);
       return imagePath;
     }
   }
@@ -268,9 +286,9 @@ export class EnhancedOCRProcessor {
             x: block.bbox.x0,
             y: block.bbox.y0,
             width: block.bbox.x1 - block.bbox.x0,
-            height: block.bbox.y1 - block.bbox.y0
+            height: block.bbox.y1 - block.bbox.y0,
           },
-          confidence: block.confidence
+          confidence: block.confidence,
         });
       }
     }
@@ -286,15 +304,19 @@ export class EnhancedOCRProcessor {
     if (data.blocks) {
       for (const block of data.blocks) {
         // Detect potential image regions based on low text confidence and size
-        if (block.confidence < 30 && (block.bbox.x1 - block.bbox.x0) > 100 && (block.bbox.y1 - block.bbox.y0) > 100) {
+        if (
+          block.confidence < 30 &&
+          block.bbox.x1 - block.bbox.x0 > 100 &&
+          block.bbox.y1 - block.bbox.y0 > 100
+        ) {
           regions.push({
             bbox: {
               x: block.bbox.x0,
               y: block.bbox.y0,
               width: block.bbox.x1 - block.bbox.x0,
-              height: block.bbox.y1 - block.bbox.y0
+              height: block.bbox.y1 - block.bbox.y0,
             },
-            type: 'figure'
+            type: "figure",
           });
         }
       }
@@ -304,7 +326,7 @@ export class EnhancedOCRProcessor {
   }
 
   private cleanupTempFiles(filePaths: string[]): void {
-    filePaths.forEach(filePath => {
+    filePaths.forEach((filePath) => {
       try {
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
@@ -318,30 +340,44 @@ export class EnhancedOCRProcessor {
   async batchProcessDocuments(filePaths: string[]): Promise<OCRResult[]> {
     const results: OCRResult[] = [];
 
-    console.log(`📚 Starting batch processing of ${filePaths.length} documents`);
+    console.log(
+      `📚 Starting batch processing of ${filePaths.length} documents`
+    );
 
     for (let i = 0; i < filePaths.length; i++) {
       const filePath = filePaths[i];
-      console.log(`📄 Processing document ${i + 1}/${filePaths.length}: ${path.basename(filePath)}`);
+      console.log(
+        `📄 Processing document ${i + 1}/${filePaths.length}: ${path.basename(filePath)}`
+      );
 
       try {
         const result = await this.processDocument(filePath);
         results.push(result);
-        console.log(`✅ Completed processing ${path.basename(filePath)} in ${result.processing_time}ms`);
+        console.log(
+          `✅ Completed processing ${path.basename(filePath)} in ${result.processing_time}ms`
+        );
       } catch (error) {
-        console.error(`❌ Failed to process ${path.basename(filePath)}:`, error);
+        console.error(
+          `❌ Failed to process ${path.basename(filePath)}:`,
+          error
+        );
         // Continue with other documents
       }
     }
 
-    console.log(`🎉 Batch processing completed. ${results.length}/${filePaths.length} documents processed successfully`);
+    console.log(
+      `🎉 Batch processing completed. ${results.length}/${filePaths.length} documents processed successfully`
+    );
     return results;
   }
 
-  getProcessingStats(): { supportedFormats: string[]; tesseractReady: boolean } {
+  getProcessingStats(): {
+    supportedFormats: string[];
+    tesseractReady: boolean;
+  } {
     return {
       supportedFormats: this.supportedFormats,
-      tesseractReady: true
+      tesseractReady: true,
     };
   }
 }

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(npm run check:*)",
@@ -87,7 +88,23 @@
       "Bash(npm search canvas-types)",
       "Bash(timeout 10 npm run dev)",
       "Bash(realpath:*)",
-      "Bash(powershell.exe:*)"
+      "Bash(powershell.exe:*)",
+      "mcp__filesystem__edit_file",
+      "mcp__filesystem__write_file",
+      "mcp__filesystem__create_directory",
+      "Bash(npm run compile:*)",
+      "Bash(npm run mcp:status:*)",
+      "Bash(where:*)",
+      "Bash(ollama:*)",
+      "Bash(timeout 45 npm run check:base)",
+      "Bash(timeout 30 npx svelte-check --tsconfig ./tsconfig.json --threshold error --diagnostic-sources \"svelte\" --output human)",
+      "Bash(timeout 30 npx svelte-check --tsconfig ./tsconfig.json --threshold error --output human)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run setup:gpu-json:*)",
+      "Bash(npm run benchmark:json:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": []
   }

@@ -1,15 +1,15 @@
 {
-  "timestamp": "2025-07-30T23:58:24.827Z",
+  "timestamp": "2025-08-01T03:57:58.895Z",
   "summary": {
-    "passed": 9,
-    "failed": 0,
-    "successRate": "100.0%"
+    "passed": 8,
+    "failed": 1,
+    "successRate": "88.9%"
   },
   "results": [
     {
       "test": "Enhanced RAG Service Structure",
-      "status": "PASSED",
-      "result": "Enhanced RAG service has all required components"
+      "status": "FAILED",
+      "error": "Enhanced RAG service test failed: Missing required component: import { ollamaGemmaCache"
     },
     {
       "test": "Cluster Manager Implementation",

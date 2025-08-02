@@ -57,7 +57,7 @@
     loadAIReports();
 
     // Add keyboard shortcuts
-    const handleKeyPress = (e: KeyboardEvent) => {
+    const handleKeyPress = (e: CustomEvent<any>) => {
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
           case "b":

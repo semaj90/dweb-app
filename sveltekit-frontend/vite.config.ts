@@ -5,12 +5,12 @@ import UnoCSS from "unocss/vite";
 export default defineConfig({
   plugins: [UnoCSS(), sveltekit()],
   server: {
-    port: 5175,
+    port: 3130,
     host: "0.0.0.0",
     cors: true,
     hmr: {
-      port: 5176,
-      clientPort: 5176
+      port: 3131,
+      clientPort: 3131
     },
     fs: {
       allow: ['..']

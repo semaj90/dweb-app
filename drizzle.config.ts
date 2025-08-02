@@ -1,19 +1,16 @@
-import { config } from "dotenv";
-import { defineConfig } from "drizzle-kit";
+import { defineConfig } from 'drizzle-kit';
 
-// Load environment variables
-config();
-
-// Enforce Postgres only
 export default defineConfig({
-  schema: "./sveltekit-frontend/src/lib/server/db/unified-schema.ts",
-  out: "./drizzle",
-  dialect: "postgresql",
+  schema: './sveltekit-frontend/src/lib/server/db/schema.ts',
+  out: './database/migrations',
+  dialect: 'postgresql',
   dbCredentials: {
-    url:
-      process.env.DATABASE_URL ||
-      "postgresql://postgres:postgres@localhost:5432/prosecutor_db",
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: 'postgres',
+    database: 'prosecutor_db',
   },
-  strict: true,
   verbose: true,
+  strict: true,
 });

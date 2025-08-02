@@ -1,0 +1,59 @@
+[2025-08-02T02:03:24.582Z] [INFO] ================================================================================
+[2025-08-02T02:03:24.584Z] [INFO] STARTING COMPREHENSIVE LEGAL AI SYSTEM HEALTH CHECK
+[2025-08-02T02:03:24.584Z] [INFO] ================================================================================
+[2025-08-02T02:03:24.584Z] [INFO] Testing Context7 MCP Server service at http://localhost:40000/health...
+[2025-08-02T02:03:24.630Z] [SUCCESS] ✅ Context7 MCP Server service is HEALTHY
+[2025-08-02T02:03:24.630Z] [INFO]    - Expected field 'status' found: healthy
+[2025-08-02T02:03:24.630Z] [INFO] Testing Context7 MCP Integration...
+[2025-08-02T02:03:24.630Z] [INFO] Testing API endpoint: POST http://localhost:40000/mcp/memory/read-graph
+[2025-08-02T02:03:24.648Z] [SUCCESS] ✅ API MCP Memory Graph responded successfully
+[2025-08-02T02:03:24.648Z] [INFO]    - Status: 200
+[2025-08-02T02:03:24.648Z] [INFO]    - Response: {
+  "success": true,
+  "graph_data": {
+    "nodes": [],
+    "relationships": [],
+    "totalNodes": 0,
+    "totalRelationships": 0
+  },
+  "query": "legal-ai-test",
+  "timestamp": "2025-08-02T02:03:24.6...
+[2025-08-02T02:03:24.648Z] [INFO] Testing API endpoint: POST http://localhost:40000/mcp/context7/analyze-stack
+[2025-08-02T02:03:24.853Z] [SUCCESS] ✅ API MCP Context7 Analysis responded successfully
+[2025-08-02T02:03:24.853Z] [INFO]    - Status: 200
+[2025-08-02T02:03:24.853Z] [INFO]    - Response: {
+  "success": true,
+  "analysis": {
+    "recommendations": [
+      "Use SSR for better SEO and performance",
+      "Implement proper form validation with Superforms",
+      "Use Lucia Auth for secure...
+[2025-08-02T02:03:24.853Z] [INFO] Testing API endpoint: POST http://localhost:40000/mcp/context7/generate-best-practices
+[2025-08-02T02:03:25.010Z] [SUCCESS] ✅ API MCP Best Practices responded successfully
+[2025-08-02T02:03:25.010Z] [INFO]    - Status: 200
+[2025-08-02T02:03:25.010Z] [INFO]    - Response: {
+  "success": true,
+  "best_practices": [
+    "Use proper code splitting and lazy loading",
+    "Implement efficient caching strategies",
+    "Optimize database queries with proper indexing",
+    "Us...
+[2025-08-02T02:03:25.010Z] [INFO] Context7 MCP Integration: 3/3 endpoints healthy
+[2025-08-02T02:03:25.010Z] [INFO] Testing AI Integration Components...
+[2025-08-02T02:03:25.010Z] [INFO] Testing Ollama service at http://localhost:11434/api/tags...
+[2025-08-02T02:03:25.057Z] [SUCCESS] ✅ Ollama service is HEALTHY
+[2025-08-02T02:03:25.057Z] [INFO] Testing Qdrant service at http://localhost:6333/collections...
+[2025-08-02T02:03:25.059Z] [ERROR] ❌ Qdrant service is UNHEALTHY: fetch failed
+[2025-08-02T02:03:25.059Z] [INFO] Testing API endpoint: POST http://localhost:5173/api/ai/chat
+[2025-08-02T02:03:25.060Z] [ERROR] ❌ API AI Chat error: fetch failed
+[2025-08-02T02:03:25.060Z] [INFO] Testing Production API Endpoints...
+[2025-08-02T02:03:25.060Z] [INFO] Testing API endpoint: GET http://localhost:5173/api/health
+[2025-08-02T02:03:25.061Z] [ERROR] ❌ API Health Check error: fetch failed
+[2025-08-02T02:03:25.061Z] [INFO] Testing API endpoint: GET http://localhost:5173/api/cases
+[2025-08-02T02:03:25.063Z] [ERROR] ❌ API Cases List error: fetch failed
+[2025-08-02T02:03:25.063Z] [INFO] Testing API endpoint: GET http://localhost:5173/api/evidence
+[2025-08-02T02:03:25.064Z] [ERROR] ❌ API Evidence List error: fetch failed
+[2025-08-02T02:03:25.064Z] [INFO] Testing API endpoint: POST http://localhost:5173/api/ai/find
+[2025-08-02T02:03:25.065Z] [ERROR] ❌ API AI Find error: fetch failed
+[2025-08-02T02:03:25.065Z] [INFO] Generating Comprehensive System Report...
+[2025-08-02T02:03:25.066Z] [SUCCESS] 📊 Comprehensive system report generated successfully

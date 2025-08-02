@@ -842,3 +842,22 @@ export const vectorMetadata = pgTable("vector_metadata", {
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow(),
 });
+
+// === CASE SCORING SYSTEM ===
+
+export const caseScores = pgTable("case_scores", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  caseId: uuid("case_id")
+    .notNull()
+    .references(() => cases.id, { onDelete: "cascade" }),
+  score: decimal("score", { precision: 5, scale: 2 }).notNull(),
+  riskLevel: varchar("risk_level", { length: 20 }).notNull(), // LOW, MEDIUM, HIGH
+  breakdown: jsonb("breakdown").default({}).notNull(),
+  criteria: jsonb("criteria").default({}).notNull(),
+  recommendations: jsonb("recommendations").default([]).notNull(),
+  calculatedBy: uuid("calculated_by").references(() => users.id),
+  calculatedAt: timestamp("calculated_at", { mode: "date" })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});

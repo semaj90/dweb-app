@@ -1,9 +1,9 @@
+/* Golden Ratio CSS Utilities */
+@import './lib/styles/golden-ratio-utilities.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Golden Ratio CSS Utilities */
-@import './lib/styles/golden-ratio-utilities.css';
 
 /* YoRHa-specific global styles */
 @layer base {

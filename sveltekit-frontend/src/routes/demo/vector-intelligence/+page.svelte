@@ -4,8 +4,8 @@ Comprehensive showcase of Phase 4 capabilities
 -->
 <script lang="ts">
   import VectorIntelligenceDemo from '$lib/components/vector/VectorIntelligenceDemo.svelte';
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card';
-  import { Badge } from '$lib/components/ui/Badge';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { 
     ArrowLeft,

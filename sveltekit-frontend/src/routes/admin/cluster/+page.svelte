@@ -287,7 +287,7 @@
       <Card class="p-4 bg-slate-800/50 border-slate-700">
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-lg" class:bg-red-100={errorRateStatus === 'high'} class:bg-yellow-100={errorRateStatus === 'medium'} class:bg-green-100={errorRateStatus === 'low'}>
-            <AlertTriangle class="h-5 w-5" class:text-red-600={errorRateStatus === 'high'} class:text-yellow-600={errorRateStatus === 'medium'} class:text-green-600={errorRateStatus === 'low'} />
+            <AlertTriangle class="h-5 w-5 {errorRateStatus === 'high' ? 'text-red-600' : errorRateStatus === 'medium' ? 'text-yellow-600' : 'text-green-600'}" />
           </div>
           <div>
             <h3 class="font-semibold text-white">Errors/min</h3>

@@ -1,0 +1,121 @@
+{
+  "name": "Legal AI System Dev Environment",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "../docker-compose.override.yml"
+  ],
+  "service": "sveltekit-frontend",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts",
+      "nodeGypDependencies": true,
+      "installYarnUsingApt": true
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11",
+      "installTools": true
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": true
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "svelte.svelte-vscode",
+        "bradlc.vscode-tailwindcss",
+        "antfu.unocss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "usernamehw.errorlens",
+        "christian-kohler.path-intellisense",
+        "formulahendry.auto-rename-tag",
+        "ms-vscode.vscode-json",
+        "ms-azuretools.vscode-docker",
+        "ms-python.python",
+        "ms-python.pylint",
+        "github.copilot",
+        "github.copilot-chat",
+        "redhat.vscode-yaml"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "typescript.preferences.includePackageJsonAutoImports": "auto",
+        "svelte.enable-ts-plugin": true,
+        "tailwindCSS.includeLanguages": {
+          "svelte": "html"
+        },
+        "files.associations": {
+          "*.env.*": "dotenv"
+        }
+      }
+    }
+  },
+
+  "forwardPorts": [5173, 4173, 8000, 8001, 11434, 6333, 6379, 5432, 40000],
+
+  "portsAttributes": {
+    "5173": {
+      "label": "SvelteKit Dev Server",
+      "onAutoForward": "notify"
+    },
+    "4173": {
+      "label": "SvelteKit Preview",
+      "onAutoForward": "silent"
+    },
+    "8000": {
+      "label": "Enhanced RAG API",
+      "onAutoForward": "silent"
+    },
+    "8001": {
+      "label": "CrewAI Orchestrator",
+      "onAutoForward": "silent"
+    },
+    "11434": {
+      "label": "Ollama API",
+      "onAutoForward": "silent"
+    },
+    "6333": {
+      "label": "Qdrant Vector DB",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis Cache",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "40000": {
+      "label": "MCP Server",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "cd sveltekit-frontend && npm install && npm run build",
+  "postStartCommand": "cd sveltekit-frontend && npm run check",
+
+  "remoteUser": "root",
+  "mounts": [
+    "source=${localWorkspaceFolder}/uploads,target=/workspace/uploads,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/vector-store,target=/workspace/vector-store,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/logs,target=/workspace/logs,type=bind,consistency=cached"
+  ],
+
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "FORCE_COLOR": "1",
+    "NPM_CONFIG_COLOR": "always"
+  }
+}

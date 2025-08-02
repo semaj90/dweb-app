@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+  import type { AIResponse } from '$lib/types/ai';
   import { onMount, onDestroy } from 'svelte';
   import { createGGUFRuntime, GGUFHelpers } from '$lib/services/gguf-runtime';
   import { createNodeJSOrchestrator } from '$lib/services/nodejs-orchestrator';

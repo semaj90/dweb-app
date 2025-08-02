@@ -18,7 +18,7 @@ $svelteFiles = Get-ChildItem -Path "." -Filter "*.svelte" | Where-Object { $_.Na
 if ($svelteFiles.Count -eq 0) {
     Write-Host "⚠️  No Svelte component files found (looking for +*.svelte)" -ForegroundColor Yellow
     Write-Host "📁 Current directory: $(Get-Location)" -ForegroundColor Gray
-    
+
     # Also check in src directory if it exists
     if (Test-Path "src") {
         Write-Host "🔍 Checking src directory..." -ForegroundColor Cyan
@@ -27,7 +27,7 @@ if ($svelteFiles.Count -eq 0) {
             Write-Host "✅ Found $($svelteFiles.Count) Svelte files in src/" -ForegroundColor Green
         }
     }
-    
+
     if ($svelteFiles.Count -eq 0) {
         Write-Host "❌ No Svelte files found to process." -ForegroundColor Red
         Write-Host "💡 Make sure you're in the correct directory with .svelte files" -ForegroundColor Cyan
@@ -42,9 +42,9 @@ foreach ($file in $svelteFiles) {
         $content = Get-Content $file.FullName -Raw
         $originalContent = $content
         $issuesInFile = 0
-        
+
         Write-Host "`n📄 Analyzing: $($file.Name)" -ForegroundColor Yellow
-        
+
         # 1. Fix tabindex="number" to tabindex={number} - CRITICAL
         $tabindexMatches = [regex]::Matches($content, 'tabindex="(\d+)"')
         if ($tabindexMatches.Count -gt 0) {
@@ -57,7 +57,7 @@ foreach ($file in $svelteFiles) {
             Write-Host "  ✅ Fixed tabindex quotes: $($matchStrings -join ', ')" -ForegroundColor Green
             $issuesInFile += $tabindexMatches.Count
         }
-        
+
         # 2. Fix boolean props as strings - MEDIUM PRIORITY
         $booleanMatches = [regex]::Matches($content, '(disabled|readonly|checked)="(true|false)"')
         if ($booleanMatches.Count -gt 0) {
@@ -70,18 +70,18 @@ foreach ($file in $svelteFiles) {
             Write-Host "  ✅ Fixed boolean props: $($matchStrings -join ', ')" -ForegroundColor Green
             $issuesInFile += $booleanMatches.Count
         }
-        
+
         # 3. Check for accessibility issues (report only)
         $hasClickableDiv = $content -match '<div[^>]*on:click[^>]*>'
         $hasProperRole = $content -match 'role="button"'
         $hasTabindex = $content -match 'tabindex='
-        
+
         if ($hasClickableDiv -and (-not $hasProperRole -or -not $hasTabindex)) {
             $fixes.accessibilityIssues += $file.Name
             Write-Host "  🔵 Accessibility review needed: clickable div missing proper ARIA" -ForegroundColor Blue
         }
-        
-        # 4. Check for generic string props - MEDIUM PRIORITY  
+
+        # 4. Check for generic string props - MEDIUM PRIORITY
         $stringPropMatches = [regex]::Matches($content, 'export let \w+: string')
         if ($stringPropMatches.Count -gt 0) {
             $matchStrings = $stringPropMatches | ForEach-Object { $_.Value }
@@ -91,7 +91,7 @@ foreach ($file in $svelteFiles) {
             }
             Write-Host "  🟡 Consider union types for: $($matchStrings -join ', ')" -ForegroundColor Yellow
         }
-        
+
         # Write file back if changes were made
         if ($content -ne $originalContent) {
             Set-Content -Path $file.FullName -Value $content -NoNewline
@@ -99,10 +99,10 @@ foreach ($file in $svelteFiles) {
         } elseif ($issuesInFile -eq 0 -and $stringPropMatches.Count -eq 0 -and $fixes.accessibilityIssues -notcontains $file.Name) {
             Write-Host "  ✓ No issues found: $($file.Name)" -ForegroundColor Gray
         }
-        
+
         $fixes.filesProcessed++
         $fixes.totalIssues += $issuesInFile
-        
+
     } catch {
         Write-Host "  ❌ Error processing $($file.Name): $($_.Exception.Message)" -ForegroundColor Red
     }
@@ -148,12 +148,12 @@ if ($fixes.propTypeIssues.Count -gt 0) {
 if ($fixes.accessibilityIssues.Count -gt 0) {
     Write-Host "`n🔵 ACCESSIBILITY REVIEW NEEDED:" -ForegroundColor Blue
     foreach ($file in $fixes.accessibilityIssues) {
-        Write-Host "   📄 $file: Add role=`"button`", tabindex={0}, and keyboard handlers" -ForegroundColor White
+        Write-Host "   📄 $file`: Add role=`"button`", tabindex={0}, and keyboard handlers" -ForegroundColor White
     }
 }
 
 # Success metrics
-$successRate = if ($fixes.filesProcessed -gt 0) { 
+$successRate = if ($fixes.filesProcessed -gt 0) {
     [math]::Round(($fixes.filesProcessed - $fixes.accessibilityIssues.Count) / $fixes.filesProcessed * 100, 1)
 } else { 0 }
 

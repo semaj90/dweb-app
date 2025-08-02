@@ -2,10 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "🔧 Fix Critical Svelte Errors",
+      "label": "Start Legal AI System",
       "type": "shell",
-      "command": "powershell",
-      "args": ["-ExecutionPolicy", "Bypass", "-File", "fix-critical-errors.ps1"],
+      "command": "${workspaceFolder}/START-LEGAL-AI-WINDOWS.bat",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -14,120 +13,138 @@
         "echo": true,
         "reveal": "always",
         "focus": false,
-        "panel": "shared"
+        "panel": "new"
       },
       "problemMatcher": []
     },
     {
-      "label": "📚 Setup Documentation System",
-      "type": "shell", 
-      "command": "powershell",
-      "args": ["-ExecutionPolicy", "Bypass", "-File", "setup-docs-system.ps1"],
+      "label": "Start MCP Servers",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Starting MCP servers..."],
       "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "MCP: Context7 Server",
+        "MCP: Memory Server", 
+        "MCP: Postgres Server"
+      ]
     },
     {
-      "label": "🚀 Run Documentation Integration",
+      "label": "MCP: Context7 Server",
       "type": "shell",
-      "command": "powershell", 
-      "args": ["-ExecutionPolicy", "Bypass", "-File", "integrate-docs.ps1"],
-      "group": "build",
-      "dependsOn": "📚 Setup Documentation System"
-    },
-    {
-      "label": "🔍 TypeScript Check",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "check"],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-servers/context7-server.js"],
+      "options": {
+        "env": {
+          "STACK_CONFIG": "${workspaceFolder}/context7-docs/context7-mcp-config.json",
+          "DOC_SOURCES": "${workspaceFolder}/context7-docs",
+          "ENABLE_VLLM": "false",
+          "SERVER_PORT": "4000"
+        }
       },
-      "problemMatcher": ["$tsc"]
-    },
-    {
-      "label": "🎯 Search Accessibility Issues",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-Command",
-        "Get-ChildItem -Path . -Filter '*.svelte' | Select-String -Pattern '<div[^>]*on:click[^>]*>' | Where-Object { $_.Line -notmatch 'role=\"button\"' }"
-      ],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "🔎 Find TabIndex Issues",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-Command",
-        "Get-ChildItem -Path . -Filter '*.svelte' | Select-String -Pattern 'tabindex=\"[^\"]*\"'"
-      ],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "📋 Generate Error Report",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-Command",
-        "Write-Host '🔍 Scanning for common Svelte issues...' -ForegroundColor Cyan; Get-ChildItem -Path . -Filter '*.svelte' | ForEach-Object { Write-Host \"Checking: $($_.Name)\" -ForegroundColor Yellow; Get-Content $_.FullName | Select-String -Pattern 'tabindex=\"|disabled=\"true\"|readonly=\"false\"|export let \\w+: string' | ForEach-Object { Write-Host \"  Found: $($_.Line.Trim())\" -ForegroundColor Red } }"
-      ],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "🧹 Clean & Rebuild",
-      "type": "shell",
-      "command": "npm",
-      "args": ["run", "clean"],
       "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Context7 server starting.*$",
+          "endsPattern": "^.*Context7 server ready.*$"
+        }
       }
     },
     {
-      "label": "🏃 Start Development Server",
+      "label": "MCP: Memory Server",
+      "type": "shell",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "group": "build",
+      "isBackground": true
+    },
+    {
+      "label": "MCP: Postgres Server",
+      "type": "shell",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "options": {
+        "env": {
+          "POSTGRES_CONNECTION_STRING": "postgresql://postgres:postgres@localhost:5432/prosecutor_db"
+        }
+      },
+      "group": "build",
+      "isBackground": true
+    },
+    {
+      "label": "Start SvelteKit Dev",
       "type": "shell",
       "command": "npm",
       "args": ["run", "dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
       "group": "build",
       "isBackground": true,
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "dedicated"
-      },
-      "problemMatcher": []
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*VITE.*$",
+          "endsPattern": "^.*Local:.*$"
+        }
+      }
+    },
+    {
+      "label": "Health Check Services",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Checking service health..."],
+      "group": "test",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Check PostgreSQL",
+        "Check Ollama",
+        "Check Redis",
+        "Check Qdrant"
+      ]
+    },
+    {
+      "label": "Check PostgreSQL",
+      "type": "shell",
+      "command": "docker",
+      "args": ["exec", "legal_ai_postgres", "pg_isready", "-U", "postgres"]
+    },
+    {
+      "label": "Check Ollama", 
+      "type": "shell",
+      "command": "curl",
+      "args": ["-f", "http://localhost:11434/api/version"]
+    },
+    {
+      "label": "Check Redis",
+      "type": "shell", 
+      "command": "docker",
+      "args": ["exec", "legal_ai_redis", "redis-cli", "ping"]
+    },
+    {
+      "label": "Check Qdrant",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-f", "http://localhost:6333/collections"]
     }
   ]
 }

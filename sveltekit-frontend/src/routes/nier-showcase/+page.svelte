@@ -5,8 +5,8 @@
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
   import { Button } from 'bits-ui'
 
-  let isDarkMode = $state(false)
-  let showAIAssistant = $state(false)
+  let isDarkMode = $state(false);
+  let showAIAssistant = $state(false);
 
   // Sample user data
   const user = {

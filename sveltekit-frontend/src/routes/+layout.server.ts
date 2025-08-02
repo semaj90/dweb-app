@@ -3,7 +3,7 @@ import { superValidate } from "sveltekit-superforms";
 import { zod } from "sveltekit-superforms/adapters";
 
 // Expose session and user to all layouts/pages (SSR)
-export const load = async ({ locals, url }) => {
+export const load = async ({ locals, url, request }) => {
   const loginForm = await superValidate(zod(loginSchema));
   const registerForm = await superValidate(zod(registerSchema));
 
@@ -16,20 +16,20 @@ export const load = async ({ locals, url }) => {
     hydrationContext: {
       timestamp: new Date().toISOString(),
       route: url.pathname,
-      userAgent: locals.userAgent || null,
+      userAgent: request?.headers.get("user-agent") || null,
       // Golden ratio layout settings for consistent SSR/client rendering
       goldenRatio: {
         phi: 1.618,
         containerWidth: 1200,
         mainContentRatio: 0.618,
-        sidebarRatio: 0.382
+        sidebarRatio: 0.382,
       },
       // AI system status for client hydration
       aiSystemStatus: {
         localLLMEnabled: true,
         ragEnabled: true,
         vectorSearchEnabled: true,
-        streamingEnabled: true
+        streamingEnabled: true,
       },
       // Theme and UI preferences
       uiPreferences: {
@@ -38,10 +38,10 @@ export const load = async ({ locals, url }) => {
         accessibility: {
           highContrast: false,
           reducedMotion: false,
-          screenReader: false
-        }
-      }
-    }
+          screenReader: false,
+        },
+      },
+    },
   };
 
   return contextData;

@@ -1,149 +1,150 @@
--- Initial schema setup for Legal AI Assistant
--- This creates vector-enabled tables for embeddings
+-- Legal AI Database Schema - Ultra Low Memory PostgreSQL Setup
+-- Windows 10 optimized with minimal resource usage
 
--- Ensure vector extension is loaded
+-- Enable required extensions
 CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS btree_gin;
+CREATE EXTENSION IF NOT EXISTS hstore;
 
--- Create vector search configuration
-CREATE TABLE IF NOT EXISTS vector_search_config (
-  id SERIAL PRIMARY KEY,
-  model_name VARCHAR(100) NOT NULL,
-  embedding_dimension INTEGER NOT NULL,
-  chunk_size INTEGER DEFAULT 1000,
-  chunk_overlap INTEGER DEFAULT 200,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Users table for authentication
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    role VARCHAR(50) DEFAULT 'user',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Insert default configurations for different embedding models
-INSERT INTO vector_search_config (model_name, embedding_dimension) VALUES
-  ('nomic-embed-text', 768),
-  ('mxbai-embed-large', 1024),
-  ('all-minilm', 384),
-  ('bge-base', 768)
-ON CONFLICT DO NOTHING;
-
--- Create document embeddings table
-CREATE TABLE IF NOT EXISTS document_embeddings (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  document_id VARCHAR(255) NOT NULL,
-  document_type VARCHAR(50) NOT NULL, -- 'case', 'evidence', 'note', 'template'
-  chunk_index INTEGER NOT NULL,
-  chunk_text TEXT NOT NULL,
-  embedding vector(768), -- Default to 768 dimensions, can be altered
-  metadata JSONB DEFAULT '{}',
-  model_used VARCHAR(100),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT check_embedding_dim CHECK (
-    embedding IS NULL OR array_length(embedding::real[], 1) = 768
-  )
+-- Cases table for legal case management
+CREATE TABLE IF NOT EXISTS cases (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(500) NOT NULL,
+    description TEXT,
+    case_type VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'open',
+    priority VARCHAR(20) DEFAULT 'medium',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create indexes for document embeddings
-CREATE INDEX IF NOT EXISTS idx_document_embeddings_document 
-  ON document_embeddings(document_id, document_type);
-CREATE INDEX IF NOT EXISTS idx_document_embeddings_created 
-  ON document_embeddings(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_document_embeddings_metadata 
-  ON document_embeddings USING gin(metadata);
-
--- Create semantic search history
-CREATE TABLE IF NOT EXISTS search_history (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id VARCHAR(255) NOT NULL,
-  query_text TEXT NOT NULL,
-  query_embedding vector(768),
-  results_count INTEGER,
-  results JSONB DEFAULT '[]',
-  search_type VARCHAR(50) DEFAULT 'semantic',
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- Evidence table for case evidence
+CREATE TABLE IF NOT EXISTS evidence (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    case_id UUID REFERENCES cases(id) ON DELETE CASCADE,
+    title VARCHAR(500) NOT NULL,
+    content TEXT,
+    evidence_type VARCHAR(100),
+    file_path VARCHAR(1000),
+    metadata JSONB DEFAULT '{}',
+    embedding vector(384), -- 384-dimensional embeddings for efficient storage
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Function to perform semantic search
-CREATE OR REPLACE FUNCTION semantic_search(
-  query_embedding vector,
-  search_type text DEFAULT 'all',
-  limit_results integer DEFAULT 10,
-  similarity_threshold float DEFAULT 0.7
-)
-RETURNS TABLE (
-  id UUID,
-  document_id VARCHAR(255),
-  document_type VARCHAR(50),
-  chunk_text TEXT,
-  similarity float,
-  metadata JSONB
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT 
-    de.id,
-    de.document_id,
-    de.document_type,
-    de.chunk_text,
-    1 - (de.embedding <=> query_embedding) as similarity,
-    de.metadata
-  FROM document_embeddings de
-  WHERE 
-    (search_type = 'all' OR de.document_type = search_type)
-    AND de.embedding IS NOT NULL
-    AND 1 - (de.embedding <=> query_embedding) >= similarity_threshold
-  ORDER BY de.embedding <=> query_embedding
-  LIMIT limit_results;
-END;
-$$ LANGUAGE plpgsql;
+-- Reports table for generated reports
+CREATE TABLE IF NOT EXISTS reports (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    case_id UUID REFERENCES cases(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(500) NOT NULL,
+    content TEXT,
+    report_type VARCHAR(100),
+    ai_analysis JSONB DEFAULT '{}',
+    status VARCHAR(50) DEFAULT 'draft',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
--- Function to add document embedding
-CREATE OR REPLACE FUNCTION add_document_embedding(
-  p_document_id VARCHAR(255),
-  p_document_type VARCHAR(50),
-  p_chunk_index INTEGER,
-  p_chunk_text TEXT,
-  p_embedding vector,
-  p_metadata JSONB DEFAULT '{}',
-  p_model_used VARCHAR(100) DEFAULT 'nomic-embed-text'
-)
-RETURNS UUID AS $$
-DECLARE
-  v_id UUID;
-BEGIN
-  INSERT INTO document_embeddings (
-    document_id, document_type, chunk_index, 
-    chunk_text, embedding, metadata, model_used
-  ) VALUES (
-    p_document_id, p_document_type, p_chunk_index,
-    p_chunk_text, p_embedding, p_metadata, p_model_used
-  ) RETURNING id INTO v_id;
-  
-  RETURN v_id;
-END;
-$$ LANGUAGE plpgsql;
+-- AI Sessions table for tracking AI interactions
+CREATE TABLE IF NOT EXISTS ai_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    case_id UUID REFERENCES cases(id) ON DELETE SET NULL,
+    session_type VARCHAR(100),
+    conversation JSONB DEFAULT '[]',
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
--- Create materialized view for frequently accessed embeddings
-CREATE MATERIALIZED VIEW IF NOT EXISTS recent_embeddings AS
-SELECT 
-  id, document_id, document_type, chunk_text, 
-  embedding, metadata, created_at
-FROM document_embeddings
-WHERE created_at > CURRENT_TIMESTAMP - INTERVAL '7 days'
-ORDER BY created_at DESC;
+-- Create indexes for performance (minimal for low memory)
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_cases_user_id ON cases(user_id);
+CREATE INDEX IF NOT EXISTS idx_cases_status ON cases(status);
+CREATE INDEX IF NOT EXISTS idx_evidence_case_id ON evidence(case_id);
+CREATE INDEX IF NOT EXISTS idx_evidence_type ON evidence(evidence_type);
+CREATE INDEX IF NOT EXISTS idx_reports_case_id ON reports(case_id);
+CREATE INDEX IF NOT EXISTS idx_reports_user_id ON reports(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_sessions_user_id ON ai_sessions(user_id);
 
--- Create index on materialized view
-CREATE INDEX IF NOT EXISTS idx_recent_embeddings_vector 
-  ON recent_embeddings USING ivfflat (embedding vector_cosine_ops);
+-- Vector similarity search index (HNSW for efficiency)
+CREATE INDEX IF NOT EXISTS idx_evidence_embedding ON evidence USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
 
--- Auto-refresh materialized view
-CREATE OR REPLACE FUNCTION refresh_recent_embeddings()
-RETURNS void AS $$
-BEGIN
-  REFRESH MATERIALIZED VIEW CONCURRENTLY recent_embeddings;
-END;
-$$ LANGUAGE plpgsql;
+-- Insert default admin user
+INSERT INTO users (email, password_hash, first_name, last_name, role)
+VALUES (
+    'admin@prosecutor.local',
+    '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- password: password
+    'System',
+    'Administrator',
+    'admin'
+) ON CONFLICT (email) DO NOTHING;
 
--- Notification
+-- Create a sample case for testing
 DO $$
+DECLARE
+    admin_id UUID;
+    case_id UUID;
 BEGIN
-  RAISE NOTICE 'Vector search schema initialized successfully';
-END
-$$;
+    SELECT id INTO admin_id FROM users WHERE email = 'admin@prosecutor.local';
+    
+    INSERT INTO cases (user_id, title, description, case_type)
+    VALUES (
+        admin_id,
+        'Sample Case - System Test',
+        'This is a sample case for testing the Legal AI system functionality.',
+        'criminal'
+    ) 
+    RETURNING id INTO case_id;
+    
+    -- Insert sample evidence
+    INSERT INTO evidence (case_id, title, content, evidence_type)
+    VALUES (
+        case_id,
+        'Sample Evidence Document',
+        'This is sample evidence content for testing the system.',
+        'document'
+    );
+END $$;
+
+-- Update function for updated_at timestamps
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create triggers for updated_at
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_cases_updated_at BEFORE UPDATE ON cases
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_evidence_updated_at BEFORE UPDATE ON evidence
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_reports_updated_at BEFORE UPDATE ON reports
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_ai_sessions_updated_at BEFORE UPDATE ON ai_sessions
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

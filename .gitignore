@@ -6,6 +6,14 @@
 .env.*.local
 *.env
 
+# Windows reserved device names (problematic files)
+nul
+con
+aux
+prn
+com[1-9]
+lpt[1-9]
+
 # Dependencies
 node_modules/
 .pnp

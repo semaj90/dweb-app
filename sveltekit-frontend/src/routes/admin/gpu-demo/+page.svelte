@@ -22,13 +22,13 @@
   // Canvas and WebGL context
   let canvas: HTMLCanvasElement;
   let gl: WebGL2RenderingContext | null = null;
-  
+
   // Demo state
   let isInitialized = $state(false);
   let activeVisualization = $state<string>('attentionHeatmap');
   let isRendering = $state(false);
   let animationFrame: number = 0;
-  
+
   // Performance metrics
   let gpuMetrics = $state({
     totalContexts: 0,
@@ -61,11 +61,11 @@
     if (animationFrame) {
       cancelAnimationFrame(animationFrame);
     }
-    
+
     if (gpuManager) {
       gpuManager.destroy();
     }
-    
+
     if (shaderCache) {
       shaderCache.cleanup();
     }
@@ -78,7 +78,7 @@
       // Check GPU capabilities
       gpuCapabilities = await checkGPUCapabilities();
       console.log('GPU Capabilities:', gpuCapabilities);
-      
+
       if (!gpuCapabilities.webgl && !gpuCapabilities.webgl2) {
         throw new Error('WebGL not supported');
       }
@@ -86,7 +86,7 @@
       // Initialize WebGL context
       if (canvas) {
         gl = canvas.getContext('webgl2') || canvas.getContext('webgl') as WebGL2RenderingContext;
-        
+
         if (!gl) {
           throw new Error('Failed to get WebGL context');
         }
@@ -95,13 +95,13 @@
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.clearColor(0.05, 0.05, 0.1, 1.0);
-        
+
         console.log('✅ WebGL context initialized');
       }
 
       // Initialize GPU cluster manager
       gpuManager = createGPUClusterManager();
-      
+
       // Initialize shader cache
       if (gl) {
         shaderCache = createWebGLShaderCache(gl);
@@ -149,12 +149,12 @@
     // Generate attention weight data (simulating transformer attention)
     const attentionSize = 64 * 64; // 64x64 attention matrix
     attentionData = new Float32Array(attentionSize * 3); // x, y, attention
-    
+
     for (let i = 0; i < attentionSize; i++) {
       const x = (i % 64) / 63 * 2 - 1; // -1 to 1
       const y = Math.floor(i / 64) / 63 * 2 - 1;
       const attention = Math.random() * Math.exp(-((x*x + y*y) * 2)); // Gaussian-like
-      
+
       attentionData[i * 3] = x;
       attentionData[i * 3 + 1] = y;
       attentionData[i * 3 + 2] = attention;
@@ -163,14 +163,14 @@
     // Generate document network data (simulating legal document relationships)
     const docCount = 100;
     documentData = new Float32Array(docCount * 7); // x, y, z, r, g, b, pagerank
-    
+
     for (let i = 0; i < docCount; i++) {
       const angle = (i / docCount) * Math.PI * 2;
       const radius = 0.5 + Math.random() * 0.3;
       const pageRank = Math.random();
-      
+
       documentData[i * 7] = Math.cos(angle) * radius;     // x
-      documentData[i * 7 + 1] = Math.sin(angle) * radius; // y  
+      documentData[i * 7 + 1] = Math.sin(angle) * radius; // y
       documentData[i * 7 + 2] = (Math.random() - 0.5) * 0.2; // z
       documentData[i * 7 + 3] = 0.3 + pageRank * 0.7;    // r
       documentData[i * 7 + 4] = 0.2 + pageRank * 0.3;    // g
@@ -181,11 +181,11 @@
     // Generate timeline data (simulating evidence timeline)
     const timelineCount = 50;
     timelineData = new Float32Array(timelineCount * 6); // x, y, timestamp, importance, r, g, b
-    
+
     for (let i = 0; i < timelineCount; i++) {
       const t = i / (timelineCount - 1);
       const importance = Math.random();
-      
+
       timelineData[i * 6] = t * 2 - 1;                    // x (time axis)
       timelineData[i * 6 + 1] = (Math.random() - 0.5) * 0.5; // y (random offset)
       timelineData[i * 6 + 2] = t;                        // timestamp
@@ -200,20 +200,20 @@
 
   async function startVisualization(type: string) {
     if (!isInitialized || !gl || !shaderCache) return;
-    
+
     activeVisualization = type;
     isRendering = true;
-    
+
     try {
       // Get appropriate shader program
       const shaderId = `legal-ai-${type}`;
       const shaderProgram = await shaderCache.getShaderProgram(shaderId);
-      
+
       console.log(`🎨 Starting ${type} visualization`);
-      
+
       // Start render loop
       renderLoop();
-      
+
     } catch (error) {
       console.error(`Failed to start ${type} visualization:`, error);
     }
@@ -221,12 +221,12 @@
 
   function renderLoop() {
     if (!isRendering || !gl || !shaderCache) return;
-    
+
     // Clear canvas
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
+
     const currentTime = Date.now() * 0.001; // Convert to seconds
-    
+
     try {
       switch (activeVisualization) {
         case 'attentionHeatmap':
@@ -245,7 +245,7 @@
     } catch (error) {
       console.error('Render error:', error);
     }
-    
+
     // Continue render loop
     if (isRendering) {
       animationFrame = requestAnimationFrame(renderLoop);
@@ -254,16 +254,16 @@
 
   async function renderAttentionHeatmap(time: number) {
     if (!gl || !shaderCache) return;
-    
+
     try {
       const program = await shaderCache.getShaderProgram('legal-ai-attentionHeatmap');
-      
+
       // Create vertex buffer if needed
       const positionBuffer = shaderCache.createVertexBuffer(attentionData);
-      
+
       // Set up rendering state
       gl.useProgram(program.program);
-      
+
       // Set uniforms
       const uniforms = {
         u_matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], // Identity matrix
@@ -273,21 +273,21 @@
         u_highColor: [0.8, 0.2, 0.2],
         u_intensity: 1.0
       };
-      
+
       shaderCache.setUniforms(program, uniforms);
-      
+
       // Set up vertex attributes
       const attributes = {
         a_position: { buffer: positionBuffer, size: 2 },
         a_texCoord: { buffer: positionBuffer, size: 2 },
         a_attention: { buffer: positionBuffer, size: 1, offset: 2 * 4 }
       };
-      
+
       shaderCache.setupVertexAttributes(program, attributes);
-      
+
       // Render
       gl.drawArrays(gl.POINTS, 0, attentionData.length / 3);
-      
+
     } catch (error) {
       console.error('Attention heatmap render error:', error);
     }
@@ -295,33 +295,33 @@
 
   async function renderDocumentNetwork(time: number) {
     if (!gl || !shaderCache) return;
-    
+
     try {
       const program = await shaderCache.getShaderProgram('legal-ai-documentNetwork');
-      
+
       const positionBuffer = shaderCache.createVertexBuffer(documentData);
-      
+
       gl.useProgram(program.program);
-      
+
       const uniforms = {
         u_matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         u_time: time,
         u_nodeSize: 10.0,
         u_alpha: 0.8
       };
-      
+
       shaderCache.setUniforms(program, uniforms);
-      
+
       const attributes = {
         a_position: { buffer: positionBuffer, size: 3 },
         a_color: { buffer: positionBuffer, size: 3, offset: 3 * 4 },
         a_pageRank: { buffer: positionBuffer, size: 1, offset: 6 * 4 }
       };
-      
+
       shaderCache.setupVertexAttributes(program, attributes);
-      
+
       gl.drawArrays(gl.POINTS, 0, documentData.length / 7);
-      
+
     } catch (error) {
       console.error('Document network render error:', error);
     }
@@ -329,34 +329,34 @@
 
   async function renderEvidenceTimeline(time: number) {
     if (!gl || !shaderCache) return;
-    
+
     try {
       const program = await shaderCache.getShaderProgram('legal-ai-evidenceTimeline');
-      
+
       const positionBuffer = shaderCache.createVertexBuffer(timelineData);
-      
+
       gl.useProgram(program.program);
-      
+
       const uniforms = {
         u_matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         u_currentTime: (time * 0.1) % 1.0,
         u_timeRange: 1.0,
         u_alpha: 0.8
       };
-      
+
       shaderCache.setUniforms(program, uniforms);
-      
+
       const attributes = {
         a_position: { buffer: positionBuffer, size: 2 },
         a_timestamp: { buffer: positionBuffer, size: 1, offset: 2 * 4 },
         a_importance: { buffer: positionBuffer, size: 1, offset: 3 * 4 },
         a_evidenceColor: { buffer: positionBuffer, size: 3, offset: 4 * 4 }
       };
-      
+
       shaderCache.setupVertexAttributes(program, attributes);
-      
+
       gl.drawArrays(gl.POINTS, 0, timelineData.length / 7);
-      
+
     } catch (error) {
       console.error('Evidence timeline render error:', error);
     }
@@ -365,11 +365,11 @@
   async function renderTextFlow(time: number) {
     // Simplified text flow rendering
     if (!gl || !shaderCache) return;
-    
+
     try {
       const program = await shaderCache.getShaderProgram('legal-ai-textFlow');
       // Implementation would be similar to other renderers
-      
+
     } catch (error) {
       console.error('Text flow render error:', error);
     }
@@ -384,7 +384,7 @@
 
   async function executeGPUWorkload() {
     if (!gpuManager) return;
-    
+
     try {
       const workload = {
         id: `demo_${Date.now()}`,
@@ -397,10 +397,10 @@
           console.log('GPU workload result:', result);
         }
       };
-      
+
       const result = await gpuManager.executeWorkload(workload);
       console.log('🔥 GPU workload completed:', result);
-      
+
     } catch (error) {
       console.error('GPU workload failed:', error);
     }
@@ -440,11 +440,13 @@
         <Gpu class="h-5 w-5" />
         GPU Capabilities
       </h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-lg" class:bg-green-100={gpuCapabilities.webgl} class:bg-red-100={!gpuCapabilities.webgl}>
-            <Activity class="h-4 w-4" class:text-green-600={gpuCapabilities.webgl} class:text-red-600={!gpuCapabilities.webgl} />
+            <div class="h-4 w-4" class:text-green-600={gpuCapabilities.webgl} class:text-red-600={!gpuCapabilities.webgl}>
+              <Activity class="h-4 w-4" />
+            </div>
           </div>
           <div>
             <p class="font-medium">WebGL</p>
@@ -454,7 +456,9 @@
 
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-lg" class:bg-green-100={gpuCapabilities.webgl2} class:bg-red-100={!gpuCapabilities.webgl2}>
-            <Zap class="h-4 w-4" class:text-green-600={gpuCapabilities.webgl2} class:text-red-600={!gpuCapabilities.webgl2} />
+            <div class="h-4 w-4" class:text-green-600={gpuCapabilities.webgl2} class:text-red-600={!gpuCapabilities.webgl2}>
+              <Zap class="h-4 w-4" />
+            </div>
           </div>
           <div>
             <p class="font-medium">WebGL 2</p>
@@ -464,7 +468,9 @@
 
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-lg" class:bg-green-100={gpuCapabilities.webgpu} class:bg-red-100={!gpuCapabilities.webgpu}>
-            <Cpu class="h-4 w-4" class:text-green-600={gpuCapabilities.webgpu} class:text-red-600={!gpuCapabilities.webgpu} />
+            <div class="h-4 w-4" class:text-green-600={gpuCapabilities.webgpu} class:text-red-600={!gpuCapabilities.webgpu}>
+              <Cpu class="h-4 w-4" />
+            </div>
           </div>
           <div>
             <p class="font-medium">WebGPU</p>
@@ -552,18 +558,18 @@
         <Eye class="h-5 w-5" />
         Legal AI Visualizations
       </h2>
-      
+
       <div class="space-y-4">
         <!-- Canvas -->
         <div class="relative">
-          <canvas 
+          <canvas
             bind:this={canvas}
-            width="500" 
-            height="400" 
+            width="500"
+            height="400"
             class="w-full border border-slate-600 rounded bg-black"
             style="max-width: 100%; height: auto;"
           ></canvas>
-          
+
           {#if !isInitialized}
             <div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded">
               <div class="text-white text-center">
@@ -576,7 +582,7 @@
 
         <!-- Visualization Controls -->
         <div class="grid grid-cols-2 gap-2">
-          <Button 
+          <Button
             onclick={() => startVisualization('attentionHeatmap')}
             disabled={!isInitialized}
             variant={activeVisualization === 'attentionHeatmap' ? 'default' : 'outline'}
@@ -584,8 +590,8 @@
           >
             Attention Heatmap
           </Button>
-          
-          <Button 
+
+          <Button
             onclick={() => startVisualization('documentNetwork')}
             disabled={!isInitialized}
             variant={activeVisualization === 'documentNetwork' ? 'default' : 'outline'}
@@ -593,8 +599,8 @@
           >
             Document Network
           </Button>
-          
-          <Button 
+
+          <Button
             onclick={() => startVisualization('evidenceTimeline')}
             disabled={!isInitialized}
             variant={activeVisualization === 'evidenceTimeline' ? 'default' : 'outline'}
@@ -602,8 +608,8 @@
           >
             Evidence Timeline
           </Button>
-          
-          <Button 
+
+          <Button
             onclick={() => startVisualization('textFlow')}
             disabled={!isInitialized}
             variant={activeVisualization === 'textFlow' ? 'default' : 'outline'}
@@ -620,8 +626,8 @@
               Stop Rendering
             </Button>
           {/if}
-          
-          <Button 
+
+          <Button
             onclick={executeGPUWorkload}
             disabled={!isInitialized}
             variant="outline"
@@ -641,14 +647,14 @@
           <Network class="h-5 w-5" />
           GPU Cluster Metrics
         </h3>
-        
+
         <div class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div class="bg-slate-700/50 p-3 rounded">
               <p class="text-xs text-gray-400">Context Switches</p>
               <p class="text-lg font-bold">{gpuMetrics.contextSwitches}</p>
             </div>
-            
+
             <div class="bg-slate-700/50 p-3 rounded">
               <p class="text-xs text-gray-400">Compilation Time</p>
               <p class="text-lg font-bold">{gpuMetrics.compilationTime}ms</p>
@@ -661,7 +667,7 @@
               <span>{formatPercentage(gpuMetrics.cacheHitRate)}</span>
             </div>
             <div class="w-full bg-slate-700 rounded-full h-2">
-              <div 
+              <div
                 class="bg-green-500 h-2 rounded-full transition-all duration-500"
                 style="width: {gpuMetrics.cacheHitRate}%"
               ></div>
@@ -676,28 +682,28 @@
           <BarChart3 class="h-5 w-5" />
           Shader Cache Stats
         </h3>
-        
+
         <div class="space-y-3">
           <div class="flex justify-between">
             <span class="text-gray-400">Total Shaders:</span>
             <span class="font-bold">{shaderMetrics.totalShaders}</span>
           </div>
-          
+
           <div class="flex justify-between">
             <span class="text-gray-400">Cache Hits:</span>
             <span class="font-bold text-green-400">{shaderMetrics.cacheHits}</span>
           </div>
-          
+
           <div class="flex justify-between">
             <span class="text-gray-400">Cache Misses:</span>
             <span class="font-bold text-red-400">{shaderMetrics.cacheMisses}</span>
           </div>
-          
+
           <div class="flex justify-between">
             <span class="text-gray-400">Avg Compilation:</span>
             <span class="font-bold">{shaderMetrics.averageCompilationTime.toFixed(1)}ms</span>
           </div>
-          
+
           <div class="flex justify-between">
             <span class="text-gray-400">Memory Usage:</span>
             <span class="font-bold">{formatBytes(shaderMetrics.memoryUsage)}</span>
@@ -711,7 +717,7 @@
           <Clock class="h-5 w-5" />
           Available Shaders
         </h3>
-        
+
         <div class="space-y-2">
           {#each Object.keys(LEGAL_AI_SHADERS) as shaderName}
             <div class="flex justify-between items-center py-2 px-3 bg-slate-700/50 rounded">

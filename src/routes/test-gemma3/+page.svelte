@@ -69,19 +69,19 @@
       const modelResponse = await fetch('http://localhost:11434/api/tags');
       if (modelResponse.ok) {
         const modelData = await modelResponse.json();
-        const hasGemma3 = modelData.models?.some((model: any) =>
-          model.name.includes('gemma3-legal')
+        const hasLegalAI = modelData.models?.some((model: any) =>
+          model.name.includes('legal-ai')
         );
 
-        if (hasGemma3) {
+        if (hasLegalAI) {
           systemChecks.model = {
             status: 'connected',
-            message: 'Gemma3-legal model loaded'
+            message: 'Legal-AI model loaded (Gemma3 based)'
           };
         } else {
           systemChecks.model = {
             status: 'error',
-            message: 'Gemma3-legal model not found'
+            message: 'Legal-AI model not found - check Ollama setup'
           };
         }
       }

@@ -48,7 +48,7 @@ c:/Users/james/Desktop/deeds-web/deeds-web-app/
 │       └── ...
 ├── setup-gemma3-legal.ps1                # Ollama setup script
 ├── Modelfile-Ultra-Light                 # Ollama model config
-├── direct-gemma3-vllm-server.py          # vLLM server
+├── direct-gemma3llama.cpp server
 ├── test-gemma3-direct.py                 # Model testing
 └── ...
 ```
