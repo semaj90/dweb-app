@@ -72,7 +72,7 @@ Self-prompting is the process of automatically generating the next best action o
 
 - Semantic search (Context7 MCP)
 - Memory graph (knowledge graph, user/system history)
-- Multi-agent orchestration (AutoGen, CrewAI, Copilot, Claude, VLLM, etc)
+- Multi-agent orchestration (AutoGen, CrewAI, Copilot, Claude, Ollama, etc)
 - Codebase and error analysis
 
 ### How to Use Self-Prompting in This Project
@@ -194,7 +194,7 @@ You can automate advanced flows (evidence analysis, memory graph updates, multi-
 - Use `copilotOrchestrator` and `copilotSelfPrompt` (see `src/lib/utils/mcp-helpers.ts` and `copilot-self-prompt.ts`):
   - Compose prompts like: `"Analyze evidence upload errors and suggest fixes"`
   - Options: `{ useSemanticSearch: true, useMemory: true, useMultiAgent: true, synthesizeOutputs: true }`
-  - Sub-agents (AutoGen, CrewAI, Claude, VLLM) are orchestrated automatically.
+  - Sub-agents (AutoGen, CrewAI, Claude, Ollama) are orchestrated automatically.
 - Example:
   ```ts
   const result = await copilotSelfPrompt("Analyze new evidence for case 123", {
@@ -325,7 +325,7 @@ See `frontendshadunocss.md` for up-to-date best practices on integrating shadcn-
 - **Agent Orchestration:**
 
   - Use `copilotOrchestrator` in `src/lib/utils/mcp-helpers.ts` for advanced workflows:
-    - Dynamically select agents (autogen, crewai, copilot, claude, vllm)
+    - Dynamically select agents (autogen, crewai, copilot, claude, ollama)
     - Compose results from semantic/codebase/memory/agent analysis
     - Example:
       ```typescript

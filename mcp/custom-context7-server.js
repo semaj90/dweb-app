@@ -82,9 +82,9 @@ class CustomContext7Server {
         codeSnippets: 78,
         trustScore: 9,
       },
-      vllm: {
-        id: "/vllm-project/vllm",
-        name: "vLLM",
+      ollama: {
+        id: "/ollama-project/ollama",
+        name: "Ollama",
         description:
           "High-throughput and memory-efficient inference engine for LLMs",
         version: "0.6.0",

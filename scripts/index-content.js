@@ -8,8 +8,8 @@ async function main() {
   // Step 1: Configure the Tools
   const embeddings = new OpenAIEmbeddings({
     modelName: "nomic-embed-text",
-    openAIApiKey: "N/A", // Not needed for local vLLM
-    baseURL: "http://localhost:8000/v1", // Your local vLLM OpenAI-compatible endpoint
+    openAIApiKey: "N/A", // Not needed for local Ollama
+    baseURL: "http://localhost:11434/v1", // Your local Ollama OpenAI-compatible endpoint
   });
   const vectorStore = new PGVectorStore({
     pool,

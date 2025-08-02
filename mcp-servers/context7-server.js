@@ -235,7 +235,7 @@ ${stackConfig.length > 0 ? stackConfig.map(tech => `- ${tech}`).join('\n') : '- 
 - **pgvector**: Vector similarity search for AI features
 
 ### AI & ML
-- **VLLM**: Efficient LLM inference
+- **Ollama**: Efficient LLM inference
 - **Docker**: Containerization for AI services
 
 ## Best Practices
@@ -269,7 +269,7 @@ ${stackConfig.length > 0 ? stackConfig.map(tech => `- ${tech}`).join('\n') : '- 
 - Implement proper migrations
 
 ### 4. AI Features
-- Integrate with existing VLLM setup
+- Integrate with existing Ollama setup
 - Use pgvector for similarity search
 - Follow established AI service patterns
 
@@ -307,7 +307,7 @@ ${stackConfig.length > 0 ? stackConfig.map(tech => `- ${tech}`).join('\n') : '- 
    - Implement connection pooling
 
 2. **AI Performance**
-   - Optimize VLLM configuration
+   - Optimize Ollama configuration
    - Use efficient embedding strategies
    - Implement proper caching
 
@@ -331,7 +331,7 @@ ${stackConfig.length > 0 ? stackConfig.map(tech => `- ${tech}`).join('\n') : '- 
       'shadcn-svelte': 'Consistent UI component library. Excellent for professional legal interfaces.',
       'bits-ui': 'Headless UI primitives that complement shadcn-svelte well.',
       'melt-ui': 'Advanced UI primitives for complex interactions.',
-      vllm: 'Efficient LLM inference for legal AI capabilities.',
+      ollama: 'Efficient LLM inference for legal AI capabilities.',
       docker: 'Essential for consistent AI model deployment.',
       postgres: 'Robust database perfect for legal data requirements.'
     };
@@ -385,7 +385,7 @@ ${stackConfig.includes(component.toLowerCase()) ? '✅ Already integrated in you
 - Cache frequently accessed data
 
 ## AI Performance
-- Optimize VLLM model loading
+- Optimize Ollama model loading
 - Use efficient vector similarity search
 - Implement proper embedding strategies
 - Monitor AI response times`,

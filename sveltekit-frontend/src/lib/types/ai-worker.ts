@@ -6,7 +6,7 @@ export interface LLMModel {
   id: string;
   name: string;
   displayName: string;
-  provider: "ollama" | "vllm" | "autogen" | "crewai" | "langchain";
+  provider: "ollama" | "llamacpp" | "autogen" | "crewai" | "langchain";
   size: string;
   specialization: "general" | "legal" | "code" | "reasoning" | "embedding";
   status: "online" | "offline" | "loading" | "error";
@@ -92,7 +92,7 @@ export interface WorkerStatus {
 
 export interface AIProviderConfig {
   id: string;
-  type: "ollama" | "vllm" | "autogen" | "crewai";
+  type: "ollama" | "llamacpp" | "autogen" | "crewai";
   endpoint: string;
   timeout: number;
   retries: number;

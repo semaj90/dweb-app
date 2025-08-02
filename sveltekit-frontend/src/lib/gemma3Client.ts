@@ -1,6 +1,6 @@
 /**
  * Gemma3 API Client for SvelteKit
- * Provides integration with both vLLM and direct llama-cpp servers
+ * Provides integration with Ollama and llama.cpp servers
  */
 
 export interface ChatMessage {
@@ -69,7 +69,7 @@ export class Gemma3Client {
   private defaultModel: string;
 
   constructor(
-    baseUrl: string = "http://localhost:8001",
+    baseUrl: string = "http://localhost:11434",
     timeout: number = 60000,
     defaultModel: string = "gemma3-legal",
   ) {
@@ -336,8 +336,8 @@ export async function detectAvailableServer(): Promise<{
   backend: string;
 } | null> {
   const servers = [
-    { url: "http://localhost:8001", name: "vLLM Server" },
-    { url: "http://localhost:8000", name: "Direct Server" },
+    { url: "http://localhost:11434", name: "Ollama Server" },
+    { url: "http://localhost:8000", name: "llama.cpp Server" },
   ];
 
   for (const server of servers) {

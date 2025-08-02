@@ -16,7 +16,7 @@ declare const self: DedicatedWorkerGlobalScope;
 
 interface AIProviderConfig {
   id: string;
-  type: "ollama" | "vllm" | "autogen" | "crewai";
+  type: "ollama" | "llamacpp" | "autogen" | "crewai";
   endpoint: string;
   timeout: number;
   retries: number;
@@ -44,9 +44,9 @@ class AIServiceWorker {
       retries: 2,
     });
 
-    this.providers.set("vllm", {
-      id: "vllm",
-      type: "vllm",
+    this.providers.set("llamacpp", {
+      id: "llamacpp",
+      type: "llamacpp",
       endpoint: "http://localhost:8000",
       timeout: 15000,
       retries: 3,
