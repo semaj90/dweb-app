@@ -119,7 +119,7 @@
       {#each demoSections as section (section.id)}
         <button
           class={tabClasses(section.id)}
-          on:click={() => currentTab = section.id}
+          onclick={() => currentTab = section.id}
         >
           <div class="flex items-center gap-2">
             <svelte:component this={section.icon} class="w-4 h-4" />
@@ -284,15 +284,15 @@
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Button variant="yorha" legal on:click={() => dialogOpen = true}>
+          <Button variant="yorha" legal onclick={() => dialogOpen = true}>
             Case Management
           </Button>
           
-          <Button variant="primary" legal on:click={() => evidenceDialogOpen = true}>
+          <Button variant="primary" legal onclick={() => evidenceDialogOpen = true}>
             Evidence Upload
           </Button>
           
-          <Button variant="outline" legal on:click={runAIAnalysis} loading={aiAnalysisLoading}>
+          <Button variant="outline" legal onclick={runAIAnalysis} loading={aiAnalysisLoading}>
             {#if aiAnalysisLoading}
               Running AI Analysis...
             {:else}
@@ -356,7 +356,7 @@
             </div>
             
             <div class="bits-dialog-footer">
-              <Button variant="outline" on:click={() => dialogOpen = false}>
+              <Button variant="outline" onclick={() => dialogOpen = false}>
                 Cancel
               </Button>
               <Button variant="primary" legal>
@@ -411,10 +411,10 @@
             </div>
             
             <div class="bits-dialog-footer">
-              <Button variant="outline" on:click={() => evidenceDialogOpen = false}>
+              <Button variant="outline" onclick={() => evidenceDialogOpen = false}>
                 Cancel
               </Button>
-              <Button variant="primary" legal on:click={uploadEvidence} disabled={evidenceUploadProgress > 0}>
+              <Button variant="primary" legal onclick={uploadEvidence} disabled={evidenceUploadProgress > 0}>
                 Upload Evidence
               </Button>
             </div>

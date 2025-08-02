@@ -127,16 +127,16 @@ export const POST: RequestHandler = async ({ request }) => {
         console.error('❌ AI Boilerplate generation error:', err);
         
         if (err instanceof z.ZodError) {
-            throw error(400, {
+            return json({
                 message: 'Invalid request format',
                 errors: err.errors
-            });
+            }, { status: 400 });
         }
 
-        throw error(500, {
+        return json({
             message: 'AI Boilerplate service temporarily unavailable',
             details: err instanceof Error ? err.message : 'Unknown error'
-        });
+        }, { status: 500 });
     }
 };
 
@@ -160,7 +160,7 @@ async function getHighPerformingPhrases(
         WHERE spr.avg_prosecution_score >= $1
     `;
     
-    const params = [CONFIG.boilerplate.minProsecutionScore];
+    const params: any[] = [CONFIG.boilerplate.minProsecutionScore];
     let paramIndex = 2;
 
     // Filter by jurisdiction if specified
@@ -444,9 +444,9 @@ export const GET: RequestHandler = async () => {
         return json({
             templates,
             statistics: {
-                total_phrases: parseInt(stats.rows[0]?.total_phrases || '0'),
-                average_score: parseFloat(stats.rows[0]?.avg_score || '0'),
-                high_performing_count: parseInt(stats.rows[0]?.high_performing_phrases || '0')
+                total_phrases: parseInt(String(stats.rows[0]?.total_phrases || '0')),
+                average_score: parseFloat(String(stats.rows[0]?.avg_score || '0')),
+                high_performing_count: parseInt(String(stats.rows[0]?.high_performing_phrases || '0'))
             }
         });
 

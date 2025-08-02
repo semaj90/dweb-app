@@ -676,6 +676,158 @@ export class SelfOrganizingMapRAG {
 
     return vizData;
   }
+
+  /**
+   * Train SOM incrementally with new document
+   */
+  async trainIncremental(embedding: number[], document: any): Promise<void> {
+    console.log(`🧠 Training SOM incrementally with new document...`);
+
+    const docEmbedding: DocumentEmbedding = {
+      id: document.id,
+      content: document.content,
+      embedding: embedding,
+      metadata: {
+        case_id: document.metadata?.case_id,
+        evidence_type: document.metadata?.type,
+        legal_category: document.metadata?.practiceArea?.[0],
+        confidence: 0.8,
+        timestamp: Date.now(),
+      }
+    };
+
+    // Store document embedding
+    this.documentEmbeddings.set(document.id, docEmbedding);
+
+    // Find Best Matching Unit (BMU)
+    const bmu = this.findBestMatchingUnit(embedding);
+
+    // Update BMU and neighbors with reduced learning rate for incremental training
+    const learningRate = this.config.learningRate * 0.1; // Reduced for incremental
+    const neighborhoodRadius = 2; // Smaller neighborhood for incremental
+
+    this.updateNeighborhood(bmu, embedding, learningRate, neighborhoodRadius);
+    this.updateLegalContext(bmu, docEmbedding);
+
+    console.log('✅ Incremental SOM training completed');
+  }
+
+  /**
+   * Remove document from SOM system
+   */
+  async removeDocument(documentId: string): Promise<void> {
+    console.log(`🗑️ Removing document ${documentId} from SOM system...`);
+
+    // Remove from document embeddings
+    this.documentEmbeddings.delete(documentId);
+
+    // Remove from SOM nodes
+    for (let x = 0; x < this.config.mapWidth; x++) {
+      for (let y = 0; y < this.config.mapHeight; y++) {
+        const node = this.som[x][y];
+        const index = node.documents.indexOf(documentId);
+        if (index > -1) {
+          node.documents.splice(index, 1);
+        }
+      }
+    }
+
+    // Remove from clusters
+    this.clusters.forEach((cluster) => {
+      const index = cluster.documents.indexOf(documentId);
+      if (index > -1) {
+        cluster.documents.splice(index, 1);
+      }
+    });
+
+    console.log('✅ Document removed from SOM system');
+  }
+
+  /**
+   * Optimize clusters using advanced algorithms
+   */
+  async optimizeClusters(): Promise<void> {
+    console.log('🔧 Optimizing SOM clusters...');
+
+    // Re-run k-means clustering with current data
+    await this.performKMeansClustering();
+
+    // Regenerate boolean patterns
+    this.generateBooleanPatterns();
+
+    console.log('✅ Cluster optimization completed');
+  }
+
+  /**
+   * Generate query suggestions based on SOM analysis
+   */
+  async generateQuerySuggestions(query: string): Promise<string[]> {
+    const suggestions: string[] = [];
+
+    // Find relevant clusters based on current documents
+    this.clusters.forEach((cluster) => {
+      const legalType = cluster.metadata.dominant_legal_type;
+      if (legalType && legalType !== 'unknown') {
+        suggestions.push(`${query} ${legalType}`);
+        suggestions.push(`${legalType} related to ${query}`);
+      }
+    });
+
+    // Add general legal suggestions
+    const legalTerms = ['evidence', 'testimony', 'case law', 'precedent', 'ruling'];
+    legalTerms.forEach(term => {
+      if (!query.toLowerCase().includes(term)) {
+        suggestions.push(`${query} ${term}`);
+      }
+    });
+
+    return [...new Set(suggestions)].slice(0, 5);
+  }
+
+  /**
+   * Get current clusters
+   */
+  getClusters(): BooleanCluster[] {
+    return Array.from(this.clusters.values());
+  }
+
+  /**
+   * Generate recommendations based on search results
+   */
+  async generateRecommendations(query: string, results: any[]): Promise<string[]> {
+    const recommendations: string[] = [];
+
+    // Analyze result patterns
+    const evidenceTypes = new Set<string>();
+    const caseTypes = new Set<string>();
+
+    results.forEach(result => {
+      if (result.document?.metadata?.type) {
+        evidenceTypes.add(result.document.metadata.type);
+      }
+      if (result.document?.metadata?.practiceArea) {
+        result.document.metadata.practiceArea.forEach((area: string) => {
+          caseTypes.add(area);
+        });
+      }
+    });
+
+    // Generate recommendations based on patterns
+    if (evidenceTypes.size > 0) {
+      recommendations.push(`Consider searching for more ${Array.from(evidenceTypes).join(' or ')} evidence`);
+    }
+
+    if (caseTypes.size > 0) {
+      recommendations.push(`Explore related ${Array.from(caseTypes).join(' and ')} cases`);
+    }
+
+    // Add general recommendations
+    recommendations.push('Review case timeline for context');
+    recommendations.push('Check for witness testimonies');
+    recommendations.push('Analyze digital evidence metadata');
+
+    return recommendations.slice(0, 5);
+  }
 }
 
 // Export factory function for easy instantiation

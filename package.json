@@ -1,41 +1,43 @@
 {
-  "name": "legal-ai-system",
-  "version": "1.0.0",
-  "type": "module",
+  "name": "deeds-web-app",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "db:up": "docker-compose up -d postgres redis qdrant",
-    "db:down": "docker-compose down",
-    "db:logs": "docker-compose logs -f",
-    "db:migrate": "cd sveltekit-frontend && npx drizzle-kit migrate",
-    "db:push": "cd sveltekit-frontend && npx drizzle-kit push:pg",
-    "db:studio": "cd sveltekit-frontend && npx drizzle-kit studio",
-    "ai:start": "ollama serve",
-    "ai:models": "ollama create gemma3-legal -f local-models/Modelfile.gemma3-legal && ollama pull nomic-embed-text",
-    "dev:infra": "npm run db:up && sleep 10 && npm run db:push",
-    "dev:full": "npm run dev:infra && cd sveltekit-frontend && npm run dev",
-    "test": "npm run test:services && npm run test:integration",
-    "test:services": "node tests/services.test.js",
-    "test:integration": "node tests/integration.test.js",
-    "production:start": "npm run db:up && npm run ai:models && cd sveltekit-frontend && npm run build && npm run preview",
-    "setup:gpu-json": "node setup-gpu-json-parser.ts",
-    "build:wasm": "cd src/lib/wasm && powershell -ExecutionPolicy Bypass -File build-wasm.ps1",
-    "build:wasm:debug": "cd src/lib/wasm && powershell -ExecutionPolicy Bypass -File build-wasm.ps1 -BuildType debug",
-    "test:wasm": "cd src/lib/wasm && powershell -ExecutionPolicy Bypass -File build-wasm.ps1 -RunTests",
-    "benchmark:json": "node -e \"import('./src/lib/wasm/benchmark-json-parser.js').then(m => m.runBenchmark())\"",
-    "optimize:docker": "node -e \"import('./src/lib/optimization/docker-resource-optimizer.js').then(m => m.optimizeResources())\"",
-    "profile:wasm": "node --inspect src/lib/wasm/benchmark-json-parser.js",
-    "clean:wasm": "cd src/lib/wasm && make clean",
-    "install:deps": "cd src/lib/wasm && make install-deps"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "db:init": "node scripts/init-db.js",
+    "ollama:start": "cd local-models && .\\RUN-GPU-SETUP.bat",
+    "test": "vitest"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "typescript": "^5.5.0"
+    "@sveltejs/adapter-node": "^5.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/pg": "^8.11.0",
+    "svelte": "^5.0.0",
+    "svelte-check": "^3.6.0",
+    "tslib": "^2.4.1",
+    "typescript": "^5.0.0",
+    "unocss": "^0.58.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
   },
   "dependencies": {
-    "drizzle-kit": "^0.24.0",
-    "drizzle-orm": "^0.33.0",
-    "postgres": "^3.4.0",
-    "@qdrant/js-client-rest": "^1.15.0",
-    "redis": "^4.7.0"
+    "@langchain/community": "^0.0.20",
+    "@langchain/core": "^0.1.20",
+    "@unocss/reset": "^0.58.0",
+    "@unocss/svelte": "^0.58.0",
+    "bits-ui": "^0.11.0",
+    "langchain": "^0.1.20",
+    "mammoth": "^1.6.0",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.11.0"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
   }
 }

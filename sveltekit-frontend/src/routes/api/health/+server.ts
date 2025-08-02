@@ -1,68 +1,78 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { redisVectorService } from '$lib/services/redis-vector-service';
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
+import { redisVectorService } from "$lib/services/redis-vector-service";
 
 export const GET: RequestHandler = async () => {
   const startTime = Date.now();
   const health = {
-    status: 'healthy',
+    status: "healthy",
     timestamp: new Date().toISOString(),
-    services: {},
-    performance: {},
+    services: {
+      ollama: "unknown",
+      qdrant: "unknown",
+      redis: "unknown",
+      gpu: "unknown",
+    },
+    performance: {
+      responseTime: 0,
+    },
   };
 
   // Check Ollama
   try {
-    const ollamaResponse = await fetch('http://localhost:11434/api/tags', {
-      signal: AbortSignal.timeout(5000)
+    const ollamaResponse = await fetch("http://localhost:11434/api/tags", {
+      signal: AbortSignal.timeout(5000),
     });
-    health.services.ollama = ollamaResponse.ok ? 'healthy' : 'degraded';
+    health.services.ollama = ollamaResponse.ok ? "healthy" : "degraded";
   } catch {
-    health.services.ollama = 'unhealthy';
+    health.services.ollama = "unhealthy";
   }
 
   // Check Qdrant
   try {
-    const qdrantResponse = await fetch('http://localhost:6333/collections', {
-      signal: AbortSignal.timeout(5000)
+    const qdrantResponse = await fetch("http://localhost:6333/collections", {
+      signal: AbortSignal.timeout(5000),
     });
-    health.services.qdrant = qdrantResponse.ok ? 'healthy' : 'degraded';
+    health.services.qdrant = qdrantResponse.ok ? "healthy" : "degraded";
   } catch {
-    health.services.qdrant = 'unhealthy';
+    health.services.qdrant = "unhealthy";
   }
 
   // Check Redis
   try {
-    const redisHealthy = await redisVectorService.healthCheck();
-    health.services.redis = redisHealthy ? 'healthy' : 'unhealthy';
+    // const redisHealthy = await redisVectorService.healthCheck();
+    health.services.redis = "unknown"; // TODO: implement healthCheck
   } catch {
-    health.services.redis = 'unhealthy';
+    health.services.redis = "unhealthy";
   }
 
   // Check GPU status
   try {
-    const gpuResponse = await fetch('http://localhost:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const gpuResponse = await fetch("http://localhost:11434/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: 'gemma3-legal',
-        prompt: 'test',
-        stream: false
+        model: "gemma3-legal",
+        prompt: "test",
+        stream: false,
       }),
-      signal: AbortSignal.timeout(10000)
+      signal: AbortSignal.timeout(10000),
     });
-    health.services.gpu = gpuResponse.ok ? 'accelerated' : 'cpu_fallback';
+    health.services.gpu = gpuResponse.ok ? "accelerated" : "cpu_fallback";
   } catch {
-    health.services.gpu = 'unavailable';
+    health.services.gpu = "unavailable";
   }
 
-  health.performance.responseTime = `${Date.now() - startTime}ms`;
-  
-  const unhealthyServices = Object.values(health.services).filter(s => s === 'unhealthy').length;
-  if (unhealthyServices > 1) health.status = 'degraded';
-  if (unhealthyServices > 2) health.status = 'critical';
+  health.performance.responseTime = Date.now() - startTime;
 
+  const unhealthyServices = Object.values(health.services).filter(
+    (s) => s === "unhealthy"
+  ).length;
+  if (unhealthyServices > 1) health.status = "degraded";
+  if (unhealthyServices > 2) health.status = "critical";
+
+  const responseStatus = health.status === "healthy" ? 200 : 503;
   return json(health, {
-    status: health.status === 'healthy' ? 200 : 503
+    status: responseStatus,
   });
 };

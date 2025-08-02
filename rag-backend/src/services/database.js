@@ -3,9 +3,12 @@
  * Handles vector operations, document storage, and query optimization
  */
 
-import pkg from 'pg';
+import pkg from "pg";
 const { Pool } = pkg;
-import { pgvector } from 'pgvector/pg';
+
+// Import pgvector properly for CommonJS compatibility
+import pgvectorPkg from "pgvector/pg";
+const { toSql } = pgvectorPkg;
 
 export class DatabaseService {
   constructor(config) {
@@ -26,12 +29,12 @@ export class DatabaseService {
     });
 
     // Register pgvector extension
-    await this.pool.query('CREATE EXTENSION IF NOT EXISTS vector');
-    
+    await this.pool.query("CREATE EXTENSION IF NOT EXISTS vector");
+
     // Create tables if they don't exist
     await this.createTables();
-    
-    console.log('✅ Database connection established with pgvector support');
+
+    console.log("✅ Database connection established with pgvector support");
     return true;
   }
 
@@ -117,7 +120,7 @@ export class DatabaseService {
     await this.pool.query(createJobsTable);
     await this.pool.query(createIndexes);
 
-    console.log('✅ Database tables and indexes created');
+    console.log("✅ Database tables and indexes created");
   }
 
   // Document operations
@@ -127,17 +130,17 @@ export class DatabaseService {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `;
-    
+
     const values = [
       document.title,
       document.content,
       document.filePath,
       document.fileType,
       document.fileSize,
-      document.documentType || 'general',
+      document.documentType || "general",
       document.caseId,
       JSON.stringify(document.metadata || {}),
-      document.embedding ? pgvector.toSql(document.embedding) : null
+      document.embedding ? toSql(document.embedding) : null,
     ];
 
     const result = await this.pool.query(query, values);
@@ -146,24 +149,24 @@ export class DatabaseService {
 
   async updateDocumentEmbedding(documentId, embedding) {
     const query = `
-      UPDATE rag_documents 
+      UPDATE rag_documents
       SET embedding = $1, indexed_at = NOW(), processing_status = 'completed', updated_at = NOW()
       WHERE id = $2
       RETURNING *
     `;
-    
-    const result = await this.pool.query(query, [pgvector.toSql(embedding), documentId]);
+
+    const result = await this.pool.query(query, [toSql(embedding), documentId]);
     return result.rows[0];
   }
 
   async getDocument(documentId) {
-    const query = 'SELECT * FROM rag_documents WHERE id = $1';
+    const query = "SELECT * FROM rag_documents WHERE id = $1";
     const result = await this.pool.query(query, [documentId]);
     return result.rows[0];
   }
 
   async getDocuments(filters = {}) {
-    let query = 'SELECT * FROM rag_documents WHERE 1=1';
+    let query = "SELECT * FROM rag_documents WHERE 1=1";
     const values = [];
     let paramCount = 1;
 
@@ -185,7 +188,7 @@ export class DatabaseService {
       paramCount++;
     }
 
-    query += ' ORDER BY created_at DESC';
+    query += " ORDER BY created_at DESC";
 
     if (filters.limit) {
       query += ` LIMIT $${paramCount}`;
@@ -204,19 +207,19 @@ export class DatabaseService {
       threshold = 0.7,
       caseId,
       documentTypes = [],
-      includeContent = true
+      includeContent = true,
     } = options;
 
     let query = `
       SELECT d.id, d.title, d.document_type, d.case_id, d.metadata, d.created_at,
              1 - (d.embedding <=> $1) as similarity_score
-             ${includeContent ? ', d.content' : ''}
+             ${includeContent ? ", d.content" : ""}
       FROM rag_documents d
       WHERE d.embedding IS NOT NULL
         AND 1 - (d.embedding <=> $1) > $2
     `;
 
-    const values = [pgvector.toSql(queryEmbedding), threshold];
+    const values = [toSql(queryEmbedding), threshold];
     let paramCount = 3;
 
     if (caseId) {
@@ -245,13 +248,13 @@ export class DatabaseService {
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `;
-    
+
     const values = [
       chunk.documentId,
       chunk.chunkIndex,
       chunk.content,
-      chunk.embedding ? pgvector.toSql(chunk.embedding) : null,
-      JSON.stringify(chunk.metadata || {})
+      chunk.embedding ? toSql(chunk.embedding) : null,
+      JSON.stringify(chunk.metadata || {}),
     ];
 
     const result = await this.pool.query(query, values);
@@ -259,11 +262,7 @@ export class DatabaseService {
   }
 
   async vectorSearchChunks(queryEmbedding, options = {}) {
-    const {
-      limit = 20,
-      threshold = 0.7,
-      documentIds = []
-    } = options;
+    const { limit = 20, threshold = 0.7, documentIds = [] } = options;
 
     let query = `
       SELECT c.id, c.document_id, c.chunk_index, c.content, c.metadata,
@@ -275,7 +274,7 @@ export class DatabaseService {
         AND 1 - (c.embedding <=> $1) > $2
     `;
 
-    const values = [pgvector.toSql(queryEmbedding), threshold];
+    const values = [toSql(queryEmbedding), threshold];
     let paramCount = 3;
 
     if (documentIds.length > 0) {
@@ -298,16 +297,16 @@ export class DatabaseService {
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `;
-    
+
     const values = [
       queryData.queryText,
-      queryData.queryEmbedding ? pgvector.toSql(queryData.queryEmbedding) : null,
+      queryData.queryEmbedding ? toSql(queryData.queryEmbedding) : null,
       queryData.response,
       queryData.confidenceScore,
       queryData.processingTimeMs,
       JSON.stringify(queryData.sources || []),
       queryData.userId,
-      queryData.caseId
+      queryData.caseId,
     ];
 
     const result = await this.pool.query(query, values);
@@ -321,22 +320,25 @@ export class DatabaseService {
       VALUES ($1, $2)
       RETURNING *
     `;
-    
-    const result = await this.pool.query(query, [jobType, JSON.stringify(inputData)]);
+
+    const result = await this.pool.query(query, [
+      jobType,
+      JSON.stringify(inputData),
+    ]);
     return result.rows[0];
   }
 
   async updateJobStatus(jobId, status, outputData = null, errorMessage = null) {
     let query = `
-      UPDATE rag_jobs 
+      UPDATE rag_jobs
       SET status = $1, updated_at = NOW()
     `;
     const values = [status, jobId];
     let paramCount = 3;
 
-    if (status === 'running') {
+    if (status === "running") {
       query += `, started_at = NOW()`;
-    } else if (status === 'completed' || status === 'failed') {
+    } else if (status === "completed" || status === "failed") {
       query += `, completed_at = NOW()`;
     }
 
@@ -359,7 +361,7 @@ export class DatabaseService {
   }
 
   async getJob(jobId) {
-    const query = 'SELECT * FROM rag_jobs WHERE id = $1';
+    const query = "SELECT * FROM rag_jobs WHERE id = $1";
     const result = await this.pool.query(query, [jobId]);
     return result.rows[0];
   }
@@ -367,17 +369,17 @@ export class DatabaseService {
   // Health and statistics
   async getHealthStats() {
     const queries = [
-      'SELECT COUNT(*) as total_documents FROM rag_documents',
-      'SELECT COUNT(*) as indexed_documents FROM rag_documents WHERE embedding IS NOT NULL',
-      'SELECT COUNT(*) as total_chunks FROM rag_chunks',
-      'SELECT COUNT(*) as total_queries FROM rag_queries WHERE created_at > NOW() - INTERVAL \'24 hours\'',
-      'SELECT AVG(processing_time_ms) as avg_processing_time FROM rag_queries WHERE created_at > NOW() - INTERVAL \'24 hours\'',
-      'SELECT COUNT(*) as pending_jobs FROM rag_jobs WHERE status = \'pending\'',
-      'SELECT COUNT(*) as running_jobs FROM rag_jobs WHERE status = \'running\''
+      "SELECT COUNT(*) as total_documents FROM rag_documents",
+      "SELECT COUNT(*) as indexed_documents FROM rag_documents WHERE embedding IS NOT NULL",
+      "SELECT COUNT(*) as total_chunks FROM rag_chunks",
+      "SELECT COUNT(*) as total_queries FROM rag_queries WHERE created_at > NOW() - INTERVAL '24 hours'",
+      "SELECT AVG(processing_time_ms) as avg_processing_time FROM rag_queries WHERE created_at > NOW() - INTERVAL '24 hours'",
+      "SELECT COUNT(*) as pending_jobs FROM rag_jobs WHERE status = 'pending'",
+      "SELECT COUNT(*) as running_jobs FROM rag_jobs WHERE status = 'running'",
     ];
 
     const results = await Promise.all(
-      queries.map(query => this.pool.query(query))
+      queries.map((query) => this.pool.query(query))
     );
 
     return {
@@ -385,16 +387,17 @@ export class DatabaseService {
       indexedDocuments: parseInt(results[1].rows[0].indexed_documents),
       totalChunks: parseInt(results[2].rows[0].total_chunks),
       queriesLast24h: parseInt(results[3].rows[0].total_queries),
-      avgProcessingTime: parseFloat(results[4].rows[0].avg_processing_time) || 0,
+      avgProcessingTime:
+        parseFloat(results[4].rows[0].avg_processing_time) || 0,
       pendingJobs: parseInt(results[5].rows[0].pending_jobs),
-      runningJobs: parseInt(results[6].rows[0].running_jobs)
+      runningJobs: parseInt(results[6].rows[0].running_jobs),
     };
   }
 
   async close() {
     if (this.pool) {
       await this.pool.end();
-      console.log('✅ Database connection closed');
+      console.log("✅ Database connection closed");
     }
   }
 }

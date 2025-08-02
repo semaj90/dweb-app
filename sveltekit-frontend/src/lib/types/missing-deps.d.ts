@@ -1,47 +1,96 @@
-// Type declarations for optional dependencies that may not be installed
-
-declare module 'gl-matrix' {
-  export const mat4: any;
-  export const vec3: any;
-  export const quat: any;
-}
-
-declare module 'fuse' {
-  export default class Fuse<T> {
-    constructor(list: T[], options?: any);
-    search(query: string): any[];
-    _docs?: T[];
-  }
-}
+// Missing type definitions for external libraries
 
 declare module 'fuse.js' {
-  export default class Fuse<T> {
-    constructor(list: T[], options?: any);
-    search(query: string): any[];
-    _docs?: T[];
+  interface FuseOptions<T> {
+    keys?: Array<string | { name: string; weight: number }>;
+    threshold?: number;
+    includeScore?: boolean;
+    includeMatches?: boolean;
+    minMatchCharLength?: number;
+    ignoreLocation?: boolean;
+    findAllMatches?: boolean;
+    location?: number;
+    distance?: number;
+    useExtendedSearch?: boolean;
+    getFn?: (obj: T, path: string) => string | string[];
   }
+
+  interface FuseResult<T> {
+    item: T;
+    score?: number;
+    matches?: any[];
+  }
+
+  class Fuse<T> {
+    constructor(list: T[], options?: FuseOptions<T>);
+    search(pattern: string): FuseResult<T>[];
+    setCollection(docs: T[]): void;
+    add(doc: T): void;
+    remove(predicate: (doc: T, idx: number) => boolean): T[];
+  }
+
+  export = Fuse;
 }
 
-// Tauri types - optional dependency
-declare module '@tauri-apps/api/tauri' {
-  export function invoke<T = any>(cmd: string, args?: Record<string, any>): Promise<T>;
+declare module '@tiptap/extension-table-row' {
+  import { Node } from '@tiptap/core';
+  export interface TableRowOptions {
+    HTMLAttributes?: Record<string, any>;
+  }
+  export const TableRow: Node<TableRowOptions>;
+  export default TableRow;
 }
 
-declare module '@tauri-apps/api/fs' {
-  export function readTextFile(path: string): Promise<string>;
-  export function writeTextFile(path: string, content: string): Promise<void>;
-  export function readBinaryFile(path: string): Promise<Uint8Array>;
-  export function writeBinaryFile(path: string, content: Uint8Array): Promise<void>;
-  export function createDir(path: string, options?: { recursive?: boolean }): Promise<void>;
-  export function exists(path: string): Promise<boolean>;
+declare module '@tiptap/extension-table-cell' {
+  import { Node } from '@tiptap/core';
+  export interface TableCellOptions {
+    HTMLAttributes?: Record<string, any>;
+    resizable?: boolean;
+  }
+  export const TableCell: Node<TableCellOptions>;
+  export default TableCell;
 }
 
-// LokiJS types
+declare module '@tiptap/extension-table-header' {
+  import { Node } from '@tiptap/core';
+  export interface TableHeaderOptions {
+    HTMLAttributes?: Record<string, any>;
+    resizable?: boolean;
+  }
+  export const TableHeader: Node<TableHeaderOptions>;
+  export default TableHeader;
+}
+
+declare module '@tiptap/extension-table' {
+  import { Node } from '@tiptap/core';
+  export interface TableOptions {
+    HTMLAttributes?: Record<string, any>;
+    resizable?: boolean;
+    handleWidth?: number;
+    cellMinWidth?: number;
+    View?: any;
+    lastColumnResizable?: boolean;
+    allowTableNodeSelection?: boolean;
+  }
+  export const Table: Node<TableOptions>;
+  export default Table;
+}
+
+declare module '@tailwindcss/postcss' {
+  const plugin: any;
+  export default plugin;
+}
+
+// Global type declarations
 declare global {
-  class Collection<T = any> {
-    find(query?: any): T[];
-    insert(doc: T): T;
-    update(doc: T): T;
-    remove(doc: T): void;
+  interface Window {
+    __TAURI__?: any;
+    electronAPI?: any;
+  }
+
+  interface HTMLElement {
+    inert?: boolean;
   }
 }
+
+export {};

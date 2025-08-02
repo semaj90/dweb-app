@@ -1,67 +1,57 @@
+// Comprehensive UI Component Exports
+// Auto-generated barrel file for all UI components
+
+// Enhanced Bits UI Components (Legal AI specific) - Primary exports
+export * from './enhanced-bits';
+
+// Standard Component Barrel Exports
+export * from './button';
+export * from './dialog';
+export * from './input';
+export * from './label';
+export * from './textarea';
+export * from './badge';
+export * from './tabs';
+export * from './tooltip';
+export * from './progress';
+export * from './scrollarea';
+export * from './layout';
+export * from './modal';
+
+// Individual Svelte component imports for direct use
 import Badge from "./Badge.svelte";
-import BitsUnoDemo from "./BitsUnoDemo.svelte";
 import Button from "./Button.svelte";
 import Card from "./Card.svelte";
-
-// Layout Components - Golden Ratio Grid System
-export * as Layout from './layout';
-export { GoldenRatioGrid } from './layout';
 import CardContent from "./CardContent.svelte";
 import CardFooter from "./CardFooter.svelte";
 import CardHeader from "./CardHeader.svelte";
-import CaseForm from "./CaseForm.svelte";
-import CommandMenu from "./CommandMenu.svelte";
-import CommandPalette from "./CommandPalette.svelte";
-import ContextMenuContent from "./ContextMenuContent.svelte";
-import ContextMenuItem from "./ContextMenuItem.svelte";
-import ContextMenuSeparator from "./ContextMenuSeparator.svelte";
-import ContextMenuTrigger from "./ContextMenuTrigger.svelte";
-import DragDropZone from "./DragDropZone.svelte";
-import ExpandGrid from "./ExpandGrid.svelte";
-import Form from "./Form.svelte";
-import GoldenLayout from "./GoldenLayout.svelte";
+import CardTitle from "./CardTitle.svelte";
 import Input from "./Input.svelte";
 import Label from "./Label.svelte";
-import MarkdownRenderer from "./MarkdownRenderer.svelte";
 import Modal from "./Modal.svelte";
-import ModalManager from "./ModalManager.svelte";
-import NoteViewerModal from "./NoteViewerModal.svelte";
-import Notifications from "./Notifications.svelte";
-import RichTextEditor from "./RichTextEditor.svelte";
-import SmartTextarea from "./SmartTextarea.svelte";
 import Tooltip from "./Tooltip.svelte";
-import TooltipContent from "./TooltipContent.svelte";
-import TooltipTrigger from "./TooltipTrigger.svelte";
 
+// Export individual components for direct access
 export {
-  Badge,
-  BitsUnoDemo,
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CaseForm,
-  CommandMenu,
-  CommandPalette,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-  DragDropZone,
-  ExpandGrid,
-  Form,
-  GoldenLayout,
-  Input,
-  Label,
-  MarkdownRenderer,
-  Modal,
-  ModalManager,
-  NoteViewerModal,
-  Notifications,
-  RichTextEditor,
-  SmartTextarea,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
+  Badge as UiBadge,
+  Button as UiButton,
+  Card as UiCard,
+  CardContent as UiCardContent,
+  CardFooter as UiCardFooter,
+  CardHeader as UiCardHeader,
+  CardTitle as UiCardTitle,
+  Input as UiInput,
+  Label as UiLabel,
+  Modal as UiModal,
+  Tooltip as UiTooltip
 };
+
+// Legacy exports for compatibility
+export { default as BitsUnoDemo } from "./BitsUnoDemo.svelte";
+export { default as CaseForm } from "./CaseForm.svelte";
+export { default as CommandMenu } from "./CommandMenu.svelte";
+export { default as DragDropZone } from "./DragDropZone.svelte";
+export { default as Form } from "./Form.svelte";
+export { default as MarkdownRenderer } from "./MarkdownRenderer.svelte";
+export { default as RichTextEditor } from "./RichTextEditor.svelte";
+export { default as SmartTextarea } from "./SmartTextarea.svelte";

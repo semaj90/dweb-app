@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-import Fuse from "fuse.js";
+import Fuse from "fuse.js/dist/fuse.js";
 import { del, get, keys, set } from "idb-keyval";
 import { derived, writable } from "svelte/store";
 

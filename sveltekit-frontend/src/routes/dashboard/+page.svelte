@@ -32,7 +32,7 @@
 
   async function sendAIMessage() {
     if (!chatMessage.trim()) return;
-    
+
     try {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
@@ -43,7 +43,7 @@
           context: 'dashboard'
         })
       });
-      
+
       const data = await response.json();
       aiResponse = data.aiMetadata;
       chatMessage = '';
@@ -89,18 +89,18 @@
         <div class="yorha-card p-6 h-fit">
           <h2 class="text-xl font-mono font-semibold text-white mb-4">Active Cases</h2>
           <div class="space-y-3">
-            {#each cases as case}
+            {#each cases as caseItem}
               <button
-                class="w-full text-left p-3 rounded border transition-all duration-200 {selectedCase === case.id ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-600 hover:border-gray-500'}"
-                onclick={() => selectCase(case.id)}
+                class="w-full text-left p-3 rounded border transition-all duration-200 {selectedCase === caseItem.id ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-600 hover:border-gray-500'}"
+                onclick={() => selectCase(caseItem.id)}
               >
-                <div class="font-mono text-sm text-yellow-400">{case.id}</div>
-                <div class="font-semibold text-white text-sm">{case.title}</div>
+                <div class="font-mono text-sm text-yellow-400">{caseItem.id}</div>
+                <div class="font-semibold text-white text-sm">{caseItem.title}</div>
                 <div class="text-xs text-gray-400 mt-1">
-                  Status: {case.status} • Priority: {case.priority}
+                  Status: {caseItem.status} • Priority: {caseItem.priority}
                 </div>
                 <div class="text-xs text-gray-500 mt-1">
-                  Evidence: {case.evidenceCount} • Docs: {case.documentsCount}
+                  Evidence: {caseItem.evidenceCount} • Docs: {caseItem.documentsCount}
                 </div>
               </button>
             {/each}
@@ -115,7 +115,7 @@
           <h2 class="text-xl font-mono font-semibold text-white mb-4">
             Legal AI Assistant
           </h2>
-          
+
           <div class="flex gap-3 mb-4">
             <input
               bind:value={chatMessage}
@@ -160,7 +160,7 @@
                   </div>
                 </div>
               </div>
-              
+
               {#if aiResponse.keyTerms && aiResponse.keyTerms.length > 0}
                 <div class="mt-3">
                   <div class="text-gray-400 text-sm mb-2">Key Legal Terms:</div>
@@ -185,7 +185,7 @@
               <span class="text-sm text-gray-400">for {selectedCase}</span>
             {/if}
           </h2>
-          
+
           <div class="space-y-3">
             {#each evidence as item}
               <div class="p-4 bg-gray-800/30 rounded border border-gray-700 hover:border-gray-600 transition-colors">
@@ -198,11 +198,11 @@
                     {new Date(item.uploadedAt).toLocaleDateString()}
                   </div>
                 </div>
-                
+
                 <div class="text-sm text-gray-300 mb-2 line-clamp-2">
                   {item.content}
                 </div>
-                
+
                 <div class="flex flex-wrap gap-1">
                   {#each item.tags as tag}
                     <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">

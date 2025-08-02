@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Dialog, Button, Select, AlertDialog } from 'bits-ui';
+  import { Dialog, Button, Select } from '$lib/components/ui/enhanced-bits';
+import { AlertDialog } from 'bits-ui';
   import { fade } from 'svelte/transition';
   import { createToaster, melt } from '@melt-ui/svelte';
   import { flip } from 'svelte/animate';
@@ -78,23 +79,23 @@
   <div class="container mx-auto px-4">
     <h3 class="container mx-auto px-4">Melt-UI Notifications Demo</h3>
     <div class="container mx-auto px-4">
-      <button class="container mx-auto px-4" on:click={() => showSuccessNotification()}>
+      <button class="container mx-auto px-4" onclick={() => showSuccessNotification()}>
         Success Notification
       </button>
-      <button class="container mx-auto px-4" on:click={() => showWarningNotification()}>
+      <button class="container mx-auto px-4" onclick={() => showWarningNotification()}>
         Warning Notification
       </button>
-      <button class="container mx-auto px-4" on:click={() => showErrorNotification()}>
+      <button class="container mx-auto px-4" onclick={() => showErrorNotification()}>
         Error Notification
       </button>
-      <button class="container mx-auto px-4" on:click={() => showInfoNotification()}>
+      <button class="container mx-auto px-4" onclick={() => showInfoNotification()}>
         Info Notification
       </button>
     </div>
   </div>
 
   <!-- Bits UI Button -->
-  <Button.Root class="container mx-auto px-4" on:click={showSuccessNotification}>
+  <Button.Root class="container mx-auto px-4" onclick={showSuccessNotification}>
     Create New Case
   </Button.Root>
 
@@ -179,7 +180,7 @@
           <AlertDialog.Cancel class="container mx-auto px-4">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="container mx-auto px-4" on:click={showErrorNotification}>
+          <AlertDialog.Action class="container mx-auto px-4" onclick={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>

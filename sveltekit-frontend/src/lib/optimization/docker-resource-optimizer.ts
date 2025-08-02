@@ -1,9 +1,11 @@
 /**
- * Docker Resource Optimization and Performance Enhancement
- * Implements memory management, cache optimization, and throughput improvements
+ * Docker Desktop Resource Optimizer with Advanced ML and Cache Management
+ * Advanced memory management and performance optimization for 70GB development environment
+ * Includes K-means clustering, self-organizing maps, and intelligent resource allocation
  */
 
 import type { RequestHandler } from "@sveltejs/kit";
+import { EventEmitter } from 'events';
 
 export interface DockerResourceMetrics {
   memory: {
@@ -621,13 +623,13 @@ export const performanceUtils = {
    */
   generateReport: async (): Promise<Record<string, any>> => {
     const metrics = await dockerOptimizer.getResourceMetrics();
-    const cacheStats = dockerOptimizer.performanceCache.size;
+    const cacheStats = (dockerOptimizer as any).performanceCache?.size || 0;
 
     return {
       timestamp: new Date().toISOString(),
       metrics,
       cacheEntries: cacheStats,
-      config: dockerOptimizer.optimizationConfig,
+      config: (dockerOptimizer as any).optimizationConfig || {},
     };
   },
 };

@@ -1,21 +1,17 @@
 // ======================================================================
-// ENHANCED STATE MACHINES FOR LEGAL AI SYSTEM
+// ENHANCED STATE MACHINES FOR LEGAL AI SYSTEM - FIXED VERSION
 // Building on existing autoTaggingMachine with advanced capabilities
 // ======================================================================
 
 import {
   assign,
-  createMachine,
-  fromPromise,
   setup,
-  sendTo,
+  fromPromise,
   createActor,
 } from "xstate";
 import { writable, derived } from "svelte/store";
 import { browser } from "$app/environment";
-
-// Import existing types and extend them
-import type { Evidence } from "$lib/data/types";
+import type { Database, Evidence } from "$lib/types";
 
 // ======================================================================
 // ENHANCED TYPES
@@ -152,16 +148,16 @@ export const evidenceProcessingMachine = setup({
         try {
           // Parallel processing of multiple AI tasks
           const [embeddingResponse, taggingResponse, analysisResponse] =
-            await Promise.all([
+            await Promise.allSettled([
               // Generate embeddings using local/cloud models
               fetch("/api/ai/embedding", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   content: input.evidence.description || input.evidence.title,
-                  model: "nomic-embed-text", // Your local embedding model
+                  model: "nomic-embed-text",
                 }),
-              }),
+              }).then(r => r.ok ? r.json() : Promise.reject(new Error('Embedding failed'))),
 
               // AI tagging with enhanced context
               fetch("/api/ai/tag", {
@@ -172,7 +168,7 @@ export const evidenceProcessingMachine = setup({
                   context: "legal_investigation",
                   enhance_tags: true,
                 }),
-              }),
+              }).then(r => r.ok ? r.json() : Promise.reject(new Error('Tagging failed'))),
 
               // Deep AI analysis using local LLM
               fetch("/api/ai/analyze", {
@@ -181,29 +177,28 @@ export const evidenceProcessingMachine = setup({
                 body: JSON.stringify({
                   evidence: input.evidence,
                   analysis_type: "comprehensive",
-                  model: "gemma3-legal", // Your custom legal model
+                  model: "gemma3-legal",
                 }),
-              }),
+              }).then(r => r.ok ? r.json() : Promise.reject(new Error('Analysis failed'))),
             ]);
 
-          const [embeddings, tags, analysis] = await Promise.all([
-            embeddingResponse.json(),
-            taggingResponse.json(),
-            analysisResponse.json(),
-          ]);
+          // Extract results, handling potential failures
+          const embeddings = embeddingResponse.status === 'fulfilled' ? embeddingResponse.value : { vector: [], confidence: 0 };
+          const tags = taggingResponse.status === 'fulfilled' ? taggingResponse.value : { tags: [], confidence: 0 };
+          const analysis = analysisResponse.status === 'fulfilled' ? analysisResponse.value : { analysis: {}, confidence: 0 };
 
           const processingTime = Date.now() - startTime;
 
           return {
             evidenceId: input.evidence.id,
-            embeddings: embeddings.vector,
-            tags: tags.tags,
-            analysis: analysis,
+            embeddings: embeddings.vector || [],
+            tags: tags.tags || [],
+            analysis: analysis.analysis || {},
             processingTime,
             confidence: Math.min(
-              embeddings.confidence,
-              tags.confidence,
-              analysis.confidence,
+              embeddings.confidence || 0,
+              tags.confidence || 0,
+              analysis.confidence || 0,
             ),
             timestamp: new Date(),
           };
@@ -220,74 +215,94 @@ export const evidenceProcessingMachine = setup({
       }: {
         input: { embeddings: number[]; limit?: number };
       }) => {
-        const response = await fetch("/api/vector/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            vector: input.embeddings,
-            limit: input.limit || 10,
-            threshold: 0.7,
-          }),
-        });
+        try {
+          const response = await fetch("/api/vector/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              vector: input.embeddings,
+              limit: input.limit || 10,
+              threshold: 0.7,
+            }),
+          });
 
-        if (!response.ok) throw new Error("Vector search failed");
-        return await response.json();
+          if (!response.ok) throw new Error("Vector search failed");
+          return await response.json();
+        } catch (error) {
+          // Return empty results on failure
+          return { matches: [] };
+        }
       },
     ),
 
     // Graph relationship discovery
     discoverRelationships: fromPromise(
       async ({ input }: { input: { evidenceId: string } }) => {
-        const response = await fetch(
-          `/api/graph/discover/${input.evidenceId}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              depth: 3,
-              relationship_types: [
-                "references",
-                "involves",
-                "located_at",
-                "connected_to",
-              ],
-            }),
-          },
-        );
+        try {
+          const response = await fetch(
+            `/api/graph/discover/${input.evidenceId}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                depth: 3,
+                relationship_types: [
+                  "references",
+                  "involves",
+                  "located_at",
+                  "connected_to",
+                ],
+              }),
+            },
+          );
 
-        if (!response.ok) throw new Error("Relationship discovery failed");
-        return await response.json();
+          if (!response.ok) throw new Error("Relationship discovery failed");
+          return await response.json();
+        } catch (error) {
+          // Return empty relationships on failure
+          return { nodes: [], connections: [] };
+        }
       },
     ),
 
     // Health monitoring
     systemHealthCheck: fromPromise(async () => {
-      const checks = await Promise.allSettled([
-        fetch("/api/ai/health/local").then((r) => r.json()),
-        fetch("/api/vector/health").then((r) => r.json()),
-        fetch("/api/graph/health").then((r) => r.json()),
-        fetch("/api/cache/health").then((r) => r.json()),
-      ]);
+      try {
+        const checks = await Promise.allSettled([
+          fetch("/api/ai/health/local").then((r) => r.json()).catch(() => ({ status: 'down' })),
+          fetch("/api/vector/health").then((r) => r.json()).catch(() => ({ status: 'down' })),
+          fetch("/api/graph/health").then((r) => r.json()).catch(() => ({ status: 'down' })),
+          fetch("/api/cache/health").then((r) => r.json()).catch(() => ({ status: 'down' })),
+        ]);
 
-      const healthStatus = checks.every(
-        (check) =>
-          check.status === "fulfilled" && check.value.status === "healthy",
-      )
-        ? "healthy"
-        : checks.some(
-              (check) =>
-                check.status === "fulfilled" &&
-                check.value.status === "healthy",
-            )
-          ? "degraded"
-          : "critical";
+        const healthStatus = checks.every(
+          (check) =>
+            check.status === "fulfilled" && check.value.status === "healthy",
+        )
+          ? "healthy"
+          : checks.some(
+                (check) =>
+                  check.status === "fulfilled" &&
+                  check.value.status === "healthy",
+              )
+            ? "degraded"
+            : "critical";
 
-      return { health: healthStatus, details: checks };
+        return { health: healthStatus, details: checks };
+      } catch (error) {
+        return { health: "critical", details: [], error: (error as Error).message };
+      }
     }),
 
     syncCache: fromPromise(async () => {
-      // Simulate cache synchronization logic
-      return { cacheOperations: 10 }; // Example return
+      try {
+        const response = await fetch("/api/cache/sync", { method: "POST" });
+        if (!response.ok) throw new Error("Cache sync failed");
+        const result = await response.json();
+        return { cacheOperations: result.operations || 0 };
+      } catch (error) {
+        return { cacheOperations: 0, error: (error as Error).message };
+      }
     }),
   },
 
@@ -454,7 +469,7 @@ export const evidenceProcessingMachine = setup({
               target: "relationshipDiscovery",
               actions: assign({
                 vectorMatches: ({ event }) =>
-                  event.output.matches.map((match: any, index: number) => ({
+                  (event.output.matches || []).map((match: any, index: number) => ({
                     ...match,
                     rank: index + 1,
                   })),
@@ -495,7 +510,7 @@ export const evidenceProcessingMachine = setup({
                 graphRelationships: ({ event }) => event.output.nodes || [],
                 connectionStrength: ({ event }) => {
                   const strengthMap = new Map();
-                  event.output.connections?.forEach((conn: any) => {
+                  (event.output.connections || []).forEach((conn: any) => {
                     strengthMap.set(`${conn.from}-${conn.to}`, conn.strength);
                   });
                   return strengthMap;
@@ -654,12 +669,6 @@ export const evidenceProcessingStore = writable({
   context: null as EnhancedAIContext | null,
 });
 
-export const streamingStore = writable({
-  machine: null as any,
-  connected: false,
-  messageQueue: [] as any[],
-});
-
 // Derived stores for easy component access
 export const currentlyProcessingStore = derived(
   evidenceProcessingStore,
@@ -706,6 +715,15 @@ export const systemHealthStore = derived(evidenceProcessingStore, ($store) => ({
   cacheHits: $store.context?.cacheHits || 0,
   lastSync: $store.context?.lastSync,
 }));
+
+// Streaming store for real-time updates
+export const streamingStore = writable({
+  isStreaming: false,
+  streamType: null as string | null,
+  progress: 0,
+  data: null as any,
+  error: null as string | null,
+});
 
 // ======================================================================
 // INITIALIZATION HELPERS

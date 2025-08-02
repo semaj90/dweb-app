@@ -37,7 +37,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     if (!sessionId) {
       return json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
     const body: EmbedRequest = await request.json();
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
           success: false,
           error: "Missing required fields: text and type",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
     // Generate embedding
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
               success: false,
               error: "userId required for user_context embeddings",
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
         const userResult = await VectorService.storeUserEmbedding(
@@ -93,16 +93,15 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
               success: false,
               error: "conversationId required for chat_message embeddings",
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
         await VectorService.storeChatEmbedding({
           conversationId: metadata.conversationId,
-          userId: metadata.userId || "anonymous",
-          role: metadata.role || "user",
+          messageId: metadata.messageId || Date.now().toString(),
           content: text,
-          embedding: vector,
-          metadata: metadata,
+          userId: metadata.userId || "anonymous",
+          role: "user", // Add required role property
         });
         insertId = `chat_${Date.now()}`;
         break;
@@ -114,15 +113,12 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
               success: false,
               error: "evidenceId required for evidence embeddings",
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
         await VectorService.storeEvidenceVector({
-          evidenceId: metadata.evidenceId,
-          caseId: metadata.caseId,
+          id: metadata.evidenceId,
           content: text,
-          embedding: vector,
-          vectorType: metadata.category || "text",
           metadata: metadata,
         });
         insertId = `evidence_${Date.now()}`;
@@ -135,15 +131,16 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
               success: false,
               error: "caseId required for case_summary embeddings",
             },
-            { status: 400 },
+            { status: 400 }
           );
         }
         await VectorService.storeCaseEmbedding({
           caseId: metadata.caseId,
           content: text,
-          embedding: vector,
-          summary_type: metadata.category || "general",
-          metadata: metadata,
+          metadata: {
+            ...metadata,
+            summary_type: metadata.category || "general",
+          },
         });
         insertId = `case_${Date.now()}`;
         break;
@@ -154,15 +151,15 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
             success: false,
             error: `Unsupported embedding type: ${type}`,
           },
-          { status: 400 },
+          { status: 400 }
         );
     }
     // Find similar content for context
     const similarityResults = await VectorService.findSimilar(vector, {
       limit: 5,
       threshold: 0.7,
-      userId: metadata.userId,
-      caseId: metadata.caseId,
+      type: type,
+      userId: metadata.userId, // Add userId property
     });
 
     return json({
@@ -178,7 +175,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         success: false,
         error: error instanceof Error ? error.message : "Internal server error",
       } as EmbedResponse,
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -190,7 +187,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     if (!sessionId) {
       return json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
     const queryVector = url.searchParams.get("vector");
@@ -205,7 +202,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
           success: false,
           error: "Query vector required",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
     const vector = JSON.parse(queryVector) as number[];
@@ -213,8 +210,8 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     const similarityResults = await VectorService.findSimilar(vector, {
       limit,
       threshold,
-      userId,
-      caseId,
+      type: "all",
+      userId: userId, // Add userId property
     });
 
     return json({
@@ -228,7 +225,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         success: false,
         error: error instanceof Error ? error.message : "Internal server error",
       } as EmbedResponse,
-      { status: 500 },
+      { status: 500 }
     );
   }
 };

@@ -60,7 +60,7 @@ export class EnhancedVectorEmbeddingService {
       db: 0,
       retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,
-    });
+    } as any); // Type assertion to avoid strict Redis options check
 
     this.initializeService();
   }
@@ -82,7 +82,10 @@ export class EnhancedVectorEmbeddingService {
       // Create vector index for legal documents
       const indexExists = await this.redis.call("FT._LIST");
 
-      if (!indexExists.includes("legal_vectors")) {
+      if (
+        !Array.isArray(indexExists) ||
+        !indexExists.includes("legal_vectors")
+      ) {
         await this.redis.call(
           "FT.CREATE",
           "legal_vectors",

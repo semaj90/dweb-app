@@ -21,7 +21,7 @@
     Separator: SelectSeparator
   } = BitsSelect;
 
-  interface SelectOption {
+  export interface SelectOption {
     value: string;
     label: string;
     description?: string;

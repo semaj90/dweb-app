@@ -107,6 +107,18 @@ export class OllamaService {
     }
   }
 
+  async generateCompletion(
+    model: string,
+    prompt: string,
+    options: {
+      temperature?: number;
+      max_tokens?: number;
+    } = {}
+  ): Promise<string> {
+    // Alias for generate method for backward compatibility
+    return this.generate(model, prompt, options);
+  }
+
   async embeddings(model: string, prompt: string): Promise<number[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/embeddings`, {

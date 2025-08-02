@@ -104,7 +104,15 @@
       "Bash(git push:*)",
       "Bash(npm run setup:gpu-json:*)",
       "Bash(npm run benchmark:json:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(timeout 30 npx tsc --noEmit --skipLibCheck --incremental)",
+      "Bash(docker:*)",
+      "Bash(timeout 60 npx tsc --noEmit --skipLibCheck --incremental)",
+      "Bash(npm start)",
+      "Bash(timeout 60 npx tsc --noEmit --skipLibCheck)",
+      "Bash(cat:*)",
+      "Bash(timeout 60 npx tsc --noEmit --skipLibCheck src/lib/stores/enhanced-rag-store.ts)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

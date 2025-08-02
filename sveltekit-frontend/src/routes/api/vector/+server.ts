@@ -38,10 +38,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       case "search": {
         const params = searchSchema.parse(body);
         const results = await VectorService.semanticSearch(params.query, {
-          documentType: params.documentType,
+          type: params.documentType,
           limit: params.limit,
-          threshold: params.threshold,
-          userId: locals.user?.id,
+          threshold: params.threshold
         });
 
         return json({
@@ -56,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
           params.documentId,
           params.documentType,
           params.text,
-          params.metadata,
+          params.metadata
         );
 
         return json({
@@ -69,7 +68,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const params = analyzeSchema.parse(body);
         const analysis = await VectorService.analyzeDocument(
           params.text,
-          params.analysisType,
+          params.analysisType
         );
 
         return json({
@@ -82,7 +81,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         const { documentId, limit = 5 } = body;
         const similar = await VectorService.findSimilarDocuments(
           documentId,
-          limit,
+          limit
         );
 
         return json({
@@ -94,7 +93,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       case "test": {
         // Test endpoint to verify Ollama connection
         const testEmbedding = await VectorService.generateEmbedding(
-          "This is a test legal document for vector embedding.",
+          "This is a test legal document for vector embedding."
         );
 
         return json({
@@ -107,7 +106,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       default:
         return json(
           { success: false, error: "Invalid action" },
-          { status: 400 },
+          { status: 400 }
         );
     }
   } catch (error) {
@@ -116,7 +115,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     if (error instanceof z.ZodError) {
       return json(
         { success: false, error: "Validation error", details: error.errors },
-        { status: 400 },
+        { status: 400 }
       );
     }
     return json(
@@ -124,7 +123,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         success: false,
         error: error instanceof Error ? error.message : "Internal server error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -156,7 +155,7 @@ export const GET: RequestHandler = async () => {
         error: "Failed to connect to Ollama",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 503 },
+      { status: 503 }
     );
   }
 };

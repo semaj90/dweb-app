@@ -18,6 +18,8 @@ export interface Evidence {
   width?: number;
   height?: number;
   metadata?: any;
+  evidenceId?: string; // Additional property for API compatibility
+  embedding?: number[]; // Vector embedding data
   analysis?: {
     summary: string;
     keyPoints: string[];
@@ -151,14 +153,25 @@ export type { CanvasState as CanvasStateType };
 
 // Case Scoring Types
 export interface CaseScoringRequest {
-  caseId: string;
+  caseId?: string;
+  case_id?: string;
   criteria?: ScoringCriteria;
+  scoring_criteria?: ScoringCriteria;
   evidence?: Evidence[];
+  case_data?: {
+    title?: string;
+    description?: string;
+    evidence?: Evidence[];
+    defendants?: string[];
+    jurisdiction?: string;
+  };
   additionalData?: any;
+  temperature?: number;
 }
 
 export interface CaseScoringResult {
   caseId: string;
+  case_id?: string;
   score: number;
   breakdown: {
     [key: string]: number;
@@ -166,6 +179,10 @@ export interface CaseScoringResult {
   riskLevel: "LOW" | "MEDIUM" | "HIGH";
   recommendations: string[];
   timestamp: Date;
+  confidence?: number;
+  scoring_criteria?: ScoringCriteria;
+  ai_analysis?: any;
+  processing_time?: number;
 }
 
 export interface ScoringCriteria {
@@ -180,6 +197,13 @@ export interface ScoringCriteria {
     medium: number;
     high: number;
   };
+  // Legacy snake_case properties for backward compatibility
+  evidence_strength?: number;
+  witness_reliability?: number;
+  legal_precedent?: number;
+  public_interest?: number;
+  case_complexity?: number;
+  resource_requirements?: number;
 }
 
 // Vector Search Types
@@ -188,6 +212,15 @@ export interface VectorSearchResult {
   score: number;
   payload: any;
   vector?: number[];
+  // Additional properties for compatibility
+  similarity?: number;
+  content?: unknown;
+  title?: unknown;
+  type?: unknown;
+  metadata?: unknown;
+  case_id?: unknown;
+  created_at?: unknown;
+  relevance_score?: unknown;
 }
 
 export interface DocumentVector {
@@ -195,6 +228,12 @@ export interface DocumentVector {
   vector: number[];
   payload: any;
   metadata?: any;
+  // Additional properties used in the codebase
+  content?: string;
+  title?: string;
+  type?: string;
+  case_id?: string;
+  relevance_score?: number;
 }
 
 export interface SearchOptions {
@@ -204,6 +243,13 @@ export interface SearchOptions {
   collection?: string;
   minScore?: number;
   caseId?: string;
+  // Additional properties used in the codebase
+  filter?: any;
+  includePayload?: boolean;
+  includeVector?: boolean;
+  documentType?: string;
+  userId?: string;
+  score_threshold?: number;
 }
 
 export interface CollectionInfo {
@@ -217,4 +263,65 @@ export interface BatchUpsertResult {
   operation_id: number;
   status: "acknowledged" | "completed" | "failed";
   result?: any;
+  // Additional properties for compatibility
+  successful?: boolean;
+}
+
+export interface ConversationMessage {
+  conversationId: string;
+  messageId: string;
+  content: string;
+  userId?: string;
+  role?: "user" | "assistant" | "system";
+  timestamp?: Date;
+}
+
+export interface ChatMessage {
+  conversationId: string;
+  messageId: string;
+  content: string;
+  userId?: string;
+  role?: "user" | "assistant" | "system";
+  timestamp?: Date;
+}
+
+export interface CaseSummary {
+  caseId: string;
+  content: string;
+  embedding?: number[];
+  metadata?: any;
+}
+
+// Database Types
+export interface Database {
+  cases: Case[];
+  evidence: Evidence[];
+  users: User[];
+  reports: Report[];
+  canvasStates: CanvasState[];
+}
+
+// API Types
+export interface API {
+  cases: {
+    getAll: () => Promise<Case[]>;
+    getById: (id: string) => Promise<Case>;
+    create: (data: Partial<Case>) => Promise<Case>;
+    update: (id: string, data: Partial<Case>) => Promise<Case>;
+    delete: (id: string) => Promise<void>;
+  };
+  evidence: {
+    getAll: () => Promise<Evidence[]>;
+    getById: (id: string) => Promise<Evidence>;
+    create: (data: Partial<Evidence>) => Promise<Evidence>;
+    update: (id: string, data: Partial<Evidence>) => Promise<Evidence>;
+    delete: (id: string) => Promise<void>;
+  };
+  users: {
+    getAll: () => Promise<User[]>;
+    getById: (id: string) => Promise<User>;
+    create: (data: Partial<User>) => Promise<User>;
+    update: (id: string, data: Partial<User>) => Promise<User>;
+    delete: (id: string) => Promise<void>;
+  };
 }

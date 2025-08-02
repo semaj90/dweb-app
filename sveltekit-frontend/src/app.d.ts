@@ -2,41 +2,25 @@
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
 
+import type { Database } from '$lib/types';
+
 declare global {
   namespace App {
     interface Error {
       code?: string;
       id?: string;
+      errorId?: string;
     }
 
     interface Locals {
-      user?: {
-        id: string;
-        email: string;
-        role: string;
-      };
-      session?: {
-        id: string;
-        expiresAt: Date;
-        user: {
-          userId: string;
-          email: string;
-          role: string;
-        };
-      };
-      auth?: {
-        sessionId: string;
-        userId: string;
-        user: {
-          id: string;
-          email: string;
-          role: string;
-        };
-      };
+      user?: Database.User;
+      sessionId?: string;
+      session?: Database.UserSession;
     }
 
     interface PageData {
       user?: App.Locals["user"];
+      session?: App.Locals["session"];
     }
 
     interface Platform {
@@ -45,6 +29,8 @@ declare global {
         RABBITMQ_URL: string;
         NEO4J_URL: string;
         DATABASE_URL: string;
+        OLLAMA_URL: string;
+        NODE_ENV: string;
       };
     }
   }
@@ -57,6 +43,12 @@ declare global {
       ) => Promise<Uint8Array | string>;
     };
     __MATRIX_UI__: any;
+    __TAURI__?: any;
+    electronAPI?: any;
+  }
+
+  interface HTMLElement {
+    inert?: boolean;
   }
 }
 

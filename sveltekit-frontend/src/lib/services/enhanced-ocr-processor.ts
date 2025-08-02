@@ -4,7 +4,7 @@
  */
 
 import { createWorker } from "tesseract.js";
-import PDFParser from "pdf2pic";
+import * as pdf2pic from "pdf2pic";
 import sharp from "sharp";
 import fs from "fs/promises";
 import path from "path";
@@ -55,8 +55,8 @@ export class EnhancedOCRProcessor extends EventEmitter {
       // Initialize Tesseract workers
       for (let i = 0; i < this.maxConcurrentWorkers; i++) {
         const worker = await createWorker();
-        await worker.loadLanguage("eng");
-        await worker.initialize("eng");
+        await (worker as any).loadLanguage("eng");
+        await (worker as any).initialize("eng");
         this.workers.push(worker);
       }
 
@@ -121,7 +121,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
     filePath: string,
     options: ProcessingOptions
   ): Promise<OCRResult> {
-    const pdfParser = new PDFParser({
+    const pdfParser = pdf2pic.fromPath(filePath, {
       density: options.dpi || 300,
       saveFilename: "page",
       savePath: this.tempDir,
@@ -132,7 +132,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
 
     try {
       // Convert PDF pages to images
-      const pages = await pdfParser.convertBulk(filePath, -1);
+      const pages = await pdfParser.bulk(-1);
       this.emit("pdf:converted", `${pages.length} pages converted`);
 
       const results: string[] = [];
@@ -173,6 +173,9 @@ export class EnhancedOCRProcessor extends EventEmitter {
         pages: pages.length,
         processingTime: 0, // Set by caller
         metadata: {
+          filename: path.basename(filePath),
+          fileSize: 0, // TODO: get actual file size
+          mimeType: "application/pdf",
           pageCount: pages.length,
           language: options.language || "eng",
         },
@@ -214,6 +217,9 @@ export class EnhancedOCRProcessor extends EventEmitter {
         pages: 1,
         processingTime: 0, // Set by caller
         metadata: {
+          filename: path.basename(filePath),
+          fileSize: 0, // TODO: get actual file size
+          mimeType: "image/jpeg",
           language: options.language || "eng",
         },
       };
@@ -372,8 +378,7 @@ export class EnhancedOCRProcessor extends EventEmitter {
           metadata: {
             filename: path.basename(filePaths[i]),
             fileSize: 0,
-            mimeType: "error",
-            error: error.message,
+            mimeType: "application/octet-stream",
           },
         });
       }

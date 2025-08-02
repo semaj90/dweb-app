@@ -158,16 +158,16 @@ export const POST: RequestHandler = async ({ request }) => {
         console.error('❌ Autocomplete error:', err);
         
         if (err instanceof z.ZodError) {
-            throw error(400, {
+            return json({
                 message: 'Invalid request format',
                 errors: err.errors
-            });
+            }, { status: 400 });
         }
 
-        throw error(500, {
+        return json({
             message: 'Autocomplete service temporarily unavailable',
             details: err instanceof Error ? err.message : 'Unknown error'
-        });
+        }, { status: 500 });
     }
 };
 

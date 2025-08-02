@@ -515,8 +515,9 @@ async function addToEnhancedRAG(
     // Add to RAG system with high-priority ranking
     const ragContent = `${synthesizedEvidence.title}\n\n${synthesizedEvidence.summary}\n\nAnalysis: ${synthesizedEvidence.aiSummary}`;
 
-    await enhancedRAGService.addDocument(ragContent, {
+    await enhancedRAGService.indexDocument({
       id: synthesizedEvidence.id,
+      content: ragContent,
       type: "synthesized_evidence",
       caseId: synthesizedEvidence.caseId,
       ragScore,

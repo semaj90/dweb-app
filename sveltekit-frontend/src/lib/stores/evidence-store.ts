@@ -1,4 +1,4 @@
-import Fuse from "fuse.js";
+import Fuse from "fuse.js/dist/fuse.js";
 import type { Writable } from "svelte/store";
 import { derived, writable } from "svelte/store";
 
@@ -93,6 +93,7 @@ export const uploadModal: Writable<UploadModalState> = writable({
 // === FUSE.JS SEARCH ===
 
 let fuseInstance: Fuse<Evidence> | null = null;
+let lastItemsLength = 0;
 
 const fuseOptions = {
   keys: [
@@ -116,8 +117,9 @@ export const filteredEvidence = derived(evidenceGrid, ($evidenceGrid) => {
 
   // Apply search filter
   if (searchQuery.trim()) {
-    if (!fuseInstance || fuseInstance._docs.length !== items.length) {
+    if (!fuseInstance || lastItemsLength !== items.length) {
       fuseInstance = new Fuse(items, fuseOptions);
+      lastItemsLength = items.length;
     }
     const searchResults = fuseInstance.search(searchQuery);
     filtered = searchResults.map((result) => result.item);

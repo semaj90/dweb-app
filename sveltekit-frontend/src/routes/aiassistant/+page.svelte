@@ -9,9 +9,9 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import GoldenRatioLoader from '$lib/components/ui/enhanced-bits/GoldenRatioLoader.svelte';
-	import { 
-		MessageSquare, 
-		FileText, 
+	import {
+		MessageSquare,
+		FileText,
 		BookOpen,
 		Brain,
 		Zap,
@@ -214,7 +214,7 @@
 
 			if (response.ok) {
 				const data = await response.json();
-				
+
 				const assistantMessage: ChatMessage = {
 					id: `msg_${Date.now()}_ai`,
 					type: 'assistant',
@@ -226,7 +226,7 @@
 
 				chatMessages = [...chatMessages, assistantMessage];
 				aiSuggestions = data.suggestions || [];
-				
+
 				aiService.send('RESPONSE_COMPLETE');
 
 			} else {
@@ -235,7 +235,7 @@
 
 		} catch (error) {
 			console.error('Chat error:', error);
-			
+
 			const errorMessage: ChatMessage = {
 				id: `msg_${Date.now()}_error`,
 				type: 'system',
@@ -264,7 +264,7 @@
 		try {
 			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 			const recognition = new SpeechRecognition();
-			
+
 			recognition.continuous = false;
 			recognition.interimResults = false;
 			recognition.lang = 'en-US';
@@ -319,10 +319,10 @@
 			const response = await fetch(`/api/context/${contextId}`);
 			if (response.ok) {
 				const contextData = await response.json();
-				
+
 				// Update relevant panels with new context
 				// This would load specific reports, summaries, etc.
-				
+
 				aiService.send('CONTEXT_LOADED');
 			}
 		} catch (error) {
@@ -344,7 +344,7 @@
 		const current = panelLayout[panelName].width;
 		const newWidth = Math.max(15, Math.min(50, current + delta));
 		panelLayout[panelName].width = newWidth;
-		
+
 		// Redistribute remaining width
 		const remaining = 100 - newWidth;
 		const otherPanels = Object.keys(panelLayout).filter(p => p !== panelName);
@@ -385,15 +385,14 @@
 					Context7 Active
 				</Badge>
 			</div>
-			
-			<div class="flex items-center space-x-2">
-				<Button variant="outline" size="sm" onclick={exportChatHistory}>
-					<Download class="h-4 w-4 mr-1" />
-					Export
-				</Button>
-				<Button variant="outline" size="sm" use:settingsDialogTrigger>
-					<Settings class="h-4 w-4" />
-				</Button>
+
+			<div class="flex items-center space-x-2">			<Button variant="outline" size="sm" onclick={exportChatHistory}>
+				<Download class="h-4 w-4 mr-1" />
+				Export
+			</Button>
+			<button class="btn-outline btn-sm" use:settingsDialogTrigger>
+				<Settings class="h-4 w-4" />
+			</button>
 			</div>
 		</div>
 	</header>
@@ -401,7 +400,7 @@
 	<!-- 4-Panel Layout -->
 	<div class="flex-1 flex">
 		<!-- Reports Panel -->
-		<div 
+		<div
 			class="border-r border-slate-200 bg-white transition-all duration-300"
 			style:width="{panelLayout.reports.collapsed ? '0px' : `${panelLayout.reports.width}%`}"
 			style:min-width="{panelLayout.reports.collapsed ? '0px' : '250px'}"
@@ -419,7 +418,7 @@
 							</Button>
 						</div>
 					</div>
-					
+
 					<div class="flex-1 overflow-y-auto p-4">
 						{#if reports.length === 0}
 							<div class="text-center py-8">
@@ -446,7 +445,7 @@
 		</div>
 
 		<!-- Summaries Panel -->
-		<div 
+		<div
 			class="border-r border-slate-200 bg-white transition-all duration-300"
 			style:width="{panelLayout.summaries.collapsed ? '0px' : `${panelLayout.summaries.width}%`}"
 			style:min-width="{panelLayout.summaries.collapsed ? '0px' : '250px'}"
@@ -459,7 +458,7 @@
 							<Minimize class="h-3 w-3" />
 						</Button>
 					</div>
-					
+
 					<div class="flex-1 overflow-y-auto p-4">
 						<div class="space-y-3">
 							{#each summaries as summary}
@@ -475,7 +474,7 @@
 		</div>
 
 		<!-- Citations Panel -->
-		<div 
+		<div
 			class="border-r border-slate-200 bg-white transition-all duration-300"
 			style:width="{panelLayout.citations.collapsed ? '0px' : `${panelLayout.citations.width}%`}"
 			style:min-width="{panelLayout.citations.collapsed ? '0px' : '250px'}"
@@ -488,7 +487,7 @@
 							<Minimize class="h-3 w-3" />
 						</Button>
 					</div>
-					
+
 					<div class="flex-1 overflow-y-auto p-4">
 						<div class="space-y-3">
 							{#each citations as citation}
@@ -510,7 +509,7 @@
 		</div>
 
 		<!-- AI Chat Panel -->
-		<div 
+		<div
 			class="bg-white transition-all duration-300 flex flex-col"
 			style:width="{panelLayout.chat.collapsed ? '0px' : `${panelLayout.chat.width}%`}"
 		>
@@ -535,7 +534,7 @@
 						<p class="text-xs text-blue-700 mb-2">💡 Suggested actions:</p>
 						<div class="flex flex-wrap gap-2">
 							{#each contextualSuggestions as suggestion}
-								<button 
+								<button
 									class="text-xs px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded transition-colors"
 									onclick={() => useSuggestion(suggestion)}
 								>
@@ -562,11 +561,11 @@
 									<p class="text-xs opacity-75 mt-1">
 										{new Date(message.timestamp).toLocaleTimeString()}
 									</p>
-									
+
 									{#if message.suggestions && message.suggestions.length > 0}
 										<div class="mt-2 space-y-1">
 											{#each message.suggestions as suggestion}
-												<button 
+												<button
 													class="block w-full text-left text-xs p-2 bg-white/20 hover:bg-white/30 rounded transition-colors"
 													onclick={() => useSuggestion(suggestion)}
 												>
@@ -605,10 +604,10 @@
 								disabled={isProcessing}
 							/>
 						</div>
-						
+
 						{#if voiceEnabled}
-							<Button 
-								variant="outline" 
+							<Button
+								variant="outline"
 								size="sm"
 								onclick={startVoiceInput}
 								disabled={isListening || isProcessing}
@@ -621,8 +620,8 @@
 								{/if}
 							</Button>
 						{/if}
-						
-						<Button 
+
+						<Button
 							onclick={sendMessage}
 							disabled={!currentMessage.trim() || isProcessing}
 						>

@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     if (!sessionId) {
       return json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
     const body: CaseSummaryRequest = await request.json();
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
           success: false,
           error: "caseId is required",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
     // Check for existing summary if not regenerating
@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     const caseData = await gatherCaseData(
       caseId,
       includeEvidence,
-      includeTimeline,
+      includeTimeline
     );
 
     // Generate AI summary
@@ -120,11 +120,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     await VectorService.storeCaseEmbedding({
       caseId,
       content: summaryText,
-      embedding: await VectorService.generateEmbedding(summaryText, {
-        model: "ollama",
-      }),
-      summary_type: "ai_generated",
       metadata: {
+        summary_type: "ai_generated",
         summary,
         analysisDepth,
         generatedAt: new Date(),
@@ -148,7 +145,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         success: false,
         error: error instanceof Error ? error.message : "Internal server error",
       } as CaseSummaryResponse,
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -160,7 +157,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     if (!sessionId) {
       return json(
         { success: false, error: "Authentication required" },
-        { status: 401 },
+        { status: 401 }
       );
     }
     const caseId = url.searchParams.get("caseId");
@@ -171,7 +168,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
           success: false,
           error: "caseId is required",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
     // Get latest summary
@@ -188,7 +185,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
           success: false,
           error: "No summary found for this case",
         },
-        { status: 404 },
+        { status: 404 }
       );
     }
     const analytics = await calculateCaseAnalytics(caseId);
@@ -205,7 +202,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         success: false,
         error: error instanceof Error ? error.message : "Internal server error",
       } as CaseSummaryResponse,
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -213,7 +210,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 async function gatherCaseData(
   caseId: string,
   includeEvidence: boolean,
-  includeTimeline: boolean,
+  includeTimeline: boolean
 ) {
   const data: any = { caseId };
 
@@ -222,7 +219,10 @@ async function gatherCaseData(
     const evidenceData = await db
       .select()
       .from(evidenceVectors)
-      .innerJoin(evidenceTable, eq(evidenceVectors.evidenceId, evidenceTable.id))
+      .innerJoin(
+        evidenceTable,
+        eq(evidenceVectors.evidenceId, evidenceTable.id)
+      )
       .where(eq(evidenceTable.caseId, caseId));
 
     data.evidence = evidenceData.map((e) => ({
@@ -327,13 +327,13 @@ Respond with valid JSON only.`;
         summary.evidence = {
           total: caseData.evidenceAnalytics.totalEvidence,
           admissible: Math.round(
-            caseData.evidenceAnalytics.totalEvidence * 0.7,
+            caseData.evidenceAnalytics.totalEvidence * 0.7
           ), // Estimated
           questionable: Math.round(
-            caseData.evidenceAnalytics.totalEvidence * 0.2,
+            caseData.evidenceAnalytics.totalEvidence * 0.2
           ),
           inadmissible: Math.round(
-            caseData.evidenceAnalytics.totalEvidence * 0.1,
+            caseData.evidenceAnalytics.totalEvidence * 0.1
           ),
         };
       }
@@ -403,7 +403,7 @@ async function calculateCaseAnalytics(caseId: string) {
     daysActive: 30, // Would calculate from case creation date
     completionPercentage: Math.min(
       95,
-      Math.floor((evidence + interactions) * 10),
+      Math.floor((evidence + interactions) * 10)
     ),
   };
 }

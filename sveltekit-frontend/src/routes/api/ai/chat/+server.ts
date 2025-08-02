@@ -3,10 +3,10 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
   const startTime = Date.now();
-  
+
   try {
     const { message, model = 'gemma3-legal', temperature = 0.1 } = await request.json();
-    
+
     if (!message) {
       return json({ error: 'Message required' }, { status: 400 });
     }
@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     const data = await response.json();
-    
+
     return json({
       response: data.response,
       model,
@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request }) => {
         tokens: data.eval_count || 0
       }
     });
-    
+
   } catch (error) {
     return json(
       { error: `Chat failed: ${error.message}` },
