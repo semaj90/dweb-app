@@ -89,6 +89,34 @@ gemma3Q4_K_M/
 *.gguf
 *.bin
 models/
+local-models/*.gguf
+local-models/mo16.gguf
+local-models/mohf16-Q4_K_M.gguf
+
+# Large media files that shouldn't be in the repo
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+
+# Large executables and binaries
+*.exe
+workerd.exe
+ffmpeg.exe
+
+# Large libraries and dependencies
+*.dll
+*.lib
+*.so
+*.dylib
+
+# Backup and temporary large files
+*.backup
+*.bak
+*.tmp
+*.temp
 
 # Uploads
 uploads/

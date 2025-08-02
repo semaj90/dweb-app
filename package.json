@@ -16,7 +16,16 @@
     "test": "npm run test:services && npm run test:integration",
     "test:services": "node tests/services.test.js",
     "test:integration": "node tests/integration.test.js",
-    "production:start": "npm run db:up && npm run ai:models && cd sveltekit-frontend && npm run build && npm run preview"
+    "production:start": "npm run db:up && npm run ai:models && cd sveltekit-frontend && npm run build && npm run preview",
+    "setup:gpu-json": "node setup-gpu-json-parser.ts",
+    "build:wasm": "cd src/lib/wasm && powershell -ExecutionPolicy Bypass -File build-wasm.ps1",
+    "build:wasm:debug": "cd src/lib/wasm && powershell -ExecutionPolicy Bypass -File build-wasm.ps1 -BuildType debug",
+    "test:wasm": "cd src/lib/wasm && powershell -ExecutionPolicy Bypass -File build-wasm.ps1 -RunTests",
+    "benchmark:json": "node -e \"import('./src/lib/wasm/benchmark-json-parser.js').then(m => m.runBenchmark())\"",
+    "optimize:docker": "node -e \"import('./src/lib/optimization/docker-resource-optimizer.js').then(m => m.optimizeResources())\"",
+    "profile:wasm": "node --inspect src/lib/wasm/benchmark-json-parser.js",
+    "clean:wasm": "cd src/lib/wasm && make clean",
+    "install:deps": "cd src/lib/wasm && make install-deps"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

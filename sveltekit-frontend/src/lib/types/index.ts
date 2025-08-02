@@ -148,3 +148,73 @@ export interface AnalysisResults {
 export type { Evidence as EvidenceType };
 export type { Report as ReportType };
 export type { CanvasState as CanvasStateType };
+
+// Case Scoring Types
+export interface CaseScoringRequest {
+  caseId: string;
+  criteria?: ScoringCriteria;
+  evidence?: Evidence[];
+  additionalData?: any;
+}
+
+export interface CaseScoringResult {
+  caseId: string;
+  score: number;
+  breakdown: {
+    [key: string]: number;
+  };
+  riskLevel: "LOW" | "MEDIUM" | "HIGH";
+  recommendations: string[];
+  timestamp: Date;
+}
+
+export interface ScoringCriteria {
+  weights: {
+    evidenceQuality: number;
+    caseComplexity: number;
+    legalPrecedent: number;
+    evidenceVolume: number;
+  };
+  thresholds: {
+    low: number;
+    medium: number;
+    high: number;
+  };
+}
+
+// Vector Search Types
+export interface VectorSearchResult {
+  id: string;
+  score: number;
+  payload: any;
+  vector?: number[];
+}
+
+export interface DocumentVector {
+  id: string;
+  vector: number[];
+  payload: any;
+  metadata?: any;
+}
+
+export interface SearchOptions {
+  limit?: number;
+  threshold?: number;
+  type?: string;
+  collection?: string;
+  minScore?: number;
+  caseId?: string;
+}
+
+export interface CollectionInfo {
+  name: string;
+  vectorsCount: number;
+  pointsCount: number;
+  config: any;
+}
+
+export interface BatchUpsertResult {
+  operation_id: number;
+  status: "acknowledged" | "completed" | "failed";
+  result?: any;
+}
