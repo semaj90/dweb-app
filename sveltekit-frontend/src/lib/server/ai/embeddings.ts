@@ -1,5 +1,6 @@
 // AI embedding generation service
-// Supports OpenAI and local models with Redis/memory caching for performance
+// UPDATED: Now defaults to Nomic Embed (free, local) instead of OpenAI (paid)
+// Supports both OpenAI and local Nomic Embed models with Redis/memory caching for performance
 // Use process.env for server-side environment variables
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 import { eq } from "drizzle-orm";
@@ -11,7 +12,7 @@ export async function generateEmbedding(
   text: string,
   options: EmbeddingOptions = {},
 ): Promise<number[] | null> {
-  const { model = "openai", cache = true, maxTokens = 8000 } = options;
+  const { model = "local", cache = true, maxTokens = 8000 } = options;
 
   if (!text || text.trim().length === 0) {
     return null;
@@ -31,8 +32,10 @@ export async function generateEmbedding(
 
   try {
     if (model === "openai") {
+      console.warn("⚠️  OpenAI embeddings are not free! Consider using model='local' for Nomic Embed instead.");
       embedding = await generateOpenAIEmbedding(truncatedText);
     } else {
+      // Default to local Nomic Embed (free)
       embedding = await generateLocalEmbedding(truncatedText);
     }
     // Cache the result
@@ -69,23 +72,47 @@ async function generateOpenAIEmbedding(text: string): Promise<number[]> {
   const data = await response.json();
   return data.data[0].embedding;
 }
-// Local embedding generation (placeholder for local models)
+// Local embedding generation using Nomic Embed
 async function generateLocalEmbedding(text: string): Promise<number[]> {
-  // This could use sentence-transformers, Ollama, or other local models
-  // For now, return a simple hash-based pseudo-embedding
-  console.warn(
-    "Local embedding generation not implemented, using OpenAI fallback",
-  );
-  return generateOpenAIEmbedding(text);
+  try {
+    // Use local Nomic Embed server
+    const nomicEmbedUrl = process.env.NOMIC_EMBED_URL || "http://localhost:5000";
+    
+    const response = await fetch(`${nomicEmbedUrl}/embed`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: text
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Nomic Embed API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.embedding;
+  } catch (error) {
+    console.warn(
+      "Nomic Embed generation failed, this avoids OpenAI costs but requires local Nomic Embed server:",
+      error
+    );
+    
+    // Instead of fallback to OpenAI, throw error to encourage local setup
+    throw new Error("Local Nomic Embed server required. Please start Nomic Embed server on port 5000 or set NOMIC_EMBED_URL environment variable.");
+  }
 }
 // Batch embedding generation for efficiency
 export async function generateBatchEmbeddings(
   texts: string[],
   options: EmbeddingOptions = {},
 ): Promise<number[][]> {
-  const { model = "openai" } = options;
+  const { model = "local" } = options;
 
   if (model === "openai" && texts.length > 1) {
+    console.warn("⚠️  OpenAI batch embeddings are not free! Consider using model='local' for Nomic Embed instead.");
     return generateOpenAIBatchEmbeddings(texts);
   }
   // Fall back to individual generation

@@ -9,6 +9,12 @@ export interface EmbeddingProvider {
 }
 // Configure embedding providers
 const providers: Record<string, EmbeddingProvider> = {
+  nomic: {
+    name: "Nomic Embed",
+    endpoint: "http://localhost:5000/embed",
+    model: "nomic-embed-text",
+    dimensions: 768,
+  },
   ollama: {
     name: "Ollama",
     endpoint: "http://localhost:11434/api/embeddings",
@@ -25,7 +31,7 @@ const providers: Record<string, EmbeddingProvider> = {
 
 export async function getEmbedding(
   text: string,
-  provider: string = "ollama",
+  provider: string = "nomic",
 ): Promise<number[]> {
   const config = providers[provider];
   if (!config) {
@@ -36,9 +42,12 @@ export async function getEmbedding(
     const cleanText = text.replace(/[^\w\s.,;:!?-]/g, " ").trim();
     const truncatedText = cleanText.slice(0, 8000); // Safe limit for most models
 
-    if (provider === "ollama") {
+    if (provider === "nomic") {
+      return await getNomicEmbedding(truncatedText, config);
+    } else if (provider === "ollama") {
       return await getOllamaEmbedding(truncatedText, config);
     } else if (provider === "openai") {
+      console.warn("⚠️  OpenAI embeddings are not free! Consider using provider='nomic' instead.");
       return await getOpenAIEmbedding(truncatedText, config);
     }
     throw new Error(
@@ -51,6 +60,29 @@ export async function getEmbedding(
     );
   }
 }
+async function getNomicEmbedding(
+  text: string,
+  config: EmbeddingProvider,
+): Promise<number[]> {
+  const response = await fetch(config.endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text: text,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Nomic Embed API error: ${response.status} ${response.statusText}`,
+    );
+  }
+  const data = await response.json();
+  return data.embedding;
+}
+
 async function getOllamaEmbedding(
   text: string,
   config: EmbeddingProvider,
