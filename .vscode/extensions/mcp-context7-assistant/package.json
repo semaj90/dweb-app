@@ -2,7 +2,7 @@
   "name": "mcp-context7-assistant",
   "displayName": "Context7 MCP Assistant",
   "description": "Intelligent MCP integration with auto-context detection for legal AI development",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -127,6 +127,21 @@
         "command": "mcp.getBenchmarks",
         "title": "🎯 Get Benchmark Results",
         "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.embedVscodeMarkdown",
+        "title": "📝 Embed VSCode Markdown Files",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.searchEvidence",
+        "title": "🔍 Search Evidence",
+        "category": "Context7 MCP"
+      },
+      {
+        "command": "mcp.parseEvidenceSimdJson",
+        "title": "⚡ Parse Evidence SIMD JSON",
+        "category": "Context7 MCP"
       }
     ],
     "menus": {
@@ -206,6 +221,36 @@
           ],
           "default": "info",
           "description": "Logging level for MCP extension"
+        },
+        "mcpContext7.nomicEmbedUrl": {
+          "type": "string",
+          "default": "http://localhost:5000",
+          "description": "URL for local Nomic Embed server"
+        },
+        "mcpContext7.neo4jUrl": {
+          "type": "string",
+          "default": "bolt://localhost:7687",
+          "description": "Neo4j database URL"
+        },
+        "mcpContext7.neo4jUsername": {
+          "type": "string",
+          "default": "neo4j",
+          "description": "Neo4j username"
+        },
+        "mcpContext7.neo4jPassword": {
+          "type": "string",
+          "default": "password",
+          "description": "Neo4j password"
+        },
+        "mcpContext7.redisUrl": {
+          "type": "string",
+          "default": "redis://localhost:6379",
+          "description": "Redis cache URL"
+        },
+        "mcpContext7.qdrantUrl": {
+          "type": "string",
+          "default": "http://localhost:6333",
+          "description": "Qdrant vector database URL"
         }
       }
     }
@@ -218,10 +263,19 @@
   "devDependencies": {
     "@types/vscode": "^1.74.0",
     "@types/node": "16.x",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "@types/pg": "^8.11.0",
+    "@types/lokijs": "^1.5.9"
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "ws": "^8.14.0"
+    "ws": "^8.14.0",
+    "neo4j-driver": "^5.23.0",
+    "simdjson": "^0.9.0",
+    "ioredis": "^5.3.2",
+    "@qdrant/js-client-rest": "^1.11.0",
+    "pg": "^8.11.0",
+    "lokijs": "^1.5.12",
+    "fuse.js": "^7.0.0"
   }
 }

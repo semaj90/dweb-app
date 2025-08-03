@@ -105,7 +105,7 @@ export interface ExtensionConfig {
 
 // VS Code specific interfaces
 export interface StatusBarState {
-  status: 'ready' | 'analyzing' | 'executing' | 'error' | 'offline';
+  status: 'ready' | 'analyzing' | 'executing' | 'processing' | 'error' | 'offline';
   message: string;
   tooltip?: string;
 }
