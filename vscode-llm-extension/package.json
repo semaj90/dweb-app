@@ -24,8 +24,68 @@
       {
         "command": "llmManager.refreshModels",
         "title": "Refresh LLM Model List"
+      },
+      {
+        "command": "mcp.embedMarkdownFiles",
+        "title": "MCP: Embed VSCode Markdown Files",
+        "category": "MCP Context7"
+      },
+      {
+        "command": "mcp.searchEvidence",
+        "title": "MCP: Search Evidence",
+        "category": "MCP Context7"
+      },
+      {
+        "command": "mcp.parseEvidenceSimdJson",
+        "title": "MCP: Parse Evidence SIMD JSON",
+        "category": "MCP Context7"
       }
     ],
+    "configuration": {
+      "title": "MCP Context7 Assistant",
+      "properties": {
+        "mcpContext7.neo4jUri": {
+          "type": "string",
+          "default": "bolt://localhost:7687",
+          "description": "Neo4j database URI for embeddings and metadata storage"
+        },
+        "mcpContext7.neo4jUser": {
+          "type": "string",
+          "default": "neo4j",
+          "description": "Neo4j database username"
+        },
+        "mcpContext7.neo4jPassword": {
+          "type": "string",
+          "default": "password",
+          "description": "Neo4j database password"
+        },
+        "mcpContext7.nomicEmbedUrl": {
+          "type": "string",
+          "default": "http://localhost:8080",
+          "description": "Nomic Embed server URL for batch embedding"
+        },
+        "mcpContext7.embeddingModel": {
+          "type": "string",
+          "default": "nomic-embed-text-v1.5",
+          "description": "Nomic embedding model to use"
+        },
+        "mcpContext7.workerThreads": {
+          "type": "number",
+          "default": 4,
+          "description": "Number of worker threads for multi-core embedding"
+        },
+        "mcpContext7.batchSize": {
+          "type": "number",
+          "default": 32,
+          "description": "Batch size for embedding operations"
+        },
+        "mcpContext7.enableSimdJson": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable SIMD JSON parsing for performance"
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -52,8 +112,13 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.80.0",
-    "typescript": "^5.0.0",
-    "vsce": "^3.0.0"
+    "@vscode/vsce": "^2.22.0",
+    "typescript": "^5.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/node": "^24.1.0",
+    "neo4j-driver": "^5.24.0",
+    "node-fetch": "^3.3.2",
+    "simdjson": "^0.9.0"
+  }
 }

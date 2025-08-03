@@ -11,17 +11,26 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "types": ["node", "vscode"]
+    "isolatedModules": false,
+    "noEmit": false,
+    "outDir": "./dist",
+    "sourceMap": true
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.js"
+    "src/extension.ts",
+    "src/nomic-embed-service.ts",
+    "src/neo4j-service.ts",
+    "src/simd-json-parser.ts"
   ],
   "exclude": [
     "node_modules",
     "out",
-    "dist"
+    "dist",
+    "../sveltekit-frontend",
+    "../agents",
+    "src/cluster-manager.ts",
+    "src/enhanced-mcp-memory-manager.ts",
+    "src/llm-optimization-manager.ts",
+    "src/ollama-gemma-cache.ts"
   ]
 }
