@@ -1,4 +1,4 @@
-import Fuse from "fuse.js/dist/fuse.js";
+import Fuse from "fuse.js";
 import type { Writable } from "svelte/store";
 import { derived, writable } from "svelte/store";
 
@@ -211,7 +211,7 @@ export const evidenceActions = {
   // Update sort settings
   setSorting(
     sortBy: EvidenceGridState["sortBy"],
-    sortOrder: EvidenceGridState["sortOrder"],
+    sortOrder: EvidenceGridState["sortOrder"]
   ) {
     evidenceGrid.update((state) => ({ ...state, sortBy, sortOrder }));
   },
@@ -253,7 +253,7 @@ export const evidenceActions = {
         ...state,
         items: state.items.filter((item) => item.id !== evidenceId),
         selectedItems: new Set(
-          [...state.selectedItems].filter((id) => id !== evidenceId),
+          [...state.selectedItems].filter((id) => id !== evidenceId)
         ),
       }));
     } catch (error) {
@@ -315,7 +315,7 @@ export const uploadActions = {
             files: state.files.map((f) =>
               f.id === uploadFile.id
                 ? { ...f, preview: e.target?.result as string }
-                : f,
+                : f
             ),
           }));
         };
@@ -357,7 +357,7 @@ export const uploadActions = {
         uploadModal.update((modalState) => ({
           ...modalState,
           files: modalState.files.map((f) =>
-            f.id === uploadFile.id ? { ...f, status: "uploading" as const } : f,
+            f.id === uploadFile.id ? { ...f, status: "uploading" as const } : f
           ),
         }));
 
@@ -374,7 +374,7 @@ export const uploadActions = {
             uploadModal.update((modalState) => ({
               ...modalState,
               files: modalState.files.map((f) =>
-                f.id === uploadFile.id ? { ...f, progress } : f,
+                f.id === uploadFile.id ? { ...f, progress } : f
               ),
             }));
           }
@@ -396,7 +396,7 @@ export const uploadActions = {
                         aiAnalysis: result.aiAnalysis,
                         extractedText: result.extractedText,
                       }
-                    : f,
+                    : f
                 ),
               }));
               resolve();
@@ -407,7 +407,7 @@ export const uploadActions = {
                 files: modalState.files.map((f) =>
                   f.id === uploadFile.id
                     ? { ...f, status: "error" as const, error }
-                    : f,
+                    : f
                 ),
               }));
               reject(new Error(error));
@@ -421,7 +421,7 @@ export const uploadActions = {
               files: modalState.files.map((f) =>
                 f.id === uploadFile.id
                   ? { ...f, status: "error" as const, error }
-                  : f,
+                  : f
               ),
             }));
             reject(new Error(error));

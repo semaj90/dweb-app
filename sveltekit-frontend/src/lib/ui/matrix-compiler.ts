@@ -310,13 +310,18 @@ export class MatrixUICompiler {
     const element = this.createElement(node);
 
     // Parse matrix transform
-    const matrix = mat4.fromValues(...node.matrix);
+    const matrix = mat4.fromValues(
+      node.matrix[0] || 1, node.matrix[1] || 0, node.matrix[2] || 0, node.matrix[3] || 0,
+      node.matrix[4] || 0, node.matrix[5] || 1, node.matrix[6] || 0, node.matrix[7] || 0,
+      node.matrix[8] || 0, node.matrix[9] || 0, node.matrix[10] || 1, node.matrix[11] || 0,
+      node.matrix[12] || 0, node.matrix[13] || 0, node.matrix[14] || 0, node.matrix[15] || 1
+    );
 
     // Generate CSS classes with UnoCSS
     const cssClasses = await this.generateCSS(node);
 
     // Create WebGL buffer for GPU acceleration
-    const webglBuffer = this.createWebGLBuffer(node, matrix);
+    const webglBuffer = this.createWebGLBuffer(node, new Float32Array(matrix));
 
     // Determine LOD level based on viewport and AI context
     const lodLevel = this.calculateLOD(node);
@@ -525,7 +530,8 @@ export class MatrixUICompiler {
     // Apply matrix transform to vertices
     for (let i = 0; i < vertices.length; i += 5) {
       const vertex = [vertices[i], vertices[i + 1], vertices[i + 2], 1.0];
-      const transformed = mat4.multiply([], matrix, vertex as any);
+      const result = mat4.create();
+      const transformed = mat4.multiply(result, matrix, vertex as any);
       vertices[i] = transformed[0];
       vertices[i + 1] = transformed[1];
       vertices[i + 2] = transformed[2];

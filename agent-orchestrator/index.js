@@ -1,6 +1,6 @@
 ﻿/**
  * Enhanced RAG System - Agent Orchestrator
- * Multi-Agent Coordination for Legal AI
+ * Multi-Agent Coordination for Legal AI with LLM Optimization Patterns
  */
 
 import { EventEmitter } from 'events';
@@ -8,6 +8,7 @@ import ClaudeAgent from './agents/claude.js';
 import CrewAIAgent from './agents/crewai.js';
 import GemmaAgent from './agents/gemma.js';
 import OllamaAgent from './agents/ollama.js';
+import ConfigLoader from './config-loader.js';
 
 export class AgentOrchestrator extends EventEmitter {
     constructor(config = {}) {
@@ -16,6 +17,10 @@ export class AgentOrchestrator extends EventEmitter {
         this.agents = new Map();
         this.isInitialized = false;
         this.activeJobs = new Map();
+        this.jobCounter = 0;
+        
+        // Initialize configuration loader
+        this.configLoader = new ConfigLoader(config.configPath);
         
         // Initialize agents based on configuration
         this.initializeAgents();
@@ -50,6 +55,14 @@ export class AgentOrchestrator extends EventEmitter {
     }
     
     async initialize() {
+        // Load configuration with LLM optimizations
+        try {
+            await this.configLoader.loadConfig();
+            console.log('📋 Configuration loaded with LLM optimizations');
+        } catch (error) {
+            console.warn('⚠️ Failed to load advanced config, using default:', error.message);
+        }
+        
         const initPromises = [];
         
         for (const [name, agent] of this.agents) {
@@ -81,12 +94,14 @@ export class AgentOrchestrator extends EventEmitter {
         this.emit('orchestrator-initialized', {
             initializedAgents,
             failedAgents,
-            totalAgents: initializedAgents.length
+            totalAgents: initializedAgents.length,
+            optimizations: this.configLoader.getSummary().optimizations
         });
         
         return {
             initialized: initializedAgents,
-            failed: failedAgents
+            failed: failedAgents,
+            configSummary: this.configLoader.getSummary()
         };
     }
     
@@ -95,7 +110,7 @@ export class AgentOrchestrator extends EventEmitter {
             await this.initialize();
         }
         
-        const jobId = job--;
+        const jobId = ++this.jobCounter;
         const job = {
             id: jobId,
             type: 'legal-document-analysis',
@@ -244,7 +259,182 @@ export class AgentOrchestrator extends EventEmitter {
         return Array.from(this.activeJobs.values());
     }
     
+    /**
+     * Process streaming tokens with optimization patterns
+     */
+    async processStreamingTokens(tokens, options = {}) {
+        if (!this.configLoader.isLoaded) {
+            // Fallback to basic processing
+            return tokens.map(token => ({ token, timestamp: Date.now() }));
+        }
+        
+        try {
+            // Use worker thread for optimized token processing
+            const result = await this.configLoader.processTokensWithWorker(tokens, 'processTokens');
+            
+            this.emit('tokens-processed', {
+                count: tokens.length,
+                compressed: result.length < tokens.length,
+                worker: true
+            });
+            
+            return result;
+        } catch (error) {
+            console.warn('⚠️ Worker processing failed, using fallback:', error.message);
+            return tokens.map(token => ({ token, timestamp: Date.now() }));
+        }
+    }
+    
+    /**
+     * Compress token payload for transmission
+     */
+    async compressTokens(tokens) {
+        if (!this.configLoader.isLoaded) {
+            return { compressed: false, data: tokens };
+        }
+        
+        try {
+            const result = await this.configLoader.processTokensWithWorker(tokens, 'compactTokens');
+            
+            this.emit('tokens-compressed', {
+                originalSize: JSON.stringify(tokens).length,
+                compressedSize: result.compact.length,
+                ratio: result.ratio
+            });
+            
+            return {
+                compressed: true,
+                data: result,
+                savings: `${Math.round((1 - result.ratio) * 100)}%`
+            };
+        } catch (error) {
+            console.warn('⚠️ Token compression failed:', error.message);
+            return { compressed: false, data: tokens };
+        }
+    }
+    
+    /**
+     * Execute workflow with optimization patterns
+     */
+    async executeWorkflow(workflowName, input, options = {}) {
+        const workflow = this.configLoader.getWorkflow(workflowName);
+        if (!workflow) {
+            throw new Error(`Workflow not found: ${workflowName}`);
+        }
+        
+        const jobId = ++this.jobCounter;
+        const job = {
+            id: jobId,
+            type: 'workflow-execution',
+            workflow: workflowName,
+            input,
+            options,
+            results: {},
+            startTime: Date.now(),
+            status: 'running'
+        };
+        
+        this.activeJobs.set(jobId, job);
+        this.emit('workflow-started', { jobId, workflow: workflowName });
+        
+        try {
+            const results = {};
+            
+            // Execute workflow steps
+            for (const step of workflow.steps) {
+                if (step.type === 'aggregation') {
+                    // Synthesis step
+                    results[step.name] = await this.synthesizeResults(results, step.method);
+                } else {
+                    // Agent step
+                    const agent = this.agents.get(step.agent);
+                    if (agent && agent[step.tasks[0]]) {
+                        results[step.name] = await agent[step.tasks[0]](input, options);
+                    }
+                }
+                
+                // Emit progress
+                this.emit('workflow-progress', {
+                    jobId,
+                    step: step.name,
+                    completed: Object.keys(results).length,
+                    total: workflow.steps.length
+                });
+            }
+            
+            job.status = 'completed';
+            job.endTime = Date.now();
+            job.duration = job.endTime - job.startTime;
+            job.results = results;
+            
+            this.emit('workflow-completed', { jobId, results, duration: job.duration });
+            
+            return {
+                jobId,
+                results,
+                duration: job.duration,
+                workflow: workflowName
+            };
+        } catch (error) {
+            job.status = 'failed';
+            job.error = error.message;
+            this.emit('workflow-failed', { jobId, error: error.message });
+            throw error;
+        }
+    }
+    
+    /**
+     * Get optimization metrics and bottleneck analysis
+     */
+    getOptimizationMetrics() {
+        const bottlenecks = this.configLoader.getBottleneckAnalysis();
+        const summary = this.configLoader.getSummary();
+        
+        return {
+            configSummary: summary,
+            bottleneckAnalysis: bottlenecks,
+            activeJobs: this.activeJobs.size,
+            agentStatus: this.getAgentStatus(),
+            workerStats: this.configLoader.workers.size
+        };
+    }
+    
+    /**
+     * Get real-time performance dashboard data
+     */
+    async getPerformanceDashboard() {
+        const metrics = this.getOptimizationMetrics();
+        
+        // Get worker statistics if available
+        let workerStats = null;
+        try {
+            workerStats = await this.configLoader.processTokensWithWorker([], 'getStats');
+        } catch (error) {
+            // Worker stats not available
+        }
+        
+        return {
+            timestamp: Date.now(),
+            orchestrator: {
+                agents: metrics.agentStatus,
+                jobs: {
+                    active: this.activeJobs.size,
+                    completed: this.jobCounter - this.activeJobs.size
+                }
+            },
+            optimization: {
+                workers: metrics.workerStats,
+                workerStats,
+                bottlenecks: metrics.bottleneckAnalysis
+            },
+            config: metrics.configSummary
+        };
+    }
+    
     async cleanup() {
+        console.log('🧹 Cleaning up orchestrator...');
+        
+        // Cleanup agents
         for (const [name, agent] of this.agents) {
             if (agent.cleanup) {
                 try {
@@ -254,7 +444,14 @@ export class AgentOrchestrator extends EventEmitter {
                 }
             }
         }
+        
+        // Cleanup configuration loader (worker threads, etc.)
+        if (this.configLoader) {
+            await this.configLoader.cleanup();
+        }
+        
         this.activeJobs.clear();
+        console.log('✅ Orchestrator cleanup complete');
     }
 }
 

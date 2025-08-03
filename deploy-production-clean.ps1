@@ -33,37 +33,70 @@ foreach ($dir in $dataDirs) {
     }
 }
 
-# Step 1: Check Docker Desktop status
-Write-Host "Checking Docker Desktop status..." -ForegroundColor Cyan
+# Step 1: Check Docker Desktop status via CLI
+Write-Host "Checking Docker Desktop status via CLI..." -ForegroundColor Cyan
 
 try {
     $dockerVersion = docker --version 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Docker found: $dockerVersion" -ForegroundColor Green
 
-        # Check if Docker is running
+        # Check if Docker daemon is running
         docker ps > $null 2>&1
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "Docker Desktop is running" -ForegroundColor Green
+            Write-Host "Docker daemon is running" -ForegroundColor Green
+
+            # Check Docker Desktop status via CLI
+            $dockerContext = docker context ls --format "table {{.Name}}\t{{.Current}}\t{{.Endpoint}}" 2>$null
+            Write-Host "Docker context: $dockerContext" -ForegroundColor Cyan
         } else {
-            Write-Host "Starting Docker Desktop..." -ForegroundColor Yellow
-            Start-Process -FilePath "C:\Program Files\Docker\Docker\Docker Desktop.exe" -WindowStyle Hidden -ErrorAction SilentlyContinue
+            Write-Host "Docker daemon not running. Starting Docker Desktop via CLI..." -ForegroundColor Yellow
 
-            # Wait for Docker to start
-            Write-Host "Waiting for Docker Desktop to start..." -ForegroundColor Yellow
-            $timeout = 60
-            $elapsed = 0
+            # Try to start Docker Desktop using CLI commands
+            try {
+                # Method 1: Use Docker Desktop CLI if available
+                if (Get-Command "docker-desktop" -ErrorAction SilentlyContinue) {
+                    Write-Host "Starting Docker Desktop using CLI..." -ForegroundColor Yellow
+                    docker-desktop start
+                } else {
+                    # Method 2: Use wsl command to start Docker in WSL2
+                    Write-Host "Starting Docker via WSL2..." -ForegroundColor Yellow
+                    wsl -d docker-desktop -e sh -c "service docker start" 2>$null
 
-            do {
-                Start-Sleep 5
-                $elapsed += 5
-                docker ps > $null 2>&1
-            } while ($LASTEXITCODE -ne 0 -and $elapsed -lt $timeout)
+                    # Method 3: Fallback to com.docker.cli
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Host "Attempting to start Docker via com.docker.cli..." -ForegroundColor Yellow
+                        & "C:\Program Files\Docker\Docker\resources\com.docker.cli.exe" start 2>$null
+                    }
+                }
 
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "Docker Desktop started successfully" -ForegroundColor Green
-            } else {
-                Write-Host "Docker Desktop failed to start within $timeout seconds" -ForegroundColor Red
+                # Wait for Docker daemon to be ready
+                Write-Host "Waiting for Docker daemon to be ready..." -ForegroundColor Yellow
+                $timeout = 90
+                $elapsed = 0
+
+                do {
+                    Start-Sleep 5
+                    $elapsed += 5
+                    docker ps > $null 2>&1
+                    if ($elapsed % 15 -eq 0) {
+                        Write-Host "Still waiting... ($elapsed/$timeout seconds)" -ForegroundColor Yellow
+                    }
+                } while ($LASTEXITCODE -ne 0 -and $elapsed -lt $timeout)
+
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "Docker daemon started successfully via CLI" -ForegroundColor Green
+
+                    # Verify Docker Desktop is running
+                    $dockerInfo = docker info --format "{{.ServerVersion}}" 2>$null
+                    Write-Host "Docker Server Version: $dockerInfo" -ForegroundColor Green
+                } else {
+                    Write-Host "Docker daemon failed to start within $timeout seconds" -ForegroundColor Red
+                    Write-Host "Try running: wsl --shutdown && wsl" -ForegroundColor Yellow
+                    Write-Host "Continuing without Docker..." -ForegroundColor Yellow
+                }
+            } catch {
+                Write-Host "Failed to start Docker via CLI: $($_.Exception.Message)" -ForegroundColor Red
                 Write-Host "Continuing without Docker..." -ForegroundColor Yellow
             }
         }

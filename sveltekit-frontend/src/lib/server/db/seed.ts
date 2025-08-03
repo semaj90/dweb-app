@@ -3,12 +3,12 @@ import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { cases, evidence, users } from "./unified-schema";
+import { cases, evidence, users } from "./schema-postgres";
 
 // Database connection
 const connectionString =
   process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
+  "postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db";
 const sql = postgres(connectionString);
 const db = drizzle(sql);
 
@@ -76,12 +76,13 @@ const sampleCases = [
     description:
       "Investigation into alleged theft of electronic equipment from downtown electronics store",
     jurisdiction: "State Court",
-    prosecutor: "", // Will be set after user creation
-    leadInvestigator: "", // Will be set after user creation
-    caseType: "criminal",
+    leadProsecutor: "", // Will be set after user creation
     status: "active",
     priority: "medium",
-    openedAt: new Date("2024-01-15"),
+    incidentDate: new Date("2024-01-15"),
+    category: "theft",
+    dangerScore: 3,
+    createdBy: "", // Will be set after user creation
     metadata: {
       jurisdiction: "State Court",
       caseNumber: "CASE-2024-001",
@@ -96,12 +97,13 @@ const sampleCases = [
     description:
       "Investigation into alleged possession of controlled substances",
     jurisdiction: "State Court",
-    prosecutor: "", // Will be set after user creation
-    leadInvestigator: "", // Will be set after user creation
-    caseType: "criminal",
-    status: "active",
+    leadProsecutor: "", // Will be set after user creation
+    status: "active", 
     priority: "high",
-    openedAt: new Date("2024-02-01"),
+    incidentDate: new Date("2024-02-01"),
+    category: "drugs",
+    dangerScore: 5,
+    createdBy: "", // Will be set after user creation
     metadata: {
       jurisdiction: "State Court",
       caseNumber: "CASE-2024-002",
@@ -128,16 +130,10 @@ const sampleEvidence = [
     collectedAt: new Date("2024-01-15T10:30:00Z"),
     collectedBy: "Detective Smith",
     location: "Electronics Store - 123 Commerce St",
-    aiAnalysis: {
-      summary:
-        "Video shows individual matching suspect description entering store and concealing items",
-      confidence: 0.85,
-      tags: ["theft", "concealment", "electronics"],
-    } as any,
-    summary:
-      "High-quality security footage that clearly identifies the suspect",
-    isAdmissible: true,
-    confidentialityLevel: "standard",
+    extractedText: "Video analysis: Individual enters store at 10:15 AM, proceeds to electronics section, conceals multiple items in jacket",
+    aiSummary: "Video shows individual matching suspect description entering store and concealing items. High confidence match with known suspect profile.",
+    confidenceScore: 0.85,
+    uploadedBy: "", // Will be set after user creation
   } as any,
 ];
 
@@ -175,10 +171,10 @@ async function seedDatabase() {
 
     if (prosecutor.length > 0 && detective.length > 0) {
       // Update case assignments
-      sampleCases[0].prosecutor = prosecutor[0].id;
-      sampleCases[0].leadInvestigator = detective[0].id;
-      sampleCases[1].prosecutor = prosecutor[0].id;
-      sampleCases[1].leadInvestigator = detective[0].id;
+      sampleCases[0].leadProsecutor = prosecutor[0].id;
+      sampleCases[0].createdBy = prosecutor[0].id;
+      sampleCases[1].leadProsecutor = prosecutor[0].id;
+      sampleCases[1].createdBy = prosecutor[0].id;
 
       // Insert cases
       console.log("⚖️ Inserting cases...");
@@ -196,6 +192,7 @@ async function seedDatabase() {
 
       if (case1.length > 0) {
         sampleEvidence[0].caseId = case1[0].id;
+        sampleEvidence[0].uploadedBy = detective[0].id;
 
         // Insert evidence
         console.log("📁 Inserting evidence...");
@@ -262,7 +259,7 @@ export async function createUser(userData: {
 }) {
   const connectionString =
     process.env.DATABASE_URL ||
-    "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
+    "postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db";
   const sql = postgres(connectionString);
   const db = drizzle(sql);
 

@@ -112,7 +112,17 @@
       "Bash(timeout 60 npx tsc --noEmit --skipLibCheck)",
       "Bash(cat:*)",
       "Bash(timeout 60 npx tsc --noEmit --skipLibCheck src/lib/stores/enhanced-rag-store.ts)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(timeout 30 npx tsc --noEmit --skipLibCheck src/lib/services/comprehensive-caching-architecture.ts)",
+      "Bash(psql:*)",
+      "Bash(sc query:*)",
+      "Bash(choco:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" --version)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"CREATE DATABASE legal_ai_db;\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\createdb.exe\" -U postgres legal_ai_db)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\dt\")"
     ],
     "deny": []
   }

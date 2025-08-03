@@ -2,19 +2,19 @@
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
-  // import { Checkbox } from "$lib/components/ui/checkbox";
-  // import { Progress } from "$lib/components/ui/progress";
+  import { Progress } from "$lib/components/ui/progress";
   import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-  // import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
+  import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
   import { FileUp, BrainCircuit, Search, Loader2 } from "lucide-svelte";
 
-  let files: FileList;
-  let verboseMode = false;
-  let thinkingMode = false;
-  let isUploading = false;
-  let uploadProgress = 0;
-  let error: string | null = null;
-  let analysisResult: any = null;
+  // Svelte 5 state management
+  let files = $state<FileList>();
+  let verboseMode = $state(false);
+  let thinkingMode = $state(false);
+  let isUploading = $state(false);
+  let uploadProgress = $state(0);
+  let error = $state<string | null>(null);
+  let analysisResult = $state<any>(null);
 
   async function handleUpload() {
     if (!files || files.length === 0) {

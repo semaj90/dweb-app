@@ -1,5 +1,5 @@
 import { browser } from "$app/environment";
-import Fuse from "fuse.js/dist/fuse.js";
+import Fuse from "fuse.js";
 import { del, get, keys, set } from "idb-keyval";
 import { derived, writable } from "svelte/store";
 
@@ -51,7 +51,7 @@ export const filteredNotes = derived(
     }
     if ($noteFilters.tags.length > 0) {
       notes = notes.filter((note) =>
-        $noteFilters.tags.some((tag) => note.tags.includes(tag)),
+        $noteFilters.tags.some((tag) => note.tags.includes(tag))
       );
     }
     // Apply fuzzy search
@@ -71,9 +71,9 @@ export const filteredNotes = derived(
       return results.map((result) => result.item);
     }
     return notes.sort(
-      (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
+      (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
     );
-  },
+  }
 );
 
 // Derived stores for quick stats
@@ -84,7 +84,7 @@ export const noteStats = derived(savedNotes, ($savedNotes) => ({
       acc[note.noteType] = (acc[note.noteType] || 0) + 1;
       return acc;
     },
-    {} as Record<string, number>,
+    {} as Record<string, number>
   ),
   totalTags: Array.from(new Set($savedNotes.flatMap((note) => note.tags)))
     .length,
@@ -149,7 +149,7 @@ class NotesManager {
     try {
       const allKeys = await keys();
       const noteKeys = allKeys.filter(
-        (key) => typeof key === "string" && key.startsWith(this.dbPrefix),
+        (key) => typeof key === "string" && key.startsWith(this.dbPrefix)
       );
 
       const notes: SavedNote[] = [];
@@ -168,8 +168,8 @@ class NotesManager {
       savedNotes.set(
         notes.sort(
           (a, b) =>
-            new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
-        ),
+            new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
+        )
       );
     } catch (error) {
       console.warn("Failed to load notes from IndexedDB:", error);
@@ -209,7 +209,7 @@ class NotesManager {
 
           return Array.from(merged.values()).sort(
             (a, b) =>
-              new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
+              new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
           );
         });
       }

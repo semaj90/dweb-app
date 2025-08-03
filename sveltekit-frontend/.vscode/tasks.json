@@ -2,25 +2,52 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "start-dev-server",
+      "label": "Dev with Memory Monitoring",
       "type": "shell",
       "command": "npm",
       "args": ["run", "dev"],
-      "group": "build",
-      "isBackground": true,
-      "problemMatcher": [],
       "options": {
-        "cwd": "${workspaceFolder}"
-      }
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=4096",
+          "OLLAMA_BASE_URL": "http://localhost:11434"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "isBackground": true,
+      "problemMatcher": "$tsc"
     },
     {
-      "label": "run-tests",
+      "label": "Check with High Memory",
       "type": "shell",
       "command": "npm",
-      "args": ["test"],
+      "args": ["run", "check"],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=6144"
+        }
+      },
+      "group": "build"
+    },
+    {
+      "label": "Monitor Ollama Status",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "while($true) { try { $response = Invoke-RestMethod -Uri 'http://localhost:11434/api/tags' -TimeoutSec 5; Write-Host '✅ Ollama OK' -ForegroundColor Green } catch { Write-Host '❌ Ollama offline' -ForegroundColor Red }; Start-Sleep 10 }"
+      ],
       "group": "test",
-      "isBackground": false,
-      "problemMatcher": []
+      "isBackground": true
     }
   ]
 }
+EOF < /dev/null

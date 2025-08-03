@@ -1,20 +1,8 @@
 // Loki.js based local memory and sync service for enhanced performance
 // Browser environment check
-const browser = typeof window !== 'undefined';
+const browser = typeof window !== "undefined";
 import Loki from "lokijs";
-
-// Type definitions for missing Loki types
-interface Collection<T = any> {
-  insert(doc: T): T;
-  find(query?: any): T[];
-  findOne(query?: any): T | null;
-  update(doc: T): T;
-  remove(doc: T): void;
-  chain(): any;
-  count(): number;
-  clear(): void;
-  where(predicate: (obj: T) => boolean): T[];
-}
+import type { Collection } from "lokijs";
 import type { Evidence } from "../stores/evidenceStore";
 
 interface LokiEvidence extends Evidence {
@@ -88,7 +76,7 @@ class LokiEvidenceService {
       const toDelete = syncedOps
         .sort(
           (a, b) =>
-            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         )
         .slice(0, syncedOps.length - 1000);
 
@@ -127,7 +115,7 @@ class LokiEvidenceService {
   }
   public async updateEvidence(
     evidenceId: string,
-    changes: Partial<Evidence>,
+    changes: Partial<Evidence>
   ): Promise<void> {
     if (!this.evidenceCollection) {
       throw new Error("Database not initialized");
@@ -241,7 +229,7 @@ class LokiEvidenceService {
   }
   public getEvidenceByDateRange(
     startDate: string,
-    endDate: string,
+    endDate: string
   ): LokiEvidence[] {
     if (!this.evidenceCollection) return [];
 
@@ -319,7 +307,7 @@ class LokiEvidenceService {
           if (operation.retryCount > 5) {
             this.syncQueue.remove(operation);
             console.warn(
-              `Removing operation ${operation.id} after ${operation.retryCount} failed attempts`,
+              `Removing operation ${operation.id} after ${operation.retryCount} failed attempts`
             );
           } else {
             this.syncQueue.update(operation);
@@ -394,24 +382,26 @@ class LokiEvidenceService {
         // Both have the item - check timestamps and resolve conflict
         const serverUpdated = new Date(serverItem.timeline?.updatedAt || 0);
         const localUpdated = new Date(
-          (localItem as any).timeline?.updatedAt || 0,
+          (localItem as any).timeline?.updatedAt || 0
         );
 
         if (serverUpdated > localUpdated) {
           // Server is newer - update local
-          this.evidenceCollection.update(Object.assign({}, localItem, serverItem));
+          this.evidenceCollection.update(
+            Object.assign({}, localItem, serverItem)
+          );
         }
         // If local is newer, keep local version (it will sync to server later)
       }
     }
     // Remove items that exist locally but not on server (unless they're in sync queue)
     const pendingIds = new Set(
-      this.syncQueue?.find({ synced: false }).map((op) => op.recordId) || [],
+      this.syncQueue?.find({ synced: false }).map((op) => op.recordId) || []
     );
 
     for (const [id, localItem] of Array.from(localMap)) {
-      if (!serverMap.has(id) && !pendingIds.has(id)) {
-        this.evidenceCollection.remove(localItem);
+      if (!serverMap.has(id as string) && !pendingIds.has(id as string)) {
+        this.evidenceCollection?.remove(localItem);
       }
     }
   }
@@ -422,7 +412,7 @@ class LokiEvidenceService {
     // This is a placeholder - Loki.js doesn't have a direct compact method
     // In a real implementation, you might recreate the database with current data
     console.log(
-      "Database compaction requested - implement based on Loki.js version",
+      "Database compaction requested - implement based on Loki.js version"
     );
   }
   public async clearLocalData(): Promise<void> {

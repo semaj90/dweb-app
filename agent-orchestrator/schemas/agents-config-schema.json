@@ -1,0 +1,806 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agents Configuration Schema",
+  "description": "Schema for Legal AI system agent configuration with LLM optimization patterns",
+  "type": "object",
+  "required": ["version", "agents"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Configuration version following semantic versioning"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the configuration"
+    },
+    "agents": {
+      "type": "object",
+      "description": "Agent definitions",
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_-]*$": {
+          "type": "object",
+          "required": ["enabled", "type"],
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether the agent is enabled"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["llm", "local-llm", "multi-agent", "hybrid"],
+              "description": "Type of agent"
+            },
+            "provider": {
+              "type": "string",
+              "description": "Provider name (e.g., anthropic, ollama, crewai)"
+            },
+            "model": {
+              "type": "string",
+              "description": "Model identifier"
+            },
+            "models": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of model identifiers for multi-model agents"
+            },
+            "endpoint": {
+              "type": "string",
+              "format": "uri",
+              "description": "API endpoint URL"
+            },
+            "optimization": {
+              "type": "object",
+              "description": "Optimization settings for the agent",
+              "properties": {
+                "streaming": {
+                  "type": "boolean",
+                  "description": "Enable streaming responses"
+                },
+                "tokenCompression": {
+                  "type": "boolean",
+                  "description": "Enable token compression"
+                },
+                "batchRequests": {
+                  "type": "boolean",
+                  "description": "Enable request batching"
+                },
+                "gpuAcceleration": {
+                  "type": "boolean",
+                  "description": "Enable GPU acceleration"
+                },
+                "quantization": {
+                  "type": "string",
+                  "enum": ["Q4_K_M", "Q4_K_S", "Q5_K_M", "Q8_0", "FP16", "FP32"],
+                  "description": "Model quantization level"
+                },
+                "batchSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 128,
+                  "description": "Batch size for processing"
+                },
+                "parallelRequests": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16,
+                  "description": "Number of parallel requests"
+                },
+                "caching": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": ["memory", "redis", "lru", "loki"]
+                    },
+                    "maxSize": {
+                      "type": ["integer", "string"]
+                    },
+                    "ttl": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 65535
+                    },
+                    "db": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "persistent": {
+                      "type": "boolean"
+                    },
+                    "sharedCache": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "contextLength": {
+                  "type": "object",
+                  "properties": {
+                    "max": {
+                      "type": "integer",
+                      "minimum": 1000
+                    },
+                    "threshold": {
+                      "type": "integer",
+                      "minimum": 1000
+                    },
+                    "management": {
+                      "type": "string",
+                      "enum": ["chunking", "truncation", "summarization"]
+                    }
+                  }
+                },
+                "warmup": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "systemPrompt": {
+                      "type": "string"
+                    },
+                    "preloadModels": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "performance": {
+                  "type": "object",
+                  "properties": {
+                    "useWorkerThreads": {
+                      "type": "boolean"
+                    },
+                    "simdjsonParsing": {
+                      "type": "boolean"
+                    },
+                    "unixSockets": {
+                      "type": "boolean"
+                    },
+                    "webSockets": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of features supported by the agent"
+            },
+            "agents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "string"
+                  },
+                  "goal": {
+                    "type": "string"
+                  },
+                  "backstory": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Sub-agents for multi-agent systems"
+            }
+          }
+        }
+      }
+    },
+    "optimization": {
+      "type": "object",
+      "description": "Global optimization settings",
+      "properties": {
+        "global": {
+          "type": "object",
+          "properties": {
+            "minimizeJsonPayload": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "strategies": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["token-streaming", "token-encoding", "compression"]
+                  }
+                },
+                "tokenEncoding": {
+                  "type": "object",
+                  "properties": {
+                    "method": {
+                      "type": "string",
+                      "enum": ["id-mapping", "binary", "base64"]
+                    },
+                    "separator": {
+                      "type": "string"
+                    },
+                    "compressionRatio": {
+                      "type": "number",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            },
+            "workerThreads": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "handlerScript": {
+                  "type": "string"
+                },
+                "poolSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 32
+                },
+                "tasks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "caching": {
+              "type": "object",
+              "properties": {
+                "strategy": {
+                  "type": "string",
+                  "enum": ["single-layer", "multi-layer"]
+                },
+                "layers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["memory", "redis", "loki", "disk"]
+                      },
+                      "priority": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "maxSize": {
+                        "type": "string"
+                      },
+                      "ttl": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "host": {
+                        "type": "string"
+                      },
+                      "port": {
+                        "type": "integer"
+                      },
+                      "db": {
+                        "type": "integer"
+                      },
+                      "persistent": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                },
+                "compression": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "algorithm": {
+                      "type": "string",
+                      "enum": ["gzip", "deflate", "brotli", "lz4"]
+                    },
+                    "level": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9
+                    }
+                  }
+                },
+                "keyGeneration": {
+                  "type": "object",
+                  "properties": {
+                    "method": {
+                      "type": "string",
+                      "enum": ["hash", "concat", "structured"]
+                    },
+                    "algorithm": {
+                      "type": "string",
+                      "enum": ["sha256", "md5", "xxhash"]
+                    },
+                    "includeParams": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "networking": {
+              "type": "object",
+              "properties": {
+                "connectionPooling": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "maxConnections": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "keepAlive": {
+                      "type": "boolean"
+                    },
+                    "timeout": {
+                      "type": "integer",
+                      "minimum": 1000
+                    }
+                  }
+                },
+                "compression": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "algorithms": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": ["gzip", "deflate", "brotli"]
+                      }
+                    }
+                  }
+                },
+                "retryStrategy": {
+                  "type": "object",
+                  "properties": {
+                    "maxRetries": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "backoffMultiplier": {
+                      "type": "number",
+                      "minimum": 1
+                    },
+                    "initialDelay": {
+                      "type": "integer",
+                      "minimum": 100
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "bottleneckAnalysis": {
+          "type": "object",
+          "properties": {
+            "layers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "bottlenecks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "solutions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "benchmarking": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "tools": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "description": "Workflow definitions",
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_-]*$": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "agents": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "agent": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "method": {
+                    "type": "string"
+                  },
+                  "tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "optimization": {
+              "type": "object",
+              "properties": {
+                "parallelization": {
+                  "type": "boolean"
+                },
+                "streaming": {
+                  "type": "boolean"
+                },
+                "progressiveResults": {
+                  "type": "boolean"
+                },
+                "tokenByToken": {
+                  "type": "boolean"
+                },
+                "webSockets": {
+                  "type": "boolean"
+                },
+                "workerThreads": {
+                  "type": "boolean"
+                },
+                "batchSize": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "parallelWorkers": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "queueManagement": {
+                  "type": "boolean"
+                },
+                "resultAggregation": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "ui": {
+              "type": "object",
+              "properties": {
+                "framework": {
+                  "type": "string"
+                },
+                "components": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "patterns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "scaling": {
+              "type": "object",
+              "properties": {
+                "horizontal": {
+                  "type": "boolean"
+                },
+                "autoScale": {
+                  "type": "boolean"
+                },
+                "maxWorkers": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "monitoring": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "performance": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "quality": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "alerting": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "channels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "thresholds": {
+              "type": "object",
+              "patternProperties": {
+                ".*": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "dashboards": {
+          "type": "object",
+          "properties": {
+            "grafana": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "port": {
+                  "type": "integer"
+                },
+                "datasource": {
+                  "type": "string"
+                }
+              }
+            },
+            "custom": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "endpoint": {
+                  "type": "string"
+                },
+                "realtime": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "encryption": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "algorithm": {
+              "type": "string"
+            },
+            "keyRotation": {
+              "type": "boolean"
+            }
+          }
+        },
+        "authentication": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "methods": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "rateLimit": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "requests": {
+              "type": "integer"
+            },
+            "window": {
+              "type": "integer"
+            },
+            "burst": {
+              "type": "integer"
+            }
+          }
+        },
+        "dataPrivacy": {
+          "type": "object",
+          "properties": {
+            "piiDetection": {
+              "type": "boolean"
+            },
+            "anonymization": {
+              "type": "boolean"
+            },
+            "retention": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "enum": ["development", "testing", "staging", "production"]
+        },
+        "scaling": {
+          "type": "object",
+          "properties": {
+            "auto": {
+              "type": "boolean"
+            },
+            "minInstances": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "maxInstances": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "targetCPU": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "healthChecks": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "interval": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "timeout": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "retries": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "loadBalancing": {
+          "type": "object",
+          "properties": {
+            "algorithm": {
+              "type": "string",
+              "enum": ["round-robin", "least-connections", "weighted"]
+            },
+            "healthyThreshold": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "unhealthyThreshold": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

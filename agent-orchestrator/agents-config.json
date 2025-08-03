@@ -1,0 +1,427 @@
+{
+  "$schema": "./schemas/agents-config-schema.json",
+  "version": "1.0.0",
+  "description": "Agent configuration for Legal AI system with LLM optimization patterns",
+  "agents": {
+    "claude": {
+      "enabled": true,
+      "type": "llm",
+      "provider": "anthropic",
+      "model": "claude-3-sonnet",
+      "endpoint": "https://api.anthropic.com/v1/messages",
+      "optimization": {
+        "streaming": true,
+        "tokenCompression": true,
+        "batchRequests": true,
+        "caching": {
+          "enabled": true,
+          "type": "lru",
+          "maxSize": 1000,
+          "ttl": 3600
+        },
+        "contextLength": {
+          "max": 128000,
+          "threshold": 120000,
+          "management": "chunking"
+        }
+      },
+      "features": [
+        "legal-document-analysis",
+        "precedent-search",
+        "contract-review",
+        "compliance-analysis"
+      ]
+    },
+    "ollama": {
+      "enabled": true,
+      "type": "local-llm",
+      "provider": "ollama",
+      "models": [
+        "llama3.1:8b",
+        "gemma2:9b",
+        "mistral:7b"
+      ],
+      "endpoint": "http://localhost:11434/api/generate",
+      "optimization": {
+        "streaming": true,
+        "tokenCompression": true,
+        "gpuAcceleration": true,
+        "quantization": "Q4_K_M",
+        "batchSize": 32,
+        "parallelRequests": 4,
+        "caching": {
+          "enabled": true,
+          "type": "redis",
+          "host": "localhost",
+          "port": 6379,
+          "db": 2
+        },
+        "warmup": {
+          "enabled": true,
+          "systemPrompt": "You are a legal AI assistant specialized in document analysis.",
+          "preloadModels": ["llama3.1:8b"]
+        },
+        "performance": {
+          "useWorkerThreads": true,
+          "simdjsonParsing": true,
+          "unixSockets": false,
+          "webSockets": true
+        }
+      },
+      "features": [
+        "document-classification",
+        "entity-extraction",
+        "summarization",
+        "real-time-analysis"
+      ]
+    },
+    "crewai": {
+      "enabled": true,
+      "type": "multi-agent",
+      "provider": "crewai",
+      "agents": [
+        {
+          "role": "Legal Analyst",
+          "goal": "Analyze legal documents for key insights",
+          "backstory": "Expert in legal document analysis with 10+ years experience"
+        },
+        {
+          "role": "Compliance Officer",
+          "goal": "Ensure regulatory compliance",
+          "backstory": "Specialist in regulatory compliance and risk assessment"
+        },
+        {
+          "role": "Contract Reviewer",
+          "goal": "Review contracts for potential issues",
+          "backstory": "Contract law expert with focus on risk mitigation"
+        }
+      ],
+      "optimization": {
+        "parallelExecution": true,
+        "resultSynthesis": true,
+        "taskDistribution": "load-balanced",
+        "caching": {
+          "enabled": true,
+          "type": "memory",
+          "sharedCache": true
+        }
+      },
+      "features": [
+        "multi-perspective-analysis",
+        "collaborative-review",
+        "consensus-building"
+      ]
+    },
+    "gemma": {
+      "enabled": true,
+      "type": "local-llm",
+      "provider": "google",
+      "model": "gemma2:9b",
+      "optimization": {
+        "streaming": true,
+        "tokenCompression": true,
+        "simdOptimization": true,
+        "memoryMapping": true,
+        "caching": {
+          "enabled": true,
+          "type": "loki",
+          "persistent": true
+        }
+      },
+      "features": [
+        "rapid-classification",
+        "lightweight-analysis",
+        "batch-processing"
+      ]
+    }
+  },
+  "optimization": {
+    "global": {
+      "minimizeJsonPayload": {
+        "enabled": true,
+        "strategies": [
+          "token-streaming",
+          "token-encoding",
+          "compression"
+        ],
+        "tokenEncoding": {
+          "method": "id-mapping",
+          "separator": ",",
+          "compressionRatio": 10
+        }
+      },
+      "workerThreads": {
+        "enabled": true,
+        "handlerScript": "./llm-stream-handler.js",
+        "poolSize": 4,
+        "tasks": [
+          "token-parsing",
+          "result-caching",
+          "response-streaming"
+        ]
+      },
+      "caching": {
+        "strategy": "multi-layer",
+        "layers": [
+          {
+            "type": "memory",
+            "priority": 1,
+            "maxSize": "256MB",
+            "ttl": 300
+          },
+          {
+            "type": "redis",
+            "priority": 2,
+            "host": "localhost",
+            "port": 6379,
+            "db": 1,
+            "ttl": 3600
+          },
+          {
+            "type": "loki",
+            "priority": 3,
+            "persistent": true,
+            "ttl": 86400
+          }
+        ],
+        "compression": {
+          "enabled": true,
+          "algorithm": "gzip",
+          "level": 6
+        },
+        "keyGeneration": {
+          "method": "hash",
+          "algorithm": "sha256",
+          "includeParams": ["prompt", "model", "temperature"]
+        }
+      },
+      "networking": {
+        "connectionPooling": {
+          "enabled": true,
+          "maxConnections": 20,
+          "keepAlive": true,
+          "timeout": 30000
+        },
+        "compression": {
+          "enabled": true,
+          "algorithms": ["gzip", "deflate"]
+        },
+        "retryStrategy": {
+          "maxRetries": 3,
+          "backoffMultiplier": 2,
+          "initialDelay": 1000
+        }
+      }
+    },
+    "bottleneckAnalysis": {
+      "layers": [
+        {
+          "name": "Frontend",
+          "bottlenecks": ["Slow rendering of streamed tokens"],
+          "solutions": ["Use <pre>, Melt-UI with reactive stores"]
+        },
+        {
+          "name": "SvelteKit Server",
+          "bottlenecks": ["Blocking API response"],
+          "solutions": ["Use stream response, don't await full LLM result"]
+        },
+        {
+          "name": "Node.js App",
+          "bottlenecks": ["JSON parsing + event loop stalls"],
+          "solutions": ["Use worker_threads, simdjson"]
+        },
+        {
+          "name": "Network",
+          "bottlenecks": ["TCP + HTTP + JSON + delay"],
+          "solutions": ["Use streaming, Unix sockets if possible"]
+        },
+        {
+          "name": "Ollama",
+          "bottlenecks": ["Model warmup, token sampling"],
+          "solutions": ["Use system_prompt, batch inference, GPU optimizations"]
+        },
+        {
+          "name": "GPU",
+          "bottlenecks": ["Underutilization or VRAM limits"],
+          "solutions": ["Restart workers, clean cache, use quantized models (Q4_K_M, etc.)"]
+        }
+      ]
+    },
+    "benchmarking": {
+      "enabled": true,
+      "metrics": [
+        "latency",
+        "throughput",
+        "memory-usage",
+        "gpu-utilization",
+        "cache-hit-rate"
+      ],
+      "tools": [
+        {
+          "name": "latency-profiler",
+          "description": "prompt → Ollama → streamed tokens → SvelteKit UI"
+        },
+        {
+          "name": "json-size-analyzer",
+          "description": "JSON size vs token count graph"
+        },
+        {
+          "name": "transport-benchmark",
+          "description": "CLI to benchmark: local http vs socket vs worker_threads"
+        },
+        {
+          "name": "websocket-wrapper",
+          "description": "WebSocket/streaming wrapper around Ollama for even lower latency"
+        }
+      ]
+    }
+  },
+  "workflows": {
+    "legal-document-analysis": {
+      "description": "Comprehensive legal document analysis pipeline",
+      "agents": ["claude", "ollama", "crewai"],
+      "steps": [
+        {
+          "name": "preprocessing",
+          "agent": "ollama",
+          "tasks": ["document-classification", "entity-extraction"]
+        },
+        {
+          "name": "analysis",
+          "agent": "claude",
+          "tasks": ["legal-analysis", "risk-assessment"]
+        },
+        {
+          "name": "review",
+          "agent": "crewai",
+          "tasks": ["multi-perspective-review", "consensus-building"]
+        },
+        {
+          "name": "synthesis",
+          "type": "aggregation",
+          "method": "weighted-consensus"
+        }
+      ],
+      "optimization": {
+        "parallelization": true,
+        "streaming": true,
+        "progressiveResults": true
+      }
+    },
+    "real-time-chat": {
+      "description": "Real-time chat interface with streaming responses",
+      "agents": ["ollama"],
+      "optimization": {
+        "streaming": true,
+        "tokenByToken": true,
+        "webSockets": true,
+        "workerThreads": true
+      },
+      "ui": {
+        "framework": "svelte",
+        "components": ["streaming-text", "progress-indicator"],
+        "patterns": ["reactive-stores", "melt-ui"]
+      }
+    },
+    "batch-processing": {
+      "description": "High-throughput batch document processing",
+      "agents": ["gemma", "ollama"],
+      "optimization": {
+        "batchSize": 32,
+        "parallelWorkers": 4,
+        "queueManagement": true,
+        "resultAggregation": true
+      },
+      "scaling": {
+        "horizontal": true,
+        "autoScale": true,
+        "maxWorkers": 16
+      }
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics": {
+      "performance": [
+        "response-time",
+        "throughput",
+        "error-rate",
+        "cache-hit-ratio"
+      ],
+      "resources": [
+        "cpu-usage",
+        "memory-usage",
+        "gpu-utilization",
+        "disk-io"
+      ],
+      "quality": [
+        "result-accuracy",
+        "consistency",
+        "hallucination-rate"
+      ]
+    },
+    "alerting": {
+      "enabled": true,
+      "channels": ["console", "webhook"],
+      "thresholds": {
+        "response-time": 5000,
+        "error-rate": 0.05,
+        "memory-usage": 0.8
+      }
+    },
+    "dashboards": {
+      "grafana": {
+        "enabled": true,
+        "port": 3000,
+        "datasource": "prometheus"
+      },
+      "custom": {
+        "enabled": true,
+        "endpoint": "/api/metrics",
+        "realtime": true
+      }
+    }
+  },
+  "security": {
+    "encryption": {
+      "enabled": true,
+      "algorithm": "AES-256-GCM",
+      "keyRotation": true
+    },
+    "authentication": {
+      "required": true,
+      "methods": ["jwt", "api-key"]
+    },
+    "rateLimit": {
+      "enabled": true,
+      "requests": 1000,
+      "window": 3600,
+      "burst": 50
+    },
+    "dataPrivacy": {
+      "piiDetection": true,
+      "anonymization": true,
+      "retention": 30
+    }
+  },
+  "deployment": {
+    "environment": "production",
+    "scaling": {
+      "auto": true,
+      "minInstances": 2,
+      "maxInstances": 10,
+      "targetCPU": 70
+    },
+    "healthChecks": {
+      "enabled": true,
+      "interval": 30,
+      "timeout": 5,
+      "retries": 3
+    },
+    "loadBalancing": {
+      "algorithm": "round-robin",
+      "healthyThreshold": 2,
+      "unhealthyThreshold": 3
+    }
+  }
+}

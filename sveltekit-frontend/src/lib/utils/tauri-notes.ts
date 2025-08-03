@@ -1,7 +1,40 @@
 // Tauri-specific utilities for desktop app integration
-import { invoke } from "@tauri-apps/api/tauri";
-import { appDataDir, join } from "@tauri-apps/api/path";
-import { writeTextFile, readTextFile, exists } from "@tauri-apps/api/fs";
+// Conditional imports to support both web and desktop environments
+
+let invoke: any;
+let appDataDir: any;
+let join: any;
+let writeTextFile: any;
+let readTextFile: any;
+let exists: any;
+
+async function initializeTauri() {
+  try {
+    const tauriModule = await import("@tauri-apps/api/tauri");
+    const pathModule = await import("@tauri-apps/api/path");
+    const fsModule = await import("@tauri-apps/api/fs");
+    
+    invoke = tauriModule.invoke;
+    appDataDir = pathModule.appDataDir;
+    join = pathModule.join;
+    writeTextFile = fsModule.writeTextFile;
+    readTextFile = fsModule.readTextFile;
+    exists = fsModule.exists;
+  } catch (error) {
+    console.warn("Tauri not available - desktop features disabled");
+    // Provide fallback implementations
+    invoke = () => Promise.reject(new Error("Tauri not available"));
+    appDataDir = () => Promise.reject(new Error("Tauri not available"));
+    join = () => Promise.reject(new Error("Tauri not available"));
+    writeTextFile = () => Promise.reject(new Error("Tauri not available"));
+    readTextFile = () => Promise.reject(new Error("Tauri not available"));
+    exists = () => Promise.reject(new Error("Tauri not available"));
+  }
+}
+
+// Initialize Tauri when module loads
+initializeTauri();
+
 import type { SavedNote } from "$lib/stores/saved-notes";
 
 export interface TauriNoteExport {

@@ -5,7 +5,7 @@
  */
 
 import Loki from 'lokijs';
-import Fuse from 'fuse.js/dist/fuse.js';
+import Fuse from 'fuse.js';
 import { createClient as createRedisClient } from 'redis';
 import { QdrantClient } from '@qdrant/js-client-rest';
 import pkg from 'pg';

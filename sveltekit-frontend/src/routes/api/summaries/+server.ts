@@ -13,7 +13,7 @@ import {
   legalDocuments,
 } from "$lib/server/db/schema-postgres";
 import { eq, and, inArray } from "drizzle-orm";
-import Fuse from "fuse.js/dist/fuse.js";
+import Fuse from "fuse.js";
 import { interpret } from "xstate";
 import { aiSummaryMachine } from "$lib/machines/aiSummaryMachine";
 

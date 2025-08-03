@@ -1,3 +1,8 @@
+Check Node.js version compatibility
+Run npm install in agent-orchestrator directory
+
+
+
 # 🚀 Comprehensive Legal AI System Optimization Plan
 
 **Advanced Memory Management, Multi-Layer Caching, and Performance Enhancement**

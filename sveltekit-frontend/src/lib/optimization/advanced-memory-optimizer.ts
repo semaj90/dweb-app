@@ -3,8 +3,22 @@
  * Optimizes memory usage across the entire legal AI system
  */
 
+import { Worker } from "worker_threads";
 import { SelfOrganizingMapRAG } from "../ai/som-rag-system.js";
 import { DockerResourceOptimizer } from "./docker-resource-optimizer.js";
+import {
+  SIMDJSONParser,
+  type ParsedLegalDocument,
+} from "../parsers/simd-json-parser.js";
+
+// Initialize SIMD parser instance
+const simdParser = new SIMDJSONParser({
+  batchSize: 2048,
+  enableSIMD: true,
+  memoryLimit: 512 * 1024 * 1024, // 512MB
+  parallelChunks: 4,
+  validateStructure: true,
+});
 
 export interface LODLevel {
   id: string;
@@ -63,6 +77,8 @@ export class AdvancedMemoryOptimizer {
   private currentLOD: LODLevel;
   private memoryPressure = 0;
   private optimizationHistory: any[] = [];
+  private workerPool: Map<string, Worker> = new Map();
+  private maxWorkers = 4;
 
   constructor() {
     this.dockerOptimizer = new DockerResourceOptimizer({
@@ -77,6 +93,7 @@ export class AdvancedMemoryOptimizer {
     this.initializeLODLevels();
     this.initializeCacheLayers();
     this.initializeMemoryPools();
+    this.initializeWorkerPool();
     this.currentLOD = this.lodLevels[1]; // Start with medium
     this.startMemoryMonitoring();
   }
@@ -251,6 +268,47 @@ export class AdvancedMemoryOptimizer {
   }
 
   /**
+   * Initialize worker thread pool for CPU-intensive operations
+   */
+  private initializeWorkerPool(): void {
+    console.log(`🧵 Initializing worker pool with ${this.maxWorkers} workers`);
+
+    // Don't create workers immediately - create them on demand
+    // This helps with memory usage and allows for better error handling
+  }
+
+  /**
+   * Get or create a worker for k-means clustering
+   */
+  private async getKMeansWorker(): Promise<Worker> {
+    const workerId = "kmeans-worker";
+
+    if (this.workerPool.has(workerId)) {
+      return this.workerPool.get(workerId)!;
+    }
+
+    // Create new worker
+    const workerPath = new URL("../workers/kmeans-worker.js", import.meta.url);
+    const worker = new Worker(workerPath);
+
+    // Set up error handling
+    worker.on("error", (error) => {
+      console.error("🚨 K-means worker error:", error);
+      this.workerPool.delete(workerId);
+    });
+
+    worker.on("exit", (code) => {
+      if (code !== 0) {
+        console.warn(`⚠️ K-means worker exited with code ${code}`);
+      }
+      this.workerPool.delete(workerId);
+    });
+
+    this.workerPool.set(workerId, worker);
+    return worker;
+  }
+
+  /**
    * Intelligent cache layer selection based on data type and access patterns
    */
   async selectOptimalCacheLayer(
@@ -322,14 +380,105 @@ export class AdvancedMemoryOptimizer {
   }
 
   /**
-   * K-means clustering for memory pool optimization
+   * K-means clustering using worker threads for CPU-intensive operations
    */
   async performKMeansClustering(
     data: any[],
     k: number = 5
   ): Promise<ClusterMetrics[]> {
     console.log(
-      `🔄 Performing k-means clustering (k=${k}) on ${data.length} items...`
+      `🔄 Performing k-means clustering (k=${k}) on ${data.length} items using worker threads...`
+    );
+
+    const startTime = Date.now();
+
+    // Determine if we should use worker threads
+    const useWorkerThread = data.length > 1000 && this.enableWorkerThreads();
+
+    if (useWorkerThread) {
+      return this.performKMeansWithWorker(data, k);
+    } else {
+      // Use original in-process clustering for smaller datasets
+      return this.performKMeansInProcess(data, k);
+    }
+  }
+
+  /**
+   * Perform k-means clustering using worker thread
+   */
+  private async performKMeansWithWorker(
+    data: any[],
+    k: number
+  ): Promise<ClusterMetrics[]> {
+    const worker = await this.getKMeansWorker();
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("K-means clustering timeout"));
+      }, 300000); // 5 minute timeout
+
+      // Set up progress monitoring
+      const progressHandler = (message: any) => {
+        if (message.type === "progress") {
+          console.log(`📊 K-means progress: iteration ${message.iteration}`);
+        }
+      };
+
+      // Set up result handler
+      const messageHandler = (message: any) => {
+        try {
+          if (message.type === "result") {
+            clearTimeout(timeout);
+            worker.off("message", messageHandler);
+            worker.off("message", progressHandler);
+
+            // Store cluster results
+            message.clusters.forEach((cluster: ClusterMetrics) => {
+              this.clusters.set(cluster.id, cluster);
+            });
+
+            console.log(
+              `✅ Worker k-means clustering completed in ${message.processingTime}ms`
+            );
+            resolve(message.clusters);
+          } else if (message.type === "error") {
+            clearTimeout(timeout);
+            worker.off("message", messageHandler);
+            worker.off("message", progressHandler);
+            reject(new Error(`Worker error: ${message.error}`));
+          }
+        } catch (error) {
+          clearTimeout(timeout);
+          reject(error);
+        }
+      };
+
+      worker.on("message", progressHandler);
+      worker.on("message", messageHandler);
+
+      // Send clustering task to worker
+      worker.postMessage({
+        data: data,
+        k: k,
+        dimensions: data[0]?.embedding?.length || 384,
+        options: {
+          maxIterations: 100,
+          convergenceThreshold: 0.001,
+        },
+      });
+    });
+  }
+
+  /**
+   * Original in-process k-means for smaller datasets
+   */
+  private async performKMeansInProcess(
+    data: any[],
+    k: number
+  ): Promise<ClusterMetrics[]> {
+    // Keep original implementation for small datasets
+    console.log(
+      `🔄 Performing in-process k-means clustering (k=${k}) on ${data.length} items...`
     );
 
     const startTime = Date.now();
@@ -426,8 +575,26 @@ export class AdvancedMemoryOptimizer {
       this.clusters.set(`cluster_${i}`, clusterMetrics[i]);
     }
 
-    console.log(`✅ K-means clustering completed in ${processingTime}ms`);
+    console.log(
+      `✅ In-process k-means clustering completed in ${processingTime}ms`
+    );
     return clusterMetrics;
+  }
+
+  /**
+   * Check if worker threads should be enabled
+   */
+  private enableWorkerThreads(): boolean {
+    try {
+      // Check if worker_threads is available
+      require.resolve("worker_threads");
+      return true;
+    } catch {
+      console.warn(
+        "⚠️ Worker threads not available, falling back to in-process clustering"
+      );
+      return false;
+    }
   }
 
   /**
@@ -586,6 +753,359 @@ export class AdvancedMemoryOptimizer {
     if (accessTrend > 0.2) {
       console.log("🚀 Predicting high access - cache warm-up");
       await this.predictiveCacheWarmup();
+    }
+  }
+
+  /**
+   * K-means clustering using worker threads for parallel processing
+   */
+  async performKMeansClusteringWithWorkers(
+    data: any[],
+    k: number = 5
+  ): Promise<ClusterMetrics[]> {
+    console.log(
+      `🔄 Performing worker-based k-means clustering (k=${k}) on ${data.length} items...`
+    );
+
+    const startTime = Date.now();
+
+    // For small datasets, use main thread to avoid worker overhead
+    if (data.length < 1000) {
+      return this.performKMeansClustering(data, k);
+    }
+
+    try {
+      const worker = await this.getKMeansWorker();
+
+      // Prepare data for worker (extract only necessary fields)
+      const workerData = data.map((item, index) => ({
+        id: item.id || `item_${index}`,
+        embedding: item.embedding || [],
+        metadata: item.metadata || {},
+      }));
+
+      // Send clustering task to worker
+      const result = await this.sendWorkerMessage(worker, {
+        action: "cluster",
+        data: workerData,
+        k,
+        dimensions: workerData[0]?.embedding?.length || 384,
+      });
+
+      const processingTime = Date.now() - startTime;
+
+      // Convert worker result to ClusterMetrics format
+      const clusterMetrics: ClusterMetrics[] = result.clusters.map(
+        (cluster: any, index: number) => {
+          const metrics: ClusterMetrics = {
+            id: `cluster_${index}`,
+            centroid: cluster.centroid,
+            size: cluster.size,
+            cohesion: cluster.cohesion,
+            separability: cluster.separability || 0,
+            memoryUsage: cluster.memoryUsage,
+            processingTime: processingTime / k,
+          };
+
+          this.clusters.set(`cluster_${index}`, metrics);
+          return metrics;
+        }
+      );
+
+      console.log(
+        `✅ Worker-based k-means clustering completed in ${processingTime}ms`
+      );
+      return clusterMetrics;
+    } catch (error) {
+      console.error(
+        "❌ Worker clustering failed, falling back to main thread:",
+        error
+      );
+      return this.performKMeansClustering(data, k);
+    }
+  }
+
+  /**
+   * Send message to worker and wait for response
+   */
+  private sendWorkerMessage(worker: Worker, message: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const messageId = crypto.randomUUID();
+      const messageWithId = { ...message, messageId };
+
+      const timeout = setTimeout(() => {
+        worker.off("message", messageHandler);
+        reject(new Error("Worker timeout"));
+      }, 30000); // 30 second timeout
+
+      const messageHandler = (response: any) => {
+        if (response.messageId === messageId) {
+          clearTimeout(timeout);
+          worker.off("message", messageHandler);
+
+          if (response.error) {
+            reject(new Error(response.error));
+          } else {
+            resolve(response);
+          }
+        }
+      };
+
+      worker.on("message", messageHandler);
+      worker.postMessage(messageWithId);
+    });
+  }
+
+  /**
+   * Parallel document processing using SIMD parser and worker threads
+   */
+  async processDocumentsBatch(documents: string[]): Promise<any[]> {
+    console.log(
+      `📄 Processing ${documents.length} documents with worker threads and SIMD`
+    );
+
+    if (documents.length === 0) return [];
+
+    const batchSize = Math.ceil(documents.length / this.maxWorkers);
+    const promises: Promise<any[]>[] = [];
+
+    // Split documents into chunks for parallel processing
+    for (
+      let i = 0;
+      i < this.maxWorkers && i * batchSize < documents.length;
+      i++
+    ) {
+      const start = i * batchSize;
+      const end = Math.min(start + batchSize, documents.length);
+      const chunk = documents.slice(start, end);
+
+      promises.push(this.processDocumentChunk(chunk, i));
+    }
+
+    try {
+      const results = await Promise.all(promises);
+      const flatResults = results.flat();
+
+      console.log(`✅ Processed ${flatResults.length} documents successfully`);
+      return flatResults;
+    } catch (error) {
+      console.error("❌ Batch processing failed:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process a chunk of documents in a worker thread
+   */
+  private async processDocumentChunk(
+    documents: string[],
+    chunkIndex: number
+  ): Promise<any[]> {
+    const workerId = `document-processor-${chunkIndex}`;
+
+    try {
+      // Create or get worker for document processing
+      let worker = this.workerPool.get(workerId);
+
+      if (!worker) {
+        // Create SIMD document processor worker
+        const workerPath = new URL(
+          "../workers/simd-document-processor.js",
+          import.meta.url
+        );
+        worker = new Worker(workerPath);
+
+        worker.on("error", (error) => {
+          console.error(
+            `🚨 Document processor worker ${chunkIndex} error:`,
+            error
+          );
+          this.workerPool.delete(workerId);
+        });
+
+        worker.on("exit", (code) => {
+          if (code !== 0) {
+            console.warn(
+              `⚠️ Document processor worker ${chunkIndex} exited with code ${code}`
+            );
+          }
+          this.workerPool.delete(workerId);
+        });
+
+        this.workerPool.set(workerId, worker);
+      }
+
+      // Send documents to worker for SIMD processing
+      const result = await this.sendWorkerMessage(worker, {
+        action: "processDocuments",
+        documents,
+        options: {
+          batchSize: 1024,
+          enableSIMD: true,
+          memoryLimit: 256 * 1024 * 1024, // 256MB per worker
+          validateStructure: true,
+        },
+      });
+
+      return result.processedDocuments || [];
+    } catch (error) {
+      console.error(
+        `❌ Document chunk processing failed for chunk ${chunkIndex}:`,
+        error
+      );
+
+      // Fallback to main thread processing
+      const { SIMDJSONParser } = await import("../parsers/simd-json-parser.js");
+      const parser = new SIMDJSONParser({
+        batchSize: 512,
+        enableSIMD: false, // Disable SIMD in fallback
+        memoryLimit: 128 * 1024 * 1024,
+      });
+
+      return parser.parseDocumentsBatch(documents);
+    }
+  }
+
+  /**
+   * Optimized memory allocation using worker threads for complex calculations
+   */
+  async optimizedMemoryAllocationWithWorkers(request: any): Promise<string> {
+    await this.initializeSOM();
+
+    if (!this.somNetwork) {
+      throw new Error("SOM network not initialized");
+    }
+
+    try {
+      // Use worker for complex memory optimization calculations
+      const optimizationWorker = await this.getOptimizationWorker();
+
+      const result = await this.sendWorkerMessage(optimizationWorker, {
+        action: "optimizeMemoryAllocation",
+        request,
+        currentState: {
+          memoryPools: this.serializeMemoryPools(),
+          clusters: this.serializeClusters(),
+          memoryPressure: this.memoryPressure,
+          lodLevel: this.currentLOD,
+        },
+      });
+
+      // Apply optimizations from worker result
+      if (result.recommendations) {
+        await this.applyOptimizationRecommendations(result.recommendations);
+      }
+
+      return result.allocatedPool || this.allocateToDefaultPool(request);
+    } catch (error) {
+      console.error(
+        "❌ Worker-based optimization failed, using fallback:",
+        error
+      );
+      return this.optimizedMemoryAllocation(request);
+    }
+  }
+
+  /**
+   * Get or create optimization worker
+   */
+  private async getOptimizationWorker(): Promise<Worker> {
+    const workerId = "memory-optimizer";
+
+    if (this.workerPool.has(workerId)) {
+      return this.workerPool.get(workerId)!;
+    }
+
+    const workerPath = new URL(
+      "../workers/memory-optimizer-worker.js",
+      import.meta.url
+    );
+    const worker = new Worker(workerPath);
+
+    worker.on("error", (error) => {
+      console.error("🚨 Memory optimizer worker error:", error);
+      this.workerPool.delete(workerId);
+    });
+
+    worker.on("exit", (code) => {
+      if (code !== 0) {
+        console.warn(`⚠️ Memory optimizer worker exited with code ${code}`);
+      }
+      this.workerPool.delete(workerId);
+    });
+
+    this.workerPool.set(workerId, worker);
+    return worker;
+  }
+
+  /**
+   * Serialize memory pools for worker communication
+   */
+  private serializeMemoryPools(): any[] {
+    return Array.from(this.memoryPools.entries()).map(([id, pool]) => ({
+      id,
+      type: pool.type,
+      current: pool.current,
+      max: pool.max,
+      itemCount: pool.items.size,
+      lastAccessed: pool.lastAccessed,
+      priority: pool.priority,
+    }));
+  }
+
+  /**
+   * Serialize clusters for worker communication
+   */
+  private serializeClusters(): any[] {
+    return Array.from(this.clusters.values());
+  }
+
+  /**
+   * Apply optimization recommendations from worker
+   */
+  private async applyOptimizationRecommendations(
+    recommendations: any
+  ): Promise<void> {
+    console.log("🔧 Applying worker optimization recommendations");
+
+    if (recommendations.adjustLOD) {
+      this.currentLOD =
+        this.lodLevels.find((lod) => lod.id === recommendations.targetLOD) ||
+        this.currentLOD;
+      await this.applyLODSettings();
+    }
+
+    if (recommendations.clearPools) {
+      for (const poolClear of recommendations.clearPools) {
+        await this.clearPool(poolClear.poolId, poolClear.ratio);
+      }
+    }
+
+    if (recommendations.compressPools) {
+      await this.compressAllPools();
+    }
+
+    if (recommendations.redistributeMemory) {
+      await this.redistributeMemoryPools(recommendations.redistributeMemory);
+    }
+  }
+
+  /**
+   * Redistribute memory between pools based on usage patterns
+   */
+  private async redistributeMemoryPools(redistribution: any): Promise<void> {
+    console.log("🔄 Redistributing memory pools");
+
+    for (const adjustment of redistribution) {
+      const pool = this.memoryPools.get(adjustment.poolId);
+      if (pool) {
+        const oldMax = pool.max;
+        pool.max = Math.max(pool.current, adjustment.newMax);
+
+        console.log(
+          `📊 Pool ${adjustment.poolId}: ${oldMax} -> ${pool.max} bytes`
+        );
+      }
     }
   }
 
@@ -890,18 +1410,161 @@ export class AdvancedMemoryOptimizer {
   }
 
   /**
-   * Cleanup resources
+   * Cleanup resources including worker threads
    */
   dispose(): void {
+    console.log("🧹 Disposing advanced memory optimizer...");
+
+    // Terminate all worker threads
+    for (const [workerId, worker] of this.workerPool) {
+      console.log(`🛑 Terminating worker: ${workerId}`);
+      worker.terminate();
+    }
+    this.workerPool.clear();
+
+    // Clean up memory pools
     this.memoryPools.clear();
     this.clusters.clear();
     this.cacheLayers.clear();
     this.optimizationHistory = [];
+
+    // Clean up Docker optimizer
     this.dockerOptimizer.dispose();
 
+    // Clean up SOM network
     if (this.somNetwork) {
-      // Cleanup SOM network if it has a dispose method
       this.somNetwork = null;
     }
+
+    // Clean up SIMD parser
+    simdParser.dispose();
+
+    console.log("✅ Advanced memory optimizer disposed");
+  }
+
+  /**
+   * SIMD-optimized document processing and memory allocation
+   */
+  async processBatchDocumentsSIMD(
+    jsonDocuments: string[]
+  ): Promise<ParsedLegalDocument[]> {
+    console.log(
+      `📄 Processing ${jsonDocuments.length} documents with SIMD optimization...`
+    );
+
+    const startTime = performance.now();
+
+    // Use SIMD parser for high-performance document processing
+    const parsedDocuments = await simdParser.parseDocumentsBatch(jsonDocuments);
+
+    // Process embeddings and allocate memory efficiently
+    const processedDocuments = await Promise.all(
+      parsedDocuments.map(async (doc) => {
+        // Generate embeddings if not present
+        if (!doc.embeddings && doc.content) {
+          doc.embeddings = await this.generateDocumentEmbeddings(doc.content);
+        }
+
+        // Allocate optimized memory based on document characteristics
+        const memoryPool = await this.optimizedMemoryAllocation({
+          id: doc.id,
+          content: doc.content,
+          embedding: doc.embeddings ? Array.from(doc.embeddings) : [],
+          type: doc.documentType,
+          caseId: doc.caseNumber,
+          category: doc.metadata?.category,
+          priority: this.calculateDocumentPriority(doc),
+        });
+
+        // Add memory allocation info to metadata
+        doc.metadata = {
+          ...doc.metadata,
+          memoryPool,
+          processedAt: Date.now(),
+          simdOptimized: true,
+        };
+
+        return doc;
+      })
+    );
+
+    const processingTime = performance.now() - startTime;
+    console.log(
+      `✅ SIMD document processing completed in ${processingTime.toFixed(2)}ms`
+    );
+
+    // Update optimization history
+    this.optimizationHistory.push({
+      timestamp: Date.now(),
+      operation: "simd_batch_processing",
+      documentCount: processedDocuments.length,
+      processingTime,
+      memoryUsage: await this.getCurrentMemoryUsage(),
+      memoryPressure: this.memoryPressure,
+    });
+
+    return processedDocuments;
+  }
+
+  /**
+   * Generate embeddings for document content (placeholder for actual embedding service)
+   */
+  private async generateDocumentEmbeddings(
+    content: string
+  ): Promise<Float32Array> {
+    // This would typically call your embedding service (Ollama, OpenAI, etc.)
+    // For now, return a mock embedding
+    const dimensions = 384; // nomic-embed-text dimensions
+    const embedding = new Float32Array(dimensions);
+
+    // Simple hash-based mock embedding
+    const hash = this.simpleHash(content);
+    for (let i = 0; i < dimensions; i++) {
+      embedding[i] = (Math.sin(hash + i) + 1) / 2; // Normalize to [0,1]
+    }
+
+    return embedding;
+  }
+
+  /**
+   * Calculate document priority for memory allocation
+   */
+  private calculateDocumentPriority(doc: ParsedLegalDocument): number {
+    let priority = 0.5; // Base priority
+
+    // Higher priority for recent documents
+    const age = Date.now() - (doc.metadata?.timestamp || Date.now());
+    const ageScore = Math.max(0, 1 - age / (30 * 24 * 60 * 60 * 1000)); // 30 days
+    priority += ageScore * 0.3;
+
+    // Higher priority for legal documents with case numbers
+    if (doc.caseNumber) {
+      priority += 0.2;
+    }
+
+    // Higher priority for larger documents
+    const sizeScore = Math.min(1, doc.content.length / 10000); // Normalize to 10k chars
+    priority += sizeScore * 0.2;
+
+    // Higher priority for certain document types
+    const importantTypes = ["evidence", "testimony", "contract", "ruling"];
+    if (importantTypes.includes(doc.documentType.toLowerCase())) {
+      priority += 0.3;
+    }
+
+    return Math.min(1, priority);
+  }
+
+  /**
+   * Simple hash function for mock embeddings
+   */
+  private simpleHash(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
   }
 }

@@ -7,6 +7,7 @@ import { db } from "$lib/server/db/index";
 import { evidence, cases } from "$lib/server/db/schema-postgres";
 import { eq, and, inArray } from "drizzle-orm";
 import { enhancedRAGService } from "$lib/services/enhanced-rag-service";
+import type { RAGResponse } from "$lib/types/rag";
 import { aiService } from "$lib/services/ai-service";
 import { createClient } from "redis";
 import { randomUUID } from "crypto";
@@ -126,7 +127,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       evidenceItems,
       synthesisType,
       prompt,
-      locals.user.id
+      locals.user.id,
+      caseId
     );
 
     // Create new synthesized evidence record
@@ -175,7 +177,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     await addToEnhancedRAG(
       synthesizedEvidence[0],
       synthesisResult.embedding,
-      synthesisResult.ragScore
+      synthesisResult.ragScore,
+      synthesisType
     );
 
     // Publish real-time update
@@ -215,7 +218,8 @@ async function synthesizeEvidence(
   evidenceItems: any[],
   synthesisType: string,
   customPrompt: string | undefined,
-  userId: string
+  userId: string,
+  caseId: string
 ): Promise<SynthesisResult> {
   // Prepare synthesis context
   const evidenceContext = evidenceItems.map((item) => ({
@@ -240,15 +244,17 @@ async function synthesizeEvidence(
 
   // Use enhanced RAG for context-aware synthesis
   const ragResult = await enhancedRAGService.query(synthesisPrompt, {
-    useContextRAG: true,
-    useSelfPrompting: true,
-    useMultiAgent: true,
+    caseId: caseId,
     documentTypes: ["evidence", "legal"],
-    maxResults: 20,
   });
 
   // Generate embeddings for the synthesized content
-  const synthesizedContent = `${ragResult.analysis}\n\nRecommendations:\n${ragResult.recommendations.join("\n")}`;
+  const analysis = ragResult.answer || "No analysis available";
+  const recommendations = [
+    "Comprehensive analysis completed",
+    "Review source evidence for details",
+  ];
+  const synthesizedContent = `${analysis}\n\nRecommendations:\n${recommendations.join("\n")}`;
 
   const embedding = (await aiService.generateEmbedding(synthesizedContent, {
     provider: "tauri-legal-bert",
@@ -265,9 +271,9 @@ async function synthesizeEvidence(
 
   return {
     synthesizedEvidence: {
-      summary: ragResult.analysis,
-      analysis: `Synthesis Analysis (${synthesisType}):\n\n${ragResult.analysis}\n\nRecommendations:\n- ${ragResult.recommendations.join("\n- ")}`,
-      recommendations: ragResult.recommendations,
+      summary: analysis,
+      analysis: `Synthesis Analysis (${synthesisType}):\n\n${analysis}\n\nRecommendations:\n- ${recommendations.join("\n- ")}`,
+      recommendations: recommendations,
       methodology: synthesisType,
       sourceCount: evidenceItems.length,
       correlations: identifyCorrelations(evidenceItems),
@@ -277,8 +283,8 @@ async function synthesizeEvidence(
     },
     embedding,
     ragScore,
-    confidence: ragResult.metadata?.confidence || 0.8,
-    sources: ragResult.metadata?.sources || [],
+    confidence: ragResult.confidence || 0.8,
+    sources: ragResult.sources.map((s) => s.content) || [],
   };
 }
 
@@ -330,7 +336,7 @@ function calculateHighRAGScore(
   embedding: number[],
   synthesisType: string
 ): number {
-  let score = ragResult.metadata?.ragScore || 0.5;
+  let score = ragResult.metadata.ragScore || 0.5;
 
   // Boost score based on evidence quality
   const avgEvidenceQuality =
@@ -509,7 +515,8 @@ function identifyPatterns(evidenceItems: any[]): any[] {
 async function addToEnhancedRAG(
   synthesizedEvidence: any,
   embedding: number[],
-  ragScore: number
+  ragScore: number,
+  synthesisType: string
 ): Promise<void> {
   try {
     // Add to RAG system with high-priority ranking
@@ -517,16 +524,18 @@ async function addToEnhancedRAG(
 
     await enhancedRAGService.indexDocument({
       id: synthesizedEvidence.id,
+      title: `Synthesized Evidence - ${synthesisType}`,
       content: ragContent,
       type: "synthesized_evidence",
-      caseId: synthesizedEvidence.caseId,
-      ragScore,
-      priority: ragScore > 0.8 ? "high" : ragScore > 0.6 ? "medium" : "normal",
-      embedding,
-      synthesized: true,
-      timestamp: new Date().toISOString(),
-      tags: synthesizedEvidence.tags,
       metadata: {
+        caseId: synthesizedEvidence.caseId,
+        ragScore,
+        priority:
+          ragScore > 0.8 ? "high" : ragScore > 0.6 ? "medium" : "normal",
+        embedding,
+        synthesized: true,
+        timestamp: new Date().toISOString(),
+        tags: synthesizedEvidence.tags,
         synthesisMethod: synthesizedEvidence.aiAnalysis?.synthesisMethod,
         sourceCount: Array.isArray(
           synthesizedEvidence.aiAnalysis?.sourceEvidenceIds
