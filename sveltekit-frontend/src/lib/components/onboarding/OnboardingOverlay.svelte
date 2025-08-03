@@ -234,8 +234,8 @@
       on:keydown={(e) => {
         if (e.key === "Escape") {
           closeOnboarding();
-}
-      "
+        }
+      }}
     ></div>
 
     <!-- Highlight box for target element -->

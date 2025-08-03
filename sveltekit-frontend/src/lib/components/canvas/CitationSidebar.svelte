@@ -165,8 +165,7 @@
                 e.preventDefault();
                 // For keyboard users, trigger a click event instead
                 e.currentTarget.click();
-}
-            "
+            }"
             title="Drag to insert into report"
           >
             <div class="container mx-auto px-4">

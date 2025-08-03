@@ -1,6 +1,6 @@
 <script lang="ts">
   import UploadArea from './UploadArea.svelte';
-  
+
   let uploadComponent: UploadArea;
   let uploadStatus = '';
   let uploadedFiles: any[] = [];
@@ -8,7 +8,7 @@
   let autoUpload = false;
   let maxFiles = 5;
   let maxFileSize = 10 * 1024 * 1024; // 10MB
-  
+
   function handleUploadStart(event: CustomEvent) {
     uploadStatus = `Starting upload of ${event.detail.files.length} files...`;
     console.log('Upload started:', event.detail);
@@ -51,7 +51,7 @@
   <div class="container mx-auto px-4">
     <div class="container mx-auto px-4">
       <h3>Enhanced UploadArea Component Demo</h3>
-      
+
       <!-- Configuration Controls -->
       <div class="container mx-auto px-4">
         <div class="container mx-auto px-4">
@@ -61,22 +61,22 @@
           <div class="container mx-auto px-4">
             <div class="container mx-auto px-4">
               <div class="container mx-auto px-4">
-                <input 
-                  class="container mx-auto px-4" 
-                  type="checkbox" 
-                  id="showProgress" 
+                <input
+                  class="container mx-auto px-4"
+                  type="checkbox"
+                  id="showProgress"
                   bind:checked={showProgress}
                 >
                 <label class="container mx-auto px-4" for="showProgress">
                   Show Progress
                 </label>
               </div>
-              
+
               <div class="container mx-auto px-4">
-                <input 
-                  class="container mx-auto px-4" 
-                  type="checkbox" 
-                  id="autoUpload" 
+                <input
+                  class="container mx-auto px-4"
+                  type="checkbox"
+                  id="autoUpload"
                   bind:checked={autoUpload}
                 >
                 <label class="container mx-auto px-4" for="autoUpload">
@@ -84,34 +84,34 @@
                 </label>
               </div>
             </div>
-            
+
             <div class="container mx-auto px-4">
               <div class="container mx-auto px-4">
                 <label for="maxFiles" class="container mx-auto px-4">Max Files:</label>
-                <input 
-                  type="number" 
-                  class="container mx-auto px-4" 
-                  id="maxFiles" 
-                  bind:value={maxFiles} 
-                  min="1" 
+                <input
+                  type="number"
+                  class="container mx-auto px-4"
+                  id="maxFiles"
+                  bind:value={maxFiles}
+                  min="1"
                   max="20"
                 >
               </div>
-              
+
               <div class="container mx-auto px-4">
                 <label for="maxSize" class="container mx-auto px-4">Max Size (MB):</label>
-                <input 
-                  type="number" 
-                  class="container mx-auto px-4" 
-                  id="maxSize" 
+                <input
+                  type="number"
+                  class="container mx-auto px-4"
+                  id="maxSize"
                   on:input={(e) => {
                     const target = e.target as HTMLInputElement;
                     if (target) {
                       maxFileSize = parseInt(target.value) * 1024 * 1024;
-}
-                  "
+                    }
+                  }}
                   value={Math.round(maxFileSize / 1024 / 1024)}
-                  min="1" 
+                  min="1"
                   max="100"
                 >
               </div>
@@ -119,7 +119,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Upload Component -->
       <UploadArea
         bind:this={uploadComponent}
@@ -147,29 +147,29 @@
         on:files-selected={handleFilesSelected}
         on:validation-error={handleValidationError}
       />
-      
+
       <!-- Status Display -->
       {#if uploadStatus}
         <div class="container mx-auto px-4" role="status">
           <i class="container mx-auto px-4"></i>
           {uploadStatus}
-          <button 
-            type="button" 
-            class="container mx-auto px-4" 
+          <button
+            type="button"
+            class="container mx-auto px-4"
             aria-label="Clear status"
             on:click={() => clearStatus()}
           ></button>
         </div>
       {/if}
     </div>
-    
+
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <div class="container mx-auto px-4">
           <h5>Upload Results</h5>
           {#if uploadedFiles.length > 0}
-            <button 
-              type="button" 
+            <button
+              type="button"
               class="container mx-auto px-4"
               on:click={() => clearStatus()}
             >
@@ -206,7 +206,7 @@
           {/if}
         </div>
       </div>
-      
+
       <!-- Feature List -->
       <div class="container mx-auto px-4">
         <div class="container mx-auto px-4">

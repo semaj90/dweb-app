@@ -453,11 +453,9 @@ import type { User } from '$lib/types';
             class:assistant={message.role === "assistant"}
             class:error={message.isError}
             transition:fly={{
-              transition:fly={{
               x: message.role === "user" ? 20 : -20,
               duration: 300,
             }}
-             "
           >
             <div class="container mx-auto px-4">
               {#if message.role === "user"}
@@ -528,7 +526,7 @@ import type { User } from '$lib/types';
 
       <!-- Quick actions (when no messages) -->
       {#if $messages.length === 0}
-        <div class="container mx-auto px-4" transition:fade={{ delay: 300 ">
+        <div class="container mx-auto px-4" transition:fade={{ delay: 300 }}>
           <h3>Quick Actions</h3>
           <div class="container mx-auto px-4">
             {#each quickActions as action}

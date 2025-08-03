@@ -100,7 +100,7 @@
         <div
           use:melt={$fileMenu}
           class="container mx-auto px-4"
-          transition:fly={{ y: -5, duration: 150 "
+          transition:fly={{ y: -5, duration: 150 }}
         >
           <button
             use:melt={$fileItem}

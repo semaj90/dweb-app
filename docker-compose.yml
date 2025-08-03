@@ -4,11 +4,11 @@ version: "3.8"
 
 services:
   postgres:
-    image: pgvector/pgvector:pg16
+    image: pgvector/pgvector:pg17
     container_name: legal_ai_postgres
     platform: linux/amd64
     environment:
-      POSTGRES_DB: prosecutor_db
+      POSTGRES_DB: legal_ai_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_SHARED_BUFFERS: 256MB
@@ -22,7 +22,7 @@ services:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d prosecutor_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d legal_ai_db"]
       interval: 30s
       timeout: 10s
       retries: 3

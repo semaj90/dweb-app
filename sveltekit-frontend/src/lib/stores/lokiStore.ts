@@ -16,12 +16,11 @@ async function initLoki() {
     const Loki = (await import("lokijs")).default;
 
     lokiDb = new Loki("canvas-cache.db", {
-      persistenceMethod: "localStorage",
       autoload: true,
       autoloadCallback: databaseInitialize,
       autosave: true,
       autosaveInterval: 5000,
-    });
+    } as any);
   } catch (error) {
     console.error("Failed to initialize Loki:", error);
   }

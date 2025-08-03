@@ -27,18 +27,23 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
   }
   try {
     // Simplified analysis - just local LLM and basic context
-    const currentCase = await db.query.cases.findFirst({
-      where: eq(cases.id, caseId),
-    });
+    const currentCaseResults = await db
+      .select()
+      .from(cases)
+      .where(eq(cases.id, caseId))
+      .limit(1);
 
-    if (!currentCase) {
+    if (!currentCaseResults.length) {
       return json({ error: "Case not found" }, { status: 404 });
     }
-    const recentActivities = await db.query.caseActivities.findMany({
-      where: eq(caseActivities.caseId, caseId),
-      orderBy: (activities, { desc }) => [desc(activities.createdAt)],
-      limit: 3,
-    });
+
+    const currentCase = currentCaseResults[0];
+    const recentActivities = await db
+      .select()
+      .from(caseActivities)
+      .where(eq(caseActivities.caseId, caseId))
+      .orderBy((activities) => activities.createdAt)
+      .limit(3);
 
     try {
       const embeddingResponse = await fetch(`${NLP_SERVICE_URL}/embed`, {
@@ -59,7 +64,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
           limit: 3,
           filter: { must: [{ key: "caseId", match: { value: caseId } }] },
           with_payload: true,
-        },
+        }
       );
 
       const relevantFragments = qdrantSearchResults
@@ -106,7 +111,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
     } catch (vectorError) {
       console.warn(
         "Vector search failed, falling back to basic analysis:",
-        vectorError,
+        vectorError
       );
 
       // Fallback without vector search

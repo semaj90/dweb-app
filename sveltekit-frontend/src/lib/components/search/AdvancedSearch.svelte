@@ -5,7 +5,7 @@
   import Fuse from "fuse";
   import { Search, X, Filter, Tag, Calendar, FileType } from 'lucide-svelte';
   import type { Evidence } from '$lib/stores/report';
-  
+
   export let items: Evidence[] = [];
   export let onResults: (results: Evidence[]) => void = () => {};
   export let onSelect: (item: Evidence) => void = () => {};
@@ -13,7 +13,7 @@
   export let maxResults = 10;
   export let showFilters = true;
   export let showTags = true;
-  
+
   let searchValue = '';
   let fuse: Fuse<Evidence>;
   let searchResults: Evidence[] = [];
@@ -21,7 +21,7 @@
   let selectedTags: string[] = [];
   let selectedTypes: string[] = [];
   let dateRange: { start?: Date; end?: Date } = {};
-  
+
   // Fuse.js configuration for fuzzy search
   const fuseOptions = {
     keys: [
@@ -36,7 +36,7 @@
     includeScore: true,
     includeMatches: true
   };
-  
+
   // Combobox for search input
   const {
     elements: { input, menu, option, label },
@@ -46,7 +46,7 @@
     forceVisible: true,
     defaultSelected: undefined
   });
-  
+
   // Initialize Fuse when items change
   $: if (items.length > 0) {
     fuse = new Fuse(items, fuseOptions);
@@ -82,19 +82,19 @@
 }
     return true;
   });
-  
+
   // Update results when filters change
   $: onResults(filteredResults);
-  
+
   // Sync input value
   $: searchValue = $inputValue;
-  
+
   // Handle item selection
   const handleSelect = (item: Evidence) => {
     onSelect(item);
     inputValue.set('');
   };
-  
+
   // Clear search
   const clearSearch = () => {
     inputValue.set('');
@@ -102,7 +102,7 @@
     selectedTypes = [];
     dateRange = {};
   };
-  
+
   // Toggle tag filter
   const toggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {
@@ -111,7 +111,7 @@
       selectedTags = [...selectedTags, tag];
 }
   };
-  
+
   // Toggle type filter
   const toggleType = (type: string) => {
     if (selectedTypes.includes(type)) {
@@ -120,10 +120,10 @@
       selectedTypes = [...selectedTypes, type];
 }
   };
-  
+
   // Evidence types
   const evidenceTypes = ['document', 'image', 'video', 'audio', 'link'];
-  
+
   // Highlight search matches
   const highlightMatches = (text: string, searchTerm: string): string => {
     if (!searchTerm) return text;
@@ -154,13 +154,13 @@
         </button>
       {/if}
     </div>
-    
+
     <!-- Results dropdown -->
     {#if $open && searchResults.length > 0}
       <div
         use:melt={$menu}
         class="container mx-auto px-4"
-        transition:fly={{ y: -5, duration: 150  "
+        transition:fly={{ y: -5, duration: 150 }}
       >
         {#each filteredResults as item, index (item.id)}
           <button
@@ -178,7 +178,7 @@
                 <div class="container mx-auto px-4">{item.type[0].toUpperCase()}</div>
               {/if}
             </div>
-            
+
             <div class="container mx-auto px-4">
               <div class="container mx-auto px-4">
                 {@html highlightMatches(item.title, searchValue)}
@@ -189,7 +189,7 @@
                   {#if item.description.length > 100}...{/if}
                 </div>
               {/if}
-              
+
               {#if item.tags && item.tags.length > 0}
                 <div class="container mx-auto px-4">
                   {#each item.tags.slice(0, 3) as tag}
@@ -198,7 +198,7 @@
                 </div>
               {/if}
             </div>
-            
+
             <div class="container mx-auto px-4">
               <span class="container mx-auto px-4">{item.type}</span>
               <span class="container mx-auto px-4">
@@ -207,7 +207,7 @@
             </div>
           </button>
         {/each}
-        
+
         {#if filteredResults.length === 0}
           <div class="container mx-auto px-4">
             <Search size={24} />
@@ -218,7 +218,7 @@
       </div>
     {/if}
   </div>
-  
+
   <!-- Filters -->
   {#if showFilters}
     <div class="container mx-auto px-4">
@@ -240,7 +240,7 @@
           {/each}
         </div>
       </div>
-      
+
       <!-- Tag filters -->
       {#if showTags && allTags.length > 0}
         <div class="container mx-auto px-4">
@@ -261,7 +261,7 @@
           </div>
         </div>
       {/if}
-      
+
       <!-- Date range -->
       <div class="container mx-auto px-4">
         <label class="container mx-auto px-4">
@@ -286,12 +286,12 @@
       </div>
     </div>
   {/if}
-  
+
   <!-- Active filters summary -->
   {#if selectedTags.length > 0 || selectedTypes.length > 0 || dateRange.start || dateRange.end}
     <div class="container mx-auto px-4">
       <span class="container mx-auto px-4">Active filters:</span>
-      
+
       {#each selectedTypes as type}
         <span class="container mx-auto px-4">
           {type}
@@ -300,7 +300,7 @@
           </button>
         </span>
       {/each}
-      
+
       {#each selectedTags as tag}
         <span class="container mx-auto px-4">
           #{tag}
@@ -309,16 +309,16 @@
           </button>
         </span>
       {/each}
-      
+
       {#if dateRange.start || dateRange.end}
         <span class="container mx-auto px-4">
           {dateRange.start?.toLocaleDateString() || '...'} - {dateRange.end?.toLocaleDateString() || '...'}
-          <button on:click={() => dateRange = {">
+          <button on:click={() => dateRange = {}}>
             <X size={12} />
           </button>
         </span>
       {/if}
-      
+
       <button class="container mx-auto px-4" on:click={() => clearSearch()}>
         Clear all
       </button>
@@ -441,7 +441,7 @@
   .result-type-badge.video { background: #8b5cf6; }
   .result-type-badge.audio { background: #f59e0b; }
   .result-type-badge.link { background: #06b6d4; }
-  
+
   .result-content {
     flex: 1;
     min-width: 0;

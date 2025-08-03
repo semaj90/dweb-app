@@ -2,6 +2,8 @@
   import { goto } from '$app/navigation';
   import { user } from '$lib/stores/user';
   
+  // Note: Authentication check is handled server-side to prevent redirect loops
+  
   let email = 'admin@legal-ai.local';
   let password = '';
   let loading = false;

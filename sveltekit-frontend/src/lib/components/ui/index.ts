@@ -2,21 +2,20 @@
 // Auto-generated barrel file for all UI components
 
 // Enhanced Bits UI Components (Legal AI specific) - Primary exports
-export * from './enhanced-bits';
+export { default as EnhancedButton } from "./enhanced-bits/Button.svelte";
+export { default as EnhancedDialog } from "./enhanced-bits/Dialog.svelte";
+export { default as EnhancedInput } from "./enhanced-bits/Input.svelte";
 
-// Standard Component Barrel Exports
-export * from './button';
-export * from './dialog';
-export * from './input';
-export * from './label';
-export * from './textarea';
-export * from './badge';
-export * from './tabs';
-export * from './tooltip';
-export * from './progress';
-export * from './scrollarea';
-export * from './layout';
-export * from './modal';
+// Standard Component Barrel Exports (no conflicts)
+export * from "./label";
+export * from "./textarea";
+export * from "./badge";
+export * from "./tabs";
+export * from "./tooltip";
+export * from "./progress";
+export * from "./scrollarea";
+export * from "./layout";
+export * from "./modal";
 
 // Individual Svelte component imports for direct use
 import Badge from "./Badge.svelte";
@@ -43,7 +42,7 @@ export {
   Input as UiInput,
   Label as UiLabel,
   Modal as UiModal,
-  Tooltip as UiTooltip
+  Tooltip as UiTooltip,
 };
 
 // Legacy exports for compatibility

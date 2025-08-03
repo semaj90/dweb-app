@@ -101,13 +101,11 @@ class EnhancedLokiDB {
       const Loki = (await import("lokijs")).default;
 
       this.db = new Loki("enhanced-legal-ai-cache.db", {
-        persistenceMethod: "localStorage",
         autoload: true,
         autoloadCallback: () => this.setupEnhancedCollections(),
         autosave: true,
         autosaveInterval: 10000, // More frequent saves
-        serializationMethod: "pretty", // Better debugging
-      });
+      } as any);
 
       // Setup real-time sync
       this.setupRealtimeSync();
@@ -275,7 +273,7 @@ class EnhancedLokiDB {
       accessCount: 0,
       lastAccess: new Date(),
       contentHash: await this.generateContentHash(
-        evidence.description || evidence.title || "",
+        evidence.description || evidence.title || ""
       ),
     };
 
@@ -318,7 +316,7 @@ class EnhancedLokiDB {
 
   async searchEvidenceByCaseId(
     caseId: string,
-    options: { limit?: number; minConfidence?: number } = {},
+    options: { limit?: number; minConfidence?: number } = {}
   ) {
     const col = this.collections.get("evidence");
     if (!col) return [];
@@ -352,7 +350,7 @@ class EnhancedLokiDB {
   async cacheAIAnalysis(
     evidenceId: string,
     analysis: any,
-    model: string = "unknown",
+    model: string = "unknown"
   ) {
     const col = this.collections.get("aiAnalysis");
     if (!col) return null;
@@ -378,7 +376,7 @@ class EnhancedLokiDB {
   async getAIAnalysis(
     evidenceId: string,
     analysisType?: string,
-    model?: string,
+    model?: string
   ) {
     const col = this.collections.get("aiAnalysis");
     if (!col) return null;
@@ -391,7 +389,7 @@ class EnhancedLokiDB {
       .find(query)
       .sort(
         (a: any, b: any) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
 
     if (analyses.length > 0) {
@@ -413,7 +411,7 @@ class EnhancedLokiDB {
   async cacheEmbeddings(
     contentHash: string,
     embeddings: number[],
-    metadata: any = {},
+    metadata: any = {}
   ) {
     const col = this.collections.get("embeddings");
     if (!col) return null;
@@ -640,7 +638,7 @@ class EnhancedLokiDB {
     operation: "create" | "update" | "delete",
     collection: string,
     data: any,
-    priority: number = 1,
+    priority: number = 1
   ) {
     const syncOp: SyncOperation = {
       id: crypto.randomUUID(),
@@ -725,7 +723,7 @@ class EnhancedLokiDB {
         lastAccess: new Date(),
         operations: docs.reduce(
           (sum: number, doc: any) => sum + (doc.accessCount || 0),
-          0,
+          0
         ),
       });
     }
@@ -812,12 +810,12 @@ export const enhancedLokiStore = writable({
 // Derived stores for specific data access
 export const evidenceCacheStore = derived(
   enhancedLokiStore,
-  ($store) => $store.initialized,
+  ($store) => $store.initialized
 );
 
 export const cacheStatsStore = derived(
   enhancedLokiStore,
-  ($store) => $store.stats,
+  ($store) => $store.stats
 );
 
 export const cacheHealthStore = derived(enhancedLokiStore, ($store) => {
@@ -867,7 +865,7 @@ export const enhancedLoki = {
 
     async getByCaseId(
       caseId: string,
-      options?: { limit?: number; minConfidence?: number },
+      options?: { limit?: number; minConfidence?: number }
     ) {
       return await enhancedLokiDB.searchEvidenceByCaseId(caseId, options);
     },
@@ -891,12 +889,12 @@ export const enhancedLoki = {
     async cacheEmbeddings(
       contentHash: string,
       embeddings: number[],
-      metadata?: any,
+      metadata?: any
     ) {
       return await enhancedLokiDB.cacheEmbeddings(
         contentHash,
         embeddings,
-        metadata,
+        metadata
       );
     },
 
@@ -914,7 +912,7 @@ export const enhancedLoki = {
     async getMatches(queryHash: string, minSimilarity?: number) {
       return await enhancedLokiDB.getCachedVectorMatches(
         queryHash,
-        minSimilarity,
+        minSimilarity
       );
     },
   },

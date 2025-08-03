@@ -1,5 +1,4 @@
-import { db } from "$lib/server/db/index";
-import { cases, evidence } from "$lib/server/db/unified-schema";
+import { db, cases, evidence } from "$lib/server/db/index";
 import { fail } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
@@ -52,7 +51,7 @@ export const actions: Actions = {
   // Add evidence to case
   addEvidence: async ({ request, locals }) => {
     const session = locals.session;
-    if (!session || !session.user) {
+    if (!session) {
       return fail(401, { message: "Unauthorized" });
     }
     const formData = await request.formData();
@@ -86,7 +85,7 @@ export const actions: Actions = {
   // Update evidence
   updateEvidence: async ({ request, locals }) => {
     const session = locals.session;
-    if (!session || !session.user) {
+    if (!session) {
       return fail(401, { message: "Unauthorized" });
     }
     const formData = await request.formData();
@@ -120,7 +119,7 @@ export const actions: Actions = {
   // Delete evidence
   deleteEvidence: async ({ request, locals }) => {
     const session = locals.session;
-    if (!session || !session.user) {
+    if (!session) {
       return fail(401, { message: "Unauthorized" });
     }
     const formData = await request.formData();

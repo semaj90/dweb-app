@@ -88,7 +88,7 @@
   class="container mx-auto px-4"
   class:draggable
   class:expanded={isHovered}
-  transition:scale={{ duration: 200, easing: quintOut "
+  transition:scale={{ duration: 200, easing: quintOut }}
   on:mouseenter={handleMouseEnter}
   on:mouseleave={handleMouseLeave}
   role="article"

@@ -1,6 +1,6 @@
 // Environment variables fallback
 const env = process.env || {};
-import { caseActivities, cases, evidence } from "$lib/server/db/schema";
+import { caseActivities, cases, evidence } from "$lib/server/db/index";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
@@ -31,25 +31,34 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
   if (!queryText) {
     return json({ error: "Query text is required" }, { status: 400 });
   }
+
   try {
     // --- RAG: RETRIEVAL ---
-    const currentCase = await db.query.cases.findFirst({
-      where: eq(cases.id, caseId),
-    });
-    if (!currentCase) return json({ error: "Case not found" }, { status: 404 });
+    const currentCaseResults = await db
+      .select()
+      .from(cases)
+      .where(eq(cases.id, caseId))
+      .limit(1);
+    if (!currentCaseResults.length) {
+      return json({ error: "Case not found" }, { status: 404 });
+    }
 
-    const recentActivities = await db.query.caseActivities.findMany({
-      where: eq(caseActivities.caseId, caseId),
-      orderBy: (activities, { desc }) => [desc(activities.createdAt)],
-      limit: 5,
-    });
+    const currentCase = currentCaseResults[0];
+
+    const recentActivities = await db
+      .select()
+      .from(caseActivities)
+      .where(eq(caseActivities.caseId, caseId))
+      .orderBy((activities) => activities.createdAt)
+      .limit(5);
 
     // Get recent evidence files
-    const recentEvidence = await db.query.evidence.findMany({
-      where: eq(evidence.caseId, caseId),
-      orderBy: (evidenceTable, { desc }) => [desc(evidenceTable.uploadedAt)],
-      limit: 5,
-    });
+    const recentEvidence = await db
+      .select()
+      .from(evidence)
+      .where(eq(evidence.caseId, caseId))
+      .orderBy((evidenceTable) => evidenceTable.uploadedAt)
+      .limit(10);
 
     const embeddingResponse = await fetch(`${NLP_SERVICE_URL}/embed`, {
       method: "POST",
@@ -144,8 +153,8 @@ ws ::= ([ \t\n]*)
           grammar: jsonGrammar, // Pass the grammar to constrain the output
         }),
       }).then((res) =>
-        res.json().then((data) => ({ source: "firm_ai", data, ok: res.ok })),
-      ),
+        res.json().then((data) => ({ source: "firm_ai", data, ok: res.ok }))
+      )
     );
 
     // 2. OpenAI (if enabled and key exists)
@@ -163,8 +172,8 @@ ws ::= ([ \t\n]*)
             max_tokens: 512,
           }),
         }).then((res) =>
-          res.json().then((data) => ({ source: "openai", data, ok: res.ok })),
-        ),
+          res.json().then((data) => ({ source: "openai", data, ok: res.ok }))
+        )
       );
     }
     const settledResults = await Promise.allSettled(promises);
@@ -186,7 +195,7 @@ ws ::= ([ \t\n]*)
             // Fallback if JSON parsing fails despite the grammar (very unlikely)
             console.error(
               "Local LLM output was not valid JSON:",
-              data.response,
+              data.response
             );
             analysisResults.firm_ai = {
               output: data.response,

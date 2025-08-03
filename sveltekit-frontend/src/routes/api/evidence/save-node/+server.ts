@@ -57,7 +57,7 @@ const canvasStateSchema = z.object({
       ]),
       strength: z.number().min(0).max(1),
       label: z.string().optional(),
-    }),
+    })
   ),
   viewport: z.object({
     zoomLevel: z.number(),
@@ -72,9 +72,9 @@ const canvasStateSchema = z.object({
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
-    // Check authentication
-    const session = locals.session;
-    if (!session?.user?.userId) {
+    // Check authentication - use locals.user which is set by hooks
+    const user = locals.user;
+    if (!user) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
     const body = await request.json();
@@ -82,16 +82,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     switch (action) {
       case "save_node":
-        return await saveEvidenceNode(data, session.user.userId);
+        return await saveEvidenceNode(data, user.id);
 
       case "save_canvas_state":
-        return await saveCanvasState(data, session.user.userId);
+        return await saveCanvasState(data, user.id);
 
       case "bulk_save":
-        return await bulkSaveEvidence(data, session.user.userId);
+        return await bulkSaveEvidence(data, user.id);
 
       case "auto_save":
-        return await autoSaveCanvasState(data, session.user.userId);
+        return await autoSaveCanvasState(data, user.id);
 
       default:
         return json({ error: "Invalid action" }, { status: 400 });
@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         error: "Failed to save evidence",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
@@ -160,7 +160,7 @@ async function saveEvidenceNode(nodeData: any, userId: string) {
           error: "Validation failed",
           details: error.errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
     throw error;
@@ -207,7 +207,7 @@ async function saveCanvasState(canvasData: any, userId: string) {
           error: "Canvas validation failed",
           details: error.errors,
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
     throw error;
@@ -225,7 +225,7 @@ async function bulkSaveEvidence(evidenceItems: any[], userId: string) {
       const batch = evidenceItems.slice(i, i + batchSize);
 
       const batchResults = await Promise.allSettled(
-        batch.map((item) => saveEvidenceNode(item, userId)),
+        batch.map((item) => saveEvidenceNode(item, userId))
       );
 
       batchResults.forEach((result, index) => {
@@ -340,7 +340,7 @@ async function generateAndStoreEmbedding(evidence: any) {
           model: "nomic-embed-text",
           prompt: embeddingText,
         }),
-      },
+      }
     );
 
     if (!embeddingResponse.ok) return;
@@ -400,7 +400,7 @@ async function updateSearchIndex(evidence: any) {
 }
 async function getLastAutoSaveTime(
   userId: string,
-  caseId?: string,
+  caseId?: string
 ): Promise<number | null> {
   try {
     // In production, this would query the database
@@ -421,8 +421,8 @@ async function cleanupOldAutoSaves(userId: string, caseId?: string) {
 // GET endpoint for loading evidence
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
-    const session = locals.session;
-    if (!session?.user?.userId) {
+    const user = locals.user;
+    if (!user) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
     const action = url.searchParams.get("action");
@@ -432,17 +432,17 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     switch (action) {
       case "load_evidence":
         if (evidenceId) {
-          return await loadSingleEvidence(evidenceId, session.user.userId);
+          return await loadSingleEvidence(evidenceId, user.id);
         } else if (caseId) {
-          return await loadEvidenceByCase(caseId, session.user.userId);
+          return await loadEvidenceByCase(caseId, user.id);
         } else {
-          return await loadAllEvidence(session.user.userId);
+          return await loadAllEvidence(user.id);
         }
       case "load_canvas_state":
-        return await loadCanvasState(caseId || "", session.user.userId);
+        return await loadCanvasState(caseId || "", user.id);
 
       case "get_auto_saves":
-        return await getAutoSaves(caseId || "", session.user.userId);
+        return await getAutoSaves(caseId || "", user.id);
 
       default:
         return json({ error: "Invalid action" }, { status: 400 });
@@ -454,7 +454,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         error: "Failed to load evidence",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };

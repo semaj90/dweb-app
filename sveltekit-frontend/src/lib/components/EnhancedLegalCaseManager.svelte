@@ -9,20 +9,7 @@
     // Import subcomponents
     import CaseInfoForm from './subcomponents/CaseInfoForm.svelte';
     import DocumentUploadForm from './subcomponents/DocumentUploadForm.svelte';
-    import EvidenceAnalysisForm from './subcomponents                    {#if recognition}
-                        <button
-                            on:click={toggleVoiceListening}
-                            class="p-2 rounded-lg border border-gray-300 dark:border-gray-600
-                                   hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
-                                   {isListening ? 'bg-red-50 border-red-300 text-red-600' : ''}"
-                            title="Toggle voice commands"
-                            aria-label="Toggle voice commands"
-                        >
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    {/if}ysisForm.svelte';
+    import EvidenceAnalysisForm from './subcomponents/EvidenceAnalysisForm.svelte';
     import AIAnalysisForm from './subcomponents/AIAnalysisForm.svelte';
     import ReviewSubmitForm from './subcomponents/ReviewSubmitForm.svelte';
     import ProgressIndicator from './subcomponents/ProgressIndicator.svelte';

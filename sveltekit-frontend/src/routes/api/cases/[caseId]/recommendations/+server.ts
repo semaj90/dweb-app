@@ -5,7 +5,7 @@ import {
   cases,
   evidence,
   statutes,
-} from "$lib/server/db/schema-postgres";
+} from "$lib/server/db/index";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
@@ -43,13 +43,17 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
   try {
     // 1. Fetch the current case data
-    const currentCase = await db.query.cases.findFirst({
-      where: eq(cases.id, caseId),
-    });
+    const currentCaseResults = await db
+      .select()
+      .from(cases)
+      .where(eq(cases.id, caseId))
+      .limit(1);
 
-    if (!currentCase) {
+    if (!currentCaseResults.length) {
       return json({ error: "Case not found" }, { status: 404 });
     }
+
+    const currentCase = currentCaseResults[0];
     // 2. Recommendation: Check for missing information
     if (!currentCase.description || currentCase.description.length < 50) {
       recommendations.push({
@@ -104,7 +108,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: textToEmbed }),
-        },
+        }
       );
 
       if (nlpResponse.ok) {
@@ -124,7 +128,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
             type: "link_case",
             title: `Review Similar Case: ${hit.payload?.title || "Untitled"}`,
             description: `This case has a similarity score of ${hit.score.toFixed(
-              2,
+              2
             )}. It may contain related evidence or criminals.`,
             confidence: hit.score,
             actionData: {
@@ -145,10 +149,11 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       Array.isArray(currentCase.aiTags) &&
       currentCase.aiTags.includes("fraud")
     ) {
-      const fraudStatutes = await db.query.statutes.findMany({
-        where: ilike(statutes.title, "%fraud%"),
-        limit: 3,
-      });
+      const fraudStatutes = await db
+        .select()
+        .from(statutes)
+        .where(ilike(statutes.title, "%fraud%"))
+        .limit(3);
       fraudStatutes.forEach((statute) => {
         recommendations.push({
           id: `rec-statute-${statute.id}`,
@@ -170,7 +175,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
     console.error("Error generating recommendations:", error);
     return json(
       { error: "Failed to generate recommendations" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };

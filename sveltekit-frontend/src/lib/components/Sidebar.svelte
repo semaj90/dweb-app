@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Fuse from "fuse";
+  import Fuse from "fuse.js";
   import { onMount } from "svelte";
   import { quintOut } from "svelte/easing";
   import { slide } from "svelte/transition";
@@ -100,7 +100,7 @@
   {#if sidebarOpen}
     <div
       class="container mx-auto px-4"
-      transition:slide={{ duration: 300, easing: quintOut, axis: "x"  "
+      transition:slide={{ duration: 300, easing: quintOut, axis: "x" }}
     >
       <!-- Header -->
       <div class="container mx-auto px-4">

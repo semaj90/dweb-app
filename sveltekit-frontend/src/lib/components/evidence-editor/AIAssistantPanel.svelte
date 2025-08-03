@@ -2,7 +2,7 @@
   import Badge from "$lib/components/ui/Badge.svelte";
 import Button from "$lib/components/ui/Button.svelte";
 import Input from "$lib/components/ui/Input.svelte";
-  import Fuse from "fuse";
+  import Fuse from "fuse.js";
   import { createEventDispatcher, onMount } from "svelte";
 
   const dispatch = createEventDispatcher();

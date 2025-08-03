@@ -1,6 +1,6 @@
 # copilot.md - GitHub Copilot Context & Integration Guide
 
-> **🤖 COPILOT CONTEXT**: This file provides comprehensive context for GitHub Copilot to understand the Legal AI VS Code Remote Indexing System and provide accurate code suggestions, completions, and assistance.
+> **🤖 COPILOT CONTEXT**: This file provides comprehensive context for GitHub Copilot to understand the Legal AI VS Code Remote Indexing System and provide accurate code suggestions, completions, and assistance. never use docker. attempt to read claude.md
 
 ---
 
@@ -19,6 +19,7 @@ for result in enhanced_results:
         "source": "enhanced_local_index",
         "priority": "high",
         "vs_basic_index": True  # Enhanced beats basic indexing
+
     })
 ```
 
@@ -43,7 +44,7 @@ Search_Capabilities: SEMANTIC_VECTOR_ENABLED
 Framework: "SvelteKit 2.16.0 + Svelte 5.0";
 Language: "TypeScript (strict mode)";
 Database: "Drizzle ORM + PostgreSQL + pg_vector";
-UI: "Melt UI + Bits UI + Custom CSS";
+UI: "Melt UI + Bits UI + uno CSS + nier automata theme";
 AI: "Ollama + Gemma3 C:UsersjamesDesktopdeeds-webdeeds-web-appgemma3Q4_K_Mmo16.gguf + nomic-embed-text";
 Authentication: "Lucia Auth";
 State: "XState machines + Svelte stores";

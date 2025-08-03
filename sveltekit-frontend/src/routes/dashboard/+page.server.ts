@@ -1,6 +1,6 @@
 import { cases, criminals } from "$lib/server/db/schema-postgres";
 import { redirect } from "@sveltejs/kit";
-import { db } from "$lib/server/db/index";
+import { db } from "$lib/server/db";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {

@@ -31,9 +31,6 @@ Stop everything: Make sure no other startup scripts are running. You can stop al
 
 Use the correct command: Only use the command we've been working with to start your services:
 
-Bash
-
-docker-compose -f docker-compose-gpu.yml up --build -d
 Verify with the check script: Run the check-setup.bat script from the Canvas to confirm everything is running correctly.
 
 This will ensure you're using the persistent volume method and will likely resolve the errors with your other containers as well.

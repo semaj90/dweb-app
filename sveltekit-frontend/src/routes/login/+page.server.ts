@@ -1,7 +1,6 @@
 import { loginSchema } from "$lib/schemas";
 import { lucia } from "$lib/server/auth";
-import { db } from "$lib/server/db";
-import { users } from "$lib/server/db/schema-postgres";
+import { db, users } from "$lib/server/db/index";
 import { verify } from "@node-rs/argon2";
 import { fail, redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";

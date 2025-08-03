@@ -119,7 +119,7 @@
       {#each displayedItems as item, index (item.id || index)}
         <div
           class="container mx-auto px-4"
-          transition:slide={{ duration: 300, easing: quintOut "
+          transition:slide={{ duration: 300, easing: quintOut }}
           on:click={() => handleItemClick(item)}
           on:keydown={(e) => e.key === "Enter" && handleItemClick(item)}
           role="option"
@@ -176,14 +176,14 @@
   {/if}
 
   {#if isLoading}
-    <div class="container mx-auto px-4" transition:fade={{ duration: 200 ">
+    <div class="container mx-auto px-4" transition:fade={{ duration: 200 }}>
       <div class="container mx-auto px-4"></div>
       <p>Loading more {itemType}...</p>
     </div>
   {/if}
 
   {#if !hasMore && displayedItems.length > 0}
-    <div class="container mx-auto px-4" transition:fade={{ duration: 200 ">
+    <div class="container mx-auto px-4" transition:fade={{ duration: 200 }}>
       <p>No more {itemType} to load</p>
     </div>
   {/if}

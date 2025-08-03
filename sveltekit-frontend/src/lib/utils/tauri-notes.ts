@@ -10,16 +10,17 @@ let exists: any;
 
 async function initializeTauri() {
   try {
-    const tauriModule = await import("@tauri-apps/api/tauri");
+    // Note: In Tauri v2, core functions are in different modules
+    const { invoke: tauriInvoke } = await import("@tauri-apps/api/core");
     const pathModule = await import("@tauri-apps/api/path");
-    const fsModule = await import("@tauri-apps/api/fs");
     
-    invoke = tauriModule.invoke;
+    invoke = tauriInvoke;
     appDataDir = pathModule.appDataDir;
     join = pathModule.join;
-    writeTextFile = fsModule.writeTextFile;
-    readTextFile = fsModule.readTextFile;
-    exists = fsModule.exists;
+    
+    // File system operations require @tauri-apps/plugin-fs plugin in Tauri v2
+    // For now, these will use fallbacks
+    throw new Error("Tauri v2 filesystem plugin not configured");
   } catch (error) {
     console.warn("Tauri not available - desktop features disabled");
     // Provide fallback implementations

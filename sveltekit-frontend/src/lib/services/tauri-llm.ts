@@ -8,7 +8,19 @@ declare global {
   }
 }
 
-import { invoke } from "@tauri-apps/api/core";
+// Dynamic Tauri imports to prevent TypeScript errors
+let invoke: any;
+
+async function initializeTauri() {
+  try {
+    const tauriCore = await import("@tauri-apps/api/core");
+    invoke = tauriCore.invoke;
+  } catch (error) {
+    console.warn("Tauri not available - using fallback implementations");
+    invoke = () => Promise.reject(new Error("Tauri not available"));
+  }
+}
+
 import {
   formatGemmaPrompt,
   getInferenceSettings,
@@ -80,7 +92,7 @@ class TauriLLMService {
         return;
       }
       // Get available models from Rust backend
-      const models = await invoke<LocalModel[]>("list_llm_models");
+      const models = (await (invoke as any)("list_llm_models")) as LocalModel[];
       this.availableModels = models;
 
       // Initialize Gemma3 if available
@@ -93,7 +105,7 @@ class TauriLLMService {
       console.log(
         "Tauri LLM Service initialized with",
         models.length,
-        "models",
+        "models"
       );
     } catch (error) {
       console.error("Failed to initialize Tauri LLM service:", error);
@@ -104,7 +116,7 @@ class TauriLLMService {
     // Prefer legal-bert for embeddings in legal domain
     const legalEmbeddingModel = this.availableModels.find(
       (model) =>
-        model.architecture === "legal-bert" && model.type === "embedding",
+        model.architecture === "legal-bert" && model.type === "embedding"
     );
     if (legalEmbeddingModel) {
       this.currentEmbeddingModel = legalEmbeddingModel.id;
@@ -113,7 +125,7 @@ class TauriLLMService {
       // Fallback to Gemma3Q4_K_M if available
       const gemmaModel = this.availableModels.find(
         (model) =>
-          model.name.toLowerCase().includes("gemma") && model.type === "chat",
+          model.name.toLowerCase().includes("gemma") && model.type === "chat"
       );
       if (gemmaModel) {
         this.currentChatModel = gemmaModel.id;
@@ -121,8 +133,7 @@ class TauriLLMService {
       } else {
         // Fallback to general BERT model
         const generalEmbeddingModel = this.availableModels.find(
-          (model) =>
-            model.architecture === "bert" && model.type === "embedding",
+          (model) => model.architecture === "bert" && model.type === "embedding"
         );
         if (generalEmbeddingModel) {
           this.currentEmbeddingModel = generalEmbeddingModel.id;
@@ -132,7 +143,7 @@ class TauriLLMService {
     }
     // Select chat model (prefer local Llama/Mistral for legal domain, then Gemma)
     const legalChatModel = this.availableModels.find(
-      (model) => model.type === "chat" && model.domain === "legal",
+      (model) => model.type === "chat" && model.domain === "legal"
     );
     if (legalChatModel) {
       this.currentChatModel = legalChatModel.id;
@@ -141,7 +152,7 @@ class TauriLLMService {
       // Fallback to Gemma3Q4_K_M if available
       const gemmaModel = this.availableModels.find(
         (model) =>
-          model.name.toLowerCase().includes("gemma") && model.type === "chat",
+          model.name.toLowerCase().includes("gemma") && model.type === "chat"
       );
       if (gemmaModel) {
         this.currentChatModel = gemmaModel.id;
@@ -152,7 +163,9 @@ class TauriLLMService {
   // Load a specific model into memory
   async loadModel(modelId: string): Promise<boolean> {
     try {
-      const result = await invoke<boolean>("load_model", { modelId });
+      const result = (await (invoke as any)("load_model", {
+        modelId,
+      })) as boolean;
 
       // Update model status
       const model = this.availableModels.find((m) => m.id === modelId);
@@ -168,13 +181,13 @@ class TauriLLMService {
   // Generate embeddings using local legal-bert
   async generateEmbedding(
     text: string | string[],
-    options: EmbeddingOptions = {},
+    options: EmbeddingOptions = {}
   ): Promise<number[] | number[][]> {
     if (!this.isInitialized || !this.currentEmbeddingModel) {
       throw new Error("Embedding model not available");
     }
     try {
-      const result = await invoke<number[] | number[][]>("generate_embedding", {
+      const result = await (invoke as any)("generate_embedding", {
         modelId: this.currentEmbeddingModel,
         text: Array.isArray(text) ? text : [text],
         options: {
@@ -198,10 +211,7 @@ class TauriLLMService {
       this.availableMemory = await this.getAvailableMemory();
 
       // Select optimal Gemma3 model based on available memory
-      const optimalModel = selectOptimalGemmaModel(
-        0,
-        this.availableMemory,
-      );
+      const optimalModel = selectOptimalGemmaModel(0, this.availableMemory);
 
       if (optimalModel) {
         this.gemma3Config = optimalModel;
@@ -250,7 +260,7 @@ class TauriLLMService {
   private async initializeFallbackModel(): Promise<void> {
     // Try to find any available chat model
     const fallbackModel = this.availableModels.find(
-      (model) => model.type === "chat" && model.isLoaded,
+      (model) => model.type === "chat" && model.isLoaded
     );
 
     if (fallbackModel) {
@@ -263,7 +273,7 @@ class TauriLLMService {
   // Enhanced run inference with Gemma3 optimization
   async runInference(
     prompt: string,
-    options: InferenceOptions = {},
+    options: InferenceOptions = {}
   ): Promise<string> {
     if (!this.isInitialized) {
       await this.initialize();
@@ -308,9 +318,7 @@ class TauriLLMService {
   private async getAvailableMemory(): Promise<number> {
     try {
       if (window.__TAURI__) {
-        const memInfo = await invoke<{ total: number; available: number }>(
-          "get_system_memory",
-        );
+        const memInfo = await (invoke as any)("get_system_memory");
         return Math.floor(memInfo.available / (1024 * 1024 * 1024)); // Convert to GB
       }
       // Fallback for web mode
@@ -323,7 +331,7 @@ class TauriLLMService {
   // Gemma3-specific inference with optimized prompting
   private async runGemma3Inference(
     prompt: string,
-    options: InferenceOptions,
+    options: InferenceOptions
   ): Promise<string> {
     if (!this.gemma3Config) {
       throw new Error("Gemma3 not initialized");
@@ -337,11 +345,11 @@ class TauriLLMService {
     const formattedPrompt = formatGemmaPrompt(
       this.gemma3Config.promptTemplate,
       systemPrompt,
-      prompt,
+      prompt
     );
 
     try {
-      const response = await invoke<string>("gemma3_inference", {
+      const response = await (invoke as any)("gemma3_inference", {
         prompt: formattedPrompt,
         maxTokens: options.maxTokens || inferenceSettings.maxTokens,
         temperature: options.temperature || inferenceSettings.temperature,
@@ -384,7 +392,7 @@ class TauriLLMService {
   }
   // Get optimized system prompt for legal domain
   private getLegalSystemPrompt(): string {
-    return `You are a specialized legal AI assistant with expertise in case law analysis, legal research, and document review. 
+    return `You are a specialized legal AI assistant with expertise in case law analysis, legal research, and document review.
 
 Your capabilities include:
 - Analyzing legal documents and evidence
@@ -419,7 +427,9 @@ Please provide accurate, well-reasoned responses that would be helpful to legal 
   // Model management
   async unloadModel(modelId: string): Promise<boolean> {
     try {
-      const result = await invoke<boolean>("unload_model", { modelId });
+      const result = (await (invoke as any)("unload_model", {
+        modelId,
+      })) as boolean;
 
       const model = this.availableModels.find((m) => m.id === modelId);
       if (model) {
@@ -449,7 +459,7 @@ Please provide accurate, well-reasoned responses that would be helpful to legal 
   // Switch models
   async switchEmbeddingModel(modelId: string): Promise<boolean> {
     const model = this.availableModels.find(
-      (m) => m.id === modelId && m.type === "embedding",
+      (m) => m.id === modelId && m.type === "embedding"
     );
     if (!model) {
       throw new Error(`Embedding model ${modelId} not found`);
@@ -467,7 +477,7 @@ Please provide accurate, well-reasoned responses that would be helpful to legal 
   }
   async switchChatModel(modelId: string): Promise<boolean> {
     const model = this.availableModels.find(
-      (m) => m.id === modelId && m.type === "chat",
+      (m) => m.id === modelId && m.type === "chat"
     );
     if (!model) {
       throw new Error(`Chat model ${modelId} not found`);
@@ -512,7 +522,7 @@ export async function getAvailableModels(): Promise<string[]> {
 }
 export async function runInference(
   model: string,
-  prompt: string,
+  prompt: string
 ): Promise<string> {
   await tauriLLM.initialize();
 

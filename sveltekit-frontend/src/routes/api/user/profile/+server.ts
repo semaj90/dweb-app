@@ -1,4 +1,4 @@
-import { users } from "$lib/server/db/schema-postgres";
+import { users } from "$lib/server/db/index";
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";

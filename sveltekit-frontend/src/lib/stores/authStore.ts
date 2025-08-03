@@ -396,7 +396,5 @@ export const recentConversations = derived(aiAssistantStore, $ai =>
   $ai.conversationHistory.slice(0, 10)
 );
 
-// Initialize auth on app start
-if (browser) {
-  authStore.init();
-}
+// Note: Auth initialization is now handled server-side via hooks.server.ts
+// Client-side initialization only when explicitly needed to prevent redirect loops

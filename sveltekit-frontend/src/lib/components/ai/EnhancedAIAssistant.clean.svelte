@@ -293,8 +293,7 @@
       on:keydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
-}
-      "
+        }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="citation-modal-title"

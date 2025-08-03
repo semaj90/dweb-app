@@ -45,7 +45,7 @@
 {#if open}
   <div
     class="container mx-auto px-4"
-    transition:fade={{ duration: 200, easing: quadOut "
+    transition:fade={{ duration: 200, easing: quadOut }}
     on:click={handleOutsideClick}
     on:keydown={handleKeydown}
     role="dialog"
@@ -61,7 +61,7 @@
       "fixed left-1/2 top-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 border border-slate-200 bg-white p-6 shadow-lg duration-200 dark:border-slate-800 dark:bg-slate-950 sm:rounded-lg",
       sizeClasses[size]
     )}
-    transition:fly={{ y: -20, duration: 200, easing: quadOut "
+    transition:fly={{ y: -20, duration: 200, easing: quadOut }}
     role="dialog"
     tabindex={0}
     aria-modal="true"

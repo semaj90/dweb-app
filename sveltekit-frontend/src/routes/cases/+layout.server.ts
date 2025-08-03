@@ -7,9 +7,9 @@ import type { LayoutServerLoad } from "./$types";
 // This runs for /cases and all its sub-pages
 // Perfect for loading persistent 3-column layout data
 export const load: LayoutServerLoad = async ({ locals, url }) => {
-  // Check authentication session
-  const session = locals.session;
-  if (!session || !session.user) {
+  // Check authentication
+  const user = locals.user;
+  if (!user) {
     throw redirect(303, "/login");
   }
   // Get search/filter parameters
@@ -20,15 +20,15 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
   const sortOrder = url.searchParams.get("order") || "desc";
 
   // Build where conditions
-  const whereConditions = [eq(cases.leadProsecutor, session.user.userId)];
+  const whereConditions = [eq(cases.leadProsecutor, user.id)];
 
   if (searchQuery) {
     whereConditions.push(
       or(
         like(cases.title, `%${searchQuery}%`),
         like(cases.description, `%${searchQuery}%`),
-        like(cases.caseNumber, `%${searchQuery}%`),
-      ),
+        like(cases.caseNumber, `%${searchQuery}%`)
+      )
     );
   }
   if (statusFilter !== "all") {
@@ -79,7 +79,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
         count: count(cases.id),
       })
       .from(cases)
-      .where(eq(cases.leadProsecutor, session.user.userId))
+      .where(eq(cases.leadProsecutor, user.id))
       .groupBy(cases.status);
   } catch (error) {
     console.error("Error fetching case stats:", error);
@@ -93,6 +93,6 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
     priorityFilter,
     sortBy,
     sortOrder,
-    user: session.user,
+    user: user,
   };
 };

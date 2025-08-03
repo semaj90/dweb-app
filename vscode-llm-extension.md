@@ -91,9 +91,6 @@ code --install-extension claude-dev.claude-dev
   "ollama.baseUrl": "http://localhost:11434",
   "ollama.models": [
     "gemma3-legal:latest",
-    "llama3.1:8b",
-    "mixtral:8x7b",
-    "codellama:13b"
   ],
   "ollama.defaultModel": "gemma3-legal:latest",
   "ollama.enableGPU": true,

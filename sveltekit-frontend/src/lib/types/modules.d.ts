@@ -77,7 +77,13 @@ declare module "lokijs" {
     removeWhere(query: any): void;
     count(query?: any): number;
     data: T[];
-    chain(): any;
+    chain(): {
+      find(query?: any): any;
+      where(filter: (obj: T) => boolean): any;
+      simplesort(property: string, desc?: boolean): any;
+      limit(qty: number): any;
+      data(): T[];
+    };
     clear(): void;
     where(filter: (obj: T) => boolean): T[];
   }
@@ -93,5 +99,43 @@ declare module "lokijs" {
     saveDatabase(callback?: (err: any) => void): void;
     loadDatabase(options?: any, callback?: (err: any) => void): void;
     close(): void;
+    listCollections(): Array<{ name: string; data: any[]; options: any }>;
   }
+}
+
+// Tauri API module declarations (optional dependencies)
+declare module "@tauri-apps/api/tauri" {
+  export function invoke<T = any>(
+    cmd: string,
+    args?: Record<string, any>
+  ): Promise<T>;
+  export const convertFileSrc: (filePath: string, protocol?: string) => string;
+}
+
+declare module "@tauri-apps/api/fs" {
+  export interface FileEntry {
+    path: string;
+    name?: string;
+    children?: FileEntry[];
+  }
+
+  export function readTextFile(filePath: string): Promise<string>;
+  export function writeTextFile(filePath: string, data: string): Promise<void>;
+  export function readDir(
+    dir: string,
+    options?: { recursive?: boolean }
+  ): Promise<FileEntry[]>;
+  export function createDir(
+    dir: string,
+    options?: { recursive?: boolean }
+  ): Promise<void>;
+  export function removeFile(file: string): Promise<void>;
+  export function exists(path: string): Promise<boolean>;
+}
+
+declare module "@tauri-apps/api/core" {
+  export function invoke<T = any>(
+    cmd: string,
+    args?: Record<string, any>
+  ): Promise<T>;
 }

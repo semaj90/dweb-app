@@ -4,12 +4,19 @@ import { Lucia } from "lucia";
 import { db } from "./db/index";
 import { sessions, users } from "./db/schema-postgres";
 
+// Ensure database connection exists
+if (!db) {
+  throw new Error("Database connection is not available for Lucia authentication");
+}
+
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions as any, users as any);
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
       secure: !dev,
+      sameSite: "lax",
+      path: "/",
     },
   },
   getUserAttributes: (attributes) => {

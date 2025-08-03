@@ -1,8 +1,3 @@
-<script module>
-  // Re-export Select components for external use
-  export { Select as BitsSelect } from 'bits-ui';
-</script>
-
 <script lang="ts">
   import { Select as BitsSelect } from 'bits-ui';
   import { cn } from '$lib/utils/cn';
@@ -14,14 +9,12 @@
     Trigger: SelectTrigger,
     Content: SelectContent,
     Item: SelectItem,
-    Value: SelectValue,
+    // Value and other components might not be available
     Portal: SelectPortal,
-    Group: SelectGroup,
-    Label: SelectLabel,
-    Separator: SelectSeparator
+    Group: SelectGroup
   } = BitsSelect;
 
-  export interface SelectOption {
+  interface SelectOption {
     value: string;
     label: string;
     description?: string;

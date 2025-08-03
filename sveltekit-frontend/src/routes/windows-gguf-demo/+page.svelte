@@ -9,8 +9,8 @@
   import { onMount, onDestroy } from 'svelte';
   import { createGGUFRuntime, GGUFHelpers } from '$lib/services/gguf-runtime';
   import { createNodeJSOrchestrator } from '$lib/services/nodejs-orchestrator';
-  import { Button } from '$lib/components/ui/enhanced-bits/Button.svelte';
-  import { Card } from '$lib/components/ui/enhanced-bits/Card.svelte';
+  import Button from '$lib/components/ui/enhanced-bits/Button.svelte';
+  import Card from '$lib/components/ui/enhanced-bits/Card.svelte';
 
   // Initialize services
   const ggufRuntime = createGGUFRuntime({

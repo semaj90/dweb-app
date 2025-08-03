@@ -6,7 +6,7 @@ import type { User } from '$lib/types';
   import { evidenceStore } from "$lib/stores/evidenceStore";
   import type { TEvent } from "fabric";
   import * as fabric from "fabric";
-  import Fuse from "fuse";
+  import Fuse from "fuse.js";
   import Loki from "lokijs";
   import {
     Archive,

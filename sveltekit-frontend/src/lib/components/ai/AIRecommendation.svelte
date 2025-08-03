@@ -1,6 +1,6 @@
 <script lang="ts">
   import { aiHistory } from "$lib/stores/aiHistoryStore";
-  import Fuse from "fuse";
+  import Fuse from "fuse.js";
   import { onMount } from "svelte";
 
   let recommendations: any[] = [];

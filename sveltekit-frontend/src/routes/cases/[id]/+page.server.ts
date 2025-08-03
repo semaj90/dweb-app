@@ -1,7 +1,6 @@
-import { cases } from "$lib/server/db/schema-postgres";
+import { db, cases } from "$lib/server/db/index";
 import { redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, locals }) => {

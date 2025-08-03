@@ -3,8 +3,8 @@ let invoke: any;
 
 async function initializeTauri() {
   try {
-    const tauriModule = await import("@tauri-apps/api/tauri");
-    invoke = tauriModule.invoke;
+    const { invoke: tauriInvoke } = await import("@tauri-apps/api/core");
+    invoke = tauriInvoke;
   } catch (error) {
     console.warn("Tauri not available - using fallback implementations");
     invoke = () => Promise.reject(new Error("Tauri not available"));

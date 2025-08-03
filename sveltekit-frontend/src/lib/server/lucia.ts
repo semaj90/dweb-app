@@ -1,5 +1,4 @@
-import { db } from "$lib/server/db/index";
-import { sessions } from "$lib/server/db/schema-postgres";
+import { db, sessions } from "$lib/server/db/index";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";
 import { and, eq, gte } from "drizzle-orm";

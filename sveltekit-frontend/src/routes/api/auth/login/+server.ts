@@ -4,8 +4,8 @@ import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { hashPassword, verifyPassword } from "$lib/auth/password";
-import { lucia } from "$lib/auth/session";
-import { db } from "$lib/server/db/index";
+import { lucia } from "$lib/server/auth";
+import { db } from "$lib/server/db";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {

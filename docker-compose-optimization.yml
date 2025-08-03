@@ -1,0 +1,87 @@
+version: '3.8'
+services:
+  # Qdrant Vector Database for SIMD JSON embeddings
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-optimization
+    ports:
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC API
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+      - QDRANT__LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for optimization caching
+  redis:
+    image: redis:7-alpine
+    container_name: redis-optimization
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Initialize Qdrant collections for copilot optimization
+  qdrant-init:
+    image: curlimages/curl:latest
+    container_name: qdrant-init
+    depends_on:
+      - qdrant
+    restart: "no"
+    command: >
+      sh -c "
+        echo 'Waiting for Qdrant to start...' &&
+        sleep 15 &&
+        echo 'Creating copilot_embeddings collection...' &&
+        curl -X PUT 'http://qdrant:6333/collections/copilot_embeddings' \
+          -H 'Content-Type: application/json' \
+          -d '{
+            \"vectors\": {
+              \"size\": 384,
+              \"distance\": \"Cosine\"
+            },
+            \"optimizers_config\": {
+              \"default_segment_number\": 2
+            },
+            \"replication_factor\": 1
+          }' &&
+        echo 'Collection created successfully!' &&
+        curl -X PUT 'http://qdrant:6333/collections/legal_documents' \
+          -H 'Content-Type: application/json' \
+          -d '{
+            \"vectors\": {
+              \"size\": 384,
+              \"distance\": \"Cosine\"
+            },
+            \"optimizers_config\": {
+              \"default_segment_number\": 2
+            },
+            \"replication_factor\": 1
+          }' &&
+        echo 'Legal documents collection created!'
+      "
+
+volumes:
+  qdrant_storage:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: optimization-network

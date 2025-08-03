@@ -8,10 +8,9 @@ let createDir: any, writeTextFile: any, readTextFile: any, exists: any, join: an
 
 async function initializeTauriAPI() {
   try {
-    const fsModule = await import("@tauri-apps/api/fs");
-    const pathModule = await import("@tauri-apps/api/path");
-    ({ createDir, writeTextFile, readTextFile, exists } = fsModule);
-    ({ join, appLocalDataDir } = pathModule);
+    // Note: In Tauri v2, filesystem operations require plugins
+    // For now, we'll use fallback implementations
+    throw new Error("Tauri v2 requires filesystem plugin");
   } catch {
     // Fallback implementations for web environment
     createDir = () => Promise.resolve();

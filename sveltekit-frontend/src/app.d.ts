@@ -2,7 +2,7 @@
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
 
-import type { Database } from '$lib/types';
+import type { User, UserSession } from '$lib/types/user';
 
 declare global {
   namespace App {
@@ -13,9 +13,9 @@ declare global {
     }
 
     interface Locals {
-      user?: Database.User;
+      user?: User | null;
       sessionId?: string;
-      session?: Database.UserSession;
+      session?: UserSession | null;
     }
 
     interface PageData {

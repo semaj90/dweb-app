@@ -4,8 +4,29 @@ export { db, sql, pool };
 // Database type detection
 export const isPostgreSQL = true; // Since we're using PostgreSQL with pgvector
 
-// Re-export all database tables and relations
+// Re-export all database tables and relations from schema
 export * from "./schema-postgres";
+
+// Explicitly export tables to ensure they're available
+import {
+  users,
+  sessions,
+  cases,
+  evidence,
+  legalDocuments,
+  caseActivities,
+  statutes,
+} from "./schema-postgres";
+
+export {
+  users,
+  sessions,
+  cases,
+  evidence,
+  legalDocuments,
+  caseActivities,
+  statutes,
+};
 
 // Re-export performance optimizations (optional - may not exist)
 // export { OptimizedQueries, CacheService } from '$lib/performance/optimizations';
@@ -13,9 +34,16 @@ export * from "./schema-postgres";
 // Database connection health check
 export async function healthCheck() {
   try {
+    if (!db) {
+      return {
+        status: "unhealthy",
+        error: "Database not initialized",
+        timestamp: new Date(),
+      };
+    }
     await db.execute(sql`SELECT 1`);
     return { status: "healthy", timestamp: new Date() };
-  } catch (error) {
+  } catch (error: any) {
     return { status: "unhealthy", error: error.message, timestamp: new Date() };
   }
 }

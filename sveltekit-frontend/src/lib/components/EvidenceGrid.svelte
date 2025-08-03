@@ -1,18 +1,18 @@
 <script lang="ts">
   import type { Evidence } from '$lib/types';
-  import Button from "$lib/components/ui/button";
+  import { Button } from "$lib/components/ui/button";
   import {
     evidenceActions,
     evidenceGrid,
     filteredEvidence,
-    type Evidence,
   } from "$lib/stores/evidence-store";
   import {
     formatFileSize,
     getFileCategory,
     isImageFile,
   } from "$lib/utils/file-utils";
-  import { saveAs } from "file-saver";
+  // Note: file-saver package would need to be installed
+  // import { saveAs } from "file-saver";
   import {
     Archive,
     Download,

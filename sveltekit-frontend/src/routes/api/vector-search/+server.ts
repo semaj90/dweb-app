@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-import { db } from "$lib/server/db/index";
+import { db, cases } from "$lib/server/db/index";
 import { qdrant } from "$lib/server/vector/qdrant";
 
 export async function POST({ request }) {
