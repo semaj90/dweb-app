@@ -57,8 +57,5 @@
 </div>
 
 <style>
-  /* Test styles */
-  body {
-    background-color: #f5f5f5;
-  }
+  /* Test styles - removed unused body selector */
 </style>

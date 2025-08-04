@@ -181,5 +181,26 @@
   },
   "enhancedRAG.redis": {
     "url": "redis://localhost:6379"
-  }
+  },
+  
+  // GPU Optimization Settings for VS Code
+  "disable-hardware-acceleration": false,
+  "enable-gpu-rasterization": true,
+  "enable-webgl2-compute-context": true,
+  "gpu-sandbox": true,
+  "use-angle": "d3d11",
+  "enable-zero-copy": true,
+  "enable-gpu-memory-buffer-video-frames": true,
+  "enable-native-gpu-memory-buffers": true,
+  "disable-gpu-vsync": false,
+  "max-active-webgl-contexts": 16,
+  "webgl-antialiasing-mode": "msaa",
+  "enable-gpu-scheduler": true,
+  
+  // Terminal GPU optimization
+  "terminal.integrated.gpuAcceleration": "on",
+  
+  // Editor GPU settings
+  "editor.experimental.useGPU": true,
+  "editor.experimentalWhitespace.enabled": true
 }

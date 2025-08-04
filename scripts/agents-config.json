@@ -1,0 +1,145 @@
+{
+  "agents": {
+    "typescript_fixer": {
+      "role": "TypeScript Expert",
+      "goal": "Fix TypeScript compilation errors and type issues",
+      "backstory": "Senior TypeScript developer with deep knowledge of SvelteKit and type systems",
+      "tools": ["code_analyzer", "type_checker", "auto_fixer"],
+      "llm": {
+        "provider": "ollama",
+        "model": "gemma3-legal",
+        "temperature": 0.2
+      }
+    },
+    "svelte_migrator": {
+      "role": "Svelte 5 Migration Specialist",
+      "goal": "Migrate Svelte 4 patterns to Svelte 5 syntax",
+      "backstory": "Expert in Svelte framework evolution and runes API",
+      "tools": ["ast_parser", "codemod_runner", "svelte_compiler"],
+      "llm": {
+        "provider": "ollama",
+        "model": "gemma3-legal",
+        "temperature": 0.3
+      }
+    },
+    "import_resolver": {
+      "role": "Module Resolution Expert",
+      "goal": "Fix import paths and module resolution issues",
+      "backstory": "Specialist in JavaScript module systems and bundler configurations",
+      "tools": ["import_analyzer", "path_resolver", "alias_mapper"],
+      "llm": {
+        "provider": "ollama",
+        "model": "gemma3-legal",
+        "temperature": 0.1
+      }
+    },
+    "performance_optimizer": {
+      "role": "Performance Engineer",
+      "goal": "Optimize build times and runtime performance",
+      "backstory": "Expert in web performance, GPU acceleration, and optimization",
+      "tools": ["profiler", "bundle_analyzer", "gpu_monitor"],
+      "llm": {
+        "provider": "ollama",
+        "model": "gemma3-legal",
+        "temperature": 0.4
+      }
+    },
+    "test_engineer": {
+      "role": "Quality Assurance Expert",
+      "goal": "Ensure all fixes maintain test coverage and quality",
+      "backstory": "Experienced in test-driven development and CI/CD pipelines",
+      "tools": ["test_runner", "coverage_analyzer", "e2e_tester"],
+      "llm": {
+        "provider": "ollama",
+        "model": "gemma3-legal",
+        "temperature": 0.2
+      }
+    }
+  },
+  "crews": {
+    "build_fix_crew": {
+      "agents": ["typescript_fixer", "svelte_migrator", "import_resolver"],
+      "process": "sequential",
+      "manager_llm": {
+        "provider": "ollama",
+        "model": "gemma3-legal"
+      }
+    },
+    "optimization_crew": {
+      "agents": ["performance_optimizer", "test_engineer"],
+      "process": "hierarchical",
+      "manager_llm": {
+        "provider": "ollama",
+        "model": "gemma3-legal"
+      }
+    }
+  },
+  "workflows": {
+    "comprehensive_fix": {
+      "steps": [
+        {
+          "name": "analyze_errors",
+          "crew": "build_fix_crew",
+          "input": "error_log",
+          "output": "analysis_report"
+        },
+        {
+          "name": "generate_fixes",
+          "crew": "build_fix_crew",
+          "input": "analysis_report",
+          "output": "fix_patches"
+        },
+        {
+          "name": "apply_fixes",
+          "crew": "build_fix_crew",
+          "input": "fix_patches",
+          "output": "fixed_files"
+        },
+        {
+          "name": "optimize_performance",
+          "crew": "optimization_crew",
+          "input": "fixed_files",
+          "output": "optimized_build"
+        },
+        {
+          "name": "validate_fixes",
+          "crew": "optimization_crew",
+          "input": "optimized_build",
+          "output": "validation_report"
+        }
+      ]
+    }
+  },
+  "tools": {
+    "code_analyzer": {
+      "type": "typescript_compiler_api",
+      "config": {
+        "tsconfig": "./tsconfig.json"
+      }
+    },
+    "auto_fixer": {
+      "type": "eslint_fixer",
+      "config": {
+        "fix": true,
+        "cache": true
+      }
+    },
+    "codemod_runner": {
+      "type": "jscodeshift",
+      "transforms": [
+        "svelte5-migration",
+        "typescript-strict-mode"
+      ]
+    },
+    "gpu_monitor": {
+      "type": "nvidia_smi",
+      "metrics": ["memory", "utilization", "temperature"]
+    }
+  },
+  "vector_integration": {
+    "error_similarity_threshold": 0.85,
+    "batch_similar_errors": true,
+    "cache_successful_fixes": true,
+    "learn_from_patterns": true
+  }
+}

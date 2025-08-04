@@ -1,7 +1,10 @@
-import { db } from '$lib/server/database';
-import { documents, embeddingCache } from '$lib/server/db/schema-postgres';
-import { eq, sql, desc, asc } from 'drizzle-orm';
-import crypto from 'crypto';
+import { db } from "$lib/server/database";
+import {
+  legalDocuments as documents,
+  embeddingCache,
+} from "$lib/server/db/schema-postgres";
+import { eq, sql, desc, asc } from "drizzle-orm";
+import crypto from "crypto";
 
 export interface VectorSearchOptions {
   threshold?: number;
@@ -31,7 +34,7 @@ export interface EmbeddingCacheEntry {
 
 export class VectorSearchService {
   private static instance: VectorSearchService;
-  
+
   public static getInstance(): VectorSearchService {
     if (!VectorSearchService.instance) {
       VectorSearchService.instance = new VectorSearchService();
@@ -43,20 +46,24 @@ export class VectorSearchService {
    * Generate text hash for embedding cache
    */
   private generateTextHash(text: string): string {
-    return crypto.createHash('sha256').update(text.trim().toLowerCase()).digest('hex');
+    return crypto
+      .createHash("sha256")
+      .update(text.trim().toLowerCase())
+      .digest("hex");
   }
 
   /**
    * Get or create embedding with caching
    */
   private async getOrCreateEmbedding(
-    text: string, 
-    model: string = 'ollama-nomic-embed-text'
+    text: string,
+    model: string = "ollama-nomic-embed-text"
   ): Promise<number[]> {
     const textHash = this.generateTextHash(text);
-    
+
     // Check cache first
-    const cached = await db.select()
+    const cached = await db
+      .select()
       .from(embeddingCache)
       .where(eq(embeddingCache.textHash, textHash))
       .limit(1);
@@ -67,32 +74,44 @@ export class VectorSearchService {
 
     // Generate new embedding
     let embedding: number[];
-    
+
     try {
-      if (model.startsWith('ollama-')) {
-        embedding = await this.generateOllamaEmbedding(text, model.replace('ollama-', ''));
-      } else if (model.startsWith('claude-')) {
+      if (model.startsWith("ollama-")) {
+        embedding = await this.generateOllamaEmbedding(
+          text,
+          model.replace("ollama-", "")
+        );
+      } else if (model.startsWith("claude-")) {
         // Claude doesn't have embeddings API, fallback to Ollama
-        embedding = await this.generateOllamaEmbedding(text, 'nomic-embed-text');
-      } else if (model.startsWith('gemini-')) {
+        embedding = await this.generateOllamaEmbedding(
+          text,
+          "nomic-embed-text"
+        );
+      } else if (model.startsWith("gemini-")) {
         embedding = await this.generateGeminiEmbedding(text);
       } else {
         // Default to Ollama
-        embedding = await this.generateOllamaEmbedding(text, 'nomic-embed-text');
+        embedding = await this.generateOllamaEmbedding(
+          text,
+          "nomic-embed-text"
+        );
       }
 
       // Cache the embedding
-      await db.insert(embeddingCache).values({
-        textHash,
-        embedding,
-        model,
-        dimensions: embedding.length,
-        createdAt: new Date()
-      }).onConflictDoNothing();
+      await db
+        .insert(embeddingCache)
+        .values({
+          textHash,
+          embedding,
+          model,
+          dimensions: embedding.length,
+          createdAt: new Date(),
+        })
+        .onConflictDoNothing();
 
       return embedding;
     } catch (error) {
-      console.error('Failed to generate embedding:', error);
+      console.error("Failed to generate embedding:", error);
       throw error;
     }
   }
@@ -100,14 +119,17 @@ export class VectorSearchService {
   /**
    * Generate embedding using Ollama
    */
-  private async generateOllamaEmbedding(text: string, model: string = 'nomic-embed-text'): Promise<number[]> {
-    const response = await fetch('http://localhost:11434/api/embeddings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+  private async generateOllamaEmbedding(
+    text: string,
+    model: string = "nomic-embed-text"
+  ): Promise<number[]> {
+    const response = await fetch("http://localhost:11434/api/embeddings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model,
-        prompt: text
-      })
+        prompt: text,
+      }),
     });
 
     if (!response.ok) {
@@ -124,31 +146,26 @@ export class VectorSearchService {
   private async generateGeminiEmbedding(text: string): Promise<number[]> {
     // Implement Gemini embedding API call
     // This would require the Gemini API key and proper setup
-    throw new Error('Gemini embeddings not yet implemented');
+    throw new Error("Gemini embeddings not yet implemented");
   }
 
   /**
    * Perform vector similarity search
    */
   async search(
-    query: string, 
+    query: string,
     options: VectorSearchOptions = {}
   ): Promise<VectorSearchResult[]> {
-    const {
-      threshold = 0.7,
-      limit = 10,
-      caseId,
-      documentType
-    } = options;
+    const { threshold = 0.7, limit = 10, caseId, documentType } = options;
 
     try {
       // Generate query embedding
       const queryEmbedding = await this.getOrCreateEmbedding(query);
-      const embeddingVector = `[${queryEmbedding.join(',')}]`;
+      const embeddingVector = `[${queryEmbedding.join(",")}]`;
 
       // Build SQL query
       let sqlQuery = sql`
-        SELECT 
+        SELECT
           d.id,
           d.extracted_text as content,
           d.filename,
@@ -164,17 +181,19 @@ export class VectorSearchService {
 
       // Add filters
       const conditions = [];
-      
+
       if (caseId) {
         conditions.push(sql`d.case_id = ${caseId}`);
       }
-      
+
       if (documentType) {
         conditions.push(sql`d.document_type = ${documentType}`);
       }
-      
+
       // Add similarity threshold
-      conditions.push(sql`(d.embedding <=> ${embeddingVector}::vector) < ${1 - threshold}`);
+      conditions.push(
+        sql`(d.embedding <=> ${embeddingVector}::vector) < ${1 - threshold}`
+      );
 
       if (conditions.length > 0) {
         sqlQuery = sql`${sqlQuery} AND ${sql.join(conditions, sql` AND `)}`;
@@ -188,7 +207,7 @@ export class VectorSearchService {
       `;
 
       const results = await db.execute(sqlQuery);
-      
+
       return results.rows.map((row: any) => ({
         id: row.id,
         content: row.content,
@@ -198,11 +217,10 @@ export class VectorSearchService {
         relevanceScore: parseFloat(row.relevance_score),
         summary: row.summary,
         keywords: row.keywords,
-        createdAt: new Date(row.created_at)
+        createdAt: new Date(row.created_at),
       }));
-
     } catch (error) {
-      console.error('Vector search failed:', error);
+      console.error("Vector search failed:", error);
       throw error;
     }
   }
@@ -226,17 +244,17 @@ export class VectorSearchService {
       const embedding = await this.getOrCreateEmbedding(content);
 
       // Update document with embedding
-      await db.update(documents)
+      await db
+        .update(documents)
         .set({
           embedding: embedding as any, // Drizzle will handle vector type conversion
           summary: metadata.summary,
           keywords: metadata.keywords,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
         .where(eq(documents.id, documentId));
-
     } catch (error) {
-      console.error('Document indexing failed:', error);
+      console.error("Document indexing failed:", error);
       throw error;
     }
   }
@@ -246,7 +264,7 @@ export class VectorSearchService {
    */
   async getCacheStats() {
     const stats = await db.execute(sql`
-      SELECT 
+      SELECT
         COUNT(*) as total_embeddings,
         COUNT(DISTINCT model) as unique_models,
         AVG(dimensions) as avg_dimensions,
@@ -265,17 +283,17 @@ export class VectorSearchService {
     try {
       // Create IVFFlat index for better performance
       await db.execute(sql`
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_documents_embedding_ivfflat 
-        ON documents USING ivfflat (embedding vector_cosine_ops) 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_documents_embedding_ivfflat
+        ON documents USING ivfflat (embedding vector_cosine_ops)
         WITH (lists = 100)
       `);
 
       // Analyze table for better query planning
       await db.execute(sql`ANALYZE documents`);
-      
-      console.log('Vector index created successfully');
+
+      console.log("Vector index created successfully");
     } catch (error) {
-      console.error('Failed to create vector index:', error);
+      console.error("Failed to create vector index:", error);
       throw error;
     }
   }
@@ -284,7 +302,7 @@ export class VectorSearchService {
    * Build context for Claude/Gemini with vector search results
    */
   async buildLegalContext(
-    query: string, 
+    query: string,
     caseId?: string,
     maxContext: number = 5000
   ): Promise<{
@@ -295,7 +313,7 @@ export class VectorSearchService {
     const searchResults = await this.search(query, {
       caseId,
       threshold: 0.6,
-      limit: 10
+      limit: 10,
     });
 
     // Sort by relevance and build context
@@ -303,14 +321,14 @@ export class VectorSearchService {
       .sort((a, b) => b.relevanceScore - a.relevanceScore)
       .slice(0, 5);
 
-    let context = '';
+    let context = "";
     let currentLength = 0;
     const usedSources: VectorSearchResult[] = [];
     const relevanceScores: number[] = [];
 
     for (const result of topResults) {
-      const resultText = `Document: ${result.filename || 'Unknown'}\nContent: ${result.content}\nSummary: ${result.summary || 'No summary'}\n\n`;
-      
+      const resultText = `Document: ${result.filename || "Unknown"}\nContent: ${result.content}\nSummary: ${result.summary || "No summary"}\n\n`;
+
       if (currentLength + resultText.length <= maxContext) {
         context += resultText;
         currentLength += resultText.length;
@@ -324,7 +342,7 @@ export class VectorSearchService {
     return {
       context,
       sources: usedSources,
-      relevanceScores
+      relevanceScores,
     };
   }
 }

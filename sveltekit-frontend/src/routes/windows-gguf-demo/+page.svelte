@@ -440,10 +440,11 @@
           <h2 class="text-xl font-semibold mb-4">Demo Input</h2>
           
           <div class="mb-4">
-            <label class="block text-sm font-medium text-slate-300 mb-2">
+            <label for="demo-input" class="block text-sm font-medium text-slate-300 mb-2">
               Legal Document Text
             </label>
             <textarea
+              id="demo-input"
               bind:value={demoInput}
               rows="4"
               class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -654,26 +655,11 @@
     max-width: 1400px;
   }
 
-  /* Glowing effects for active elements */
-  .bg-blue-600:hover {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-  }
-
-  .bg-green-600:hover {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
-  }
-
-  .bg-purple-600:hover {
-    box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
-  }
-
   /* Animation for processing states */
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
   }
-
-  .processing {
-    animation: pulse 2s infinite;
-  }
+  
+  /* Removed unused hover effects and processing class */
 </style>

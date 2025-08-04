@@ -3,12 +3,14 @@
     variant?: 'default' | 'secondary' | 'destructive' | 'outline';
     size?: 'default' | 'sm' | 'lg';
     class?: string;
+    children?: any;
   }
 
   let {
     variant = 'default',
     size = 'default',
-    class: className = ''
+    class: className = '',
+    children
   }: Props = $props();
 
   const variants = {
@@ -33,5 +35,5 @@
 </script>
 
 <span class={classes}>
-  <slot />
+  {@render children?.()}
 </span>
