@@ -380,7 +380,7 @@
                   <input
                     type="checkbox"
                     checked={selectedItems.has(item.id)}
-                    on:change={() => toggleSelection(item)}
+                    onchange={() => toggleSelection(item)}
                     class="container mx-auto px-4"
                   />
                 </div>

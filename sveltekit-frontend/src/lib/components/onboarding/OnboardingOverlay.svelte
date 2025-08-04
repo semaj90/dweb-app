@@ -17,27 +17,41 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open = false;
-  export let currentStep = 0;
-  export let steps: OnboardingStep[] = [];
-  export let autoProgress = false;
-  export let progressDelay = 3000; // 3 seconds per step
-  export let showMinimap = true;
-  export let allowSkip = true;
-
   interface OnboardingStep {
     id: string;
     title: string;
     description: string;
+    target?: string;
     targetSelector?: string;
-    position?: "top" | "bottom" | "left" | "right" | "center";
+    position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
     action?: () => void;
     validate?: () => boolean;
-    type?: "info" | "action" | "input" | "success";
+    type?: 'info' | 'action' | 'input' | 'success';
     content?: string;
     image?: string;
     video?: string;
-}
+  }
+
+  interface Props {
+    open?: boolean;
+    currentStep?: number;
+    steps?: OnboardingStep[];
+    autoProgress?: boolean;
+    progressDelay?: number;
+    showMinimap?: boolean;
+    allowSkip?: boolean;
+  }
+
+  let {
+    open = $bindable(false),
+    currentStep = $bindable(0),
+    steps = [],
+    autoProgress = false,
+    progressDelay = 3000,
+    showMinimap = true,
+    allowSkip = true
+  }: Props = $props();
+
   let overlayEl: HTMLElement;
   let autoProgressTimer: NodeJS.Timeout;
   let isPlaying = autoProgress;
@@ -49,10 +63,13 @@
     height: number;
   } | null = null;
 
-  $: if (open && steps.length > 0) {
-    updateTargetHighlight();
-}
-  $: currentStepData = steps[currentStep] || null;
+  $effect(() => {
+    if (open && steps.length > 0) {
+      updateTargetHighlight();
+    }
+  });
+
+  let currentStepData = $derived(steps[currentStep] || null);
 
   onMount(() => {
     if (browser) {

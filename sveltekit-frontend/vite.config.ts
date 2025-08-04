@@ -2,10 +2,22 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
+import { vscodeErrorLogger } from "./src/lib/vite/vscode-error-logger";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
     UnoCSS(),
+    vscodeErrorLogger({
+      enabled: mode === 'development',
+      logFile: resolve('.vscode/vite-errors.json'),
+      maxEntries: 500,
+      includeWarnings: true,
+      includeSourceMaps: true,
+      autoOpenProblems: false,
+      notificationLevel: 'errors-only',
+      integrateTasks: true,
+      generateDiagnostics: true
+    }),
     sveltekit()
   ],
   

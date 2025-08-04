@@ -7,7 +7,7 @@
   import Card from '$lib/components/ui/Card.svelte';
   import { createGPUClusterManager, checkGPUCapabilities } from '$lib/services/gpu-cluster-acceleration';
   import { createWebGLShaderCache, LEGAL_AI_SHADERS } from '$lib/utils/webgl-shader-cache';
-  import { Activity, Gpu, Zap, Eye, BarChart3, Network, Clock, Cpu } from 'lucide-svelte';
+  import { Activity, Cpu, Zap, Eye, BarChart3, Network, Clock } from 'lucide-svelte';
 
   // GPU system state
   let gpuManager: any = null;
@@ -437,7 +437,7 @@
     <!-- GPU Capabilities -->
     <Card class="p-6 mb-8 bg-slate-800/30 border-slate-600">
       <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-        <Gpu class="h-5 w-5" />
+        <Cpu class="h-5 w-5" />
         GPU Capabilities
       </h2>
 
@@ -500,7 +500,7 @@
       <Card class="p-4 bg-slate-800/50 border-slate-700">
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-lg bg-green-100">
-            <Gpu class="h-5 w-5 text-green-600" />
+            <Cpu class="h-5 w-5 text-green-600" />
           </div>
           <div>
             <h3 class="font-semibold text-white">GPU Contexts</h3>

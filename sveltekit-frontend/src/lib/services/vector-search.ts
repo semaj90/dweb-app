@@ -104,7 +104,6 @@ export class VectorSearchService {
           textHash,
           embedding,
           model,
-          dimensions: embedding.length,
           createdAt: new Date(),
         })
         .onConflictDoNothing();

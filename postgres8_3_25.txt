@@ -27,7 +27,7 @@ phase recoommednations, work with copilot, ollama, delete docker setup, use nati
   ⎿  Error: Agent type 'mcp__context7-custom' not found. Available agents: general-purpose, sveltekit-dev-orchestrator, 
      senior-fullstack-engineer, fullstack-ai-architect
 
-  fullstack-ai-architect(Generate LangChain Ollama CUDA best practices)
+
   ⎿  Read(src\lib\ai\langchain.ts)
      Read 374 lines (ctrl+r to expand)
      +6 more tool uses
@@ -35,7 +35,7 @@ phase recoommednations, work with copilot, ollama, delete docker setup, use nati
 
 > @.claude @.vite @.vscode @.vs @mcp\ @MULTI_LLM_ORCHESTRATION_ARCHITECTURE.md @mcp\ sveltekit 2, postgresql, pg vector, langchain, ollama, nvidia cuda, bits-ui v2,        
   drizzle-orm, drizzle-kit, wire all up for real development, enhanced masterpiece quality
-
+  fullstack-ai-architect(Generate LangChain Ollama CUDA best practices)
 make postgresql work with drizzle-orm, drizzle-kit sync them?
 front-end?
 image upload, form upload. then ai summarization on said stuff. embeds? query embeds? organization, ranking, fetching, multi-state, xstate, superform zod.

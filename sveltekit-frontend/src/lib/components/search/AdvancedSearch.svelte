@@ -2,7 +2,7 @@
   import { createCombobox, melt } from '@melt-ui/svelte';
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
-  import Fuse from "fuse";
+  import Fuse from "fuse.js";
   import { Search, X, Filter, Tag, Calendar, FileType } from 'lucide-svelte';
   import type { Evidence } from '$lib/stores/report';
 

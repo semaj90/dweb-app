@@ -256,6 +256,110 @@
         "panel": "shared"
       },
       "problemMatcher": "$tsc"
+    },
+    
+    // Vite Error Logger Tasks
+    {
+      "label": "View Vite Errors",
+      "type": "shell",
+      "command": "code",
+      "args": [".vscode/vite-errors.json"],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": [],
+      "detail": "Open Vite error log in VS Code editor"
+    },
+    {
+      "label": "Clear Vite Error Log",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "'{\"metadata\":{\"lastUpdated\":\"\",\"totalEntries\":0},\"errors\":[],\"diagnostics\":[]}' | Out-File -FilePath '.vscode/vite-errors.json' -Encoding utf8"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "detail": "Clear the Vite error log file"
+    },
+    {
+      "label": "Restart Vite with Clean Logs",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "sveltekit-frontend"
+      },
+      "group": "build",
+      "dependsOn": "Clear Vite Error Log",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": [
+        {
+          "owner": "vite-error-logger",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": [
+            {
+              "regexp": "^🔧.*ERROR\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
+              "file": 1,
+              "line": 2,
+              "column": 3,
+              "message": 4,
+              "severity": "error"
+            },
+            {
+              "regexp": "^🔧.*WARN\\s+(.+):(\\d+):(\\d+)\\s+(.+)$", 
+              "file": 1,
+              "line": 2,
+              "column": 3,
+              "message": 4,
+              "severity": "warning"
+            }
+          ]
+        }
+      ],
+      "detail": "Restart Vite development server with clean error logs"
+    },
+    {
+      "label": "Analyze Error Patterns",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "const fs = require('fs'); try { const data = JSON.parse(fs.readFileSync('.vscode/vite-errors.json', 'utf8')); const errors = data.errors || []; console.log('📊 Error Analysis:'); console.log('Total errors:', errors.length); console.log('Error levels:', errors.reduce((acc, e) => { acc[e.level] = (acc[e.level] || 0) + 1; return acc; }, {})); const fileErrors = errors.filter(e => e.file).reduce((acc, e) => { acc[e.file] = (acc[e.file] || 0) + 1; return acc; }, {}); console.log('Most problematic files:', Object.entries(fileErrors).sort(([,a], [,b]) => b - a).slice(0, 5)); } catch(e) { console.log('No error log found or invalid format'); }"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Analyze error patterns and statistics"
+    },
+    {
+      "label": "Generate Error Report",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "const fs = require('fs'); try { const data = JSON.parse(fs.readFileSync('.vscode/vite-errors.json', 'utf8')); const report = { timestamp: new Date().toISOString(), summary: { total: data.errors?.length || 0, byLevel: (data.errors || []).reduce((acc, e) => { acc[e.level] = (acc[e.level] || 0) + 1; return acc; }, {}), byFile: (data.errors || []).filter(e => e.file).reduce((acc, e) => { acc[e.file] = (acc[e.file] || 0) + 1; return acc; }, {}), recentErrors: (data.errors || []).slice(-10) } }; fs.writeFileSync('.vscode/error-report.json', JSON.stringify(report, null, 2)); console.log('📋 Error report generated: .vscode/error-report.json'); } catch(e) { console.log('❌ Failed to generate report:', e.message); }"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Generate comprehensive error report"
     }
   ]
 }

@@ -1,11 +1,21 @@
 <!-- AI Recommendations: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Card, CardHeader, CardTitle, CardContent } from '../index.js';
-  export let userContext: any = {};
-  export let neo4jContext: any = {};
-  export let analyticsLog: (event: any) => void = () => {};
-  export let onRecommendations: (results: any) => void = () => {};
+  import { UiCard as Card, UiCardHeader as CardHeader, UiCardTitle as CardTitle, UiCardContent as CardContent } from '../index.js';
+
+  interface Props {
+    userContext?: any;
+    neo4jContext?: any;
+    analyticsLog?: (event: any) => void;
+    onRecommendations?: (results: any) => void;
+  }
+
+  const {
+    userContext = {},
+    neo4jContext = {},
+    analyticsLog = () => {},
+    onRecommendations = () => {}
+  }: Props = $props();
 
   let recommendations = $state<any[]>([]);
   let loading = $state(false);

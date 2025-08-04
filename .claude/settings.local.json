@@ -180,6 +180,8 @@
       "Bash(if exist bits-ui-main rmdir /s /q bits-ui-main)",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
       "Bash(set PGPASSWORD=123456)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")"
     ],
     "deny": []

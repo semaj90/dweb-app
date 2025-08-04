@@ -146,30 +146,29 @@ export const PUT: RequestHandler = async ({ request }) => {
         }
 
         // Generate analysis
+        const documentContent = doc.content || doc.fullText || "";
+        const documentTitle = doc.title || "Unknown Document";
+
         const analysis = await generateDocumentAnalysis(
-          doc.extractedText || "",
-          doc.filename || "Unknown Document",
+          documentContent,
+          documentTitle,
           true,
           true
         );
 
         // Index the document
-        await vectorSearchService.indexDocument(
-          documentId,
-          doc.extractedText || "",
-          {
-            filename: doc.filename,
-            caseId: doc.caseId,
-            documentType: doc.documentType,
-            summary: analysis.summary,
-            keywords: analysis.keywords,
-          }
-        );
+        await vectorSearchService.indexDocument(documentId, documentContent, {
+          filename: documentTitle,
+          caseId: doc.caseId,
+          documentType: doc.documentType,
+          summary: analysis.summary,
+          keywords: analysis.keywords,
+        });
 
         results.push({
           documentId,
           status: "success",
-          filename: doc.filename,
+          title: documentTitle,
           summary: analysis.summary?.substring(0, 100) + "...",
         });
         successCount++;

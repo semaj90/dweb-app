@@ -1,17 +1,31 @@
 <!-- Dialog Wrapper: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
-  export let open = $state(false);
-  export let title: string = '';
-  export let description: string = '';
-  export let analyticsLog: (event: any) => void = () => {};
-  export let onClose: () => void = () => {};
+  import { createDialog } from '@melt-ui/svelte';
+
+  interface Props {
+    open?: boolean;
+    title?: string;
+    description?: string;
+    analyticsLog?: (event: any) => void;
+    onClose?: () => void;
+  }
+
+  let {
+    open = $bindable(false),
+    title = '',
+    description = '',
+    analyticsLog = () => {},
+    onClose = () => {}
+  }: Props = $props();
 
   const {
     elements: { trigger, overlay, content, title: titleEl, description: descEl, close },
     states: { open: dialogOpen }
   } = createDialog({ open, onOpenChange: (v) => { open = v; if (!v) onClose(); analyticsLog({ event: 'dialog_closed', timestamp: Date.now() }); } });
 
-  $: if (open) analyticsLog({ event: 'dialog_opened', title, timestamp: Date.now() });
+  $effect(() => {
+    if (open) analyticsLog({ event: 'dialog_opened', title, timestamp: Date.now() });
+  });
 </script>
 
 {#if $dialogOpen}

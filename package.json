@@ -74,10 +74,10 @@
     "test:dev:headed": "node run-development-tests.mjs --headed",
     "test:dev:verbose": "node run-development-tests.mjs --verbose",
     "test:environment": "playwright test tests/development-environment.spec.ts",
-    "test:postgresql": "playwright test tests/postgresql-crud-pgvector.spec.ts",
+    "test:postgresql-crud": "playwright test tests/postgresql-crud-pgvector.spec.ts",
     "test:rag-enhanced": "playwright test tests/enhanced-rag-system.spec.ts",
     "test:claude-cli": "playwright test tests/claude-vector-cli.spec.ts",
-    "test:sveltekit": "playwright test tests/sveltekit-endpoints.spec.ts",
+    "test:sveltekit-endpoints": "playwright test tests/sveltekit-endpoints.spec.ts",
     "test:rag-integration": "playwright test tests/comprehensive-rag-system-integration.spec.ts",
     "test:rag-full": "playwright test tests/comprehensive-rag-system-integration.spec.ts --headed",
     "test:worker-threads": "playwright test tests/comprehensive-rag-system-integration.spec.ts --grep=\"Worker Threads\"",
@@ -151,7 +151,9 @@
     "node-fetch": "^3.3.2",
     "pdf-parse": "^1.1.1",
     "pg": "^8.11.0",
-    "pgvector": "^0.1.8"
+    "pgvector": "^0.1.8",
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
   },
   "type": "module",
   "engines": {

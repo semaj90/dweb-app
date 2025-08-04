@@ -175,10 +175,10 @@
       </CardTitle>
     </CardHeader>
     <CardContent class="space-y-4">
-      <form on:submit={handleSubmit} class="flex gap-2">
+      <form onsubmit={handleSubmit} class="flex gap-2">
         <Input
           bind:value={query}
-          on:keydown={handleKeydown}
+          onkeydown={handleKeydown}
           placeholder="Search legal documents using natural language..."
           class="flex-1"
           disabled={isSearching}
@@ -205,7 +205,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => { query = example; }}
+            onclick={() => { query = example; }}
             disabled={isSearching}
           >
             {example}
@@ -270,7 +270,7 @@
                 <div class="flex items-start justify-between gap-4">
                   <div class="flex-1">
                     <div class="flex items-center gap-2 mb-1">
-                      <svelte:component this={typeStyle.icon} class="h-4 w-4" />
+                      <typeStyle.icon class="h-4 w-4" />
                       <h4 class="font-semibold line-clamp-1">{result.title}</h4>
                     </div>
                     <p class="text-sm text-muted-foreground line-clamp-2">
@@ -344,7 +344,7 @@
         <div class="flex justify-center">
           <Button
             variant="outline"
-            on:click={() => { results = demoResults; metrics = { totalDocuments: 1250, searchTime: 45, vectorDimensions: 384, similarityThreshold: 0.7 }; }}
+            onclick={() => { results = demoResults; metrics = { totalDocuments: 1250, searchTime: 45, vectorDimensions: 384, similarityThreshold: 0.7 }; }}
           >
             Load Demo Results
           </Button>
@@ -361,7 +361,7 @@
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           {selectedResult.title}
-          <Button variant="ghost" size="sm" on:click={() => selectedResult = null}>
+          <Button variant="ghost" size="sm" onclick={() => selectedResult = null}>
             ×
           </Button>
         </CardTitle>

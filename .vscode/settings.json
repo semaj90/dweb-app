@@ -163,6 +163,69 @@
   "mcpContext7.ragAutoStart": false,
   "mcpContext7.ragHealthCheck": false,
   
+  // Vite Error Logger Integration
+  "files.associations": {
+    "vite-errors.json": "json",
+    "vite-diagnostics.json": "json",
+    "*.svelte": "svelte"
+  },
+  
+  // JSON Schema validation for error logs
+  "json.schemas": [
+    {
+      "fileMatch": ["vite-errors.json"],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "lastUpdated": { "type": "string" },
+              "totalEntries": { "type": "number" },
+              "viteVersion": { "type": "string" },
+              "projectRoot": { "type": "string" }
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "timestamp": { "type": "string" },
+                "level": { "type": "string", "enum": ["error", "warn", "info"] },
+                "message": { "type": "string" },
+                "file": { "type": "string" },
+                "line": { "type": "number" },
+                "column": { "type": "number" },
+                "stack": { "type": "string" },
+                "suggestion": { "type": "string" },
+                "buildPhase": { "type": "string" }
+              }
+            }
+          },
+          "diagnostics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uri": { "type": "string" },
+                "range": { "type": "object" },
+                "severity": { "type": "number" },
+                "message": { "type": "string" },
+                "source": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  
+  // Problem matcher configuration
+  "problems.decorations.enabled": true,
+  "problems.sortOrder": "severity",
+  "problems.showNearbySymbols": true,
+  
   // Comprehensive RAG Settings
   "enhancedRAG.enabled": false,
   "enhancedRAG.backend": {

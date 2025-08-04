@@ -20,7 +20,10 @@
   const dispatch = createEventDispatcher();
 
   // Convert to Svelte 5 $props
-  let { open = $bindable(false) } = $props();
+  let {
+    open = $bindable(false),
+    shortcutsHelp
+  } = $props();
 
   // Keyboard shortcuts configuration
   const shortcuts = [
@@ -180,14 +183,14 @@
 // Duplicate import removed: onMount is already imported above
   import { get } from 'svelte/store';
 
-  let searchQuery = "";
-  let selectedIndex = 0;
-  let filteredShortcuts = [];
-  let filteredCommands = [];
+  let searchQuery = $state("");
+  let selectedIndex = $state(0);
+  let filteredShortcuts = $state([]);
+  let filteredCommands = $state([]);
   let commandInput: HTMLInputElement;
 
   // Subscribe to keyboardShortcuts store for dynamic/AI-driven shortcuts
-  let allShortcuts = get(keyboardShortcuts);
+  let allShortcuts = $state(get(keyboardShortcuts));
   const unsubscribeShortcuts = keyboardShortcuts.subscribe((shortcuts) => {
     allShortcuts = shortcuts;
     filterShortcuts();
@@ -529,8 +532,8 @@
     tabindex={0}
     aria-modal="true"
     aria-labelledby="command-palette-title"
-    on:click|self={() => (open = false)}
-    on:keydown={(e) => (e.key === "Escape" ? (open = false) : null)}
+    onclick={(e) => { if (e.target === e.currentTarget) open = false; }}
+    onkeydown={(e) => (e.key === "Escape" ? (open = false) : null)}
   >
     <div class="command-palette">
       <div class="command-palette-header">
@@ -573,14 +576,14 @@
                 role="option"
                 aria-selected={index === selectedIndex}
                 tabindex={0}
-                on:click={() => shortcut.action && shortcut.action()}
-                on:keydown={(e) => {
+                onclick={() => shortcut.action && shortcut.action()}
+                onkeydown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
                     shortcut.action && shortcut.action();
                   }
                 }}
-                on:mouseenter={() => (selectedIndex = index)}
+                onmouseenter={() => (selectedIndex = index)}
               >
                 <div class="command-content">
                   <div class="command-title flex items-center gap-2">
@@ -617,8 +620,8 @@
 {/if}
 
 <!-- Keyboard Shortcuts Help Modal -->
-<div class="container mx-auto px-4" class:hidden={!$$slots.shortcutsHelp}>
-  <slot name="shortcutsHelp" />
+<div class="container mx-auto px-4">
+  {@render shortcutsHelp?.()}
 </div>
 
 <!-- Shortcut definitions for screen readers -->

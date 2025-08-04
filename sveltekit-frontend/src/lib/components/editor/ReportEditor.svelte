@@ -134,7 +134,7 @@
   };
 
   // Keyboard shortcuts
-  const handleKeydown = (e: CustomEvent<any>) => {
+  const handleKeydown = (e: KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey) {
       switch (e.key) {
         case "s":
@@ -157,7 +157,7 @@
   };
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div
   class="container mx-auto px-4"

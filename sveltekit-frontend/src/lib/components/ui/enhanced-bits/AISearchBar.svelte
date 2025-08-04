@@ -3,11 +3,22 @@
   import { createEventDispatcher } from 'svelte';
   import { Input, Button } from './index.js';
   import { Search } from 'lucide-svelte';
-  export let placeholder = 'Ask AI...';
-  export let userContext: any = {};
-  export let neo4jContext: any = {};
-  export let analyticsLog: (event: any) => void = () => {};
-  export let onResults: (results: any) => void = () => {};
+
+  interface Props {
+    placeholder?: string;
+    userContext?: any;
+    neo4jContext?: any;
+    analyticsLog?: (event: any) => void;
+    onResults?: (results: any) => void;
+  }
+
+  const {
+    placeholder = 'Ask AI...',
+    userContext = {},
+    neo4jContext = {},
+    analyticsLog = () => {},
+    onResults = () => {}
+  }: Props = $props();
 
   let query = $state('');
   let loading = $state(false);

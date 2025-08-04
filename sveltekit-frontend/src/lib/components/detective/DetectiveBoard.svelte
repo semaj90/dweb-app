@@ -608,7 +608,7 @@ import * as ContextMenu from "$lib/components/ui/context-menu";
                     role="button"
                     tabindex="0"
                   >
-                    <EvidenceCard {item} />
+                    <EvidenceCard evidence={item} />
                   </div>
                 {/each}
               </div>
@@ -675,7 +675,7 @@ import * as ContextMenu from "$lib/components/ui/context-menu";
 <!-- Context Menu -->
 {#if contextMenu.show}
   <ContextMenu.Root>
-    <ContextMenu.Content style={`position:fixed;left:${contextMenu.x}px;top:${contextMenu.y}px;`} menu={true}>
+    <ContextMenu.Content class="fixed" style:left="{contextMenu.x}px" style:top="{contextMenu.y}px">
       <div class="container mx-auto px-4">
         <p class="container mx-auto px-4">Evidence Actions</p>
       </div>
@@ -705,11 +705,10 @@ import * as ContextMenu from "$lib/components/ui/context-menu";
                 type="text"
                 bind:value={findModal.query}
                 placeholder="Enter keywords or question..."
-                on:keydown={(e) => { if (e.key === 'Enter') runFindSearch(); }}
-                autofocus
+                onkeydown={(e) => { if (e.key === 'Enter') runFindSearch(); }}
               />
-              <Button size="sm" on:click={runFindSearch} disabled={findModal.loading}>Search</Button>
-              <Button size="sm" variant="outline" on:click={closeFindModal}>Close</Button>
+              <Button size="sm" onclick={runFindSearch} disabled={findModal.loading}>Search</Button>
+              <Button size="sm" variant="outline" onclick={closeFindModal}>Close</Button>
             </div>
             {#if findModal.loading}
               <div class="text-primary">Searching...</div>
