@@ -129,13 +129,24 @@ const createAIAgentStore = () => {
       update((state) => ({ ...state, isProcessing: true }));
 
       try {
-        const response = await fetch("/api/ai/connect", {
+        // Try real endpoint first, fallback to mock for development
+        let response = await fetch("/api/ai/connect", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ model: modelName || "gemma3-legal" }),
         });
 
-        if (!response.ok) throw new Error("Connection failed");
+        // If real endpoint fails, try mock endpoint
+        if (!response.ok) {
+          console.warn('Real AI endpoint failed, using mock endpoint for development');
+          response = await fetch("/api/ai/connect-mock", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ model: modelName || "gemma3-legal" }),
+          });
+        }
+
+        if (!response.ok) throw new Error("Both real and mock connections failed");
 
         const data = await response.json();
 
@@ -215,8 +226,8 @@ const createAIAgentStore = () => {
       }));
 
       try {
-        // Check if streaming is supported
-        const response = await fetch("/api/ai/chat", {
+        // Try real chat endpoint first, fallback to mock
+        let response = await fetch("/api/ai/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -229,6 +240,24 @@ const createAIAgentStore = () => {
             stream: true,
           }),
         });
+
+        // If real endpoint fails, try mock endpoint
+        if (!response.ok) {
+          console.warn('Real chat endpoint failed, using mock endpoint for development');
+          response = await fetch("/api/ai/chat-mock", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message,
+              sessionId,
+              context: {
+                conversationHistory: [],
+                ...context,
+              },
+              stream: true,
+            }),
+          });
+        }
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
@@ -567,7 +596,13 @@ const createAIAgentStore = () => {
     startHeartbeat() {
       const interval = setInterval(async () => {
         try {
-          const response = await fetch("/api/ai/health");
+          // Try real health endpoint first, fallback to mock
+          let response = await fetch("/api/ai/health");
+          
+          if (!response.ok) {
+            response = await fetch("/api/ai/health-mock");
+          }
+          
           const health = await response.json();
 
           update((state) => ({

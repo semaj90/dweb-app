@@ -1,6 +1,15 @@
 <script lang="ts">
-  export let variant: 'default' | 'secondary' | 'destructive' | 'outline' = 'default';
-  export let size: 'default' | 'sm' | 'lg' = 'default';
+  interface Props {
+    variant?: 'default' | 'secondary' | 'destructive' | 'outline';
+    size?: 'default' | 'sm' | 'lg';
+    class?: string;
+  }
+
+  let {
+    variant = 'default',
+    size = 'default',
+    class: className = ''
+  }: Props = $props();
 
   const variants = {
     default: 'bg-primary text-primary-foreground',
@@ -14,8 +23,15 @@
     sm: 'px-2 py-0.5 text-xs',
     lg: 'px-3 py-1 text-sm'
   };
+
+  const classes = $derived([
+    'mx-auto px-4 max-w-7xl',
+    variants[variant],
+    sizes[size],
+    className
+  ].filter(Boolean).join(' '));
 </script>
 
-<span class="mx-auto px-4 max-w-7xl {variants[variant]} {sizes[size]}">
+<span class={classes}>
   <slot />
 </span>

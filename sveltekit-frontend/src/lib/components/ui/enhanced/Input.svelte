@@ -1,13 +1,14 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
-	interface Props extends Omit<HTMLInputAttributes, 'class'> {
+	interface Props extends Omit<HTMLInputAttributes, 'class' | 'value'> {
 		label?: string;
 		error?: string;
 		hint?: string;
 		icon?: string;
 		loading?: boolean;
 		class?: string;
+		value?: string;
 	}
 
 	let {
@@ -18,6 +19,7 @@
 		loading = false,
 		class: className,
 		id = crypto.randomUUID(),
+		value = $bindable(''),
 		...props
 	}: Props = $props();
 
@@ -46,6 +48,7 @@
 		
 		<input
 			{id}
+			bind:value
 			class={inputClasses}
 			aria-invalid={error ? 'true' : undefined}
 			aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}

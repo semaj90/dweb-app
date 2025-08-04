@@ -253,12 +253,12 @@
           id: Date.now(),
           type: 'WebGPU Processing',
           input: demoInput.substring(0, 100) + '...',
-          output: `Analysis completed with ${result.confidence * 100}% confidence. Key terms: ${result.keyTerms.join(', ')}`,
+          output: `Analysis completed with ${(result as any).confidence * 100}% confidence. Key terms: ${(result as any).keyTerms?.join(', ') || 'None'}`,
           metrics: {
-            processingTime: result.processingTime,
-            gpuProcessed: result.gpuProcessed,
-            confidence: result.confidence,
-            legalRisk: result.legalRisk
+            processingTime: (result as any).processingTime || 0,
+            gpuProcessed: (result as any).gpuProcessed || false,
+            confidence: (result as any).confidence || 0,
+            legalRisk: (result as any).legalRisk || 'Low'
           },
           timestamp: new Date().toLocaleTimeString()
         },

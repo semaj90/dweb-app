@@ -144,7 +144,8 @@
       <div class="bg-white rounded-lg border p-6">
         <h3 class="text-xl font-semibold mb-4">Memory Pool Utilization</h3>
         <div class="space-y-4">
-          {#each Object.entries(systemStatus.poolUtilization) as [poolName, utilization]}
+          {#each Object.entries(systemStatus.poolUtilization) as [poolName, utilizationValue]}
+            {@const utilization = Number(utilizationValue)}
             <div class="flex items-center justify-between">
               <span class="font-medium capitalize">{poolName}</span>
               <div class="flex items-center gap-3">

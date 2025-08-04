@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import VisualEvidenceEditor from '$lib/components/evidence-editor/VisualEvidenceEditor.svelte';
-  import { Button } from '$lib/components/ui';
+  import { UiButton as Button } from '$lib/components/ui';
   import { onMount } from 'svelte';
   
   let caseId: string | null = null;

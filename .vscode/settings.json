@@ -49,7 +49,7 @@
   "copilot.chat.useProjectContext": true,
   "copilot.chat.defaultModel": "github.copilot-chat/claude-sonnet-4",
   "copilot.chat.experimental.codeGeneration": true,
-  "context7.enabled": true,
+  "context7.enabled": false,
   "context7.sources": [
     "https://context7.com/svelte.dev-9b0d6d1/llmstxt/llms.txt",
     "https://context7.com/tailwindcss.com/llmstxt/llms.txt",
@@ -136,12 +136,12 @@
 
   // Agent Orchestration Integration
   "mcpContext7.agentOrchestrator": {
-    "enabled": true,
+    "enabled": false,
     "endpoint": "http://localhost:7070",
     "defaultAgents": ["claude", "crewai", "rag"],
     "autoTrigger": {
-      "onFileChange": true,
-      "onError": true,
+      "onFileChange": false,
+      "onError": false,
       "interval": 600000
     }
   },
@@ -159,12 +159,12 @@
   "mcpContext7.ragBackendUrl": "http://localhost:8000",
   "mcpContext7.ragTimeout": 30000,
   "mcpContext7.ragRetries": 3,
-  "mcpContext7.ragEnabled": true,
-  "mcpContext7.ragAutoStart": true,
-  "mcpContext7.ragHealthCheck": true,
+  "mcpContext7.ragEnabled": false,
+  "mcpContext7.ragAutoStart": false,
+  "mcpContext7.ragHealthCheck": false,
   
   // Comprehensive RAG Settings
-  "enhancedRAG.enabled": true,
+  "enhancedRAG.enabled": false,
   "enhancedRAG.backend": {
     "url": "http://localhost:8000",
     "timeout": 30000,

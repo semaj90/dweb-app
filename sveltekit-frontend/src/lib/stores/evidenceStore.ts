@@ -27,6 +27,13 @@ export interface Evidence {
     collectedAt?: string;
   };
   analysis?: {
+    summary: string;
+    keyPoints: string[];
+    relevance: number;
+    admissibility: "admissible" | "questionable" | "inadmissible";
+    reasoning: string;
+    suggestedTags: string[];
+    // Additional legacy properties for compatibility
     aiSummary?: string;
     vectorSimilarity?: number;
     relatedEvidence?: string[];

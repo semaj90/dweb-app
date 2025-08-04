@@ -1,1 +1,0 @@
-ALTER TABLE "legal_documents" ALTER COLUMN "auto_save_data" SET DEFAULT '{"content":"","citations":[],"autoSavedAt":"2025-07-19T04:45:21.749Z","isDirty":false}'::jsonb;

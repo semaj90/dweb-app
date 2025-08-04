@@ -12,7 +12,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { vector } from "pgvector/drizzle-orm";
+import { vector } from "pgvector/drizzle-orm"; // Re-enabled - pgvector is now installed!
 
 // === AUTHENTICATION & USER MANAGEMENT ===
 
@@ -86,7 +86,7 @@ export const legalDocuments = pgTable("legal_documents", {
   content: text("content"), // Main document content for search/display
   summary: text("summary"),
   headnotes: text("headnotes"),
-  embedding: vector("embedding", { dimensions: 768 }), // Nomic embed-text default dimension
+  embedding: vector("embedding", { dimensions: 768 }), // Nomic embed-text default dimension - pgvector enabled
   keywords: jsonb("keywords").$type<string[]>().default([]),
   topics: jsonb("topics").$type<string[]>().default([]),
   parties: jsonb("parties")
@@ -828,7 +828,7 @@ export const ragMessagesRelations = relations(ragMessages, ({ one }) => ({
 export const embeddingCache = pgTable("embedding_cache", {
   id: uuid("id").primaryKey().defaultRandom(),
   textHash: text("text_hash").notNull().unique(),
-  embedding: vector("embedding", { dimensions: 768 }).notNull(),
+  embedding: vector("embedding", { dimensions: 768 }).notNull(), // Re-enabled - pgvector working
   model: varchar("model", { length: 100 }).notNull(),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });

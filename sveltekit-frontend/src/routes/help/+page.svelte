@@ -1,8 +1,5 @@
-import type { User } from '$lib/types';
-
-
-
 <script lang="ts">
+  import type { User } from '$lib/types';
   import { Button } from "$lib/components/ui/button";
   import { AlertTriangle, ArrowRight, Book, Clock, Download, ExternalLink, HelpCircle, Info, MessageSquare, Play, Search, Star, User as UserIcon, Video } from "lucide-svelte";
   import { onMount } from "svelte";

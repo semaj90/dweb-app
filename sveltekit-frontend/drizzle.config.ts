@@ -7,7 +7,7 @@ export default defineConfig({
   dbCredentials: {
     url:
       process.env.DATABASE_URL ||
-      "postgresql://legal_admin:LegalSecure2024!@localhost:5432/prosecutor_db",
+      "postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db",
   },
   verbose: true,
   strict: true,

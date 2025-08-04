@@ -1,4 +1,30 @@
 use #context7 sveltekit 2, svelte 5, postgresql, drizzle-orm, drizzle-kit, make sure everything's linked up. generate_best_practices npm run check see if playwright is working, user registers, logins, create case, crud, cms of it, add evidence to evidence board by multiform part upload, attempt to npm run check solve all problems and errors #read_graph 
+ How to Run Tests:
+
+  # Quick validation (recommended first)
+  npm run test:quick
+
+  # Start Ollama with GPU and run full test suite
+  npm run test:full-stack 
+
+# Run individual test categories
+  npm run test:auth        # Authentication tests
+  npm run test:store       # Global store tests  
+  npm run test:health      # System health tests
+  npm run test:sw          # Service worker tests
+  npm run test:xstate      # XState machine tests
+  npm run test:loki        # LokiJS caching tests
+  npm run test:ingestion   # GPU Ollama ingestion tests # Run all comprehensive tests
+  npm run test:comprehensive # View test report
+  ✅ User Authentication: Login, registration, session persistence, logout✅ Global Store: State
+  synchronization, real-time updates, error handling✅ System Health: API monitoring, performance metrics,      
+   error tracking✅ Service Workers: Offline mode, caching, background sync✅ XState Machines: Workflow
+  states, transitions, error recovery✅ LokiJS Caching: Browser storage, cache optimization, offline
+  data✅ GPU Ollama: GPU acceleration, model loading, ingestion pipeline✅ Logging Systems: Activity logs,       
+   system diagnostics, audit trails
+
+  Special Features Tested:
+
 
 
 

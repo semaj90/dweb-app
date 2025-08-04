@@ -1,18 +1,25 @@
 <script lang="ts">
   import NierThemeShowcase from '$lib/components/NierThemeShowcase.svelte'
   import NierHeader from '$lib/components/NierHeader.svelte'
-  import { CaseCard } from '$lib/components/cases/CaseCard.svelte'
+  import CaseCard from '$lib/components/cases/CaseCard.svelte'
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
   import { Button } from 'bits-ui'
+  import type { User } from '$lib/types'
 
   let isDarkMode = $state(false);
   let showAIAssistant = $state(false);
 
   // Sample user data
-  const user = {
+  const user: User = {
+    id: 'user-white-001',
     name: 'Commander White',
     email: 'commander@yorha.mil',
-    avatar: null
+    firstName: 'Commander',
+    lastName: 'White',
+    avatarUrl: '',
+    role: 'admin',
+    isActive: true,
+    permissions: ['read', 'write', 'admin']
   }
 
   // Sample case data

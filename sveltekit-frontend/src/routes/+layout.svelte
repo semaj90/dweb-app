@@ -4,17 +4,22 @@ import '../app.css';
 import '../lib/styles/nier.css';
 import '../lib/styles/theme.css';
 import Navigation from '$lib/components/Navigation.svelte';
-import { aiService } from '$lib/services/ai-service';
+// import { aiService } from '$lib/services/ai-service';
 import { onMount } from 'svelte';
 
 let llmEndpoint = '';
 let llmStatus: 'Ollama' | 'vLLM' | 'offline' = 'offline';
 
 onMount(() => {
-  llmEndpoint = aiService.getCurrentLlmEndpoint?.() || '';
-  if (llmEndpoint.includes('11434')) llmStatus = 'Ollama';
-  else if (llmEndpoint.includes('8000')) llmStatus = 'vLLM';
-  else llmStatus = 'offline';
+  // Temporary disable AI service connection for development
+  llmEndpoint = 'mock://localhost:5175';
+  llmStatus = 'offline';
+  
+  // TODO: Re-enable when AI service is fixed
+  // llmEndpoint = aiService.getCurrentLlmEndpoint?.() || '';
+  // if (llmEndpoint.includes('11434')) llmStatus = 'Ollama';
+  // else if (llmEndpoint.includes('8000')) llmStatus = 'vLLM';
+  // else llmStatus = 'offline';
 });
 </script>
 

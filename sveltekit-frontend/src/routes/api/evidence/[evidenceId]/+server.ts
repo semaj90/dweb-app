@@ -2,7 +2,7 @@ import { evidence } from "$lib/server/db/schema-postgres";
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+import { db } from "$lib/server/db/drizzle";
 
 // GET specific evidence by ID
 export const GET: RequestHandler = async ({ params }) => {

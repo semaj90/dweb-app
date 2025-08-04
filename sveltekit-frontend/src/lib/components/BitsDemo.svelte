@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Dialog, Button, Select } from 'bits-ui';
+  import { Dialog, Button as BitsButton, Select } from 'bits-ui';
   import { AlertDialog } from 'bits-ui';
   import { fade } from 'svelte/transition';
   import { createToaster, melt } from '@melt-ui/svelte';
@@ -29,7 +29,7 @@
   // Svelte 5 state management
   let dialogOpen = $state(false);
   let alertOpen = $state(false);
-  let selectedCaseType = $state('');
+  let selectedCaseType = $state<string>('');
 
   // Melt-UI Toast/Notification setup
   const {
@@ -102,19 +102,19 @@
   </div>
 
   <!-- Bits UI Button -->
-  <Button
+  <BitsButton.Root
     class="container mx-auto px-4"
     onclick={showSuccessNotification}
   >
     Create New Case
-  </Button>
+  </BitsButton.Root>
 
   <!-- Bits UI Select -->
   <div class="container mx-auto px-4">
     <label class="container mx-auto px-4" for="practice-area-select">Legal Practice Area</label>
-    <Select.Root bind:selected={selectedCaseType}>
+    <Select.Root bind:value={selectedCaseType} type="single">
       <Select.Trigger class="container mx-auto px-4" id="practice-area-select">
-        <Select.Value placeholder="Select practice area..." />
+        {selectedCaseType || "Select practice area..."}
       </Select.Trigger>
       <Select.Content class="container mx-auto px-4">
         {#each caseTypes as type}
@@ -140,7 +140,6 @@
         <Dialog.Description class="container mx-auto px-4">
           Choose an action for this legal case
         </Dialog.Description>
-        </Dialog.Title>
         <Dialog.Description class="container mx-auto px-4">
           Manage your legal cases with our comprehensive case management system.
           Track evidence, deadlines, and case progress all in one place.
@@ -165,9 +164,9 @@
           <Dialog.Close class="container mx-auto px-4">
             Close
           </Dialog.Close>
-          <Button class="container mx-auto px-4">
+          <BitsButton.Root class="container mx-auto px-4">
             Get Started
-          </Button>
+          </BitsButton.Root>
         </div>
       </Dialog.Content>
     </Dialog.Portal>

@@ -28,6 +28,16 @@ export interface Evidence {
     reasoning: string;
     suggestedTags: string[];
   };
+  // Additional properties for compatibility with components
+  isAdmissible?: boolean;
+  aiAnalysis?: {
+    summary?: string;
+    keyPoints?: string[];
+    relevance?: number;
+    confidence?: number;
+    recommendations?: string[];
+    risks?: string[];
+  };
   tags?: string[];
   similarEvidence?: { id: string; title: string; similarity: number }[];
   thumbnailUrl?: string;

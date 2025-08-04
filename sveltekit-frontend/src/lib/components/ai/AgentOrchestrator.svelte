@@ -35,10 +35,12 @@ Manages AutoGen and CrewAI multi-agent workflows
   import { crewAIService, analyzeLegalCaseWithCrew, analyzeContractWithCrew } from '$lib/services/crewai-service.js';
   import type { 
     AutoGenConversation, 
-    AutoGenMessage,
+    AutoGenMessage
+  } from '$lib/services/autogen-service.js';
+  import type {
     CrewExecution,
     CrewTaskResult
-  } from '$lib/services/autogen-service.js';
+  } from '$lib/services/crewai-service.js';
 
   interface Props {
     defaultWorkflow?: string;

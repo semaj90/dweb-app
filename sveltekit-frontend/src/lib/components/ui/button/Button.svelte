@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Button as BitsButton } from 'bits-ui';
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize } from '$lib/types';
 
@@ -37,8 +36,8 @@
   ].filter(Boolean).join(' '));
 </script>
 
-<BitsButton.Root
-  bind:ref
+<button
+  bind:this={ref}
   class={classes}
   disabled={loading || Boolean(rest.disabled)}
   {...rest}
@@ -50,11 +49,13 @@
   {#if loading}
     <span class="loader mr-2"></span>
   {/if}
-  {@render children?.()}
+  {#if children}
+    {@render children()}
+  {/if}
   {#if icon && iconPosition === 'right'}
     <i class={icon} aria-hidden="true"></i>
   {/if}
-</BitsButton.Root>
+</button>
 
 <style>
   :global(.nier-btn) {

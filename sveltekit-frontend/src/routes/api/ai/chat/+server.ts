@@ -1,10 +1,9 @@
-// Enhanced Ollama API route for Legal AI Chat
-// SvelteKit 2.0 + Svelte 5 + Drizzle ORM integration
+// Simplified Ollama API route for Legal AI Chat
+// SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
 
 import { json, error } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { ollamaService } from "$lib/server/services/OllamaService";
-import { redisVectorService } from "$lib/services/redis-vector-service";
 import { logger } from "$lib/server/logger";
 import { dev } from "$app/environment";
 
@@ -34,18 +33,15 @@ export interface ChatResponse {
   relatedCases?: string[];
 }
 
-export const POST: RequestHandler = async ({ request, url, locals }) => {
+export const POST: RequestHandler = async ({ request }) => {
   const startTime = Date.now();
 
   try {
     const {
       message,
-      model = "gemma3-legal",
-      context = [],
+      model = "gemma2:2b",
       temperature = 0.7,
       stream = false,
-      caseId,
-      useRAG = true,
     }: ChatRequest = await request.json();
 
     // Validate input
@@ -60,50 +56,20 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
       throw error(503, { message: "AI service is currently unavailable" });
     }
 
-    // Enhanced prompt with legal context
-    let enhancedPrompt = message;
+    // Add legal AI system prompt
+    const systemPrompt = `You are a specialized legal AI assistant for prosecutors, detectives, and legal professionals.
 
-    if (useRAG && message.length > 10) {
-      try {
-        // Get embeddings for semantic search
-        const embedding = await ollamaService.embeddings(
-          "nomic-embed-text",
-          message
-        );
-
-        // Search for related legal documents
-        const relatedDocs = await redisVectorService.searchVectors(embedding, {
-          limit: 3,
-          threshold: 0.7,
-          collection: "legal-documents",
-        });
-
-        if (relatedDocs.length > 0) {
-          const contextDocs = relatedDocs
-            .map((doc) => `[${doc.payload.title}]: ${doc.payload.summary}`)
-            .join("\n");
-
-          enhancedPrompt = `Context from legal documents:
-${contextDocs}
+Instructions:
+- Provide accurate, well-reasoned legal analysis
+- Cite relevant laws, precedents, and procedures when possible
+- Consider ethical implications and due process
+- Focus on factual, evidence-based responses
+- Always note when additional professional legal research is recommended
+- Keep responses concise but comprehensive
 
 User question: ${message}
 
-Please provide a comprehensive legal analysis based on the context above.`;
-        }
-      } catch (ragError) {
-        logger.warn("RAG enhancement failed, using original prompt", ragError);
-      }
-    }
-
-    // Add legal AI system prompt
-    const systemPrompt = `You are a specialized legal AI assistant for prosecutors.
-- Provide accurate, well-reasoned legal analysis
-- Cite relevant laws, precedents, and procedures
-- Consider ethical implications and due process
-- Focus on factual, evidence-based responses
-- Always note when additional research is recommended
-
-${enhancedPrompt}`;
+Please provide a helpful legal analysis:`;
 
     // Handle streaming vs non-streaming responses
     if (stream) {
@@ -113,8 +79,7 @@ ${enhancedPrompt}`;
         model,
         systemPrompt,
         temperature,
-        startTime,
-        caseId
+        startTime
       );
     }
   } catch (err) {
@@ -201,39 +166,14 @@ async function handleNonStreamingResponse(
   model: string,
   prompt: string,
   temperature: number,
-  startTime: number,
-  caseId?: string
+  startTime: number
 ): Promise<Response> {
   const response = await ollamaService.generate(model, prompt, { temperature });
   const endTime = Date.now();
   const duration = endTime - startTime;
 
-  // Generate intelligent suggestions
-  const suggestions = await generateSuggestions(prompt, response);
-
-  // Find related cases if caseId is provided
-  let relatedCases: string[] = [];
-  if (caseId) {
-    try {
-      relatedCases = await findRelatedCases(caseId, prompt);
-    } catch (error) {
-      logger.warn("Failed to find related cases", error);
-    }
-  }
-
-  // Cache the interaction for future RAG enhancement
-  try {
-    await redisVectorService.cacheEmbedding(
-      `${prompt} ${response}`,
-      await ollamaService.embeddings(
-        "nomic-embed-text",
-        `${prompt} ${response}`
-      ),
-      "chat-interactions"
-    );
-  } catch (cacheError) {
-    logger.warn("Failed to cache interaction", cacheError);
-  }
+  // Generate intelligent suggestions (simplified, no external API calls)
+  const suggestions = generateSimpleSuggestions(prompt, response);
 
   // Enhanced token counting
   const promptTokens = estimateTokens(prompt);
@@ -249,10 +189,10 @@ async function handleNonStreamingResponse(
       tokens: totalTokens,
       promptTokens,
       responseTokens,
-      tokensPerSecond: totalTokens / (duration / 1000),
+      tokensPerSecond: duration > 0 ? totalTokens / (duration / 1000) : 0,
     },
     suggestions,
-    relatedCases,
+    relatedCases: [], // Simplified - no external case lookup
   };
 
   return json(chatResponse);
@@ -266,62 +206,34 @@ function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4);
 }
 
-async function generateSuggestions(
+function generateSimpleSuggestions(
   prompt: string,
   response: string
-): Promise<string[]> {
-  try {
-    const suggestionPrompt = `Based on this legal query and response, suggest 3 related questions a prosecutor might ask:
+): string[] {
+  // Simple rule-based suggestions based on keywords in the prompt
+  const suggestions: string[] = [];
+  const lowerPrompt = prompt.toLowerCase();
 
-Query: ${prompt}
-Response: ${response.substring(0, 200)}...
-
-Provide only the questions, one per line:`;
-
-    const suggestions = await ollamaService.generate(
-      "gemma3:2b",
-      suggestionPrompt,
-      {
-        temperature: 0.8,
-      }
-    );
-
-    return suggestions
-      .split("\n")
-      .filter((line) => line.trim() && line.includes("?"))
-      .slice(0, 3);
-  } catch (error) {
-    logger.warn("Failed to generate suggestions", error);
-    return [];
+  if (lowerPrompt.includes('evidence') || lowerPrompt.includes('proof')) {
+    suggestions.push("What makes evidence admissible in court?");
+    suggestions.push("How do I establish chain of custody?");
+    suggestions.push("What are the different types of evidence?");
+  } else if (lowerPrompt.includes('contract') || lowerPrompt.includes('agreement')) {
+    suggestions.push("What elements make a contract valid?");
+    suggestions.push("How can a contract be breached?");
+    suggestions.push("What are the remedies for contract violations?");
+  } else if (lowerPrompt.includes('criminal') || lowerPrompt.includes('crime')) {
+    suggestions.push("What are the elements of this crime?");
+    suggestions.push("What defenses might the defendant raise?");
+    suggestions.push("What evidence do I need to prove intent?");
+  } else {
+    // Default legal suggestions
+    suggestions.push("What legal precedents apply to this situation?");
+    suggestions.push("What additional evidence should I gather?");
+    suggestions.push("Are there any constitutional issues to consider?");
   }
-}
 
-async function findRelatedCases(
-  caseId: string,
-  prompt: string
-): Promise<string[]> {
-  try {
-    // Get embedding for the prompt
-    const embedding = await ollamaService.embeddings(
-      "nomic-embed-text",
-      prompt
-    );
-
-    // Search for similar cases
-    const similarCases = await redisVectorService.searchVectors(embedding, {
-      limit: 5,
-      threshold: 0.6,
-      collection: "cases",
-    });
-
-    return similarCases
-      .filter((c) => c.id !== caseId)
-      .map((c) => c.payload.title || c.id)
-      .slice(0, 3);
-  } catch (error) {
-    logger.warn("Failed to find related cases", error);
-    return [];
-  }
+  return suggestions.slice(0, 3);
 }
 
 // Health check endpoint
@@ -336,7 +248,7 @@ export const GET: RequestHandler = async () => {
       models: models.map((m) => ({
         name: m.name,
         size: m.size,
-        family: m.details.family,
+        family: m.details?.family || 'unknown',
       })),
       endpoints: [
         "POST /api/ai/chat - Send chat message",
@@ -345,6 +257,10 @@ export const GET: RequestHandler = async () => {
     });
   } catch (error) {
     logger.error("Health check failed", error);
-    return json({ status: "error", error: error.message }, { status: 500 });
+    return json({ 
+      status: "error", 
+      error: (error as Error).message,
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 };

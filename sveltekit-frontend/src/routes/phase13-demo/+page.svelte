@@ -93,7 +93,7 @@
       ragEngine.stores.queryResults.subscribe((results: any) => {
         if (results.size > 0) {
           const latestResults = Array.from(results.values()).pop() || [];
-          searchResults = latestResults.slice(0, 5);
+          searchResults = Array.isArray(latestResults) ? latestResults.slice(0, 5) : [];
         }
       });
 
@@ -104,7 +104,7 @@
 
       // Subscribe to Context7 integration stores
       context7Integration.stores.activeRecommendations.subscribe((recs: any) => {
-        recommendations = recs.slice(0, 3);
+        recommendations = Array.isArray(recs) ? recs.slice(0, 3) : [];
       });
 
       context7Integration.stores.integrationStatus.subscribe((status: any) => {

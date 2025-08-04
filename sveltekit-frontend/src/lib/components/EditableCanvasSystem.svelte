@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { writable, derived } from 'svelte/store';
-  import type { EditableNode, Evidence, CanvasState } from '$lib/types';
+  import type { EditableNode, CanvasState } from '$lib/components/types';
+  import type { Evidence } from '$lib/types';
 
   // Component props with validation
   export let userId: string;
@@ -32,7 +33,7 @@
   let canvasElement: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
   let ws: WebSocket | null = null;
-  let reconnectTimeout: number;
+  let reconnectTimeout: ReturnType<typeof setTimeout>;
 
   // Lifecycle management
   onMount(async () => {
@@ -328,7 +329,7 @@
       
       {#each $evidence as item (item.id)}
         <div class="evidence-item">
-          <span class="filename">{item.filename}</span>
+          <span class="filename">{item.fileName}</span>
           <time class="upload-date">{new Date(item.uploadedAt).toLocaleDateString()}</time>
         </div>
       {:else}

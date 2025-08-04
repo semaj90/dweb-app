@@ -254,7 +254,7 @@
           </p>
         </div>
         <Button.Root
-          on:click={performAutomatedAnalysis}
+          onclick={performAutomatedAnalysis}
           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           🤖 Start Analysis
@@ -302,7 +302,7 @@
                   {Math.round(entity.confidence * 100)}%
                 </span>
                 <Button.Root
-                  on:click={() => removeEntity(index)}
+                  onclick={() => removeEntity(index)}
                   class="p-1 text-red-600 hover:text-red-800 focus:outline-none"
                 >
                   ×
@@ -322,7 +322,7 @@
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-medium text-gray-900">Key Facts</h3>
       <Button.Root
-        on:click={addKeyFact}
+        onclick={addKeyFact}
         class="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
       >
         + Add Fact
@@ -342,7 +342,7 @@
               ></textarea>
             </div>
             <Button.Root
-              on:click={() => removeKeyFact(index)}
+              onclick={() => removeKeyFact(index)}
               class="px-3 py-2 text-red-600 hover:text-red-800 focus:outline-none"
             >
               Remove
@@ -360,7 +360,7 @@
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-medium text-gray-900">Legal Issues</h3>
       <Button.Root
-        on:click={addLegalIssue}
+        onclick={addLegalIssue}
         class="px-3 py-1 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
       >
         + Add Issue
@@ -381,7 +381,7 @@
               {/each}
             </select>
             <Button.Root
-              on:click={() => removeLegalIssue(index)}
+              onclick={() => removeLegalIssue(index)}
               class="px-3 py-2 text-red-600 hover:text-red-800 focus:outline-none"
             >
               Remove
@@ -420,7 +420,7 @@
   <!-- Form Actions -->
   <div class="flex justify-between pt-6 border-t border-gray-200">
     <Button.Root
-      on:click={handlePrevious}
+      onclick={handlePrevious}
       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
       ← Previous
@@ -428,14 +428,14 @@
 
     <div class="flex space-x-3">
       <Button.Root
-        on:click={handleSaveDraft}
+        onclick={handleSaveDraft}
         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         Save Draft
       </Button.Root>
 
       <Button.Root
-        on:click={handleNext}
+        onclick={handleNext}
         disabled={formData.key_facts.length === 0}
         class="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >

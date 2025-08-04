@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { writable, derived } from 'svelte/store';
   import { aiAgentStore, isAIConnected, currentConversation, systemHealth, isProcessing } from '$lib/stores/ai-agent';
-  import { Button } from '$lib/components/ui/button';
+  // import { Button } from '$lib/components/ui/button';
   import type { API, Database } from '$lib/types';
 
   // ======================================================================
@@ -209,13 +209,13 @@
         
         <!-- Actions -->
         <div class="flex space-x-2">
-          <Button variant="outline" size="sm" onclick={clearChat}>
+          <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick={clearChat}>
             Clear Chat
-          </Button>
+          </button>
           {#if !$isAIConnected}
-            <Button variant="default" size="sm" onclick={retryConnection}>
+            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onclick={retryConnection}>
               Reconnect
-            </Button>
+            </button>
           {/if}
         </div>
       </div>
@@ -373,17 +373,17 @@
           </div>
           
           <div class="flex flex-col space-y-2">
-            <Button
+            <button
               onclick={sendMessage}
               disabled={!canSend}
-              class="px-6 py-3"
+              class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
               {#if $chatState.isLoading}
                 <div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
               {:else}
                 Send
               {/if}
-            </Button>
+            </button>
             
             {#if $chatState.message.trim().length > 0}
               <div class="text-xs text-gray-500 text-center">
@@ -461,20 +461,20 @@
       <div>
         <h4 class="font-medium text-gray-900 mb-3">Quick Actions</h4>
         <div class="space-y-2">
-          <Button variant="outline" size="sm" class="w-full" onclick={clearChat}>
+          <button class="w-full px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick={clearChat}>
             🗑️ Clear Conversation
-          </Button>
+          </button>
           
           {#if !$isAIConnected}
-            <Button variant="default" size="sm" class="w-full" onclick={retryConnection}>
+            <button class="w-full px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onclick={retryConnection}>
               🔄 Retry Connection
-            </Button>
+            </button>
           {/if}
           
           <a href="/test" class="block">
-            <Button variant="ghost" size="sm" class="w-full">
+            <button class="w-full px-3 py-1 text-sm text-gray-700 rounded hover:bg-gray-100">
               🧪 Test Interface
-            </Button>
+            </button>
           </a>
         </div>
       </div>

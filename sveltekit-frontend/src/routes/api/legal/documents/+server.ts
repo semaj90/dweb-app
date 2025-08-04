@@ -144,7 +144,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const wordCount = data.content.split(/\s+/).length;
 
     // Create document
-    const [newDocument] = await db
+    const result = await db
       .insert(legalDocuments)
       .values({
         title: data.title,
@@ -159,6 +159,7 @@ export const POST: RequestHandler = async ({ request }) => {
       })
       .returning();
 
+    const newDocument = Array.isArray(result) ? result[0] : result;
     return json(newDocument, { status: 201 });
   } catch (error) {
     console.error("Error creating legal document:", error);
@@ -228,10 +229,12 @@ export const DELETE: RequestHandler = async ({ params }) => {
       return json({ success: true });
     }
     // Delete document
-    const [deletedDocument] = await db
+    const deleteResult = await db
       .delete(legalDocuments)
       .where(eq(legalDocuments.id, documentId))
       .returning();
+    
+    const deletedDocument = Array.isArray(deleteResult) ? deleteResult[0] : deleteResult;
 
     if (!deletedDocument) {
       return json({ error: "Document not found" }, { status: 404 });

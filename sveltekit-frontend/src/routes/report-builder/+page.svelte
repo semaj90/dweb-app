@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Evidence } from '$lib/types';
+  import type { Evidence } from '$lib/types/api';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import ReportEditor from "$lib/components/ReportEditor.svelte";

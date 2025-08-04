@@ -1,6 +1,5 @@
-import type { User } from '$lib/types/user';
-
 <script lang="ts">
+  import type { User } from '$lib/types/user';
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import Button from "$lib/components/ui/button/Button.svelte";
@@ -20,7 +19,8 @@ import type { User } from '$lib/types/user';
 
   const dispatch = createEventDispatcher();
 
-  export let open = false;
+  // Convert to Svelte 5 $props
+  let { open = $bindable(false) } = $props();
 
   // Keyboard shortcuts configuration
   const shortcuts = [
@@ -177,12 +177,13 @@ import type { User } from '$lib/types/user';
   ];
 
   import { keyboardShortcuts, loadShortcutsFromAI } from '$lib/stores';
-  import { onMount } from 'svelte';
+// Duplicate import removed: onMount is already imported above
   import { get } from 'svelte/store';
 
   let searchQuery = "";
   let selectedIndex = 0;
   let filteredShortcuts = [];
+  let filteredCommands = [];
   let commandInput: HTMLInputElement;
 
   // Subscribe to keyboardShortcuts store for dynamic/AI-driven shortcuts
@@ -205,12 +206,20 @@ import type { User } from '$lib/types/user';
     selectedIndex = 0;
   }
 
-  $: filterShortcuts();
+  // Convert reactive statement to Svelte 5 $effect
+  $effect(() => {
+    filterShortcuts();
+  });
 
   // Optionally, load AI-driven shortcuts on mount
   onMount(async () => {
     await loadShortcutsFromAI();
   });
+
+  // Command palette items
+  const commands = [
+    {
+      title: "Persons of interest",
       description: "Persons of interest",
       icon: Users,
       action: () => goto("/criminals"),
@@ -244,8 +253,6 @@ import type { User } from '$lib/types/user';
       action: () => goto("/help"),
       keywords: ["support", "docs"],
     },
-
-    // Creation
     {
       title: "New Case",
       description: "Create a new case",
@@ -267,8 +274,6 @@ import type { User } from '$lib/types/user';
       action: () => goto("/evidence"),
       keywords: ["upload", "files"],
     },
-
-    // Tools
     {
       title: "Hash Verification",
       description: "Verify evidence integrity",
@@ -292,7 +297,8 @@ import type { User } from '$lib/types/user';
     },
   ];
 
-  $: {
+  // Convert reactive statement to Svelte 5 $effect
+  $effect(() => {
     if (searchQuery.trim()) {
       filteredCommands = commands.filter(
         (cmd) =>
@@ -304,9 +310,9 @@ import type { User } from '$lib/types/user';
       );
     } else {
       filteredCommands = commands;
-}
+    }
     selectedIndex = 0;
-}
+  });
   onMount(() => {
     if (!browser) return;
 
@@ -504,11 +510,15 @@ import type { User } from '$lib/types/user';
 }
     if (!style.parentNode) {
       document.head.appendChild(style);
-}}
-  // Focus management for command palette
-  $: if (open && commandInput) {
-    commandInput.focus();
-}
+    }
+  }
+
+  // Focus management for command palette - convert to Svelte 5 $effect
+  $effect(() => {
+    if (open && commandInput) {
+      commandInput.focus();
+    }
+  });
 </script>
 
 <!-- Command Palette Overlay -->
@@ -540,7 +550,7 @@ import type { User } from '$lib/types/user';
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (open = false)}
+            onclick={() => (open = false)}
             class="close-button"
             aria-label="Close command palette"
           >

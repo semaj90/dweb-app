@@ -145,6 +145,84 @@
       "type": "shell",
       "command": "curl",
       "args": ["-f", "http://localhost:6333/collections"]
+    },
+    {
+      "label": "🗃️ Optimize Vector Database",
+      "type": "shell",
+      "command": "npx",
+      "args": ["tsx", "scripts/optimize-vector-database.ts"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "🧠 Test Vector Search",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-d", "{\"query\": \"contract liability terms\", \"model\": \"claude\", \"limit\": 5}",
+        "http://localhost:5173/api/ai/vector-search"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "📊 Vector Search Status",
+      "type": "shell", 
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/ai/vector-search"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🔄 Reindex Documents",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X", "PUT",
+        "-H", "Content-Type: application/json", 
+        "-d", "{\"documentIds\": [\"sample-doc-1\", \"sample-doc-2\"], \"forceReindex\": true}",
+        "http://localhost:5173/api/ai/vector-search/index"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "🧪 Vector Search Demo",
+      "type": "shell",
+      "command": "node",
+      "args": ["-e", "console.log('Navigate to: http://localhost:5173/dev/vector-search-demo')"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
     }
   ]
 }

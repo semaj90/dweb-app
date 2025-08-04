@@ -11,7 +11,8 @@ import { QdrantClient } from '@qdrant/js-client-rest';
 import pkg from 'pg';
 const { Pool } = pkg;
 import amqp from 'amqplib';
-import neo4j from 'neo4j-driver';
+// import neo4j from 'neo4j-driver'; // TODO: Install neo4j-driver dependency
+const neo4j = null as any;
 import { writable, type Writable } from 'svelte/store';
 
 // Core caching interfaces

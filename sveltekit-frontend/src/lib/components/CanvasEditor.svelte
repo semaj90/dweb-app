@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Evidence } from '$lib/types';
+  import type { Evidence } from '$lib/types/api';
 	import { onMount, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
@@ -79,7 +79,42 @@
 }
 		// Subscribe to real-time evidence updates
 		unsubscribeEvidence = evidenceStore.evidence.subscribe((evidenceList) => {
-			realtimeEvidence = evidenceList;
+			// Cast evidenceStore Evidence to api Evidence format with defaults for missing properties
+			realtimeEvidence = evidenceList.map(item => ({
+				...item,
+				criminalId: null,
+				evidenceType: item.type || 'document',
+				fileUrl: item.fileUrl || null,
+				fileType: item.fileUrl ? item.fileUrl.split('.').pop() || null : null,
+				subType: null,
+				fileName: item.title || 'Untitled Evidence',
+				fileSize: null,
+				mimeType: null,
+				hash: null,
+				tags: item.tags || [],
+				chainOfCustody: [],
+				collectedAt: new Date(),
+				collectedBy: null,
+				location: null,
+				labAnalysis: {},
+				aiAnalysis: {},
+				uploadedAt: new Date(),
+				status: 'active' as const,
+				visibility: 'internal' as const,
+				priority: 'medium' as const,
+				verificationStatus: 'pending' as const,
+				digitalSignature: null,
+				relatedCases: [],
+				aiTags: [],
+				aiSummary: null,
+				isAdmissible: null,
+				metadata: null,
+				summary: null,
+				confidentialityLevel: 'internal' as const,
+				canvasPosition: null,
+				uploadedBy: null,
+				updatedAt: new Date()
+			}));
 		});
 	});
 
@@ -581,7 +616,7 @@
 					panY
 				},
 				metadata: {
-					title: canvasState?.title || 'Untitled Canvas',
+					title: 'Untitled Canvas',
 					description: '',
 					tags: [],
 					evidenceIds: getEvidenceIds(),
@@ -592,9 +627,8 @@
 			// Generate thumbnail
 			const thumbnailUrl = generateThumbnail();
 
-			const canvasStateData: Partial<CanvasState> = {
+			const canvasStateData: Partial<CanvasState> & { thumbnailUrl?: string } = {
 				...canvasState,
-				reportId,
 				canvasData: JSON.stringify(canvasData), // Ensure it's stored as string
 				thumbnailUrl,
 				updatedAt: new Date() // Store as Date object
@@ -801,7 +835,7 @@
 					</div>
 					<button
 						class="container mx-auto px-4"
-						on:click={() => addEvidenceMarker(item)}
+						onclick={() => addEvidenceMarker(item)}
 						disabled={readOnly}
 						title="Add evidence marker to canvas"
 					>
@@ -824,7 +858,7 @@
 					</div>
 					<button
 						class="container mx-auto px-4"
-						on:click={() => addCitationMarker(citation)}
+						onclick={() => addCitationMarker(citation)}
 						disabled={readOnly}
 						title="Add citation marker to canvas"
 					>

@@ -1,7 +1,0 @@
-packages:
-  - packages/*
-  - docs
-  - tests
-
-catalog:
-  svelte: 5.33.2

@@ -122,10 +122,12 @@ export const DELETE: RequestHandler = async ({ params }) => {
       return json({ success: true });
     }
     // Delete document
-    const [deletedDocument] = await db
+    const deleteResult = await db
       .delete(legalDocuments)
       .where(eq(legalDocuments.id, documentId))
       .returning();
+    
+    const deletedDocument = Array.isArray(deleteResult) ? deleteResult[0] : deleteResult;
 
     if (!deletedDocument) {
       return json({ error: "Document not found" }, { status: 404 });

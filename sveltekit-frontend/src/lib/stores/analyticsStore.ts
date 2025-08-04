@@ -12,3 +12,9 @@ export function logAnalyticsEvent(event) {
     body: JSON.stringify(event),
   });
 }
+
+// Export main store for backward compatibility
+export const analyticsStore = {
+  events: analyticsEvents,
+  logEvent: logAnalyticsEvent
+};

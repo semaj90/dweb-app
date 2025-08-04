@@ -1,0 +1,190 @@
+import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar } from 'drizzle-orm/pg-core';
+import { vector } from 'pgvector/drizzle-orm';
+import { sql } from 'drizzle-orm';
+
+// Users table
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  firstName: varchar('first_name', { length: 100 }),
+  lastName: varchar('last_name', { length: 100 }),
+  role: varchar('role', { length: 50 }).notNull().default('user'), // admin, prosecutor, detective, user
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Cases table
+export const cases = pgTable('cases', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
+  status: varchar('status', { length: 50 }).default('active'), // active, closed, archived
+  priority: varchar('priority', { length: 20 }).default('medium'), // low, medium, high, critical
+  caseNumber: varchar('case_number', { length: 100 }).unique(),
+  createdBy: uuid('created_by').references(() => users.id),
+  assignedTo: uuid('assigned_to').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Documents table with vector embeddings
+export const documents = pgTable('documents', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  caseId: uuid('case_id').references(() => cases.id),
+  title: varchar('title', { length: 255 }).notNull(),
+  filename: varchar('filename', { length: 255 }),
+  fileType: varchar('file_type', { length: 50 }),
+  fileSize: integer('file_size'),
+  content: text('content'), // Extracted text content
+  extractedText: text('extracted_text'), // Full extracted text for search
+  embedding: vector('embedding', { dimensions: 1536 }), // OpenAI ada-002 or similar
+  metadata: json('metadata').$type<{
+    pageCount?: number;
+    extractionMethod?: string;
+    confidence?: number;
+    language?: string;
+    [key: string]: any;
+  }>(),
+  tags: json('tags').$type<string[]>().default([]),
+  isIndexed: boolean('is_indexed').default(false),
+  source: varchar('source', { length: 100 }).default('upload'), // upload, scan, email, etc.
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Evidence table
+export const evidence = pgTable('evidence', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  caseId: uuid('case_id').references(() => cases.id),
+  documentId: uuid('document_id').references(() => documents.id),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description'),
+  evidenceType: varchar('evidence_type', { length: 50 }), // document, image, video, audio, physical
+  hash: varchar('hash', { length: 256 }), // File integrity hash
+  chainOfCustody: json('chain_of_custody').$type<Array<{
+    timestamp: string;
+    handler: string;
+    action: string;
+    location: string;
+  }>>().default([]),
+  isAdmissible: boolean('is_admissible'),
+  admissibilityNotes: text('admissibility_notes'),
+  tags: json('tags').$type<string[]>().default([]),
+  aiAnalysis: json('ai_analysis').$type<{
+    summary?: string;
+    keyPoints?: string[];
+    relevance?: number;
+    confidence?: number;
+    recommendations?: string[];
+    risks?: string[];
+    extractedEntities?: Array<{
+      type: string;
+      value: string;
+      confidence: number;
+    }>;
+  }>(),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// AI chat history and interactions
+export const aiInteractions = pgTable('ai_interactions', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: uuid('user_id').references(() => users.id),
+  caseId: uuid('case_id').references(() => cases.id),
+  sessionId: varchar('session_id', { length: 255 }),
+  prompt: text('prompt').notNull(),
+  response: text('response').notNull(),
+  model: varchar('model', { length: 100 }),
+  tokensUsed: integer('tokens_used'),
+  responseTime: integer('response_time'), // milliseconds
+  confidence: integer('confidence'), // 0-100
+  feedback: json('feedback').$type<{
+    rating?: number; // 1-5
+    helpful?: boolean;
+    notes?: string;
+  }>(),
+  metadata: json('metadata').$type<{
+    temperature?: number;
+    maxTokens?: number;
+    sources?: Array<{
+      id: string;
+      title: string;
+      relevance: number;
+    }>;
+    [key: string]: any;
+  }>(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Search index for semantic search
+export const searchIndex = pgTable('search_index', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  entityType: varchar('entity_type', { length: 50 }).notNull(), // document, case, evidence, etc.
+  entityId: uuid('entity_id').notNull(),
+  content: text('content').notNull(),
+  embedding: vector('embedding', { dimensions: 1536 }),
+  metadata: json('metadata').$type<{
+    title?: string;
+    tags?: string[];
+    relevanceScore?: number;
+    [key: string]: any;
+  }>(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Relations for type safety
+export const relations = {
+  users: {
+    createdCases: cases,
+    assignedCases: cases,
+    createdDocuments: documents,
+    createdEvidence: evidence,
+    aiInteractions: aiInteractions,
+  },
+  cases: {
+    creator: users,
+    assignee: users,
+    documents: documents,
+    evidence: evidence,
+    aiInteractions: aiInteractions,
+  },
+  documents: {
+    case: cases,
+    creator: users,
+    evidence: evidence,
+  },
+  evidence: {
+    case: cases,
+    document: documents,
+    creator: users,
+  },
+  aiInteractions: {
+    user: users,
+    case: cases,
+  },
+};
+
+// Type exports for use in application
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type Case = typeof cases.$inferSelect;
+export type NewCase = typeof cases.$inferInsert;
+
+export type Document = typeof documents.$inferSelect;
+export type NewDocument = typeof documents.$inferInsert;
+
+export type Evidence = typeof evidence.$inferSelect;
+export type NewEvidence = typeof evidence.$inferInsert;
+
+export type AIInteraction = typeof aiInteractions.$inferSelect;
+export type NewAIInteraction = typeof aiInteractions.$inferInsert;
+
+export type SearchIndex = typeof searchIndex.$inferSelect;
+export type NewSearchIndex = typeof searchIndex.$inferInsert;

@@ -10,6 +10,7 @@ export interface Evidence {
   criminalId?: string;
   title: string;
   description?: string;
+  type: string; // Required property for compatibility
   evidenceType: string;
   fileType?: string;
   subType?: string;
@@ -20,7 +21,7 @@ export interface Evidence {
   hash?: string;
   tags: string[];
   chainOfCustody: any[];
-  collectedAt?: string;
+  collectedAt?: Date;
   collectedBy?: string;
   location?: string;
   labAnalysis: any;
@@ -32,8 +33,17 @@ export interface Evidence {
   confidentialityLevel: string;
   canvasPosition: any;
   uploadedBy: string;
-  uploadedAt: string;
-  updatedAt: string;
+  uploadedAt: Date;
+  updatedAt: Date;
+  // Add missing properties for compatibility
+  analysis?: {
+    summary: string;
+    keyPoints: string[];
+    relevance: number;
+    admissibility: "admissible" | "questionable" | "inadmissible";
+    reasoning: string;
+    suggestedTags: string[];
+  };
 }
 
 export interface UploadFile {

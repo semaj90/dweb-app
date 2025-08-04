@@ -1,13 +1,12 @@
-import type { User } from '$lib/types';
-
 <!-- Enhanced Interactive Canvas with Fabric.js, No VDOM, Auto-save with Loki.js -->
 <script lang="ts">
+  import type { User } from '$lib/types';
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
   import { evidenceStore } from "$lib/stores/evidenceStore";
   import type { TEvent } from "fabric";
   import * as fabric from "fabric";
   import Fuse from "fuse.js";
-  import Loki from "lokijs";
+  import Loki, { Collection } from "lokijs";
   import {
     Archive,
     Circle,

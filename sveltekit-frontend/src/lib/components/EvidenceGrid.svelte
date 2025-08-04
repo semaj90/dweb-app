@@ -5,6 +5,7 @@
     evidenceActions,
     evidenceGrid,
     filteredEvidence,
+    type EvidenceGridState,
   } from "$lib/stores/evidence-store";
   import {
     formatFileSize,
@@ -33,24 +34,48 @@
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  export let caseId: string | undefined = undefined;
-  export let showHeader: boolean = true;
-  export let columns: number = 3;
+  interface Props {
+    caseId?: string;
+    showHeader?: boolean;
+    columns?: number;
+  }
+
+  let {
+    caseId = undefined,
+    showHeader = true,
+    columns = 3
+  }: Props = $props();
 
   let searchInput: HTMLInputElement;
   let selectedItem: Evidence | null = null;
 
-  // Reactive values from store
-  $: ({
-    items,
-    searchQuery,
-    sortBy,
-    sortOrder,
-    selectedItems,
-    viewMode,
-    isLoading,
-    error,
-  } = $evidenceGrid);
+  // In Svelte 5, access store values directly
+  let gridData = $state<EvidenceGridState | undefined>(undefined);
+  let filteredData = $state<Evidence[]>([]);
+
+  // Subscribe to store changes
+  $effect(() => {
+    const unsubscribe = evidenceGrid.subscribe(value => {
+      gridData = value;
+    });
+    const unsubscribeFiltered = filteredEvidence.subscribe(value => {
+      filteredData = value;
+    });
+    return () => {
+      unsubscribe();
+      unsubscribeFiltered();
+    };
+  });
+
+  // Derived values
+  let items = $derived(gridData?.items || []);
+  let searchQuery = $derived(gridData?.searchQuery || '');
+  let sortBy = $derived(gridData?.sortBy || 'uploadedAt');
+  let sortOrder = $derived(gridData?.sortOrder || 'desc');
+  let selectedItems = $derived(gridData?.selectedItems || new Set());
+  let viewMode = $derived(gridData?.viewMode || 'grid');
+  let isLoading = $derived(gridData?.isLoading || false);
+  let error = $derived(gridData?.error);
 
   // Load evidence on mount
   onMount(() => {
@@ -74,7 +99,7 @@
     evidenceActions.toggleSelection(item.id);
 }
   function selectAll() {
-    $filteredEvidence.forEach((item) => {
+    filteredData.forEach((item) => {
       if (!selectedItems.has(item.id)) {
         evidenceActions.toggleSelection(item.id);
 }
@@ -102,26 +127,38 @@
         return FileText;
       default:
         return File;
-}}
-  function formatDate(dateString: string): string {
+}}  function formatDate(date: string | Date | undefined): string {
+    if (!date) return 'Unknown';
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(new Date(dateString));
-}
+    }).format(dateObj);
+  }
   async function downloadEvidence(item: Evidence) {
     if (!item.fileUrl) return;
 
     try {
       const response = await fetch(item.fileUrl);
       const blob = await response.blob();
-      saveAs(blob, item.fileName || item.title);
+
+      // Native browser download without file-saver library
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = item.fileName || item.title || 'evidence-file';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (error) {
       console.error("Download failed:", error);
-}}
+    }
+  }
   async function deleteEvidence(item: Evidence) {
     if (confirm(`Are you sure you want to delete "${item.title}"?`)) {
       try {
@@ -189,7 +226,7 @@
             type="text"
             placeholder="Search evidence..."
             value={searchQuery}
-            on:input={handleSearch}
+            oninput={handleSearch}
             class="container mx-auto px-4"
           />
         </div>
@@ -199,7 +236,12 @@
         <!-- Sort dropdown -->
         <select
           value={sortBy}
-          on:change={(e) => toggleSort((e.target as HTMLSelectElement)?.value)}
+          onchange={(e) => {
+            const value = (e.target as HTMLSelectElement)?.value;
+            if (value === 'title' || value === 'evidenceType' || value === 'fileSize' || value === 'uploadedAt') {
+              toggleSort(value);
+            }
+          }}
           class="container mx-auto px-4"
         >
           <option value="uploadedAt">Date</option>
@@ -212,7 +254,7 @@
         <Button
           variant="secondary"
           size="sm"
-          on:click={() => toggleSort(sortBy)}
+          onclick={() => toggleSort(sortBy)}
           class="container mx-auto px-4"
         >
           {#if sortOrder === "asc"}
@@ -226,7 +268,7 @@
         <Button
           variant="secondary"
           size="sm"
-          on:click={() => toggleViewMode()}
+          onclick={() => toggleViewMode()}
           class="container mx-auto px-4"
         >
           {#if viewMode === "grid"}
@@ -250,7 +292,7 @@
           <Button
             variant="secondary"
             size="sm"
-            on:click={() => clearSelection()}
+            onclick={() => clearSelection()}
           >
             Clear
           </Button>
@@ -284,12 +326,12 @@
         variant="secondary"
         size="sm"
         class="container mx-auto px-4"
-        on:click={() => evidenceActions.loadEvidence(caseId)}
+        onclick={() => evidenceActions.loadEvidence(caseId)}
       >
         Try Again
       </Button>
     </div>
-  {:else if $filteredEvidence.length === 0}
+  {:else if filteredData.length === 0}
     <!-- Empty state -->
     <div class="container mx-auto px-4">
       <File class="container mx-auto px-4" />
@@ -309,11 +351,11 @@
           class="container mx-auto px-4"
           style="grid-template-columns: repeat({columns}, minmax(0, 1fr))"
         >
-          {#each $filteredEvidence as item (item.id)}
+          {#each filteredData as item (item.id)}
             <div
               class="container mx-auto px-4"
-              on:click={() => toggleSelection(item)}
-              on:contextmenu|preventDefault={(e) => showContextMenu(e, item)}
+              onclick={() => toggleSelection(item)}
+              oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Preview/Thumbnail -->
               <div
@@ -400,11 +442,11 @@
       {:else}
         <!-- List view -->
         <div class="container mx-auto px-4">
-          {#each $filteredEvidence as item (item.id)}
+          {#each filteredData as item (item.id)}
             <div
               class="container mx-auto px-4"
-              on:click={() => toggleSelection(item)}
-              on:contextmenu|preventDefault={(e) => showContextMenu(e, item)}
+              onclick={() => toggleSelection(item)}
+              oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Selection checkbox -->
               <input

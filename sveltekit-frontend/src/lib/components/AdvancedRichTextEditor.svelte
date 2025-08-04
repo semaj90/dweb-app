@@ -80,70 +80,67 @@
     setShortcutContext('editor');
     
     // Register editor-specific shortcuts
-    const shortcuts = [
-      registerShortcut({
-        id: 'editor-save',
-        keys: ['ctrl', 's'],
-        description: 'Save Document',
-        category: 'editing',
-        action: saveContent,
-        contexts: ['editor'],
-      }),
-      registerShortcut({
-        id: 'ai-generate-case-summary',
-        keys: ['ctrl', 'shift', 'c'],
-        description: 'Generate Case Summary',
-        category: 'ai',
-        action: () => generateAIReport('case-summary'),
-        contexts: ['editor'],
-      }),
-      registerShortcut({
-        id: 'ai-generate-evidence-analysis', 
-        keys: ['ctrl', 'shift', 'e'],
-        description: 'Generate Evidence Analysis',
-        category: 'ai',
-        action: () => generateAIReport('evidence-analysis'),
-        contexts: ['editor'],
-      }),
-      registerShortcut({
-        id: 'ai-generate-legal-brief',
-        keys: ['ctrl', 'shift', 'l'],
-        description: 'Generate Legal Brief',
-        category: 'ai',
-        action: () => generateAIReport('legal-brief'),
-        contexts: ['editor'],
-      }),
-      registerShortcut({
-        id: 'ai-generate-investigation-report',
-        keys: ['ctrl', 'shift', 'i'],
-        description: 'Generate Investigation Report',
-        category: 'ai',
-        action: () => generateAIReport('investigation-report'),
-        contexts: ['editor'],
-      }),
-      registerShortcut({
-        id: 'ai-summarize',
-        keys: ['ctrl', 'shift', 's'],
-        description: 'Summarize Content',
-        category: 'ai',
-        action: summarizeReport,
-        contexts: ['editor'],
-      }),
-      registerShortcut({
-        id: 'ai-analyze',
-        keys: ['ctrl', 'shift', 'a'],
-        description: 'Analyze Report',
-        category: 'ai', 
-        action: analyzeReport,
-        contexts: ['editor'],
-      }),
-    ];
+    registerShortcut({
+      key: 's',
+      ctrl: true,
+      description: 'Save Document',
+      action: saveContent,
+      preventDefault: true
+    });
     
-    return () => {
-      // Cleanup shortcuts
-      shortcuts.forEach(unregister => unregister());
-      setShortcutContext('global');
-    };
+    registerShortcut({
+      key: 'c',
+      ctrl: true,
+      shift: true,
+      description: 'Generate Case Summary',
+      action: () => generateAIReport('case-summary'),
+      preventDefault: true
+    });
+    
+    registerShortcut({
+      key: 'e',
+      ctrl: true,
+      shift: true,
+      description: 'Generate Evidence Analysis',
+      action: () => generateAIReport('evidence-analysis'),
+      preventDefault: true
+    });
+    
+    registerShortcut({
+      key: 'l',
+      ctrl: true,
+      shift: true,
+      description: 'Generate Legal Brief',
+      action: () => generateAIReport('legal-brief'),
+      preventDefault: true
+    });
+    
+    registerShortcut({
+      key: 'i',
+      ctrl: true,
+      shift: true,
+      description: 'Generate Investigation Report',
+      action: () => generateAIReport('investigation-report'),
+      preventDefault: true
+    });
+    
+    registerShortcut({
+      key: 's',
+      ctrl: true,
+      shift: true,
+      description: 'Summarize Content',
+      action: summarizeReport,
+      preventDefault: true
+    });
+    
+    registerShortcut({
+      key: 'a',
+      ctrl: true,
+      shift: true,
+      description: 'Analyze Report',
+      action: analyzeReport,
+      preventDefault: true
+    });
   });
 
   onDestroy(() => {
@@ -159,11 +156,7 @@
     editor = new Editor({
       element: editorElement,
       extensions: [
-        StarterKit.configure({
-          history: {
-            depth: 50,
-          },
-        }),
+        StarterKit,
         Image.configure({
           inline: true,
           allowBase64: true,
@@ -290,28 +283,29 @@
   }
 
   // Enhanced image handling functions
-  async function handleDrop(view: any, event: DragEvent) {
+  function handleDrop(view: any, event: DragEvent, slice: any, moved: boolean): boolean {
     const files = Array.from(event.dataTransfer?.files || []);
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
     
     if (imageFiles.length > 0) {
       event.preventDefault();
-      await uploadImages(imageFiles);
+      // Handle async upload without blocking the handler
+      uploadImages(imageFiles).catch(console.error);
       return true;
     }
     return false;
   }
 
-  async function handlePaste(view: any, event: ClipboardEvent) {
+  function handlePaste(view: any, event: ClipboardEvent, slice: any): boolean {
     const items = Array.from(event.clipboardData?.items || []);
     const imageItems = items.filter(item => item.type.startsWith('image/'));
     
     if (imageItems.length > 0) {
       event.preventDefault();
-      const files = await Promise.all(
+      // Handle async processing without blocking
+      Promise.all(
         imageItems.map(item => item.getAsFile()).filter(Boolean)
-      );
-      await uploadImages(files);
+      ).then(files => uploadImages(files)).catch(console.error);
       return true;
     }
     return false;

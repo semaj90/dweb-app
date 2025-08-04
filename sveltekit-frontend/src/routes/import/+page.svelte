@@ -1,8 +1,5 @@
-import type { User } from '$lib/types';
-
-
-
 <script lang="ts">
+  import type { User } from '$lib/types';
   import { browser } from "$app/environment";
   import { Tooltip } from "$lib/components/ui";
   import { Button } from "$lib/components/ui/button";

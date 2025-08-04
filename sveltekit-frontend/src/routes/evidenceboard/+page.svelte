@@ -1,20 +1,23 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { writable, derived } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	import { page } from '$app/stores';
-	import { createDialog, createDropzone } from '@melt-ui/svelte';
+import { createDialog } from '@melt-ui/svelte';
+// Dropzone and Superforms fallback for SvelteKit 2/Svelte 5
+// If Bits UI and Superforms are unavailable, use SvelteKit's built-in file input and Zod validation
+import { z } from 'zod';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import GoldenRatioLoader from '$lib/components/ui/enhanced-bits/GoldenRatioLoader.svelte';
-	import { 
-		Upload, 
-		FileText, 
-		Image, 
-		Search, 
-		Filter, 
+	import {
+		Upload,
+		FileText,
+		Image,
+		Search,
+		Filter,
 		MoreVertical,
 		Eye,
 		Download,
@@ -24,20 +27,33 @@
 		Target
 	} from 'lucide-svelte';
 
-	// Evidence management stores
-	let evidenceItems = $state<any[]>([]);
-	let filteredEvidence = $state<any[]>([]);
-	let searchQuery = $state('');
-	let selectedFilter = $state('all');
-	let isUploading = $state(false);
-	let uploadProgress = $state(0);
-	let processingStatus = $state<'loading' | 'processing' | 'success' | 'error'>('loading');
 
-	// Context7 integration state
-	let context7Enabled = $state(true);
-	let semanticSearchResults = $state<any[]>([]);
-	let ragEnhanced = $state(true);
+// Evidence management stores
+let evidenceItems = $state([]);
+let filteredEvidence = $state([]);
+let searchQuery = $state('');
+let selectedFilter = $state('all');
+let isUploading = $state(false);
+let uploadProgress = $state(0);
+let processingStatus = $state<'loading' | 'processing' | 'success' | 'error'>('loading');
 
+// Context7 integration state
+let context7Enabled = $state(true);
+let semanticSearchResults = $state([]);
+let ragEnhanced = $state(true);
+
+// Zod schema for evidence upload
+const evidenceSchema = z.object({
+  files: z.any().refine(val => val instanceof FileList && val.length > 0, {
+	message: 'Please select at least one file.'
+  }),
+  context7Enabled: z.boolean(),
+  ragEnhanced: z.boolean()
+});
+
+// Fallback form state
+let formErrors = $state<{ files?: string } | null>(null);
+// ...existing code...
 	interface EvidenceItem {
 		id: string;
 		filename: string;
@@ -59,19 +75,22 @@
 		states: { open }
 	} = createDialog();
 
-	const {
-		elements: { root: dropzoneRoot, input: dropzoneInput },
-		states: { isDragover }
-	} = createDropzone({
-		accept: 'application/pdf,image/*,.doc,.docx',
-		multiple: true,
-		onFilesChange: handleFilesUpload
-	});
 
-	// Computed properties
-	let totalEvidence = $derived(evidenceItems.length);
-	let processingCount = $derived(evidenceItems.filter(item => item.status === 'processing').length);
-	let readyCount = $derived(evidenceItems.filter(item => item.status === 'ready').length);
+
+// Fallback file input state
+let dropzoneFiles = $state<FileList | null>(null);
+let isDragover = $state(false);
+let formFields = $state({
+  context7Enabled: true,
+  ragEnhanced: true
+});
+
+// ...existing code...
+
+	// Computed properties using Svelte 5 runes
+let totalEvidence = $derived(evidenceItems.length);
+let processingCount = $derived(evidenceItems.filter(item => item.status === 'processing').length);
+let readyCount = $derived(evidenceItems.filter(item => item.status === 'ready').length);
 
 	onMount(async () => {
 		await loadExistingEvidence();
@@ -91,57 +110,67 @@
 		}
 	}
 
-	async function handleFilesUpload(files: FileList | null) {
-		if (!files || files.length === 0) return;
 
-		isUploading = true;
-		uploadProgress = 0;
-		processingStatus = 'loading';
+// Superforms submit handler for evidence upload
+async function handleEvidenceSubmit(event) {
+  event.preventDefault();
+  isUploading = true;
+  uploadProgress = 0;
+  processingStatus = 'loading';
 
-		try {
-			const formData = new FormData();
-			
-			Array.from(files).forEach(file => {
-				formData.append('files', file);
-			});
+  // Validate with Zod
+  const result = evidenceSchema.safeParse({
+	files: dropzoneFiles,
+	context7Enabled: formFields.context7Enabled,
+	ragEnhanced: formFields.ragEnhanced
+  });
+  if (!result.success) {
+	// Zod error output is string[]; join for display
+	const fieldErrors = result.error.formErrors.fieldErrors;
+	formErrors = {
+	  files: Array.isArray(fieldErrors.files) ? fieldErrors.files.join(', ') : fieldErrors.files
+	};
+	isUploading = false;
+	return;
+  }
+  formErrors = null;
 
-			// Add processing options
-			formData.append('context7Enabled', context7Enabled.toString());
-			formData.append('ragEnhanced', ragEnhanced.toString());
-			formData.append('extractEntities', 'true');
-			formData.append('generateSummary', 'true');
+  const formData = new FormData();
+  if (dropzoneFiles) {
+	Array.from(dropzoneFiles).forEach(file => {
+	  formData.append('files', file);
+	});
+  }
+  formData.append('context7Enabled', formFields.context7Enabled ? 'true' : 'false');
+  formData.append('ragEnhanced', formFields.ragEnhanced ? 'true' : 'false');
+  formData.append('extractEntities', 'true');
+  formData.append('generateSummary', 'true');
 
-			const response = await fetch('/api/evidence/upload', {
-				method: 'POST',
-				body: formData
-			});
+  try {
+	const response = await fetch('/api/evidence/upload', {
+	  method: 'POST',
+	  body: formData
+	});
 
-			if (response.ok) {
-				const result = await response.json();
-				
-				// Add new evidence items
-				evidenceItems = [...evidenceItems, ...result.evidence];
-				filterEvidence();
-
-				processingStatus = 'success';
-				
-				// Trigger Context7 analysis if enabled
-				if (context7Enabled) {
-					await triggerContext7Analysis(result.evidence);
-				}
-
-			} else {
-				throw new Error('Upload failed');
-			}
-
-		} catch (error) {
-			console.error('Upload error:', error);
-			processingStatus = 'error';
-		} finally {
-			isUploading = false;
-			uploadProgress = 0;
-		}
+	if (response.ok) {
+	  const result = await response.json();
+	  evidenceItems = [...evidenceItems, ...result.evidence];
+	  filterEvidence();
+	  processingStatus = 'success';
+	  if (context7Enabled) {
+		await triggerContext7Analysis(result.evidence);
+	  }
+	} else {
+	  throw new Error('Upload failed');
 	}
+  } catch (error) {
+	console.error('Upload error:', error);
+	processingStatus = 'error';
+  } finally {
+	isUploading = false;
+	uploadProgress = 0;
+  }
+}
 
 	async function triggerContext7Analysis(newEvidence: EvidenceItem[]) {
 		try {
@@ -158,7 +187,7 @@
 
 				if (response.ok) {
 					const analysis = await response.json();
-					
+
 					// Update evidence item with Context7 analysis
 					const index = evidenceItems.findIndex(e => e.id === item.id);
 					if (index !== -1) {
@@ -225,7 +254,7 @@
 	});
 
 	// Debounced semantic search
-	let searchTimeout: number;
+let searchTimeout: ReturnType<typeof setTimeout>;
 	$effect(() => {
 		if (searchQuery) {
 			clearTimeout(searchTimeout);
@@ -362,53 +391,68 @@
 							<span>Upload Evidence</span>
 						</CardTitle>
 					</CardHeader>
-					<CardContent>
-						<!-- File Drop Zone -->
-						<div
-							use:dropzoneRoot
-							class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center transition-colors duration-200 {$isDragover ? 'border-blue-500 bg-blue-50' : 'hover:border-slate-400'}"
-						>
-							<input use:dropzoneInput />
-							<Upload class="h-12 w-12 text-slate-400 mx-auto mb-4" />
-							<p class="text-lg font-medium text-slate-700 mb-2">
-								Drop files here or click to upload
-							</p>
-							<p class="text-sm text-slate-500">
-								Supports PDF, images, and documents. Max 50MB per file.
-							</p>
-						</div>
 
-						<!-- Upload Progress -->
-						{#if isUploading}
-							<div class="mt-6">
-								<GoldenRatioLoader
-									bind:status={processingStatus}
-									bind:progress={uploadProgress}
-									loadingText="Uploading and processing evidence..."
-									aiOutput="Evidence successfully processed and added to your board."
-								/>
-							</div>
-						{/if}
+<CardContent>
+  <!-- Fallback Evidence Upload Form -->
+  <form onsubmit={handleEvidenceSubmit} enctype="multipart/form-data" class="space-y-6">
+  <div class="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center transition-colors duration-200 {isDragover ? 'border-blue-500 bg-blue-50' : 'hover:border-slate-400'}"
+	role="region"
+	aria-label="File dropzone"
+	ondragover={() => isDragover = true}
+	ondragleave={() => isDragover = false}
+  >
+  <input type="file" name="files" multiple accept="application/pdf,image/*,.doc,.docx" onchange={(e) => dropzoneFiles = (e.target as HTMLInputElement).files} class="mb-4" />
+	  <Upload class="h-12 w-12 text-slate-400 mx-auto mb-4" />
+	  <p class="text-lg font-medium text-slate-700 mb-2">
+		Drop files here or click to upload
+	  </p>
+	  <p class="text-sm text-slate-500">
+		Supports PDF, images, and documents. Max 50MB per file.
+	  </p>
+	</div>
 
-						<!-- Upload Options -->
-						<div class="mt-6 flex flex-wrap gap-4">
-							<label class="flex items-center space-x-2">
-								<input type="checkbox" bind:checked={context7Enabled} class="rounded" />
-								<span class="text-sm">Enable Context7 AI Analysis</span>
-							</label>
-							<label class="flex items-center space-x-2">
-								<input type="checkbox" bind:checked={ragEnhanced} class="rounded" />
-								<span class="text-sm">Enhanced RAG Processing</span>
-							</label>
-						</div>
-					</CardContent>
+	<!-- Zod validation error -->
+	{#if formErrors?.files}
+	  <p class="text-red-500 text-sm">{formErrors.files}</p>
+	{/if}
+
+	<!-- Upload Options -->
+	<div class="flex flex-wrap gap-4">
+  <label class="flex items-center space-x-2">
+	<input type="checkbox" name="context7Enabled" bind:checked={formFields.context7Enabled} class="rounded" />
+	<span class="text-sm">Enable Context7 AI Analysis</span>
+  </label>
+  <label class="flex items-center space-x-2">
+	<input type="checkbox" name="ragEnhanced" bind:checked={formFields.ragEnhanced} class="rounded" />
+	<span class="text-sm">Enhanced RAG Processing</span>
+  </label>
+	</div>
+
+	<Button type="submit" class="mt-4 w-full" disabled={isUploading}>
+	  <Upload class="h-4 w-4 mr-2" />
+	  {isUploading ? 'Uploading...' : 'Upload Evidence'}
+	</Button>
+
+	<!-- Upload Progress -->
+	{#if isUploading}
+	  <div class="mt-6">
+		<GoldenRatioLoader
+		  bind:status={processingStatus}
+		  bind:progress={uploadProgress}
+		  loadingText="Uploading and processing evidence..."
+		  aiOutput="Evidence successfully processed and added to your board."
+		/>
+	  </div>
+	{/if}
+  </form>
+</CardContent>
 				</Card>
 
 				<!-- Evidence Grid -->
 				<Card class="mt-6">
 					<CardHeader>
 						<CardTitle>Evidence Collection ({filteredEvidence.length})</CardTitle>
-						
+
 						<!-- Search and Filter -->
 						<div class="flex flex-col sm:flex-row gap-4 mt-4">
 							<div class="flex-1">
@@ -426,7 +470,7 @@
 							</select>
 						</div>
 					</CardHeader>
-					
+
 					<CardContent>
 						{#if filteredEvidence.length === 0}
 							<div class="text-center py-12">
@@ -439,7 +483,13 @@
 									<div class="border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow">
 										<div class="flex items-start justify-between mb-3">
 											<div class="flex items-center space-x-2">
-												<svelte:component this={getFileIcon(item.type)} class="h-5 w-5 text-slate-500" />
+{#if getFileIcon(item.type) === FileText}
+  <FileText class="h-5 w-5 text-slate-500" />
+{:else if getFileIcon(item.type) === Image}
+  <Image class="h-5 w-5 text-slate-500" />
+{:else}
+  <FileText class="h-5 w-5 text-slate-500" />
+{/if}
 												<h4 class="font-medium text-slate-900 truncate flex-1">
 													{item.filename}
 												</h4>
@@ -450,7 +500,7 @@
 										</div>
 
 										<div class="space-y-2 mb-3">
-											<Badge class="{getStatusColor(item.status)} text-xs">
+  <Badge size="sm" variant="outline">
 												{item.status}
 											</Badge>
 											<p class="text-xs text-slate-500">
@@ -471,7 +521,7 @@
 													<span>{(item.prosecutionScore * 100).toFixed(0)}%</span>
 												</div>
 												<div class="w-full bg-slate-200 rounded-full h-2">
-													<div 
+													<div
 														class="h-2 rounded-full bg-gradient-to-r from-green-400 to-blue-500"
 														style:width="{item.prosecutionScore * 100}%"
 													></div>
@@ -482,7 +532,7 @@
 										{#if item.tags.length > 0}
 											<div class="flex flex-wrap gap-1 mb-3">
 												{#each item.tags.slice(0, 3) as tag}
-													<Badge variant="outline" class="text-xs">{tag}</Badge>
+  <Badge variant="outline" size="sm">{tag}</Badge>
 												{/each}
 											</div>
 										{/if}
@@ -525,11 +575,11 @@
 									<Zap class="h-4 w-4 text-blue-500" />
 									<span class="text-sm font-medium">Context7 Analysis Active</span>
 								</div>
-								
+
 								<div class="text-sm text-slate-600">
 									AI is continuously analyzing your evidence for:
 								</div>
-								
+
 								<ul class="text-sm text-slate-600 space-y-1">
 									<li>• Legal entity extraction</li>
 									<li>• Case law connections</li>
@@ -605,7 +655,8 @@
 <style>
 	.line-clamp-2 {
 		display: -webkit-box;
-		-webkit-line-clamp: 2;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

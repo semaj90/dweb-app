@@ -27,16 +27,16 @@
       gutter: 8,
     },
     preventScroll: true,
-    closeOnEscape: true,
-    closeOnOutsideClick: true,
     portal: null, // Keep in document flow for better accessibility
   };
 
   const {
     elements: { trigger, menu, item, separator },
     states: { open },
-    helpers: { isSelected },
   } = createDropdownMenu(dropdownConfig);
+
+  // Track selected item
+  let selectedItem: string | null = null;
 
   // Report types configuration
   const reportTypes = [
@@ -129,6 +129,8 @@
     if (disabled || isGenerating) return;
     if (requiresContent && !hasContent) return;
 
+    selectedItem = action;
+
     switch (action) {
       case 'summarize':
         onSummarize();
@@ -159,11 +161,10 @@
   aria-label="AI Tools Menu"
   title="AI Tools (Press ? for shortcuts)"
 >
-  <Sparkles size="16" class="ai-trigger__icon" />
+  <Sparkles size={16} class="ai-trigger__icon" />
   <ChevronDown 
-    size="12" 
-    class="ai-trigger__chevron" 
-    class:ai-trigger__chevron--rotated={$open}
+    size={12} 
+    class="ai-trigger__chevron {$open ? 'ai-trigger__chevron--rotated' : ''}"
   />
   
   {#if isGenerating}
@@ -181,7 +182,7 @@
     <!-- Report Generation Section -->
     <div class="ai-menu__section">
       <div class="ai-menu__header">
-        <FileText size="14" />
+        <FileText size={14} />
         Generate Report
       </div>
       
@@ -189,13 +190,13 @@
         <button
           use:melt={$item}
           class="ai-menu__item"
-          class:ai-menu__item--selected={$isSelected(reportType.id)}
+          class:ai-menu__item--selected={selectedItem === reportType.id}
           on:click={() => handleItemSelect(reportType.id)}
           disabled={disabled || isGenerating}
           data-value={reportType.id}
         >
           <div class="ai-menu__item-content">
-            <svelte:component this={reportType.icon} size="14" class="ai-menu__item-icon" />
+            <svelte:component this={reportType.icon} size={14} class="ai-menu__item-icon" />
             <div class="ai-menu__item-text">
               <span class="ai-menu__item-name">{reportType.name}</span>
               <span class="ai-menu__item-description">{reportType.description}</span>
@@ -212,7 +213,7 @@
     <!-- AI Tools Section -->
     <div class="ai-menu__section">
       <div class="ai-menu__header">
-        <Brain size="14" />
+        <Brain size={14} />
         AI Analysis
       </div>
       
@@ -220,7 +221,7 @@
         <button
           use:melt={$item}
           class="ai-menu__item"
-          class:ai-menu__item--selected={$isSelected(tool.id)}
+          class:ai-menu__item--selected={selectedItem === tool.id}
           class:ai-menu__item--disabled={tool.requiresContent && !hasContent}
           on:click={() => handleItemSelect(tool.id, tool.requiresContent)}
           disabled={disabled || isGenerating || (tool.requiresContent && !hasContent)}
@@ -228,7 +229,7 @@
           title={tool.requiresContent && !hasContent ? 'Add content to enable this feature' : ''}
         >
           <div class="ai-menu__item-content">
-            <svelte:component this={tool.icon} size="14" class="ai-menu__item-icon" />
+            <svelte:component this={tool.icon} size={14} class="ai-menu__item-icon" />
             <div class="ai-menu__item-text">
               <span class="ai-menu__item-name">{tool.name}</span>
               <span class="ai-menu__item-description">{tool.description}</span>
@@ -242,7 +243,7 @@
     <!-- Keyboard Shortcuts Help -->
     <div use:melt={$separator} class="ai-menu__separator"></div>
     <div class="ai-menu__footer">
-      <Keyboard size="12" />
+      <Keyboard size={12} />
       <span class="ai-menu__footer-text">Use keyboard shortcuts or click items</span>
     </div>
   </div>

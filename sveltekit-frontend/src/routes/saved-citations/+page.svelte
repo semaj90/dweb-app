@@ -239,7 +239,7 @@
   <!-- Citations Grid -->
   <div class="container mx-auto px-4">
     {#each filteredCitations as citation (citation.id)}
-      <CardRoot className="citation-card">
+      <CardRoot class="citation-card">
         <CardHeader className="citation-header">
           <div class="container mx-auto px-4">
             <h3 class="container mx-auto px-4">{citation.title}</h3>
@@ -247,30 +247,30 @@
             <DropdownMenuRoot let:trigger let:menu>
               <DropdownMenuTrigger {trigger}>
                 <Button variant="ghost" size="sm">
-                  <MoreVertical className="container mx-auto px-4" />
+                  <MoreVertical class="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent {menu}>
                 <DropdownMenuItem on:click={() => toggleFavorite(citation)}>
-                  <Star className="container mx-auto px-4" />
+                  <Star class="w-4 h-4 mr-2" />
                   {citation.isFavorite
                     ? "Remove from favorites"
                     : "Add to favorites"}
                 </DropdownMenuItem>
                 <DropdownMenuItem on:click={() => copyCitation(citation)}>
-                  <Copy className="container mx-auto px-4" />
+                  <Copy class="w-4 h-4 mr-2" />
                   Copy citation
                 </DropdownMenuItem>
                 <DropdownMenuItem on:click={() => editCitation(citation)}>
-                  <Edit className="container mx-auto px-4" />
+                  <Edit class="w-4 h-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   on:click={() => deleteCitation(citation.id)}
-                  className="container mx-auto px-4"
+                  class="text-destructive"
                 >
-                  <Trash2 className="container mx-auto px-4" />
+                  <Trash2 class="w-4 h-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -278,11 +278,11 @@
           </div>
 
           <div class="container mx-auto px-4">
-            <Badge variant="secondary" className="container mx-auto px-4">
+            <Badge variant="secondary" class="mr-2">
               {citation.category}
             </Badge>
             {#if citation.isFavorite}
-              <Badge variant="secondary" className="container mx-auto px-4">
+              <Badge variant="secondary" class="mr-2">
                 <Star class="container mx-auto px-4" />
                 Favorite
               </Badge>
@@ -290,7 +290,7 @@
           </div>
         </CardHeader>
 
-        <CardContent class="citation-content">
+        <CardContent className="citation-content">
           <p class="container mx-auto px-4">{citation.content}</p>
           <p class="container mx-auto px-4">Source: {citation.source}</p>
 
@@ -303,8 +303,8 @@
           {#if citation.tags.length > 0}
             <div class="container mx-auto px-4">
               {#each citation.tags as tag}
-                <Badge variant="secondary" className="container mx-auto px-4">
-                  <Tag className="container mx-auto px-4" />
+                <Badge variant="secondary" class="mr-2">
+                  <Tag class="w-3 h-3 mr-1" />
                   {tag}
                 </Badge>
               {/each}
@@ -317,7 +317,7 @@
             </span>
 
             {#if citation.contextData?.caseId}
-              <Badge variant="secondary" className="container mx-auto px-4">
+              <Badge variant="secondary" class="mr-2">
                 Case: {citation.contextData.caseId}
               </Badge>
             {/if}
@@ -363,7 +363,10 @@
 <!-- Add Citation Dialog -->
 <DialogRoot bind:open={showAddDialog}>
   <DialogContent
-    className="container mx-auto px-4"
+    className="sm:max-w-[425px]"
+    overlay={{}}
+    content={{}}
+    openState={showAddDialog}
   >
     <DialogHeader>
       <DialogTitle title="Add New Citation" />
@@ -450,7 +453,10 @@
 {#if editingCitation}
   <DialogRoot open={true} onOpenChange={() => (editingCitation = null)}>
     <DialogContent
-      className="container mx-auto px-4"
+      className="sm:max-w-[425px]"
+      overlay={{}}
+      content={{}}
+      openState={true}
     >
       <DialogHeader>
         <DialogTitle title="Edit Citation" />

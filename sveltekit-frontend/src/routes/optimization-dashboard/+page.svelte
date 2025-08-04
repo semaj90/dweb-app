@@ -52,7 +52,7 @@
         currentUsage: enhancedRAGStore.neuralMemory.getCurrentMemoryUsage(),
         efficiency: memoryReport.memoryEfficiency,
         predictions: [],
-        lodLevel: memoryReport.lodLevel.name
+        lodLevel: "medium" as const
       };
 
       // Get caching metrics
@@ -112,7 +112,7 @@
 
       if (jobResponse.ok) {
         const { jobId } = await jobResponse.json();
-        
+
         // Wait for job completion
         const resultResponse = await fetch('/api/workers/wait', {
           method: 'PUT',
@@ -138,7 +138,7 @@
         limit: 5,
         useMLRanking: true
       });
-      
+
       systemStatus.recommendations = enhancedRAGStore.intelligentSuggestions();
     } catch (error) {
       console.error('RAG search failed:', error);
@@ -157,7 +157,7 @@
   function startMonitoring() {
     isMonitoring = true;
     updateSystemMetrics();
-    
+
     // Update every 5 seconds
     const interval = setInterval(() => {
       if (isMonitoring) {
@@ -273,7 +273,7 @@
         <div class="space-y-3">
           <div class="flex justify-between">
             <span class="text-slate-300">Avg Response:</span>
-            <span class="font-mono">{systemStatus.mlCaching.avgResponseTime}ms</span>
+            <span class="font-mono">{systemStatus.mlCaching?.avgResponseTime ?? 'N/A'}ms</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-300">Throughput:</span>
@@ -340,7 +340,7 @@
         >
           {isSubmittingJob ? '⏳ Processing...' : 'Test Workers'}
         </button>
-        
+
         {#if testJobResult}
           <div class="mt-4 p-3 bg-slate-700 rounded-lg">
             <h4 class="text-sm font-semibold mb-2">Job Result:</h4>
@@ -438,17 +438,17 @@
   ::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: rgb(30 41 59);
     border-radius: 4px;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: rgb(100 116 139);
     border-radius: 4px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: rgb(148 163 184);
   }

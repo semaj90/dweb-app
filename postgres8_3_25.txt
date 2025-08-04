@@ -1,0 +1,39 @@
+taskkill /F /IM node.exe
+
+You've hit the nail on the head! The error message tells us that the pg_vector extension isn't installed
+  in your main PostgreSQL directory.
+
+  The easiest way to fix this is to download the pre-compiled files for Windows and copy them to the
+  correct location. Here's how:
+
+   1. Download the pg_vector Extension:
+       * Click this link to go to the official download page for pg_vector on Windows: [pg_vector for
+         Windows Releases](https://github.com/andreiramani/pgvector_pgsql_windows/releases)
+       * Look for the latest release that is compatible with PostgreSQL 17. It will likely be named
+         something like vector.vX.X.X-pg17.zip.
+       * Download that .zip file.
+
+   2. Extract the Files:
+       * Find the .zip file you just downloaded (usually in your "Downloads" folder).
+       * Right-click it and select "Extract All...".
+
+   3. Copy the Extension Files:
+       * Open the folder that was created when you extracted the files.
+       * You will see a few files inside (like vector.control, and files in lib and share subdirectories).
+       * Select all of these files and folders and copy them.
+       * Now, navigate to your PostgreSQL installation directory. Based on the error message, it is:
+          C:\Program Files\PostgreSQL\17\
+       * Go into the share\extension subfolder. The full path is:
+          C:\Program Files\PostgreSQL\17\share\extension
+       * Paste the files you copied into this extension folder. You may need administrator permission to do
+         this.
+
+   4. Try Again in pgAdmin:
+       * Go back to the pgAdmin Query Tool that is connected to your legal_ai_db database.
+       * Run the command again:
+   1         CREATE EXTENSION IF NOT EXISTS vector;
+
+  This time, it should execute successfully because PostgreSQL will be able to find the control file it
+  was looking for.
+
+  Let me know as soon as you see the "Query returned successfully" message

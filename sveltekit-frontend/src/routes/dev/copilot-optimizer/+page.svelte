@@ -187,8 +187,7 @@
    * Generate test suggestions
    */
   async function generateSuggestions() {
-    const testCode = `
-// Test Svelte 5 component
+    const testCode = `// Test Svelte 5 component
 <script lang="ts">
   let { data = [] } = $props();
   let count = $state(0);

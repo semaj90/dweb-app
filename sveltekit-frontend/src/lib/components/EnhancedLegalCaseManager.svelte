@@ -1,24 +1,36 @@
 <!-- Enhanced Legal Case Manager with Production Features -->
 <script lang="ts">
     import { onMount, tick } from 'svelte';
-    import { writable, derived } from 'svelte/store';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { dev } from '$app/environment';
 
     // Import subcomponents
-    import CaseInfoForm from './subcomponents/CaseInfoForm.svelte';
-    import DocumentUploadForm from './subcomponents/DocumentUploadForm.svelte';
-    import EvidenceAnalysisForm from './subcomponents/EvidenceAnalysisForm.svelte';
-    import AIAnalysisForm from './subcomponents/AIAnalysisForm.svelte';
-    import ReviewSubmitForm from './subcomponents/ReviewSubmitForm.svelte';
+    import CaseInfoForm from './CaseInfoForm.svelte';
+    import DocumentUploadForm from './DocumentUploadForm.svelte';
+    import EvidenceAnalysisForm from './EvidenceAnalysisForm.svelte';
+    import AIAnalysisForm from './AIAnalysisForm.svelte';
+    import ReviewSubmitForm from './ReviewSubmitForm.svelte';
     import ProgressIndicator from './subcomponents/ProgressIndicator.svelte';
-    import LoadingSpinner from './subcomponents/LoadingSpinner.svelte';
+    import LoadingSpinner from './LoadingSpinner.svelte';
 
     // Import enhanced services
     import { ocrProcessor } from '$lib/services/enhanced-ocr-processor';
     import { caseStore, type CaseData } from '$lib/stores/caseStore';
-    import { notificationStore } from '$lib/stores/notificationStore';
+
+    // Extended case data interface for the form
+    interface ExtendedCaseData extends Partial<CaseData> {
+        clientInfo?: {
+            name: string;
+            email: string;
+            phone: string;
+            address: string;
+        };
+        documents?: any[];
+        aiAnalysis?: any;
+        [key: string]: any; // Allow additional properties
+    }
+    import { notifications } from '$lib/stores/notification';
     import { analyticsStore } from '$lib/stores/analyticsStore';
 
     // Types
@@ -37,15 +49,15 @@
         warnings: string[];
     }
 
-    // Reactive state
-    let currentStep = writable(0);
-    let isProcessing = writable(false);
-    let autoSaveEnabled = writable(true);
-    let validationResults = writable<Record<number, ValidationResult>>({});
-    let processingQueue = writable<string[]>([]);
+    // Reactive state using Svelte 5 runes
+    let currentStep = $state(0);
+    let isProcessing = $state(false);
+    let autoSaveEnabled = $state(true);
+    let validationResults = $state<Record<number, ValidationResult>>({});
+    let processingQueue = $state<string[]>([]);
 
-    // Case data with enhanced tracking
-    let caseData = writable<CaseData>({
+    // Case data with enhanced tracking using Svelte 5 runes
+    let caseData = $state<ExtendedCaseData>({
         id: '',
         title: '',
         description: '',
@@ -113,48 +125,52 @@
         }
     ];
 
-    // Derived stores
-    const totalSteps = derived(currentStep, () => steps.length);
-    const progressPercentage = derived(currentStep, ($step) =>
-        Math.round(($step / (steps.length - 1)) * 100)
+    // Derived stores converted to Svelte 5 $derived
+    const totalSteps = $derived(steps.length);
+    const progressPercentage = $derived(
+        Math.round((currentStep / (steps.length - 1)) * 100)
     );
-    const currentStepConfig = derived(currentStep, ($step) => steps[$step]);
-    const isFirstStep = derived(currentStep, ($step) => $step === 0);
-    const isLastStep = derived(currentStep, ($step) => $step === steps.length - 1);
-    const estimatedTimeRemaining = derived(currentStep, ($step) =>
-        steps.slice($step + 1).reduce((sum, step) => sum + step.estimatedTime, 0)
+    const currentStepConfig = $derived(steps[currentStep]);
+    const isFirstStep = $derived(currentStep === 0);
+    const isLastStep = $derived(currentStep === steps.length - 1);
+    const estimatedTimeRemaining = $derived(
+        steps.slice(currentStep + 1).reduce((sum, step) => sum + step.estimatedTime, 0)
     );
 
-    // Auto-save functionality
+    // Auto-save functionality using Svelte 5 $effect
     let autoSaveTimeout: NodeJS.Timeout;
     const AUTOSAVE_DELAY = 3000; // 3 seconds
 
-    $: if ($autoSaveEnabled && $caseData) {
-        clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(saveProgress, AUTOSAVE_DELAY);
-    }
+    $effect(() => {
+        if (autoSaveEnabled && caseData) {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(saveProgress, AUTOSAVE_DELAY);
+        }
+    });
 
     // Methods
     async function saveProgress(): Promise<void> {
         try {
-            await caseStore.updateCase($caseData);
-            notificationStore.addNotification({
+            await caseStore.updateCase(caseData.id, caseData);
+            notifications.add({
                 type: 'info',
+                title: 'Auto-save',
                 message: 'Progress auto-saved',
-                timeout: 2000
+                duration: 2000
             });
         } catch (error) {
             console.error('Auto-save failed:', error);
-            notificationStore.addNotification({
+            notifications.add({
                 type: 'error',
+                title: 'Auto-save Error',
                 message: 'Auto-save failed. Please save manually.',
-                timeout: 5000
+                duration: 5000
             });
         }
     }
 
     async function validateCurrentStep(): Promise<ValidationResult> {
-        const stepConfig = $currentStepConfig;
+        const stepConfig = currentStepConfig;
         const result: ValidationResult = {
             isValid: true,
             errors: [],
@@ -163,38 +179,38 @@
 
         switch (stepConfig.id) {
             case 'case-info':
-                if (!$caseData.title.trim()) {
+                if (!caseData.title.trim()) {
                     result.errors.push('Case title is required');
                 }
-                if (!$caseData.clientInfo.name.trim()) {
+                if (!caseData.clientInfo.name.trim()) {
                     result.errors.push('Client name is required');
                 }
-                if (!$caseData.clientInfo.email.trim()) {
+                if (!caseData.clientInfo.email.trim()) {
                     result.warnings.push('Client email is recommended');
                 }
                 break;
 
             case 'document-upload':
-                if ($caseData.documents.length === 0) {
+                if (caseData.documents.length === 0) {
                     result.errors.push('At least one document is required');
                 }
                 break;
 
             case 'evidence-analysis':
-                if ($caseData.evidence.length === 0) {
+                if (caseData.evidence.length === 0) {
                     result.warnings.push('No evidence items found');
                 }
                 break;
 
             case 'ai-analysis':
-                if (!$caseData.aiAnalysis) {
+                if (!caseData.aiAnalysis) {
                     result.warnings.push('AI analysis not completed');
                 }
                 break;
 
             case 'review-submit':
                 // Final validation
-                if (!$caseData.title || !$caseData.clientInfo.name) {
+                if (!caseData.title || !caseData.clientInfo.name) {
                     result.errors.push('Required fields missing');
                 }
                 break;
@@ -203,36 +219,35 @@
         result.isValid = result.errors.length === 0;
 
         // Update validation store
-        validationResults.update(results => ({
-            ...results,
-            [$currentStep]: result
-        }));
+        validationResults[currentStep] = result;
 
         return result;
     }
 
     async function nextStep(): Promise<void> {
-        isProcessing.set(true);
+        isProcessing = true;
 
         try {
             // Validate current step
             const validation = await validateCurrentStep();
 
             if (!validation.isValid) {
-                notificationStore.addNotification({
+                notifications.add({
                     type: 'error',
+                    title: 'Validation Error',
                     message: `Please fix errors: ${validation.errors.join(', ')}`,
-                    timeout: 5000
+                    duration: 5000
                 });
                 return;
             }
 
             // Show warnings if any
             if (validation.warnings.length > 0) {
-                notificationStore.addNotification({
+                notifications.add({
                     type: 'warning',
+                    title: 'Validation Warning',
                     message: `Warnings: ${validation.warnings.join(', ')}`,
-                    timeout: 4000
+                    duration: 4000
                 });
             }
 
@@ -240,15 +255,16 @@
             await saveProgress();
 
             // Track analytics
-            analyticsStore.trackEvent('case_step_completed', {
-                step: $currentStep,
-                stepId: $currentStepConfig.id,
-                caseId: $caseData.id
+            analyticsStore.logEvent({
+                type: 'case_step_completed',
+                step: currentStep,
+                stepId: currentStepConfig.id,
+                caseId: caseData.id
             });
 
             // Move to next step
-            if ($currentStep < steps.length - 1) {
-                currentStep.update(n => n + 1);
+            if (currentStep < steps.length - 1) {
+                currentStep += 1;
 
                 // Smooth scroll to top
                 await tick();
@@ -257,19 +273,20 @@
 
         } catch (error) {
             console.error('Error advancing to next step:', error);
-            notificationStore.addNotification({
+            notifications.add({
                 type: 'error',
+                title: 'Step Error',
                 message: 'Failed to advance to next step',
-                timeout: 5000
+                duration: 5000
             });
         } finally {
-            isProcessing.set(false);
+            isProcessing = false;
         }
     }
 
     async function previousStep(): Promise<void> {
-        if ($currentStep > 0) {
-            currentStep.update(n => n - 1);
+        if (currentStep > 0) {
+            currentStep -= 1;
             await tick();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -281,14 +298,15 @@
             let canJump = true;
 
             for (let i = 0; i < stepIndex; i++) {
-                currentStep.set(i);
+                currentStep = i;
                 const validation = await validateCurrentStep();
 
                 if (!validation.isValid && steps[i].required) {
-                    notificationStore.addNotification({
+                    notifications.add({
                         type: 'error',
+                        title: 'Step Required',
                         message: `Cannot skip required step: ${steps[i].title}`,
-                        timeout: 5000
+                        duration: 5000
                     });
                     canJump = false;
                     break;
@@ -296,7 +314,7 @@
             }
 
             if (canJump) {
-                currentStep.set(stepIndex);
+                currentStep = stepIndex;
                 await tick();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
@@ -304,7 +322,7 @@
     }
 
     async function submitCase(): Promise<void> {
-        isProcessing.set(true);
+        isProcessing = true;
 
         try {
             // Final validation
@@ -315,14 +333,11 @@
             }
 
             // Update case status
-            caseData.update(data => ({
-                ...data,
-                status: 'submitted',
-                metadata: {
-                    ...data.metadata,
-                    submittedAt: new Date()
-                }
-            }));
+            caseData.status = 'submitted';
+            caseData.metadata = {
+                ...(typeof caseData.metadata === 'object' && caseData.metadata !== null ? caseData.metadata : {}),
+                submittedAt: new Date()
+            };
 
             // Submit to backend
             const response = await fetch('/api/cases/submit', {
@@ -330,7 +345,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify($caseData)
+                body: JSON.stringify(caseData)
             });
 
             if (!response.ok) {
@@ -340,18 +355,20 @@
             const result = await response.json();
 
             // Track analytics
-            analyticsStore.trackEvent('case_submitted', {
+            analyticsStore.logEvent({
+                type: 'case_submitted',
                 caseId: result.id,
                 stepCount: steps.length,
-                documentCount: $caseData.documents.length,
-                evidenceCount: $caseData.evidence.length
+                documentCount: caseData.documents.length,
+                evidenceCount: caseData.evidence.length
             });
 
             // Show success notification
-            notificationStore.addNotification({
+            notifications.add({
                 type: 'success',
+                title: 'Success',
                 message: 'Case submitted successfully!',
-                timeout: 5000
+                duration: 5000
             });
 
             // Redirect to case view
@@ -359,56 +376,56 @@
 
         } catch (error) {
             console.error('Case submission failed:', error);
-            notificationStore.addNotification({
+            notifications.add({
                 type: 'error',
+                title: 'Submission Error',
                 message: 'Failed to submit case. Please try again.',
-                timeout: 5000
+                duration: 5000
             });
         } finally {
-            isProcessing.set(false);
+            isProcessing = false;
         }
     }
 
     async function resetCase(): Promise<void> {
         if (confirm('Are you sure you want to reset all case data? This cannot be undone.')) {
-            caseData.set({
-                id: '',
-                title: '',
-                description: '',
-                clientInfo: {
-                    name: '',
-                    email: '',
-                    phone: '',
-                    address: ''
-                },
-                documents: [],
-                evidence: [],
-                aiAnalysis: null,
-                status: 'draft',
-                priority: 'medium',
-                tags: [],
-                metadata: {
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    version: 1,
-                    workflow: 'standard'
-                }
-            });
+            caseData.id = '';
+            caseData.title = '';
+            caseData.description = '';
+            caseData.clientInfo = {
+                name: '',
+                email: '',
+                phone: '',
+                address: ''
+            };
+            caseData.documents = [];
+            caseData.evidence = [];
+            caseData.aiAnalysis = null;
+            caseData.status = 'draft';
+            caseData.priority = 'medium';
+            caseData.tags = [];
+            caseData.metadata = {
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                version: 1,
+                workflow: 'standard'
+            };
 
-            currentStep.set(0);
-            validationResults.set({});
+            currentStep = 0;
+            validationResults = {};
 
-            notificationStore.addNotification({
+            notifications.add({
                 type: 'info',
+                title: 'Reset',
                 message: 'Case data reset',
-                timeout: 3000
+                duration: 3000
             });
         }
     }
 
     // Voice commands setup (if supported)
-    let recognition: SpeechRecognition | null = null;
-    let isListening = false;
+    let recognition = $state<any | null>(null);
+    let isListening = $state(false);
 
     function setupVoiceCommands(): void {
         if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
@@ -417,7 +434,7 @@
             recognition.interimResults = false;
             recognition.lang = 'en-US';
 
-            recognition.onresult = (event: SpeechRecognitionEvent) => {
+            recognition.onresult = (event: any) => {
                 const command = event.results[0][0].transcript.toLowerCase();
                 handleVoiceCommand(command);
             };
@@ -473,7 +490,7 @@
                     saveProgress();
                     break;
                 case 'Enter':
-                    if ($isLastStep) {
+                    if (isLastStep) {
                         event.preventDefault();
                         submitCase();
                     }
@@ -490,32 +507,34 @@
         });
 
         ocrProcessor.on('processing:start', (data) => {
-            processingQueue.update(queue => [...queue, data.filename]);
+            processingQueue = [...processingQueue, data.filename];
         });
 
         ocrProcessor.on('processing:complete', (result) => {
-            processingQueue.update(queue =>
-                queue.filter(filename => filename !== result.metadata.filename)
-            );
+            processingQueue = processingQueue.filter(filename => filename !== result.metadata.filename);
         });
 
         // Setup voice commands
         setupVoiceCommands();
 
         // Track page view
-        analyticsStore.trackPageView('/case/new');
+        analyticsStore.logEvent({ type: 'page_view', page: '/case/new' });
 
         // Check for case ID in URL (edit mode)
-        const caseId = $page.url.searchParams.get('id');
+        let pageStore: any;
+        const unsubscribe = page.subscribe(value => pageStore = value);
+        const caseId = pageStore?.url.searchParams.get('id');
+        unsubscribe();
         if (caseId) {
             try {
-                const existingCase = await caseStore.getCase(caseId);
+                const existingCase = await caseStore.loadCase(caseId);
                 if (existingCase) {
-                    caseData.set(existingCase);
-                    notificationStore.addNotification({
+                    caseData = existingCase;
+                    notifications.add({
                         type: 'info',
+                        title: 'Case Loaded',
                         message: 'Loaded existing case for editing',
-                        timeout: 3000
+                        duration: 3000
                     });
                 }
             } catch (error) {
@@ -524,12 +543,12 @@
         }
     });
 
-    // Reactive statement for step validation
-    $: {
-        if ($currentStep >= 0) {
+    // Reactive statement for step validation converted to $effect
+    $effect(() => {
+        if (currentStep >= 0) {
             validateCurrentStep();
         }
-    }
+    });
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -544,7 +563,7 @@
                         Legal Case Manager
                     </h1>
                     <div class="text-sm text-gray-500 dark:text-gray-400">
-                        Step {$currentStep + 1} of {$totalSteps}
+                        Step {currentStep + 1} of {totalSteps}
                     </div>
                 </div>
 
@@ -552,11 +571,12 @@
                     <!-- Voice control button -->
                     {#if recognition}
                         <button
-                            on:click={toggleVoiceListening}
+                            onclick={toggleVoiceListening}
                             class="p-2 rounded-lg border border-gray-300 dark:border-gray-600
                                    hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
                                    {isListening ? 'bg-red-50 border-red-300 text-red-600' : ''}"
                             title="Toggle voice commands"
+                            aria-label="Toggle voice commands"
                         >
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd" />
@@ -568,16 +588,16 @@
                     <label class="flex items-center space-x-2 text-sm">
                         <input
                             type="checkbox"
-                            bind:checked={$autoSaveEnabled}
+                            bind:checked={autoSaveEnabled}
                             class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                         />
                         <span class="text-gray-600 dark:text-gray-400">Auto-save</span>
                     </label>
 
                     <!-- Estimated time -->
-                    {#if $estimatedTimeRemaining > 0}
+                    {#if estimatedTimeRemaining > 0}
                         <div class="text-sm text-gray-500 dark:text-gray-400">
-                            ~{$estimatedTimeRemaining} min remaining
+                            ~{estimatedTimeRemaining} min remaining
                         </div>
                     {/if}
                 </div>
@@ -588,19 +608,19 @@
     <!-- Progress indicator -->
     <ProgressIndicator
         {steps}
-        currentStep={$currentStep}
-        validationResults={$validationResults}
+        currentStep={currentStep}
+        validationResults={validationResults}
         on:step-click={(e) => jumpToStep(e.detail)}
     />
 
     <!-- Processing queue indicator -->
-    {#if $processingQueue.length > 0}
+    {#if processingQueue.length > 0}
         <div class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div class="flex items-center space-x-3">
                     <LoadingSpinner size="sm" />
                     <span class="text-sm text-blue-700 dark:text-blue-300">
-                        Processing {$processingQueue.length} file(s): {$processingQueue.join(', ')}
+                        Processing {processingQueue.length} file(s): {processingQueue.join(', ')}
                     </span>
                 </div>
             </div>
@@ -613,27 +633,27 @@
             <!-- Step header -->
             <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white">
-                    {$currentStepConfig.title}
+                    {currentStepConfig.title}
                 </h2>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {$currentStepConfig.description}
+                    {currentStepConfig.description}
                 </p>
             </div>
 
             <!-- Step content -->
             <div class="p-6">
-                {#if $isProcessing}
+                {#if isProcessing}
                     <div class="flex items-center justify-center py-12">
                         <LoadingSpinner size="lg" />
                         <span class="ml-3 text-gray-600 dark:text-gray-400">Processing...</span>
                     </div>
                 {:else}
-                    <svelte:component
-                        this={$currentStepConfig.component}
-                        bind:caseData={$caseData}
-                        validationResult={$validationResults[$currentStep]}
+                    {@const Component = currentStepConfig.component}
+                    <Component
+                        bind:caseData={caseData}
+                        validationResult={validationResults[currentStep]}
                         on:data-changed={() => {
-                            caseData.update(data => ({ ...data, metadata: { ...data.metadata, updatedAt: new Date() } }));
+                            caseData.metadata = { ...(typeof caseData.metadata === 'object' && caseData.metadata !== null ? caseData.metadata : {}), updatedAt: new Date() };
                         }}
                         on:request-validation={validateCurrentStep}
                     />
@@ -645,8 +665,8 @@
                 <div class="flex items-center justify-between">
                     <div class="flex space-x-3">
                         <button
-                            on:click={previousStep}
-                            disabled={$isFirstStep || $isProcessing}
+                            onclick={previousStep}
+                            disabled={isFirstStep || isProcessing}
                             class="px-4 py-2 border border-gray-300 dark:border-gray-600
                                    rounded-md shadow-sm text-sm font-medium
                                    text-gray-700 dark:text-gray-300
@@ -659,8 +679,8 @@
                         </button>
 
                         <button
-                            on:click={resetCase}
-                            disabled={$isProcessing}
+                            onclick={resetCase}
+                            disabled={isProcessing}
                             class="px-4 py-2 border border-red-300 dark:border-red-600
                                    rounded-md shadow-sm text-sm font-medium
                                    text-red-700 dark:text-red-300
@@ -675,8 +695,8 @@
 
                     <div class="flex space-x-3">
                         <button
-                            on:click={saveProgress}
-                            disabled={$isProcessing}
+                            onclick={saveProgress}
+                            disabled={isProcessing}
                             class="px-4 py-2 border border-gray-300 dark:border-gray-600
                                    rounded-md shadow-sm text-sm font-medium
                                    text-gray-700 dark:text-gray-300
@@ -688,10 +708,10 @@
                             Save Progress
                         </button>
 
-                        {#if $isLastStep}
+                        {#if isLastStep}
                             <button
-                                on:click={submitCase}
-                                disabled={$isProcessing}
+                                onclick={submitCase}
+                                disabled={isProcessing}
                                 class="px-4 py-2 border border-transparent
                                        rounded-md shadow-sm text-sm font-medium
                                        text-white bg-blue-600
@@ -703,8 +723,8 @@
                             </button>
                         {:else}
                             <button
-                                on:click={nextStep}
-                                disabled={$isProcessing}
+                                onclick={nextStep}
+                                disabled={isProcessing}
                                 class="px-4 py-2 border border-transparent
                                        rounded-md shadow-sm text-sm font-medium
                                        text-white bg-blue-600

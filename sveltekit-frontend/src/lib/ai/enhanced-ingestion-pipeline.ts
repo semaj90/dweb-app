@@ -8,7 +8,8 @@ import { QdrantClient } from "@qdrant/js-client-rest";
 import { Pool } from "pg";
 import { createClient } from "redis";
 import { connect } from "amqplib";
-import neo4j from "neo4j-driver";
+// import neo4j from "neo4j-driver"; // TODO: Install neo4j-driver dependency
+const neo4j = null as any;
 // import { errorHandler } from "$lib/utils/errorHandler";
 // Fallback error handler for when the module is not available
 const errorHandler = {

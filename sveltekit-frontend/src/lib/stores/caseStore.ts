@@ -10,6 +10,9 @@ export interface CaseWithRelations extends Case {
   reports?: Report[];
 }
 
+// Alias for backward compatibility
+export type CaseData = CaseWithRelations;
+
 export interface CaseState {
   cases: CaseWithRelations[];
   activeCaseId: string | null;
