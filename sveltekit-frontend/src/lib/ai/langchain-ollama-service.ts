@@ -77,6 +77,7 @@ export interface SummarizationResult {
 // ============================================================================
 
 class PostgreSQLVectorRetriever extends BaseRetriever {
+  lc_namespace = ["custom", "retrievers", "postgresql"];
   private embeddings: OllamaEmbeddings;
   private maxResults: number;
   private similarityThreshold: number;
@@ -280,7 +281,7 @@ export class LangChainOllamaService {
         .update(documents)
         .set({
           isIndexed: true,
-          processedAt: new Date(),
+          updatedAt: new Date(),
           metadata: {
             ...metadata,
             chunkCount: chunks.length,

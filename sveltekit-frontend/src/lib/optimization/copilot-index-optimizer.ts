@@ -5,7 +5,7 @@
 
 import { simdIndexProcessor, type CopilotIndex, type CopilotIndexEntry } from './simd-json-index-processor';
 import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store';
-import type { SearchResult } from '$lib/types/rag';
+import type { RAGSearchResult } from '$lib/types/rag';
 
 // Context7 MCP integration patterns
 interface Context7Pattern {
@@ -84,7 +84,7 @@ export class CopilotIndexOptimizer {
   private config: OptimizationConfig;
   private optimizedIndex: CopilotIndex | null = null;
   private patternCache = new Map<string, Context7Pattern[]>();
-  private searchCache = new Map<string, SearchResult[]>();
+  private searchCache = new Map<string, RAGSearchResult[]>();
   private performanceMetrics = {
     optimizationTime: 0,
     searchTime: 0,
@@ -166,7 +166,7 @@ export class CopilotIndexOptimizer {
       boostContext7?: boolean;
       useCache?: boolean;
     } = {}
-  ): Promise<SearchResult[]> {
+  ): Promise<RAGSearchResult[]> {
     const { 
       limit = 10, 
       includePatterns = true, 
@@ -391,7 +391,7 @@ export class CopilotIndexOptimizer {
   /**
    * Apply Context7 boosting to search results
    */
-  private async applyContext7Boosting(query: string, results: SearchResult[]): Promise<SearchResult[]> {
+  private async applyContext7Boosting(query: string, results: RAGSearchResult[]): Promise<RAGSearchResult[]> {
     const queryPatterns = this.findMatchingPatterns(query);
     
     return results.map(result => {
@@ -518,7 +518,7 @@ export class CopilotIndexOptimizer {
   /**
    * Apply intelligent ranking based on multiple factors
    */
-  private async applyIntelligentRanking(query: string, results: SearchResult[]): Promise<SearchResult[]> {
+  private async applyIntelligentRanking(query: string, results: RAGSearchResult[]): Promise<RAGSearchResult[]> {
     const queryPatterns = this.findMatchingPatterns(query);
     const queryEmbedding = await simdIndexProcessor.generateEmbeddings(query);
 

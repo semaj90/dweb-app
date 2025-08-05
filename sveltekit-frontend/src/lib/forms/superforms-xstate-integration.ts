@@ -3,7 +3,7 @@
 
 import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { writable, derived, type Writable } from 'svelte/store';
+import { writable, derived, type Writable, type Readable } from 'svelte/store';
 import { createActor, type ActorRefFrom } from 'xstate';
 import {
   DocumentUploadSchema,
@@ -25,15 +25,15 @@ import type { z } from 'zod';
 // FORM STATE INTEGRATION TYPES
 // ============================================================================
 
-export interface FormMachineIntegration<T, M> {
+export interface FormMachineIntegration<T extends Record<string, unknown>, M> {
   form: ReturnType<typeof superForm<T>>;
   actor: M;
   state: Writable<any>;
   context: Writable<any>;
-  isValid: Writable<boolean>;
-  isSubmitting: Writable<boolean>;
-  errors: Writable<Record<string, string[]>>;
-  progress: Writable<number>;
+  isValid: Readable<boolean>;
+  isSubmitting: Readable<boolean>;
+  errors: Readable<Record<string, string[]>>;
+  progress: Readable<number>;
 }
 
 export interface FormOptions {
@@ -66,10 +66,10 @@ export function createDocumentUploadForm(
     timeoutMs: 8000,
     invalidateAll: false,
     onUpdated: ({ form }) => {
-      if (form.valid) {
+      if ((form as any).valid) {
         actor.send({
           type: 'VALIDATE_FORM',
-          data: form.data
+          data: (form as any).data || form
         });
       }
     },
@@ -93,14 +93,35 @@ export function createDocumentUploadForm(
   // Reactive state stores
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
-  const isValid = derived([form.form], ([$form]) => $form.valid);
+  const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) => 
     $state === 'uploading' || $state === 'processing' || $state === 'validating'
   );
-  const errors = derived([form.errors, context], ([$errors, $context]) => ({
-    ...$errors,
-    ...$context.validationErrors
-  }));
+  const errors = derived([form.errors, context], ([$errors, $context]) => {
+    // Flatten the complex superforms error structure to match interface
+    const flattened: Record<string, string[]> = {};
+    
+    // Handle superforms errors (which can be nested objects)
+    const flattenErrors = (obj: any, prefix = ''): void => {
+      for (const [key, value] of Object.entries(obj || {})) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (Array.isArray(value)) {
+          flattened[fullKey] = value as string[];
+        } else if (typeof value === 'object' && value !== null) {
+          flattenErrors(value, fullKey);
+        }
+      }
+    };
+    
+    flattenErrors($errors);
+    
+    // Add context validation errors
+    if ($context.validationErrors) {
+      Object.assign(flattened, $context.validationErrors);
+    }
+    
+    return flattened;
+  });
   const progress = derived(context, ($context) => 
     Math.max($context.uploadProgress, $context.processingProgress)
   );
@@ -124,10 +145,10 @@ export function createDocumentUploadForm(
     let autoSaveTimeout: NodeJS.Timeout;
 
     form.form.subscribe(($form) => {
-      if ($form.valid) {
+      if (($form as any).valid) {
         clearTimeout(autoSaveTimeout);
         autoSaveTimeout = setTimeout(() => {
-          localStorage.setItem('document-upload-draft', JSON.stringify($form.data));
+          localStorage.setItem('document-upload-draft', JSON.stringify(($form as any).data || $form));
         }, autoSaveDelay);
       }
     });
@@ -181,14 +202,35 @@ export function createCaseCreationForm(
 
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
-  const isValid = derived([form.form], ([$form]) => $form.valid);
+  const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) => 
     $state === 'submitting' || $state === 'validating'
   );
-  const errors = derived([form.errors, context], ([$errors, $context]) => ({
-    ...$errors,
-    ...$context.validationErrors
-  }));
+  const errors = derived([form.errors, context], ([$errors, $context]) => {
+    // Flatten the complex superforms error structure to match interface
+    const flattened: Record<string, string[]> = {};
+    
+    // Handle superforms errors (which can be nested objects)
+    const flattenErrors = (obj: any, prefix = ''): void => {
+      for (const [key, value] of Object.entries(obj || {})) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (Array.isArray(value)) {
+          flattened[fullKey] = value as string[];
+        } else if (typeof value === 'object' && value !== null) {
+          flattenErrors(value, fullKey);
+        }
+      }
+    };
+    
+    flattenErrors($errors);
+    
+    // Add context validation errors
+    if ($context.validationErrors) {
+      Object.assign(flattened, $context.validationErrors);
+    }
+    
+    return flattened;
+  });
   const progress = derived([state, context], ([$state, $context]) => {
     if ($state === 'completed') return 100;
     if ($state === 'submitting') return 80;
@@ -262,14 +304,35 @@ export function createSearchForm(
 
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
-  const isValid = derived([form.form], ([$form]) => $form.valid);
+  const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) => 
     $state === 'searching' || $state === 'validating' || $state === 'loadingMore'
   );
-  const errors = derived([form.errors, context], ([$errors, $context]) => ({
-    ...$errors,
-    ...$context.validationErrors
-  }));
+  const errors = derived([form.errors, context], ([$errors, $context]) => {
+    // Flatten the complex superforms error structure to match interface
+    const flattened: Record<string, string[]> = {};
+    
+    // Handle superforms errors (which can be nested objects)
+    const flattenErrors = (obj: any, prefix = ''): void => {
+      for (const [key, value] of Object.entries(obj || {})) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (Array.isArray(value)) {
+          flattened[fullKey] = value as string[];
+        } else if (typeof value === 'object' && value !== null) {
+          flattenErrors(value, fullKey);
+        }
+      }
+    };
+    
+    flattenErrors($errors);
+    
+    // Add context validation errors
+    if ($context.validationErrors) {
+      Object.assign(flattened, $context.validationErrors);
+    }
+    
+    return flattened;
+  });
   const progress = derived([state], ([$state]) => {
     if ($state === 'results') return 100;
     if ($state === 'searching') return 60;
@@ -339,14 +402,35 @@ export function createAIAnalysisForm(
 
   const state = writable(actor.getSnapshot().value);
   const context = writable(actor.getSnapshot().context);
-  const isValid = derived([form.form], ([$form]) => $form.valid);
+  const isValid = derived([form.form], ([$form]) => !!($form as any).valid);
   const isSubmitting = derived(state, ($state) => 
     $state === 'analyzing' || $state === 'validating'
   );
-  const errors = derived([form.errors, context], ([$errors, $context]) => ({
-    ...$errors,
-    ...$context.validationErrors
-  }));
+  const errors = derived([form.errors, context], ([$errors, $context]) => {
+    // Flatten the complex superforms error structure to match interface
+    const flattened: Record<string, string[]> = {};
+    
+    // Handle superforms errors (which can be nested objects)
+    const flattenErrors = (obj: any, prefix = ''): void => {
+      for (const [key, value] of Object.entries(obj || {})) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (Array.isArray(value)) {
+          flattened[fullKey] = value as string[];
+        } else if (typeof value === 'object' && value !== null) {
+          flattenErrors(value, fullKey);
+        }
+      }
+    };
+    
+    flattenErrors($errors);
+    
+    // Add context validation errors
+    if ($context.validationErrors) {
+      Object.assign(flattened, $context.validationErrors);
+    }
+    
+    return flattened;
+  });
   const progress = derived([state, context], ([$state, $context]) => {
     if ($state === 'completed') return 100;
     if ($state === 'analyzing') return $context.isStreaming ? 70 : 50;
@@ -396,7 +480,7 @@ export function createFormValidator<T extends z.ZodType>(schema: T) {
       if (result.success) return {};
       return result.error.flatten().fieldErrors;
     },
-    async validateAsync: (data: unknown): Promise<z.infer<T>> => {
+    validateAsync: async (data: unknown): Promise<z.infer<T>> => {
       return schema.parseAsync(data);
     }
   };

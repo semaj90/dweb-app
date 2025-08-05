@@ -5,7 +5,7 @@
 
 import { createActor } from 'xstate';
 import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store';
-import type { RAGDocument, SearchResult, TextChunk } from '$lib/types/rag';
+import type { RAGDocument, RAGSearchResult, TextChunk } from '$lib/types/rag';
 
 // SIMD JSON Parser using structured cloning for performance
 interface SIMDJSONParser {
@@ -187,7 +187,7 @@ export class SIMDJSONIndexProcessor {
       threshold?: number;
       preferEnhanced?: boolean;
     } = {}
-  ): Promise<SearchResult[]> {
+  ): Promise<RAGSearchResult[]> {
     const { limit = 10, threshold = 0.7, preferEnhanced = true } = options;
 
     // Generate query embedding

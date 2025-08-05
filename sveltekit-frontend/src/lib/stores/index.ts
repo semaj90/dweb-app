@@ -1,16 +1,15 @@
-// Context menu store and actions
-export { contextMenuStore, contextMenuActions } from "./ui";
-// Keyboard shortcuts store (auto-populating)
-export * from "./keyboardShortcuts";
-// Enhanced Store Barrel Exports for Phase 2 - Unified
-// Prosecutor AI - Clean merged stores
+/**
+ * Enhanced Store Barrel Exports - TypeScript Store Pattern
+ * Centralized store management with XState integration
+ */
 
 // Core UI stores
+export { contextMenuStore, contextMenuActions } from "./ui";
 export { uiStore } from "./ui";
 export { default as modalStore } from "./modal";
 export { notifications as notificationStore } from "./notification";
 
-// Authentication & User stores
+// Authentication & User stores  
 export { default as authStore } from "./auth";
 export { default as userStore } from "./user";
 export { avatarStore } from "./avatarStore";
@@ -20,7 +19,7 @@ export { default as casesStore } from "./cases";
 export { default as citationsStore } from "./citations";
 export { report as reportStore } from "./report";
 
-// Unified AI Store (merged ai-commands + ai-command-parser)
+// AI & Machine Learning stores
 export {
   aiStore,
   parseAICommand,
@@ -30,7 +29,11 @@ export {
   isAIActive,
 } from "./ai-unified";
 
-// Unified Evidence Store (merged evidence + evidenceStore)
+export { aiHistory as aiHistoryStore } from "./aiHistoryStore";
+export { chatStore } from "./chatStore";
+export { enhancedRAGStore } from "./enhanced-rag-store";
+
+// Evidence & Document stores
 export {
   evidenceStore,
   evidenceById,
@@ -38,17 +41,14 @@ export {
   type Evidence,
 } from "./evidence-unified";
 
-// Canvas & Visual stores
-export { canvasStore } from "./canvas";
-
 // Form handling stores
 export { createFormStore as formStore } from "./form";
 
-// LokiJS database stores
+// Database & Caching stores
 export { lokiStore } from "./lokiStore";
 export { enhancedLokiStore } from "./enhancedLokiStore";
 
-// XState machines
+// XState machines and state management
 export { autoTaggingMachine } from "./autoTaggingMachine";
 export {
   evidenceProcessingMachine,
@@ -57,16 +57,21 @@ export {
 } from "./enhancedStateMachines";
 export { aiCommandMachine } from "./ai-command-machine";
 
-// Error handling
+// New XState + Go microservice integration
+export * from "./machines";
+
+// Canvas & Visual stores
+export { canvasStore } from "./canvas";
+
+// Utility stores
 export { errorHandler } from "./error-handler";
-
-// Notes storage
 export { default as savedNotesStore } from "./saved-notes";
+export * from "./keyboardShortcuts";
 
-// Phase 2: Melt UI Integration utilities
+// UI Integration utilities
 export * from "./melt-ui-integration";
 
-// Phase 2: Demo and health check
+// Demo and testing
 export {
   runPhase2Demo,
   phase2HealthCheck,
@@ -77,5 +82,11 @@ export {
 // Legacy compatibility aliases
 export { aiStore as aiCommands } from "./ai-unified";
 export { evidenceStore as evidence } from "./evidence-unified";
-export { chatStore } from "./chatStore";
-export { aiHistory as aiHistoryStore } from "./aiHistoryStore";
+
+// Types and interfaces
+export type {
+  StoreState,
+  StoreAction,
+  StoreContext,
+  AsyncStoreState
+} from "./types";

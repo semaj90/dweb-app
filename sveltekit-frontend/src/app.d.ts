@@ -2,7 +2,7 @@
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
 
-import type { User, UserSession } from '$lib/types/user';
+import type { SessionUser, UserSession } from '$lib/types/auth';
 
 declare global {
   namespace App {
@@ -13,14 +13,12 @@ declare global {
     }
 
     interface Locals {
-      user?: User | null;
-      sessionId?: string;
-      session?: UserSession | null;
+      user: SessionUser | null;
+      session: string | null;
     }
 
     interface PageData {
-      user?: App.Locals["user"];
-      session?: App.Locals["session"];
+      user?: SessionUser | null;
     }
 
     interface Platform {

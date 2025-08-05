@@ -105,6 +105,8 @@
     "wsl:start": "bash ./start-wsl.sh",
     "ai:setup": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-ai-models.ps1",
     "ai:test": "node scripts/test-ai-integration.mjs",
+    "ai:test-pipeline": "npx tsx scripts/test-ai-pipeline.ts",
+    "ai:demo": "npm run dev:frontend -- --open /demo/ai-dashboard",
     "test:integration": "node scripts/test-integration.mjs",
     "test:quick": "npm run test:integration",
     "dev:frontend": "cd sveltekit-frontend && npm run dev",

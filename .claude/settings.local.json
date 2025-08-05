@@ -182,7 +182,26 @@
       "Bash(set PGPASSWORD=123456)",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")"
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(true)",
+      "Bash(nvidia-smi:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(.quick-ai-setup.bat)",
+      "Bash(redis-windowsredis-cli.exe ping)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(go run:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "mcp__filesystem__search_files",
+      "Bash(start /B qdrant-windows\\qdrant.exe:*)",
+      "Bash(dir:*)",
+      "Bash(qdrant-windows\\qdrant.exe:*)",
+      "Bash(./qdrant-windows/qdrant.exe --help)",
+      "Bash(start /B:*)",
+      "Bash(start-qdrant-permanent.bat)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(go build:*)"
     ],
     "deny": []
   }

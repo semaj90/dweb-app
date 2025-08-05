@@ -156,9 +156,8 @@ async function processFile(file: File, uploadData: Partial<FileUpload>): Promise
 
     // Save to database
     const evidenceRecord = await db.insert(evidence).values({
-      id: fileId,
       caseId: uploadData.caseId,
-      userId: uploadData.userId || 'system',
+      userId: 'system', // TODO: Get from session
       title: uploadData.title || file.name,
       description: uploadData.description,
       evidenceType: uploadData.evidenceType || 'documents',
@@ -174,19 +173,7 @@ async function processFile(file: File, uploadData: Partial<FileUpload>): Promise
       aiAnalysis: aiAnalysis || {},
       aiSummary: aiAnalysis?.summary,
       contentEmbedding: embedding,
-      chainOfCustody: uploadData.chainOfCustody || [],
-      metadata: {
-        originalName: file.name,
-        uploadedAt: new Date().toISOString(),
-        ocrText,
-        thumbnailPath,
-        processingOptions: {
-          aiAnalysisEnabled: uploadData.enableAiAnalysis,
-          ocrEnabled: uploadData.enableOcr,
-          embeddingsEnabled: uploadData.enableEmbeddings,
-          summarizationEnabled: uploadData.enableSummarization
-        }
-      }
+      chainOfCustody: uploadData.chainOfCustody || []
     }).returning();
 
     // Cache embedding for future use
@@ -195,27 +182,26 @@ async function processFile(file: File, uploadData: Partial<FileUpload>): Promise
     }
 
     return {
-      id: fileId,
+      id: evidenceRecord[0].id,
       fileName,
       originalName: file.name,
       fileSize: file.size,
       mimeType: file.type,
-      url: `/api/evidence/${fileId}/file`,
+      url: `/api/evidence/${evidenceRecord[0].id}/file`,
       hash,
       aiAnalysis,
       embedding,
       ocrText,
-      thumbnail: thumbnailPath ? `/api/evidence/${fileId}/thumbnail` : undefined
+      thumbnail: thumbnailPath ? `/api/evidence/${evidenceRecord[0].id}/thumbnail` : undefined
     };
 
   } catch (error) {
     console.error(`Error processing file ${file.name}:`, error);
     
     // Still save basic file info even if AI processing fails
-    await db.insert(evidence).values({
-      id: fileId,
+    const evidenceRecord = await db.insert(evidence).values({
       caseId: uploadData.caseId,
-      userId: uploadData.userId || 'system',
+      userId: 'system', // TODO: Get from session
       title: uploadData.title || file.name,
       description: uploadData.description,
       evidenceType: uploadData.evidenceType || 'documents',
@@ -228,12 +214,7 @@ async function processFile(file: File, uploadData: Partial<FileUpload>): Promise
       confidentialityLevel: uploadData.confidentialityLevel || 'standard',
       collectedBy: uploadData.collectedBy,
       location: uploadData.location,
-      chainOfCustody: uploadData.chainOfCustody || [],
-      metadata: {
-        originalName: file.name,
-        uploadedAt: new Date().toISOString(),
-        processingError: error instanceof Error ? error.message : 'Unknown error'
-      }
+      chainOfCustody: uploadData.chainOfCustody || []
     });
 
     return {
@@ -347,8 +328,7 @@ Format your response as JSON with the following structure:
 }`;
 
         const analysisResult = await ollamaCudaService.chatCompletion([
-          { role: 'system', content: 'You are a legal AI assistant specializing in document analysis.' },
-          { role: 'user', content: analysisPrompt }
+          'You are a legal AI assistant specializing in document analysis.\n\n' + analysisPrompt
         ], {
           temperature: 0.3,
           maxTokens: 1000
@@ -401,8 +381,8 @@ async function cacheEmbedding(contentHash: string, embedding: number[]): Promise
 }
 
 // File serving endpoints
-export const GET: RequestHandler = async ({ url, params }) => {
-  const fileId = params.fileId;
+export const GET: RequestHandler = async ({ url }) => {
+  const fileId = url.pathname.split('/').pop();
   const action = url.searchParams.get('action');
 
   if (!fileId) {
@@ -423,17 +403,9 @@ export const GET: RequestHandler = async ({ url, params }) => {
 
     const record = evidenceRecord[0];
     
-    if (action === 'thumbnail' && record.metadata?.thumbnailPath) {
-      // Serve thumbnail
-      const { readFile } = await import('fs/promises');
-      const thumbnailBuffer = await readFile(record.metadata.thumbnailPath as string);
-      
-      return new Response(thumbnailBuffer, {
-        headers: {
-          'Content-Type': 'image/webp',
-          'Cache-Control': 'public, max-age=31536000'
-        }
-      });
+    if (action === 'thumbnail') {
+      // TODO: Implement thumbnail serving when we have a thumbnail storage solution
+      throw error(404, 'Thumbnail not found');
     } else {
       // Serve original file
       const { readFile } = await import('fs/promises');
@@ -454,8 +426,8 @@ export const GET: RequestHandler = async ({ url, params }) => {
   }
 };
 
-export const DELETE: RequestHandler = async ({ params }) => {
-  const fileId = params.fileId;
+export const DELETE: RequestHandler = async ({ url }) => {
+  const fileId = url.pathname.split('/').pop();
   
   if (!fileId) {
     throw error(404, 'File not found');

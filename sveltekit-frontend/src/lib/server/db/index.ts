@@ -31,20 +31,63 @@ export {
 // Re-export performance optimizations (optional - may not exist)
 // export { OptimizedQueries, CacheService } from '$lib/performance/optimizations';
 
-// Database connection health check
+// Type-safe database queries helper
+export function getTableByName(tableName: string) {
+  const tableMap = {
+    users,
+    sessions,
+    cases,
+    evidence,
+    legalDocuments,
+    caseActivities,
+    statutes,
+  };
+  
+  return tableMap[tableName as keyof typeof tableMap];
+}
+
+// Database connection health check with enhanced error handling
 export async function healthCheck() {
   try {
     if (!db) {
       return {
-        status: "unhealthy",
+        status: "unhealthy" as const,
         error: "Database not initialized",
         timestamp: new Date(),
       };
     }
+    
+    // Test basic connectivity
     await db.execute(sql`SELECT 1`);
-    return { status: "healthy", timestamp: new Date() };
+    
+    // Test specific tables
+    const tableTests = await Promise.allSettled([
+      db.select().from(users).limit(1),
+      db.select().from(sessions).limit(1),
+      db.select().from(cases).limit(1),
+    ]);
+    
+    const failedTests = tableTests.filter(result => result.status === 'rejected');
+    
+    if (failedTests.length > 0) {
+      return {
+        status: "degraded" as const,
+        error: `${failedTests.length} table(s) inaccessible`,
+        timestamp: new Date(),
+      };
+    }
+    
+    return { 
+      status: "healthy" as const, 
+      timestamp: new Date(),
+      tablesAccessible: tableTests.length 
+    };
   } catch (error: any) {
-    return { status: "unhealthy", error: error.message, timestamp: new Date() };
+    return { 
+      status: "unhealthy" as const, 
+      error: error.message, 
+      timestamp: new Date() 
+    };
   }
 }
 
@@ -55,17 +98,22 @@ export async function healthCheck() {
 // Context7 MCP: Expose DB pool for vector store and semantic search
 // (Already exported above)
 
-// Example: Export a function to get a vector store for semantic search (Nomic embed LLM)
+// Enhanced vector store with error handling
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { OpenAIEmbeddings } from "@langchain/openai";
 
 export function getVectorStore() {
-  const embeddings = new OpenAIEmbeddings({
-    modelName: "nomic-embed-text",
-    openAIApiKey: "N/A", // Local LLM, no key needed
-    // baseURL intentionally omitted for local compatibility
-  });
-  return new PGVectorStore(embeddings, { pool, tableName: "vectors" });
+  try {
+    const embeddings = new OpenAIEmbeddings({
+      modelName: "nomic-embed-text",
+      openAIApiKey: "N/A", // Local LLM, no key needed
+      // baseURL intentionally omitted for local compatibility
+    });
+    return new PGVectorStore(embeddings, { pool, tableName: "vectors" });
+  } catch (error: any) {
+    console.error('Vector store initialization failed:', error);
+    throw new Error(`Vector store unavailable: ${error.message}`);
+  }
 }
 
 // Example: Bits UI/Melt UI best practice (for Svelte 5):

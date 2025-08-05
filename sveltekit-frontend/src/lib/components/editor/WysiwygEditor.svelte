@@ -33,14 +33,14 @@
 
   // Melt UI Dialog for AI Assistant
   const {
-    elements: { 
-      trigger: aiTrigger, 
-      overlay: aiOverlay, 
-      content: aiContent, 
-      title: aiTitle, 
-      description: aiDescription, 
-      close: aiClose, 
-      portalled: aiPortalled 
+    elements: {
+      trigger: aiTrigger,
+      overlay: aiOverlay,
+      content: aiContent,
+      title: aiTitle,
+      description: aiDescription,
+      close: aiClose,
+      portalled: aiPortalled
     },
     states: { open: aiOpen }
   } = createDialog({
@@ -49,13 +49,13 @@
 
   // Melt UI Dialog for Citations
   const {
-    elements: { 
-      trigger: citeTrigger, 
-      overlay: citeOverlay, 
-      content: citeContent, 
-      title: citeTitle, 
-      close: citeClose, 
-      portalled: citePortalled 
+    elements: {
+      trigger: citeTrigger,
+      overlay: citeOverlay,
+      content: citeContent,
+      title: citeTitle,
+      close: citeClose,
+      portalled: citePortalled
     },
     states: { open: citeOpen }
   } = createDialog();
@@ -82,7 +82,7 @@
     try {
       // Dynamically import TinyMCE as an alternative
       // const { default: Hugerte } = await import('hugerte');
-      
+
       // Initialize basic editor for now
       hugerte = {
         getContent: () => content,
@@ -95,104 +95,101 @@
             addButton: () => {},
             addIcon: () => {}
           }
-        }
-      };
-      
-      isInitialized = true;
-        readonly,
+        },
         config: {
+          readonly,
           height,
           menubar: true,
-            plugins: [
-              'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-              'anchor', 'searchreplace', 'visualblocks', 'codesample', 'fullscreen',
-              'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
-              'autosave', 'save', 'directionality', 'emoticons', 'template',
-              'textpattern', 'nonbreaking', 'pagebreak', 'permanentpen', 'powerpaste',
-              'advtable', 'tinymcespellchecker', 'mentions', 'linkchecker'
-            ],
-            toolbar: [
-              'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify',
-              'outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save print',
-              'insertfile image media template link anchor codesample | ltr rtl | ai-assistant citation-helper'
-            ],
-            content_style: `
-              body { 
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-                font-size: 14px; 
-                line-height: 1.6;
-                color: #374151;
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
+          plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'codesample', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount',
+            'autosave', 'save', 'directionality', 'emoticons', 'template',
+            'textpattern', 'nonbreaking', 'pagebreak', 'permanentpen', 'powerpaste',
+            'advtable', 'tinymcespellchecker', 'mentions', 'linkchecker'
+          ],
+          toolbar: [
+            'undo redo | bold italic underline strikethrough | fontfamily fontsize blocks | alignleft aligncenter alignright alignjustify',
+            'outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save print',
+            'insertfile image media template link anchor codesample | ltr rtl | ai-assistant citation-helper'
+          ],
+          content_style: `
+            body {
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              font-size: 14px;
+              line-height: 1.6;
+              color: #374151;
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 20px;
 }
-              h1, h2, h3, h4, h5, h6 { 
-                color: #1f2937; 
-                font-weight: 600;
-                margin-top: 1.5em;
-                margin-bottom: 0.5em;
+            h1, h2, h3, h4, h5, h6 {
+              color: #1f2937;
+              font-weight: 600;
+              margin-top: 1.5em;
+              margin-bottom: 0.5em;
 }
-              .citation {
-                background: #eff6ff;
-                border-left: 4px solid #3b82f6;
-                padding: 0.5em;
-                margin: 1em 0;
-                border-radius: 0 4px 4px 0;
+            .citation {
+              background: #eff6ff;
+              border-left: 4px solid #3b82f6;
+              padding: 0.5em;
+              margin: 1em 0;
+              border-radius: 0 4px 4px 0;
 }
-              .ai-suggestion {
-                background: #f0fdf4;
-                border: 1px solid #bbf7d0;
-                padding: 0.5em;
-                border-radius: 4px;
-                margin: 0.5em 0;
+            .ai-suggestion {
+              background: #f0fdf4;
+              border: 1px solid #bbf7d0;
+              padding: 0.5em;
+              border-radius: 4px;
+              margin: 0.5em 0;
 }
-            `,
-            setup: (editor: any) => {
-              // Custom AI Assistant button
-              editor.ui.registry.addButton('ai-assistant', {
-                text: '🤖 AI',
-                tooltip: 'AI Assistant',
-                onAction: () => openAIAssistant(editor.selection.getContent())
-              });
+          `,
+          setup: (editor: any) => {
+            // Custom AI Assistant button
+            editor.ui.registry.addButton('ai-assistant', {
+              text: '🤖 AI',
+              tooltip: 'AI Assistant',
+              onAction: () => openAIAssistant(editor.selection.getContent())
+            });
 
-              // Custom Citation Helper button
-              editor.ui.registry.addButton('citation-helper', {
-                text: '📚 Cite',
-                tooltip: 'Citation Helper',
-                onAction: () => openCitationHelper(editor.selection.getContent())
-              });
+            // Custom Citation Helper button
+            editor.ui.registry.addButton('citation-helper', {
+              text: '📚 Cite',
+              tooltip: 'Citation Helper',
+              onAction: () => openCitationHelper(editor.selection.getContent())
+            });
 
-              // Auto-save functionality
-              editor.on('NodeChange', () => {
-                updateCounts(editor.getContent());
-              });
+            // Auto-save functionality
+            editor.on('NodeChange', () => {
+              updateCounts(editor.getContent());
+            });
 
-              // Content change listener
-              editor.on('input', () => {
-                const newContent = editor.getContent();
-                content = newContent;
-                updateCounts(newContent);
-                dispatch('change', { content: newContent, wordCount: $wordCount });
-              });
+            // Content change listener
+            editor.on('input', () => {
+              const newContent = editor.getContent();
+              content = newContent;
+              updateCounts(newContent);
+              dispatch('change', { content: newContent, wordCount: $wordCount });
+            });
 
-              // Save handler
-              editor.on('save', () => {
-                dispatch('save', { content: editor.getContent() });
-              });
-            },
-            save_enablewhendirty: true,
-            save_onsavecallback: () => {
-              dispatch('save', { content: hugerte.getContent() });
-            },
-            autosave_interval: '10s',
-            autosave_retention: '30m',
-            // Legal document specific settings
-            spellchecker_language: 'en_US',
-            spellchecker_whitelist: ['appellant', 'appellee', 'plaintiff', 'defendant', 'jurisdiction'],
-            word_count: true,
-            character_count: true,
-}
-        });
+            // Save handler
+            editor.on('save', () => {
+              dispatch('save', { content: editor.getContent() });
+            });
+          },
+          save_enablewhendirty: true,
+          save_onsavecallback: () => {
+            dispatch('save', { content: hugerte.getContent() });
+          },
+          autosave_interval: '10s',
+          autosave_retention: '30m',
+          // Legal document specific settings
+          spellchecker_language: 'en_US',
+          spellchecker_whitelist: ['appellant', 'appellee', 'plaintiff', 'defendant', 'jurisdiction'],
+          word_count: true,
+          character_count: true,
+        }
+      };
 
       // Listen to content changes from Hugerte
       hugerte.$on('input', (event: any) => {
@@ -203,7 +200,8 @@
       isInitialized = true;
     } catch (error) {
       console.error('Failed to initialize editor:', error);
-}}
+    }
+}
   function updateCounts(text: string) {
     const plainText = text.replace(/<[^>]*>/g, '');
     wordCount.set(plainText.trim().split(/\s+/).filter(word => word.length > 0).length);
@@ -222,7 +220,7 @@
 }
   async function processAIRequest() {
     if (!aiQuery.trim()) return;
-    
+
     isProcessingAI = true;
     try {
       const response = await fetch('/api/ai/ask', {
@@ -317,15 +315,15 @@
   <!-- Editor Toolbar -->
   <div class="container mx-auto px-4">
     <div class="container mx-auto px-4">
-      <button 
-        use:melt={$aiTrigger} 
+      <button
+        use:melt={$aiTrigger}
         class="container mx-auto px-4"
         disabled={!enableAI}
       >
         🤖 AI Assistant
       </button>
-      
-      <button 
+
+      <button
         use:melt={$citeTrigger}
         class="container mx-auto px-4"
         disabled={!enableCitation}
@@ -333,7 +331,7 @@
         📚 Citations
       </button>
     </div>
-    
+
     <div class="container mx-auto px-4">
       <span class="container mx-auto px-4">Words: {$wordCount}</span>
       <span class="container mx-auto px-4">Characters: {$charCount}</span>
@@ -341,7 +339,7 @@
   </div>
 
   <!-- Main Editor -->
-  <div 
+  <div
     bind:this={editorElement}
     class="container mx-auto px-4"
     style="height: {height};"
@@ -354,14 +352,14 @@
     <div use:melt={$aiOverlay} class="container mx-auto px-4"></div>
     <div use:melt={$aiContent} class="container mx-auto px-4">
       <h2 use:melt={$aiTitle} class="container mx-auto px-4">AI Legal Assistant</h2>
-      
+
       {#if selectedText}
         <div class="container mx-auto px-4">
           <strong>Selected text:</strong>
           <p>"{selectedText}"</p>
         </div>
       {/if}
-      
+
       <div class="container mx-auto px-4">
         <label for="ai-query">What would you like help with?</label>
         <textarea
@@ -371,8 +369,8 @@
           rows="4"
           class="container mx-auto px-4"
         ></textarea>
-        
-        <button 
+
+        <button
           on:click={() => processAIRequest()}
           disabled={isProcessingAI || !aiQuery.trim()}
           class="container mx-auto px-4"
@@ -383,7 +381,7 @@
             Ask AI
           {/if}
         </button>
-        
+
         {#if aiResults}
           <div class="container mx-auto px-4">
             <strong>AI Response:</strong>
@@ -394,7 +392,7 @@
           </div>
         {/if}
       </div>
-      
+
       <button use:melt={$aiClose} class="container mx-auto px-4">×</button>
     </div>
   {/if}
@@ -406,7 +404,7 @@
     <div use:melt={$citeOverlay} class="container mx-auto px-4"></div>
     <div use:melt={$citeContent} class="container mx-auto px-4">
       <h2 use:melt={$citeTitle} class="container mx-auto px-4">Citation Helper</h2>
-      
+
       <div class="container mx-auto px-4">
         <label for="cite-query">Search for citations:</label>
         <input
@@ -415,15 +413,15 @@
           placeholder="Enter legal concept, case name, or statute..."
           class="container mx-auto px-4"
         />
-        
-        <button 
+
+        <button
           on:click={() => searchCitations()}
           disabled={!citationQuery.trim()}
           class="container mx-auto px-4"
         >
           Search
         </button>
-        
+
         {#if citationResults.length > 0}
           <div class="container mx-auto px-4">
             <h4>Found Citations:</h4>
@@ -434,7 +432,7 @@
                 <div class="container mx-auto px-4">
                   Relevance: {Math.round(citation.relevance * 100)}%
                 </div>
-                <button 
+                <button
                   on:click={() => insertCitation(citation)}
                   class="container mx-auto px-4"
                 >
@@ -445,7 +443,7 @@
           </div>
         {/if}
       </div>
-      
+
       <button use:melt={$citeClose} class="container mx-auto px-4">×</button>
     </div>
   {/if}

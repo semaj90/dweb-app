@@ -90,14 +90,16 @@ How can I assist you with your legal needs today?`);
 		}
 	});
 
-	// Auto-scroll to bottom when new messages arrive
-	$: if (messages.length > 0) {
-		tick().then(() => {
-			if (messagesContainer) {
-				messagesContainer.scrollTop = messagesContainer.scrollHeight;
-			}
-		});
-	}
+	// Auto-scroll to bottom when new messages arrive (Svelte 5)
+	$effect(() => {
+		if (messages.length > 0) {
+			tick().then(() => {
+				if (messagesContainer) {
+					messagesContainer.scrollTop = messagesContainer.scrollHeight;
+				}
+			});
+		}
+	});
 
 	// Add message to chat
 	function addMessage(role: Message['role'], content: string, options: Partial<Message> = {}) {

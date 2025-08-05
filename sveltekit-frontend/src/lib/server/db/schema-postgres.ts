@@ -611,6 +611,38 @@ export type NewCanvasAnnotation = typeof canvasAnnotations.$inferInsert;
 export type PersonOfInterest = typeof personsOfInterest.$inferSelect;
 export type NewPersonOfInterest = typeof personsOfInterest.$inferInsert;
 
+// === AI QUERY LOGGING SYSTEM ===
+
+export const userAiQueries = pgTable("user_ai_queries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
+  query: text("query").notNull(),
+  response: text("response").notNull(),
+  model: varchar("model", { length: 100 }).default("gemma3-legal").notNull(),
+  queryType: varchar("query_type", { length: 50 }).default("general"), // general, evidence_analysis, case_summary, legal_research
+  confidence: decimal("confidence", { precision: 3, scale: 2 }),
+  tokensUsed: integer("tokens_used"),
+  processingTime: integer("processing_time"), // milliseconds
+  contextUsed: jsonb("context_used").default([]).notNull(), // References to evidence, cases, etc.
+  embedding: vector("embedding", { dimensions: 768 }), // Query embedding for similarity search
+  metadata: jsonb("metadata").default({}).notNull(),
+  isSuccessful: boolean("is_successful").default(true).notNull(),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export type UserAiQuery = typeof userAiQueries.$inferSelect;
+export type NewUserAiQuery = typeof userAiQueries.$inferInsert;
+
+export type AutoTag = typeof autoTags.$inferSelect;
+export type NewAutoTag = typeof autoTags.$inferInsert;
+
+export type DocumentChunk = typeof documentChunks.$inferSelect;
+export type NewDocumentChunk = typeof documentChunks.$inferInsert;
+
 // === RELATIONS ===
 
 // (Relations are defined using the `relations` function from "drizzle-orm" and are not explicitly listed here)
@@ -823,6 +855,42 @@ export const ragMessagesRelations = relations(ragMessages, ({ one }) => ({
   }),
 }));
 
+// === NEW RELATIONS FOR AI SYSTEM ===
+
+export const userAiQueriesRelations = relations(userAiQueries, ({ one }) => ({
+  user: one(users, {
+    fields: [userAiQueries.userId],
+    references: [users.id],
+  }),
+  case: one(cases, {
+    fields: [userAiQueries.caseId],
+    references: [cases.id],
+  }),
+}));
+
+// === AUTO-TAGGING SYSTEM ===
+
+export const autoTags = pgTable("auto_tags", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  entityId: uuid("entity_id").notNull(), // Can reference evidence, cases, etc.
+  entityType: varchar("entity_type", { length: 50 }).notNull(), // evidence, case, document
+  tag: varchar("tag", { length: 100 }).notNull(),
+  confidence: decimal("confidence", { precision: 3, scale: 2 }).notNull(),
+  source: varchar("source", { length: 50 }).default("ai_analysis").notNull(), // ai_analysis, manual, system
+  model: varchar("model", { length: 100 }),
+  extractedAt: timestamp("extracted_at", { mode: "date" }).defaultNow().notNull(),
+  isConfirmed: boolean("is_confirmed").default(false).notNull(),
+  confirmedBy: uuid("confirmed_by").references(() => users.id),
+  confirmedAt: timestamp("confirmed_at", { mode: "date" }),
+});
+
+export const autoTagsRelations = relations(autoTags, ({ one }) => ({
+  confirmedBy: one(users, {
+    fields: [autoTags.confirmedBy],
+    references: [users.id],
+  }),
+}));
+
 // === VECTOR CACHE AND METADATA TABLES ===
 
 export const embeddingCache = pgTable("embedding_cache", {
@@ -860,4 +928,17 @@ export const caseScores = pgTable("case_scores", {
     .defaultNow()
     .notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+// === VECTOR SIMILARITY INDEXES ===
+
+export const documentChunks = pgTable("document_chunks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  documentId: uuid("document_id").notNull(),
+  documentType: varchar("document_type", { length: 50 }).notNull(), // evidence, legal_document, case_summary
+  chunkIndex: integer("chunk_index").notNull(),
+  content: text("content").notNull(),
+  embedding: vector("embedding", { dimensions: 768 }).notNull(),
+  metadata: jsonb("metadata").default({}).notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });

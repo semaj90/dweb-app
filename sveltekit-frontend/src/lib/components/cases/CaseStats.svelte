@@ -15,11 +15,11 @@
   // - Services: AnalyticsService, ExportService, SSE
   // - Components: TrendChart, DistributionChart, MetricCard
   // - Stores: Real-time stats store, user preferences
-  
+
   import type { Case } from '$lib/types/api';
-  
+
   export let cases: Case[] = [];
-  
+
   // TODO: Enhanced stats interface
   // interface AdvancedStats {
   //   resolutionTimeAvg: number;
@@ -31,53 +31,49 @@
   //   upcomingDeadlines: number;
   //   overdueCount: number;
   // }
-  
+
   $: stats = {
     // TODO: IMPLEMENT ADVANCED CALCULATIONS
     // ===================================
     // 1. Resolution time analytics
-    // 2. Workload distribution analysis  
+    // 2. Workload distribution analysis
     // 3. Trend calculations with historical data
     // 4. Performance metrics and KPIs
     // 5. Predictive analytics for case outcomes
-    
+
     // Basic stats (STUB)
     total: cases.length,
-    active: cases.filter(c => c.status === 'active').length,
-    pending: cases.filter(c => c.status === 'pending').length,
-    closed: cases.filter(c => c.status === 'closed').length,
+    active: cases.filter(c => c.status && c.status === 'open').length,
+    pending: cases.filter(c => c.status && c.status === 'pending').length,
+    closed: cases.filter(c => c.status && c.status === 'closed').length,
     recentlyUpdated: cases.filter(c => {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      return new Date(c.updatedAt) > weekAgo;
+      return c.updatedAt && new Date(c.updatedAt) > weekAgo;
     }).length,
   };
 </script>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">{stats.total}</div>
-    <div class="container mx-auto px-4">Total Cases</div>
+<div class="case-stats container mx-auto px-4">
+  <div class="stat-card">
+    <div class="stat-value">{stats.total}</div>
+    <div class="stat-label">Total Cases</div>
   </div>
-  
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">{stats.active}</div>
-    <div class="container mx-auto px-4">Active</div>
+  <div class="stat-card">
+    <div class="stat-value">{stats.active}</div>
+    <div class="stat-label">Active</div>
   </div>
-  
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">{stats.pending}</div>
-    <div class="container mx-auto px-4">Pending</div>
+  <div class="stat-card">
+    <div class="stat-value">{stats.pending}</div>
+    <div class="stat-label">Pending</div>
   </div>
-  
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">{stats.closed}</div>
-    <div class="container mx-auto px-4">Closed</div>
+  <div class="stat-card">
+    <div class="stat-value">{stats.closed}</div>
+    <div class="stat-label">Closed</div>
   </div>
-  
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">{stats.recentlyUpdated}</div>
-    <div class="container mx-auto px-4">Recently Updated</div>
+  <div class="stat-card">
+    <div class="stat-value">{stats.recentlyUpdated}</div>
+    <div class="stat-label">Recently Updated</div>
   </div>
 </div>
 

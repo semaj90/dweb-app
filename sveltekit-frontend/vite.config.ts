@@ -44,6 +44,38 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:6333',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/qdrant/, '')
+      },
+      // Go microservice proxy for high-performance operations
+      '/api/go': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/go/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('Go microservice proxy error:', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxying to Go microservice:', req.method, req.url);
+          });
+        }
+      },
+      '/api/parse': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/api/train-som': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/api/cuda-infer': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      // Neo4j database proxy
+      '/api/neo4j': {
+        target: 'http://localhost:7474',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/neo4j/, '')
       }
     }
   },

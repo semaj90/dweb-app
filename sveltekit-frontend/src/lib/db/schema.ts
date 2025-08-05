@@ -221,6 +221,9 @@ export const collaborationSessionsRelations = relations(
   }),
 );
 
+// Export all vector tables and types
+export * from "./schema/vectors";
+
 // Export types for TypeScript
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

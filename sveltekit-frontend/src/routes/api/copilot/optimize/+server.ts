@@ -9,6 +9,10 @@ export const GET: RequestHandler = async ({ url }) => {
   const action = url.searchParams.get('action');
   
   try {
+    // Add input validation
+    if (!action) {
+      return error(400, 'Action parameter is required');
+    }
     switch (action) {
       case 'health':
         return json({
@@ -56,17 +60,37 @@ export const GET: RequestHandler = async ({ url }) => {
         });
       
       default:
-        return error(400, 'Invalid action. Use: health, status, load_copilot');
+        return error(400, `Invalid action: ${action}. Use: health, status, load_copilot`);
     }
-  } catch (err) {
-    console.error('API error:', err);
-    return error(500, `Request failed: ${err.message}`);
+  } catch (err: any) {
+    console.error('Optimization API error:', {
+      error: err.message,
+      stack: err.stack,
+      action,
+      timestamp: new Date().toISOString()
+    });
+    return error(500, `API request failed: ${err.message || 'Unknown error'}`);
   }
 };
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { action, content } = await request.json();
+    // Add request validation
+    const contentType = request.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      return error(400, 'Content-Type must be application/json');
+    }
+
+    const body = await request.json().catch(() => null);
+    if (!body) {
+      return error(400, 'Invalid JSON body');
+    }
+
+    const { action, content } = body;
+
+    if (!action) {
+      return error(400, 'Action is required');
+    }
 
     switch (action) {
       case 'optimize_index':
@@ -110,11 +134,15 @@ export const POST: RequestHandler = async ({ request }) => {
         });
       
       default:
-        return error(400, 'Invalid action. Use: optimize_index, semantic_search');
+        return error(400, `Invalid action: ${action}. Use: optimize_index, semantic_search`);
     }
-  } catch (err) {
-    console.error('Copilot optimization error:', err);
-    return error(500, `Optimization failed: ${err.message}`);
+  } catch (err: any) {
+    console.error('Copilot optimization POST error:', {
+      error: err.message,
+      stack: err.stack,
+      timestamp: new Date().toISOString()
+    });
+    return error(500, `Optimization failed: ${err.message || 'Unknown error'}`);
   }
 };
 

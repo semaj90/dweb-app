@@ -257,6 +257,76 @@ export async function safeFetch(url: string, options?: RequestInit) {
 }
 
 /**
+ * Database error handling
+ */
+export function handleDatabaseError(error: any, operation: string): string {
+  console.error(`Database error during ${operation}:`, {
+    message: error.message,
+    stack: error.stack,
+    timestamp: new Date().toISOString(),
+  });
+  
+  // Return user-friendly error message
+  if (error.message.includes('connection')) {
+    return 'Database connection failed. Please try again later.';
+  }
+  
+  if (error.message.includes('constraint')) {
+    return 'Data validation error. Please check your input.';
+  }
+  
+  if (error.message.includes('unique')) {
+    return 'This record already exists. Please use different values.';
+  }
+  
+  if (error.message.includes('foreign key')) {
+    return 'Referenced data not found. Please check related records.';
+  }
+  
+  return 'An unexpected database error occurred. Please try again.';
+}
+
+/**
+ * Session validation helper
+ */
+export function validateUserSession(locals: any): any {
+  if (!locals.user) {
+    throw new Error('Authentication required');
+  }
+  
+  if (!locals.user.isActive) {
+    throw new Error('Account is inactive');
+  }
+  
+  return locals.user;
+}
+
+/**
+ * API response error handler
+ */
+export function handleAPIError(error: any, endpoint: string): Response {
+  const errorMessage = handleDatabaseError(error, `API call to ${endpoint}`);
+  
+  errorHandler.system(`API error at ${endpoint}`, {
+    error: error.message,
+    endpoint,
+    timestamp: new Date().toISOString()
+  });
+  
+  return new Response(
+    JSON.stringify({
+      error: errorMessage,
+      timestamp: new Date().toISOString(),
+      endpoint
+    }),
+    {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    }
+  );
+}
+
+/**
  * Form validation helper
  */
 export function validateForm(

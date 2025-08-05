@@ -91,6 +91,93 @@ class Context7Server {
               },
               required: ['feature'],
             },
+          },
+          {
+            name: 'analyze-legal-document',
+            description: 'Analyze legal documents for key findings, risk assessment, and compliance',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                content: {
+                  type: 'string',
+                  description: 'Legal document content to analyze',
+                },
+                caseType: {
+                  type: 'string',
+                  description: 'Type of legal case (e.g., "contract", "litigation", "compliance")',
+                },
+                jurisdiction: {
+                  type: 'string',
+                  description: 'Legal jurisdiction (e.g., "federal", "state", "international")',
+                },
+              },
+              required: ['content', 'caseType'],
+            },
+          },
+          {
+            name: 'generate-compliance-report',
+            description: 'Generate compliance reports based on evidence and regulations',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                evidence: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Array of evidence items to analyze',
+                },
+                regulations: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Applicable regulations and standards',
+                },
+                framework: {
+                  type: 'string',
+                  description: 'Compliance framework (e.g., "GDPR", "HIPAA", "SOX")',
+                },
+              },
+              required: ['evidence', 'regulations'],
+            },
+          },
+          {
+            name: 'suggest-legal-precedents',
+            description: 'Find and suggest relevant legal precedents for a case',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                query: {
+                  type: 'string',
+                  description: 'Legal query or case description',
+                },
+                jurisdiction: {
+                  type: 'string',
+                  description: 'Legal jurisdiction for precedent search',
+                },
+                caseType: {
+                  type: 'string',
+                  description: 'Type of case for precedent matching',
+                },
+              },
+              required: ['query'],
+            },
+          },
+          {
+            name: 'extract-legal-entities',
+            description: 'Extract legal entities (parties, dates, amounts, clauses) from documents',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                content: {
+                  type: 'string',
+                  description: 'Document content to analyze',
+                },
+                entityTypes: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Types of entities to extract (e.g., "parties", "dates", "monetary", "clauses")',
+                },
+              },
+              required: ['content'],
+            },
           }
         ]
       };
@@ -196,6 +283,46 @@ class Context7Server {
               {
                 type: 'text',
                 text: this.suggestIntegration(args.feature, args.requirements)
+              }
+            ]
+          };
+
+        case 'analyze-legal-document':
+          return {
+            content: [
+              {
+                type: 'text',
+                text: this.analyzeLegalDocument(args.content, args.caseType, args.jurisdiction)
+              }
+            ]
+          };
+
+        case 'generate-compliance-report':
+          return {
+            content: [
+              {
+                type: 'text',
+                text: this.generateComplianceReport(args.evidence, args.regulations, args.framework)
+              }
+            ]
+          };
+
+        case 'suggest-legal-precedents':
+          return {
+            content: [
+              {
+                type: 'text',
+                text: this.suggestLegalPrecedents(args.query, args.jurisdiction, args.caseType)
+              }
+            ]
+          };
+
+        case 'extract-legal-entities':
+          return {
+            content: [
+              {
+                type: 'text',
+                text: this.extractLegalEntities(args.content, args.entityTypes)
               }
             ]
           };
@@ -460,6 +587,236 @@ ${requirements ? `\n### 5. Special Requirements\n${requirements}` : ''}
 3. Add proper documentation
 4. Test integration with existing features
 5. Deploy and monitor performance`;
+  }
+
+  analyzeLegalDocument(content, caseType, jurisdiction = 'federal') {
+    // Simulate AI-powered legal document analysis
+    const wordCount = content.split(' ').length;
+    const hasContracts = content.toLowerCase().includes('contract') || content.toLowerCase().includes('agreement');
+    const hasLiability = content.toLowerCase().includes('liability') || content.toLowerCase().includes('damages');
+    const hasCompliance = content.toLowerCase().includes('comply') || content.toLowerCase().includes('regulation');
+    
+    let riskLevel = 'Low';
+    let riskScore = 25;
+    
+    if (hasLiability && wordCount > 1000) {
+      riskLevel = 'High';
+      riskScore = 85;
+    } else if (hasContracts && wordCount > 500) {
+      riskLevel = 'Medium';
+      riskScore = 60;
+    }
+
+    const keyFindings = [];
+    if (hasContracts) keyFindings.push('Contract terms and conditions identified');
+    if (hasLiability) keyFindings.push('Liability and damages clauses present');
+    if (hasCompliance) keyFindings.push('Compliance requirements mentioned');
+
+    return `# Legal Document Analysis
+
+## Document Overview
+- **Case Type**: ${caseType}
+- **Jurisdiction**: ${jurisdiction}
+- **Document Length**: ${wordCount} words
+- **Analysis Date**: ${new Date().toISOString().split('T')[0]}
+
+## Risk Assessment
+- **Overall Risk Level**: ${riskLevel}
+- **Risk Score**: ${riskScore}/100
+- **Critical Issues**: ${hasLiability ? '2' : '0'} potential issues identified
+
+## Key Findings
+${keyFindings.length > 0 ? keyFindings.map(finding => `- ${finding}`).join('\n') : '- No significant legal issues identified'}
+
+## Compliance Status
+- **GDPR Compliance**: ${hasCompliance ? 'Under Review' : 'Not Applicable'}
+- **Contract Law**: ${hasContracts ? 'Requires Review' : 'N/A'}
+- **Liability Assessment**: ${hasLiability ? 'High Priority Review Needed' : 'Standard Processing'}
+
+## Recommended Actions
+${riskLevel === 'High' ? `1. Immediate legal review required
+2. Risk mitigation strategies needed
+3. Stakeholder notification recommended` : 
+riskLevel === 'Medium' ? `1. Standard legal review process
+2. Monitor for compliance issues
+3. Schedule follow-up assessment` : 
+`1. Routine processing acceptable
+2. Standard filing procedures
+3. Regular monitoring sufficient`}
+
+## Integration Notes
+This analysis integrates with:
+- **Drizzle ORM**: Store analysis results in evidence table
+- **pgvector**: Enable semantic similarity search
+- **XState**: Trigger appropriate workflow states
+- **Ollama**: Enhanced AI analysis capabilities`;
+  }
+
+  generateComplianceReport(evidence, regulations, framework = 'General') {
+    const evidenceCount = evidence.length;
+    const regulationCount = regulations.length;
+    const complianceScore = Math.min(90, evidenceCount * 10 + regulationCount * 5);
+    
+    return `# Compliance Report - ${framework}
+
+## Executive Summary
+- **Evidence Items Analyzed**: ${evidenceCount}
+- **Applicable Regulations**: ${regulationCount}
+- **Compliance Score**: ${complianceScore}%
+- **Report Date**: ${new Date().toISOString().split('T')[0]}
+
+## Evidence Analysis
+${evidence.map((item, index) => `${index + 1}. ${item.substring(0, 100)}${item.length > 100 ? '...' : ''}`).join('\n')}
+
+## Regulatory Framework
+${regulations.map((reg, index) => `${index + 1}. ${reg}`).join('\n')}
+
+## Compliance Assessment
+- **${framework} Compliance**: ${complianceScore > 80 ? 'Compliant' : complianceScore > 60 ? 'Partially Compliant' : 'Non-Compliant'}
+- **Risk Level**: ${complianceScore > 80 ? 'Low' : complianceScore > 60 ? 'Medium' : 'High'}
+- **Remediation Required**: ${complianceScore < 80 ? 'Yes' : 'No'}
+
+## Stack Integration
+- **Database Storage**: Evidence stored via Drizzle ORM
+- **Vector Search**: Compliance patterns indexed with pgvector
+- **Workflow Management**: XState compliance review workflows
+- **AI Analysis**: Enhanced compliance checking with Ollama`;
+  }
+
+  suggestLegalPrecedents(query, jurisdiction = 'federal', caseType = 'general') {
+    // Simulate precedent matching based on query analysis
+    const queryWords = query.toLowerCase().split(' ');
+    const hasContract = queryWords.includes('contract') || queryWords.includes('agreement');
+    const hasLiability = queryWords.includes('liability') || queryWords.includes('damages');
+    const hasBreach = queryWords.includes('breach') || queryWords.includes('violation');
+    
+    const precedents = [];
+    
+    if (hasContract && hasBreach) {
+      precedents.push({
+        case: 'Smith v. Jones Contract Dispute',
+        relevance: '95%',
+        year: '2022',
+        jurisdiction: jurisdiction,
+        summary: 'Breach of contract with significant damages awarded'
+      });
+    }
+    
+    if (hasLiability) {
+      precedents.push({
+        case: 'Corporate Liability Standards Case',
+        relevance: '88%',
+        year: '2021',
+        jurisdiction: jurisdiction,
+        summary: 'Established liability standards for corporate entities'
+      });
+    }
+
+    return `# Legal Precedent Analysis
+
+## Query Analysis
+- **Search Query**: "${query}"
+- **Jurisdiction**: ${jurisdiction}
+- **Case Type**: ${caseType}
+- **Search Date**: ${new Date().toISOString().split('T')[0]}
+
+## Relevant Precedents
+${precedents.length > 0 ? 
+  precedents.map(p => `### ${p.case} (${p.year})
+- **Relevance Score**: ${p.relevance}
+- **Jurisdiction**: ${p.jurisdiction}
+- **Summary**: ${p.summary}
+`).join('\n') : 
+  '### No Direct Precedents Found\n- Consider expanding search criteria\n- Review similar case types\n- Consult legal databases'}
+
+## Precedent Impact Analysis
+- **Binding Authority**: ${jurisdiction === 'federal' ? 'High' : 'Medium'}
+- **Persuasive Value**: ${precedents.length > 0 ? 'Strong' : 'Limited'}
+- **Case Strength**: ${precedents.length > 1 ? 'Well-Supported' : 'Requires Additional Research'}
+
+## Integration Recommendations
+- **Vector Storage**: Index precedents with pgvector for similarity search
+- **Case Database**: Store in PostgreSQL with Drizzle ORM relationships
+- **AI Enhancement**: Use Ollama for deeper precedent analysis
+- **Workflow Integration**: Trigger XState precedent research workflows`;
+  }
+
+  extractLegalEntities(content, entityTypes = ['parties', 'dates', 'monetary', 'clauses']) {
+    const entities = {
+      parties: [],
+      dates: [],
+      monetary: [],
+      clauses: []
+    };
+
+    // Simple entity extraction simulation
+    const words = content.split(' ');
+    
+    // Extract potential parties (capitalized names)
+    if (entityTypes.includes('parties')) {
+      const partyPatterns = content.match(/[A-Z][a-z]+ [A-Z][a-z]+/g) || [];
+      entities.parties = [...new Set(partyPatterns)].slice(0, 5);
+    }
+
+    // Extract dates
+    if (entityTypes.includes('dates')) {
+      const datePatterns = content.match(/\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2}|[A-Z][a-z]+ \d{1,2}, \d{4}/g) || [];
+      entities.dates = [...new Set(datePatterns)];
+    }
+
+    // Extract monetary amounts
+    if (entityTypes.includes('monetary')) {
+      const monetaryPatterns = content.match(/\$[\d,]+\.?\d*|\$\d+|USD \d+/g) || [];
+      entities.monetary = [...new Set(monetaryPatterns)];
+    }
+
+    // Extract clause references
+    if (entityTypes.includes('clauses')) {
+      const clausePatterns = content.match(/[Ss]ection \d+|[Cc]lause \d+|[Aa]rticle \d+|[Pp]aragraph \d+/g) || [];
+      entities.clauses = [...new Set(clausePatterns)];
+    }
+
+    const totalEntities = Object.values(entities).flat().length;
+
+    return `# Legal Entity Extraction
+
+## Extraction Summary
+- **Total Entities Found**: ${totalEntities}
+- **Entity Types Requested**: ${entityTypes.join(', ')}
+- **Document Length**: ${content.length} characters
+- **Extraction Date**: ${new Date().toISOString().split('T')[0]}
+
+## Extracted Entities
+
+### Parties (${entities.parties.length})
+${entities.parties.length > 0 ? entities.parties.map(party => `- ${party}`).join('\n') : '- No parties identified'}
+
+### Dates (${entities.dates.length})
+${entities.dates.length > 0 ? entities.dates.map(date => `- ${date}`).join('\n') : '- No dates identified'}
+
+### Monetary Amounts (${entities.monetary.length})
+${entities.monetary.length > 0 ? entities.monetary.map(amount => `- ${amount}`).join('\n') : '- No monetary amounts identified'}
+
+### Legal Clauses (${entities.clauses.length})
+${entities.clauses.length > 0 ? entities.clauses.map(clause => `- ${clause}`).join('\n') : '- No clause references identified'}
+
+## Data Structure for Integration
+\`\`\`json
+{
+  "entities": ${JSON.stringify(entities, null, 2)},
+  "metadata": {
+    "extractionDate": "${new Date().toISOString()}",
+    "documentLength": ${content.length},
+    "entityCount": ${totalEntities}
+  }
+}
+\`\`\`
+
+## Stack Integration
+- **Database Storage**: Store entities in jsonb column with Drizzle ORM
+- **Vector Search**: Create embeddings for entity relationships with pgvector
+- **State Management**: Update XState context with extracted entities
+- **AI Enhancement**: Use Ollama for advanced entity relationship analysis`;
   }
 
   async run() {
