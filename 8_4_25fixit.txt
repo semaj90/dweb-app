@@ -2,7 +2,7 @@
  LEGAL AI SYSTEM SETUP
 ==========================================================
 [INFO] Project Root: C:\Users\james\Desktop\deeds-web\deeds-web-app
-
+finish where you left off at, check for errors, no docker use windows native.  mcp context7 generate_best_practices 
 ==========================================================
  STEP 1: CREATING DIRECTORY STRUCTURE
 ==========================================================
@@ -21,6 +21,55 @@
 [INFO] Directory exists: C:\Users\james\Desktop\deeds-web\deeds-web-app\src\lib\workers
 [OK] Created directory: C:\Users\james\Desktop\deeds-web\deeds-web-app\src\lib\db
 [OK] Created directory: C:\Users\james\Desktop\deeds-web\deeds-web-app\src\lib\gpu
+Finalize PostgreSQL + pgvector setup.
+  Implement Go server integration with Ollama and Postgres.
+  Wire SvelteKit API to BullMQ and Go server.
+  Set up PM2 and Windows Service for process management.
+  Test full pipeline and UI integration.
+the next logical step: finalizing the Go GPU server integration with PostgreSQL + pgvector and Ollama.
+Update Todos: ☐ Implement Go server Ollama integration with callOllama function
+     ☐ Add PostgreSQL pgx driver integration to Go server
+     ☐ Wire SvelteKit API endpoints to BullMQ and Go server
+     ☐ Test complete pipeline: PDF upload → Go processing → results
+     ☐ Set up PM2 process management for production
+
+  
+ [×] Fix Lucia Sessions table access
+     [×] Complete document upload API integration with gemma3-legal
+     [ ] Fix Optimization API Internal Server Error (500) - investigating hooks.server.ts issues
+     [ ] Resolve UserSession type mismatches
+     [ ] Fix RAG type mismatches
+     [ ] Integrate components with existing legal case management system
+     [ ] Remove all pico-css references
+
+● Excellent work on the TypeScript error resolution! You've made tremendous progress - from 1230+ errors down to just       
+  30-40 remaining issues, achieving a 95% error reduction. The critical path blocking errors are now resolved.
+
+  Given that you've also created comprehensive setup scripts for the Legal AI system integration, let me help you with      
+  the next logical step: finalizing the Go GPU server integration with PostgreSQL + pgvector and Ollama.
+Update Todos: ☐ Implement Go server Ollama integration with callOllama function
+     ☐ Add PostgreSQL pgx driver integration to Go server
+     ☐ Wire SvelteKit API endpoints to BullMQ and Go server
+     ☐ Test complete pipeline: PDF upload → Go processing → results
+     ☐ Set up PM2 process management for production
+
+  ⎿  ☒ Implement Go server Ollama integration with callOllama function
+     ☒ Add PostgreSQL pgx driver integration to Go server
+     ☐ Wire SvelteKit API endpoints to BullMQ and Go server
+     ☐ Test complete pipeline: PDF upload → Go processing → results
+     ☐ Set up PM2 process management for production
+       options: ProcessingOptions;
+
+● Update Todos
+
+  ⎿  ☒ Implement Go server Ollama integration with callOllama function
+     ☒ Add PostgreSQL pgx driver integration to Go server
+     ☒ Wire SvelteKit API endpoints to BullMQ and Go server
+     ☐ Test complete pipeline: PDF upload → Go processing → results
+     ☐ Set up PM2 process management for production
+         {
+           name: 'legal-ai-frontend',
+
 
 stgreSQL + pgvector: Persistent storage for embeddings
 
@@ -733,23 +782,16 @@ fix it.
 
 
 
-  🚀 To Get Started:
-
-  Open PowerShell as Administrator
+  🚀 To Get Started: Open PowerShell as Administrator
   Navigate to your project:
   powershellcd C:\Users\james\Desktop\deeds-web\deeds-web-app
 
   Run the setup:
   powershellpowershell -ExecutionPolicy Bypass -File Setup-Legal-AI-System.ps1
 
-
-  🔑 Key Points:
-
-  ✅ Uses your local gemma3-legal model (no downloads)
-  ✅ All commands converted to PowerShell
-  ✅ Includes error checking at every step
-  ✅ Creates complete directory structure
-  ✅ Sets up workers, database schema, and configuration files
+Key Points: Uses your local gemma3-legal model (no downloads) All commands converted to PowerShell
+Includes error checking at every step
+Creates complete directory structure Sets up workers, database schema, and configuration files
 
   The setup script will guide you through the entire process and tell you exactly what to do next!   Remaining Issues       
   (Lower Priority):
@@ -788,45 +830,4 @@ Key Accomplishments: 1. Build Blocking Errors Resolved - The critical path TypeS
   SvelteKit polls for status or receives WebSocket updates.
   Results available for search, graph queries, and UI display.
   6. Next Steps
-  Finalize PostgreSQL + pgvector setup.
-  Implement Go server integration with Ollama and Postgres.
-  Wire SvelteKit API to BullMQ and Go server.
-  Set up PM2 and Windows Service for process management.
-  Test full pipeline and UI integration.
-
- [×] Fix Lucia Sessions table access
-     [×] Complete document upload API integration with gemma3-legal
-     [ ] Fix Optimization API Internal Server Error (500) - investigating hooks.server.ts issues
-     [ ] Resolve UserSession type mismatches
-     [ ] Fix RAG type mismatches
-     [ ] Integrate components with existing legal case management system
-     [ ] Remove all pico-css references
-
-● Excellent work on the TypeScript error resolution! You've made tremendous progress - from 1230+ errors down to just       
-  30-40 remaining issues, achieving a 95% error reduction. The critical path blocking errors are now resolved.
-
-  Given that you've also created comprehensive setup scripts for the Legal AI system integration, let me help you with      
-  the next logical step: finalizing the Go GPU server integration with PostgreSQL + pgvector and Ollama.
-Update Todos: ☐ Implement Go server Ollama integration with callOllama function
-     ☐ Add PostgreSQL pgx driver integration to Go server
-     ☐ Wire SvelteKit API endpoints to BullMQ and Go server
-     ☐ Test complete pipeline: PDF upload → Go processing → results
-     ☐ Set up PM2 process management for production
-
-  ⎿  ☒ Implement Go server Ollama integration with callOllama function
-     ☒ Add PostgreSQL pgx driver integration to Go server
-     ☐ Wire SvelteKit API endpoints to BullMQ and Go server
-     ☐ Test complete pipeline: PDF upload → Go processing → results
-     ☐ Set up PM2 process management for production
-       options: ProcessingOptions;
-
-● Update Todos
-
-  ⎿  ☒ Implement Go server Ollama integration with callOllama function
-     ☒ Add PostgreSQL pgx driver integration to Go server
-     ☒ Wire SvelteKit API endpoints to BullMQ and Go server
-     ☐ Test complete pipeline: PDF upload → Go processing → results
-     ☐ Set up PM2 process management for production
-         {
-           name: 'legal-ai-frontend',
-
+  

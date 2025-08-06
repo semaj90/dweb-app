@@ -1,7 +1,13 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { 
+	queueDocumentProcessing, 
+	getJobStatus, 
+	getQueueStats,
+	type DocumentProcessingJobData 
+} from '$lib/services/queue-service';
 
-// Types for Go server integration
+// Types for Go server integration (kept for compatibility)
 interface DocumentProcessRequest {
 	document_id: string;
 	content: string;
@@ -49,54 +55,113 @@ interface RiskAssessment {
 
 // Configuration
 const GO_SERVER_URL = process.env.GO_SERVER_URL || 'http://localhost:8080';
-const REQUEST_TIMEOUT = 60000; // 60 seconds
+const USE_QUEUE = process.env.USE_QUEUE !== 'false'; // Enable by default
 
 /**
- * Process document through Go Legal AI Server
- * Integrates with Ollama and PostgreSQL via Go microservice
+ * Process document through BullMQ worker system
+ * Integrates with Go Legal AI Server via queue workers
  */
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, url }) => {
 	try {
 		const body = await request.json();
 		
-		// Validate required fields
+		// Check if this is a job status check
+		const jobId = url.searchParams.get('job_id');
+		if (jobId) {
+			try {
+				const status = await getJobStatus(jobId);
+				return json(status);
+			} catch (error) {
+				console.error('❌ Error checking job status:', error);
+				return json({ 
+					error: 'Failed to check job status',
+					details: error instanceof Error ? error.message : 'Unknown error'
+				}, { status: 500 });
+			}
+		}
+		
+		// Validate required fields for new job
 		if (!body.content) {
 			return json({ error: 'Content is required' }, { status: 400 });
 		}
 
-		// Prepare request for Go server
-		const goRequest: DocumentProcessRequest = {
-			document_id: body.document_id || `doc_${Date.now()}`,
+		const documentId = body.document_id || `doc_${Date.now()}`;
+		
+		// Prepare job data
+		const jobData: DocumentProcessingJobData = {
+			documentId: documentId,
 			content: body.content,
-			document_type: body.document_type || 'evidence',
-			case_id: body.case_id,
+			documentType: body.document_type || 'evidence',
+			caseId: body.case_id,
+			filePath: body.file_path,
 			options: {
-				extract_entities: body.extract_entities ?? true,
-				generate_summary: body.generate_summary ?? true,
-				assess_risk: body.assess_risk ?? true,
-				generate_embedding: body.generate_embedding ?? true,
-				store_in_database: body.store_in_database ?? true,
-				use_gemma3_legal: body.use_gemma3_legal ?? true
+				extractEntities: body.extract_entities ?? true,
+				generateSummary: body.generate_summary ?? true,
+				assessRisk: body.assess_risk ?? true,
+				generateEmbedding: body.generate_embedding ?? true,
+				storeInDatabase: body.store_in_database ?? true,
+				useGemma3Legal: body.use_gemma3_legal ?? true
 			}
 		};
 
-		console.log(`🔄 Processing document via Go server: ${goRequest.document_id}`);
+		console.log(`🔄 Queuing document for processing: ${documentId}`);
 
-		// Call Go server
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+		if (USE_QUEUE) {
+			try {
+				// Add job to queue
+				const priority = body.priority || 0;
+				const { jobId: queueJobId, estimated } = await queueDocumentProcessing(jobData, priority);
+				
+				// Get current queue statistics
+				const queueStats = await getQueueStats();
+				
+				console.log(`✅ Document queued successfully: ${documentId}`);
+				console.log(`📊 Job ID: ${queueJobId}, Estimated: ${estimated}s`);
+				console.log(`📈 Queue stats: ${queueStats.waiting} waiting, ${queueStats.active} active`);
+				
+				return json({
+					success: true,
+					queued: true,
+					document_id: documentId,
+					job_id: queueJobId,
+					estimated_seconds: estimated,
+					queue_stats: queueStats,
+					status_url: `/api/legal-ai/process-document?job_id=${queueJobId}`,
+					message: 'Document queued for processing',
+					timestamp: new Date().toISOString()
+				});
+				
+			} catch (queueError) {
+				console.error('❌ Queue error, falling back to direct processing:', queueError);
+				// Fall through to direct processing
+			}
+		}
 
+		// Direct processing fallback (when queue is disabled or failed)
+		console.log(`🔄 Processing document directly via Go server: ${documentId}`);
+		
 		try {
 			const response = await fetch(`${GO_SERVER_URL}/process-document`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify(goRequest),
-				signal: controller.signal
+				body: JSON.stringify({
+					document_id: documentId,
+					content: body.content,
+					document_type: body.document_type || 'evidence',
+					case_id: body.case_id,
+					options: {
+						extract_entities: jobData.options.extractEntities,
+						generate_summary: jobData.options.generateSummary,
+						assess_risk: jobData.options.assessRisk,
+						generate_embedding: jobData.options.generateEmbedding,
+						store_in_database: jobData.options.storeInDatabase,
+						use_gemma3_legal: jobData.options.useGemma3Legal
+					}
+				}),
+				signal: AbortSignal.timeout(120000) // 2 minute timeout
 			});
-
-			clearTimeout(timeoutId);
 
 			if (!response.ok) {
 				const errorText = await response.text();
@@ -113,40 +178,18 @@ export const POST: RequestHandler = async ({ request }) => {
 			console.log(`✅ Document processed successfully: ${result.document_id}`);
 			console.log(`📊 Processing time: ${result.processing_time}`);
 			
-			if (result.summary) {
-				console.log(`📝 Summary generated: ${result.summary.substring(0, 100)}...`);
-			}
-			
-			if (result.entities && result.entities.length > 0) {
-				console.log(`🏷️  Entities extracted: ${result.entities.length}`);
-			}
-			
-			if (result.risk_assessment) {
-				console.log(`⚠️  Risk assessment: ${result.risk_assessment.overall_risk} (${result.risk_assessment.risk_score})`);
-			}
-
-			// Return processed result
 			return json({
 				success: true,
+				queued: false,
 				data: result,
-				processed_by: 'go-legal-ai-server',
+				processed_by: 'go-legal-ai-server-direct',
 				timestamp: new Date().toISOString()
 			});
 
 		} catch (fetchError) {
-			clearTimeout(timeoutId);
-			
-			if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-				console.error('❌ Go server request timeout');
-				return json({ 
-					error: 'Request timeout',
-					details: 'Go server did not respond within 60 seconds'
-				}, { status: 408 });
-			}
-
-			console.error('❌ Go server connection error:', fetchError);
+			console.error('❌ Direct processing error:', fetchError);
 			return json({ 
-				error: 'Go server connection failed',
+				error: 'Processing failed',
 				details: fetchError instanceof Error ? fetchError.message : 'Unknown error'
 			}, { status: 503 });
 		}

@@ -188,36 +188,80 @@ export class AIProcessingPipeline {
   }
 
   /**
-   * Perform comprehensive document analysis
+   * Perform comprehensive document analysis using Go GPU Server
    */
   private async analyzeDocument(content: string, options: AnalysisOptions): Promise<any> {
     const analysis: any = {
       wordCount: content.split(/\s+/).length,
       characterCount: content.length,
-      language: 'en', // Could be enhanced with language detection
+      language: 'en',
       extractedAt: new Date()
     };
 
-    // Generate summary
-    if (options.includeSummary) {
-      analysis.summary = await this.langchain.summarizeDocument(content);
+    try {
+      // Call Go GPU Server for comprehensive analysis
+      const goServerUrl = process.env.GO_SERVER_URL || 'http://localhost:8081';
+      const response = await fetch(`${goServerUrl}/process-document`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          document_id: this.generateJobId(),
+          content: content,
+          document_type: 'legal_document',
+          options: {
+            extract_entities: options.includeEntities,
+            generate_summary: options.includeSummary,
+            assess_risk: options.includeRiskAnalysis,
+            generate_embedding: options.includeEmbeddings,
+            store_in_database: false, // We'll handle storage in SvelteKit
+            use_gemma3_legal: true
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Go server error: ${response.status}`);
+      }
+
+      const goResult = await response.json();
+      
+      if (goResult.success) {
+        // Merge Go server results with basic analysis
+        analysis.summary = goResult.summary || '';
+        analysis.entities = goResult.entities || [];
+        analysis.riskAssessment = goResult.risk_assessment || {};
+        analysis.embedding = goResult.embedding || [];
+        analysis.processingTime = goResult.processing_time;
+        
+        // Extract additional data from entities
+        analysis.keyTerms = this.extractKeyTermsFromEntities(goResult.entities || []);
+        analysis.dates = this.extractDates(content);
+        analysis.amounts = this.extractMonetaryAmounts(content);
+        
+        // Map risk assessment to our format
+        if (goResult.risk_assessment) {
+          analysis.risks = [{
+            type: 'legal',
+            severity: goResult.risk_assessment.overall_risk || 'medium',
+            description: `Risk score: ${goResult.risk_assessment.risk_score}/100`,
+            factors: goResult.risk_assessment.risk_factors || [],
+            recommendations: goResult.risk_assessment.recommendations || []
+          }];
+        }
+      } else {
+        // Fallback to local processing if Go server fails
+        console.warn('Go server processing failed, falling back to local:', goResult.error);
+        await this.performLocalAnalysis(content, options, analysis);
+      }
+    } catch (error) {
+      // Fallback to local processing
+      console.warn('Go server not available, falling back to local processing:', error);
+      await this.performLocalAnalysis(content, options, analysis);
     }
 
-    // Extract entities and key information
-    if (options.includeEntities) {
-      analysis.entities = await this.extractEntities(content);
-      analysis.keyTerms = await this.extractKeyTerms(content);
-      analysis.dates = this.extractDates(content);
-      analysis.amounts = this.extractMonetaryAmounts(content);
-    }
-
-    // Perform risk analysis
-    if (options.includeRiskAnalysis) {
-      analysis.risks = await this.analyzeRisks(content);
-      analysis.compliance = await this.checkCompliance(content);
-    }
-
-    // Legal document classification
+    // Always perform local classification and confidence scoring
     analysis.documentType = await this.classifyDocumentType(content);
     analysis.practiceArea = await this.identifyPracticeArea(content);
     analysis.confidenceScore = this.calculateConfidenceScore(analysis);
@@ -410,6 +454,48 @@ export class AIProcessingPipeline {
   }
 
   // Private helper methods
+
+  /**
+   * Fallback local analysis when Go server is unavailable
+   */
+  private async performLocalAnalysis(content: string, options: AnalysisOptions, analysis: any): Promise<void> {
+    try {
+      // Generate summary
+      if (options.includeSummary) {
+        analysis.summary = await this.langchain.summarizeDocument(content);
+      }
+
+      // Extract entities and key information
+      if (options.includeEntities) {
+        analysis.entities = await this.extractEntities(content);
+        analysis.keyTerms = await this.extractKeyTerms(content);
+        analysis.dates = this.extractDates(content);
+        analysis.amounts = this.extractMonetaryAmounts(content);
+      }
+
+      // Perform risk analysis
+      if (options.includeRiskAnalysis) {
+        analysis.risks = await this.analyzeRisks(content);
+        analysis.compliance = await this.checkCompliance(content);
+      }
+    } catch (error) {
+      console.error('Local analysis failed:', error);
+      // Set minimal analysis data
+      analysis.summary = 'Analysis failed';
+      analysis.entities = [];
+      analysis.risks = [];
+    }
+  }
+
+  /**
+   * Extract key terms from Go server entity results
+   */
+  private extractKeyTermsFromEntities(entities: Array<{ type: string; value: string; confidence: number }>): string[] {
+    return entities
+      .filter(entity => entity.confidence > 0.7)
+      .map(entity => entity.value)
+      .slice(0, 20);
+  }
 
   private async initializeWorkers(): Promise<void> {
     // Initialize RabbitMQ workers for distributed processing

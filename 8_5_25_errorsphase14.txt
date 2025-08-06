@@ -1,0 +1,25 @@
+
+  D. Configure PM2 for Production
+  Finally, use PM2 to manage all your Node.js processes (SvelteKit server, workers, WebSocket server).
+
+  Create ecosystem.config.js in your project root:
+
+  JavaScript
+
+  module.exports = {
+    apps: [
+      {
+        name: 'SvelteKit',
+        script: 'npm',
+        args: 'run preview', // Assumes you've run 'npm run build'
+        cwd: './sveltekit-frontend',
+      },
+      {
+        name: 'BullMQ-Worker',
+        script: './workers/document-processor.worker.js',
+      },
+      {
+        name: 'WebSocket-Server',
+        script: './ws-server.js', // The WebSocket server from above
+      },
+    ],

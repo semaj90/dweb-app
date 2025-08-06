@@ -6,50 +6,57 @@
 module.exports = {
   apps: [
     {
-      name: 'legal-ai-frontend',
-      script: 'npm',
-      args: 'run build && npm run preview',
-      cwd: './sveltekit-frontend',
-      env: {
-        NODE_ENV: 'production',
-        PORT: 5173,
-        GO_SERVER_URL: 'http://localhost:8080',
-        DATABASE_URL: 'postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db',
-        REDIS_URL: 'redis://localhost:6379'
-      },
-      instances: 1,
-      exec_mode: 'fork',
-      watch: false,
-      max_memory_restart: '1G',
-      log_file: './logs/legal-ai-frontend.log',
-      error_file: './logs/legal-ai-frontend-error.log',
-      out_file: './logs/legal-ai-frontend-out.log',
-      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      restart_delay: 5000,
-      max_restarts: 10,
-      min_uptime: '10s'
-    },
-    {
-      name: 'legal-ai-worker',
-      script: './sveltekit-frontend/start-legal-ai-worker.mjs',
+      name: 'legal-ai-sveltekit',
+      script: 'build/index.js',
       cwd: './',
       env: {
         NODE_ENV: 'production',
-        GO_SERVER_URL: 'http://localhost:8080',
+        PORT: 3000,
+        GO_SERVER_URL: 'http://localhost:8081',
+        DATABASE_URL: 'postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db',
+        REDIS_URL: 'redis://localhost:6379',
+        OLLAMA_BASE_URL: 'http://localhost:11434',
+        QDRANT_URL: 'http://localhost:6333'
+      },
+      env_development: {
+        NODE_ENV: 'development',
+        PORT: 5173,
+        GO_SERVER_URL: 'http://localhost:8081'
+      },
+      instances: 2,
+      exec_mode: 'cluster',
+      watch: false,
+      max_memory_restart: '2G',
+      log_file: './logs/legal-ai-sveltekit.log',
+      error_file: './logs/legal-ai-sveltekit-error.log',
+      out_file: './logs/legal-ai-sveltekit-out.log',
+      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+      restart_delay: 3000,
+      max_restarts: 5,
+      min_uptime: '10s'
+    },
+    {
+      name: 'legal-ai-bullmq-worker',
+      script: 'src/lib/workers/bullmq-worker.js',
+      cwd: './',
+      env: {
+        NODE_ENV: 'production',
+        WORKER_CONCURRENCY: 3,
+        GO_SERVER_URL: 'http://localhost:8081',
         DATABASE_URL: 'postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db',
         REDIS_URL: 'redis://localhost:6379'
       },
       instances: 2, // Run 2 worker instances for load balancing
       exec_mode: 'fork',
       watch: false,
-      max_memory_restart: '512M',
+      max_memory_restart: '1G',
       log_file: './logs/legal-ai-worker.log',
       error_file: './logs/legal-ai-worker-error.log',
       out_file: './logs/legal-ai-worker-out.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      restart_delay: 10000,
-      max_restarts: 5,
-      min_uptime: '30s'
+      restart_delay: 5000,
+      max_restarts: 10,
+      min_uptime: '5s'
     },
     {
       name: 'legal-ai-scheduler',
@@ -57,7 +64,7 @@ module.exports = {
       cwd: './',
       env: {
         NODE_ENV: 'production',
-        GO_SERVER_URL: 'http://localhost:8080',
+        GO_SERVER_URL: 'http://localhost:8081',
         DATABASE_URL: 'postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db',
         REDIS_URL: 'redis://localhost:6379'
       },

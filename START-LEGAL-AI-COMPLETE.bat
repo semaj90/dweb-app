@@ -1,56 +1,79 @@
 ﻿@echo off
-echo ====================================================================
-echo   LEGAL AI COMPLETE SYSTEM STARTUP
-echo   Using Local gemma3-legal Model
-echo ====================================================================
+title Legal AI System - Complete Startup
+color 0A
+
+echo.
+echo ========================================
+echo  LEGAL AI SYSTEM - COMPLETE STARTUP
+echo ========================================
+echo  Version: 2.0.0-legal-ai
+echo  Architecture: Go GPU Server + SvelteKit 2
+echo  AI Models: gemma3-legal via Ollama
+echo ========================================
 echo.
 
-REM Source environment configuration
-call SET-LEGAL-AI-ENV.bat
+:: Create logs directory
+if not exist "logs" mkdir logs
 
-REM Verify Ollama is running with local models
-echo [CHECK] Verifying Ollama with gemma3-legal...
-ollama list | findstr /i "gemma3-legal" >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [ERROR] gemma3-legal model not found!
-    echo Please ensure your local model is properly installed.
-    pause
-    exit /b 1
-)
+:: Kill any existing processes on our ports
+echo [1/6] Cleaning up existing processes...
+taskkill /f /im legal-ai-server.exe /t 2>nul
+taskkill /f /im node.exe /t 2>nul
+timeout /t 2 >nul
 
-REM Start Ollama if not running
-curl -s http://localhost:11434/api/tags >nul 2>&1
-if %errorLevel% neq 0 (
-    echo Starting Ollama...
-    start "Ollama" ollama serve
-    timeout /t 5 /nobreak >nul
-)
-
-REM Check if main startup script exists
-if not exist "START-LEGAL-AI.bat" (
-    echo [ERROR] START-LEGAL-AI.bat not found!
-    echo Please ensure you have the base startup script.
-    pause
-    exit /b 1
-)
-
-REM Start existing services
-echo [START] Core services...
-
-
-REM Wait for services
-timeout /t 10 /nobreak >nul
-
-REM Start BullMQ workers
-echo [START] BullMQ workers...
-if exist "workers\start-workers.js" (
-    cd workers
-    call npm install --silent
-    start "BullMQ Workers" cmd /c "node start-workers.js"
-    cd ..
+:: Start PostgreSQL (if not running)
+echo [2/6] Checking PostgreSQL...
+sc query postgresql-x64-17 | find "RUNNING" >nul
+if errorlevel 1 (
+    echo Starting PostgreSQL...
+    sc start postgresql-x64-17
+    timeout /t 5 >nul
 ) else (
-    echo [WARNING] Workers not found - skipping
+    echo PostgreSQL is already running.
 )
+
+:: Start Redis (if not running)
+echo [3/6] Checking Redis...
+tasklist /FI "IMAGENAME eq redis-server.exe" 2>nul | find /I "redis-server.exe" >nul
+if errorlevel 1 (
+    echo Starting Redis...
+    start /B redis-windows\redis-server.exe redis-windows\redis.windows.conf
+    timeout /t 3 >nul
+) else (
+    echo Redis is already running.
+)
+
+:: Start Ollama (if not running)
+echo [4/6] Checking Ollama...
+tasklist /FI "IMAGENAME eq ollama.exe" 2>nul | find /I "ollama.exe" >nul
+if errorlevel 1 (
+    echo Starting Ollama...
+    start /B ollama serve
+    timeout /t 5 >nul
+) else (
+    echo Ollama is already running.
+)
+
+:: Build and start Go GPU Server
+echo [5/6] Starting Go GPU Server (Port 8081)...
+cd go-microservice
+if not exist "legal-ai-server.exe" (
+    echo Building Go server...
+    set CGO_ENABLED=0
+    go build -o legal-ai-server.exe .
+)
+set PORT=8081
+set OLLAMA_URL=http://localhost:11434
+set DATABASE_URL=postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db
+start "Legal AI Go Server" legal-ai-server.exe
+cd ..
+timeout /t 3 >nul
+
+:: Start SvelteKit with PM2
+echo [6/6] Starting SvelteKit and Workers with PM2...
+call npm install -g pm2 2>nul
+call pm2 delete all 2>nul
+call pm2 start ecosystem.config.js --env production
 
 echo.
 echo ====================================================================
