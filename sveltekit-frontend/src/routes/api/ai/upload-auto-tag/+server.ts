@@ -10,7 +10,7 @@ import { aiAutoTaggingService } from '$lib/services/aiAutoTagging';
 import { enhancedRAGPipeline } from '$lib/services/enhancedRAGPipeline';
 import { goMicroservice } from '$lib/services/goMicroservice';
 import { db } from '$lib/server/database';
-import { evidence } from '$lib/db/schema';
+import { enhancedEvidence } from '$lib/server/db/enhanced-legal-schema';
 import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -99,19 +99,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       updateData.embedding = `[${autoTagResult.embedding.join(',')}]`;
     }
     
-    await db.update(evidence)
+    await db.update(enhancedEvidence)
       .set(updateData)
-      .where(eq(evidence.id, documentId));
+      .where(eq(enhancedEvidence.id, documentId));
     
     console.log('💾 Database updated successfully');
     
     // 5. Update RAG pipeline search index
     try {
-      const documents = await db.select().from(evidence);
+      const documents = await db.select().from(enhancedEvidence);
       enhancedRAGPipeline.updateSearchIndex(documents.map(doc => ({
         id: doc.id,
         title: doc.title,
-        content: doc.description || '',
+        content: doc.content || '',
         tags: doc.tags || [],
         type: 'document'
       })));
@@ -172,8 +172,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     if (documentId) {
       // Get specific document tagging info
       const document = await db.select()
-        .from(evidence)
-        .where(eq(evidence.id, documentId))
+        .from(enhancedEvidence)
+        .where(eq(enhancedEvidence.id, documentId))
         .limit(1);
         
       if (document.length === 0) {
@@ -191,7 +191,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     
     // Get general auto-tagging statistics
     const stats = await db.select()
-      .from(evidence)
+      .from(enhancedEvidence)
       .limit(100);
       
     const taggedDocuments = stats.filter(doc => doc.tags && doc.tags.length > 0);

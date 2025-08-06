@@ -8,7 +8,7 @@ import { ollamaService } from './ollamaService';
 import { db } from '$lib/server/database';
 import { evidence } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
-import type { EvidenceMetadata } from '$lib/types/evidence';
+import type { Evidence } from '$lib/types/legal-types';
 
 export interface AutoTaggingResult {
   tags: string[];

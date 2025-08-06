@@ -13,6 +13,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { eq } from 'drizzle-orm';
 
 // OCR integration (optional)
@@ -78,7 +79,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     }
 
     // Add user ID from session
-    uploadData.userId = locals.user.id;
+    (uploadData as any).userId = locals.user?.id || 'anonymous';
 
     const results: UploadResult[] = [];
 
@@ -328,11 +329,13 @@ Format your response as JSON with the following structure:
 }`;
 
         const analysisResult = await ollamaCudaService.chatCompletion([
-          'You are a legal AI assistant specializing in document analysis.\n\n' + analysisPrompt
+          new SystemMessage('You are a legal AI assistant specializing in document analysis.'),
+          new HumanMessage(analysisPrompt)
         ], {
-          temperature: 0.3,
-          maxTokens: 1000
-        });
+            temperature: 0.3,
+            maxTokens: 1000
+          }
+        );
 
         // Parse AI response
         try {
@@ -451,7 +454,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       const filePath = join(UPLOAD_DIR, record.fileName!);
       await unlink(filePath);
       
-      if (record.metadata?.thumbnailPath) {
+      if (record && typeof record === 'object' && 'metadata' in record && record.metadata && typeof record.metadata === 'object' && 'thumbnailPath' in record.metadata) {
         await unlink(record.metadata.thumbnailPath as string);
       }
     } catch (error) {

@@ -216,6 +216,9 @@ export class SIMDJSONIndexProcessor {
     // Convert to SearchResult format
     return results.map(({ entry, similarity }, index) => ({
       id: entry.id,
+      content: entry.content,
+      metadata: entry.metadata,
+      type: 'document' as const,
       document: this.convertToRAGDocument(entry),
       score: similarity,
       relevantChunks: entry.semanticChunks.map((chunk, chunkIndex) => ({
@@ -475,6 +478,7 @@ export class SIMDJSONIndexProcessor {
       id: entry.id,
       title: entry.filePath.split('/').pop() || entry.id,
       content: entry.content,
+      type: 'document' as const,
       metadata: {
         source: entry.filePath,
         type: this.getDocumentType(entry.language),

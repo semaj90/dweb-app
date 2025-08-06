@@ -1,40 +1,79 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
+  import { useMachine } from '@xstate/svelte';
+  import { agentShellMachine } from '$lib/machines/agentShellMachine';
+  import { io } from 'socket.io-client';
+  import Loki from 'lokijs';
+  import Fuse from 'fuse.js';
 
-  const query = writable('');
-  const results = writable([]);
-  const loading = writable(false);
+  // State machine for agent activity
+  const { state, send } = useMachine(agentShellMachine);
 
-  async function search() {
-    loading.set(true);
-    const res = await fetch('/api/semantic-search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: $query })
+  // Local cache for job state
+  const db = new Loki('agentCache');
+  const jobs = db.addCollection('jobs');
+  const jobStore = writable([]);
+
+  // Fuzzy search setup
+  let fuse;
+  let searchResults = [];
+
+  // WebSocket for real-time updates
+  let socket;
+  onMount(() => {
+    socket = io('/api/ws');
+    socket.on('agent-update', (data) => {
+      jobs.insert(data);
+      jobStore.set(jobs.find());
+      if (fuse) fuse.setCollection(jobs.find());
     });
-    const data = await res.json();
-    results.set(data.results || []);
-    loading.set(false);
+    // Initialize Fuse.js
+    fuse = new Fuse(jobs.find(), { keys: ['description', 'status'] });
+  });
+
+  function searchJobs(query: string) {
+    searchResults = fuse.search(query).map(r => r.item);
+  }
+
+  function acceptPatch(jobId: string) {
+    send({ type: 'ACCEPT_PATCH', jobId });
+  }
+
+  function rateSuggestion(jobId: string, rating: number) {
+    send({ type: 'RATE_SUGGESTION', jobId, rating });
   }
 </script>
 
 <div class="vector-demo">
-  <input type="text" bind:value={$query} placeholder="Ask a question..." />
-  <button on:click={search} disabled={$loading}>Search</button>
-  {#if $loading}
-    <p>Loading...</p>
-  {/if}
+<div class="vector-intelligence-demo">
+  <h2>Agentic Legal AI Demo</h2>
+  <input placeholder="Search jobs..." on:input={(e) => searchJobs(e.target.value)} />
   <ul>
-    {#each $results as result}
-      <li>{result.content}</li>
+    {#each $jobStore as job}
+      <li>
+        <strong>{job.description}</strong> — {job.status}
+        <button on:click={() => acceptPatch(job.id)}>Accept Patch</button>
+        <button on:click={() => rateSuggestion(job.id, 5)}>👍</button>
+        <button on:click={() => rateSuggestion(job.id, 1)}>👎</button>
+      </li>
     {/each}
   </ul>
+  <canvas id="webgpu-canvas" width="800" height="400"></canvas>
+  <div>
+    <h3>Search Results</h3>
+    <ul>
+      {#each searchResults as result}
+        <li>{result.description} — {result.status}</li>
+      {/each}
+    </ul>
+  </div>
+</div>
 </div>
 
 <style>
-.vector-demo {
-  max-width: 500px;
+.vector-intelligence-demo {
+  max-width: 800px;
   margin: 2rem auto;
   padding: 1rem;
   border: 1px solid #ccc;
@@ -50,5 +89,10 @@ button {
 }
 ul {
   margin-top: 1rem;
+}
+canvas {
+  margin-top: 2rem;
+  border: 1px solid #aaa;
+  border-radius: 4px;
 }
 </style>

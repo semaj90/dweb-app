@@ -54,10 +54,14 @@ export const evidence = pgTable("evidence", {
   fileSize: integer("file_size"), // File size in bytes
   mimeType: text("mime_type"), // MIME type of file
   hash: text("hash"), // File hash for integrity
+  tags: jsonb("tags"), // AI-generated tags
+  summary: text("summary"), // AI-generated summary
+  embedding: text("embedding"), // Vector embeddings as text
   createdBy: uuid("created_by")
     .references(() => users.id)
     .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
   metadata: jsonb("metadata"), // Additional metadata (tags, analysis results, etc.)
 });
 

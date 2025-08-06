@@ -85,7 +85,7 @@ export interface TagPrediction {
 
 // Qdrant Service Class
 export class QdrantService {
-	private client: QdrantClient;
+	public client: QdrantClient;
 	private isConnected = false;
 	
 	// Reactive stores for UI integration

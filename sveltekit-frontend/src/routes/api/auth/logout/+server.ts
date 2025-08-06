@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ cookies, locals }) => {
       return json({ success: true, message: "Already logged out" });
     }
     // Invalidate the session in the database
-    await lucia.invalidateSession(locals.session.id);
+    await lucia.invalidateSession(locals.session);
 
     // Create a blank session cookie to clear the existing one
     const sessionCookie = lucia.createBlankSessionCookie();
@@ -46,7 +46,7 @@ export const GET: RequestHandler = async ({ cookies, locals }) => {
     // Get the current session
     if (locals.session) {
       // Invalidate the session in the database
-      await lucia.invalidateSession(locals.session.id);
+      await lucia.invalidateSession(locals.session);
     }
     // Create a blank session cookie to clear the existing one
     const sessionCookie = lucia.createBlankSessionCookie();

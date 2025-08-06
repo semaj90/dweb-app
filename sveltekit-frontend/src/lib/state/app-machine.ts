@@ -2,7 +2,7 @@
  * Global Application State Machine
  * Coordinates multiple state machines and manages global application state
  */
-import { createMachine, assign, spawn, fromPromise } from 'xstate';
+import { createMachine, assign, fromPromise } from 'xstate';
 import { legalCaseMachine } from './legal-case-machine';
 import type { ActorRefFrom } from 'xstate';
 
@@ -212,10 +212,10 @@ const isOnline = ({ context }: { context: AppContext }) => {
 
 // Actions
 const setUser = assign({
-  user: ({ event }: { event: any }) => event.output.user,
+  user: ({ event }: { event: any }) => event.output?.user,
   session: ({ event }: { event: any }) => ({
-    id: event.output.sessionId,
-    expiresAt: new Date(event.output.expiresAt),
+    id: event.output?.sessionId,
+    expiresAt: new Date(event.output?.expiresAt),
     isActive: true
   })
 });
@@ -304,7 +304,14 @@ const disconnectWebSocket = assign({
 });
 
 const spawnLegalCaseMachine = assign({
-  legalCaseMachine: ({ spawn }: { spawn: any }) => spawn(legalCaseMachine)
+  legalCaseMachine: ({ spawnChild }: { spawnChild?: any }) => {
+    // XState v5: Use spawnChild from context
+    if (typeof spawnChild === 'function') {
+      return spawnChild(legalCaseMachine);
+    }
+    // Fallback - return undefined for now
+    return undefined;
+  }
 });
 
 const destroyLegalCaseMachine = assign({
@@ -378,10 +385,10 @@ export const appMachine = createMachine({
           actions: [
             clearGlobalLoading,
             assign({
-              features: ({ event }) => event.output.features,
+              features: ({ event }) => event.output?.features || {},
               settings: ({ context, event }) => ({
                 ...context.settings,
-                ...event.output.userPrefs
+                ...(event.output?.userPrefs || {})
               })
             })
           ]

@@ -750,6 +750,7 @@ export class CopilotIndexOptimizer {
         id: entry.id,
         title: entry.filePath,
         content: entry.content,
+        type: 'document' as const,
         metadata: {
           source: entry.filePath,
           type: 'memo' as const,

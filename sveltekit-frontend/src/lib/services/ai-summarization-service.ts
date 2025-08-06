@@ -8,6 +8,7 @@ import { evidence, embeddingCache, cases } from '$lib/server/db/schema-postgres-
 import { eq, sql, and, desc, isNotNull } from 'drizzle-orm';
 import type { AiAnalysisResult } from '$lib/schemas/file-upload';
 import { createHash } from 'crypto';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 
 export interface SummarizationOptions {
   maxLength?: number;
@@ -128,8 +129,8 @@ class AISummarizationService {
       // Generate comprehensive summary
       const summaryPrompt = this.buildSummaryPrompt(content.substring(0, 8000), opts);
       const summaryResponse = await ollamaCudaService.chatCompletion([
-        { role: 'system', content: 'You are a legal AI assistant specializing in document analysis and summarization.' },
-        { role: 'user', content: summaryPrompt }
+        new SystemMessage('You are a legal AI assistant specializing in document analysis and summarization.'),
+        new HumanMessage(summaryPrompt)
       ], {
         temperature: 0.3,
         maxTokens: 2000

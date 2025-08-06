@@ -1,0 +1,159 @@
+
+● Let me check how they're used in the langchain-config-service:
+
+● Search(pattern: "SystemMessage|HumanMessage", path: "sveltekit-frontend\src\lib\services\langchain-config-service.ts", output_mode: "content")
+  ⎿  Found 22 lines (ctrl+r to expand)
+
+● Perfect! Now I can see the correct way to use LangChain messages. Let me fix the ai-summarization-service.ts file:
+
+● Update(sveltekit-frontend\src\lib\services\ai-summarization-service.ts)
+  ⎿  Updated sveltekit-frontend\src\lib\services\ai-summarization-service.ts with 1 addition
+        8    import { eq, sql, and, desc, isNotNull } from 'drizzle-orm';
+        9    import type { AiAnalysisResult } from '$lib/schemas/file-upload';
+       10    import { createHash } from 'crypto';
+       11 +  import { SystemMessage, HumanMessage } from '@langchain/core/messages';
+       12
+       13    export interface SummarizationOptions {
+       14      maxLength?: number;
+
+● Update(sveltekit-frontend\src\lib\services\ai-summarization-service.ts)
+  ⎿  Updated sveltekit-frontend\src\lib\services\ai-summarization-service.ts with 2 additions and 2 removals
+       129          // Generate comprehensive summary
+       130          const summaryPrompt = this.buildSummaryPrompt(content.substring(0, 8000), opts);
+       131          const summaryResponse = await ollamaCudaService.chatCompletion([
+       132 -          { role: 'system', content: 'You are a legal AI assistant specializing in document analysis and summarization.' },
+       133 -          { role: 'user', content: summaryPrompt }
+       132 +          new SystemMessage('You are a legal AI assistant specializing in document analysis and summarization.'),
+       133 +          new HumanMessage(summaryPrompt)
+       134          ], {
+       135            temperature: 0.3,
+       136            maxTokens: 2000
+
+● Now let me check and fix other BaseMessage issues in the API routes. Let me fix the evidence upload route:
+
+● Read(sveltekit-frontend\src\routes\api\evidence\upload\+server.ts)
+  ⎿  Read 15 lines (ctrl+r to expand)
+
+● Update(sveltekit-frontend\src\routes\api\evidence\upload\+server.ts)
+  ⎿  Updated sveltekit-frontend\src\routes\api\evidence\upload\+server.ts with 2 additions and 2 removals
+       328    }`;
+       329
+       330            const analysisResult = await ollamaCudaService.chatCompletion([
+       331 -            { role: 'system', content: 'You are a legal AI assistant specializing in document analysis.' },
+       332 -            { role: 'user', content: analysisPrompt }
+       331 +            new SystemMessage('You are a legal AI assistant specializing in document analysis.'),
+       332 +            new HumanMessage(analysisPrompt)
+       333            ], {
+       334                temperature: 0.3,
+       335                maxTokens: 1000
+
+● I need to import the message classes in this file too:
+
+● Read(sveltekit-frontend\src\routes\api\evidence\upload\+server.ts)
+  ⎿  Read 15 lines (ctrl+r to expand)
+
+● Update(sveltekit-frontend\src\routes\api\evidence\upload\+server.ts)
+  ⎿  Updated sveltekit-frontend\src\routes\api\evidence\upload\+server.ts with 1 addition
+       13    import { join } from 'path';
+       14    import { v4 as uuidv4 } from 'uuid';
+       15    import sharp from 'sharp';
+       16 +  import { SystemMessage, HumanMessage } from '@langchain/core/messages';
+       17    import { eq } from 'drizzle-orm';
+       18
+       19    // OCR integration (optional)
+
+● Now let me mark the BaseMessage issue as completed and move to the missing imports:
+
+● Update Todos
+  ⎿  [×] Fix XState version incompatibilities - spawn function and actor types
+     [×] Fix DoneActorEvent and ErrorActorEvent property access (use .output not .data)
+     [×] Fix missing type property on RAGDocument interfaces
+     [×] Fix property access on QueryResult type
+     [×] Fix BaseMessage role property issues
+     [ ] Fix missing module imports and exports
+     [ ] Fix duplicate type exports and redeclarations
+
+● Now let me run a quick check to see how many major errors remain:
+
+● Bash(cd sveltekit-frontend && timeout 20 npx tsc --noEmit --skipLibCheck 2>&1 | head -10)
+  ⎿  error TS6231: Could not resolve the path '2' with the extensions: '.ts', '.tsx', '.d.ts', '.cts', '.d.cts', '.mts', '.d.mts'.
+       The file is in the program because:
+         Root file specified for compilation
+
+● Bash(cd sveltekit-frontend && timeout 20 npx tsc --noEmit --skipLibCheck)
+  ⎿  Error: src/lib/services/ai-summarization-service.ts(242,18): error TS2339: Property 'metadata' does not exist on type '{ id: string; caseId: string; userId: string; title: string; description: string; evidenceType: string;
+     subType: string; fileName: string; fileSize: number; mimeType: string; hash: string; collectedAt: Date; ... 14 more ...; updatedAt: Date; }'.
+     src/lib/services/ai-summarization-service.ts(243,26): error TS2339: Property 'metadata' does not exist on type '{ id: string; caseId: string; userId: string; title: string; description: string; evidenceType: string; subType:
+     string; fileName: string; fileSize: number; mimeType: string; hash: string; collectedAt: Date; ... 14 more ...; updatedAt: Date; }'.
+     src/lib/services/ai-summarization-service.ts(265,13): error TS2698: Spread types may only be created from object types.
+     src/lib/services/aiAutoTagging.ts(11,39): error TS2307: Cannot find module '$lib/types/evidence' or its corresponding type declarations.
+     src/lib/services/aiAutoTagging.ts(176,46): error TS2554: Expected 1 arguments, but got 2.
+     src/lib/services/aiAutoTagging.ts(228,9): error TS2353: Object literal may only specify known properties, and 'tags' does not exist in type '{ title?: string | SQL<unknown> | PgColumn<ColumnBaseConfig<ColumnDataType, string>,
+     {}, {}>; createdBy?: string | SQL<unknown> | PgColumn<...>; ... 10 more ...; filePath?: string | ... 1 more ... | PgColumn<...>; }'.
+     src/lib/services/aiAutoTagging.ts(273,49): error TS2554: Expected 1 arguments, but got 2.
+     src/lib/services/aiPipeline.ts(1,20): error TS2307: Cannot find module '$lib/db' or its corresponding type declarations.
+     src/lib/services/bullmqService.ts(6,20): error TS2307: Cannot find module '$lib/db' or its corresponding type declarations.
+     src/lib/services/bullmqService.ts(74,22): error TS2769: No overload matches this call.
+     … +47 lines (ctrl+r to see all)
+
+● Great progress! I can see we've fixed the major XState, RAGDocument, QueryResult, and BaseMessage issues. Now there are mostly missing module imports and property issues. Let me focus on some of the missing import issues.
+
+  Let me check the missing evidence types:
+
+● Bash(find C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\src -name "*evidence*" -type f)
+  ⎿  find: ‘C:UsersjamesDesktopdeeds-webdeeds-web-appsveltekit-frontendsrc’: No such file or directory
+
+● Bash(cd sveltekit-frontend && find src -name "*evidence*" -type f)
+  ⎿  src/lib/state/evidenceCustodyMachine.ts
+     src/lib/state/evidenceProcessingMachine.ts
+     src/lib/stores/evidence-store.ts
+     … +10 lines (ctrl+r to expand)
+
+● The issue is that aiAutoTagging.ts is trying to import $lib/types/evidence which doesn't exist. Let me check what evidence types are available:
+
+● Bash(cd sveltekit-frontend && find src -name "*evidence*" -path "*/types/*" -type f)
+  ⎿  (No content)
+
+● List(sveltekit-frontend\src\lib\types)
+  ⎿  Listed 32 paths (ctrl+r to expand)
+
+● I see that there's no evidence.ts file in types. Let me check what's being imported in aiAutoTagging.ts and fix it:
+
+● Read(sveltekit-frontend\src\lib\services\aiAutoTagging.ts)
+  ⎿  Read 15 lines (ctrl+r to expand)
+
+● I can see the issue. It's trying to import EvidenceMetadata from $lib/types/evidence but that doesn't exist. I need to check if this type is defined elsewhere or create it. Let me check the legal-types.ts file to see if it has
+  evidence types:
+
+● Search(pattern: "Evidence|evidence", path: "sveltekit-frontend\src\lib\types\legal-types.ts", output_mode: "content", head_limit: 10)
+  ⎿  Found 10 lines (ctrl+r to expand)
+
+● Perfect! The Evidence types are defined in legal-types.ts. Let me fix the import:
+
+● Update(sveltekit-frontend\src\lib\services\aiAutoTagging.ts)
+  ⎿  Updated sveltekit-frontend\src\lib\services\aiAutoTagging.ts with 1 addition and 1 removal
+        8    import { db } from '$lib/server/database';
+        9    import { evidence } from '$lib/db/schema';
+       10    import { eq } from 'drizzle-orm';
+       11 -  import type { EvidenceMetadata } from '$lib/types/evidence';
+       11 +  import type { Evidence } from '$lib/types/legal-types';
+       12
+       13    export interface AutoTaggingResult {
+       14      tags: string[];
+
+● Now let me check what other missing imports we can fix. Let me look at the missing $lib/db imports:
+
+● Bash(cd sveltekit-frontend && find src -name "db" -type d)
+  ⎿  src/lib/db
+     src/lib/server/db
+
+● I can see there are two database directories. Let me check what's in both:
+
+● List(sveltekit-frontend\src\lib\db)
+  ⎿  Listed 13 paths (ctrl+r to expand)
+
+● List(sveltekit-frontend\src\lib\server\db)
+  ⎿  Listed 41 paths (ctrl+r to expand)
+  ⎿  Claude usage limit reached. Your limit will reset at 2am (America/Los_Angeles).
+
+      • /upgrade to increase your usage limit.

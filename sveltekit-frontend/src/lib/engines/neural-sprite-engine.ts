@@ -185,16 +185,16 @@ export class NeuralSpriteEngine {
   private databaseInitialize(): void {
     // Initialize collections if they don't exist
     this.sprites =
-      this.db.getCollection("sprites") ||
-      this.db.addCollection("sprites", { indices: ["name", "sequence"] });
+      this.db.getCollection<CanvasSprite>("sprites") ||
+      this.db.addCollection<CanvasSprite>("sprites", { indices: ["name", "sequence"] });
 
     this.activities =
-      this.db.getCollection("activities") ||
-      this.db.addCollection("activities", { indices: ["action", "timestamp"] });
+      this.db.getCollection<UserActivity>("activities") ||
+      this.db.addCollection<UserActivity>("activities", { indices: ["action", "timestamp"] });
 
     this.sequences =
-      this.db.getCollection("sequences") ||
-      this.db.addCollection("sequences", { indices: ["name", "confidence"] });
+      this.db.getCollection<AnimationSequence>("sequences") ||
+      this.db.addCollection<AnimationSequence>("sequences", { indices: ["name", "confidence"] });
 
     // Load default "idle" state if database is empty
     if (this.sprites.count() === 0) {

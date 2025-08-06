@@ -219,7 +219,7 @@ export class AIService {
         LIMIT ${limit}
       `);
 
-      return results.map(row => ({
+      return results.rows.map(row => ({
         content: row.content as string,
         similarity: row.similarity as number,
         metadata: row.metadata as Record<string, any>,
@@ -260,7 +260,7 @@ export class AIService {
         LIMIT ${limit}
       `);
 
-      return results.map(row => ({
+      return results.rows.map(row => ({
         query: row.query as string,
         response: row.response as string,
         similarity: row.similarity as number

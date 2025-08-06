@@ -91,9 +91,10 @@ const COLLECTIONS = {
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     const session = locals.session;
-    if (!session?.id) {
+    if (!session) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
+    const sessionId = typeof session === 'string' ? session : session.id;
     const body = await request.json();
     const { action = "tag", ...data } = body;
 
@@ -102,25 +103,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     switch (action) {
       case "tag":
-        return await tagDocument(data, session.id);
+        return await tagDocument(data, sessionId);
 
       case "search":
-        return await searchDocuments(data, session.id);
+        return await searchDocuments(data, sessionId);
 
       case "batch_tag":
-        return await batchTagDocuments(data, session.id);
+        return await batchTagDocuments(data, sessionId);
 
       case "update_tags":
-        return await updateDocumentTags(data, session.id);
+        return await updateDocumentTags(data, sessionId);
 
       case "delete":
-        return await deleteDocument(data, session.id);
+        return await deleteDocument(data, sessionId);
 
       case "get_similar":
-        return await getSimilarDocuments(data, session.id);
+        return await getSimilarDocuments(data, sessionId);
 
       case "get_stats":
-        return await getCollectionStats(session.id);
+        return await getCollectionStats(sessionId);
 
       default:
         return json({ error: "Invalid action" }, { status: 400 });
@@ -661,9 +662,10 @@ async function generateTextEmbedding(text: string): Promise<number[]> {
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
     const session = locals.session;
-    if (!session?.id) {
+    if (!session) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
+    const sessionId = typeof session === 'string' ? session : session.id;
     const action = url.searchParams.get("action");
     const documentId = url.searchParams.get("documentId");
     const caseId = url.searchParams.get("caseId");
@@ -674,13 +676,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         if (!documentId) {
           return json({ error: "Document ID required" }, { status: 400 });
         }
-        return await getDocument(documentId, session.id);
+        return await getDocument(documentId, sessionId);
 
       case "list_documents":
-        return await listDocuments(session.id, { caseId, limit });
+        return await listDocuments(sessionId, { caseId, limit });
 
       case "get_tags":
-        return await getUserTags(session.id);
+        return await getUserTags(sessionId);
 
       case "health":
         return await getHealthStatus();

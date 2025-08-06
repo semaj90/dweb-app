@@ -53,16 +53,14 @@ async function analyzeWithGemma3Legal(
 
 Document text: ${text.substring(0, 4000)}`;
 
-    const analysis = await ollamaService.generateCompletion({
-      model: 'gemma3-legal',
-      prompt,
-      stream: false
+    const analysis = await ollamaService.generateCompletion(prompt, {
+      model: 'gemma3-legal'
     });
 
     // Parse the AI response for structured data
-    const entities = extractEntitiesFromAnalysis(analysis.response);
-    const riskScore = extractRiskScore(analysis.response);
-    const caseType = extractCaseType(analysis.response);
+    const entities = extractEntitiesFromAnalysis(analysis);
+    const riskScore = extractRiskScore(analysis);
+    const caseType = extractCaseType(analysis);
 
     if (thinking) {
       // Enhanced analysis with deeper reasoning
@@ -72,17 +70,15 @@ Document text: ${text.substring(0, 4000)}`;
 3. Recommended actions
 4. Confidence assessment
 
-Previous analysis: ${analysis.response}`;
+Previous analysis: ${analysis}`;
 
-      const contextAnalysis = await ollamaService.generateCompletion({
-        model: 'gemma3-legal',
-        prompt: contextPrompt,
-        stream: false
+      const contextAnalysis = await ollamaService.generateCompletion(contextPrompt, {
+        model: 'gemma3-legal'
       });
 
       return {
-        summary: analysis.response,
-        synthesizedAnalysis: contextAnalysis.response,
+        summary: analysis,
+        synthesizedAnalysis: contextAnalysis,
         entities,
         riskScore,
         caseType,
@@ -93,7 +89,7 @@ Previous analysis: ${analysis.response}`;
     }
 
     return {
-      summary: analysis.response,
+      summary: analysis,
       entities,
       riskScore,
       caseType,
@@ -188,11 +184,10 @@ export const POST: RequestHandler = async ({ request }) => {
     // Generate embedding using local nomic-embed-text via Ollama
     let embedding;
     try {
-      const embeddingResponse = await ollamaService.generateEmbedding({
-        model: 'nomic-embed-text',
-        prompt: textContent.substring(0, 2000) // Limit for embedding
-      });
-      embedding = embeddingResponse.embedding;
+      const embeddingResponse = await ollamaService.generateEmbedding(
+        textContent.substring(0, 2000) // Limit for embedding
+      );
+      embedding = embeddingResponse;
     } catch (error) {
       console.error('Embedding generation failed:', error);
       embedding = new Array(384).fill(0); // Fallback zero vector
@@ -224,24 +219,27 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Store in Qdrant for hybrid vector search
     try {
-      const qdrantId = await qdrantService.upsertVector({
-        id: docId,
-        vector: embedding,
-        payload: {
-          title: safeFileName,
-          content: textContent.substring(0, 1000), // Store excerpt
-          caseType: analysis.caseType,
-          jurisdiction: 'federal',
-          riskScore: analysis.riskScore,
-          entities: analysis.entities,
-          createdAt: new Date().toISOString()
-        }
+      await qdrantService.client.upsert('legal_documents', {
+        wait: true,
+        points: [{
+          id: docId,
+          vector: embedding,
+          payload: {
+            title: safeFileName || "Document",
+            content: textContent.substring(0, 1000), // Store excerpt
+            type: "document",
+            case_id: randomUUID(),
+            metadata: {
+              caseType: analysis.caseType,
+              jurisdiction: 'federal',
+              riskScore: analysis.riskScore,
+              entities: analysis.entities
+            }
+          }
+        }]
       });
       
-      // Update record with Qdrant ID
-      await db.update(enhancedEvidence)
-        .set({ qdrantId: qdrantId })
-        .where(eq(enhancedEvidence.id, docId));
+      console.log('✅ Document stored in Qdrant successfully');
         
     } catch (qdrantError) {
       console.error('Qdrant storage failed:', qdrantError);
