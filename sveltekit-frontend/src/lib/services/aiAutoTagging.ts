@@ -7,8 +7,17 @@
 import { ollamaService } from './ollamaService';
 import { db } from '$lib/server/database';
 import { evidence } from '$lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { Evidence } from '$lib/types/legal-types';
+
+interface EvidenceMetadata {
+  aiTags: string[];
+  entities: ExtractedEntity[];
+  summary: string;
+  confidence: number;
+  relationships: DocumentRelationship[];
+  autoTaggedAt: string;
+}
 
 export interface AutoTaggingResult {
   tags: string[];
@@ -84,23 +93,57 @@ class AIAutoTaggingService {
   
   /**
    * Generate embedding using nomic-embed-text (GPU accelerated)
+   * Falls back to Qdrant server-side embedding if Ollama is unavailable
    */
-  private async generateEmbedding(text: string): Promise<number[]> {
-    const response = await fetch(`${this.ollamaEndpoint}/api/embeddings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'nomic-embed-text',
-        prompt: text.substring(0, 8192) // Limit to model context
-      })
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Embedding generation failed: ${response.statusText}`);
+  public async generateEmbedding(text: string): Promise<number[]> {
+    try {
+      // Primary: Try Ollama first (local GPU acceleration)
+      const response = await fetch(`${this.ollamaEndpoint}/api/embeddings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'nomic-embed-text',
+          prompt: text.substring(0, 8192) // Limit to model context
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Ollama embedding failed: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      return result.embedding;
+      
+    } catch (ollamaError) {
+      console.warn('Ollama embedding failed, trying server-side Qdrant:', ollamaError);
+      
+      try {
+        // Fallback: Use server-side Qdrant embedding
+        if (typeof window === 'undefined') {
+          // Server-side: Import and use Qdrant directly
+          const { fetchEmbedding } = await import('$lib/server/qdrant');
+          return await fetchEmbedding(text);
+        } else {
+          // Client-side: Make API call to server-side embedding
+          const response = await fetch('/api/embeddings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text.substring(0, 8192) })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Server embedding failed: ${response.statusText}`);
+          }
+          
+          const result = await response.json();
+          return result.embedding;
+        }
+      } catch (fallbackError) {
+        console.error('All embedding methods failed:', fallbackError);
+        // Return zero vector as ultimate fallback
+        return new Array(768).fill(0);
+      }
     }
-    
-    const result = await response.json();
-    return result.embedding;
   }
   
   /**
@@ -163,17 +206,15 @@ Return JSON format:
   private async findSimilarDocuments(embedding: number[], excludeId: string, limit = 5) {
     const embeddingStr = `[${embedding.join(',')}]`;
     
-    const query = `
-      SELECT id, title, 1 - (embedding <=> $1::vector) as similarity
-      FROM evidence 
-      WHERE id != $2 AND embedding IS NOT NULL
-      ORDER BY embedding <=> $1::vector
-      LIMIT $3
-    `;
-    
     try {
       // Raw SQL query for pgvector similarity
-      const result = await db.execute(query, [embeddingStr, excludeId, limit]);
+      const result = await db.execute(sql.raw(`
+        SELECT id, title, 1 - (embedding <=> '${embeddingStr}'::vector) as similarity
+        FROM evidence 
+        WHERE id != '${excludeId}' AND embedding IS NOT NULL
+        ORDER BY embedding <=> '${embeddingStr}'::vector
+        LIMIT ${limit}
+      `));
       return result.rows.map(row => ({
         id: row.id,
         title: row.title,
@@ -259,18 +300,16 @@ Return JSON format:
     const queryEmbedding = await this.generateEmbedding(query);
     const embeddingStr = `[${queryEmbedding.join(',')}]`;
     
-    const sqlQuery = `
-      SELECT 
-        id, title, description, tags, summary,
-        1 - (embedding <=> $1::vector) as similarity
-      FROM evidence 
-      WHERE embedding IS NOT NULL
-      ORDER BY embedding <=> $1::vector
-      LIMIT $2
-    `;
-    
     try {
-      const result = await db.execute(sqlQuery, [embeddingStr, limit]);
+      const result = await db.execute(sql.raw(`
+        SELECT 
+          id, title, description, tags, summary,
+          1 - (embedding <=> '${embeddingStr}'::vector) as similarity
+        FROM evidence 
+        WHERE embedding IS NOT NULL
+        ORDER BY embedding <=> '${embeddingStr}'::vector
+        LIMIT ${limit}
+      `));
       return result.rows.map(row => ({
         id: row.id,
         title: row.title,

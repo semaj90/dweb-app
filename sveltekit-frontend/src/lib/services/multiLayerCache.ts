@@ -68,7 +68,7 @@ export class MultiLayerCache {
 
     // Create collections
     this.cacheCollection = this.memoryDb.addCollection<CacheEntry>('cache', {
-      indices: ['key', 'metadata.type', 'metadata.userId'],
+      indices: ['key'],
       ttl: this.defaultTTL * 1000,
       ttlInterval: 60000 // Check every minute
     });
@@ -242,7 +242,6 @@ export class MultiLayerCache {
         threshold: options.threshold || 0.6,
         includeScore: options.includeScore !== false,
         minMatchCharLength: 2,
-        shouldSort: true,
         findAllMatches: false,
         location: 0,
         distance: 100,
@@ -253,7 +252,7 @@ export class MultiLayerCache {
     }
 
     // Perform search
-    const results = fuse.search(query, { limit: options.limit || 10 });
+    const results = fuse.search(query).slice(0, options.limit || 10);
 
     return results.map(result => ({
       item: result.item as T,
@@ -483,10 +482,13 @@ export class MultiLayerCache {
       return;
     }
 
-    // Sort by last accessed (LRU)
-    const sortedEntries = this.cacheCollection.chain()
-      .simplesort('metadata.lastAccessed')
-      .data();
+    // Sort by last accessed (LRU) - manual sort since simplesort has issues with nested properties
+    const allEntries = this.cacheCollection.data;
+    const sortedEntries = allEntries.sort((a, b) => {
+      const aTime = new Date(a.metadata.lastAccessed).getTime();
+      const bTime = new Date(b.metadata.lastAccessed).getTime();
+      return aTime - bTime; // Ascending order (oldest first)
+    });
 
     let freedSize = 0;
     for (const entry of sortedEntries) {
@@ -541,7 +543,7 @@ export class MultiLayerCache {
     let collection = this.persistentDb.getCollection<CacheEntry>(`cache_${type}`);
     if (!collection) {
       collection = this.persistentDb.addCollection<CacheEntry>(`cache_${type}`, {
-        indices: ['key', 'metadata.userId'],
+        indices: ['key'],
         ttl: this.defaultTTL * 1000 * 10 // 10x TTL for persistent
       });
     }

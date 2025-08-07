@@ -399,3 +399,20 @@ export type NewLegalKnowledgeBase = typeof legalKnowledgeBase.$inferInsert;
 
 export type EmbeddingJob = typeof embeddingJobs.$inferSelect;
 export type NewEmbeddingJob = typeof embeddingJobs.$inferInsert;
+
+// AI Processing Jobs table
+export const aiProcessingJobs = pgTable('ai_processing_jobs', {
+  id: uuid('id').primaryKey().default(sql`gen_random_uuid()`),
+  type: varchar('type', { length: 50 }).notNull(),
+  status: varchar('status', { length: 50 }).default('pending'),
+  input: json('input'),
+  output: json('output'),
+  error: text('error'),
+  progress: integer('progress').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+  completedAt: timestamp('completed_at'),
+});
+
+export type AIProcessingJob = typeof aiProcessingJobs.$inferSelect;
+export type NewAIProcessingJob = typeof aiProcessingJobs.$inferInsert;

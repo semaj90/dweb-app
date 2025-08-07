@@ -4,9 +4,8 @@
  */
 
 import type { QdrantClient } from '@qdrant/js-client-rest';
-import type { DrizzleDB } from '$lib/server/db/drizzle';
 import type { OllamaService } from './ollamaService';
-import type { Context7Service } from './context7Service';
+import { context7Service } from './context7Service';
 
 export interface LegalDocument {
   id: string;
@@ -54,9 +53,7 @@ export interface LegalRAGOptions {
 export class LegalRAGEngine {
   constructor(
     private qdrant: QdrantClient,
-    private db: DrizzleDB,
-    private ollama: OllamaService,
-    private context7: Context7Service
+    private ollama: OllamaService
   ) {}
 
   /**
@@ -68,7 +65,7 @@ export class LegalRAGEngine {
       let stackAnalysis: any = null;
       if (metadata.caseType) {
         try {
-          stackAnalysis = await this.context7.analyzeLegalDocument(
+          stackAnalysis = await context7Service.analyzeLegalDocument(
             content,
             metadata.caseType,
             metadata.jurisdiction
@@ -80,10 +77,10 @@ export class LegalRAGEngine {
 
       // Enhanced document processing pipeline
       const [summary, entities, tags, embedding, riskAssessment] = await Promise.all([
-        this.ollama.summarize(content, 'legal-focus'),
+        this.generateSummary(content),
         this.extractLegalEntities(content),
-        this.ollama.generateTags(content, 'legal-taxonomy'),
-        this.generateEmbedding(content),
+        this.generateTags(content),
+        this.ollama.generateEmbedding(content),
         this.assessLegalRisk(content, metadata.caseType)
       ]);
 
@@ -270,10 +267,10 @@ export class LegalRAGEngine {
    */
   private async generateEmbedding(text: string): Promise<number[]> {
     try {
-      return await this.ollama.embed(text, 'nomic-embed-text');
-    } catch (error) {
+      return await this.ollama.generateEmbedding(text);
+    } catch (error: any) {
       console.error('Error generating embedding:', error);
-      throw new Error(`Failed to generate embedding: ${error.message}`);
+      throw new Error(`Failed to generate embedding: ${error?.message || 'Unknown error'}`);
     }
   }
 
@@ -283,7 +280,7 @@ export class LegalRAGEngine {
   private async extractLegalEntities(content: string): Promise<LegalEntities> {
     try {
       // Try Context7 MCP first
-      const entities = await this.context7.extractLegalEntities(content, [
+      const entities = await context7Service.extractLegalEntities(content, [
         'parties',
         'dates',
         'monetary',
@@ -322,14 +319,13 @@ export class LegalRAGEngine {
   ): Promise<{ score: number; confidence: number }> {
     try {
       // Use Ollama for risk assessment
-      const riskAnalysis = await this.ollama.generate(
+      const riskAnalysis = await this.ollama.generateCompletion(
         `Analyze the legal risk level of this ${caseType || 'legal'} document on a scale of 0-100. 
         Consider liability, compliance issues, and potential legal exposure.
         
         Document: ${content.substring(0, 2000)}
         
-        Return only a JSON object with 'score' (0-100) and 'confidence' (0-1) properties.`,
-        'legal-analysis-model'
+        Return only a JSON object with 'score' (0-100) and 'confidence' (0-1) properties.`
       );
 
       const parsed = JSON.parse(riskAnalysis);
@@ -370,5 +366,40 @@ export class LegalRAGEngine {
         }
       ]
     });
+  }
+
+  /**
+   * Generate document summary
+   */
+  private async generateSummary(content: string): Promise<string> {
+    try {
+      const response = await this.ollama.generateCompletion(
+        `Provide a concise legal summary of this document in 2-3 sentences:
+
+        ${content.substring(0, 2000)}`
+      );
+      return response;
+    } catch (error) {
+      console.error('Error generating summary:', error);
+      return 'Summary generation failed';
+    }
+  }
+
+  /**
+   * Generate document tags
+   */
+  private async generateTags(content: string): Promise<string[]> {
+    try {
+      const response = await this.ollama.generateCompletion(
+        `Generate 5-7 relevant legal tags for this document. Return only a JSON array of strings:
+
+        ${content.substring(0, 1500)}`
+      );
+      const tags = JSON.parse(response);
+      return Array.isArray(tags) ? tags : ['legal', 'document'];
+    } catch (error) {
+      console.error('Error generating tags:', error);
+      return ['legal', 'document'];
+    }
   }
 }

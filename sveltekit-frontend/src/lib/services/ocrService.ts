@@ -4,7 +4,7 @@
  */
 
 import { writable, type Writable } from 'svelte/store';
-import { createWorker, type Worker } from 'tesseract.js';
+import { createWorker, type Worker, PSM } from 'tesseract.js';
 import { z } from 'zod';
 
 // OCR Types
@@ -143,7 +143,7 @@ export class OCRService {
 			await this.worker.setParameters({
 				tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:!?-()[]{}/@#$%^&*+=<>|\\~`"\' \n\t',
 				preserve_interword_spaces: '1',
-				tessedit_pageseg_mode: '1' // Automatic page segmentation with OSD
+				tessedit_pageseg_mode: PSM.AUTO_OSD // Automatic page segmentation with OSD
 			});
 
 			this.isInitialized = true;
@@ -208,7 +208,7 @@ export class OCRService {
 				metadata: {
 					filename: file.name,
 					fileSize: file.size,
-					dimensions: { width: data.words[0]?.bbox.x1 || 0, height: data.words[0]?.bbox.y1 || 0 },
+					dimensions: { width: (data as any).words?.[0]?.bbox?.x1 || 0, height: (data as any).words?.[0]?.bbox?.y1 || 0 },
 					pageCount: 1, // TODO: Multi-page support
 					language: options.language || 'eng',
 					documentType,

@@ -180,7 +180,6 @@ class LangChainConfigService {
       baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: this.config.modelName,
       temperature: this.config.temperature,
-      maxTokens: this.config.maxTokens,
       streaming: this.config.streaming,
       // CUDA optimizations
       numCtx: 32768,
@@ -189,7 +188,7 @@ class LangChainConfigService {
       f16Kv: true,
       useMmap: true,
       useMlock: true
-    });
+    } as any);
 
     this.models.set('primary', ollamaModel);
 
@@ -198,10 +197,9 @@ class LangChainConfigService {
       baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: 'gemma2:9b',
       temperature: 0.3, // More deterministic for legal analysis
-      maxTokens: 8192,
       numCtx: 65536, // Large context for legal documents
       numGpu: 1
-    });
+    } as any);
 
     this.models.set('legal', legalModel);
 
@@ -542,13 +540,15 @@ class LangChainConfigService {
     if (sessionId) {
       // Clear specific session memory
       const memory = this.memories.get(sessionId);
-      if (memory) {
-        await memory.clear();
+      if (memory && 'clear' in memory) {
+        await (memory as any).clear();
       }
     } else {
       // Clear all memories
       for (const memory of this.memories.values()) {
-        await memory.clear();
+        if ('clear' in memory) {
+          await (memory as any).clear();
+        }
       }
     }
     
@@ -591,10 +591,4 @@ class LangChainConfigService {
 export const langchainConfigService = LangChainConfigService.getInstance();
 export default langchainConfigService;
 
-// Export types
-export type {
-  LangChainConfig,
-  ChainConfig,
-  ConversationContext,
-  ChainExecutionResult
-};
+// Types are already exported at their definitions above

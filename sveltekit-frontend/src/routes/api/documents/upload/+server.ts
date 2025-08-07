@@ -53,9 +53,7 @@ async function analyzeWithGemma3Legal(
 
 Document text: ${text.substring(0, 4000)}`;
 
-    const analysis = await ollamaService.generateCompletion(prompt, {
-      model: 'gemma3-legal'
-    });
+    const analysis = await ollamaService.generateCompletion(prompt);
 
     // Parse the AI response for structured data
     const entities = extractEntitiesFromAnalysis(analysis);
@@ -72,9 +70,7 @@ Document text: ${text.substring(0, 4000)}`;
 
 Previous analysis: ${analysis}`;
 
-      const contextAnalysis = await ollamaService.generateCompletion(contextPrompt, {
-        model: 'gemma3-legal'
-      });
+      const contextAnalysis = await ollamaService.generateCompletion(contextPrompt);
 
       return {
         summary: analysis,

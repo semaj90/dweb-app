@@ -647,8 +647,8 @@ export class EnhancedIngestionPipeline {
         metadata: result.payload?.metadata || {},
       }));
 
-      const clustersSearched = Array.from(
-        new Set(documents.map((doc: any) => doc.metadata.cluster_id || 0))
+      const clustersSearched: number[] = Array.from(
+        new Set(documents.map((doc: any) => Number(doc.metadata.cluster_id) || 0))
       );
 
       const processingTime = Date.now() - startTime;

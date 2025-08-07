@@ -3,7 +3,7 @@ import { Redis } from 'ioredis';
 import { aiPipeline } from './aiPipeline';
 import { ollamaService } from './ollamaService';
 import { multiLayerCache } from './multiLayerCache';
-import { db } from '$lib/db';
+import { db } from '$lib/server/db';
 import { evidence, documentVectors } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 import type { DocumentProcessingOptions } from '$lib/schemas/upload';
@@ -29,7 +29,7 @@ export interface EmbeddingGenerationJob {
 
 export interface AIAnalysisJob {
   content: string;
-  analysisType: 'summary' | 'entities' | 'sentiment' | 'classification' | 'risk_assessment';
+  analysisType: 'summary' | 'entities' | 'sentiment' | 'classification';
   documentId: string;
   userId: string;
 }
@@ -73,7 +73,6 @@ export class BullMQService {
   constructor(redisUrl: string = 'redis://localhost:6379') {
     this.redis = new Redis(redisUrl, {
       maxRetriesPerRequest: 3,
-      retryDelayOnFailover: 100,
       enableOfflineQueue: false
     });
 

@@ -204,12 +204,12 @@ export function createLegalAIWorker(): Worker {
 					await db
 						.update(evidence)
 						.set({
-							aiProcessingMetadata: JSON.stringify({
+							aiAnalysis: {
 								error: error instanceof Error ? error.message : 'Unknown error',
 								processing_time: `${processingTime}ms`,
 								processed_at: new Date().toISOString(),
 								success: false
-							}),
+							},
 							updatedAt: new Date()
 						})
 						.where(eq(evidence.id, data.documentId));
@@ -231,8 +231,8 @@ export function createLegalAIWorker(): Worker {
 				})
 			},
 			concurrency: 2, // Process 2 documents simultaneously
-			removeOnComplete: 50, // Keep last 50 completed jobs
-			removeOnFail: 25, // Keep last 25 failed jobs
+			removeOnComplete: { count: 50 }, // Keep last 50 completed jobs
+			removeOnFail: { count: 25 }, // Keep last 25 failed jobs
 		}
 	);
 

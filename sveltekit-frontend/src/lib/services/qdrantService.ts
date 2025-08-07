@@ -4,7 +4,7 @@
  */
 
 import { QdrantClient } from '@qdrant/js-client-rest';
-import type { PointStruct, Filter, SearchRequest } from '@qdrant/js-client-rest/dist/types';
+import type { PointStruct, Filter, SearchRequest } from '@qdrant/js-client-rest';
 import { writable, type Writable } from 'svelte/store';
 
 // Qdrant configuration
@@ -221,10 +221,10 @@ export class QdrantService {
 		const results = await this.client.search(QDRANT_COLLECTIONS.documents, searchRequest);
 		
 		const searchResults: SearchResult[] = results.map(result => ({
-			id: result.id.toString(),
-			score: result.score,
-			payload: result.payload as DocumentVector,
-			highlights: this.extractHighlights(query, result.payload as DocumentVector)
+		id: result.id.toString(),
+		score: result.score,
+		payload: result.payload as DocumentVector & { [key: string]: unknown },
+		highlights: this.extractHighlights(query, result.payload as DocumentVector & { [key: string]: unknown })
 		}));
 
 		this.searchResults$.set(searchResults);
@@ -360,10 +360,10 @@ export class QdrantService {
 		const results = await this.client.search(QDRANT_COLLECTIONS.documents, searchRequest);
 		
 		return results.map(result => ({
-			id: result.id.toString(),
-			score: result.score,
-			payload: result.payload as LegalDocumentVector,
-			highlights: this.extractLegalHighlights(result.payload as LegalDocumentVector)
+		id: result.id.toString(),
+		score: result.score,
+		payload: result.payload as LegalDocumentVector & Record<string, unknown>,
+		highlights: this.extractLegalHighlights(result.payload as LegalDocumentVector & Record<string, unknown>)
 		}));
 	}
 
@@ -567,17 +567,17 @@ Return a JSON object with this enhanced structure:
 		
 		// Extract key legal entities as highlights
 		if (document.legalEntities) {
-			document.legalEntities.parties.slice(0, 2).forEach(party => {
-				highlights.push(`Party: ${party}`);
-			});
-			
-			document.legalEntities.monetary.slice(0, 2).forEach(amount => {
-				highlights.push(`Amount: ${amount}`);
-			});
-			
-			document.legalEntities.clauses.slice(0, 2).forEach(clause => {
-				highlights.push(`Clause: ${clause}`);
-			});
+		document.legalEntities.parties?.slice(0, 2).forEach(party => {
+		highlights.push(`Party: ${party}`);
+		});
+		
+		document.legalEntities.monetary?.slice(0, 2).forEach(amount => {
+		highlights.push(`Amount: ${amount}`);
+		});
+		
+		document.legalEntities.clauses?.slice(0, 2).forEach(clause => {
+		highlights.push(`Clause: ${clause}`);
+		});
 		}
 
 		// Add case type and jurisdiction

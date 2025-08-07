@@ -69,8 +69,8 @@ export const POST: RequestHandler = async ({ request }) => {
       
       if (caseData) {
         caseContext = {
-          caseType: caseData.metadata?.type || 'general',
-          jurisdiction: caseData.metadata?.jurisdiction || 'federal',
+          caseType: (caseData.metadata as any)?.type || 'general',
+          jurisdiction: (caseData.metadata as any)?.jurisdiction || 'federal',
           priority: caseData.priority || 'medium'
         };
       }

@@ -1,0 +1,218 @@
+# AI Microservice Configuration
+# Version 2.0.0 - Phase 14 Advanced Features
+
+# Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 8081
+  mode: "release" # debug, release, test
+  read_timeout: 60s
+  write_timeout: 60s
+  max_header_bytes: 1048576 # 1MB
+  enable_cors: true
+  cors_origins:
+    - "http://localhost:5173"
+    - "http://localhost:5175"
+    - "http://localhost:3000"
+
+# GPU/CUDA Configuration
+cuda:
+  enabled: true
+  device_id: 0
+  memory_fraction: 0.8
+  allow_growth: true
+  compute_capability: 8.6 # RTX 3060
+  use_tensor_cores: true
+  cublas:
+    workspace_size: 33554432 # 32MB
+    math_mode: "tensor_op"
+  cudnn:
+    enabled: true
+    benchmark: true
+    deterministic: false
+
+# Neo4j Configuration
+neo4j:
+  uri: "neo4j://localhost:7687"
+  username: "neo4j"
+  password: "password"
+  database: "neo4j"
+  max_connection_lifetime: 30m
+  max_connection_pool_size: 50
+  connection_acquisition_timeout: 1m
+  log_level: "info"
+  encrypted: false
+
+# Redis Configuration
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  database: 0
+  pool_size: 10
+  min_idle_conns: 5
+  max_retries: 3
+  dial_timeout: 5s
+  read_timeout: 3s
+  write_timeout: 3s
+  pool_timeout: 4s
+  idle_timeout: 5m
+  max_conn_age: 0
+  enable_cluster: false
+
+# Queue Configuration
+queues:
+  inference:
+    priority: 1
+    max_retries: 3
+    retry_delay: 5s
+    concurrency: 4
+    batch_size: 10
+  embeddings:
+    priority: 2
+    max_retries: 3
+    retry_delay: 5s
+    concurrency: 8
+    batch_size: 50
+  processing:
+    priority: 3
+    max_retries: 3
+    retry_delay: 5s
+    concurrency: 4
+    batch_size: 20
+
+# SIMD Parser Configuration
+parser:
+  strategy: "auto" # auto, simd, sonic, fast
+  buffer_size: 4096
+  max_chunk_size: 1048576 # 1MB
+  concurrency: 4
+  use_compression: false
+  enable_metrics: true
+  timeout_per_chunk: 5s
+  simd:
+    enabled: true
+    threshold_bytes: 10240 # 10KB
+  sonic:
+    enabled: true
+    threshold_bytes: 1024 # 1KB
+  fastjson:
+    enabled: true
+    threshold_bytes: 0 # Always available
+
+# Streaming Configuration
+streaming:
+  websocket:
+    enabled: true
+    read_buffer_size: 1024
+    write_buffer_size: 1024
+    max_message_size: 1048576 # 1MB
+    ping_interval: 30s
+    pong_timeout: 60s
+  sse:
+    enabled: true
+    keep_alive_interval: 30s
+    max_event_size: 65536 # 64KB
+  chunked:
+    enabled: true
+    default_chunk_size: 4096
+    max_chunk_size: 1048576 # 1MB
+
+# Cache Configuration
+cache:
+  default_ttl: 10m
+  max_entries: 10000
+  eviction_policy: "lru" # lru, lfu, fifo
+  enable_compression: true
+  compression_threshold: 1024 # bytes
+  redis_cache:
+    enabled: true
+    prefix: "ai:cache:"
+  memory_cache:
+    enabled: true
+    max_size: 104857600 # 100MB
+    cleanup_interval: 10m
+
+# Ollama Configuration
+ollama:
+  host: "http://localhost:11434"
+  models:
+    embeddings: "nomic-embed-text"
+    inference: "gemma3-legal"
+    chat: "llama3"
+  timeout: 30s
+  max_retries: 3
+  retry_delay: 1s
+
+# Metrics Configuration
+metrics:
+  enabled: true
+  endpoint: "/metrics"
+  update_interval: 10s
+  include_runtime: true
+  include_gpu: true
+  include_cache: true
+  include_queues: true
+  prometheus:
+    enabled: false
+    port: 9090
+
+# Logging Configuration
+logging:
+  level: "info" # debug, info, warn, error
+  format: "json" # json, text
+  output: "stdout" # stdout, file
+  file:
+    path: "./logs/ai-microservice.log"
+    max_size: 100 # MB
+    max_backups: 10
+    max_age: 30 # days
+    compress: true
+
+# Security Configuration
+security:
+  enable_auth: false
+  jwt:
+    secret: "your-secret-key-here"
+    expiry: 24h
+    refresh_expiry: 168h # 7 days
+  api_keys:
+    enabled: false
+    header_name: "X-API-Key"
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst: 20
+
+# Performance Configuration
+performance:
+  max_workers: 0 # 0 = number of CPU cores
+  worker_queue_size: 100
+  enable_pprof: false
+  pprof_port: 6060
+  gc_percent: 100
+  max_procs: 0 # 0 = number of CPU cores
+  read_buffer_size: 4096
+  write_buffer_size: 4096
+
+# Health Check Configuration
+health:
+  enabled: true
+  endpoint: "/health"
+  interval: 30s
+  timeout: 5s
+  checks:
+    - "redis"
+    - "neo4j"
+    - "cuda"
+    - "ollama"
+
+# Development Configuration
+development:
+  debug: false
+  verbose: false
+  pretty_json: true
+  enable_swagger: false
+  swagger_endpoint: "/swagger"
+  enable_profiling: false
+  mock_external_services: false

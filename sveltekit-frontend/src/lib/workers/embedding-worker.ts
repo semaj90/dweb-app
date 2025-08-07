@@ -165,6 +165,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
           content: chunk,
           metadata: {
             ...metadata,
+            source: metadata?.source || 'unknown',
             chunkIndex: index,
             totalChunks: chunks.length,
             startIndex: content.indexOf(chunk),
@@ -634,11 +635,4 @@ export class EmbeddingWorkerManager {
   }
 }
 
-// Export types
-export type {
-  WorkerMessage,
-  WorkerResponse,
-  EmbeddingTask,
-  ChunkingTask,
-  SimilarityTask
-};
+// Types are already exported above

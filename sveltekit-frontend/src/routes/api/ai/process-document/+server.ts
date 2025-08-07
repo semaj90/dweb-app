@@ -6,10 +6,26 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { db } from '$lib/server/database';
 import { documents, aiProcessingJobs } from '$lib/database/enhanced-schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { langChainService } from '$lib/ai/langchain-ollama-service';
-import { rateLimit } from '$lib/utils/rate-limit';
+import { RateLimiter } from '$lib/utils/rate-limit';
 import { authenticateUser } from '$lib/server/auth';
+
+// ============================================================================
+// RATE LIMITERS
+// ============================================================================
+
+const aiProcessingLimiter = new RateLimiter({
+  maxRequests: 10,
+  windowMs: 60 * 1000, // 1 minute
+  message: 'Too many AI processing requests'
+});
+
+const aiBatchProcessingLimiter = new RateLimiter({
+  maxRequests: 3,
+  windowMs: 60 * 1000, // 1 minute
+  message: 'Too many AI batch processing requests'
+});
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -67,23 +83,20 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 
   try {
     // Rate limiting
-    const rateLimitResult = await rateLimit(clientIP, 'ai-processing', {
-      requests: 10,
-      window: 60 * 1000, // 1 minute
-    });
+    const isAllowed = aiProcessingLimiter.isAllowed(clientIP);
 
-    if (!rateLimitResult.allowed) {
+    if (!isAllowed) {
       return json(
         {
           error: 'Rate limit exceeded',
-          retryAfter: rateLimitResult.retryAfter,
+          retryAfter: 60000, // 1 minute
         },
         { status: 429 }
       );
     }
 
     // Authentication
-    const user = await authenticateUser(cookies);
+    const user = await authenticateUser(request);
     if (!user) {
       return json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -136,12 +149,13 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
     const [job] = await db
       .insert(aiProcessingJobs)
       .values({
-        entityType: 'document',
-        entityId: data.documentId,
-        jobType: 'comprehensive_analysis',
+        type: 'comprehensive_analysis',
         status: 'processing',
-        model: data.model || 'llama3.2',
-        metadata: {
+        input: {
+          documentId: data.documentId,
+          entityType: 'document',
+          entityId: data.documentId,
+          model: data.model || 'llama3.2',
           generateSummary: data.generateSummary,
           extractEntities: data.extractEntities,
           riskAssessment: data.riskAssessment,
@@ -239,7 +253,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
         .update(documents)
         .set({
           metadata: {
-            ...doc.metadata,
+            ...(doc.metadata || {}),
             aiAnalysis,
             lastProcessed: new Date().toISOString(),
           },
@@ -256,13 +270,8 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
         .set({
           status: 'completed',
           progress: 100,
-          outputData: response,
-          metadata: {
-            ...job.metadata,
-            completedAt: new Date().toISOString(),
-            processingTime,
-            tokensUsed: response.metadata.tokensUsed,
-          },
+          output: response,
+          completedAt: new Date(),
         })
         .where(eq(aiProcessingJobs.id, job.id));
 
@@ -278,11 +287,6 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
         .set({
           status: 'failed',
           error: String(processingError),
-          metadata: {
-            ...job.metadata,
-            failedAt: new Date().toISOString(),
-            error: String(processingError),
-          },
         })
         .where(eq(aiProcessingJobs.id, job.id));
 
@@ -308,7 +312,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 export const GET: RequestHandler = async ({ url, cookies }) => {
   try {
     // Authentication
-    const user = await authenticateUser(cookies);
+    const user = await authenticateUser(request);
     if (!user) {
       return json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -336,10 +340,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         .select()
         .from(aiProcessingJobs)
         .where(
-          and(
-            eq(aiProcessingJobs.entityId, documentId!),
-            eq(aiProcessingJobs.entityType, 'document')
-          )
+          sql`${aiProcessingJobs.input}->>'documentId' = ${documentId}`
         )
         .orderBy(aiProcessingJobs.createdAt)
         .limit(10);
@@ -349,7 +350,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
       success: true,
       jobs: jobs.map(job => ({
         id: job.id,
-        documentId: job.entityId,
+        documentId: (job.input as any)?.documentId,
         status: job.status,
         progress: job.progress,
         jobType: job.jobType,
@@ -382,23 +383,20 @@ export const PUT: RequestHandler = async ({ request, getClientAddress, cookies }
 
   try {
     // Enhanced rate limiting for batch operations
-    const rateLimitResult = await rateLimit(clientIP, 'ai-batch-processing', {
-      requests: 3,
-      window: 60 * 1000, // 1 minute
-    });
+    const isBatchAllowed = aiBatchProcessingLimiter.isAllowed(clientIP);
 
-    if (!rateLimitResult.allowed) {
+    if (!isBatchAllowed) {
       return json(
         {
           error: 'Rate limit exceeded for batch operations',
-          retryAfter: rateLimitResult.retryAfter,
+          retryAfter: 60000, // 1 minute
         },
         { status: 429 }
       );
     }
 
     // Authentication
-    const user = await authenticateUser(cookies);
+    const user = await authenticateUser(request);
     if (!user) {
       return json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -449,11 +447,11 @@ export const PUT: RequestHandler = async ({ request, getClientAddress, cookies }
       const [job] = await db
         .insert(aiProcessingJobs)
         .values({
-          entityType: 'document',
-          entityId: documentId,
-          jobType: 'batch_analysis',
+          type: 'batch_analysis',
           status: 'queued',
-          metadata: {
+          input: {
+            documentId,
+            entityType: 'document',
             batchId,
             ...options,
             queuedAt: new Date().toISOString(),
@@ -491,7 +489,8 @@ export const PUT: RequestHandler = async ({ request, getClientAddress, cookies }
               .set({
                 status: 'completed',
                 progress: 100,
-                outputData: result,
+                output: result,
+                completedAt: new Date(),
               })
               .where(eq(aiProcessingJobs.id, job.id));
           }

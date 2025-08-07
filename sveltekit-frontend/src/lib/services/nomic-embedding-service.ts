@@ -13,7 +13,7 @@ import type { VectorStore } from '@langchain/core/vectorstores';
 // Import our database service for persistent storage
 import { db } from '$lib/database/connection';
 import { searchIndex, type NewSearchIndex } from '$lib/database/schema';
-import { eq, sql, desc, asc } from 'drizzle-orm';
+import { eq, sql, desc, asc, and } from 'drizzle-orm';
 
 export interface EmbeddingConfig {
   model: string;
@@ -116,8 +116,7 @@ class NomicEmbeddingService {
         model: this.config.model,
         requestOptions: {
           numGpu: this.config.enableGpuAcceleration ? 1 : 0,
-          mainGpu: 0,
-          batchSize: this.config.batchSize
+          mainGpu: 0
         }
       });
 
@@ -420,19 +419,21 @@ class NomicEmbeddingService {
       // Generate query embedding
       const queryEmbedding = await this.generateEmbedding(query);
 
+      // Build where conditions
+      const conditions = [];
+      if (entityType) {
+        conditions.push(eq(searchIndex.entityType, entityType));
+      }
+      if (entityId) {
+        conditions.push(eq(searchIndex.entityId, entityId));
+      }
+
       // Search in database
-      let searchQuery = db
+      const searchQuery = db
         .select()
         .from(searchIndex)
+        .where(conditions.length > 0 ? and(...conditions) : undefined)
         .limit(k * 2); // Get more results to filter
-
-      if (entityType) {
-        searchQuery = searchQuery.where(eq(searchIndex.entityType, entityType));
-      }
-
-      if (entityId) {
-        searchQuery = searchQuery.where(eq(searchIndex.entityId, entityId));
-      }
 
       const results = await searchQuery;
 
@@ -452,6 +453,11 @@ class NomicEmbeddingService {
                 id: result.id,
                 content: result.content,
                 metadata: {
+                  source: result.entityType || 'search_index',
+                  chunkIndex: 0,
+                  totalChunks: 1,
+                  startIndex: 0,
+                  endIndex: result.content.length,
                   ...result.metadata as Record<string, any>,
                   entityType: result.entityType,
                   entityId: result.entityId
@@ -613,11 +619,5 @@ class NomicEmbeddingService {
 export const nomicEmbeddingService = NomicEmbeddingService.getInstance();
 export default nomicEmbeddingService;
 
-// Export types
-export type {
-  EmbeddingConfig,
-  DocumentChunk,
-  EmbeddingResult,
-  SimilaritySearchResult,
-  BatchEmbeddingResult
-};
+// Note: Types are defined locally in this file for service-specific usage
+// Common types are available in $lib/types/unified-types

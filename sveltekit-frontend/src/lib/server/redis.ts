@@ -1,6 +1,13 @@
 import { createClient } from "redis";
+import { Redis } from 'ioredis';
 
 let redisClient: any = null;
+
+// IORedis connection for high-performance operations
+export const REDIS_CONNECTION = new Redis({
+  host: '127.0.0.1',
+  port: 6379
+});
 
 export async function createRedisClient() {
   if (redisClient) {

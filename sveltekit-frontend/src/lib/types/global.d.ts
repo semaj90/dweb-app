@@ -1,74 +1,44 @@
-import type { User } from "$lib/types/user";
-
-// Global type definitions for the project
-
+// Global type definitions for TypeScript error resolution
 declare global {
-  namespace App {
-    interface Error {
-      message: string;
-      code?: string;
+  interface Window {
+    fs?: any;
+  }
+  
+  namespace svelteHTML {
+    interface HTMLAttributes<T> {
+      'data-testid'?: string;
     }
-    interface Locals {
-      user: User | null;
-      session: Session | null;
-    }
-    interface PageData {}
-
-    interface Platform {}
   }
 }
-// User type definition
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  firstName?: string;
-  lastName?: string;
-  avatarUrl?: string;
-  role: "user" | "admin" | "prosecutor" | "investigator";
-  isActive: boolean;
-  emailVerified?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+
+// Extend module declarations for better type safety
+declare module '@qdrant/js-client-rest' {
+  export interface QdrantClient {
+    upsert(collection: string, options: any): Promise<any>;
+    search(collection: string, request: any): Promise<any>;
+    getCollections(): Promise<any>;
+    getCollection(name: string): Promise<any>;
+    createCollection(name: string, options: any): Promise<any>;
+  }
+  
+  export interface PointStruct {
+    id: string | number;
+    vector: number[];
+    payload?: Record<string, any>;
+  }
+  
+  export interface Filter {
+    must?: Array<Record<string, any>>;
+    should?: Array<Record<string, any>>;
+  }
+  
+  export interface SearchRequest {
+    vector: number[];
+    limit?: number;
+    score_threshold?: number;
+    with_payload?: boolean;
+    filter?: Filter;
+  }
 }
-// Session type definition
-export interface Session {
-  id: string;
-  userId: string;
-  fresh: boolean;
-  expiresAt: Date;
-}
-// Component props for UI components
-export interface SelectContext {
-  selected: import("svelte/store").Writable<any>;
-  open: import("svelte/store").Writable<boolean>;
-  onSelect: (value: any) => void;
-  onToggle: () => void;
-}
-// AI Service types
-export interface AIResponse {
-  content: string;
-  sources?: any[];
-  confidence?: number;
-  tokens?: number;
-  model?: string;
-}
-export interface EmbeddingResult {
-  embedding: number[];
-  tokens: number;
-  model: string;
-}
-// Vector search types
-export interface VectorSearchResult {
-  id: string;
-  content: string;
-  similarity: number;
-  metadata?: Record<string, any>;
-}
-export interface SearchOptions {
-  limit?: number;
-  threshold?: number;
-  caseId?: string;
-  contentType?: string;
-}
+
 export {};

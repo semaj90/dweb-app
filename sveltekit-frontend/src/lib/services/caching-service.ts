@@ -1,11 +1,8 @@
-// Enhanced Caching Service Integration
-// Integrates with existing comprehensive caching architecture + adds Redis support
-// Provides simple interface for SvelteKit components
+// Enhanced Caching Service - Stub Implementation
+// Simple caching interface that can be extended later
 
-import { comprehensiveCache, ComprehensiveCacheManager } from './comprehensive-caching-architecture';
-import { db } from '$lib/server/database';
-import { vectorSimilarityCache } from '$lib/database/enhanced-schema';
-import { eq, sql } from 'drizzle-orm';
+import type { Writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 // ============================================================================
 // CACHE SERVICE INTERFACE
@@ -29,7 +26,7 @@ export interface SearchCacheOptions extends CacheOptions {
 // ============================================================================
 
 class EnhancedCachingService {
-  private cache: ComprehensiveCacheManager;
+  private cache = new Map<string, any>();
   private stats = {
     requests: 0,
     hits: 0,
@@ -38,7 +35,7 @@ class EnhancedCachingService {
   };
 
   constructor() {
-    this.cache = comprehensiveCache;
+    // Simple in-memory cache for now
   }
 
   // ============================================================================
@@ -49,7 +46,7 @@ class EnhancedCachingService {
     this.stats.requests++;
     
     try {
-      const result = await this.cache.get<T>(key);
+      const result = this.cache.get(key);
       if (result) {
         this.stats.hits++;
         return result;
@@ -66,13 +63,8 @@ class EnhancedCachingService {
 
   async set<T>(key: string, value: T, options: CacheOptions = {}): Promise<boolean> {
     try {
-      const cacheOptions = {
-        ttl: options.ttl,
-        tags: options.tags,
-        priority: this.convertPriority(options.priority)
-      };
-
-      return await this.cache.set(key, value, cacheOptions);
+      this.cache.set(key, value);
+      return true;
     } catch (error) {
       this.stats.errors++;
       console.error('Cache set error:', error);
@@ -82,7 +74,7 @@ class EnhancedCachingService {
 
   async delete(key: string): Promise<boolean> {
     try {
-      return await this.cache.delete(key);
+      return this.cache.delete(key);
     } catch (error) {
       this.stats.errors++;
       console.error('Cache delete error:', error);
@@ -92,7 +84,8 @@ class EnhancedCachingService {
 
   async clear(): Promise<boolean> {
     try {
-      return await this.cache.clear();
+      this.cache.clear();
+      return true;
     } catch (error) {
       this.stats.errors++;
       console.error('Cache clear error:', error);
@@ -123,12 +116,7 @@ class EnhancedCachingService {
   async batchGet<T>(keys: string[], options: CacheOptions = {}): Promise<Map<string, T>> {
     const results = new Map<string, T>();
     
-    // Use batch operation if available
-    if (this.cache.batchGet) {
-      return await this.cache.batchGet<T>(keys);
-    }
-
-    // Fallback to individual gets
+    // Individual gets for simple implementation
     const promises = keys.map(async (key) => {
       const value = await this.get<T>(key, options);
       return { key, value };
@@ -145,21 +133,7 @@ class EnhancedCachingService {
   }
 
   async batchSet<T>(items: Array<{ key: string; value: T; options?: CacheOptions }>): Promise<boolean[]> {
-    // Use batch operation if available
-    if (this.cache.batchSet) {
-      const batchItems = items.map(item => ({
-        key: item.key,
-        value: item.value,
-        options: {
-          ttl: item.options?.ttl,
-          tags: item.options?.tags,
-          priority: this.convertPriority(item.options?.priority)
-        }
-      }));
-      return await this.cache.batchSet(batchItems);
-    }
-
-    // Fallback to individual sets
+    // Individual sets for simple implementation
     const promises = items.map(item => 
       this.set(item.key, item.value, item.options || {})
     );
@@ -235,12 +209,8 @@ class EnhancedCachingService {
 
   async invalidateByTag(tag: string): Promise<number> {
     try {
-      if (this.cache.invalidateByTag) {
-        return await this.cache.invalidateByTag(tag);
-      }
-      
-      // Fallback: clear all cache (less efficient)
-      await this.cache.clear();
+      // Simple implementation: clear all cache
+      await this.clear();
       return 1;
     } catch (error) {
       this.stats.errors++;
@@ -269,7 +239,7 @@ class EnhancedCachingService {
     service: typeof this.stats;
     layers?: any;
   }> {
-    const layerStats = this.cache.getOverallStats ? await this.cache.getOverallStats() : null;
+    const layerStats = null; // Simple implementation
     
     return {
       service: {
@@ -300,10 +270,10 @@ class EnhancedCachingService {
       serviceHealthy = false;
     }
 
-    const layerHealth = this.cache.healthCheck ? await this.cache.healthCheck() : null;
+    const layerHealth = null; // Simple implementation
 
     return {
-      healthy: serviceHealthy && (layerHealth?.healthy ?? true),
+      healthy: serviceHealthy,
       service: serviceHealthy,
       layers: layerHealth
     };

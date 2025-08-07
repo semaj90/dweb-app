@@ -5,11 +5,18 @@ import { createMachine, assign } from "xstate";
 interface AgentShellContext {
   input: string;
   response: string;
+  jobId?: string;
+  rating?: number;
+  searchQuery?: string;
+  searchResults?: any;
 }
 
-type AgentShellEvent = 
+type AgentShellEvent =
   | { type: "PROMPT"; input: string }
-  | { type: "xstate.done.actor.callAgent"; data: string };
+  | { type: "xstate.done.actor.callAgent"; data: string }
+  | { type: "ACCEPT_PATCH"; jobId: string }
+  | { type: "RATE_SUGGESTION"; jobId: string; rating: number }
+  | { type: "SEMANTIC_SEARCH"; query: string };
 
 export const agentShellMachine = createMachine({
   id: "agentShell",
@@ -24,8 +31,8 @@ export const agentShellMachine = createMachine({
       on: {
         PROMPT: {
           target: "processing",
-          actions: assign({ 
-            input: ({ event }) => (event as any).input || ""
+          actions: assign({
+            input: ({ event }) => (event as any).input || "",
           }),
         },
       },
@@ -35,11 +42,23 @@ export const agentShellMachine = createMachine({
         src: "callAgent",
         onDone: {
           target: "idle",
-          actions: assign({ 
-            response: ({ event }) => (event as any).data || ""
+          actions: assign({
+            response: (_, e) => (e && "data" in e ? (e as any).data : ""),
           }),
         },
         onError: "idle",
+      },
+      // Next step: handle agent patch acceptance, rating, and semantic search
+      on: {
+        ACCEPT_PATCH: {
+          actions: "acceptPatchAction",
+        },
+        RATE_SUGGESTION: {
+          actions: "rateSuggestionAction",
+        },
+        SEMANTIC_SEARCH: {
+          actions: "semanticSearchAction",
+        },
       },
     },
   },

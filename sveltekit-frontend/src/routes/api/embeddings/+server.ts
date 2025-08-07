@@ -6,6 +6,7 @@ import {
   generateBatchEmbeddings,
   generateEmbedding,
 } from "$lib/server/ai/embeddings-simple";
+import { fetchEmbedding } from "$lib/server/qdrant";
 // TODO: Implement syncDocumentEmbeddings function
 // import { syncDocumentEmbeddings } from '$lib/server/ai/embeddings';
 
@@ -51,7 +52,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         { status: 400 },
       );
     }
-    const embedding = await generateEmbedding(text, { model: model as "local" | "openai" });
+    // Try primary embedding service first, fallback to Qdrant
+    let embedding: number[];
+    try {
+      embedding = await generateEmbedding(text, { model: model as "local" | "openai" });
+    } catch (primaryError) {
+      console.warn('Primary embedding failed, trying Qdrant fallback:', primaryError);
+      embedding = await fetchEmbedding(text);
+      if (embedding.length === 0) {
+        throw new Error('Both primary and fallback embedding methods failed');
+      }
+    }
 
     return json({
       success: true,

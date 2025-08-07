@@ -62,16 +62,16 @@ export const actions: Actions = {
         title: form.data.title,
         description: form.data.description,
         evidenceType: form.data.type,
-        summary: extractedText || form.data.description || '',
-        fileUrl: filePath,
-        fileName: file.name,
-        fileSize: file.size,
-        mimeType: file.type,
         hash: hash,
-        uploadedBy: locals.user?.id || 'system', // Replace with actual user ID
+        createdBy: locals.user?.id || null,
         tags: form.data.tags || [],
         aiAnalysis: {
+          summary: extractedText || form.data.description || '',
           originalName: file.name,
+          fileSize: file.size,
+          mimeType: file.type,
+          uploadPath: filePath,
+          extractedText: extractedText,
           isPrivate: form.data.isPrivate
         }
       }).returning();

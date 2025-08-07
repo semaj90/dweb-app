@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     if (!session) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
-    const sessionId = typeof session === 'string' ? session : session.id;
+    const sessionId = typeof session === 'string' ? session : (session as any)?.id;
     const body = await request.json();
     const { action = "tag", ...data } = body;
 
@@ -665,7 +665,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     if (!session) {
       return json({ error: "Authentication required" }, { status: 401 });
     }
-    const sessionId = typeof session === 'string' ? session : session.id;
+    const sessionId = typeof session === 'string' ? session : (session as any)?.id;
     const action = url.searchParams.get("action");
     const documentId = url.searchParams.get("documentId");
     const caseId = url.searchParams.get("caseId");

@@ -1,0 +1,99 @@
+# Multi-stage Dockerfile for Go AI Microservice with GPU Support
+# Supports both CPU and GPU builds
+
+# Build stage
+FROM golang:1.23-windowsservercore AS builder
+
+# Install CUDA toolkit for Windows
+# Note: For production, use nvidia/cuda base image
+RUN powershell -Command \
+    Invoke-WebRequest -Uri https://developer.download.nvidia.com/compute/cuda/12.6.0/local_installers/cuda_12.6.0_windows.exe -OutFile cuda_installer.exe; \
+    Start-Process -FilePath cuda_installer.exe -ArgumentList '-s' -Wait; \
+    Remove-Item cuda_installer.exe
+
+# Set CUDA environment variables
+ENV CUDA_PATH="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6"
+ENV PATH="${CUDA_PATH}\bin;${PATH}"
+ENV CUDA_INCLUDE="${CUDA_PATH}\include"
+ENV CUDA_LIB="${CUDA_PATH}\lib\x64"
+
+WORKDIR /build
+
+# Copy go mod files
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the application with GPU support
+RUN set CGO_ENABLED=1 && \
+    set CGO_CFLAGS=-I"%CUDA_INCLUDE%" && \
+    set CGO_LDFLAGS=-L"%CUDA_LIB%" -lcudart -lcublas -lcublasLt -lcudnn && \
+    go build -a -installsuffix cgo -ldflags="-s -w" -o ai-microservice.exe .
+
+# Runtime stage - GPU version
+FROM mcr.microsoft.com/windows:ltsc2022 AS runtime-gpu
+
+# Install NVIDIA drivers and CUDA runtime
+# Note: Requires --gpus all flag when running container
+RUN powershell -Command \
+    Invoke-WebRequest -Uri https://developer.download.nvidia.com/compute/cuda/12.6.0/local_installers/cuda_12.6.0_windows.exe -OutFile cuda_installer.exe; \
+    Start-Process -FilePath cuda_installer.exe -ArgumentList '-s', 'cudart_12.6', 'cublas_12.6', 'cudnn_12.6' -Wait; \
+    Remove-Item cuda_installer.exe
+
+# Install Visual C++ Redistributables
+RUN powershell -Command \
+    Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile vc_redist.exe; \
+    Start-Process -FilePath vc_redist.exe -ArgumentList '/quiet', '/install' -Wait; \
+    Remove-Item vc_redist.exe
+
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /build/ai-microservice.exe .
+COPY --from=builder /build/config.yaml .
+
+# Create necessary directories
+RUN mkdir logs
+
+# Expose ports
+EXPOSE 8081
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD powershell -Command "Invoke-WebRequest -Uri http://localhost:8081/health -UseBasicParsing"
+
+# Set environment variables
+ENV PORT=8081
+ENV GIN_MODE=release
+ENV CUDA_VISIBLE_DEVICES=0
+
+# Run the application
+ENTRYPOINT ["ai-microservice.exe"]
+
+# Runtime stage - CPU version
+FROM mcr.microsoft.com/windows/servercore:ltsc2022 AS runtime-cpu
+
+WORKDIR /app
+
+# Copy binary from builder (built without GPU support)
+COPY --from=builder /build/ai-microservice.exe .
+COPY --from=builder /build/config.yaml .
+
+# Create necessary directories
+RUN mkdir logs
+
+# Expose ports
+EXPOSE 8081
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD powershell -Command "Invoke-WebRequest -Uri http://localhost:8081/health -UseBasicParsing"
+
+# Set environment variables
+ENV PORT=8081
+ENV GIN_MODE=release
+
+# Run the application
+ENTRYPOINT ["ai-microservice.exe"]

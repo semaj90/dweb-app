@@ -235,7 +235,7 @@
 {#if open && currentStepData}
   <!-- Overlay backdrop -->
   <div
-    class="container mx-auto px-4"
+    class="w-4 h-4"
     bind:this={overlayEl}
     role="dialog"
     aria-modal="true"
@@ -244,7 +244,7 @@
   >
     <!-- Darkened background -->
     <div
-      class="container mx-auto px-4"
+      class="w-4 h-4"
       role="button"
       tabindex={0}
       on:click={() => closeOnboarding()}
@@ -258,7 +258,7 @@
     <!-- Highlight box for target element -->
     {#if highlightBox}
       <div
-        class="container mx-auto px-4"
+        class="w-4 h-4"
         style="
           top: {highlightBox.top}px;
           left: {highlightBox.left}px;
@@ -270,7 +270,7 @@
 
     <!-- Tooltip/Content card -->
     <div
-      class="container mx-auto px-4"
+      class="w-4 h-4"
       style={highlightBox
         ? Object.entries(getTooltipPosition())
             .map(([key, value]) => `${key}: ${value}`)
@@ -278,27 +278,27 @@
         : "top: 50%; left: 50%; transform: translate(-50%, -50%);"}
     >
       <!-- Header -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">{currentStep + 1}</span>
-          <span class="container mx-auto px-4">of {steps.length}</span>
+      <div class="w-4 h-4">
+        <div class="w-4 h-4">
+          <span class="w-4 h-4">{currentStep + 1}</span>
+          <span class="w-4 h-4">of {steps.length}</span>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="w-4 h-4">
           {#if autoProgress}
             <Button
               variant="ghost"
               size="sm"
               on:click={() => toggleAutoProgress()}
-              class="container mx-auto px-4"
+              class="w-4 h-4"
               aria-label={isPlaying
                 ? "Pause auto-progress"
                 : "Play auto-progress"}
             >
               {#if isPlaying}
-                <Pause class="container mx-auto px-4" />
+                <Pause class="w-4 h-4" />
               {:else}
-                <Play class="container mx-auto px-4" />
+                <Play class="w-4 h-4" />
               {/if}
             </Button>
           {/if}
@@ -309,47 +309,47 @@
             on:click={() => closeOnboarding()}
             aria-label="Close onboarding"
           >
-            <X class="container mx-auto px-4" />
+            <X class="w-4 h-4" />
           </Button>
         </div>
       </div>
 
       <!-- Content -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="w-4 h-4">
+        <div class="w-4 h-4">
           {#if currentStepData.type === "action"}
-            <MousePointer class="container mx-auto px-4" />
+            <MousePointer class="w-4 h-4" />
           {:else if currentStepData.type === "success"}
-            <Check class="container mx-auto px-4" />
+            <Check class="w-4 h-4" />
           {:else if currentStepData.type === "input"}
-            <Target class="container mx-auto px-4" />
+            <Target class="w-4 h-4" />
           {:else}
-            <Lightbulb class="container mx-auto px-4" />
+            <Lightbulb class="w-4 h-4" />
           {/if}
         </div>
 
-        <h3 id="onboarding-title" class="container mx-auto px-4">
+        <h3 id="onboarding-title" class="w-4 h-4">
           {currentStepData.title}
         </h3>
 
-        <p id="onboarding-description" class="container mx-auto px-4">
+        <p id="onboarding-description" class="w-4 h-4">
           {currentStepData.description}
         </p>
 
         {#if currentStepData.content}
-          <div class="container mx-auto px-4">
+          <div class="w-4 h-4">
             {@html currentStepData.content}
           </div>
         {/if}
 
         {#if currentStepData.image}
-          <div class="container mx-auto px-4">
+          <div class="w-4 h-4">
             <img src={currentStepData.image} alt={currentStepData.title} />
           </div>
         {/if}
 
         {#if currentStepData.video}
-          <div class="container mx-auto px-4">
+          <div class="w-4 h-4">
             <video controls src={currentStepData.video}>
               <track kind="captions" src="" srclang="en" label="English" />
               Your browser does not support the video tag.
@@ -359,44 +359,44 @@
       </div>
 
       <!-- Progress bar -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="w-4 h-4">
+        <div class="w-4 h-4">
           <div
-            class="container mx-auto px-4"
+            class="w-4 h-4"
             style="width: {((currentStep + 1) / steps.length) * 100}%"
           ></div>
         </div>
-        <span class="container mx-auto px-4">
+        <span class="w-4 h-4">
           {currentStep + 1} / {steps.length}
         </span>
       </div>
 
       <!-- Navigation -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="w-4 h-4">
+        <div class="w-4 h-4">
           {#if allowSkip}
             <Button variant="ghost" size="sm" on:click={() => skipOnboarding()}>
-              <SkipForward class="container mx-auto px-4" />
+              <SkipForward class="w-4 h-4" />
               Skip Tour
             </Button>
           {/if}
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="w-4 h-4">
           {#if showMinimap && steps.length > 1}
-            <div class="container mx-auto px-4">
+            <div class="w-4 h-4">
               {#each steps as step, index}
                 <button
-                  class="container mx-auto px-4"
+                  class="w-4 h-4"
                   class:active={index === currentStep}
                   class:completed={index < currentStep}
                   on:click={() => goToStep(index)}
                   aria-label="Go to step {index + 1}: {step.title}"
                 >
                   {#if index < currentStep}
-                    <Check class="container mx-auto px-4" />
+                    <Check class="w-4 h-4" />
                   {:else}
-                    <span class="container mx-auto px-4">{index + 1}</span>
+                    <span class="w-4 h-4">{index + 1}</span>
                   {/if}
                 </button>
               {/each}
@@ -404,24 +404,24 @@
           {/if}
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="w-4 h-4">
           <Button
             variant="ghost"
             size="sm"
             on:click={() => previousStep()}
             disabled={currentStep === 0}
           >
-            <ArrowLeft class="container mx-auto px-4" />
+            <ArrowLeft class="w-4 h-4" />
             Back
           </Button>
 
           <Button on:click={() => nextStep()} size="sm">
             {#if currentStep === steps.length - 1}
-              <Check class="container mx-auto px-4" />
+              <Check class="w-4 h-4" />
               Complete
             {:else}
               Next
-              <ArrowRight class="container mx-auto px-4" />
+              <ArrowRight class="w-4 h-4" />
             {/if}
           </Button>
         </div>

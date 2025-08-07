@@ -105,10 +105,7 @@ const agentRegistry: Record<
           }),
         };
       } else {
-        return {
-          agent: "crewai",
-          result: `CrewAI agent (mock): Analyzed "${prompt}" - would provide multi-agent legal analysis`,
-        };
+        throw new Error(`CrewAI legal team not available for prompt: ${prompt}`);
       }
     } catch (error) {
       return {

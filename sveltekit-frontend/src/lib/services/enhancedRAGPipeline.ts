@@ -4,11 +4,11 @@
  * XState workflow integration for legal AI processing
  */
 
-import { ollamaService } from './ollamaService';
-import { aiAutoTaggingService } from './aiAutoTagging';
-import { createMachine, assign } from 'xstate';
-import Fuse from 'fuse.js';
-import { writable, derived } from 'svelte/store';
+import { ollamaService } from "./ollamaService";
+import { aiAutoTaggingService } from "./aiAutoTagging";
+import { createMachine, assign } from "xstate";
+import Fuse from "fuse.js";
+import { writable, derived } from "svelte/store";
 
 export interface RAGQueryResult {
   answer: string;
@@ -24,7 +24,7 @@ export interface RAGSource {
   title: string;
   content: string;
   relevance: number;
-  type: 'document' | 'case' | 'evidence' | 'precedent';
+  type: "document" | "case" | "evidence" | "precedent";
 }
 
 export interface RAGSynthesisOptions {
@@ -39,126 +39,133 @@ export interface RAGSynthesisOptions {
  * XState machine for RAG pipeline workflow
  */
 export const ragPipelineMachine = createMachine({
-  id: 'ragPipeline',
-  initial: 'idle',
+  id: "ragPipeline",
+  initial: "idle",
   context: {
-    query: '',
+    query: "",
     sources: [],
-    answer: '',
+    answer: "",
     confidence: 0,
-    error: null
+    error: null,
   },
   states: {
     idle: {
       on: {
         QUERY: {
-          target: 'retrieving',
+          target: "retrieving",
           actions: assign({
             query: ({ event }) => event.query,
             sources: [],
-            answer: '',
-            error: null
-          })
-        }
-      }
+            answer: "",
+            error: null,
+          }),
+        },
+      },
     },
     retrieving: {
       invoke: {
-        src: 'retrieveDocuments',
+        src: "retrieveDocuments",
         onDone: {
-          target: 'ranking',
+          target: "ranking",
           actions: assign({
-            sources: ({ event }) => event.output
-          })
+            sources: ({ event }) => event.output,
+          }),
         },
         onError: {
-          target: 'error',
+          target: "error",
           actions: assign({
-            error: ({ event }) => event.error.message
-          })
-        }
-      }
+            error: ({ event }) =>
+              typeof event.error === "object" &&
+              event.error &&
+              "message" in event.error
+                ? (event.error as { message: string }).message
+                : "Unknown error",
+          }),
+        },
+      },
     },
     ranking: {
       invoke: {
-        src: 'rankSources',
+        src: "rankSources",
         onDone: {
-          target: 'generating',
+          target: "generating",
           actions: assign({
-            sources: ({ event }) => event.output
-          })
+            sources: ({ event }) => event.output,
+          }),
         },
         onError: {
-          target: 'error',
+          target: "error",
           actions: assign({
-            error: ({ event }) => event.error.message
-          })
-        }
-      }
+            error: ({ event }) =>
+              (event.error as any)?.message || "Unknown error",
+          }),
+        },
+      },
     },
     generating: {
       invoke: {
-        src: 'generateAnswer',
+        src: "generateAnswer",
         onDone: {
-          target: 'complete',
+          target: "complete",
           actions: assign({
             answer: ({ event }) => event.output.answer,
-            confidence: ({ event }) => event.output.confidence
-          })
+            confidence: ({ event }) => event.output.confidence,
+          }),
         },
         onError: {
-          target: 'error',
+          target: "error",
           actions: assign({
-            error: ({ event }) => event.error.message
-          })
-        }
-      }
+            error: ({ event }) =>
+              (event.error as any)?.message || "Unknown error",
+          }),
+        },
+      },
     },
     complete: {
       on: {
         QUERY: {
-          target: 'retrieving',
+          target: "retrieving",
           actions: assign({
             query: ({ event }) => event.query,
             sources: [],
-            answer: '',
-            error: null
-          })
+            answer: "",
+            error: null,
+          }),
         },
-        RESET: 'idle'
-      }
+        RESET: "idle",
+      },
     },
     error: {
       on: {
-        RETRY: 'retrieving',
-        RESET: 'idle'
-      }
-    }
-  }
+        RETRY: "retrieving",
+        RESET: "idle",
+      },
+    },
+  },
 });
 
 class EnhancedRAGPipeline {
   private fuseIndex: Fuse<any> | null = null;
   private memoryGraph: Map<string, any> = new Map();
   private redis: any = null; // Redis client placeholder
-  
+
   constructor() {
     this.initializeFuseSearch();
   }
-  
+
   /**
    * Initialize Fuse.js for client-side fuzzy search
    */
   private initializeFuseSearch() {
     // Will be populated with document index
     this.fuseIndex = new Fuse([], {
-      keys: ['title', 'content', 'tags', 'summary'],
+      keys: ["title", "content", "tags", "summary"],
       threshold: 0.3,
       includeScore: true,
-      includeMatches: true
+      includeMatches: true,
     });
   }
-  
+
   /**
    * Main RAG query function with synthesis
    */
@@ -169,33 +176,33 @@ class EnhancedRAGPipeline {
       useMemoryGraph: true,
       useMultiAgent: false,
       maxSources: 10,
-      minConfidence: 0.7
+      minConfidence: 0.7,
     }
   ): Promise<RAGQueryResult> {
-    
     try {
       // 1. Retrieve relevant documents
       const sources = await this.retrieveDocuments(query, options);
-      
+
       // 2. Rank and filter sources
       const rankedSources = await this.rankSources(sources, query, options);
-      
+
       // 3. Generate comprehensive answer
       const answer = await this.generateAnswer(query, rankedSources);
-      
+
       // 4. Update memory graph
       if (options.useMemoryGraph) {
         await this.updateMemoryGraph(query, answer, rankedSources);
       }
-      
+
       return answer;
-      
     } catch (error) {
-      console.error('RAG query failed:', error);
-      throw new Error(`RAG pipeline error: ${error.message}`);
+      console.error("RAG query failed:", error);
+      throw new Error(
+        `RAG pipeline error: ${typeof error === "object" && error && "message" in error ? (error as { message: string }).message : String(error)}`
+      );
     }
   }
-  
+
   /**
    * Retrieve documents using multiple search strategies
    */
@@ -204,47 +211,49 @@ class EnhancedRAGPipeline {
     options: RAGSynthesisOptions
   ): Promise<RAGSource[]> {
     const sources: RAGSource[] = [];
-    
+
     // 1. Semantic search with embeddings
     if (options.useSemanticSearch) {
       const semanticResults = await aiAutoTaggingService.semanticSearch(
         query,
         Math.ceil(options.maxSources * 0.7)
       );
-      
-      sources.push(...semanticResults.map(result => ({
-        id: result.id,
-        title: result.title,
-        content: result.description || '',
-        relevance: result.similarity,
-        type: 'document' as const
-      })));
+
+      sources.push(
+        ...semanticResults.map((result) => ({
+          id: String(result.id),
+          title: String(result.title),
+          content: String(result.description || ""),
+          relevance: Number(result.similarity),
+          type: "document" as const,
+        }))
+      );
     }
-    
+
     // 2. Fuse.js fuzzy search for local data
     if (this.fuseIndex) {
-      const fuseResults = this.fuseIndex.search(query, {
-        limit: Math.ceil(options.maxSources * 0.3)
-      });
-      
-      sources.push(...fuseResults.map(result => ({
-        id: result.item.id,
-        title: result.item.title,
-        content: result.item.content,
-        relevance: 1 - (result.score || 0),
-        type: result.item.type || 'document'
-      })));
+      const fuseResults = this.fuseIndex.search(query);
+
+      sources.push(
+        ...fuseResults.map((result) => ({
+          id: result.item.id,
+          title: result.item.title,
+          content: result.item.content,
+          relevance: 1 - (result.score || 0),
+          type: result.item.type || "document",
+        }))
+      );
     }
-    
+
     // 3. Memory graph traversal
     if (options.useMemoryGraph) {
       const memoryResults = await this.searchMemoryGraph(query);
       sources.push(...memoryResults);
     }
-    
+
     return sources;
   }
-  
+
   /**
    * Rank sources using multiple scoring functions
    */
@@ -253,49 +262,59 @@ class EnhancedRAGPipeline {
     query: string,
     options: RAGSynthesisOptions
   ): Promise<RAGSource[]> {
-    
     // Remove duplicates by ID
-    const uniqueSources = sources.filter((source, index, self) =>
-      index === self.findIndex(s => s.id === source.id)
+    const uniqueSources = sources.filter(
+      (source, index, self) =>
+        index === self.findIndex((s) => s.id === source.id)
     );
-    
+
     // Apply custom ranking algorithm
-    const scoredSources = uniqueSources.map(source => ({
+    const scoredSources = uniqueSources.map((source) => ({
       ...source,
-      relevance: this.calculateRelevanceScore(source, query)
+      relevance: this.calculateRelevanceScore(source, query),
     }));
-    
+
     // Sort by relevance and filter by confidence threshold
     return scoredSources
-      .filter(source => source.relevance >= options.minConfidence)
+      .filter((source) => source.relevance >= options.minConfidence)
       .sort((a, b) => b.relevance - a.relevance)
       .slice(0, options.maxSources);
   }
-  
+
   /**
    * Calculate relevance score using multiple factors
    */
   private calculateRelevanceScore(source: RAGSource, query: string): number {
     let score = source.relevance;
-    
+
     // Boost score for exact matches in title
     if (source.title.toLowerCase().includes(query.toLowerCase())) {
       score += 0.2;
     }
-    
+
     // Boost score for document type relevance
-    const queryWords = query.toLowerCase().split(' ');
+    const queryWords = query.toLowerCase().split(" ");
     const typeBoosts = {
-      'contract': queryWords.some(w => ['contract', 'agreement', 'terms'].includes(w)) ? 0.1 : 0,
-      'case': queryWords.some(w => ['case', 'precedent', 'ruling'].includes(w)) ? 0.1 : 0,
-      'evidence': queryWords.some(w => ['evidence', 'proof', 'exhibit'].includes(w)) ? 0.1 : 0
+      contract: queryWords.some((w) =>
+        ["contract", "agreement", "terms"].includes(w)
+      )
+        ? 0.1
+        : 0,
+      case: queryWords.some((w) => ["case", "precedent", "ruling"].includes(w))
+        ? 0.1
+        : 0,
+      evidence: queryWords.some((w) =>
+        ["evidence", "proof", "exhibit"].includes(w)
+      )
+        ? 0.1
+        : 0,
     };
-    
+
     score += typeBoosts[source.type] || 0;
-    
+
     return Math.min(score, 1.0);
   }
-  
+
   /**
    * Generate comprehensive answer using gemma3-legal
    */
@@ -303,13 +322,15 @@ class EnhancedRAGPipeline {
     query: string,
     sources: RAGSource[]
   ): Promise<RAGQueryResult> {
-    
-    const context = sources.map(source => 
-      `[${source.type.toUpperCase()}] ${source.title}\n${source.content.substring(0, 500)}...\n`
-    ).join('\n');
-    
+    const context = sources
+      .map(
+        (source) =>
+          `[${source.type.toUpperCase()}] ${source.title}\n${source.content.substring(0, 500)}...\n`
+      )
+      .join("\n");
+
     const prompt = `As a legal AI assistant, answer this query using the provided context.
-    
+
 Query: ${query}
 
 Context:
@@ -331,57 +352,59 @@ Format your response as JSON:
 }`;
 
     try {
-      const response = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: 'gemma3-legal',
+          model: "gemma3-legal",
           prompt,
-          format: 'json',
-          stream: false
-        })
+          format: "json",
+          stream: false,
+        }),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Ollama generation failed: ${response.statusText}`);
       }
-      
+
       const result = await response.json();
       const parsed = JSON.parse(result.response);
-      
+
       // Generate embedding for the answer
-      const answerEmbedding = await aiAutoTaggingService.generateEmbedding(parsed.answer);
-      
+      const answerEmbedding = await aiAutoTaggingService.generateEmbedding(
+        parsed.answer
+      );
+
       return {
         answer: parsed.answer,
         sources,
         confidence: parsed.confidence || 0.5,
-        reasoning: parsed.reasoning || '',
+        reasoning: parsed.reasoning || "",
         suggestedActions: parsed.suggestedActions || [],
-        embedding: answerEmbedding
+        embedding: answerEmbedding,
       };
-      
     } catch (error) {
-      console.error('Answer generation failed:', error);
-      
+      console.error("Answer generation failed:", error);
+
       // Fallback response
       return {
-        answer: 'I found relevant sources but couldn\'t generate a complete analysis. Please review the provided sources.',
+        answer:
+          "I found relevant sources but couldn't generate a complete analysis. Please review the provided sources.",
         sources,
         confidence: 0.3,
-        reasoning: 'AI generation failed, manual review required.',
-        suggestedActions: ['Review source documents manually'],
-        embedding: []
+        reasoning: "AI generation failed, manual review required.",
+        suggestedActions: ["Review source documents manually"],
+        embedding: [],
       };
     }
   }
-  
+
   /**
    * Search memory graph for related concepts
    */
   private async searchMemoryGraph(query: string): Promise<RAGSource[]> {
     const results: RAGSource[] = [];
-    
+
     // Simple memory graph search (can be enhanced with Neo4j)
     for (const [key, value] of this.memoryGraph.entries()) {
       if (key.toLowerCase().includes(query.toLowerCase())) {
@@ -390,14 +413,14 @@ Format your response as JSON:
           title: `Memory: ${key}`,
           content: JSON.stringify(value),
           relevance: 0.6,
-          type: 'document'
+          type: "document",
         });
       }
     }
-    
+
     return results;
   }
-  
+
   /**
    * Update memory graph with new query-answer pair
    */
@@ -407,22 +430,22 @@ Format your response as JSON:
     sources: RAGSource[]
   ) {
     const memoryKey = query.toLowerCase().substring(0, 50);
-    
+
     this.memoryGraph.set(memoryKey, {
       query,
       answer: answer.answer,
       confidence: answer.confidence,
       timestamp: new Date().toISOString(),
-      sourceIds: sources.map(s => s.id)
+      sourceIds: sources.map((s) => s.id),
     });
-    
+
     // Keep memory graph size manageable
     if (this.memoryGraph.size > 1000) {
       const firstKey = this.memoryGraph.keys().next().value;
       this.memoryGraph.delete(firstKey);
     }
   }
-  
+
   /**
    * Update Fuse.js index with new documents
    */
@@ -431,37 +454,43 @@ Format your response as JSON:
       this.fuseIndex.setCollection(documents);
     }
   }
-  
+
   /**
    * Self-organizing map for document clustering
    */
   async createDocumentMap(documents: any[]): Promise<any[]> {
     // Generate embeddings for all documents
     const embeddings = await Promise.all(
-      documents.map(doc => aiAutoTaggingService.generateEmbedding(doc.content))
+      documents.map((doc) =>
+        aiAutoTaggingService.generateEmbedding(doc.content)
+      )
     );
-    
+
     // Simple clustering algorithm (can be replaced with SOM implementation)
     const clusters = this.simpleCluster(embeddings, documents);
-    
+
     return clusters;
   }
-  
+
   /**
    * Simple clustering algorithm (placeholder for SOM)
    */
-  private simpleCluster(embeddings: number[][], documents: any[], numClusters = 5) {
+  private simpleCluster(
+    embeddings: number[][],
+    documents: any[],
+    numClusters = 5
+  ) {
     const clusters = Array.from({ length: numClusters }, () => []);
-    
+
     embeddings.forEach((embedding, index) => {
       const clusterIndex = index % numClusters; // Simple round-robin
       clusters[clusterIndex].push({
         document: documents[index],
         embedding,
-        clusterId: clusterIndex
+        clusterId: clusterIndex,
       });
     });
-    
+
     return clusters;
   }
 }
@@ -470,7 +499,7 @@ Format your response as JSON:
 export const enhancedRAGPipeline = new EnhancedRAGPipeline();
 
 // Svelte stores for reactive RAG state
-export const ragQuery = writable('');
+export const ragQuery = writable("");
 export const ragResults = writable<RAGQueryResult | null>(null);
 export const ragLoading = writable(false);
 export const ragError = writable<string | null>(null);
@@ -479,9 +508,9 @@ export const ragError = writable<string | null>(null);
 export const ragStatus = derived(
   [ragLoading, ragError, ragResults],
   ([$loading, $error, $results]) => {
-    if ($loading) return 'loading';
-    if ($error) return 'error';
-    if ($results) return 'complete';
-    return 'idle';
+    if ($loading) return "loading";
+    if ($error) return "error";
+    if ($results) return "complete";
+    return "idle";
   }
 );

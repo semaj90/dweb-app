@@ -57,18 +57,18 @@ class LokiEvidenceService {
 
     // Evidence collection with indices for fast queries
     this.evidenceCollection =
-      this.db.getCollection("evidence") ||
-      this.db.addCollection("evidence", {
+      (this.db.getCollection("evidence") as Collection<LokiEvidence>) ||
+      (this.db.addCollection("evidence", {
         indices: ["id", "caseId", "type"],
         unique: ["id"],
-      });
+      }) as Collection<LokiEvidence>);
 
     // Sync queue for offline operations
     this.syncQueue =
-      this.db.getCollection("syncQueue") ||
-      this.db.addCollection("syncQueue", {
+      (this.db.getCollection("syncQueue") as Collection<SyncOperation>) ||
+      (this.db.addCollection("syncQueue", {
         indices: ["timestamp", "synced", "type"],
-      });
+      }) as Collection<SyncOperation>);
 
     // Clean up old synced operations (keep last 1000)
     const syncedOps = this.syncQueue.find({ synced: true });

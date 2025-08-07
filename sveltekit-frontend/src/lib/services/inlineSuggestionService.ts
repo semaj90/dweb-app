@@ -241,15 +241,13 @@ export class InlineSuggestionService {
       
       if (embeddingResult?.success) {
         // Use enhanced RAG to find related legal terms
-        const ragResults = await enhancedRAGStore.queryRAG(
+        const ragResults = await enhancedRAGStore.search(
           context.contextBefore,
-          {
-            userId: context.userId || 'inline-editor',
-            sessionId: Date.now().toString()
-          },
           {
             topK: 10,
             useEnhancedMode: true,
+            userId: context.userId || 'inline-editor',
+            sessionId: Date.now().toString(),
             filters: { 
               confidenceThreshold: 0.6,
               documentTypes: ['legal', 'case_law', 'statute']
@@ -257,7 +255,7 @@ export class InlineSuggestionService {
           }
         );
 
-        if (ragResults.results?.length > 0) {
+        if (ragResults && typeof ragResults === 'object' && 'results' in ragResults && ragResults.results?.length > 0) {
           // Process RAG results into legal term suggestions
           const legalTermTask = aiTaskCreators.analyzeDocument(
             `Based on these legal documents and the user's context, suggest relevant legal terms:
@@ -266,7 +264,7 @@ export class InlineSuggestionService {
             Document type: ${context.documentType || 'legal'}
             
             Legal documents found:
-            ${ragResults.results.slice(0, 5).map(r => `- ${r.content.slice(0, 200)}...`).join('\n')}
+            ${(ragResults as any).results.slice(0, 5).map((r: any) => `- ${r.content.slice(0, 200)}...`).join('\n')}
             
             Suggest 3-5 relevant legal terms, phrases, or concepts that would improve the text.
             Return JSON: [{"term": "legal term", "definition": "brief definition", "confidence": 0.8, "context_relevance": 0.9}]`,
@@ -311,16 +309,14 @@ export class InlineSuggestionService {
 
     try {
       // Search for related cases using RAG
-      const ragResults = await enhancedRAGStore.queryRAG(
+      const ragResults = await enhancedRAGStore.search(
         `${context.contextBefore} case references precedent`,
-        {
-          userId: context.userId || 'inline-editor',
-          sessionId: Date.now().toString(),
-          caseId: context.caseId
-        },
         {
           topK: 5,
           useEnhancedMode: true,
+          userId: context.userId || 'inline-editor',
+          sessionId: Date.now().toString(),
+          caseId: context.caseId,
           filters: { 
             confidenceThreshold: 0.7,
             documentTypes: ['case', 'precedent']
@@ -328,8 +324,8 @@ export class InlineSuggestionService {
         }
       );
 
-      if (ragResults.results?.length > 0) {
-        return ragResults.results.slice(0, 3).map((result, index) => ({
+      if (ragResults && typeof ragResults === 'object' && 'results' in ragResults && ragResults.results?.length > 0) {
+        return (ragResults as any).results.slice(0, 3).map((result: any, index: number) => ({
           id: `case_ref_${Date.now()}_${index}`,
           type: 'case_reference' as const,
           text: result.summary || `Reference to ${result.metadata?.title || 'related case'}`,

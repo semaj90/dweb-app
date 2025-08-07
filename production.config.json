@@ -1,0 +1,58 @@
+{
+  "production": {
+    "redis": {
+      "host": "localhost",
+      "port": 6379,
+      "maxRetriesPerRequest": 3,
+      "enableReadyCheck": true,
+      "lazyConnect": false,
+      "keepAlive": 30000,
+      "connectionPoolSize": 50,
+      "databases": {
+        "cache": 0,
+        "json": 1,
+        "pubsub": 2
+      }
+    },
+    "simd": {
+      "workers": 32,
+      "port": 8080,
+      "mode": "release",
+      "maxConnections": 1000,
+      "cacheTTL": 3600,
+      "batchSize": 100,
+      "timeout": 30000,
+      "cors": {
+        "origins": ["http://localhost:4173", "https://yourdomain.com"],
+        "credentials": true
+      }
+    },
+    "vite": {
+      "port": 4173,
+      "host": "0.0.0.0",
+      "preview": true,
+      "compression": true,
+      "cache": {
+        "maxAge": 31536000,
+        "immutable": true
+      }
+    },
+    "monitoring": {
+      "metricsInterval": 5000,
+      "healthCheckInterval": 30000,
+      "logLevel": "info",
+      "logRotation": {
+        "maxFiles": 10,
+        "maxSize": "100m"
+      }
+    },
+    "security": {
+      "rateLimit": {
+        "windowMs": 60000,
+        "max": 100
+      },
+      "helmet": true,
+      "csrf": true
+    }
+  }
+}

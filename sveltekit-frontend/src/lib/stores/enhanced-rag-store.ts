@@ -7,11 +7,11 @@
 import { writable, derived } from "svelte/store";
 import type {
   RAGDocument,
-  EmbeddingResponse,
   SearchResult,
   RAGSystemStatus,
   MLCachingMetrics,
 } from "$lib/types/rag";
+import type { EmbeddingResponse } from "$lib/types/unified-types";
 import { createActor } from "xstate";
 import { ragStateMachine } from "$lib/machines/rag-machine";
 import SOMRAGSystem from "$lib/ai/som-rag-system";
@@ -152,7 +152,7 @@ export function createEnhancedRAGStore() {
   };
 
   // Core actions
-  async function search(query: string, options: any = {}) {
+  async function search(query: string, options: any = {}): Promise<{ results: any[]; recommendations: any[] }> {
     state.isLoading = true;
     state.currentQuery = query;
     state.error = null;
@@ -167,7 +167,10 @@ export function createEnhancedRAGStore() {
         state.recommendations = cachedResult.recommendations;
         performanceMetrics.cacheHits++;
         updateCacheMetrics();
-        return;
+        return {
+          results: cachedResult.results,
+          recommendations: cachedResult.recommendations
+        };
       }
 
       // Generate "did you mean" suggestions
@@ -241,9 +244,18 @@ export function createEnhancedRAGStore() {
       updatePerformanceMetrics();
 
       ragActor.send({ type: "SEARCH_SUCCESS", results: optimizedResults });
+      
+      return {
+        results: optimizedResults,
+        recommendations: state.recommendations
+      };
     } catch (error) {
       state.error = error instanceof Error ? error.message : "Search failed";
       ragActor.send({ type: "SEARCH_ERROR", error: state.error });
+      return {
+        results: [],
+        recommendations: []
+      };
     } finally {
       state.isLoading = false;
     }
