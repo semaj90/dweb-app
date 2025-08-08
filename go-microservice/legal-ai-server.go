@@ -14,7 +14,6 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pgvector/pgvector-go"
 	"github.com/valyala/fastjson"
@@ -189,7 +188,7 @@ func main() {
 func initDatabase() (*pgxpool.Pool, error) {
 	databaseURL := os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
-		databaseURL = "postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db"
+		databaseURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
 	}
 
 	config, err := pgxpool.ParseConfig(databaseURL)

@@ -40,23 +40,41 @@
   let evidenceFormData: any = null; // For the evidence form
 
   // Reactive layout classes
-  $: layoutClass = {
-    single: "layout-single",
-    dual: "layout-dual",
-    masonry: "layout-masonry",
-  }[$report.settings.layout];
+  $: layoutClass = $report && $report.settings
+    ? {
+        single: "layout-single",
+        dual: "layout-dual",
+        masonry: "layout-masonry",
+      }[$report.settings.layout]
+    : "layout-single";
+
+  // Reactive editor height
+  let editorHeight = 500;
+  $: editorHeight = $reportUI && $reportUI.fullscreen ? window.innerHeight - 200 : 500;
+
+  function updateEditorHeight() {
+    editorHeight = $reportUI.fullscreen ? window.innerHeight - 200 : 500;
+  }
+
+  onMount(() => {
+    window.addEventListener('resize', updateEditorHeight);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('resize', updateEditorHeight);
+  });
 
   // Initialize auto-save
   onMount(() => {
     if ($report.settings.autoSave) {
       cleanupAutoSave = setupAutoSave();
-}
+    }
   });
 
   onDestroy(() => {
     if (cleanupAutoSave) {
       cleanupAutoSave();
-}
+    }
   });
 
   // Handle evidence actions
@@ -76,7 +94,7 @@
         const formData = new FormData();
         formData.append("id", evidence.id);
 
-        const response = await fetch("?/delete", {
+        const response = await fetch("/api/evidence/delete", {
           method: "POST",
           body: formData,
         });
@@ -86,23 +104,27 @@
           await invalidateAll(); // Refresh the page data
         } else {
           alert("Failed to delete evidence");
-}
+        }
       } catch (error) {
         console.error("Error deleting evidence:", error);
         alert("Error deleting evidence");
-}}
+      }
+    }
   };
 
   const handleDownloadEvidence = (evidence: any) => {
     if (evidence.url) {
       window.open(evidence.url, "_blank");
-}
+    }
   };
-
+  const handleShareEvidence = (evidence: any) => {
+    // Implementation for sharing evidence
+    console.log('Sharing evidence:', evidence);
+  };
   const handleInsertEvidence = (evidence: any) => {
     if (editorComponent) {
       editorComponent.insertEvidence(evidence);
-}
+    }
   };
 
   const handleAddNewEvidence = () => {
@@ -130,7 +152,7 @@
       document.documentElement.requestFullscreen?.();
     } else {
       document.exitFullscreen?.();
-}
+    }
   };
 
   // Keyboard shortcuts
@@ -149,49 +171,49 @@
           e.preventDefault();
           reportActions.reset();
           break;
-}}
+      }
+    }
     if (e.key === "F11") {
       e.preventDefault();
       toggleFullscreen();
-}
+    }
   };
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
 <div
-  class="container mx-auto px-4"
+  class="report-editor {layoutClass}"
   class:fullscreen={$reportUI.fullscreen}
   class:sidebar-closed={!$reportUI.sidebarOpen}
 >
   <!-- Toolbar -->
-  <header class="container mx-auto px-4">
+  <header class="editor-toolbar">
     <ReportToolbar />
   </header>
 
   <!-- Main Content Area -->
-  <div class="container mx-auto px-4">
+  <div class="editor-content">
     <!-- Sidebar -->
     {#if $reportUI.sidebarOpen}
       <aside
-        class="container mx-auto px-4"
+        class="editor-sidebar"
         style="width: {$reportUI.sidebarWidth}px"
         transition:fly={{ x: -300, duration: 300, easing: quintOut }}
       >
         <!-- Evidence Search -->
+        <section class="sidebar-section">
+          <div class="section-header">
         <section class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+          <div>
             <h3>Evidence Library</h3>
             <button
-              class="container mx-auto px-4"
               on:click={() => handleAddNewEvidence()}
               title="Add new evidence"
             >
               <Plus size={16} />
             </button>
           </div>
-
-          <AdvancedSearch
             items={$report.attachedEvidence}
             onResults={(results) => (evidenceSearchResults = results)}
             onSelect={handleInsertEvidence}
@@ -200,6 +222,8 @@
         </section>
 
         <!-- Evidence Grid -->
+        <section class="evidence-section">
+          {#if $report.settings.layout === "masonry"}
         <section class="container mx-auto px-4">
           {#if $report.settings.layout === "masonry"}
             <MasonryGrid
@@ -218,7 +242,7 @@
               />
             </MasonryGrid>
           {:else}
-            <div class="container mx-auto px-4">
+            <div>
               {#each evidenceSearchResults as evidence (evidence.id)}
                 <EvidenceCard
                   {evidence}
@@ -233,49 +257,48 @@
           {/if}
 
           {#if evidenceSearchResults.length === 0}
-            <div class="container mx-auto px-4">
+            <div>
               <p>No evidence found</p>
               <small>Add evidence to enhance your report</small>
             </div>
           {/if}
         </section>
-
-        <!-- Report Stats -->
+        <section class="stats-section sidebar-section">
+          <div class="stats-grid">
         <section class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">Words</span>
-              <span class="container mx-auto px-4">{$editorState.wordCount}</span>
+          <div>
+            <div>
+              <span>Words</span>
+              <span>{$editorState.wordCount}</span>
             </div>
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">Evidence</span>
-              <span class="container mx-auto px-4">{$report.attachedEvidence.length}</span>
+            <div>
+              <span>Evidence</span>
+              <span>{$report.attachedEvidence.length}</span>
             </div>
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">Status</span>
-              <span class="container mx-auto px-4">
+            <div>
+              <span>Status</span>
+              <span>
                 {$report.metadata.status}
               </span>
             </div>
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">Modified</span>
-              <span class="container mx-auto px-4">
+            <div>
+              <span>Modified</span>
+              <span>
                 {$report.metadata.updatedAt.toLocaleDateString()}
               </span>
             </div>
           </div>
         </section>
-      </aside>
-    {/if}
 
     <!-- Main Editor Area -->
+    <main class="editor-main">
+      <!-- Editor Header -->
     <main class="container mx-auto px-4">
       <!-- Editor Header -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div>
+        <div>
           {#if !$reportUI.sidebarOpen}
             <button
-              class="container mx-auto px-4"
               on:click={() => toggleSidebar()}
               title="Show sidebar"
             >
@@ -284,7 +307,6 @@
           {/if}
 
           <input
-            class="container mx-auto px-4"
             type="text"
             value={$report.title}
             on:input={(e) => reportActions.updateTitle(e.currentTarget.value)}
@@ -292,9 +314,8 @@
           />
         </div>
 
-        <div class="container mx-auto px-4">
+        <div>
           <button
-            class="container mx-auto px-4"
             on:click={() => switchLayout()}
             title="Switch layout ({$report.settings.layout})"
           >
@@ -308,7 +329,6 @@
           </button>
 
           <button
-            class="container mx-auto px-4"
             on:click={() => toggleFullscreen()}
             title="Toggle fullscreen"
           >
@@ -320,7 +340,6 @@
           </button>
 
           <button
-            class="container mx-auto px-4"
             on:click={() => (showSettingsModal = true)}
             title="Settings"
           >
@@ -329,29 +348,26 @@
         </div>
       </div>
 
-      <!-- Rich Text Editor -->
-      <div class="container mx-auto px-4">
-        <RichTextEditor
-          bind:this={editorComponent}
-          height={$reportUI.fullscreen ? window.innerHeight - 200 : 500}
-        />
-      </div>
+      <RichTextEditor
+        bind:this={editorComponent}
+        height={editorHeight}
+      />
     </main>
 
     <!-- Evidence Panel (for dual layout) -->
     {#if $report.settings.layout === "dual"}
       <aside
-        class="container mx-auto px-4"
+        class="evidence-panel"
         transition:fly={{ x: 300, duration: 300, easing: quintOut }}
       >
-        <div class="container mx-auto px-4">
+        <div class="panel-header"></div>
           <h3>Evidence</h3>
-          <button on:click={() => handleAddNewEvidence()}>
+          <button class="add-evidence-btn" on:click={() => handleAddNewEvidence()}>
             <Plus size={16} />
           </button>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="evidence-grid-panel"></div>
           <MasonryGrid
             items={$report.attachedEvidence}
             columnWidth={200}
@@ -366,24 +382,24 @@
               onDownload={handleDownloadEvidence}
               compact={true}
             />
-          </MasonryGrid>
-        </div>
-      </aside>
-    {/if}
-  </div>
-</div>
-
-<!-- Evidence Modal -->
-<Modal bind:open={showEvidenceModal}>
-  <div slot="title">
-    {selectedEvidence ? "Edit Evidence" : "Add New Evidence"}
-  </div>
-
-  {#if selectedEvidence || showEvidenceModal}
+  {#if showEvidenceModal}
     <EvidenceForm
       data={evidenceFormData}
       evidence={selectedEvidence}
       on:success={() => {
+        showEvidenceModal = false;
+        selectedEvidence = null;
+      }}
+      on:error={(e) => {
+        console.error("Evidence form error:", e.detail);
+        alert("Error saving evidence");
+      }}
+      on:cancel={() => {
+        showEvidenceModal = false;
+        selectedEvidence = null;
+      }}
+    />
+  {/if}
         showEvidenceModal = false;
         selectedEvidence = null;
       }}
@@ -403,20 +419,20 @@
 <Modal bind:open={showSettingsModal}>
   <div slot="title">Report Settings</div>
   <!-- Settings form would go here -->
-  <div class="container mx-auto px-4">
+  <div class="settings-form"></div>
     <p>Settings panel - TODO: Implement settings form</p>
   </div>
 </Modal>
 
 <style>
-  /* @unocss-include */
-  .report-editor {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background: var(--pico-background-color, #ffffff);
+  <div class="settings-form">
+    <!-- TODO: Implement settings form for report options such as auto-save, layout selection, evidence preferences, and other report configurations -->
+    <p>Settings panel - TODO: Implement settings form</p>
+  </div>
+</Modal>
+    background: #ffffff;
     transition: all 0.3s ease;
-}
+  }
   .report-editor.fullscreen {
     position: fixed;
     top: 0;
@@ -424,40 +440,40 @@
     right: 0;
     bottom: 0;
     z-index: 9999;
-}
+  }
   .editor-toolbar {
     flex-shrink: 0;
-    border-bottom: 1px solid var(--pico-border-color, #e2e8f0);
-}
+    border-bottom: 1px solid #e2e8f0;
+  }
   .editor-content {
     display: flex;
     flex: 1;
     overflow: hidden;
-}
+  }
   .editor-sidebar {
     flex-shrink: 0;
-    background: var(--pico-card-sectioning-background-color, #f8fafc);
-    border-right: 1px solid var(--pico-border-color, #e2e8f0);
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
+  }
   .sidebar-section {
     padding: 1rem;
-    border-bottom: 1px solid var(--pico-border-color, #e2e8f0);
-}
+    border-bottom: 1px solid #e2e8f0;
+  }
   .section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.75rem;
-}
+  }
   .section-header h3 {
     margin: 0;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--pico-color, #374151);
-}
+    color: #374151;
+  }
   .add-evidence-btn {
     display: flex;
     align-items: center;
@@ -465,90 +481,90 @@
     width: 1.75rem;
     height: 1.75rem;
     border: none;
-    background: var(--pico-primary, #3b82f6);
+    background: #3b82f6;
     color: white;
     border-radius: 0.375rem;
     cursor: pointer;
     transition: background-color 0.15s ease;
-}
+  }
   .add-evidence-btn:hover {
-    background: var(--pico-primary-hover, #2563eb);
-}
+    background: #2563eb;
+  }
   .evidence-section {
     flex: 1;
     overflow-y: auto;
-}
+  }
   .evidence-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-}
+  }
   .empty-evidence {
     text-align: center;
     padding: 2rem 1rem;
-    color: var(--pico-muted-color, #6b7280);
-}
+    color: #6b7280;
+  }
   .empty-evidence p {
     margin: 0 0 0.25rem;
     font-weight: 500;
-}
+  }
   .empty-evidence small {
     font-size: 0.75rem;
     opacity: 0.8;
-}
+  }
   .stats-section {
     flex-shrink: 0;
-    background: var(--pico-background-color, #ffffff);
-}
+    background: #ffffff;
+  }
   .stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
-}
+  }
   .stat-item {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-}
+  }
   .stat-label {
     font-size: 0.75rem;
-    color: var(--pico-muted-color, #6b7280);
+    color: #6b7280;
     font-weight: 500;
-}
+  }
   .stat-value {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--pico-color, #111827);
-}
+    color: #111827;
+  }
   .stat-value.status-draft {
-    color: var(--pico-primary, #3b82f6);
-}
+    color: #3b82f6;
+  }
   .stat-value.status-review {
-    color: var(--pico-secondary, #f59e0b);
-}
+    color: #f59e0b;
+  }
   .stat-value.status-final {
-    color: var(--pico-ins-color, #10b981);
-}
+    color: #10b981;
+  }
   .editor-main {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
+  }
   .editor-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    border-bottom: 1px solid var(--pico-border-color, #e2e8f0);
-    background: var(--pico-background-color, #ffffff);
-}
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+  }
   .editor-title-section {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     flex: 1;
-}
+  }
   .sidebar-toggle {
     display: flex;
     align-items: center;
@@ -557,15 +573,15 @@
     height: 2rem;
     border: none;
     background: none;
-    color: var(--pico-muted-color, #6b7280);
+    color: #6b7280;
     border-radius: 0.375rem;
     cursor: pointer;
     transition: all 0.15s ease;
-}
+  }
   .sidebar-toggle:hover {
-    background: var(--pico-primary-background, #f3f4f6);
-    color: var(--pico-primary, #3b82f6);
-}
+    background: #f3f4f6;
+    color: #3b82f6;
+  }
   .report-title-input {
     flex: 1;
     max-width: 30rem;
@@ -574,20 +590,20 @@
     background: none;
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--pico-color, #111827);
+    color: #111827;
     border-radius: 0.375rem;
     transition: border-color 0.15s ease;
-}
+  }
   .report-title-input:focus {
     outline: none;
-    border-color: var(--pico-primary, #3b82f6);
-    background: var(--pico-background-color, #ffffff);
-}
+    border-color: #3b82f6;
+    background: #ffffff;
+  }
   .editor-actions {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-}
+  }
   .layout-toggle,
   .fullscreen-toggle,
   .settings-btn {
@@ -598,137 +614,78 @@
     height: 2.25rem;
     border: none;
     background: none;
-    color: var(--pico-muted-color, #6b7280);
+    color: #6b7280;
     border-radius: 0.375rem;
     cursor: pointer;
     transition: all 0.15s ease;
-}
+  }
   .layout-toggle:hover,
   .fullscreen-toggle:hover,
   .settings-btn:hover {
-    background: var(--pico-primary-background, #f3f4f6);
-    color: var(--pico-primary, #3b82f6);
-}
+    background: #f3f4f6;
+    color: #3b82f6;
+  }
   .editor-wrapper {
     flex: 1;
     overflow: hidden;
     padding: 1rem;
-}
+  }
   .evidence-panel {
     width: 20rem;
-    background: var(--pico-card-sectioning-background-color, #f8fafc);
-    border-left: 1px solid var(--pico-border-color, #e2e8f0);
+    background: #f8fafc;
+    border-left: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
-}
+  }
   .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
-    border-bottom: 1px solid var(--pico-border-color, #e2e8f0);
-}
+    border-bottom: 1px solid #e2e8f0;
+  }
   .panel-header h3 {
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
-    color: var(--pico-color, #374151);
-}
+    color: #374151;
+  }
   .evidence-grid-panel {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
-}
+  }
   /* Layout variations */
   .layout-single .evidence-panel {
     display: none;
-}
+  }
   .layout-dual .editor-sidebar {
     width: 16rem !important;
-}
+  }
   .layout-masonry .evidence-section {
     padding: 0.5rem;
-}
+  }
   /* Modal content */
-  .evidence-modal-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-  .evidence-preview-large {
-    width: 100%;
-    max-height: 24rem;
-    object-fit: contain;
-    border-radius: 0.5rem;
-    border: 1px solid var(--pico-border-color, #e2e8f0);
-}
-  .evidence-details {
-    padding: 1rem;
-    background: var(--pico-card-sectioning-background-color, #f8fafc);
-    border-radius: 0.5rem;
-}
-  .evidence-details p {
-    margin: 0.5rem 0;
-}
-  .evidence-tags-modal {
-    margin-top: 0.75rem;
-}
-  .evidence-tags-modal .tag {
-    display: inline-block;
-    margin: 0.25rem 0.25rem 0 0;
-    padding: 0.25rem 0.5rem;
-    background: var(--pico-primary-background, #eff6ff);
-    color: var(--pico-primary, #3b82f6);
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-}
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-}
-  .btn-secondary,
-  .btn-primary {
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-  .btn-secondary {
-    border: 1px solid var(--pico-border-color, #d1d5db);
-    background: var(--pico-background-color, #ffffff);
-    color: var(--pico-color, #374151);
-}
-  .btn-secondary:hover {
-    background: var(--pico-primary-background, #f9fafb);
-}
-  .btn-primary {
-    border: 1px solid var(--pico-primary, #3b82f6);
-    background: var(--pico-primary, #3b82f6);
-    color: white;
-}
-  .btn-primary:hover {
-    background: var(--pico-primary-hover, #2563eb);
-}
   .settings-form {
     padding: 1rem;
     text-align: center;
-    color: var(--pico-muted-color, #6b7280);
-}
+    color: #6b7280;
+  }
   /* Responsive design */
   @media (max-width: 1024px) {
     .editor-sidebar {
       width: 16rem !important;
-}
+    }
     .evidence-panel {
       width: 16rem;
-}}
+    }
+  }
   @media (max-width: 768px) {
     .layout-dual .evidence-panel {
       display: none;
-}
+    }
     .editor-sidebar {
       width: 14rem !important;
-}}
+    }
+  }
 </style>

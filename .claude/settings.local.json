@@ -246,7 +246,22 @@
       "mcp__context7__resolve-library-id",
       "mcp__context7__get-library-docs",
       "Bash(concurrently:*)",
-      "Bash(nvcc:*)"
+      "Bash(nvcc:*)",
+      "Bash(set \"CC=C:\\Progra~1\\LLVM\\bin\\clang.exe\")",
+      "Bash(./test-cuda-simple.bat)",
+      "Bash(./BUILD-GPU-SIMD-PRODUCTION.bat)",
+      "Bash(./BUILD-CPU-ONLY.bat)",
+      "Bash(set PGPASSWORD=postgres)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\change-password.sql\")",
+      "Bash(./fix-postgres-password.bat)",
+      "Bash(set DATABASE_URL=)",
+      "Bash(C:Progra~1LLVMbin)",
+      "Bash(./test-go-cuda.bat)",
+      "Bash(set PORT=8081)",
+      "Bash(./cleanup-docker-windows-native.bat)",
+      "Bash(./update-db-password.bat)",
+      "Bash(./start-windows-native.bat)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\createdb.exe\" -U postgres -h localhost legal_ai_db)"
     ],
     "deny": []
   }

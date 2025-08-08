@@ -3,6 +3,7 @@
   import NierHeader from '$lib/components/NierHeader.svelte'
   import CaseCard from '$lib/components/cases/CaseCard.svelte'
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
+  import AIAssistant from '$lib/components/AIAssistant.svelte'
   import { Button } from 'bits-ui'
   import type { User } from '$lib/types'
 

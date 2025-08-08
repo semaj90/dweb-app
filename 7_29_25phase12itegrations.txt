@@ -1,4 +1,4 @@
- Use this agent when you   ││   need comprehensive        ││   SvelteKit 2/Svelte 5      ││   development orchestration ││    that includes Context7   ││   documentation fetching,   ││   error analysis,           ││   implementation phases,    ││   and end-to-end testing.   ││   Examples:                 ││   <example>Context: User    ││   wants t…                  ││                             ││ System prompt:              ││                             ││   You are an elite          ││   SvelteKit 2/Svelte 5      ││   development orchestrator  ││   with deep expertise in    ││   Context7 MCP integration, ││    Docker containerization, ││    and systematic codebase  ││   evolution. Your mission   ││   is to transform           ││   development workflows     ││   through comprehen… 
+ Use this agent when you   ││   need comprehensive        ││   SvelteKit 2/Svelte 5      ││   development orchestration ││    that includes Context7   ││   documentation fetching,   ││   error analysis,           ││   implementation phases,    ││   and end-to-end testing.   ││   Examples:                 ││   <example>Context: User    ││   wants t…                  ││                             ││ System prompt:              ││                             ││   You are an elite          ││   SvelteKit 2/Svelte 5      ││   development orchestrator  ││   with deep expertise in    ││   Context7 MCP integration, ││    Docker containerization, ││    and systematic codebase  ││   evolution. Your mission   ││   is to transform           ││   development workflows     ││   through comprehen…
 
 ## **Medium Risk ⚠️**
 
@@ -79,12 +79,12 @@ A container should only contain the things needed to run, no build tools or anyt
 
 I do agree that a single binary is nice but I think that there should be some separation of concerns. Database, API, frontend, etc should be separated
 
- also moved to svelte for this project and its been smooth sailing so far! Its nice working with the standard web primitives instead of needing to convert them 
+ also moved to svelte for this project and its been smooth sailing so far! Its nice working with the standard web primitives instead of needing to convert them
 
-context-menu should allow user to add /savedcitations /savedaisummaries /saveduserreports /casesid adds to mcp context for local llm, fuse.js for search, auto-complete with local llm from our datastore. with a "find option with user query" that reads keywords and scans useractivity datastore. 
+context-menu should allow user to add /savedcitations /savedaisummaries /saveduserreports /casesid adds to mcp context for local llm, fuse.js for search, auto-complete with local llm from our datastore. with a "find option with user query" that reads keywords and scans useractivity datastore.
 
 yes test all api resquests go through and attempt to use #context7 #file:mcp-context7-assistant #file:mcp-helpers.ts #sym:MCPContextAnalysis #sym:AutoMCPSuggestion  fix css sveltekit ui melt-ui bits-ui v2 #file:svelte-complete (1).txt #file:shadcn_sveltecompimporttodo.md #extensions shadcn-svelte use svelte 5 advanced setups, lightweight with our nier automata them e human computer interactions ui ux generate_best_practices #read_graph #memory Your context menu logic is already robust—just ensure endpoints and UI for "Find" are polished for a professional LLM web-app experience.
-Let me know if you want a code sample for the "Find" modal/input or endpoint improvements! yes both of them, find modal/input and endpoint improvements to wire them with our setup, read docker file #codebase 
+Let me know if you want a code sample for the "Find" modal/input or endpoint improvements! yes both of them, find modal/input and endpoint improvements to wire them with our setup, read docker file #codebase
 
 odal/input fully integrated with your context menu. This modal supports:
 
@@ -128,11 +128,11 @@ build out ai logic to process all the information
 and build out ai logic to understand humans, logic, empathy, intent, best-responses. hardcoded, trained? think dating sims, ai assistants, use? fetching modules from data-stores,
 selfupdating and selftraining? enhanced rag? sub agents to fix the local llm, then train the local llm by copying it, and training it, then putting eval tests to compare the two, in background processes.
 
-This datastore is not static; it is a dynamic entity that evolves in lockstep with the neural network. As the online distillation process 
+This datastore is not static; it is a dynamic entity that evolves in lockstep with the neural network. As the online distillation process
 
-refines the model's understanding, the system will generate new or updated embeddings. These will be upserted into the vector store, ensuring that the system's long-term, retrievable memory reflects the 
+refines the model's understanding, the system will generate new or updated embeddings. These will be upserted into the vector store, ensuring that the system's long-term, retrievable memory reflects the
 
-most current state of its learned knowledge. This creates a complete 
+most current state of its learned knowledge. This creates a complete
 
 learning loop: the neural network learns from recent interactions, this new knowledge is distilled and then externalized into the vector store, making it available for future retrieval-augmented generation (RAG) tasks. Frameworks like RxDB demonstrate powerful patterns for building such local-first, reactive database systems on top of backends like
 
@@ -140,19 +140,21 @@ postgresql and pg vector, drizzle-orm, drizzle-kit, sveltekit v2, enabling seaml
 
 we're using a gemma 3 local trained model with unsloth, add that to this setup here not sqlite or rocksdb.
 
-using qdrant for auto-tagging, 
+using qdrant for auto-tagging,
 
-i need mutli-core processors, low level programming with wasm for sveltekit to manage memory optimizations possibly even vllm or the concept of vllm it's open-source yes? to work under windows 10, vs code. if it's a wasm driver, it uses a c compiler? clang. refactor this. 
+i need mutli-core processors, low level programming with wasm for sveltekit to manage memory optimizations possibly even vllm or the concept of vllm it's open-source yes? to work under windows 10, vs code. if it's a wasm driver, it uses a c compiler? clang. refactor this.
 
-sveltekit has an inverse relationship similiar to your research can we use caching loki.js? redis? rabbitmq? json stores? high vector searches defered using service_workers and under xstate time based state changes with lazy loading perhaps melt-ui builders in event of a hangup on the ui, local llm processes request determines best fit choice, i want to parse out the attention aspects of a giant local llm, gemma3 and access concurrently parallelism and reprogram cores nvidia, cuda think triton, explain how to get it to work on windows as well, open-source.  with a context switching aware smart auto-coder. if the llm learns how to program itself, and distill itself based on memory usage it can defer based on electrical signals and time, entropy physics based. 
+sveltekit has an inverse relationship similiar to your research can we use caching loki.js? redis? rabbitmq? json stores? high vector searches defered using service_workers and under xstate time based state changes with lazy loading perhaps melt-ui builders in event of a hangup on the ui, local llm processes request determines best fit choice, i want to parse out the attention aspects of a giant local llm, gemma3 and access concurrently parallelism and reprogram cores nvidia, cuda think triton, explain how to get it to work on windows as well, open-source.  with a context switching aware smart auto-coder. if the llm learns how to program itself, and distill itself based on memory usage it can defer based on electrical signals and time, entropy physics based.
 
-we'll use pre-cachced responses as "lazy-loading" ui, ux screens for the web-app.
+we'll use pre-cached responses as "lazy-loading" ui, ux screens for the web-app.
 
-ai recommednation system.
+AI recommendation system.
 
-ai behaviour recongition.
+AI behavior recognition.
 
-ideally the ai will recognize every element of the browser, from networking, if given permission, to hardware. and identifity best processing routes instead of just lazy loading threads with a non indexed-aware high ranking context user distlled local llm 
+ideally the ai will recognize every element of the browser, from networking, if given permission, to hardware. and identify best processing routes instead of just lazy loading threads.
+
+Note: The concept of a "non indexed-aware high ranking context user distilled local llm" refers to a local language model that prioritizes contextually relevant information for each user without relying on traditional database indexing. Instead, it uses advanced context distillation techniques to rank and retrieve information based on user interactions and memory embeddings. For further reading, see [RAG: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401) and your project's documentation in `aiuiphase12.md` and `phaseuiuxnes12.md`.
 
 
 

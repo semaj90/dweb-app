@@ -14,14 +14,14 @@
     Database,
     TrendingUp,
     Cpu,
-    BarChart3,
+    ChartBar,
     Lightbulb,
     RefreshCw,
     Settings,
     Sparkles,
     Target
   } from 'lucide-svelte';
-  import type { SearchResult, SOMCluster, NeuralPrediction } from '$lib/types/rag.js';
+  import type { SearchResult } from '$lib/types/rag.js';
 
   // Reactive state using Svelte 5 runes
   let searchQuery = $state('');
@@ -30,14 +30,12 @@
   let optimizationLevel = $state<'basic' | 'enhanced' | 'neural'>('enhanced');
 
   // Derived reactive state from store
-  const {
-    state: ragState,
-    performanceMetrics,
-    optimizedResults,
-    intelligentSuggestions,
-    search,
-    optimizeCache
-  } = enhancedRAGStore;
+  const ragState = $derived(enhancedRAGStore.state);
+  const performanceMetrics = $derived(enhancedRAGStore.performanceMetrics);
+  const optimizedResults = $derived(enhancedRAGStore.optimizedResults);
+  const intelligentSuggestions = $derived(enhancedRAGStore.intelligentSuggestions);
+  const search = enhancedRAGStore.search;
+  const optimizeCache = enhancedRAGStore.optimizeCache;
 
   // Performance monitoring
   let searchStartTime = $state(0);
@@ -49,6 +47,8 @@
 
   onMount(async () => {
     // Initialize the RAG system
+  onMount(() => {
+    // Initialize the RAG system
     console.log('Enhanced RAG Interface initialized');
 
     // Start real-time performance monitoring
@@ -58,8 +58,6 @@
 
     return () => clearInterval(interval);
   });
-
-  // Enhanced search function with performance tracking
   async function handleSearch() {
     if (!searchQuery.trim()) return;
 
@@ -379,7 +377,7 @@
               >
                 <BarChart3 class="h-4 w-4 mr-1" />
                 Analytics
-              </Button>
+                <ChartBar class="h-4 w-4 mr-1" />
             </div>
           </div>
         </CardContent>

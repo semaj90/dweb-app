@@ -235,13 +235,13 @@
   /* @unocss-include */
   .container {
     max-width: 1200px;
-}
+  }
   .alert {
     position: relative;
-}
+  }
   .btn-close {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-}
+  }
 </style>

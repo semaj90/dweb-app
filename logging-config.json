@@ -1,0 +1,41 @@
+{
+  "logger": {
+    "level": "info",
+    "format": "json",
+    "output": ["file", "stdout"],
+    "file_path": "./logs/gpu-legal-processor.log",
+    "max_size_mb": 100,
+    "max_files": 10,
+    "compress": true
+  },
+  "services": {
+    "gpu_processor": {
+      "name": "legal-processor-gpu",
+      "log_fields": ["timestamp", "level", "service", "gpu_memory", "processing_time", "method", "request_id"],
+      "metrics": ["gpu_utilization", "memory_usage", "request_count", "error_rate", "response_time"]
+    },
+    "auto_indexer": {
+      "name": "auto-indexer",
+      "log_fields": ["timestamp", "level", "service", "file_path", "processing_time", "method", "batch_size"],
+      "metrics": ["files_processed", "processing_rate", "queue_depth", "error_count"]
+    },
+    "bullmq_producer": {
+      "name": "bullmq-producer",
+      "log_fields": ["timestamp", "level", "service", "job_type", "queue_size", "job_id"],
+      "metrics": ["jobs_enqueued", "jobs_completed", "jobs_failed", "queue_health"]
+    }
+  },
+  "monitoring": {
+    "prometheus_endpoint": "http://localhost:9090/metrics",
+    "health_check_interval": "10s",
+    "gpu_monitoring": true,
+    "redis_monitoring": true,
+    "postgres_monitoring": true
+  },
+  "alerts": {
+    "gpu_memory_threshold": 80,
+    "queue_depth_threshold": 1000,
+    "error_rate_threshold": 5.0,
+    "response_time_threshold": 5000
+  }
+}

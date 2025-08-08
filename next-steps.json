@@ -1,0 +1,84 @@
+{
+  "project": "deeds-web-app",
+  "status": "partially_operational",
+  "critical_path": [
+    {
+      "id": "1",
+      "action": "disable_cgo",
+      "command": "set CGO_ENABLED=0",
+      "reason": "Windows CGO with CUDA is unstable. Pure Go compiles immediately.",
+      "priority": "P0"
+    },
+    {
+      "id": "2", 
+      "action": "remove_incompatible_deps",
+      "commands": [
+        "go mod edit -droprequire github.com/bytedance/sonic",
+        "go mod edit -droprequire github.com/NVIDIA/go-nvml",
+        "go mod tidy"
+      ],
+      "reason": "sonic is Unix-only, go-nvml requires dlfcn.h",
+      "priority": "P0"
+    },
+    {
+      "id": "3",
+      "action": "consolidate_services",
+      "command": "taskkill /F /IM legal-ai-server.exe && go run main.go",
+      "reason": "Multiple services on 8080. One service, one port.",
+      "priority": "P0"
+    }
+  ],
+  "optimization_path": [
+    {
+      "id": "4",
+      "action": "offload_gpu_to_ollama",
+      "endpoint": "http://localhost:11434/api/embed",
+      "reason": "Ollama handles GPU inference. Don't duplicate.",
+      "priority": "P1"
+    },
+    {
+      "id": "5",
+      "action": "use_simdjson_natively",
+      "package": "github.com/minio/simdjson-go",
+      "reason": "Already supports AVX2. No CGO needed.",
+      "priority": "P1"
+    },
+    {
+      "id": "6",
+      "action": "postgres_trust_auth",
+      "config": "host all all 127.0.0.1/32 trust",
+      "file": "pg_hba.conf",
+      "priority": "P2"
+    }
+  ],
+  "working_components": {
+    "ollama": {
+      "status": "operational",
+      "gpu": "RTX 3060 Ti",
+      "vram": "7GB available",
+      "models": ["nomic-embed-text", "llama3"]
+    },
+    "services": {
+      "port_8080": "running",
+      "port_11434": "ollama"
+    }
+  },
+  "next_build": {
+    "script": "BUILD-FINAL.bat",
+    "contents": [
+      "@echo off",
+      "cd go-microservice",
+      "set CGO_ENABLED=0",
+      "go build -ldflags \"-s -w\" -o service.exe main.go",
+      "taskkill /F /IM service.exe 2>nul",
+      "start /B service.exe"
+    ]
+  },
+  "production_config": {
+    "deployment": "single_binary",
+    "gpu_strategy": "ollama_api",
+    "json_parser": "simdjson-go",
+    "database": "optional_pgvector",
+    "cache": "redis_when_needed"
+  }
+}

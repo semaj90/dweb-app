@@ -20,18 +20,18 @@ class TypeScriptFixEngine {
 
   async run() {
     console.log('🚀 Starting automated TypeScript fix implementation...');
-    
+
     await this.loadKnownFixes();
     await this.applyFixes();
     await this.generateReport();
-    
+
     console.log('✅ Fix implementation completed');
     return this.results;
   }
 
   async loadKnownFixes() {
     console.log('📋 Loading fix patterns...');
-    
+
     // Critical Drizzle ORM fixes
     this.fixes.push({
       id: 'drizzle-types',
@@ -48,18 +48,10 @@ class TypeScriptFixEngine {
       action: () => this.addWebGPUTypes()
     });
 
-    // VLLM Service Implementation
-    this.fixes.push({
-      id: 'vllm-service',
-      priority: 'high',
-      description: 'Create VLLM service implementation',
-      action: () => this.createVLLMService()
-    });
-
     // Orchestrator Store fixes
     this.fixes.push({
       id: 'orchestrator-store',
-      priority: 'critical', 
+      priority: 'critical',
       description: 'Fix Svelte store subscribe methods',
       action: () => this.fixOrchestratorStore()
     });
@@ -101,11 +93,11 @@ class TypeScriptFixEngine {
 
   async applyFixes() {
     console.log('🔧 Applying fixes in priority order...');
-    
+
     // Sort by priority
     const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
     this.fixes.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
-    
+
     for (const fix of this.fixes) {
       try {
         console.log(`🎯 Applying: ${fix.description}`);
@@ -139,7 +131,7 @@ try {
 } catch {
   // Mock schema for type generation
   cases = {} as any;
-  evidence = {} as any;  
+  evidence = {} as any;
   documents = {} as any;
 }
 
@@ -216,37 +208,37 @@ export type DatabaseTypes = {
     try {
       const packageContent = await fs.readFile(packageJsonPath, 'utf8');
       const packageJson = JSON.parse(packageContent);
-      
+
       // Add WebGPU types to devDependencies
       if (!packageJson.devDependencies) {
         packageJson.devDependencies = {};
       }
       packageJson.devDependencies['@webgpu/types'] = '^0.1.34';
-      
+
       await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
-      
+
       // Update tsconfig.json
       const tsconfigPath = 'tsconfig.json';
       try {
         const tsconfigContent = await fs.readFile(tsconfigPath, 'utf8');
         const tsconfig = JSON.parse(tsconfigContent);
-        
+
         if (!tsconfig.compilerOptions) {
           tsconfig.compilerOptions = {};
         }
         if (!tsconfig.compilerOptions.types) {
           tsconfig.compilerOptions.types = [];
         }
-        
+
         if (!tsconfig.compilerOptions.types.includes('@webgpu/types')) {
           tsconfig.compilerOptions.types.unshift('@webgpu/types');
         }
-        
+
         await fs.writeFile(tsconfigPath, JSON.stringify(tsconfig, null, 2));
       } catch (error) {
         console.warn('Could not update tsconfig.json:', error.message);
       }
-      
+
     } catch (error) {
       throw new Error(`Failed to update package.json: ${error.message}`);
     }
@@ -260,24 +252,6 @@ interface VLLMOptions {
   topP?: number;
   stop?: string[];
 }
-
-interface VLLMResponse {
-  choices: Array<{
-    text: string;
-    index: number;
-    logprobs?: any;
-    finish_reason: string;
-  }>;
-  usage: {
-    prompt_tokens: number;
-    completion_tokens: number;
-    total_tokens: number;
-  };
-}
-
-export class VLLMService {
-  private baseUrl: string;
-  private isAvailable: boolean = false;
 
   constructor(baseUrl = 'http://localhost:8000') {
     this.baseUrl = baseUrl;
@@ -304,11 +278,6 @@ export class VLLMService {
       return this.mockResponse(prompt);
     }
 
-    try {
-      const response = await fetch(\`\${this.baseUrl}/v1/completions\`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           prompt,
@@ -406,7 +375,7 @@ function createOrchestratorStore(): OrchestratorStore {
 
   return {
     subscribe, // This is the key missing method that was causing errors
-    
+
     startTask: (taskName: string) => {
       update(state => ({
         ...state,
@@ -456,7 +425,7 @@ export const orchestratorStore = createOrchestratorStore();
 
 // Derived stores for specific UI needs
 export const isProcessing: Readable<boolean> = derived(
-  orchestratorStore, 
+  orchestratorStore,
   $store => $store.isProcessing
 );
 
@@ -697,7 +666,7 @@ export type LegalAITypes = {
         // Fix clustering algorithm names
         updated = updated.replace(/algorithm:\s*['"]lloyd['"]/g, "algorithm: 'kmeans'");
         updated = updated.replace(/algorithm:\s*['"]kohonen['"]/g, "algorithm: 'som'");
-        
+
         // Add missing properties
         updated = updated.replace(
           /(\{[^}]*maxIterations:\s*\d+[^}]*)\}/g,
@@ -733,7 +702,7 @@ export type LegalAITypes = {
   async generateReport() {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const reportFile = \`FIX_IMPLEMENTATION_REPORT_\${timestamp}.md\`;
-    
+
     const report = \`# TypeScript Fix Implementation Report
 Generated: \${new Date().toISOString()}
 

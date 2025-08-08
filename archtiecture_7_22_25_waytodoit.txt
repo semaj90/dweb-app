@@ -1,9 +1,9 @@
-make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store 
+make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store
 
 we want to use our ai to understand commands at some point, enhanced to update our app in real-time and save to back-end similar to crud using loki.js, fuse.js, qdrant, postgresql, pg vector, redis, rabbitmq, neo4j, event service workers(node.js) chunking, streaming, embededed services, recommendation engine, predicitive analytics, self-prompting, ai llm semantic understanding using rag.
 
 we're only at around phase 2.
-what are things like rapid json, key-value pairs? if I want to create an algorithmic way using bicub, tricubic? quantiarion hypercube like searching using .map of html for web design using ai? what is a better abstraction datastore using streaming? ui, ux, webgl, was thinking css texture streaming 
+what are things like rapid json, key-value pairs? if I want to create an algorithmic way using bicub, tricubic? quantiarion hypercube like searching using .map of html for web design using ai? what is a better abstraction datastore using streaming? ui, ux, webgl, was thinking css texture streaming
 
 phase being what we have now, add to a 7phasetodolist.md 
 
@@ -19,9 +19,9 @@ user recommends prosecution,
 
 user manages trials using said cases.
 
-cases.elements, json object store can be imported anywhere in the app using this setup mentioned here, 
+cases.elements, json object store can be imported anywhere in the app using this setup mentioned here,
 
-make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store 
+make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store
 
 we want to use our ai to understand commands at some point, enhanced to update our app in real-time and save to back-end similar to crud using loki.js, fuse.js, qdrant, postgresql, pg vector, redis, rabbitmq, neo4j, event service workers(node.js) chunking, streaming, embededed services, recommendation engine, predicitive analytics, self-prompting, ai llm semantic understanding using rag.
 
@@ -133,7 +133,7 @@ Edit
 
 ### 🚧 Phase 3: Backend Intelligence + Event Worker Layer
 - [ ] Node.js service workers
-- [ ] Redis + RabbitMQ event bus
+- [ ] Redis + bullmq#(RabbitMQ) event bus
 - [ ] PostgreSQL + Qdrant + PGVector hybrid store
 - [ ] Streaming chunked saves
 - [ ] Embed chain + event replay
@@ -165,6 +165,7 @@ Edit
 
 ### 🚀 Phase 7: Simulation + Precedent Engine
 - [ ] Create hypothetical trial simulations
+- [ ] Integrate real-world data, all 50 states, avaliable with download button? for accuracy qlra training using enhanced
 - [ ] Embedding prior outcomes for strategy
 - [ ] Legal precedent graph queries (via Neo4j)
 - [ ] Outcome projection
@@ -196,12 +197,12 @@ IndexedDB/Loki.js + PG hybrid sync logic?
 
 Let me know how you'd like to prioritize Phase 2 and beyond.
 
-make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store 
+make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store
 
 we want to use our ai to understand commands at some point, enhanced to update our app in real-time and save to back-end similar to crud using loki.js, fuse.js, qdrant, postgresql, pg vector, redis, rabbitmq, neo4j, event service workers(node.js) chunking, streaming, embededed services, recommendation engine, predicitive analytics, self-prompting, ai llm semantic understanding using rag.
 
 we're only at around phase 2.
-what are things like rapid json, key-value pairs? if I want to create an algorithmic way using bicub, tricubic? quantiarion hypercube like searching using .map of html for web design using ai? what is a better abstraction datastore using streaming? ui, ux, webgl, was thinking css texture streaming 
+what are things like rapid json, key-value pairs? if I want to create an algorithmic way using bicub, tricubic? quantiarion hypercube like searching using .map of html for web design using ai? what is a better abstraction datastore using streaming? ui, ux, webgl, was thinking css texture streaming
 
 phase being what we have now, add to a 7phasetodolist.md 
 
@@ -217,9 +218,9 @@ user recommends prosecution,
 
 user manages trials using said cases.
 
-cases.elements, json object store can be imported anywhere in the app using this setup mentioned here, 
+cases.elements, json object store can be imported anywhere in the app using this setup mentioned here,
 
-make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store 
+make sure this script works ith melt-ui as well, make it this way, bits-ui v2 does prop merging properly? .ts barrel store
 
 we want to use our ai to understand commands at some point, enhanced to update our app in real-time and save to back-end similar to crud using loki.js, fuse.js, qdrant, postgresql, pg vector, redis, rabbitmq, neo4j, event service workers(node.js) chunking, streaming, embededed services, recommendation engine, predicitive analytics, self-prompting, ai llm semantic understanding using rag.
 
@@ -291,7 +292,7 @@ Generated svelte
 	let { caseData, ...rest } = $props<{ caseData: Case } & HTMLDivElement>();
 </script>
 
-<!-- 
+<!--
   We use Card.Root and spread the rest of the props onto it.
   This is how prop merging works. If you pass a `class` or `id` to Case.Card,
   it will be applied to this div.

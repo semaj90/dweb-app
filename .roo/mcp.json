@@ -8,7 +8,26 @@
       ],
       "env": {
         "DEFAULT_MINIMUM_TOKENS": ""
-      }
+      },
+      "alwaysAllow": [
+        "resolve-library-id",
+        "get-library-docs"
+      ]
+    },
+    "sequentialthinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "ATABASE_URL=postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
+      ]
     }
   }
 }

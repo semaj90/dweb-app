@@ -1,9 +1,8 @@
 <script lang="ts">
   import { createCombobox, melt } from '@melt-ui/svelte';
-  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import Fuse from "fuse.js";
-  import { Search, X, Filter, Tag, Calendar, FileType } from 'lucide-svelte';
+  import { Search, X, Tag, Calendar, FileType } from 'lucide-svelte';
   import type { Evidence } from '$lib/stores/report';
 
   export let items: Evidence[] = [];
@@ -39,8 +38,8 @@
 
   // Combobox for search input
   const {
-    elements: { input, menu, option, label },
-    states: { open, selected, inputValue },
+    elements: { input, menu, option },
+    states: { open, inputValue },
     helpers: { isSelected }
   } = createCombobox({
     forceVisible: true,
@@ -51,7 +50,8 @@
   $: if (items.length > 0) {
     fuse = new Fuse(items, fuseOptions);
     allTags = [...new Set(items.flatMap(item => item.tags || []))];
-}
+  }
+
   // Perform search when input changes
   $: if (fuse && searchValue) {
     const fuseResults = fuse.search(searchValue);
@@ -60,26 +60,27 @@
       .slice(0, maxResults);
   } else {
     searchResults = items.slice(0, maxResults);
-}
+  }
+
   // Apply filters
   $: filteredResults = searchResults.filter(item => {
     // Type filter
     if (selectedTypes.length > 0 && !selectedTypes.includes(item.type)) {
       return false;
-}
+    }
     // Tag filter
     if (selectedTags.length > 0) {
       const itemTags = item.tags || [];
       if (!selectedTags.some(tag => itemTags.includes(tag))) {
         return false;
-}
-}
+      }
+    }
     // Date range filter
     if (dateRange.start || dateRange.end) {
       const itemDate = new Date(item.createdAt);
       if (dateRange.start && itemDate < dateRange.start) return false;
       if (dateRange.end && itemDate > dateRange.end) return false;
-}
+    }
     return true;
   });
 
@@ -109,7 +110,7 @@
       selectedTags = selectedTags.filter(t => t !== tag);
     } else {
       selectedTags = [...selectedTags, tag];
-}
+    }
   };
 
   // Toggle type filter
@@ -118,7 +119,7 @@
       selectedTypes = selectedTypes.filter(t => t !== type);
     } else {
       selectedTypes = [...selectedTypes, type];
-}
+    }
   };
 
   // Evidence types
@@ -132,21 +133,21 @@
   };
 </script>
 
-<div class="container mx-auto px-4">
+<div class="advanced-search">
   <!-- Search Input -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <Search size={20} class="container mx-auto px-4" />
+  <div class="search-input-container">
+    <div class="search-input-wrapper">
+      <Search size={20} class="search-icon" />
       <input
         use:melt={$input}
-        class="container mx-auto px-4"
+        class="search-input"
         type="text"
         {placeholder}
         autocomplete="off"
       />
       {#if searchValue}
         <button
-          class="container mx-auto px-4"
+          class="clear-button"
           on:click={() => clearSearch()}
           title="Clear search"
         >
@@ -159,49 +160,49 @@
     {#if $open && searchResults.length > 0}
       <div
         use:melt={$menu}
-        class="container mx-auto px-4"
+        class="search-results"
         transition:fly={{ y: -5, duration: 150 }}
       >
-        {#each filteredResults as item, index (item.id)}
+        {#each filteredResults as item (item.id)}
           <button
             use:melt={$option({ value: item.id, label: item.title })}
-            class="container mx-auto px-4"
+            class="search-result-item"
             class:highlighted={$isSelected(item.id)}
             on:click={() => handleSelect(item)}
           >
-            <div class="container mx-auto px-4">
+            <div class="result-icon">
               {#if item.type === 'document'}
                 <FileType size={16} />
               {:else if item.type === 'image'}
-                <img src={item.url} alt="" class="container mx-auto px-4" />
+                <img src={item.url} alt="" class="result-thumbnail" />
               {:else}
-                <div class="container mx-auto px-4">{item.type[0].toUpperCase()}</div>
+                <div class="result-type-badge {item.type}">{item.type[0].toUpperCase()}</div>
               {/if}
             </div>
 
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
+            <div class="result-content">
+              <div class="result-title">
                 {@html highlightMatches(item.title, searchValue)}
               </div>
               {#if item.description}
-                <div class="container mx-auto px-4">
+                <div class="result-description">
                   {@html highlightMatches(item.description.slice(0, 100), searchValue)}
                   {#if item.description.length > 100}...{/if}
                 </div>
               {/if}
 
               {#if item.tags && item.tags.length > 0}
-                <div class="container mx-auto px-4">
+                <div class="result-tags">
                   {#each item.tags.slice(0, 3) as tag}
-                    <span class="container mx-auto px-4">{tag}</span>
+                    <span class="result-tag">{tag}</span>
                   {/each}
                 </div>
               {/if}
             </div>
 
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">{item.type}</span>
-              <span class="container mx-auto px-4">
+            <div class="result-meta">
+              <span class="result-type">{item.type}</span>
+              <span class="result-date">
                 {new Date(item.createdAt).toLocaleDateString()}
               </span>
             </div>
@@ -209,7 +210,7 @@
         {/each}
 
         {#if filteredResults.length === 0}
-          <div class="container mx-auto px-4">
+          <div class="no-results">
             <Search size={24} />
             <p>No results found</p>
             <small>Try adjusting your search terms or filters</small>
@@ -221,17 +222,17 @@
 
   <!-- Filters -->
   {#if showFilters}
-    <div class="container mx-auto px-4">
+    <div class="search-filters">
       <!-- Type filters -->
-      <div class="container mx-auto px-4">
-        <label class="container mx-auto px-4">
+      <div class="filter-group">
+        <label class="filter-label">
           <FileType size={14} />
           Type
         </label>
-        <div class="container mx-auto px-4">
+        <div class="filter-options">
           {#each evidenceTypes as type}
             <button
-              class="container mx-auto px-4"
+              class="filter-chip"
               class:active={selectedTypes.includes(type)}
               on:click={() => toggleType(type)}
             >
@@ -243,15 +244,15 @@
 
       <!-- Tag filters -->
       {#if showTags && allTags.length > 0}
-        <div class="container mx-auto px-4">
-          <label class="container mx-auto px-4">
+        <div class="filter-group">
+          <label class="filter-label">
             <Tag size={14} />
             Tags
           </label>
-          <div class="container mx-auto px-4">
+          <div class="filter-options">
             {#each allTags.slice(0, 10) as tag}
               <button
-                class="container mx-auto px-4"
+                class="filter-chip"
                 class:active={selectedTags.includes(tag)}
                 on:click={() => toggleTag(tag)}
               >
@@ -263,22 +264,22 @@
       {/if}
 
       <!-- Date range -->
-      <div class="container mx-auto px-4">
-        <label class="container mx-auto px-4">
+      <div class="filter-group">
+        <label class="filter-label">
           <Calendar size={14} />
           Date Range
         </label>
-        <div class="container mx-auto px-4">
+        <div class="date-range-inputs">
           <input
             type="date"
-            class="container mx-auto px-4"
+            class="date-input"
             bind:value={dateRange.start}
             placeholder="Start date"
           />
           <span>to</span>
           <input
             type="date"
-            class="container mx-auto px-4"
+            class="date-input"
             bind:value={dateRange.end}
             placeholder="End date"
           />
@@ -289,11 +290,11 @@
 
   <!-- Active filters summary -->
   {#if selectedTags.length > 0 || selectedTypes.length > 0 || dateRange.start || dateRange.end}
-    <div class="container mx-auto px-4">
-      <span class="container mx-auto px-4">Active filters:</span>
+    <div class="active-filters">
+      <span class="active-filters-label">Active filters:</span>
 
       {#each selectedTypes as type}
-        <span class="container mx-auto px-4">
+        <span class="active-filter">
           {type}
           <button on:click={() => toggleType(type)}>
             <X size={12} />
@@ -302,7 +303,7 @@
       {/each}
 
       {#each selectedTags as tag}
-        <span class="container mx-auto px-4">
+        <span class="active-filter">
           #{tag}
           <button on:click={() => toggleTag(tag)}>
             <X size={12} />
@@ -311,7 +312,7 @@
       {/each}
 
       {#if dateRange.start || dateRange.end}
-        <span class="container mx-auto px-4">
+        <span class="active-filter">
           {dateRange.start?.toLocaleDateString() || '...'} - {dateRange.end?.toLocaleDateString() || '...'}
           <button on:click={() => dateRange = {}}>
             <X size={12} />
@@ -319,7 +320,7 @@
         </span>
       {/if}
 
-      <button class="container mx-auto px-4" on:click={() => clearSearch()}>
+      <button class="clear-all-filters" on:click={() => clearSearch()}>
         Clear all
       </button>
     </div>
@@ -327,292 +328,332 @@
 </div>
 
 <style>
-  /* @unocss-include */
-  .advanced-search {
-    position: relative;
-    width: 100%;
+.advanced-search {
+  position: relative;
+  width: 100%;
 }
-  .search-input-container {
-    position: relative;
-}
-  .search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-  .search-icon {
-    position: absolute;
-    left: 0.75rem;
-    color: var(--pico-muted-color, #6b7280);
-    z-index: 1;
-}
-  .search-input {
-    width: 100%;
-    padding: 0.75rem 2.5rem 0.75rem 2.75rem;
-    border: 1px solid var(--pico-border-color, #d1d5db);
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    background: var(--pico-background-color, #ffffff);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-  .search-input:focus {
-    outline: none;
-    border-color: var(--pico-primary, #3b82f6);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-  .clear-button {
-    position: absolute;
-    right: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border: none;
-    background: none;
-    color: var(--pico-muted-color, #6b7280);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: color 0.15s ease;
-}
-  .clear-button:hover {
-    color: var(--pico-color, #374151);
-}
-  .search-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--pico-card-background-color, #ffffff);
-    border: 1px solid var(--pico-border-color, #d1d5db);
-    border-radius: 0.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    max-height: 20rem;
-    overflow-y: auto;
-    z-index: 50;
-    margin-top: 0.25rem;
-}
-  .search-result-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    width: 100%;
-    padding: 0.75rem;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-    border-bottom: 1px solid var(--pico-border-color, #f1f5f9);
-}
-  .search-result-item:hover,
-  .search-result-item.highlighted {
-    background: var(--pico-primary-background, #f8fafc);
-}
-  .search-result-item:last-child {
-    border-bottom: none;
-}
-  .result-icon {
-    flex-shrink: 0;
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-  .result-thumbnail {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 0.25rem;
-}
-  .result-type-badge {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: white;
-    border-radius: 0.25rem;
-}
-  .result-type-badge.document { background: #3b82f6; }
-  .result-type-badge.video { background: #8b5cf6; }
-  .result-type-badge.audio { background: #f59e0b; }
-  .result-type-badge.link { background: #06b6d4; }
 
-  .result-content {
-    flex: 1;
-    min-width: 0;
+.search-input-container {
+  position: relative;
 }
-  .result-title {
-    font-weight: 500;
-    color: var(--pico-color, #111827);
-    margin-bottom: 0.25rem;
-    word-break: break-word;
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
-  .result-description {
-    font-size: 0.875rem;
-    color: var(--pico-muted-color, #6b7280);
-    line-height: 1.4;
-    margin-bottom: 0.25rem;
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #6b7280;
+  z-index: 1;
 }
-  .result-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 2.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-  .result-tag {
-    font-size: 0.75rem;
-    background: var(--pico-primary-background, #eff6ff);
-    color: var(--pico-primary, #3b82f6);
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-  .result-meta {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
-    font-size: 0.75rem;
-    color: var(--pico-muted-color, #9ca3af);
+
+.clear-button {
+  position: absolute;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: none;
+  color: #6b7280;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
 }
-  .result-type {
-    text-transform: capitalize;
-    font-weight: 500;
+
+.clear-button:hover {
+  color: #374151;
 }
-  .no-results {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: var(--pico-muted-color, #6b7280);
-    text-align: center;
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-height: 20rem;
+  overflow-y: auto;
+  z-index: 50;
+  margin-top: 0.25rem;
 }
-  .no-results p {
-    margin: 0.5rem 0 0.25rem;
-    font-weight: 500;
+
+.search-result-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #f1f5f9;
 }
-  .no-results small {
-    font-size: 0.75rem;
-    opacity: 0.8;
+
+.search-result-item:hover,
+.search-result-item.highlighted {
+  background: #f8fafc;
 }
-  .search-filters {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+
+.search-result-item:last-child {
+  border-bottom: none;
 }
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+
+.result-icon {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-  .filter-label {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--pico-color, #374151);
+
+.result-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.25rem;
 }
-  .filter-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+
+.result-type-badge {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  border-radius: 0.25rem;
 }
-  .filter-chip {
-    padding: 0.375rem 0.75rem;
-    border: 1px solid var(--pico-border-color, #d1d5db);
-    background: var(--pico-background-color, #ffffff);
-    color: var(--pico-color, #374151);
-    border-radius: 1rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.15s ease;
+
+.result-type-badge.document { background: #3b82f6; }
+.result-type-badge.video { background: #8b5cf6; }
+.result-type-badge.audio { background: #f59e0b; }
+.result-type-badge.link { background: #06b6d4; }
+
+.result-content {
+  flex: 1;
+  min-width: 0;
 }
-  .filter-chip:hover {
-    border-color: var(--pico-primary, #3b82f6);
-    background: var(--pico-primary-background, #f8fafc);
+
+.result-title {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.25rem;
+  word-break: break-word;
 }
-  .filter-chip.active {
-    background: var(--pico-primary, #3b82f6);
-    color: white;
-    border-color: var(--pico-primary, #3b82f6);
+
+.result-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.4;
+  margin-bottom: 0.25rem;
 }
-  .date-range-inputs {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+
+.result-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
 }
-  .date-input {
-    padding: 0.375rem 0.5rem;
-    border: 1px solid var(--pico-border-color, #d1d5db);
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
+
+.result-tag {
+  font-size: 0.75rem;
+  background: #eff6ff;
+  color: #3b82f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
 }
-  .active-filters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding: 0.75rem;
-    background: var(--pico-card-sectioning-background-color, #f8fafc);
-    border-radius: 0.5rem;
+
+.result-meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
 }
-  .active-filters-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--pico-color, #374151);
+
+.result-type {
+  text-transform: capitalize;
+  font-weight: 500;
 }
-  .active-filter {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    background: var(--pico-primary, #3b82f6);
-    color: white;
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    font-weight: 500;
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280;
+  text-align: center;
 }
-  .active-filter button {
-    display: flex;
-    align-items: center;
-    border: none;
-    background: rgba(255, 255, 255, 0.3);
-    color: inherit;
-    border-radius: 50%;
-    padding: 0.125rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+
+.no-results p {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 500;
 }
-  .active-filter button:hover {
-    background: rgba(255, 255, 255, 0.5);
+
+.no-results small {
+  font-size: 0.75rem;
+  opacity: 0.8;
 }
-  .clear-all-filters {
-    padding: 0.25rem 0.5rem;
-    border: 1px solid var(--pico-border-color, #d1d5db);
-    background: var(--pico-background-color, #ffffff);
-    color: var(--pico-muted-color, #6b7280);
-    border-radius: 0.375rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.15s ease;
+
+.search-filters {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-  .clear-all-filters:hover {
-    border-color: var(--pico-del-color, #ef4444);
-    color: var(--pico-del-color, #ef4444);
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
-  /* Search highlighting */
-  :global(mark) {
-    background: var(--pico-mark-background-color, #fef08a);
-    color: var(--pico-mark-color, #713f12);
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.125rem;
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-chip {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filter-chip:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.filter-chip.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.date-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date-input {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+}
+
+.active-filters-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.active-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.active-filter button {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  color: inherit;
+  border-radius: 50%;
+  padding: 0.125rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.active-filter button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.clear-all-filters {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #6b7280;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clear-all-filters:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Search highlighting */
+:global(mark) {
+  background: #fef08a;
+  color: #713f12;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.125rem;
 }
 </style>

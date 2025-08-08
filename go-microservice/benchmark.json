@@ -1,0 +1,16 @@
+{
+  "test_data": {
+    "small": {"id": 1, "name": "test", "value": 100},
+    "medium": {
+      "users": [
+        {"id": 1, "name": "Alice", "age": 30},
+        {"id": 2, "name": "Bob", "age": 25}
+      ],
+      "metadata": {"version": "1.0", "timestamp": 1736282000}
+    },
+    "large": {
+      "records": [],
+      "note": "Generate 1000+ records for throughput testing"
+    }
+  }
+}

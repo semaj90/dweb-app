@@ -145,7 +145,7 @@ ollama create gemma3-legal -f local-models/Modelfile.gemma3-legal
 ollama pull nomic-embed-text
 
 # Terminal 3: Dev server
-cd sveltekit-frontend && npm run dev
+cd sveltekit-frontend; npm run dev
 
 # Terminal 4: Execute validation
 .\manual-validation.ps1
@@ -201,8 +201,9 @@ cd sveltekit-frontend && npm run dev
 - [ ] Real-time logging functional
 - [ ] MCP server operational
 - [ ] Performance metrics within targets
-node.js, ollama, dual setup wsl, and windows?
-node.js and llama.cpp
+- [ ] Node.js and Ollama dual setup (WSL and Windows)
+- [ ] Node.js and llama.cpp integration
+
 ### Success Criteria
 
 **Operational Definition**

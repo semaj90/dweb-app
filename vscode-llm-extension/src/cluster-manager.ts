@@ -7,6 +7,7 @@ import * as cluster from 'cluster';
 import * as os from 'os';
 import * as vscode from 'vscode';
 import { EventEmitter } from 'events';
+import { Worker } from 'worker_threads';
 
 export interface ClusterConfig {
   workers: number;
@@ -52,7 +53,7 @@ export class ExtensionClusterManager extends EventEmitter {
 
   constructor(config?: Partial<ClusterConfig>) {
     super();
-    
+
     this.config = {
       workers: config?.workers || Math.min(os.cpus().length, 4),
       maxMemoryPerWorker: config?.maxMemoryPerWorker || 512 * 1024 * 1024, // 512MB
@@ -153,7 +154,7 @@ export class ExtensionClusterManager extends EventEmitter {
     });
 
     this.workers.set(worker.id, worker);
-    
+
     // Initialize worker stats
     this.workerStats.set(worker.id, {
       workerId: worker.id,
@@ -180,7 +181,7 @@ export class ExtensionClusterManager extends EventEmitter {
 
       // Find best worker based on distribution strategy
       const worker = this.selectWorker(task);
-      
+
       if (!worker) {
         clearTimeout(timeoutId);
         reject(new Error('No available workers'));
@@ -192,7 +193,7 @@ export class ExtensionClusterManager extends EventEmitter {
         if (message.type === 'task-complete' && message.taskId === task.id) {
           clearTimeout(timeoutId);
           worker.off('message', responseHandler);
-          
+
           // Update worker stats
           const stats = this.workerStats.get(worker.id);
           if (stats) {
@@ -233,7 +234,7 @@ export class ExtensionClusterManager extends EventEmitter {
    */
   private selectWorker(task: WorkerTask): cluster.Worker | null {
     const availableWorkers = Array.from(this.workers.values()).filter(w => w.isDead() === false);
-    
+
     if (availableWorkers.length === 0) {
       return null;
     }
@@ -248,10 +249,10 @@ export class ExtensionClusterManager extends EventEmitter {
         return availableWorkers.reduce((best, current) => {
           const bestStats = this.workerStats.get(best.id);
           const currentStats = this.workerStats.get(current.id);
-          
+
           if (!bestStats) return current;
           if (!currentStats) return best;
-          
+
           return currentStats.currentLoad < bestStats.currentLoad ? current : best;
         });
 
@@ -286,7 +287,7 @@ export class ExtensionClusterManager extends EventEmitter {
           // Choose agent based on task data
           const agentType = task.data.agent || 'claude';
           let agent;
-          
+
           switch (agentType) {
             case 'claude':
               agent = services.claudeAgent;
@@ -348,7 +349,7 @@ export class ExtensionClusterManager extends EventEmitter {
   private async handleEmbeddingCache(data: any, services: any): Promise<any> {
     // This would integrate with Ollama Gemma for embeddings
     const cacheKey = `embed_${this.hashString(data.text)}`;
-    
+
     // Check cache first (would use Redis or similar in production)
     // For now, generate embedding using RAG service
     return await services.enhancedRAGService.query({
@@ -367,7 +368,7 @@ export class ExtensionClusterManager extends EventEmitter {
     if (this.isShuttingDown) return;
 
     console.log(`Worker ${worker.id} exited, cleaning up...`);
-    
+
     this.workers.delete(worker.id);
     this.workerStats.delete(worker.id);
 
@@ -389,11 +390,11 @@ export class ExtensionClusterManager extends EventEmitter {
       case 'worker-ready':
         console.log(`Worker ${worker.id} is ready`);
         break;
-      
+
       case 'stats-update':
         this.workerStats.set(worker.id, message.stats);
         break;
-      
+
       case 'error':
         console.error(`Worker ${worker.id} error:`, message.error);
         this.emit('worker-error', { workerId: worker.id, error: message.error });
@@ -411,7 +412,7 @@ export class ExtensionClusterManager extends EventEmitter {
       for (const [workerId, worker] of this.workers) {
         // Request stats from worker
         worker.send({ type: 'stats-request' });
-        
+
         // Check memory usage and restart if needed
         const stats = this.workerStats.get(workerId);
         if (stats && stats.memoryUsage.heapUsed > this.config.maxMemoryPerWorker * this.config.restartThreshold) {
@@ -463,8 +464,8 @@ export class ExtensionClusterManager extends EventEmitter {
     const workerStats = Array.from(this.workerStats.values());
     const activeWorkers = workerStats.filter(s => s.status !== 'error').length;
     const totalTasks = workerStats.reduce((sum, s) => sum + s.tasksProcessed, 0);
-    const averageLoad = workerStats.length > 0 
-      ? workerStats.reduce((sum, s) => sum + s.currentLoad, 0) / workerStats.length 
+    const averageLoad = workerStats.length > 0
+      ? workerStats.reduce((sum, s) => sum + s.currentLoad, 0) / workerStats.length
       : 0;
 
     return {
@@ -481,9 +482,9 @@ export class ExtensionClusterManager extends EventEmitter {
    */
   async shutdown(): Promise<void> {
     this.isShuttingDown = true;
-    
+
     console.log('Shutting down cluster...');
-    
+
     // Send shutdown signal to all workers
     for (const worker of this.workers.values()) {
       worker.send({ type: 'shutdown' });
@@ -492,7 +493,7 @@ export class ExtensionClusterManager extends EventEmitter {
     // Wait for workers to exit gracefully
     await new Promise<void>((resolve) => {
       let workersRemaining = this.workers.size;
-      
+
       if (workersRemaining === 0) {
         resolve();
         return;

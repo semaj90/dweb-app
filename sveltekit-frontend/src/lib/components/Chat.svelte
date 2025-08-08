@@ -357,8 +357,8 @@
 {#if open}
   <!-- Chat overlay -->
   <div
-    class="container mx-auto px-4"
-        transition:fade={{ duration: 200 }}
+    class="chat-overlay"
+    transition:fade={{ duration: 200 }}
     on:click|self={closeChat}
     on:keydown={(e) => e.key === "Escape" && closeChat()}
     role="dialog"
@@ -368,23 +368,23 @@
   >
     <!-- Chat container -->
     <div
-      class="container mx-auto px-4"
+      class="chat-container"
       transition:fly={{ y: 50, duration: 300, easing: quintOut }}
     >
       <!-- Header -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+      <div class="chat-header">
+        <div class="header-content">
+          <div class="title-section">
+            <div class="ai-indicator">
               <Sparkles size={20} />
             </div>
             <h2 id="chat-title">{title}</h2>
           </div>
 
           <!-- Mode selector -->
-          <div class="container mx-auto px-4">
+          <div class="mode-section">
             <button
-              class="container mx-auto px-4"
+              class="mode-button"
               class:active={showModeSelector}
               on:click={() => (showModeSelector = !showModeSelector)}
               title="Select AI mode"
@@ -399,12 +399,12 @@
 
             {#if showModeSelector}
               <div
-                class="container mx-auto px-4"
+                class="mode-dropdown"
                 transition:scale={{ duration: 200, easing: elasticOut }}
               >
                 {#each aiModes as mode}
                   <button
-                    class="container mx-auto px-4"
+                    class="mode-option"
                     class:selected={mode.id === selectedMode}
                     on:click={() => {
                       selectedMode = mode.id;
@@ -412,9 +412,9 @@
                     }}
                   >
                     <svelte:component this={mode.icon} size={16} />
-                    <div class="container mx-auto px-4">
-                      <span class="container mx-auto px-4">{mode.label}</span>
-                      <span class="container mx-auto px-4">{mode.description}</span>
+                    <div class="mode-info">
+                      <span class="mode-name">{mode.label}</span>
+                      <span class="mode-desc">{mode.description}</span>
                     </div>
                   </button>
                 {/each}
@@ -424,9 +424,9 @@
         </div>
 
         <!-- Actions -->
-        <div class="container mx-auto px-4">
+        <div class="header-actions">
           <button
-            class="container mx-auto px-4"
+            class="header-action"
             on:click={() => clearConversation()}
             title="Clear conversation"
             disabled={isGenerating}
@@ -434,7 +434,7 @@
             <RotateCw size={16} />
           </button>
           <button
-            class="container mx-auto px-4"
+            class="header-action"
             on:click={() => closeChat()}
             title="Close chat"
           >
@@ -444,10 +444,10 @@
       </div>
 
       <!-- Messages area -->
-      <div class="container mx-auto px-4" bind:this={messagesContainer}>
+      <div class="messages-container" bind:this={messagesContainer}>
         {#each $messages as message (message.id)}
           <div
-            class="container mx-auto px-4"
+            class="message"
             class:user={message.role === "user"}
             class:assistant={message.role === "assistant"}
             class:error={message.isError}
@@ -456,7 +456,7 @@
               duration: 300,
             }}
           >
-            <div class="container mx-auto px-4">
+            <div class="message-avatar">
               {#if message.role === "user"}
                 <UserIcon size={16} />
               {:else}
@@ -464,23 +464,23 @@
               {/if}
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="message-content">
               {#if message.isTyping}
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <div class="typing-indicator">
+                  <div class="typing-dots">
                     <span></span>
                     <span></span>
                     <span></span>
                   </div>
-                  <span class="container mx-auto px-4">AI is thinking...</span>
+                  <span class="typing-text">AI is thinking...</span>
                 </div>
               {:else}
-                <div class="container mx-auto px-4">
+                <div class="message-text">
                   {message.content}
                 </div>
 
                 {#if message.suggestions && message.suggestions.length > 0}
-                  <div class="container mx-auto px-4">
+                  <div class="suggestions">
                     <h4>Suggestions:</h4>
                     <ul>
                       {#each message.suggestions as suggestion}
@@ -491,10 +491,10 @@
                 {/if}
 
                 {#if message.actions && message.actions.length > 0}
-                  <div class="container mx-auto px-4">
+                  <div class="actions">
                     {#each message.actions as action}
                       <button
-                        class="container mx-auto px-4"
+                        class="action-button"
                         on:click={() => handleActionClick(action)}
                         title={action.text}
                       >
@@ -504,13 +504,13 @@
                   </div>
                 {/if}
 
-                <div class="container mx-auto px-4">
-                  <span class="container mx-auto px-4"
+                <div class="message-meta">
+                  <span class="timestamp"
                     >{formatTimestamp(message.timestamp)}</span
                   >
                   {#if message.contextUsed && (message.contextUsed.similarContent?.length > 0 || message.contextUsed.evidence?.length > 0)}
                     <span
-                      class="container mx-auto px-4"
+                      class="context-indicator"
                       title="Response used relevant context"
                     >
                       <Brain size={12} />
@@ -525,12 +525,12 @@
 
       <!-- Quick actions (when no messages) -->
       {#if $messages.length === 0}
-        <div class="container mx-auto px-4" transition:fade={{ delay: 300 }}>
+        <div class="quick-actions" transition:fade={{ delay: 300 }}>
           <h3>Quick Actions</h3>
-          <div class="container mx-auto px-4">
+          <div class="action-grid">
             {#each quickActions as action}
               <button
-                class="container mx-auto px-4"
+                class="quick-action"
                 on:click={() => handleQuickAction(action.text)}
                 disabled={isGenerating}
               >
@@ -543,8 +543,8 @@
       {/if}
 
       <!-- Input area -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="input-area">
+        <div class="input-container">
           <textarea
             bind:this={messageInput}
             bind:value={currentMessage}
@@ -552,18 +552,18 @@
             disabled={isGenerating}
             on:keydown={handleKeydown}
             rows="4"
-            class="container mx-auto px-4"
+            class="message-input"
           ></textarea>
 
           <button
-            class="container mx-auto px-4"
+            class="send-button"
             class:sending={isGenerating}
             disabled={!currentMessage.trim() || isGenerating}
             on:click={() => sendMessage()}
             title="Send message"
           >
             {#if isGenerating}
-              <div class="container mx-auto px-4"></div>
+              <div class="loading-spinner"></div>
             {:else}
               <Send size={20} />
             {/if}
@@ -583,6 +583,7 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -966,43 +967,46 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
-  @keyframes typing {
-    0%,
-    60%,
-    100% {
-      transform: translateY(0);
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
 }
-    30% {
-      transform: translateY(-10px);
-}}
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+/* Responsive design */
+@media (max-width: 768px) {
+  .chat-overlay {
+    padding: 0.5rem;
+  }
+  .chat-container {
+    height: 90vh;
+    max-height: none;
+  }
+  .chat-header {
+    padding: 1rem;
+  }
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+  .message {
+    max-width: 95%;
+  }
 }
-    100% {
-      transform: rotate(360deg);
-}}
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .chat-overlay {
-      padding: 0.5rem;
-}
-    .chat-container {
-      height: 90vh;
-      max-height: none;
-}
-    .chat-header {
-      padding: 1rem;
-}
-    .header-content {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.75rem;
-}
-    .action-grid {
-      grid-template-columns: 1fr;
-}
-    .message {
       max-width: 95%;
 }}
 </style>

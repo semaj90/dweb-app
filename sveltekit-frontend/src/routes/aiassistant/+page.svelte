@@ -1,4 +1,47 @@
 <script lang="ts">
+	// Web Speech API type declarations
+	interface SpeechRecognition extends EventTarget {
+		continuous: boolean;
+		interimResults: boolean;
+		lang: string;
+		start(): void;
+		stop(): void;
+		abort(): void;
+		onresult: (event: SpeechRecognitionEvent) => void;
+		onerror: (event: SpeechRecognitionErrorEvent) => void;
+		onend: () => void;
+	}
+
+	interface SpeechRecognitionEvent extends Event {
+		results: SpeechRecognitionResultList;
+	}
+
+	interface SpeechRecognitionResultList {
+		[index: number]: SpeechRecognitionResult;
+		length: number;
+	}
+
+	interface SpeechRecognitionResult {
+		[index: number]: SpeechRecognitionAlternative;
+		isFinal: boolean;
+	}
+
+	interface SpeechRecognitionAlternative {
+		transcript: string;
+		confidence: number;
+	}
+
+	interface SpeechRecognitionErrorEvent extends Event {
+		error: string;
+	}
+
+	declare global {
+		interface Window {
+			SpeechRecognition?: typeof SpeechRecognition;
+			webkitSpeechRecognition?: typeof SpeechRecognition;
+		}
+	}
+
 	import { onMount, tick } from 'svelte';
 	import { writable } from 'svelte/store';
 	import { createMachine, interpret } from 'xstate';
@@ -29,8 +72,21 @@
 		Download
 	} from 'lucide-svelte';
 
+	// Type definitions for panel layout
+	interface PanelConfig {
+		width: number;
+		collapsed: boolean;
+	}
+
+	interface PanelLayout {
+		reports: PanelConfig;
+		summaries: PanelConfig;
+		citations: PanelConfig;
+		chat: PanelConfig;
+	}
+
 	// 4-Panel Layout State
-	let panelLayout = $state({
+	let panelLayout = $state<PanelLayout>({
 		reports: { width: 25, collapsed: false },
 		summaries: { width: 25, collapsed: false },
 		citations: { width: 25, collapsed: false },
@@ -262,8 +318,11 @@
 		if (!voiceEnabled) return;
 
 		try {
-			const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-			const recognition = new SpeechRecognition();
+			const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+			if (!SpeechRecognitionAPI) {
+				throw new Error('Speech recognition not supported');
+			}
+			const recognition = new SpeechRecognitionAPI();
 
 			recognition.continuous = false;
 			recognition.interimResults = false;
@@ -326,21 +385,16 @@
 				aiService.send('CONTEXT_LOADED');
 			}
 		} catch (error) {
-			console.error('Context switch failed:', error);
+			console.error('Context switch error:', error);
 			aiService.send('ERROR');
 		}
 	}
 
-	function useSuggestion(suggestion: string) {
-		currentMessage = suggestion;
-		sendMessage();
-	}
-
-	function togglePanel(panelName: string) {
+	function togglePanel(panelName: keyof PanelLayout) {
 		panelLayout[panelName].collapsed = !panelLayout[panelName].collapsed;
 	}
 
-	function adjustPanelWidth(panelName: string, delta: number) {
+	function adjustPanelWidth(panelName: keyof PanelLayout, delta: number) {
 		const current = panelLayout[panelName].width;
 		const newWidth = Math.max(15, Math.min(50, current + delta));
 		panelLayout[panelName].width = newWidth;
@@ -368,11 +422,15 @@
 		a.click();
 		URL.revokeObjectURL(url);
 	}
+
+	function useSuggestion(suggestion: string) {
+		currentMessage = suggestion;
+		sendMessage();
+	}
 </script>
 
 <svelte:head>
-	<title>AI Assistant - Legal AI Suite</title>
-	<meta name="description" content="Intelligent legal AI assistant with real-time chat and contextual analysis" />
+	<title>AI Assistant</title>
 </svelte:head>
 
 <div class="h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
@@ -638,6 +696,7 @@
 	.line-clamp-2 {
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
