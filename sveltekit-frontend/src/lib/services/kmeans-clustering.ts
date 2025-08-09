@@ -344,7 +344,7 @@ export class LegalKMeansClusterer extends KMeansClusterer {
       results.push({
         id: `cluster_${k}`,
         centroid,
-        documents: clusterIndices.map(i: any => `doc_${i}`),
+        documents: clusterIndices.map((i: any) => `doc_${i}`),
         size: clusterIndices.length,
         label: `Legal Cluster ${k + 1}`
       });

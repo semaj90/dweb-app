@@ -776,7 +776,7 @@ export class SelfOrganizingMapRAG {
 
     // Add general legal suggestions
     const legalTerms = ['evidence', 'testimony', 'case law', 'precedent', 'ruling'];
-    legalTerms.forEach(term: any => {
+    legalTerms.forEach((term: any) => {
       if (!query.toLowerCase().includes(term)) {
         suggestions.push(`${query} ${term}`);
       }
@@ -802,7 +802,7 @@ export class SelfOrganizingMapRAG {
     const evidenceTypes = new Set<string>();
     const caseTypes = new Set<string>();
 
-    results.forEach(result: any => {
+    results.forEach((result: any) => {
       if (result.document?.metadata?.type) {
         evidenceTypes.add(result.document.metadata.type);
       }

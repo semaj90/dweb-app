@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     );
 
     // Format results for response
-    const formattedResults = results.map(result: any => ({
+    const formattedResults = results.map((result: any) => ({
       content: result.content,
       similarity: Math.round(result.similarity * 100) / 100,
       documentId: result.documentId,

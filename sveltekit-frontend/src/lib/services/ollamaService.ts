@@ -42,7 +42,7 @@ export class OllamaService {
    */
   async generateBatchEmbeddings(texts: string[]): Promise<number[][]> {
     const embeddings = await Promise.all(
-      texts.map(text: any => this.generateEmbedding(text))
+      texts.map((text: any) => this.generateEmbedding(text))
     );
     return embeddings;
   }
@@ -110,7 +110,7 @@ export class OllamaService {
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split('\n').filter(line: any => line.trim());
+      const lines = chunk.split('\n').filter((line: any) => line.trim());
 
       for (const line of lines) {
         try {

@@ -2,30 +2,44 @@
 <!-- Production-ready form with state management, validation, and progress tracking -->
 
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { createDocumentUploadForm, FormStatePersistence, FORM_STORAGE_KEYS } from '$lib/forms/superforms-xstate-integration';
-  import type { SuperValidated, Infer } from 'sveltekit-superforms';
-  import { DocumentUploadSchema } from '$lib/state/legal-form-machines';
-  import { Button } from 'bits-ui';
-  import { Input } from 'bits-ui';
-  import { Textarea } from 'bits-ui';
-  import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
-  import { Badge } from 'bits-ui';
-  import { Progress } from 'bits-ui';
-  import { Alert, AlertDescription } from 'bits-ui';
-  import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'bits-ui';
-  import { Checkbox } from 'bits-ui';
-  import { 
-    Upload, 
-    FileText, 
-    CheckCircle, 
-    AlertTriangle, 
+  import {
+    createDocumentUploadForm,
+    FORM_STORAGE_KEYS,
+    FormStatePersistence,
+  } from "$lib/forms/superforms-xstate-integration";
+  import { DocumentUploadSchema } from "$lib/state/legal-form-machines";
+  import {
+    Alert,
+    AlertDescription,
+    Badge,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    Checkbox,
+    Input,
+    Progress,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Textarea,
+  } from "bits-ui";
+  import {
+    AlertTriangle,
+    CheckCircle,
+    FileText,
     Loader2,
-    X,
-    Save,
     RotateCcw,
-    Zap
-  } from 'lucide-svelte';
+    Save,
+    Upload,
+    X,
+    Zap,
+  } from "lucide-svelte";
+  import { onMount } from "svelte";
+  import type { Infer, SuperValidated } from "sveltekit-superforms";
 
   // Props
   export let data: SuperValidated<Infer<typeof DocumentUploadSchema>>;
@@ -40,38 +54,49 @@
     onError,
     autoSave,
     autoSaveDelay: 2000,
-    resetOnSuccess: true
+    resetOnSuccess: true,
   });
 
-  const { form, actor, state, context, isValid, isSubmitting, errors, progress } = formIntegration;
-  const { form: formData, enhance, errors: formErrors } = form;
+  const {
+    form,
+    actor,
+    state,
+    context,
+    isValid,
+    isSubmitting,
+    errors,
+    progress,
+  } = formIntegration;
+  const { form: formData, enhance } = form;
 
   // Form persistence
-  const persistence = new FormStatePersistence(FORM_STORAGE_KEYS.DOCUMENT_UPLOAD);
+  const persistence = new FormStatePersistence(
+    FORM_STORAGE_KEYS.DOCUMENT_UPLOAD
+  );
 
   // File handling
-  let fileInput: HTMLInputElement;
+  let fileInput: HTMLInputElement | null = null;
   let dragActive = false;
   let selectedFile: File | null = null;
 
   // Form options
   const documentTypes = [
-    { value: 'contract', label: 'Contract' },
-    { value: 'motion', label: 'Legal Motion' },
-    { value: 'brief', label: 'Legal Brief' },
-    { value: 'evidence', label: 'Evidence' },
-    { value: 'correspondence', label: 'Correspondence' },
-    { value: 'statute', label: 'Statute' },
-    { value: 'regulation', label: 'Regulation' },
-    { value: 'case_law', label: 'Case Law' },
-    { value: 'other', label: 'Other' }
+    { value: "contract", label: "Contract" },
+    { value: "motion", label: "Legal Motion" },
+    { value: "brief", label: "Legal Brief" },
+    { value: "evidence", label: "Evidence" },
+    { value: "correspondence", label: "Correspondence" },
+    { value: "statute", label: "Statute" },
+    { value: "regulation", label: "Regulation" },
+    { value: "case_law", label: "Case Law" },
+    { value: "other", label: "Other" },
   ];
 
   const jurisdictions = [
-    { value: 'federal', label: 'Federal' },
-    { value: 'state', label: 'State' },
-    { value: 'local', label: 'Local' },
-    { value: 'international', label: 'International' }
+    { value: "federal", label: "Federal" },
+    { value: "state", label: "State" },
+    { value: "local", label: "Local" },
+    { value: "international", label: "International" },
   ];
 
   // ============================================================================
@@ -84,10 +109,10 @@
     if (file) {
       selectedFile = file;
       $formData.file = file;
-      
+
       // Auto-populate title from filename
       if (!$formData.title) {
-        $formData.title = file.name.replace(/\.[^/.]+$/, '');
+        $formData.title = file.name.replace(/\.[^/.]+$/, "");
       }
     }
   }
@@ -95,14 +120,14 @@
   function handleDrop(event: DragEvent) {
     event.preventDefault();
     dragActive = false;
-    
+
     const file = event.dataTransfer?.files[0];
     if (file) {
       selectedFile = file;
       $formData.file = file;
-      
+
       if (!$formData.title) {
-        $formData.title = file.name.replace(/\.[^/.]+$/, '');
+        $formData.title = file.name.replace(/\.[^/.]+$/, "");
       }
     }
   }
@@ -119,7 +144,7 @@
   function removeFile() {
     selectedFile = null;
     $formData.file = null;
-    if (fileInput) fileInput.value = '';
+    if (fileInput) fileInput.value = "";
   }
 
   // ============================================================================
@@ -128,17 +153,17 @@
 
   function handleSubmit() {
     if ($isValid && selectedFile) {
-      actor.send({ type: 'UPLOAD' });
+      actor.send({ type: "UPLOAD" });
     }
   }
 
   function handleReset() {
-    actor.send({ type: 'RESET' });
+    actor.send({ type: "RESET" });
     selectedFile = null;
     $formData = {
-      title: '',
-      description: '',
-      documentType: 'other',
+      title: "",
+      description: "",
+      documentType: "other",
       jurisdiction: undefined,
       tags: [],
       file: null,
@@ -146,8 +171,8 @@
         generateSummary: true,
         extractEntities: true,
         riskAssessment: true,
-        generateRecommendations: false
-      }
+        generateRecommendations: false,
+      },
     };
     persistence.clear();
   }
@@ -171,8 +196,29 @@
   $: contextValue = $context;
   $: canSubmit = $isValid && selectedFile && !$isSubmitting;
   $: showProgress = $progress > 0 && $progress < 100;
-  $: isCompleted = stateValue === 'completed';
-  $: isError = stateValue === 'uploadError' || stateValue === 'processingError' || stateValue === 'failed';
+  $: isCompleted = stateValue === "completed";
+  $: isError =
+    stateValue === "uploadError" ||
+    stateValue === "processingError" ||
+    stateValue === "failed";
+
+  // Ensure default form shape to prevent runtime errors
+  $: if ($formData) {
+    if (!$formData.aiProcessing) {
+      $formData.aiProcessing = {
+        generateSummary: true,
+        extractEntities: true,
+        riskAssessment: true,
+        generateRecommendations: false,
+      };
+    }
+    if (!$formData.tags) {
+      $formData.tags = [];
+    }
+    if (!$formData.documentType) {
+      $formData.documentType = "other";
+    }
+  }
 
   // ============================================================================
   // LIFECYCLE
@@ -180,40 +226,62 @@
 
   onMount(() => {
     // Load draft if available
-    loadDraft();
-    
-    // Set case ID if provided
-    if (caseId) {
-      // Add case ID to form context or metadata
-    }
-  });
-</script>
-
-<!-- Enhanced Document Upload Form -->
-<div class="enhanced-document-upload-form space-y-6">
-  <!-- Form Header -->
-  <Card>
-    <CardHeader>
-      <CardTitle class="flex items-center justify-between">
+          <Badge
+            variant={isCompleted
+              ? "default"
+              : isError
+                ? "destructive"
+                : "secondary"}
+          >
+            {isCompleted
+              ? "Completed"
+              : isError
+                ? "Error"
+                : $isSubmitting
+                  ? "Processing"
+                  : "Ready"}
+          </Badge>
         <div class="flex items-center gap-2">
           <Upload size={24} />
           Document Upload
-          <Badge variant={isCompleted ? 'default' : isError ? 'destructive' : 'secondary'}>
-            {isCompleted ? 'Completed' : isError ? 'Error' : isSubmitting ? 'Processing' : 'Ready'}
+          <Badge
+            variant={isCompleted
+              ? "default"
+              : isError
+                ? "destructive"
+                : "secondary"}
+          >
+            {isCompleted
+              ? "Completed"
+              : isError
+                ? "Error"
+                : isSubmitting
+                  ? "Processing"
+                  : "Ready"}
           </Badge>
         </div>
-        
+
         <div class="flex gap-2">
-          <Button variant="ghost" size="sm" on:click={handleSaveDraft} disabled={$isSubmitting}>
+          <Button
+            variant="ghost"
+            size="sm"
+            on:click={handleSaveDraft}
+            disabled={$isSubmitting}
+          >
             <Save size={16} />
           </Button>
-          <Button variant="ghost" size="sm" on:click={handleReset} disabled={$isSubmitting}>
+          <Button
+            variant="ghost"
+            size="sm"
+            on:click={handleReset}
+            disabled={$isSubmitting}
+          >
             <RotateCcw size={16} />
           </Button>
         </div>
       </CardTitle>
     </CardHeader>
-    
+
     {#if showProgress}
       <CardContent>
         <div class="space-y-2">
@@ -222,10 +290,10 @@
             <span>{Math.round($progress)}%</span>
           </div>
           <Progress value={$progress} class="h-2" />
-          
-          {#if stateValue === 'uploading'}
+
+          {#if stateValue === "uploading"}
             <p class="text-sm text-muted-foreground">Uploading file...</p>
-          {:else if stateValue === 'processing'}
+          {:else if stateValue === "processing"}
             <p class="text-sm text-muted-foreground">Processing with AI...</p>
           {/if}
         </div>
@@ -245,7 +313,7 @@
         role="button"
         tabindex="0"
         on:click={() => fileInput?.click()}
-        on:keydown={(e) => e.key === 'Enter' && fileInput?.click()}
+        on:keydown={(e) => e.key === "Enter" && fileInput?.click()}
       >
         {#if selectedFile}
           <div class="selected-file">
@@ -253,7 +321,8 @@
             <div class="file-info">
               <h3 class="file-name">{selectedFile.name}</h3>
               <p class="file-details">
-                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB • {selectedFile.type || 'Unknown type'}
+                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB • {selectedFile.type ||
+                  "Unknown type"}
               </p>
             </div>
             <Button
@@ -269,7 +338,7 @@
           <div class="drop-zone-content">
             <Upload size={48} class="text-muted-foreground" />
             <h3 class="drop-zone-title">
-              {dragActive ? 'Drop file here' : 'Choose file or drag & drop'}
+              {dragActive ? "Drop file here" : "Choose file or drag & drop"}
             </h3>
             <p class="drop-zone-description">
               Supports PDF, DOCX, TXT, and image files up to 50MB
@@ -281,7 +350,7 @@
           </div>
         {/if}
       </div>
-      
+
       <input
         bind:this={fileInput}
         type="file"
@@ -310,7 +379,7 @@
               id="title"
               bind:value={$formData.title}
               placeholder="Enter document title"
-              class={$errors.title ? 'border-red-500' : ''}
+              class={$errors.title ? "border-red-500" : ""}
               disabled={$isSubmitting}
             />
             {#if $errors.title}
@@ -336,7 +405,10 @@
               <label for="documentType" class="block text-sm font-medium mb-2">
                 Document Type *
               </label>
-              <Select bind:value={$formData.documentType} disabled={$isSubmitting}>
+              <Select
+                bind:value={$formData.documentType}
+                disabled={$isSubmitting}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -352,13 +424,18 @@
               <label for="jurisdiction" class="block text-sm font-medium mb-2">
                 Jurisdiction
               </label>
-              <Select bind:value={$formData.jurisdiction} disabled={$isSubmitting}>
+              <Select
+                bind:value={$formData.jurisdiction}
+                disabled={$isSubmitting}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select jurisdiction" />
                 </SelectTrigger>
                 <SelectContent>
                   {#each jurisdictions as jurisdiction}
-                    <SelectItem value={jurisdiction.value}>{jurisdiction.label}</SelectItem>
+                    <SelectItem value={jurisdiction.value}
+                      >{jurisdiction.label}</SelectItem
+                    >
                   {/each}
                 </SelectContent>
               </Select>
@@ -371,10 +448,13 @@
             </label>
             <Input
               id="tags"
-              value={$formData.tags.join(', ')}
+              value={$formData.tags.join(", ")}
               on:input={(e) => {
                 const value = e.currentTarget.value;
-                $formData.tags = value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                $formData.tags = value
+                  .split(",")
+                  .map((tag) => tag.trim())
+                  .filter((tag) => tag);
               }}
               placeholder="contract, litigation, corporate"
               disabled={$isSubmitting}
@@ -393,7 +473,7 @@
         </CardHeader>
         <CardContent class="space-y-4">
           <div class="space-y-3">
-            <Checkbox 
+            <Checkbox
               bind:checked={$formData.aiProcessing.generateSummary}
               disabled={$isSubmitting}
             >
@@ -403,7 +483,7 @@
               </span>
             </Checkbox>
 
-            <Checkbox 
+            <Checkbox
               bind:checked={$formData.aiProcessing.extractEntities}
               disabled={$isSubmitting}
             >
@@ -413,7 +493,7 @@
               </span>
             </Checkbox>
 
-            <Checkbox 
+            <Checkbox
               bind:checked={$formData.aiProcessing.riskAssessment}
               disabled={$isSubmitting}
             >
@@ -423,7 +503,7 @@
               </span>
             </Checkbox>
 
-            <Checkbox 
+            <Checkbox
               bind:checked={$formData.aiProcessing.generateRecommendations}
               disabled={$isSubmitting}
             >
@@ -438,7 +518,8 @@
             <Alert>
               <Zap class="h-4 w-4" />
               <AlertDescription>
-                AI processing will begin automatically after upload. This may take 1-3 minutes depending on document size.
+                AI processing will begin automatically after upload. This may
+                take 1-3 minutes depending on document size.
               </AlertDescription>
             </Alert>
           {/if}
@@ -451,24 +532,25 @@
       <Alert variant="destructive">
         <AlertTriangle class="h-4 w-4" />
         <AlertDescription>
-          {contextValue.error || 'An error occurred during processing'}
-          
-          {#if stateValue === 'uploadError' || stateValue === 'processingError'}
+          {contextValue.error || "An error occurred during processing"}
+
+          {#if stateValue === "uploadError" || stateValue === "processingError"}
             <div class="mt-2">
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => actor.send({ type: 'RETRY' })}
+                on:click={() => actor.send({ type: "RETRY" })}
                 disabled={contextValue.retryCount >= contextValue.maxRetries}
               >
-                Retry ({contextValue.maxRetries - contextValue.retryCount} attempts left)
+                Retry ({contextValue.maxRetries - contextValue.retryCount} attempts
+                left)
               </Button>
-              
-              {#if stateValue === 'processingError'}
+
+              {#if stateValue === "processingError"}
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => actor.send({ type: 'SKIP_PROCESSING' })}
+                  on:click={() => actor.send({ type: "SKIP_PROCESSING" })}
                   class="ml-2"
                 >
                   Skip AI Processing
@@ -486,11 +568,12 @@
         <CheckCircle class="h-4 w-4" />
         <AlertDescription>
           Document uploaded and processed successfully!
-          
+
           {#if contextValue.aiResults}
             <div class="mt-2">
               <p class="text-sm">
-                AI processing completed with {contextValue.aiResults.confidence}% confidence.
+                AI processing completed with {contextValue.aiResults
+                  .confidence}% confidence.
               </p>
             </div>
           {/if}
@@ -505,7 +588,7 @@
           Auto-save enabled
         {/if}
       </div>
-      
+
       <div class="flex gap-3">
         <Button
           variant="outline"
@@ -514,7 +597,7 @@
         >
           Reset Form
         </Button>
-        
+
         <Button
           type="submit"
           on:click|preventDefault={handleSubmit}
@@ -522,9 +605,11 @@
         >
           {#if $isSubmitting}
             <Loader2 class="mr-2 animate-spin" size={16} />
-            {stateValue === 'uploading' ? 'Uploading...' : 
-             stateValue === 'processing' ? 'Processing...' : 
-             'Please wait...'}
+            {stateValue === "uploading"
+              ? "Uploading..."
+              : stateValue === "processing"
+                ? "Processing..."
+                : "Please wait..."}
           {:else}
             <Upload class="mr-2" size={16} />
             Upload & Process
@@ -541,11 +626,11 @@
   }
 
   .file-upload-card {
-    @apply border-2 border-dashed border-muted-foreground/25 transition-colors;
+    @apply border-2 border-dashed border-muted-foreground border-opacity-25 transition-colors;
   }
 
   .file-upload-card:hover {
-    @apply border-primary/50;
+    @apply border-primary border-opacity-50;
   }
 
   .drop-zone {
@@ -553,7 +638,7 @@
   }
 
   .drop-zone.drag-active {
-    @apply bg-primary/5 border-primary;
+    @apply bg-primary bg-opacity-5 border-primary;
   }
 
   .drop-zone-content {
@@ -569,7 +654,7 @@
   }
 
   .selected-file {
-    @apply flex items-center gap-4 p-4 bg-muted/50 rounded-lg;
+    @apply flex items-center gap-4 p-4 bg-muted bg-opacity-50 rounded-lg;
   }
 
   .file-info {

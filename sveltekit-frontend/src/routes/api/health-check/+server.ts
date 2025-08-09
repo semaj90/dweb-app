@@ -107,9 +107,9 @@ export const GET: RequestHandler = async () => {
           const { cacheManager } = await import('$lib/services/cache-layer-manager');
           const stats = cacheManager.getLayerStats();
           
-          const enabledLayers = Object.values(stats).filter(layer: any => layer.enabled).length;
+          const enabledLayers = Object.values(stats).filter((layer: any) => layer.enabled).length;
           const avgHitRate = Object.values(stats)
-            .filter(layer: any => layer.enabled)
+            .filter((layer: any) => layer.enabled)
             .reduce((sum, layer) => sum + layer.hitRate, 0) / enabledLayers;
           
           return {

@@ -402,9 +402,8 @@ export class Context7Phase13Integration {
     try {
       // Find related memory nodes
       const relatedNodes = Array.from(this.memoryGraph.values())
-        .filter(node: any => 
-          node.content.toLowerCase().includes(query.toLowerCase()) ||
-          node.metadata.tags.some(tag: any => query.toLowerCase().includes(tag.toLowerCase()))
+        .filter((node: any) => node.content.toLowerCase().includes(query.toLowerCase()) ||
+          node.metadata.tags.some((tag: any) => query.toLowerCase().includes(tag.toLowerCase()))
         )
         .sort((a, b) => b.weight - a.weight)
         .slice(0, 5);
@@ -435,7 +434,7 @@ export class Context7Phase13Integration {
   // Enhance with PageRank scores
   private enhanceWithPageRank(results: MCPSemanticResult[]): MCPSemanticResult[] {
     // This would integrate with the PageRank system from enhanced RAG
-    return results.map(result: any => {
+    return results.map((result: any) => {
       // Simulate PageRank boost
       const pageRankBoost = Math.random() * 0.2; // 0-20% boost
       result.relevance = Math.min(1.0, result.relevance + pageRankBoost);
@@ -660,7 +659,7 @@ export class Context7Phase13Integration {
     if (!browser) return;
 
     // Connect to Phase 13 stores for real-time coordination
-    phase13Stores.aiRecommendations.subscribe(recommendations: any => {
+    phase13Stores.aiRecommendations.subscribe((recommendations: any) => {
       // Integrate Phase 13 AI recommendations with Context7 MCP
       if (recommendations.length > 0) {
         this.requestAgentRecommendations("Phase 13 AI integration", {
@@ -682,7 +681,7 @@ export class Context7Phase13Integration {
     },
     status: string
   ): void {
-    this.integrationStatus.update(current: any => ({
+    this.integrationStatus.update((current: any) => ({
       ...current,
       [component]: status
     }));
@@ -750,7 +749,7 @@ export class Context7Phase13Integration {
     }
     
     let allPractices: MCPBestPractice[] = [];
-    this.bestPractices.subscribe(practices: any => allPractices = practices)();
+    this.bestPractices.subscribe((practices: any) => allPractices = practices)();
     return allPractices;
   }
 
@@ -797,8 +796,7 @@ export function createContext7Phase13Integration(
       ),
       highPriorityRecommendations: derived(
         integration.activeRecommendations,
-        ($recommendations) => $recommendations.filter(r: any => 
-          r.priority === "HIGH" || r.priority === "CRITICAL"
+        ($recommendations) => $recommendations.filter((r: any) => r.priority === "HIGH" || r.priority === "CRITICAL"
         )
       )
     },

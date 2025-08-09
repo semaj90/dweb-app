@@ -1,336 +1,349 @@
 <!-- Ollama Agent Shell - Real-time Terminal Modal with Streaming Support -->
 <script lang="ts">
-import { onMount, onDestroy } from 'svelte';
-import { useMachine } from '@xstate/svelte';
-import { agentShellMachine } from '$lib/machines/agentShellMachine';
-import * as Dialog from 'bits-ui/dialog';
-import { Terminal, Send, Bot, User, Copy, Check, X } from 'lucide-svelte';
-import { cn } from '$lib/utils';
+  import { agentShellMachine } from "$lib/machines/agentShellMachine";
+  import { cn } from "$lib/utils";
+  import { useMachine } from "@xstate/svelte";
+  import * as Dialog from "bits-ui/dialog";
+  import { Bot, Check, Copy, Send, Terminal, User, X } from "lucide-svelte";
+  import { onDestroy, onMount } from "svelte";
 
-// Props with Svelte 5 runes
-let {
-  open = $bindable(false),
-  docId = null,
-  initialPrompt = ''
-}: {
-  open?: boolean;
-  docId?: string | null;
-  initialPrompt?: string;
-} = $props();
+  // Props with Svelte 5 runes
+  let {
+    open = $bindable(false),
+    docId = null,
+    initialPrompt = "",
+  }: {
+    open?: boolean;
+    docId?: string | null;
+    initialPrompt?: string;
+  } = $props();
 
-const { state, send } = useMachine(agentShellMachine);
+  const { state, send } = useMachine(agentShellMachine);
 
-interface Message {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: Date;
-  status?: 'pending' | 'streaming' | 'complete' | 'error';
-  embeddings?: number[];
-}
+  interface Message {
+    role: "user" | "assistant" | "system";
+    content: string;
+    timestamp: Date;
+    status?: "pending" | "streaming" | "complete" | "error";
+    embeddings?: number[];
+  }
 
-// State
-let messages: Message[] = $state([]);
-let input = $state('');
-let isLoading = $state(false);
-let copiedIndex = $state<number | null>(null);
-let terminalElement: HTMLDivElement;
-let inputElement: HTMLTextAreaElement;
+  // State
+  let messages: Message[] = $state([]);
+  let input = $state("");
+  let isLoading = $state(false);
+  let copiedIndex = $state<number | null>(null);
+  let terminalElement: HTMLDivElement;
+  let inputElement: HTMLTextAreaElement;
 
-// WebSocket for real-time updates
-let ws: WebSocket | null = null;
+  // WebSocket for real-time updates
+  let ws: WebSocket | null = null;
 
-onMount(() => {
-  // Initialize with system message
-  messages.push({
-    role: 'system',
-    content: `🚀 Ollama Agent Shell v1.0
+  onMount(() => {
+    // Initialize with system message
+    messages.push({
+      role: "system",
+      content: `🚀 Ollama Agent Shell v1.0
 Connected to: nomic-embed-text, gemma:3b
-GPU: ${navigator.gpu ? 'Enabled' : 'Disabled'}
+GPU: ${navigator.gpu ? "Enabled" : "Disabled"}
 Type /help for commands`,
-    timestamp: new Date(),
-    status: 'complete'
+      timestamp: new Date(),
+      status: "complete",
+    });
+
+    // Connect WebSocket if docId provided
+    if (docId) {
+      connectWebSocket();
+    }
+
+    // Process initial prompt
+    if (initialPrompt) {
+      input = initialPrompt;
+      handleSubmit();
+    }
   });
 
-  // Connect WebSocket if docId provided
-  if (docId) {
-    connectWebSocket();
-  }
+  onDestroy(() => {
+    ws?.close();
+  });
 
-  // Process initial prompt
-  if (initialPrompt) {
-    input = initialPrompt;
-    handleSubmit();
-  }
-});
+  function connectWebSocket() {
+    if (!docId) return;
 
-onDestroy(() => {
-  ws?.close();
-});
+    ws = new WebSocket(`ws://localhost:8080/ws?docId=${docId}`);
 
-function connectWebSocket() {
-  if (!docId) return;
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
 
-  ws = new WebSocket(`ws://localhost:8080/ws?docId=${docId}`);
+      if (data.type === "status_update") {
+        messages.push({
+          role: "system",
+          content: data.message,
+          timestamp: new Date(),
+          status: "complete",
+        });
+      }
+    };
 
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    if (data.type === 'status_update') {
+    ws.onerror = () => {
       messages.push({
-        role: 'system',
-        content: data.message,
+        role: "system",
+        content: "⚠️ WebSocket disconnected",
         timestamp: new Date(),
-        status: 'complete'
+        status: "error",
       });
-    }
-  };
-
-  ws.onerror = () => {
-    messages.push({
-      role: 'system',
-      content: '⚠️ WebSocket disconnected',
-      timestamp: new Date(),
-      status: 'error'
-    });
-  };
-}
-
-async function handleSubmit() {
-  if (!input.trim() || isLoading) return;
-
-  const userMessage: Message = {
-    role: 'user',
-    content: input,
-    timestamp: new Date(),
-    status: 'complete'
-  };
-  messages.push(userMessage);
-
-  // Handle commands
-  if (input.startsWith('/')) {
-    handleCommand(input);
-    input = '';
-    return;
+    };
   }
 
-  // Send to XState machine
-  send({ type: 'PROMPT', input });
+  async function handleSubmit() {
+    if (!input.trim() || isLoading) return;
 
-  input = '';
-  isLoading = true;
+    const userMessage: Message = {
+      role: "user",
+      content: input,
+      timestamp: new Date(),
+      status: "complete",
+    };
+    messages.push(userMessage);
 
-  // Add placeholder for response
-  const assistantMessage: Message = {
-    role: 'assistant',
-    content: '',
-    timestamp: new Date(),
-    status: 'pending'
-  };
-  messages.push(assistantMessage);
-
-  try {
-    // Get embeddings
-    const embedResponse = await fetch('http://localhost:8081/batch-embed', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        docId: docId || 'shell-' + Date.now(),
-        chunks: [userMessage.content],
-        model: 'nomic-embed-text'
-      })
-    });
-
-    if (embedResponse.ok) {
-      const embedData = await embedResponse.json();
-      messages[messages.length - 1].embeddings = embedData.embeddings[0];
+    // Handle commands
+    if (input.startsWith("/")) {
+      handleCommand(input);
+      input = "";
+      return;
     }
 
-    // Stream response from Ollama
-    const response = await fetch('http://localhost:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'gemma:3b',
-        prompt: userMessage.content,
-        stream: true
-      })
-    });
+    // Send to XState machine
+    send({ type: "PROMPT", input });
 
-    if (!response.ok || !response.body) {
-      throw new Error('Failed to get response');
-    }
+    input = "";
+    isLoading = true;
 
-    messages[messages.length - 1].status = 'streaming';
+    // Add placeholder for response
+    const assistantMessage: Message = {
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      status: "pending",
+    };
+    messages.push(assistantMessage);
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let content = '';
+    try {
+      // Get embeddings
+      const embedResponse = await fetch("http://localhost:8081/batch-embed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          docId: docId || "shell-" + Date.now(),
+          chunks: [userMessage.content],
+          model: "nomic-embed-text",
+        }),
+      });
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      if (embedResponse.ok) {
+        const embedData = await embedResponse.json();
+        messages[messages.length - 1].embeddings = embedData.embeddings[0];
+      }
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split('\n');
+      // Stream response from Ollama
+      const response = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "gemma:3b",
+          prompt: userMessage.content,
+          stream: true,
+        }),
+      });
 
-      for (const line of lines) {
-        if (line.trim()) {
-          try {
-            const data = JSON.parse(line);
-            if (data.response) {
-              content += data.response;
-              messages[messages.length - 1].content = content;
+      if (!response.ok || !response.body) {
+        throw new Error("Failed to get response");
+      }
+
+      messages[messages.length - 1].status = "streaming";
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let content = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.trim()) {
+            try {
+              const data = JSON.parse(line);
+              if (data.response) {
+                content += data.response;
+                messages[messages.length - 1].content = content;
+              }
+            } catch (e) {
+              // Skip invalid JSON
             }
-          } catch (e) {
-            // Skip invalid JSON
           }
         }
       }
+
+      messages[messages.length - 1].status = "complete";
+    } catch (error) {
+      messages[messages.length - 1].content = `❌ Error: ${error}`;
+      messages[messages.length - 1].status = "error";
+    } finally {
+      isLoading = false;
+      scrollToBottom();
     }
-
-    messages[messages.length - 1].status = 'complete';
-
-  } catch (error) {
-    messages[messages.length - 1].content = `❌ Error: ${error}`;
-    messages[messages.length - 1].status = 'error';
-  } finally {
-    isLoading = false;
-    scrollToBottom();
   }
-}
 
-function handleCommand(cmd: string) {
-  const command = cmd.slice(1).toLowerCase();
+  function handleCommand(cmd: string) {
+    const command = cmd.slice(1).toLowerCase();
 
-  switch (command) {
-    case 'help':
-      messages.push({
-        role: 'system',
-        content: `Commands:
+    switch (command) {
+      case "help":
+        messages.push({
+          role: "system",
+          content: `Commands:
 /help - Show this help
 /clear - Clear chat
 /embed - Show embeddings
 /gpu - GPU status
 /export - Export chat`,
-        timestamp: new Date(),
-        status: 'complete'
-      });
-      break;
-
-    case 'clear':
-      messages = [{
-        role: 'system',
-        content: '🧹 Cleared',
-        timestamp: new Date(),
-        status: 'complete'
-      }];
-      break;
-
-    case 'embed':
-      const lastEmbed = messages.findLast(m => m.embeddings);
-      if (lastEmbed?.embeddings) {
-        messages.push({
-          role: 'system',
-          content: `Embeddings (first 10): [${lastEmbed.embeddings.slice(0, 10).map((e: number) => e.toFixed(3)).join(', ')}...]`,
           timestamp: new Date(),
-          status: 'complete'
+          status: "complete",
         });
-      }
-      break;
+        break;
 
-    case 'gpu':
-      checkGPUStatus();
-      break;
+      case "clear":
+        messages = [
+          {
+            role: "system",
+            content: "🧹 Cleared",
+            timestamp: new Date(),
+            status: "complete",
+          },
+        ];
+        break;
 
-    case 'export':
-      exportChat();
-      break;
+      case "embed":
+        const lastEmbed = messages.findLast((m) => m.embeddings);
+        if (lastEmbed?.embeddings) {
+          messages.push({
+            role: "system",
+            content: `Embeddings (first 10): [${lastEmbed.embeddings
+              .slice(0, 10)
+              .map((e: number) => e.toFixed(3))
+              .join(", ")}...]`,
+            timestamp: new Date(),
+            status: "complete",
+          });
+        }
+        break;
 
-    default:
+      case "gpu":
+        checkGPUStatus();
+        break;
+
+      case "export":
+        exportChat();
+        break;
+
+      default:
+        messages.push({
+          role: "system",
+          content: `Unknown command: ${cmd}`,
+          timestamp: new Date(),
+          status: "error",
+        });
+    }
+  }
+
+  async function checkGPUStatus() {
+    if (navigator.gpu) {
+      const adapter = await navigator.gpu.requestAdapter();
       messages.push({
-        role: 'system',
-        content: `Unknown command: ${cmd}`,
+        role: "system",
+        content: `🎮 GPU: ${adapter?.name || "Available"}`,
         timestamp: new Date(),
-        status: 'error'
+        status: "complete",
       });
+    } else {
+      messages.push({
+        role: "system",
+        content: "❌ WebGPU not available",
+        timestamp: new Date(),
+        status: "error",
+      });
+    }
   }
-}
 
-async function checkGPUStatus() {
-  if (navigator.gpu) {
-    const adapter = await navigator.gpu.requestAdapter();
+  function exportChat() {
+    const data = JSON.stringify(messages, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `chat-${Date.now()}.json`;
+    a.click();
+
     messages.push({
-      role: 'system',
-      content: `🎮 GPU: ${adapter?.name || 'Available'}`,
+      role: "system",
+      content: "✅ Exported",
       timestamp: new Date(),
-      status: 'complete'
-    });
-  } else {
-    messages.push({
-      role: 'system',
-      content: '❌ WebGPU not available',
-      timestamp: new Date(),
-      status: 'error'
+      status: "complete",
     });
   }
-}
 
-function exportChat() {
-  const data = JSON.stringify(messages, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `chat-${Date.now()}.json`;
-  a.click();
-
-  messages.push({
-    role: 'system',
-    content: '✅ Exported',
-    timestamp: new Date(),
-    status: 'complete'
-  });
-}
-
-function copyMessage(content: string, index: number) {
-  navigator.clipboard.writeText(content);
-  copiedIndex = index;
-  setTimeout(() => copiedIndex = null, 2000);
-}
-
-function scrollToBottom() {
-  terminalElement?.scrollTo(0, terminalElement.scrollHeight);
-}
-
-function handleKeyDown(e: KeyboardEvent) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    handleSubmit();
+  function copyMessage(content: string, index: number) {
+    navigator.clipboard.writeText(content);
+    copiedIndex = index;
+    setTimeout(() => (copiedIndex = null), 2000);
   }
-}
 
-// Reactive state from XState
-$: xstateResponse = $state.context.response;
-$: if (xstateResponse && messages.length > 0 && messages[messages.length - 1].role === 'assistant') {
-  messages[messages.length - 1].content = xstateResponse;
-}
+  function scrollToBottom() {
+    terminalElement?.scrollTo(0, terminalElement.scrollHeight);
+  }
+
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  }
+
+  // Reactive state from XState
+  $: xstateResponse = $state.context.response;
+  $: if (
+    xstateResponse &&
+    messages.length > 0 &&
+    messages[messages.length - 1].role === "assistant"
+  ) {
+    messages[messages.length - 1].content = xstateResponse;
+  }
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Trigger class="fixed bottom-4 right-4 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:scale-105 transition-transform">
+  <Dialog.Trigger
+    class="fixed bottom-4 right-4 p-3 bg-primary text-primary-foreground rounded-full shadow-lg hover:scale-105 transition-transform"
+  >
     <Terminal class="h-5 w-5" />
   </Dialog.Trigger>
 
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-    <Dialog.Content class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-4xl h-[80vh] bg-background border rounded-lg shadow-xl flex flex-col">
-
+    <Dialog.Content
+      class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-4xl h-[80vh] bg-background border rounded-lg shadow-xl flex flex-col"
+    >
       <div class="flex items-center justify-between p-4 border-b">
         <div class="flex items-center gap-2">
           <Terminal class="h-5 w-5" />
           <h2 class="text-lg font-semibold">Ollama Agent Shell</h2>
-          {#if $state.matches('processing')}
-            <span class="text-sm text-muted-foreground animate-pulse">Processing...</span>
+          {#if $state.matches("processing")}
+            <span class="text-sm text-muted-foreground animate-pulse"
+              >Processing...</span
+            >
           {/if}
         </div>
         <Dialog.Close class="p-1 hover:bg-muted rounded">
@@ -338,14 +351,17 @@ $: if (xstateResponse && messages.length > 0 && messages[messages.length - 1].ro
         </Dialog.Close>
       </div>
 
-      <div bind:this={terminalElement} class="flex-1 overflow-y-auto p-4 space-y-4">
+      <div
+        bind:this={terminalElement}
+        class="flex-1 overflow-y-auto p-4 space-y-4"
+      >
         {#each messages as message, i}
           <div class="flex items-start gap-3 group">
-            {#if message.role === 'assistant'}
-              <div class="p-2 bg-primary/10 rounded-full shrink-0">
+            {#if message.role === "assistant"}
+              <div class="p-2 bg-primary bg-opacity-10 rounded-full shrink-0">
                 <Bot class="h-4 w-4" />
               </div>
-            {:else if message.role === 'user'}
+            {:else if message.role === "user"}
               <div class="p-2 bg-muted rounded-full shrink-0">
                 <User class="h-4 w-4" />
               </div>
@@ -360,14 +376,15 @@ $: if (xstateResponse && messages.length > 0 && messages[messages.length - 1].ro
                 <span class="text-xs text-muted-foreground">
                   {message.timestamp.toLocaleTimeString()}
                 </span>
-                {#if message.status === 'streaming'}
+                {#if message.status === "streaming"}
                   <span class="text-xs text-blue-500 animate-pulse">●</span>
-                {:else if message.status === 'error'}
+                {:else if message.status === "error"}
                   <span class="text-xs text-red-500">Error</span>
                 {/if}
               </div>
 
-              <pre class="whitespace-pre-wrap font-mono text-sm">{message.content}</pre>
+              <pre
+                class="whitespace-pre-wrap font-mono text-sm">{message.content}</pre>
             </div>
 
             <button
@@ -399,7 +416,7 @@ $: if (xstateResponse && messages.length > 0 && messages[messages.length - 1].ro
             disabled={isLoading || !input.trim()}
             class={cn(
               "p-3 rounded-lg transition-colors",
-              "bg-primary text-primary-foreground hover:bg-primary/90",
+              "bg-primary text-primary-foreground hover:bg-primary hover:bg-opacity-90",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
           >
@@ -407,13 +424,12 @@ $: if (xstateResponse && messages.length > 0 && messages[messages.length - 1].ro
           </button>
         </div>
       </div>
-
     </Dialog.Content>
   </Dialog.Portal>
 </Dialog.Root>
 
 <style>
   pre {
-    font-family: 'Cascadia Code', 'SF Mono', Consolas, monospace;
+    font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
   }
 </style>

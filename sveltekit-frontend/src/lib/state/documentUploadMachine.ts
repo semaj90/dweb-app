@@ -105,8 +105,7 @@ const validateFileService = fromPromise(async ({ input }: { input: DocumentUploa
   
   // Additional security checks
   const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.com', '.pif'];
-  const hassuspicious = suspiciousExtensions.some(ext: any => 
-    input.filename.toLowerCase().endsWith(ext)
+  const hassuspicious = suspiciousExtensions.some((ext: any) => input.filename.toLowerCase().endsWith(ext)
   );
   
   if (hassuspicious) {
@@ -127,7 +126,7 @@ const calculateFileHashService = fromPromise(async ({ input }: { input: Document
   const buffer = await input.file.arrayBuffer();
   const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b: any => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray.map((b: any) => b.toString(16).padStart(2, '0')).join('');
   
   return hashHex;
 });
@@ -539,15 +538,15 @@ export const createDocumentUploadActor = () => {
   return documentUploadMachine;
 };
 
-export const isUploading = (state: any): boolean: any => {
+export const isUploading = (state: any): boolean => {
   return ['uploading', 'processing'].includes(state.value);
 };
 
-export const isValidating = (state: any): boolean: any => {
+export const isValidating = (state: any): boolean => {
   return ['validating', 'calculatingHash', 'extractingText'].includes(state.value);
 };
 
-export const hasValidationErrors = (state: any): boolean: any => {
+export const hasValidationErrors = (state: any): boolean => {
   return state.context.validationErrors && state.context.validationErrors.length > 0;
 };
 
@@ -555,11 +554,11 @@ export const getValidationErrors = (state: any): string[] => {
   return state.context.validationErrors || [];
 };
 
-export const getUploadProgress = (state: any): number: any => {
+export const getUploadProgress = (state: any): number => {
   return state.context.uploadProgress || 0;
 };
 
-export const canRetryUpload = (state: any): boolean: any => {
+export const canRetryUpload = (state: any): boolean => {
   return ['uploadError', 'processingError'].includes(state.value) && 
          state.context.retryCount < state.context.maxRetries;
 };

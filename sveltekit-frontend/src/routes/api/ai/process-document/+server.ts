@@ -349,7 +349,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
     return json({
       success: true,
-      jobs: jobs.map(job: any => ({
+      jobs: jobs.map((job: any) => ({
         id: job.id,
         documentId: (job.input as any)?.documentId,
         status: job.status,
@@ -430,8 +430,8 @@ export const PUT: RequestHandler = async ({ request, getClientAddress, cookies }
       );
 
     const validDocumentIds = userDocuments
-      .filter(doc: any => documentIds.includes(doc.id))
-      .map(doc: any => doc.id);
+      .filter((doc: any) => documentIds.includes(doc.id))
+      .map((doc: any) => doc.id);
 
     if (validDocumentIds.length !== documentIds.length) {
       return json(
@@ -474,7 +474,7 @@ export const PUT: RequestHandler = async ({ request, getClientAddress, cookies }
             .where(eq(aiProcessingJobs.id, job.id));
 
           // Process document (simplified for batch)
-          const doc = userDocuments.find(d: any => d.id === job.entityId);
+          const doc = userDocuments.find((d: any) => d.id === job.entityId);
           if (doc && doc.extractedText) {
             const result = await langChainService.summarizeDocument(
               job.entityId,
@@ -511,7 +511,7 @@ export const PUT: RequestHandler = async ({ request, getClientAddress, cookies }
     return json({
       success: true,
       batchId,
-      jobIds: jobs.map(job: any => job.id),
+      jobIds: jobs.map((job: any) => job.id),
       message: `Batch processing started for ${validDocumentIds.length} documents`,
     });
 

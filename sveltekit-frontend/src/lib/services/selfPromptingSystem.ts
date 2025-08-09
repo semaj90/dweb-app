@@ -151,7 +151,7 @@ export class SelfPromptingSystem {
       
       // Keep only last minute of keystrokes
       const oneMinuteAgo = now.getTime() - 60000;
-      this.keystrokeBuffer = this.keystrokeBuffer.filter(ts: any => ts > oneMinuteAgo);
+      this.keystrokeBuffer = this.keystrokeBuffer.filter((ts: any) => ts > oneMinuteAgo);
     }
     
     // Record content changes
@@ -289,7 +289,7 @@ export class SelfPromptingSystem {
       prompts.push(this.createBreakReminderPrompt());
     }
     
-    return prompts.filter(p: any => p !== null);
+    return prompts.filter((p: any) => p !== null);
   }
 
   // ============================================================================
@@ -478,7 +478,7 @@ export class SelfPromptingSystem {
     ];
     
     const words = content.toLowerCase().split(/\s+/);
-    const legalTermCount = words.filter(word: any => legalTerms.includes(word)).length;
+    const legalTermCount = words.filter((word: any) => legalTerms.includes(word)).length;
     
     return legalTermCount > words.length * 0.02; // 2% threshold
   }
@@ -538,7 +538,7 @@ export class SelfPromptingSystem {
   private calculateEditVariance(): number {
     if (this.editHistory.length < 3) return 0;
     
-    const lengths = this.editHistory.map(edit: any => edit.content.length);
+    const lengths = this.editHistory.map((edit: any) => edit.content.length);
     const avg = lengths.reduce((sum, len) => sum + len, 0) / lengths.length;
     const variance = lengths.reduce((sum, len) => sum + Math.pow(len - avg, 2), 0) / lengths.length;
     
@@ -567,7 +567,7 @@ export class SelfPromptingSystem {
         { role: 'user', content: `Document type: ${this.userContext.documentType}\n\nContent: ${this.userContext.currentContent.substring(0, 1000)}...` }
       ]);
       
-      return response.content.split('\n').filter(line: any => line.trim().length > 0).slice(0, 3);
+      return response.content.split('\n').filter((line: any) => line.trim().length > 0).slice(0, 3);
     } catch {
       return ['Consider adding more specific legal language', 'Review for clarity and precision', 'Ensure all necessary clauses are included'];
     }
@@ -662,8 +662,8 @@ export class SelfPromptingSystem {
       
       // Show only high-priority prompts during context analysis
       prompts
-        .filter(p: any => p.priority === 'high' || p.priority === 'urgent')
-        .forEach(prompt: any => this.showPrompt(prompt));
+        .filter((p: any) => p.priority === 'high' || p.priority === 'urgent')
+        .forEach((prompt: any) => this.showPrompt(prompt));
     }
   }
 
@@ -680,7 +680,7 @@ export class SelfPromptingSystem {
   public showPrompt(prompt: SelfPrompt): void {
     // This would integrate with your UI notification system
     console.log('Showing prompt:', prompt);
-    selfPromptStore.update(prompts: any => [...prompts, prompt]);
+    selfPromptStore.update((prompts: any) => [...prompts, prompt]);
     
     if (prompt.autoHideAfter) {
       setTimeout(() => {
@@ -690,7 +690,7 @@ export class SelfPromptingSystem {
   }
 
   public hidePrompt(promptId: string): void {
-    selfPromptStore.update(prompts: any => prompts.filter(p: any => p.id !== promptId));
+    selfPromptStore.update((prompts: any) => prompts.filter((p: any) => p.id !== promptId));
   }
 
   public updateContext(updates: Partial<UserContext>): void {

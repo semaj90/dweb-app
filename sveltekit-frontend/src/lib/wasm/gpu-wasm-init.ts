@@ -553,7 +553,7 @@ export class WasmGpuInitService {
     // Setup error handling
     this.context.gpuDevice.addEventListener('uncapturederror', (event) => {
       console.error('WebGPU uncaptured error:', event.error);
-      this.resourceStatus.update(status: any => ({ ...status, errorCount: status.errorCount + 1 }));
+      this.resourceStatus.update((status: any) => ({ ...status, errorCount: status.errorCount + 1 }));
     });
 
     console.log('✅ GPU device initialized');
@@ -930,7 +930,7 @@ export class WasmGpuInitService {
     const wasmMemoryUsage = this.context.sharedBuffer ? 
       (this.context.sharedBuffer.buffer.byteLength / (1024 * 1024)) : 0;
 
-    this.resourceStatus.update(status: any => ({
+    this.resourceStatus.update((status: any) => ({
       ...status,
       wasmMemoryUsage,
       gpuMemoryUsage: this.estimateGpuMemoryUsage(),
@@ -1139,7 +1139,7 @@ export class WasmGpuInitService {
     let currentStatus = { initialized: false, ready: false };
     let deviceInfo: GpuDeviceInfo | undefined;
     
-    this.initStatus.subscribe(s: any => {
+    this.initStatus.subscribe((s: any) => {
       currentStatus = { 
         initialized: this.isInitialized, 
         ready: s.phase === 'ready',
@@ -1225,7 +1225,7 @@ export function createWasmGpuService(config?: Partial<WasmGpuConfig>) {
 // Helper utilities
 export const WasmGpuHelpers = {
   // Optimal configuration for RTX 3060
-  rtx3060Config: (): WasmGpuConfig: any => ({
+  rtx3060Config: (): WasmGpuConfig => ({
     deviceType: 'discrete',
     powerPreference: 'high-performance',
     memoryLimit: 6144, // 6GB usable of 8GB
@@ -1243,7 +1243,7 @@ export const WasmGpuHelpers = {
   }),
 
   // Create test vectors for benchmarking
-  createTestVectors: (count: number, dimensions: number): Float32Array: any => {
+  createTestVectors: (count: number, dimensions: number): Float32Array => {
     const vectors = new Float32Array(count * dimensions);
     for (let i = 0; i < vectors.length; i++) {
       vectors[i] = Math.random() * 2 - 1; // Range [-1, 1]

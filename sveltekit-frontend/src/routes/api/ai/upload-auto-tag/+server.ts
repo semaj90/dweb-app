@@ -109,7 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     // 5. Update RAG pipeline search index
     try {
       const documents = await db.select().from(enhancedEvidence);
-      enhancedRAGPipeline.updateSearchIndex(documents.map(doc: any => ({
+      enhancedRAGPipeline.updateSearchIndex(documents.map((doc: any) => ({
         id: doc.id,
         title: doc.title,
         content: doc.content || '',
@@ -129,7 +129,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       summary: autoTagResult.summary,
       confidence: autoTagResult.confidence,
       relationships: autoTagResult.relationships,
-      similarDocuments: ragResult.sources.slice(0, 3).map(source: any => ({
+      similarDocuments: ragResult.sources.slice(0, 3).map((source: any) => ({
         id: source.id,
         title: source.title,
         relevance: source.relevance
@@ -195,8 +195,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       .from(enhancedEvidence)
       .limit(100);
       
-    const taggedDocuments = stats.filter(doc: any => doc.tags && doc.tags.length > 0);
-    const documentsWithEmbeddings = stats.filter(doc: any => doc.embedding);
+    const taggedDocuments = stats.filter((doc: any) => doc.tags && doc.tags.length > 0);
+    const documentsWithEmbeddings = stats.filter((doc: any) => doc.embedding);
     
     // Check Go microservice status
     const goServiceHealth = await goMicroservice.healthCheck();

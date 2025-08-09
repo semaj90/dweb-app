@@ -278,7 +278,7 @@ export const prefetchMachine = createMachine({
       try {
         // Analyze user behavior patterns
         const recentActions = context.userActions.slice(-5);
-        const actionTypes = recentActions.map(a: any => a.action);
+        const actionTypes = recentActions.map((a: any) => a.action);
         
         // Legal AI specific intent patterns
         let intent = 'unknown';

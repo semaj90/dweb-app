@@ -258,12 +258,12 @@ export const POST: RequestHandler = async ({ request }) => {
                 totalChunks: processedDocuments.reduce((sum, doc) => sum + doc.chunks.length, 0),
                 averageProsecutionScore: processedDocuments.reduce((sum, doc) => sum + doc.prosecutionScore, 0) / processedDocuments.length,
                 factCheckResults: {
-                    facts: processedDocuments.reduce((sum, doc) => sum + doc.factChecks.filter(fc: any => fc.status === 'FACT').length, 0),
-                    fiction: processedDocuments.reduce((sum, doc) => sum + doc.factChecks.filter(fc: any => fc.status === 'FICTION').length, 0),
-                    unverified: processedDocuments.reduce((sum, doc) => sum + doc.factChecks.filter(fc: any => fc.status === 'UNVERIFIED').length, 0)
+                    facts: processedDocuments.reduce((sum, doc) => sum + doc.factChecks.filter((fc: any) => fc.status === 'FACT').length, 0),
+                    fiction: processedDocuments.reduce((sum, doc) => sum + doc.factChecks.filter((fc: any) => fc.status === 'FICTION').length, 0),
+                    unverified: processedDocuments.reduce((sum, doc) => sum + doc.factChecks.filter((fc: any) => fc.status === 'UNVERIFIED').length, 0)
                 }
             },
-            documents: processedDocuments.map(doc: any => ({
+            documents: processedDocuments.map((doc: any) => ({
                 id: doc.id,
                 filename: doc.filename,
                 jurisdiction: doc.jurisdiction,
@@ -274,8 +274,8 @@ export const POST: RequestHandler = async ({ request }) => {
                 wordCount: doc.processingMetadata.wordCount,
                 factCheckSummary: {
                     total: doc.factChecks.length,
-                    verified: doc.factChecks.filter(fc: any => fc.status === 'FACT').length,
-                    disputed: doc.factChecks.filter(fc: any => fc.status === 'FICTION').length
+                    verified: doc.factChecks.filter((fc: any) => fc.status === 'FACT').length,
+                    disputed: doc.factChecks.filter((fc: any) => fc.status === 'FICTION').length
                 }
             })),
             nextSteps: [
@@ -310,12 +310,10 @@ function detectJurisdiction(text: string, providedJurisdiction: string): string 
     
     // Calculate jurisdiction scores based on keyword matches
     const scores = Object.entries(JURISDICTION_PATTERNS).map(([jurisdiction, patterns]) => {
-        const keywordMatches = patterns.keywords.filter(keyword: any => 
-            textLower.includes(keyword.toLowerCase())
+        const keywordMatches = patterns.keywords.filter((keyword: any) => textLower.includes(keyword.toLowerCase())
         ).length;
         
-        const statuteMatches = patterns.statutes.filter(statute: any => 
-            textLower.includes(statute.toLowerCase())
+        const statuteMatches = patterns.statutes.filter((statute: any) => textLower.includes(statute.toLowerCase())
         ).length;
         
         const score = (keywordMatches * 2 + statuteMatches * 3) * patterns.weight;
@@ -336,7 +334,7 @@ function extractLegalEntities(text: string, jurisdiction: string): LegalEntity[]
     const entities: LegalEntity[] = [];
     
     Object.entries(LEGAL_ENTITY_PATTERNS).forEach(([type, patterns]) => {
-        patterns.forEach(pattern: any => {
+        patterns.forEach((pattern: any) => {
             let match;
             while ((match = pattern.exec(text)) !== null) {
                 if (match[1] && match[1].trim().length > 2) {
@@ -356,7 +354,7 @@ function extractLegalEntities(text: string, jurisdiction: string): LegalEntity[]
     // Remove duplicates and sort by confidence
     return entities
         .filter((entity, index, self) => 
-            self.findIndex(e: any => e.text === entity.text && e.type === entity.type) === index
+            self.findIndex((e: any) => e.text === entity.text && e.type === entity.type) === index
         )
         .sort((a, b) => b.confidence - a.confidence);
 }
@@ -393,8 +391,8 @@ function createSmartChunks(text: string, entities: LegalEntity[]): DocumentChunk
         
         // Find entities within this chunk
         const chunkEntities = entities
-            .filter(entity: any => chunkText.includes(entity.text))
-            .map(entity: any => entity.text);
+            .filter((entity: any) => chunkText.includes(entity.text))
+            .map((entity: any) => entity.text);
         
         // Calculate legal relevance based on entity density and types
         const legalRelevance = calculateLegalRelevance(chunkText, chunkEntities);
@@ -419,8 +417,7 @@ function calculateLegalRelevance(text: string, entities: string[]): number {
     
     // Legal keyword density
     const legalKeywords = ['court', 'judge', 'law', 'statute', 'contract', 'agreement', 'liability', 'damages', 'evidence'];
-    const keywordMatches = legalKeywords.filter(keyword: any => 
-        text.toLowerCase().includes(keyword)
+    const keywordMatches = legalKeywords.filter((keyword: any) => text.toLowerCase().includes(keyword)
     ).length;
     
     relevance += Math.min(0.3, keywordMatches * 0.04);
@@ -431,7 +428,7 @@ function calculateLegalRelevance(text: string, entities: string[]): number {
 async function generateEmbeddings(chunks: DocumentChunk[]): Promise<DocumentChunk[]> {
     // Simulate embedding generation with nomic-embed-text
     // In production, this would call the actual embedding model
-    return chunks.map(chunk: any => ({
+    return chunks.map((chunk: any) => ({
         ...chunk,
         embedding: Array.from({ length: 384 }, () => Math.random() - 0.5) // Mock 384-dim embedding
     }));
@@ -442,10 +439,10 @@ function performFactChecking(entities: LegalEntity[], jurisdiction: string): Fac
     
     // Extract claims from entities (simplified for demo)
     const claims = entities
-        .filter(entity: any => entity.type === 'WHAT' || entity.type === 'WHY')
+        .filter((entity: any) => entity.type === 'WHAT' || entity.type === 'WHY')
         .slice(0, 5); // Limit for performance
     
-    claims.forEach(entity: any => {
+    claims.forEach((entity: any) => {
         // Simulate fact-checking against trusted sources
         const confidence = Math.random() * 0.4 + 0.6; // 0.6-1.0 range
         const status = confidence > 0.8 ? 'FACT' : 
@@ -472,11 +469,11 @@ function calculateProsecutionScore(
     let score = 0.3; // Base score
     
     // Entity quality bonus
-    const highConfidenceEntities = entities.filter(e: any => e.confidence > 0.8).length;
+    const highConfidenceEntities = entities.filter((e: any) => e.confidence > 0.8).length;
     score += Math.min(0.2, highConfidenceEntities * 0.02);
     
     // Fact-checking bonus
-    const verifiedFacts = factChecks.filter(fc: any => fc.status === 'FACT').length;
+    const verifiedFacts = factChecks.filter((fc: any) => fc.status === 'FACT').length;
     const totalFacts = factChecks.length;
     if (totalFacts > 0) {
         score += (verifiedFacts / totalFacts) * 0.3;

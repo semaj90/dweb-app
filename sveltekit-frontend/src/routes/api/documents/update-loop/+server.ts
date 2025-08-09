@@ -62,7 +62,7 @@ export const POST: RequestHandler = async ({ request }) => {
           reranking: {
             queriesAffected: rerankingJobs.length,
             avgImprovement: rerankingJobs.reduce((sum, job) => sum + job.improvement, 0) / rerankingJobs.length,
-            jobs: rerankingJobs.map(job: any => ({
+            jobs: rerankingJobs.map((job: any) => ({
               queryId: job.queryId,
               query: job.query.substring(0, 100) + '...',
               improvement: job.improvement,
@@ -207,8 +207,8 @@ export const PATCH: RequestHandler = async ({ request }) => {
           data: {
             action: 'batch_reembed',
             processed: batchResults.length,
-            successful: batchResults.filter(r: any => r.success).length,
-            failed: batchResults.filter(r: any => !r.success).length,
+            successful: batchResults.filter((r: any) => r.success).length,
+            failed: batchResults.filter((r: any) => !r.success).length,
             results: batchResults
           }
         });

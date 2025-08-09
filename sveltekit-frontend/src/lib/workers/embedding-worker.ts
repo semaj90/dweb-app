@@ -126,7 +126,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
           });
           
           // Small delay to prevent overwhelming
-          await new Promise(resolve: any => setTimeout(resolve, 10));
+          await new Promise((resolve: any) => setTimeout(resolve, 10));
         } catch (error) {
           batch.forEach((text, index) => {
             errors.push({
@@ -235,7 +235,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
     
     private async generateMockEmbeddings(texts: string[], dimensions: number): Promise<EmbeddingResult[]> {
       // Mock embedding generation - in real implementation, this would interface with Ollama
-      return texts.map(text: any => ({
+      return texts.map((text: any) => ({
         id: this.generateId(),
         embedding: new Array(dimensions).fill(0).map(() => Math.random() - 0.5),
         content: text,
@@ -249,7 +249,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
     
     private splitTextIntoChunks(text: string, chunkSize: number, overlap: number): string[] {
       const chunks: string[] = [];
-      const sentences = text.split(/[.!?]+/).filter(s: any => s.trim().length > 0);
+      const sentences = text.split(/[.!?]+/).filter((s: any) => s.trim().length > 0);
       
       let currentChunk = '';
       let currentSize = 0;
@@ -297,8 +297,8 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
     private async analyzeText(text: string): Promise<any> {
       // Text analysis implementation
       const words = text.split(/\s+/);
-      const sentences = text.split(/[.!?]+/).filter(s: any => s.trim().length > 0);
-      const paragraphs = text.split(/\n\s*\n/).filter(p: any => p.trim().length > 0);
+      const sentences = text.split(/[.!?]+/).filter((s: any) => s.trim().length > 0);
+      const paragraphs = text.split(/\n\s*\n/).filter((p: any) => p.trim().length > 0);
       
       return {
         wordCount: words.length,
@@ -402,7 +402,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
       const words = text.toLowerCase().split(/\s+/);
       let score = 0;
       
-      words.forEach(word: any => {
+      words.forEach((word: any) => {
         if (positiveWords.includes(word)) score += 1;
         if (negativeWords.includes(word)) score -= 1;
       });
@@ -412,7 +412,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
     
     private normalizeVector(vector: number[]): number[] {
       const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
-      return magnitude > 0 ? vector.map(val: any => val / magnitude) : vector;
+      return magnitude > 0 ? vector.map((val: any) => val / magnitude) : vector;
     }
     
     private averageVectors(vectors: number[][]): number[] {
@@ -421,7 +421,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
       const dimensions = vectors[0].length;
       const average = new Array(dimensions).fill(0);
       
-      vectors.forEach(vector: any => {
+      vectors.forEach((vector: any) => {
         vector.forEach((val, i) => {
           average[i] += val / vectors.length;
         });
@@ -454,7 +454,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
     private flattenObject(obj: any, prefix = ''): Record<string, any> {
       const flattened: Record<string, any> = {};
       
-      Object.keys(obj).forEach(key: any => {
+      Object.keys(obj).forEach((key: any) => {
         const value = obj[key];
         const newKey = prefix ? `${prefix}.${key}` : key;
         
@@ -472,7 +472,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
       // Simple grouping by first property
       const grouped: Record<string, any[]> = {};
       
-      data.forEach(item: any => {
+      data.forEach((item: any) => {
         const key = Object.values(item)[0] as string;
         if (!grouped[key]) {
           grouped[key] = [];
@@ -484,7 +484,7 @@ if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScop
     }
     
     private filterData(data: any[], criteria: Record<string, any>): any[] {
-      return data.filter(item: any => {
+      return data.filter((item: any) => {
         return Object.entries(criteria).every(([key, value]) => {
           return item[key] === value;
         });

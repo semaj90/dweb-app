@@ -189,7 +189,7 @@ export class DocumentUpdateLoop {
       
       // Generate embeddings for all chunks
       const embeddings = await Promise.all(
-        chunks.map(chunk: any => this.embeddings.embedQuery(chunk))
+        chunks.map((chunk: any) => this.embeddings.embedQuery(chunk))
       );
 
       // Store new vectors
@@ -309,13 +309,13 @@ export class DocumentUpdateLoop {
         .orderBy(sql`${documentVectors.embedding} <=> ${queryEmbedding}`)
         .limit(10);
 
-      const newResults = newSearchResults.map(r: any => ({
+      const newResults = newSearchResults.map((r: any) => ({
         id: r.id,
         score: r.similarity
       }));
 
       // Calculate improvement (simplified metric)
-      const changedDocResult = newResults.find(r: any => r.id === changedDocumentId);
+      const changedDocResult = newResults.find((r: any) => r.id === changedDocumentId);
       const originalDocResult = originalResults.find((r: any) => r.id === changedDocumentId);
       
       const improvement = changedDocResult && originalDocResult 

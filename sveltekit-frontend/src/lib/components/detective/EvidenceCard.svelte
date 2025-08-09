@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { Evidence } from "$lib/types/index";
-  import { createEventDispatcher } from "svelte";
-  import { Card, CardContent, CardHeader } from "$lib/components/ui/card";
   import Badge from "$lib/components/ui/Badge.svelte";
   import Button from "$lib/components/ui/button/Button.svelte";
+  import { Card, CardContent, CardHeader } from "$lib/components/ui/card";
+  import type { Evidence } from "$lib/types/index";
+  import { createEventDispatcher } from "svelte";
 
   export let item: Evidence;
 
@@ -61,27 +61,52 @@
   }
 </script>
 
-<Card class="group hover:shadow-md transition-shadow duration-200 cursor-pointer"
-      role="article"
-      aria-label={item.title}>
+<Card
+  class="group hover:shadow-md transition-shadow duration-200 cursor-pointer"
+  role="article"
+  aria-label={item.title}
+>
   <CardHeader class="pb-3">
     <div class="flex items-start justify-between">
       <div class="flex items-center gap-3">
-        <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center {getTypeColor(item.evidenceType)}">
-          <i class="{getEvidenceIcon(item.evidenceType)} w-5 h-5" aria-hidden="true"></i>
+        <div
+          class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center {getTypeColor(
+            item.evidenceType
+          )}"
+        >
+          <i
+            class="{getEvidenceIcon(item.evidenceType)} w-5 h-5"
+            aria-hidden="true"
+          ></i>
         </div>
         <div class="min-w-0 flex-1">
-          <h3 class="font-semibold text-sm text-foreground truncate">{item.title}</h3>
-          <p class="text-xs text-muted-foreground truncate">{item.fileName || 'No filename'}</p>
+          <h3 class="font-semibold text-sm text-foreground truncate">
+            {item.title}
+          </h3>
+          <p class="text-xs text-muted-foreground truncate">
+            {item.fileName || "No filename"}
+          </p>
         </div>
       </div>
-      
+
       <!-- Quick Actions -->
-      <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button variant="ghost" size="sm" class="h-8 w-8 p-0" aria-label="View Evidence">
+      <div
+        class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <Button
+          variant="ghost"
+          size="sm"
+          class="h-8 w-8 p-0"
+          aria-label="View Evidence"
+        >
           <i class="i-lucide-eye w-4 h-4" aria-hidden="true"></i>
         </Button>
-        <Button variant="ghost" size="sm" class="h-8 w-8 p-0" aria-label="More Options">
+        <Button
+          variant="ghost"
+          size="sm"
+          class="h-8 w-8 p-0"
+          aria-label="More Options"
+        >
           <i class="i-lucide-more-horizontal w-4 h-4" aria-hidden="true"></i>
         </Button>
       </div>
@@ -92,18 +117,27 @@
     <!-- Preview/Thumbnail -->
     {#if item.thumbnailUrl}
       <div class="aspect-video bg-muted rounded-md overflow-hidden">
-        <img 
-          src={item.thumbnailUrl} 
-          alt="Evidence preview" 
+        <img
+          src={item.thumbnailUrl}
+          alt="Evidence preview"
           class="w-full h-full object-cover"
-          loading="lazy" 
+          loading="lazy"
         />
       </div>
     {:else}
-      <div class="aspect-video bg-muted/30 rounded-md flex items-center justify-center border-2 border-dashed border-muted-foreground/25">
+      <div
+        class="aspect-video bg-muted bg-opacity-30 rounded-md flex items-center justify-center border-2 border-dashed border-muted-foreground border-opacity-25"
+      >
         <div class="text-center">
-          <i class="{getEvidenceIcon(item.evidenceType)} w-8 h-8 mx-auto mb-2 text-muted-foreground" aria-hidden="true"></i>
-          <p class="text-xs text-muted-foreground capitalize">{item.evidenceType}</p>
+          <i
+            class="{getEvidenceIcon(
+              item.evidenceType
+            )} w-8 h-8 mx-auto mb-2 text-muted-foreground"
+            aria-hidden="true"
+          ></i>
+          <p class="text-xs text-muted-foreground capitalize">
+            {item.evidenceType}
+          </p>
         </div>
       </div>
     {/if}
@@ -115,7 +149,9 @@
           <i class="i-lucide-brain w-4 h-4 text-primary" aria-hidden="true"></i>
           <span class="text-xs font-medium text-primary">AI Summary</span>
         </div>
-        <p class="text-xs text-muted-foreground line-clamp-2">{item.aiSummary}</p>
+        <p class="text-xs text-muted-foreground line-clamp-2">
+          {item.aiSummary}
+        </p>
       </div>
     {/if}
 
@@ -138,7 +174,9 @@
       {/if}
 
       <!-- File Info -->
-      <div class="flex items-center justify-between text-xs text-muted-foreground">
+      <div
+        class="flex items-center justify-between text-xs text-muted-foreground"
+      >
         <span>{formatFileSize(item.fileSize || 0)}</span>
         <span>{formatDate(item.createdAt)}</span>
       </div>
@@ -146,7 +184,10 @@
       <!-- Hash Verification -->
       {#if item.hash}
         <div class="flex items-center gap-2">
-          <i class="i-lucide-shield-check w-4 h-4 text-green-600" aria-hidden="true"></i>
+          <i
+            class="i-lucide-shield-check w-4 h-4 text-green-600"
+            aria-hidden="true"
+          ></i>
           <span class="text-xs text-green-600 font-medium">Verified</span>
         </div>
       {/if}

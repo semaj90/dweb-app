@@ -144,7 +144,7 @@ export const userWorkflowMachine = createMachine({
             ADD_COLLABORATOR: {
               actions: assign({
                 collaborators: ({ context, event }) => {
-                  const exists = context.collaborators.some(c: any => c.id === event.collaborator.id);
+                  const exists = context.collaborators.some((c: any) => c.id === event.collaborator.id);
                   return exists ? context.collaborators : [...context.collaborators, event.collaborator];
                 }
               })
@@ -152,7 +152,7 @@ export const userWorkflowMachine = createMachine({
             REMOVE_COLLABORATOR: {
               actions: assign({
                 collaborators: ({ context, event }) => 
-                  context.collaborators.filter(c: any => c.id !== event.userId)
+                  context.collaborators.filter((c: any) => c.id !== event.userId)
               })
             }
           }
@@ -363,8 +363,7 @@ export const userWorkflowMachine = createMachine({
         MARK_NOTIFICATION_READ: {
           actions: assign({
             notifications: ({ context, event }) =>
-              context.notifications.map(n: any =>
-                n.id === event.notificationId ? { ...n, read: true } : n
+              context.notifications.map((n: any) => n.id === event.notificationId ? { ...n, read: true } : n
               )
           })
         },
@@ -484,7 +483,7 @@ export function getWorkflowProgress(context: UserWorkflowContext): number {
 }
 
 export function getUnreadNotifications(context: UserWorkflowContext): number {
-  return context.notifications.filter(n: any => !n.read).length;
+  return context.notifications.filter((n: any) => !n.read).length;
 }
 
 export function hasActiveCollaborators(context: UserWorkflowContext): boolean {

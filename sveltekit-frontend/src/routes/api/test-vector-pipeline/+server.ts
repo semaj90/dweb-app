@@ -275,7 +275,7 @@ class VectorPipelineTest {
           results: results.length,
           topSimilarity: results[0]?.similarity || 0,
           searchTime: Date.now() - queryStart,
-          matches: results.map(r: any => ({
+          matches: results.map((r: any) => ({
             filename: r.filename,
             similarity: r.similarity,
             caseTitle: r.caseTitle

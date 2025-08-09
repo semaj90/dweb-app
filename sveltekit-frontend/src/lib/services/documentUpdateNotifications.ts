@@ -71,7 +71,7 @@ class DocumentUpdateNotificationManager {
 
     console.log('🔗 Connecting to document update notifications:', wsUrl);
 
-    documentUpdateNotifications.update(state: any => ({
+    documentUpdateNotifications.update((state: any) => ({
       ...state,
       connectionStatus: 'connecting'
     }));
@@ -83,7 +83,7 @@ class DocumentUpdateNotificationManager {
         console.log('✅ Document update notifications connected');
         this.reconnectAttempts = 0;
         
-        documentUpdateNotifications.update(state: any => ({
+        documentUpdateNotifications.update((state: any) => ({
           ...state,
           connected: true,
           connectionStatus: 'connected'
@@ -109,7 +109,7 @@ class DocumentUpdateNotificationManager {
       this.ws.onclose = () => {
         console.log('🔌 Document update notifications disconnected');
         
-        documentUpdateNotifications.update(state: any => ({
+        documentUpdateNotifications.update((state: any) => ({
           ...state,
           connected: false,
           connectionStatus: 'disconnected'
@@ -127,7 +127,7 @@ class DocumentUpdateNotificationManager {
       this.ws.onerror = (error) => {
         console.error('❌ Document update notification error:', error);
         
-        documentUpdateNotifications.update(state: any => ({
+        documentUpdateNotifications.update((state: any) => ({
           ...state,
           connected: false,
           connectionStatus: 'error'
@@ -137,7 +137,7 @@ class DocumentUpdateNotificationManager {
     } catch (error) {
       console.error('❌ Failed to create WebSocket connection:', error);
       
-      documentUpdateNotifications.update(state: any => ({
+      documentUpdateNotifications.update((state: any) => ({
         ...state,
         connectionStatus: 'error'
       }));
@@ -147,7 +147,7 @@ class DocumentUpdateNotificationManager {
   private handleNotification(notification: UpdateNotification) {
     console.log('📬 Document update notification:', notification);
 
-    documentUpdateNotifications.update(state: any => {
+    documentUpdateNotifications.update((state: any) => {
       const newNotifications = [...state.notifications, notification].slice(-50); // Keep last 50
       const newActiveUpdates = new Map(state.activeUpdates);
 
@@ -250,7 +250,7 @@ class DocumentUpdateNotificationManager {
   }
 
   public clearNotifications() {
-    documentUpdateNotifications.update(state: any => ({
+    documentUpdateNotifications.update((state: any) => ({
       ...state,
       notifications: []
     }));

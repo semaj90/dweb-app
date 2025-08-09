@@ -256,7 +256,7 @@ export class AIPipeline {
         .limit(limit);
 
       const docResults = await searchQuery;
-      results = docResults.map(r: any => ({
+      results = docResults.map((r: any) => ({
         id: r.id,
         content: r.content,
         score: r.score,
@@ -277,7 +277,7 @@ export class AIPipeline {
         .limit(limit);
 
       const caseResults = await caseQuery;
-      results = caseResults.map(r: any => ({
+      results = caseResults.map((r: any) => ({
         id: r.id,
         content: r.content,
         score: r.score * (r.confidence || 1),
@@ -320,7 +320,7 @@ export class AIPipeline {
       .orderBy(sql`AVG(${documentVectors.embedding} <=> ${JSON.stringify(docEmbedding.avgEmbedding)}::vector)`)
       .limit(limit);
 
-    return results.map(r: any => ({
+    return results.map((r: any) => ({
       id: r.documentId,
       content: r.content || '',
       score: r.avgScore || 0,

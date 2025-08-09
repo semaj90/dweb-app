@@ -107,7 +107,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         // Add cached suggestions (highest priority)
         if (cacheSuggestions.status === 'fulfilled' && cacheSuggestions.value) {
-            allSuggestions.push(...cacheSuggestions.value.map(s: any => ({
+            allSuggestions.push(...cacheSuggestions.value.map((s: any) => ({
                 ...s,
                 source: 'cache',
                 boost: 1.2
@@ -116,7 +116,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         // Add database suggestions
         if (dbSuggestions.status === 'fulfilled' && dbSuggestions.value) {
-            allSuggestions.push(...dbSuggestions.value.map(s: any => ({
+            allSuggestions.push(...dbSuggestions.value.map((s: any) => ({
                 ...s,
                 source: 'database',
                 boost: 1.0
@@ -125,7 +125,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
         // Add semantic suggestions
         if (semanticSuggestions.status === 'fulfilled' && semanticSuggestions.value) {
-            allSuggestions.push(...semanticSuggestions.value.map(s: any => ({
+            allSuggestions.push(...semanticSuggestions.value.map((s: any) => ({
                 ...s,
                 source: 'semantic',
                 boost: 0.8
@@ -141,14 +141,14 @@ export const POST: RequestHandler = async ({ request }) => {
         updateUsageStats(query, topSuggestions);
 
         const response = {
-            suggestions: topSuggestions.map(s: any => includeScores ? s : {
+            suggestions: topSuggestions.map((s: any) => includeScores ? s : {
                 suggestion: s.suggestion,
                 context_type: s.context_type
             }),
             meta: {
                 query,
                 total: topSuggestions.length,
-                sources: [...new Set(allSuggestions.map(s: any => s.source))],
+                sources: [...new Set(allSuggestions.map((s: any) => s.source))],
                 processingTime: Date.now() - startTime
             }
         };
@@ -294,7 +294,7 @@ function generatePrefixes(query: string): string[] {
 
 function removeDuplicates(suggestions: any[]): any[] {
     const seen = new Set();
-    return suggestions.filter(s: any => {
+    return suggestions.filter((s: any) => {
         const key = s.suggestion.toLowerCase();
         if (seen.has(key)) {
             return false;
@@ -307,7 +307,7 @@ function removeDuplicates(suggestions: any[]): any[] {
 function rankSuggestions(suggestions: any[], query: string): any[] {
     const queryLower = query.toLowerCase();
     
-    return suggestions.map(s: any => {
+    return suggestions.map((s: any) => {
         let finalScore = (s.score || 0) * (s.boost || 1);
         
         // Boost exact prefix matches

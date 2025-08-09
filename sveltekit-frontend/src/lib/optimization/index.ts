@@ -221,7 +221,7 @@ export class PerformanceMonitor {
   }
 
   getAverageMetrics(): PerformanceMetrics {
-    const getAverage = (name: string): number: any => {
+    const getAverage = (name: string): number => {
       const values = this.metrics.get(name) || [0];
       return values.reduce((sum, val) => sum + val, 0) / values.length;
     };

@@ -541,88 +541,88 @@ export function validateMCPRequest(request: MCPToolRequest): {
  */
 export const commonMCPQueries = {
   // Stack Analysis
-  analyzeSvelteKit: (): MCPToolRequest: any => ({
+  analyzeSvelteKit: (): MCPToolRequest => ({
     tool: "analyze-stack",
     component: "sveltekit",
     context: "legal-ai",
   }),
 
-  analyzeDrizzle: (): MCPToolRequest: any => ({
+  analyzeDrizzle: (): MCPToolRequest => ({
     tool: "analyze-stack",
     component: "drizzle",
     context: "legal-ai",
   }),
 
-  analyzeUnoCSS: (): MCPToolRequest: any => ({
+  analyzeUnoCSS: (): MCPToolRequest => ({
     tool: "analyze-stack",
     component: "unocss",
     context: "performance",
   }),
 
   // Best Practices
-  performanceBestPractices: (): MCPToolRequest: any => ({
+  performanceBestPractices: (): MCPToolRequest => ({
     tool: "generate-best-practices",
     area: "performance",
   }),
 
-  securityBestPractices: (): MCPToolRequest: any => ({
+  securityBestPractices: (): MCPToolRequest => ({
     tool: "generate-best-practices",
     area: "security",
   }),
 
-  uiUxBestPractices: (): MCPToolRequest: any => ({
+  uiUxBestPractices: (): MCPToolRequest => ({
     tool: "generate-best-practices",
     area: "ui-ux",
   }),
 
-  unslothBestPractices: (): MCPToolRequest: any => ({
+  unslothBestPractices: (): MCPToolRequest => ({
     tool: "unsloth-best-practices",
   }),
 
   // Integration Suggestions
-  aiChatIntegration: (): MCPToolRequest: any => ({
+  aiChatIntegration: (): MCPToolRequest => ({
     tool: "suggest-integration",
     feature: "AI chat component",
     requirements: "legal compliance and audit trails",
   }),
 
-  documentUploadIntegration: (): MCPToolRequest: any => ({
+  documentUploadIntegration: (): MCPToolRequest => ({
     tool: "suggest-integration",
     feature: "document upload system",
     requirements: "security and virus scanning",
   }),
 
-  gamingUIIntegration: (): MCPToolRequest: any => ({
+  gamingUIIntegration: (): MCPToolRequest => ({
     tool: "suggest-integration",
     feature: "gaming-style UI components",
     requirements: "professional legal interface",
   }),
 
   // Library Documentation
-  svelteKitRouting: (): MCPToolRequest: any => ({
+  svelteKitRouting: (): MCPToolRequest => ({
     tool: "get-library-docs",
     library: "sveltekit",
     topic: "routing",
   }),
 
-  bitsUIDialog: (): MCPToolRequest: any => ({
+  bitsUIDialog: (): MCPToolRequest => ({
     tool: "get-library-docs",
     library: "bits-ui",
     topic: "dialog",
   }),
 
-  drizzleSchema: (): MCPToolRequest: any => ({
+  drizzleSchema: (): MCPToolRequest => ({
     tool: "get-library-docs",
     library: "drizzle",
     topic: "schema",
   }),
 
   // RAG System Queries
-  ragStats: (): MCPToolRequest: any => ({
+  ragStats: (): MCPToolRequest => ({
     tool: "rag-get-stats",
   }),
 
-  ragLegalQuery: (query: string, caseId?: string): MCPToolRequest: any => ({
+  ragLegalQuery: (query: string, caseId?: string): MCPToolRequest => ({
     tool: "rag-query",
     query,
     caseId,
@@ -631,7 +631,7 @@ export const commonMCPQueries = {
     documentTypes: ["contract", "case_law", "statute", "evidence"],
   }),
 
-  ragContractAnalysis: (query: string): MCPToolRequest: any => ({
+  ragContractAnalysis: (query: string): MCPToolRequest => ({
     tool: "rag-query",
     query,
     maxResults: 5,
@@ -639,7 +639,7 @@ export const commonMCPQueries = {
     documentTypes: ["contract", "agreement"],
   }),
 
-  ragCaseLawSearch: (query: string): MCPToolRequest: any => ({
+  ragCaseLawSearch: (query: string): MCPToolRequest => ({
     tool: "rag-query",
     query,
     maxResults: 15,
@@ -647,7 +647,7 @@ export const commonMCPQueries = {
     documentTypes: ["case_law", "judgment", "precedent"],
   }),
 
-  ragEvidenceSearch: (query: string, caseId: string): MCPToolRequest: any => ({
+  ragEvidenceSearch: (query: string, caseId: string): MCPToolRequest => ({
     tool: "rag-query",
     query,
     caseId,
@@ -656,22 +656,22 @@ export const commonMCPQueries = {
     documentTypes: ["evidence", "exhibit", "testimony"],
   }),
 
-  ragApiIntegration: (): MCPToolRequest: any => ({
+  ragApiIntegration: (): MCPToolRequest => ({
     tool: "rag-integration-guide",
     integrationType: "api-integration",
   }),
 
-  ragComponentIntegration: (): MCPToolRequest: any => ({
+  ragComponentIntegration: (): MCPToolRequest => ({
     tool: "rag-integration-guide",
     integrationType: "component-integration",
   }),
 
-  ragSearchUI: (): MCPToolRequest: any => ({
+  ragSearchUI: (): MCPToolRequest => ({
     tool: "rag-integration-guide",
     integrationType: "search-ui",
   }),
 
-  ragDocumentUpload: (): MCPToolRequest: any => ({
+  ragDocumentUpload: (): MCPToolRequest => ({
     tool: "rag-integration-guide",
     integrationType: "document-upload",
   }),

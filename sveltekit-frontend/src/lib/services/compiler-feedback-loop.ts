@@ -232,17 +232,17 @@ export class CompilerFeedbackLoop {
       }
 
       // Update stores
-      this.events.update(events: any => [...events.slice(-50), event]); // Keep last 50 events
+      this.events.update((events: any) => [...events.slice(-50), event]); // Keep last 50 events
       
       if (event.patch) {
-        this.patches.update(patches: any => [...patches.slice(-20), event.patch!]);
+        this.patches.update((patches: any) => [...patches.slice(-20), event.patch!]);
       }
       
       this.clusters.set(this.somClustering.getClusters());
       
       // Update performance metrics
       const processingTime = Date.now() - startTime;
-      this.performance.update(perf: any => ({
+      this.performance.update((perf: any) => ({
         ...perf,
         averageProcessingTime: (perf.averageProcessingTime + processingTime) / 2,
         totalEvents: perf.totalEvents + 1,
@@ -260,8 +260,7 @@ export class CompilerFeedbackLoop {
    */
   private async embedLogs(logs: CompilerLog[]): Promise<Float32Array> {
     // Combine all log messages and metadata into embedable text
-    const text = logs.map(log: any => 
-      `${log.level}: ${log.message} in ${log.file}:${log.line || 0} [${log.metadata.phase}/${log.metadata.category}]`
+    const text = logs.map((log: any) => `${log.level}: ${log.message} in ${log.file}:${log.line || 0} [${log.metadata.phase}/${log.metadata.category}]`
     ).join(' ');
 
     try {
@@ -285,7 +284,7 @@ export class CompilerFeedbackLoop {
     const words = text.toLowerCase().split(/\s+/);
     const wordCounts = new Map<string, number>();
     
-    words.forEach(word: any => {
+    words.forEach((word: any) => {
       wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
     });
 
@@ -318,7 +317,7 @@ export class CompilerFeedbackLoop {
         minConfidence: 0.3
       });
 
-      return results.map(result: any => ({
+      return results.map((result: any) => ({
         content: result.document.content,
         relevance: result.finalScore,
         source: (result.document.metadata as any)?.source || 'unknown'
@@ -337,10 +336,10 @@ export class CompilerFeedbackLoop {
 Analyze these compiler errors and generate a patch:
 
 ERRORS:
-${logs.map(log: any => `- ${log.level}: ${log.message} in ${log.file}:${log.line}`).join('\n')}
+${logs.map((log: any) => `- ${log.level}: ${log.message} in ${log.file}:${log.line}`).join('\n')}
 
 SIMILAR ISSUES FOUND:
-${suggestions.map(s: any => `- ${s.content.substring(0, 200)}...`).join('\n')}
+${suggestions.map((s: any) => `- ${s.content.substring(0, 200)}...`).join('\n')}
 
 Generate a targeted patch with high confidence.
 `;
@@ -362,7 +361,7 @@ Generate a targeted patch with high confidence.
         confidence: Math.min(0.95, Math.random() * 0.4 + 0.6), // 60-95% confidence
         diff: this.extractDiffFromResult(result),
         description: this.extractDescriptionFromResult(result) || 'AI-generated patch for compiler errors',
-        affectedFiles: logs.map(log: any => log.file).filter((file, index, arr) => arr.indexOf(file) === index),
+        affectedFiles: logs.map((log: any) => log.file).filter((file, index, arr) => arr.indexOf(file) === index),
         estimatedImpact: this.estimateImpact(logs),
         category: this.categorizePatch(logs),
         agentSource: 'hybrid',
@@ -383,7 +382,7 @@ Generate a targeted patch with high confidence.
         confidence: 0.3,
         diff: '// Fallback patch - manual review required',
         description: 'Automatic patch generation failed, manual review needed',
-        affectedFiles: logs.map(log: any => log.file),
+        affectedFiles: logs.map((log: any) => log.file),
         estimatedImpact: 'low',
         category: 'fix',
         agentSource: 'local-llm',
@@ -423,8 +422,8 @@ Generate a targeted patch with high confidence.
   }
 
   private estimateImpact(logs: CompilerLog[]): 'low' | 'medium' | 'high' {
-    const errorCount = logs.filter(log: any => log.level === 'error').length;
-    const fileCount = new Set(logs.map(log: any => log.file)).size;
+    const errorCount = logs.filter((log: any) => log.level === 'error').length;
+    const fileCount = new Set(logs.map((log: any) => log.file)).size;
     
     if (errorCount > 5 || fileCount > 3) return 'high';
     if (errorCount > 2 || fileCount > 1) return 'medium';
@@ -432,9 +431,9 @@ Generate a targeted patch with high confidence.
   }
 
   private categorizePatch(logs: CompilerLog[]): 'fix' | 'optimization' | 'refactor' | 'enhancement' {
-    const hasErrors = logs.some(log: any => log.level === 'error');
-    const hasTypeIssues = logs.some(log: any => log.metadata.category === 'type');
-    const hasPerformanceIssues = logs.some(log: any => log.metadata.category === 'performance');
+    const hasErrors = logs.some((log: any) => log.level === 'error');
+    const hasTypeIssues = logs.some((log: any) => log.metadata.category === 'type');
+    const hasPerformanceIssues = logs.some((log: any) => log.metadata.category === 'performance');
     
     if (hasErrors) return 'fix';
     if (hasTypeIssues) return 'refactor';
@@ -462,7 +461,7 @@ Generate a targeted patch with high confidence.
     return {
       weights,
       dimensions,
-      focusAreas: logs.map(log: any => ({
+      focusAreas: logs.map((log: any) => ({
         file: log.file,
         lines: [log.line || 1, (log.line || 1) + 5],
         confidence: log.level === 'error' ? 0.9 : log.level === 'warning' ? 0.6 : 0.3
@@ -485,7 +484,7 @@ Generate a targeted patch with high confidence.
       }
       
       // Small delay to prevent blocking
-      await new Promise(resolve: any => setTimeout(resolve, 10));
+      await new Promise((resolve: any) => setTimeout(resolve, 10));
     }
     
     this.processingQueue = false;

@@ -151,7 +151,7 @@ export class PredictivePrefetcher {
         this.predictUserIntentEnhanced({
           mouseEvents: this.mouseEvents,
           keyboardEvents: this.keyboardEvents,
-        }).then(intent: any => {
+        }).then((intent: any) => {
           if (intent) {
             this.intentHistory.push(intent);
           }
@@ -429,7 +429,7 @@ export class PredictivePrefetcher {
         context,
         userProfile: {
           role: "user",
-          recentActions: this.intentHistory.slice(-5).map(intent: any => intent.action),
+          recentActions: this.intentHistory.slice(-5).map((intent: any) => intent.action),
           preferences: {},
           workflowPatterns: []
         }
@@ -445,7 +445,7 @@ export class PredictivePrefetcher {
   private async predictUserIntentEnhanced(context: { mouseEvents: MouseEvent[]; keyboardEvents: KeyboardEvent[] }): Promise<UserIntent | null> {
     const currentContext = {
       currentPage: window.location.pathname,
-      recentActions: this.intentHistory.slice(-5).map(intent: any => intent.action),
+      recentActions: this.intentHistory.slice(-5).map((intent: any) => intent.action),
       timeOnPage: Date.now() - this.startTime,
       scrollPosition: window.scrollY || 0,
       mouseActivity: context.mouseEvents,

@@ -117,11 +117,11 @@ export const POST: RequestHandler = async ({ request }) => {
           autoFix: options.autoFix,
           area: options.autoFixArea
         }
-      }).then(result: any => ({
+      }).then((result: any) => ({
         agent: 'claude',
         ...result,
         error: undefined
-      })).catch(error: any => ({
+      })).catch((error: any) => ({
         agent: 'claude',
         output: '',
         score: 0,
@@ -143,11 +143,11 @@ export const POST: RequestHandler = async ({ request }) => {
           includeContext7: options.includeContext7,
           autoFix: options.autoFix
         }
-      }).then(result: any => ({
+      }).then((result: any) => ({
         agent: 'autogen',
         ...result,
         error: undefined
-      })).catch(error: any => ({
+      })).catch((error: any) => ({
         agent: 'autogen',
         output: '',
         score: 0,
@@ -167,11 +167,11 @@ export const POST: RequestHandler = async ({ request }) => {
           includeContext7: options.includeContext7,
           autoFix: options.autoFix
         }
-      }).then(result: any => ({
+      }).then((result: any) => ({
         agent: 'crewai',
         ...result,
         error: undefined
-      })).catch(error: any => ({
+      })).catch((error: any) => ({
         agent: 'crewai',
         output: '',
         score: 0,
@@ -193,11 +193,11 @@ export const POST: RequestHandler = async ({ request }) => {
           maxResults: 5,
           confidenceThreshold: 0.7
         }
-      }).then(result: any => ({
+      }).then((result: any) => ({
         agent: 'rag',
         ...result,
         error: undefined
-      })).catch(error: any => ({
+      })).catch((error: any) => ({
         agent: 'rag',
         output: '',
         score: 0,
@@ -311,7 +311,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 function synthesizeResults(results: any[], originalPrompt: string) {
   // Find best result by score
-  const validResults = results.filter(r: any => !r.error && r.score > 0);
+  const validResults = results.filter((r: any) => !r.error && r.score > 0);
   
   if (validResults.length === 0) {
     return {

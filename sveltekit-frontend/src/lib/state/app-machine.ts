@@ -191,8 +191,8 @@ const logoutService = fromPromise(async () => {
 const initializeAppService = fromPromise(async () => {
   // Load user preferences, feature flags, etc.
   const [userPrefs, features] = await Promise.all([
-    fetch('/api/user/preferences').then(r: any => r.ok ? r.json() : {}),
-    fetch('/api/features').then(r: any => r.ok ? r.json() : {})
+    fetch('/api/user/preferences').then((r: any) => r.ok ? r.json() : {}),
+    fetch('/api/features').then((r: any) => r.ok ? r.json() : {})
   ]);
   
   return { userPrefs, features };
@@ -247,7 +247,7 @@ const addNotification = assign({
 
 const dismissNotification = assign({
   notifications: ({ context, event }: { context: AppContext; event: any }) =>
-    context.notifications.filter(n: any => n.id !== event.id)
+    context.notifications.filter((n: any) => n.id !== event.id)
 });
 
 const clearNotifications = assign({

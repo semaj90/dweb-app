@@ -245,7 +245,7 @@ export class SvelteKitClusterManager extends EventEmitter {
    */
   private selectWorker(req: any): number {
     const availableWorkers = Array.from(this.workerInstances.keys()).filter(
-      id: any => {
+      (id: any) => {
         const worker = this.workerInstances.get(id);
         const workerMetrics = this.workers.get(id);
         return worker && workerMetrics && workerMetrics.status !== 'dead';
@@ -452,7 +452,7 @@ export class SvelteKitClusterManager extends EventEmitter {
    */
   private updateHealthStore(): void {
     const healthyWorkers = Array.from(this.workers.values()).filter(
-      w: any => w.status === 'online'
+      (w: any) => w.status === 'online'
     );
 
     const totalMemory = healthyWorkers.reduce((sum, w) => sum + w.memoryUsage.heapUsed, 0);
@@ -466,7 +466,7 @@ export class SvelteKitClusterManager extends EventEmitter {
       memoryUsage: {
         total: totalMemory,
         average: averageMemory,
-        peak: Math.max(...healthyWorkers.map(w: any => w.memoryUsage.heapUsed))
+        peak: Math.max(...healthyWorkers.map((w: any) => w.memoryUsage.heapUsed))
       },
       cpuUsage: {
         total: healthyWorkers.reduce((sum, w) => sum + w.cpuUsage.user + w.cpuUsage.system, 0),
@@ -570,7 +570,7 @@ export class SvelteKitClusterManager extends EventEmitter {
       this.restartWorker(workerId);
       
       // Wait for worker to be replaced
-      await new Promise(resolve: any => setTimeout(resolve, 2000));
+      await new Promise((resolve: any) => setTimeout(resolve, 2000));
     }
     
     console.log('✅ Rolling restart completed');

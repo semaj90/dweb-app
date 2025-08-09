@@ -175,7 +175,7 @@ export const crewAIOrchestrationMachine = setup({
       },
       activeAgents: ({ context, event }) => {
         if (event.type === 'AGENT_COMPLETED') {
-          return context.activeAgents.filter(id: any => id !== event.agentId);
+          return context.activeAgents.filter((id: any) => id !== event.agentId);
         }
         return context.activeAgents;
       }
@@ -191,7 +191,7 @@ export const crewAIOrchestrationMachine = setup({
       },
       activeAgents: ({ context, event }) => {
         if (event.type === 'AGENT_FAILED') {
-          return context.activeAgents.filter(id: any => id !== event.agentId);
+          return context.activeAgents.filter((id: any) => id !== event.agentId);
         }
         return context.activeAgents;
       },
@@ -244,8 +244,7 @@ export const crewAIOrchestrationMachine = setup({
     acceptRecommendation: assign({
       currentRecommendations: ({ context, event }) => {
         if (event.type === 'ACCEPT_RECOMMENDATION') {
-          return context.currentRecommendations.map(rec: any => 
-            rec.id === event.recommendationId 
+          return context.currentRecommendations.map((rec: any) => rec.id === event.recommendationId 
               ? { ...rec, accepted: true }
               : rec
           );

@@ -423,7 +423,7 @@ export class NeuralSpriteEngine {
               // Optimize sprite loading order based on usage patterns
               result = {
                 optimizedOrder: data.sprites.sort((a, b) => b.usageCount - a.usageCount),
-                cacheRecommendations: data.sprites.slice(0, 10).map(s: any => s.id)
+                cacheRecommendations: data.sprites.slice(0, 10).map((s: any) => s.id)
               };
               break;
 

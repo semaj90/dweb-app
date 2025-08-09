@@ -54,7 +54,7 @@ class AdvancedCacheManager {
     if ('IntersectionObserver' in window) {
       this.lazyLoadObserver = new IntersectionObserver(
         (entries) => {
-          entries.forEach(entry: any => {
+          entries.forEach((entry: any) => {
             if (entry.isIntersecting) {
               const element = entry.target as HTMLElement;
               const cacheKey = element.dataset.cacheKey;
@@ -223,8 +223,7 @@ class AdvancedCacheManager {
   async prefetchByPattern(patterns: string[]): Promise<void> {
     const prefetchPromises = patterns.map(async (pattern) => {
       // Simulate intelligent prefetching logic
-      const keys = Array.from(this.cache.keys()).filter(key: any => 
-        key.includes(pattern) || this.getRelatedKeys(key, pattern).length > 0
+      const keys = Array.from(this.cache.keys()).filter((key: any) => key.includes(pattern) || this.getRelatedKeys(key, pattern).length > 0
       );
 
       for (const key of keys.slice(0, 3)) { // Limit to 3 prefetches per pattern
@@ -244,7 +243,7 @@ class AdvancedCacheManager {
     const toDelete: string[] = [];
     
     for (const [key, item] of this.cache.entries()) {
-      if (item.tags.some(tag: any => tags.includes(tag))) {
+      if (item.tags.some((tag: any) => tags.includes(tag))) {
         toDelete.push(key);
       }
     }
@@ -345,8 +344,7 @@ class AdvancedCacheManager {
 
   private getRelatedKeys(key: string, pattern: string): string[] {
     // Simple relationship detection - can be made more sophisticated
-    return Array.from(this.cache.keys()).filter(k: any => 
-      k !== key && (
+    return Array.from(this.cache.keys()).filter((k: any) => k !== key && (
         k.startsWith(pattern) || 
         key.startsWith(pattern) ||
         this.levenshteinDistance(k, key) < 3
@@ -377,7 +375,7 @@ class AdvancedCacheManager {
   }
 
   private updateStats(delta: Partial<CacheStats>): void {
-    this.stats.update(current: any => ({
+    this.stats.update((current: any) => ({
       hits: current.hits + (delta.hits || 0),
       misses: current.misses + (delta.misses || 0),
       evictions: current.evictions + (delta.evictions || 0),

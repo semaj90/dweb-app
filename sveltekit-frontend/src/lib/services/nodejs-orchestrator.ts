@@ -156,7 +156,7 @@ export class NodeJSOrchestrator {
       // Start task processing
       this.startTaskProcessor();
 
-      this.orchestrationStatus.update(status: any => ({
+      this.orchestrationStatus.update((status: any) => ({
         ...status,
         initialized: true
       }));
@@ -225,7 +225,7 @@ export class NodeJSOrchestrator {
       }
     ];
 
-    configs.forEach(config: any => {
+    configs.forEach((config: any) => {
       this.workerConfigs.set(config.id, config);
     });
   }
@@ -242,7 +242,7 @@ export class NodeJSOrchestrator {
 
     await Promise.allSettled(workerPromises);
 
-    this.orchestrationStatus.update(status: any => ({
+    this.orchestrationStatus.update((status: any) => ({
       ...status,
       totalWorkers: this.workers.size,
       workersReady: this.workers.size
@@ -281,7 +281,7 @@ export class NodeJSOrchestrator {
       this.workers.set(workerId, worker);
 
       // Initialize worker status
-      this.workerStatuses.update(statuses: any => {
+      this.workerStatuses.update((statuses: any) => {
         const newStatuses = new Map(statuses);
         newStatuses.set(workerId, {
           id: workerId,
@@ -407,7 +407,7 @@ export class NodeJSOrchestrator {
             
             // Mock GGUF inference with realistic timing
             const processingTime = Math.max(100, prompt.length * 5 + maxTokens * 10);
-            await new Promise(resolve: any => setTimeout(resolve, processingTime));
+            await new Promise((resolve: any) => setTimeout(resolve, processingTime));
             
             const responses = [
               'Based on legal analysis, the contract provisions establish clear liability frameworks.',
@@ -430,7 +430,7 @@ export class NodeJSOrchestrator {
             const { query, topK, filters } = data;
             
             // Mock vector search
-            await new Promise(resolve: any => setTimeout(resolve, 100 + Math.random() * 500));
+            await new Promise((resolve: any) => setTimeout(resolve, 100 + Math.random() * 500));
             
             const results = [];
             for (let i = 0; i < Math.min(topK, 10); i++) {
@@ -452,7 +452,7 @@ export class NodeJSOrchestrator {
             
             // Mock document processing
             const processingTime = Math.max(200, document.length * 0.1);
-            await new Promise(resolve: any => setTimeout(resolve, processingTime));
+            await new Promise((resolve: any) => setTimeout(resolve, processingTime));
             
             switch (operation) {
               case 'EXTRACT_TEXT':
@@ -480,7 +480,7 @@ export class NodeJSOrchestrator {
             const { operation, parameters } = data;
             
             // Mock WebGPU computation
-            await new Promise(resolve: any => setTimeout(resolve, 500 + Math.random() * 1500));
+            await new Promise((resolve: any) => setTimeout(resolve, 500 + Math.random() * 1500));
             
             return {
               operation,
@@ -494,7 +494,7 @@ export class NodeJSOrchestrator {
       default:
         return `
           async function processTask(data) {
-            await new Promise(resolve: any => setTimeout(resolve, 100));
+            await new Promise((resolve: any) => setTimeout(resolve, 100));
             return { processed: true, data };
           }
         `;
@@ -552,7 +552,7 @@ export class NodeJSOrchestrator {
     this.completedTasksCount++;
 
     // Add to task history
-    this.taskHistory.update(history: any => [
+    this.taskHistory.update((history: any) => [
       ...history.slice(-99), // Keep last 100 entries
       {
         taskId: message.taskId,
@@ -589,7 +589,7 @@ export class NodeJSOrchestrator {
       this.failedTasksCount++;
 
       // Add to task history
-      this.taskHistory.update(history: any => [
+      this.taskHistory.update((history: any) => [
         ...history.slice(-99),
         {
           taskId: message.taskId,
@@ -631,7 +631,7 @@ export class NodeJSOrchestrator {
    * Update worker status
    */
   private updateWorkerStatus(workerId: string, updates: Partial<WorkerStatus>): void {
-    this.workerStatuses.update(statuses: any => {
+    this.workerStatuses.update((statuses: any) => {
       const newStatuses = new Map(statuses);
       const current = newStatuses.get(workerId);
       
@@ -698,7 +698,7 @@ export class NodeJSOrchestrator {
     }
 
     // Update orchestration status
-    this.orchestrationStatus.update(status: any => ({
+    this.orchestrationStatus.update((status: any) => ({
       ...status,
       queueLength: this.taskQueue.length,
       activeTasks: this.activeTasks.size
@@ -711,7 +711,7 @@ export class NodeJSOrchestrator {
   private findAvailableWorker(taskType: WorkerType): string | null {
     let currentStatuses: Map<string, WorkerStatus> = new Map();
     
-    this.workerStatuses.subscribe(statuses: any => {
+    this.workerStatuses.subscribe((statuses: any) => {
       currentStatuses = statuses;
     })();
 
@@ -743,10 +743,10 @@ export class NodeJSOrchestrator {
    */
   private updateMetrics(): void {
     let currentStatuses: Map<string, WorkerStatus> = new Map();
-    this.workerStatuses.subscribe(s: any => currentStatuses = s)();
+    this.workerStatuses.subscribe((s: any) => currentStatuses = s)();
 
     const activeWorkers = Array.from(currentStatuses.values())
-      .filter(status: any => status.status === 'BUSY').length;
+      .filter((status: any) => status.status === 'BUSY').length;
 
     const totalErrors = Array.from(currentStatuses.values())
       .reduce((sum, status) => sum + status.errors, 0);
@@ -779,7 +779,7 @@ export class NodeJSOrchestrator {
     const recentTasks = this.completedTasks.slice(-50); // Last 50 tasks
     let totalTime = 0;
     
-    this.taskHistory.subscribe(history: any => {
+    this.taskHistory.subscribe((history: any) => {
       const recentEntries = history.slice(-50);
       totalTime = recentEntries.reduce((sum, entry) => sum + entry.duration, 0);
     })();
@@ -802,7 +802,7 @@ export class NodeJSOrchestrator {
    */
   private calculateCPUUtilization(statuses: Map<string, WorkerStatus>): number {
     const activeCores = Array.from(statuses.values())
-      .filter(status: any => status.status === 'BUSY').length;
+      .filter((status: any) => status.status === 'BUSY').length;
     
     const totalCores = navigator.hardwareConcurrency || 8;
     return (activeCores / totalCores) * 100;
@@ -813,7 +813,7 @@ export class NodeJSOrchestrator {
    */
   private calculateGPUUtilization(statuses: Map<string, WorkerStatus>): number {
     const gpuWorkers = Array.from(statuses.values())
-      .filter(status: any => {
+      .filter((status: any) => {
         const config = this.workerConfigs.get(status.id);
         return config?.gpuAccelerated && status.status === 'BUSY';
       }).length;
@@ -843,9 +843,9 @@ export class NodeJSOrchestrator {
    */
   public getTaskStatus(taskId: string): 'QUEUED' | 'ACTIVE' | 'COMPLETED' | 'FAILED' | 'NOT_FOUND' {
     if (this.activeTasks.has(taskId)) return 'ACTIVE';
-    if (this.completedTasks.some(t: any => t.id === taskId)) return 'COMPLETED';
-    if (this.failedTasks.some(t: any => t.id === taskId)) return 'FAILED';
-    if (this.taskQueue.some(t: any => t.id === taskId)) return 'QUEUED';
+    if (this.completedTasks.some((t: any) => t.id === taskId)) return 'COMPLETED';
+    if (this.failedTasks.some((t: any) => t.id === taskId)) return 'FAILED';
+    if (this.taskQueue.some((t: any) => t.id === taskId)) return 'QUEUED';
     return 'NOT_FOUND';
   }
 
@@ -856,7 +856,7 @@ export class NodeJSOrchestrator {
     console.log('🛑 Shutting down Node.js Orchestrator...');
 
     // Terminate all workers
-    this.workers.forEach(worker: any => worker.terminate());
+    this.workers.forEach((worker: any) => worker.terminate());
     this.workers.clear();
 
     // Unregister service worker

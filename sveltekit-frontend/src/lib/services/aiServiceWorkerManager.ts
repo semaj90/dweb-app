@@ -178,7 +178,7 @@ export class AIServiceWorkerManager {
 
 		// Add to queue based on priority
 		this.insertTaskByPriority(taskWithId);
-		this.taskQueue$.update(queue: any => [...queue]);
+		this.taskQueue$.update((queue: any) => [...queue]);
 		
 		// Try to process immediately if workers are available
 		this.processQueue();
@@ -188,7 +188,7 @@ export class AIServiceWorkerManager {
 
 	public async processParallel(tasks: Omit<AITask, 'id'>[]): Promise<AITaskResult[]> {
 		const taskIds = await Promise.all(
-			tasks.map(task: any => this.queueTask(task))
+			tasks.map((task: any) => this.queueTask(task))
 		);
 
 		// Wait for all tasks to complete
@@ -201,7 +201,7 @@ export class AIServiceWorkerManager {
 			};
 
 			// Listen for task completions
-			taskIds.forEach(taskId: any => {
+			taskIds.forEach((taskId: any) => {
 				this.onTaskComplete(taskId, (result) => {
 					results.push(result);
 					checkCompletion();
@@ -212,9 +212,9 @@ export class AIServiceWorkerManager {
 
 	public getSystemHealth(): AISystemHealth {
 		const workers = Array.from(this.workerStatusMap.values());
-		const activeWorkers = workers.filter(w: any => w.status !== 'offline').length;
-		const busyWorkers = workers.filter(w: any => w.status === 'busy').length;
-		const errorWorkers = workers.filter(w: any => w.status === 'error').length;
+		const activeWorkers = workers.filter((w: any) => w.status !== 'offline').length;
+		const busyWorkers = workers.filter((w: any) => w.status === 'busy').length;
+		const errorWorkers = workers.filter((w: any) => w.status === 'error').length;
 
 		return {
 			totalWorkers: workers.length,
@@ -232,7 +232,7 @@ export class AIServiceWorkerManager {
 	private insertTaskByPriority(task: AITask): void {
 		const priorityOrder = { 'critical': 0, 'high': 1, 'medium': 2, 'low': 3 };
 		const insertIndex = this.taskQueue.findIndex(
-			queuedTask: any => priorityOrder[task.priority] < priorityOrder[queuedTask.priority]
+			(queuedTask: any) => priorityOrder[task.priority] < priorityOrder[queuedTask.priority]
 		);
 		
 		if (insertIndex === -1) {
@@ -257,8 +257,7 @@ export class AIServiceWorkerManager {
 			if (this.taskQueue.length === 0) break;
 
 			const workerStatus = this.workerStatusMap.get(workerId)!;
-			const suitableTaskIndex = this.taskQueue.findIndex(task: any => 
-				this.isWorkerSuitableForTask(workerStatus, task)
+			const suitableTaskIndex = this.taskQueue.findIndex((task: any) => this.isWorkerSuitableForTask(workerStatus, task)
 			);
 
 			if (suitableTaskIndex !== -1) {
@@ -354,14 +353,13 @@ export class AIServiceWorkerManager {
 	private updateWorkerStatus(workerId: string, statusUpdate: Partial<WorkerStatus>): void {
 		const currentStatus = this.workerStatusMap.get(workerId)!;
 		Object.assign(currentStatus, statusUpdate);
-		this.workerStatus$.update(statuses: any => 
-			statuses.map(s: any => s.id === workerId ? currentStatus : s)
+		this.workerStatus$.update((statuses: any) => statuses.map((s: any) => s.id === workerId ? currentStatus : s)
 		);
 	}
 
 	private updateSystemMetrics(): void {
 		const health = this.getSystemHealth();
-		this.systemMetrics$.update(metrics: any => ({
+		this.systemMetrics$.update((metrics: any) => ({
 			...metrics,
 			queueLength: health.queueLength,
 			currentLoad: health.averageLoad,

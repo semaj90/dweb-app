@@ -17,7 +17,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     throw redirect(303, "/dashboard");
   }
   
-  const form = await superValidate({ email: '', password: '' }, zod(loginSchema));
+  // Simple approach - create form directly without Superforms for now
+  const form = {
+    valid: true,
+    data: { email: '', password: '' },
+    errors: {}
+  };
   
   // Check for registration success message
   const registered = url.searchParams.get('registered');
@@ -33,10 +38,18 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 export const actions: Actions = {
   default: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod(loginSchema));
+    const formData = await request.formData();
+    const email = formData.get('email')?.toString();
+    const password = formData.get('password')?.toString();
     
-    if (!form.valid) {
-      return fail(400, { form });
+    if (!email || !password) {
+      return fail(400, { 
+        form: { 
+          data: { email: email || '', password: '' }, 
+          errors: { email: !email ? 'Email is required' : '', password: !password ? 'Password is required' : '' },
+          message: 'Please fill in all fields'
+        } 
+      });
     }
 
     try {
@@ -44,18 +57,30 @@ export const actions: Actions = {
       const existingUser = await db
         .select()
         .from(users)
-        .where(eq(users.email, form.data.email))
+        .where(eq(users.email, email))
         .limit(1);
 
       if (!existingUser.length || !existingUser[0].hashedPassword) {
-        return message(form, "Incorrect email or password.", { status: 400 });
+        return fail(400, { 
+          form: { 
+            data: { email, password: '' }, 
+            errors: {},
+            message: 'Incorrect email or password'
+          } 
+        });
       }
 
       const user = existingUser[0];
 
       // Check if user is active
       if (!user.isActive) {
-        return message(form, "Account is deactivated.", { status: 403 });
+        return fail(403, { 
+          form: { 
+            data: { email, password: '' }, 
+            errors: {},
+            message: 'Account is deactivated'
+          } 
+        });
       }
 
       // Verify password - try both bcrypt and argon2 for compatibility
@@ -63,18 +88,24 @@ export const actions: Actions = {
       
       try {
         // Try bcrypt first (for demo users)
-        validPassword = await bcrypt.compare(form.data.password, user.hashedPassword);
+        validPassword = await bcrypt.compare(password, user.hashedPassword);
       } catch {
         try {
           // Fallback to argon2 (for registered users)
-          validPassword = await verify(user.hashedPassword, form.data.password);
+          validPassword = await verify(user.hashedPassword, password);
         } catch (error) {
           console.error('Password verification failed:', error);
         }
       }
 
       if (!validPassword) {
-        return message(form, "Incorrect email or password.", { status: 400 });
+        return fail(400, { 
+          form: { 
+            data: { email, password: '' }, 
+            errors: {},
+            message: 'Incorrect email or password'
+          } 
+        });
       }
 
       // Create Lucia session
@@ -97,7 +128,13 @@ export const actions: Actions = {
         throw error;
       }
       
-      return message(form, "Login failed. Please try again.", { status: 500 });
+      return fail(500, { 
+        form: { 
+          data: { email, password: '' }, 
+          errors: {},
+          message: 'Login failed. Please try again.'
+        } 
+      });
     }
   },
 };

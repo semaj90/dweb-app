@@ -402,7 +402,7 @@ export class DocumentSummarizationWorker extends SpecializedWorker {
   private extractKeyPoints(content: string): string[] {
     // Placeholder for key point extraction
     const sentences = content.split(/[.!?]+/);
-    return sentences.slice(0, 5).map(s: any => s.trim()).filter(s: any => s.length > 10);
+    return sentences.slice(0, 5).map((s: any) => s.trim()).filter((s: any) => s.length > 10);
   }
 }
 

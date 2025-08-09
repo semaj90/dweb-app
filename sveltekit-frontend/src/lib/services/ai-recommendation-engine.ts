@@ -377,7 +377,7 @@ class AIRecommendationEngine {
     ];
 
     for (const indicator of riskIndicators) {
-      const hasRiskTerms = indicator.terms.some(term: any => query.includes(term));
+      const hasRiskTerms = indicator.terms.some((term: any) => query.includes(term));
       
       if (hasRiskTerms) {
         recommendations.push({
@@ -422,7 +422,7 @@ class AIRecommendationEngine {
   }
 
   private updateUserPatterns(query: string) {
-    this.userPatterns.update(patterns: any => {
+    this.userPatterns.update((patterns: any) => {
       const current = patterns.get(query) || 0;
       patterns.set(query, current + 1);
       
@@ -467,9 +467,9 @@ class AIRecommendationEngine {
     const highRiskAreas = ['litigation', 'compliance', 'liability'];
     const mediumRiskAreas = ['contract', 'employment', 'audit'];
 
-    if (highRiskAreas.some(area: any => expertise.includes(area))) {
+    if (highRiskAreas.some((area: any) => expertise.includes(area))) {
       return 'high';
-    } else if (mediumRiskAreas.some(area: any => expertise.includes(area))) {
+    } else if (mediumRiskAreas.some((area: any) => expertise.includes(area))) {
       return 'medium';
     }
     
@@ -563,8 +563,8 @@ class AIRecommendationEngine {
       totalQueries: Array.from(patterns.values()).reduce((sum, count) => sum + count, 0),
       uniqueQueries: patterns.size,
       activeRecommendations: recommendations.length,
-      highConfidenceRecs: recommendations.filter(r: any => r.confidence > 0.7).length,
-      actionableRecs: recommendations.filter(r: any => r.actionable).length
+      highConfidenceRecs: recommendations.filter((r: any) => r.confidence > 0.7).length,
+      actionableRecs: recommendations.filter((r: any) => r.actionable).length
     };
   }
 }

@@ -174,8 +174,8 @@ export class OptimizationTestSuite {
     }
 
     const total_duration = performance.now() - suite_start;
-    const passed = tests.filter(t: any => t.passed).length;
-    const failed = tests.filter(t: any => !t.passed).length;
+    const passed = tests.filter((t: any) => t.passed).length;
+    const failed = tests.filter((t: any) => !t.passed).length;
 
     return {
       name: 'VS Code Extension Tests',
@@ -292,8 +292,8 @@ export class OptimizationTestSuite {
     }
 
     const total_duration = performance.now() - suite_start;
-    const passed = tests.filter(t: any => t.passed).length;
-    const failed = tests.filter(t: any => !t.passed).length;
+    const passed = tests.filter((t: any) => t.passed).length;
+    const failed = tests.filter((t: any) => !t.passed).length;
 
     return {
       name: 'Redis SOM Cache Tests',
@@ -401,8 +401,8 @@ export class OptimizationTestSuite {
     }
 
     const total_duration = performance.now() - suite_start;
-    const passed = tests.filter(t: any => t.passed).length;
-    const failed = tests.filter(t: any => !t.passed).length;
+    const passed = tests.filter((t: any) => t.passed).length;
+    const failed = tests.filter((t: any) => !t.passed).length;
 
     return {
       name: 'Docker Optimizer Tests',
@@ -512,8 +512,8 @@ export class OptimizationTestSuite {
     }
 
     const total_duration = performance.now() - suite_start;
-    const passed = tests.filter(t: any => t.passed).length;
-    const failed = tests.filter(t: any => !t.passed).length;
+    const passed = tests.filter((t: any) => t.passed).length;
+    const failed = tests.filter((t: any) => !t.passed).length;
 
     return {
       name: 'JSON WASM Optimizer Tests',
@@ -616,8 +616,8 @@ export class OptimizationTestSuite {
     }
 
     const total_duration = performance.now() - suite_start;
-    const passed = tests.filter(t: any => t.passed).length;
-    const failed = tests.filter(t: any => !t.passed).length;
+    const passed = tests.filter((t: any) => t.passed).length;
+    const failed = tests.filter((t: any) => !t.passed).length;
 
     return {
       name: 'Context7 Integration Tests',
@@ -779,7 +779,7 @@ export class OptimizationTestSuite {
     const recommendations: string[] = [];
     
     // Analyze test results
-    const failed_suites = test_suites.filter(suite: any => !suite.overall_passed);
+    const failed_suites = test_suites.filter((suite: any) => !suite.overall_passed);
     if (failed_suites.length > 0) {
       recommendations.push(`⚠️  ${failed_suites.length} test suite(s) have failures - review error details`);
     }
@@ -836,15 +836,14 @@ export class OptimizationTestSuite {
 - **Memory Usage:** ${performance_benchmarks.memory_usage_mb}MB
 
 ## Test Suite Results
-${report.test_suites.map(suite: any => 
-  `### ${suite.name} ${suite.overall_passed ? '✅' : '❌'}
+${report.test_suites.map((suite: any) => `### ${suite.name} ${suite.overall_passed ? '✅' : '❌'}
 - Passed: ${suite.passed}/${suite.tests.length} tests
 - Duration: ${(suite.total_duration_ms / 1000).toFixed(2)}s
-${suite.tests.filter(t: any => !t.passed).map(t: any => `  - ❌ ${t.name}: ${t.error}`).join('\n')}`
+${suite.tests.filter((t: any) => !t.passed).map((t: any) => `  - ❌ ${t.name}: ${t.error}`).join('\n')}`
 ).join('\n\n')}
 
 ## Recommendations
-${report.recommendations.map(rec: any => `- ${rec}`).join('\n')}
+${report.recommendations.map((rec: any) => `- ${rec}`).join('\n')}
 `;
   }
 }

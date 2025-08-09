@@ -217,7 +217,7 @@ function combineAbortSignals(...signals: AbortSignal[]): AbortSignal {
  * Sleep utility for retry delays
  */
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve: any => setTimeout(resolve, ms));
+  return new Promise((resolve: any) => setTimeout(resolve, ms));
 }
 
 /**

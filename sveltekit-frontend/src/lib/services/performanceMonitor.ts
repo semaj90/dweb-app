@@ -169,7 +169,7 @@ class PerformanceMonitor {
   
   public readonly criticalAlerts = derived(
     this.alerts,
-    ($alerts) => $alerts.filter(alert: any => alert.severity === 'critical')
+    ($alerts) => $alerts.filter((alert: any) => alert.severity === 'critical')
   );
 
   constructor() {
@@ -201,7 +201,7 @@ class PerformanceMonitor {
     }, intervalMs);
 
     // Initial collection
-    this.collectMetrics().then(snapshot: any => {
+    this.collectMetrics().then((snapshot: any) => {
       this.updateStores(snapshot);
       this.metricsHistory.push(snapshot);
     });
@@ -237,17 +237,17 @@ class PerformanceMonitor {
       
       // Get historical data from previous snapshots
       const recentSnapshots = this.metricsHistory.slice(-10);
-      const processingTimeHistory = recentSnapshots.map(s: any => ({
+      const processingTimeHistory = recentSnapshots.map((s: any) => ({
         timestamp: s.timestamp,
         value: s.ai.averageProcessingTime
       }));
       
-      const confidenceHistory = recentSnapshots.map(s: any => ({
+      const confidenceHistory = recentSnapshots.map((s: any) => ({
         timestamp: s.timestamp,
         value: s.ai.averageConfidence
       }));
       
-      const throughputHistory = recentSnapshots.map(s: any => ({
+      const throughputHistory = recentSnapshots.map((s: any) => ({
         timestamp: s.timestamp,
         value: s.ai.documentsProcessed
       }));
@@ -324,12 +324,12 @@ class PerformanceMonitor {
       
       // Historical data
       const recentSnapshots = this.metricsHistory.slice(-10);
-      const throughputHistory = recentSnapshots.map(s: any => ({
+      const throughputHistory = recentSnapshots.map((s: any) => ({
         timestamp: s.timestamp,  
         value: s.queues.overallThroughput
       }));
       
-      const failureRateHistory = recentSnapshots.map(s: any => ({
+      const failureRateHistory = recentSnapshots.map((s: any) => ({
         timestamp: s.timestamp,
         value: s.queues.totalFailed / Math.max(1, s.queues.totalJobs)
       }));
@@ -361,12 +361,12 @@ class PerformanceMonitor {
       
       // Historical data
       const recentSnapshots = this.metricsHistory.slice(-10); 
-      const hitRateHistory = recentSnapshots.map(s: any => ({
+      const hitRateHistory = recentSnapshots.map((s: any) => ({
         timestamp: s.timestamp,
         value: s.cache.hitRate
       }));
       
-      const memoryUsageHistory = recentSnapshots.map(s: any => ({
+      const memoryUsageHistory = recentSnapshots.map((s: any) => ({
         timestamp: s.timestamp,
         value: s.cache.memoryUsage
       }));
@@ -412,8 +412,7 @@ class PerformanceMonitor {
       };
       
       // Calculate overall health score
-      const componentScores = Object.values(components).map(c: any => 
-        c.status === 'healthy' ? 100 : c.status === 'degraded' ? 50 : 0
+      const componentScores = Object.values(components).map((c: any) => c.status === 'healthy' ? 100 : c.status === 'degraded' ? 50 : 0
       );
       const healthScore = componentScores.reduce((a, b) => a + b, 0) / componentScores.length;
       
@@ -490,7 +489,7 @@ class PerformanceMonitor {
     const startTime = Date.now();
     try {
       // Simple health check - would be replaced with actual DB ping
-      await new Promise(resolve: any => setTimeout(resolve, 100));
+      await new Promise((resolve: any) => setTimeout(resolve, 100));
       return {
         status: 'healthy',
         responseTime: Date.now() - startTime
@@ -712,7 +711,7 @@ class PerformanceMonitor {
   // Public methods for external usage
   getMetricsHistory(hours: number = 24): PerformanceSnapshot[] {
     const cutoff = Date.now() - (hours * 60 * 60 * 1000);
-    return this.metricsHistory.filter(snapshot: any => snapshot.timestamp >= cutoff);
+    return this.metricsHistory.filter((snapshot: any) => snapshot.timestamp >= cutoff);
   }
 
   exportMetrics(): string {
@@ -732,7 +731,7 @@ class PerformanceMonitor {
 export const performanceMonitor = new PerformanceMonitor();
 
 // Export utility functions
-export const formatMetricValue = (value: number, type: 'time' | 'percentage' | 'count' | 'size'): string: any => {
+export const formatMetricValue = (value: number, type: 'time' | 'percentage' | 'count' | 'size'): string => {
   switch (type) {
     case 'time':
       return value < 1000 ? `${Math.round(value)}ms` : `${(value / 1000).toFixed(1)}s`;
@@ -754,7 +753,7 @@ export const formatMetricValue = (value: number, type: 'time' | 'percentage' | '
   }
 };
 
-export const getHealthStatusColor = (status: 'healthy' | 'degraded' | 'unhealthy'): string: any => {
+export const getHealthStatusColor = (status: 'healthy' | 'degraded' | 'unhealthy'): string => {
   switch (status) {
     case 'healthy': return 'text-green-500';
     case 'degraded': return 'text-yellow-500';
@@ -763,7 +762,7 @@ export const getHealthStatusColor = (status: 'healthy' | 'degraded' | 'unhealthy
   }
 };
 
-export const getAlertSeverityColor = (severity: SystemMetrics['activeAlerts'][0]['severity']): string: any => {
+export const getAlertSeverityColor = (severity: SystemMetrics['activeAlerts'][0]['severity']): string => {
   switch (severity) {
     case 'low': return 'text-blue-500';
     case 'medium': return 'text-yellow-500';

@@ -64,7 +64,7 @@ class DocumentEmbeddingService {
 
       // Generate embeddings for all chunks
       const embeddings = await Promise.all(
-        chunks.map(chunk: any => this.embeddings.embedQuery(chunk))
+        chunks.map((chunk: any) => this.embeddings.embedQuery(chunk))
       );
 
       // Store chunks and embeddings in database

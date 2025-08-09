@@ -66,9 +66,9 @@ export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
       timeout = setTimeout(async () => {
         try {
           const result = await func(...args);
-          resolveList.forEach(r: any => r(result));
+          resolveList.forEach((r: any) => r(result));
         } catch (error) {
-          rejectList.forEach(r: any => r(error));
+          rejectList.forEach((r: any) => r(error));
         } finally {
           resolveList = [];
           rejectList = [];

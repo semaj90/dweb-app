@@ -311,7 +311,7 @@ class GoMicroserviceClient {
   }
   
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve: any => setTimeout(resolve, ms));
+    return new Promise((resolve: any) => setTimeout(resolve, ms));
   }
 }
 
@@ -352,7 +352,7 @@ export class GoServiceManager {
       });
       
       // Wait for service to initialize
-      await new Promise(resolve: any => setTimeout(resolve, 3000));
+      await new Promise((resolve: any) => setTimeout(resolve, 3000));
       
       return true;
       

@@ -455,7 +455,7 @@ export const createSuggestionContext = (
   text: string,
   cursorPosition: number,
   options: Partial<SuggestionContext> = {}
-): SuggestionContext: any => ({
+): SuggestionContext => ({
   text,
   cursorPosition,
   contextBefore: text.slice(Math.max(0, cursorPosition - 150), cursorPosition),

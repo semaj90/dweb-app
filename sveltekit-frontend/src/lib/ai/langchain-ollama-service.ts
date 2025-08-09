@@ -117,7 +117,7 @@ class PostgreSQLVectorRetriever extends BaseRetriever {
       const processingTime = Date.now() - startTime;
       console.log(`Vector search completed in ${processingTime}ms, found ${results.length} results`);
 
-      return results.map(result: any => new LangChainDocument({
+      return results.map((result: any) => new LangChainDocument({
         pageContent: result.content,
         metadata: {
           ...result.metadata,
@@ -517,10 +517,10 @@ export class LangChainOllamaService {
     const words = text.toLowerCase()
       .replace(/[^\w\s]/g, '')
       .split(/\s+/)
-      .filter(word: any => word.length > 3);
+      .filter((word: any) => word.length > 3);
     
     const wordCount = new Map<string, number>();
-    words.forEach(word: any => {
+    words.forEach((word: any) => {
       wordCount.set(word, (wordCount.get(word) || 0) + 1);
     });
     
@@ -541,7 +541,7 @@ export class LangChainOllamaService {
     try {
       // Test Ollama connection
       const ollamaTest = await fetch(`${this.config.ollamaBaseUrl}/api/tags`)
-        .then(res: any => res.json())
+        .then((res: any) => res.json())
         .catch(() => null);
 
       // Test embedding
@@ -615,7 +615,7 @@ export class LangChainOllamaService {
     }, 0) / (interactions.length || 1);
 
     const modelUsage: Record<string, number> = {};
-    interactions.forEach(interaction: any => {
+    interactions.forEach((interaction: any) => {
       const model = interaction.model || 'unknown';
       modelUsage[model] = (modelUsage[model] || 0) + 1;
     });

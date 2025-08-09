@@ -85,7 +85,7 @@ export class SIMDJSONParser {
       throw new Error('Expected evidence array');
     }
 
-    return parsed.map(item: any => this.validateEvidence(item));
+    return parsed.map((item: any) => this.validateEvidence(item));
   }
 
   /**

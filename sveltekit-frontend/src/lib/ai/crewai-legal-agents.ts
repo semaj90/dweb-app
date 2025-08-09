@@ -254,14 +254,13 @@ export class CrewAILegalOrchestrator {
 
     try {
       // Phase 1: Parallel agent analysis
-      const agentPromises = task.assignedAgents.map(agentId: any => 
-        this.runAgentAnalysis(agentId, task)
+      const agentPromises = task.assignedAgents.map((agentId: any) => this.runAgentAnalysis(agentId, task)
       );
 
       const agentResponses = await Promise.allSettled(agentPromises);
       const successfulResponses = agentResponses
-        .filter(result: any => result.status === 'fulfilled')
-        .map(result: any => (result as PromiseFulfilledResult<AgentResponse>).value);
+        .filter((result: any) => result.status === 'fulfilled')
+        .map((result: any) => (result as PromiseFulfilledResult<AgentResponse>).value);
 
       // Phase 2: Synthesize results
       const synthesis = await this.synthesizeAgentResults(task, successfulResponses);
@@ -417,8 +416,8 @@ Focus on actionable insights and specific recommendations that align with the cl
     
     return section
       .split(/\n/)
-      .map(line: any => line.replace(/^[-*•]\s*/, '').trim())
-      .filter(line: any => line.length > 0);
+      .map((line: any) => line.replace(/^[-*•]\s*/, '').trim())
+      .filter((line: any) => line.length > 0);
   }
 
   private extractRisks(content: string): Array<any> {
@@ -452,8 +451,8 @@ Focus on actionable insights and specific recommendations that align with the cl
   private async synthesizeAgentResults(task: DocumentReviewTask, responses: AgentResponse[]): Promise<any> {
     console.log('🔄 Synthesizing agent results...');
 
-    const allRisks = responses.flatMap(r: any => r.analysis.risks);
-    const allRecommendations = responses.flatMap(r: any => r.analysis.recommendations);
+    const allRisks = responses.flatMap((r: any) => r.analysis.risks);
+    const allRecommendations = responses.flatMap((r: any) => r.analysis.recommendations);
     const avgConfidence = responses.reduce((sum, r) => sum + r.analysis.confidence, 0) / responses.length;
 
     return {
@@ -466,7 +465,7 @@ Focus on actionable insights and specific recommendations that align with the cl
   }
 
   private generateOverallAssessment(responses: AgentResponse[]): string {
-    const summaries = responses.map(r: any => r.analysis.summary);
+    const summaries = responses.map((r: any) => r.analysis.summary);
     return `Comprehensive review completed by ${responses.length} specialized agents. ${summaries.join(' ')}`;
   }
 
@@ -498,7 +497,7 @@ Focus on actionable insights and specific recommendations that align with the cl
       completedAt: new Date().toISOString(),
       synthesis,
       agentResponses: responses,
-      inlineEdits: responses.find(r: any => r.inlineEdits)?.inlineEdits || [],
+      inlineEdits: responses.find((r: any) => r.inlineEdits)?.inlineEdits || [],
       nextSteps: this.generateNextSteps(synthesis),
       qualityScore: this.calculateQualityScore(responses, synthesis)
     };

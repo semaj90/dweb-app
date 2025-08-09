@@ -150,7 +150,7 @@ export const GET: RequestHandler = async ({ request }) => {
     cancel() {
       // Cleanup when client disconnects
       if (globalThis.sseCleanupTasks) {
-        globalThis.sseCleanupTasks.forEach(cleanup: any => cleanup());
+        globalThis.sseCleanupTasks.forEach((cleanup: any) => cleanup());
         globalThis.sseCleanupTasks = [];
       }
     }

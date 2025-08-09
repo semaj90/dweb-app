@@ -255,7 +255,7 @@ export class MultiLayerCache {
     // Perform search
     const results = fuse.search(query).slice(0, options.limit || 10);
 
-    return results.map(result: any => ({
+    return results.map((result: any) => ({
       item: result.item as T,
       score: result.score
     }));
@@ -303,14 +303,14 @@ export class MultiLayerCache {
     // Filter by tags if specified
     let filteredResults = searchResults;
     if (filters?.tags && filters.tags.length > 0) {
-      filteredResults = searchResults.filter(result: any => {
+      filteredResults = searchResults.filter((result: any) => {
         const docTags = result.item.metadata?.tags || [];
-        return filters.tags!.some(tag: any => docTags.includes(tag));
+        return filters.tags!.some((tag: any) => docTags.includes(tag));
       });
     }
 
     // Convert to SearchResult format
-    return filteredResults.map(result: any => ({
+    return filteredResults.map((result: any) => ({
       id: result.item.id,
       content: result.item.content,
       score: 1 - (result.score || 0), // Convert Fuse score to similarity

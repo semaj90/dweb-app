@@ -19,7 +19,7 @@ export class RateLimiter {
     const keyRequests = this.requests.get(key) || [];
     
     // Filter out old requests
-    const recentRequests = keyRequests.filter(time: any => time > windowStart);
+    const recentRequests = keyRequests.filter((time: any) => time > windowStart);
     
     // Check if under limit
     if (recentRequests.length >= this.options.maxRequests) {
@@ -37,7 +37,7 @@ export class RateLimiter {
     const now = Date.now();
     const windowStart = now - this.options.windowMs;
     const keyRequests = this.requests.get(key) || [];
-    const recentRequests = keyRequests.filter(time: any => time > windowStart);
+    const recentRequests = keyRequests.filter((time: any) => time > windowStart);
     return Math.max(0, this.options.maxRequests - recentRequests.length);
   }
 }

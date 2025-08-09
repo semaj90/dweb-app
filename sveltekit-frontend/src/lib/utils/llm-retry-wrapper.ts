@@ -168,8 +168,7 @@ export class OllamaRetryWrapper {
       // Check if required models are available
       const requiredModels = Object.values(LOCAL_LLM_CONFIG.OLLAMA_MODELS);
       const availableModels = models.map((m: any) => m.name);
-      const missingModels = requiredModels.filter(model: any => 
-        !availableModels.some(available: any => available.includes(model))
+      const missingModels = requiredModels.filter((model: any) => !availableModels.some((available: any) => available.includes(model))
       );
 
       const status = missingModels.length === 0 ? 'healthy' : 'degraded';
@@ -290,7 +289,7 @@ export async function* streamLLM(
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split('\n').filter(line: any => line.trim());
+      const lines = chunk.split('\n').filter((line: any) => line.trim());
 
       for (const line of lines) {
         try {

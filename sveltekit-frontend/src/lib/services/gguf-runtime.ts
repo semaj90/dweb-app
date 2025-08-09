@@ -226,7 +226,7 @@ export class GGUFRuntimeService {
         async loadModel(modelPath) {
           // Simulate model loading
           console.log('Loading GGUF model:', modelPath);
-          await new Promise(resolve: any => setTimeout(resolve, 1000));
+          await new Promise((resolve: any) => setTimeout(resolve, 1000));
           modelLoaded = true;
           return true;
         }
@@ -342,7 +342,7 @@ export class GGUFRuntimeService {
     };
 
     // Send load model command to workers
-    const promises = this.workers.map(worker: any => {
+    const promises = this.workers.map((worker: any) => {
       return new Promise<void>((resolve, reject) => {
         const timeout = setTimeout(() => reject(new Error('Worker timeout')), 30000);
         
@@ -387,7 +387,7 @@ export class GGUFRuntimeService {
       // 2. Load optimized kernels
       // 3. Configure memory-efficient attention
       
-      await new Promise(resolve: any => setTimeout(resolve, 500));
+      await new Promise((resolve: any) => setTimeout(resolve, 500));
       console.log('✅ FlashAttention2 initialized');
       
     } catch (error) {
@@ -424,7 +424,7 @@ export class GGUFRuntimeService {
       pending.resolve(response);
       
       // Update performance metrics
-      this.performanceMetrics.update(current: any => ({
+      this.performanceMetrics.update((current: any) => ({
         ...current,
         tokensPerSecond: response.tokensPerSecond,
         generationTime: response.processingTime,
@@ -447,7 +447,7 @@ export class GGUFRuntimeService {
    * Update runtime statistics
    */
   private updateRuntimeStats(data: any): void {
-    this.runtimeStats.update(current: any => ({
+    this.runtimeStats.update((current: any) => ({
       ...current,
       queueLength: this.requestQueue.length,
       lastActivity: Date.now()
@@ -462,12 +462,12 @@ export class GGUFRuntimeService {
 
     setInterval(() => {
       // Request status from workers
-      this.workers.forEach(worker: any => {
+      this.workers.forEach((worker: any) => {
         worker.postMessage({ type: 'GET_STATUS' });
       });
 
       // Update uptime
-      this.runtimeStats.update(current: any => ({
+      this.runtimeStats.update((current: any) => ({
         ...current,
         uptime: Date.now()
       }));
@@ -497,7 +497,7 @@ export class GGUFRuntimeService {
         });
 
         // Update stats
-        this.runtimeStats.update(current: any => ({
+        this.runtimeStats.update((current: any) => ({
           ...current,
           totalRequests: current.totalRequests + 1,
           activeRequests: current.activeRequests + 1
@@ -529,7 +529,7 @@ export class GGUFRuntimeService {
     console.log('🛑 Shutting down GGUF Runtime...');
     
     // Terminate all workers
-    this.workers.forEach(worker: any => {
+    this.workers.forEach((worker: any) => {
       worker.terminate();
     });
     
@@ -581,7 +581,7 @@ export function createGGUFRuntime(config?: Partial<GGUFRuntimeConfig>) {
 // Helper functions for common legal AI tasks
 export const GGUFHelpers = {
   // Legal document analysis
-  analyzeLegalDocument: (text: string): GGUFInferenceRequest: any => ({
+  analyzeLegalDocument: (text: string): GGUFInferenceRequest => ({
     prompt: `Analyze the following legal document and provide key insights:\n\n${text}\n\nAnalysis:`,
     maxTokens: 512,
     temperature: 0.3,
@@ -592,7 +592,7 @@ export const GGUFHelpers = {
   }),
 
   // Contract review
-  reviewContract: (contractText: string): GGUFInferenceRequest: any => ({
+  reviewContract: (contractText: string): GGUFInferenceRequest => ({
     prompt: `Review this contract for potential issues and recommendations:\n\n${contractText}\n\nReview:`,
     maxTokens: 1024,
     temperature: 0.2,
@@ -603,7 +603,7 @@ export const GGUFHelpers = {
   }),
 
   // Legal research query
-  legalResearch: (query: string): GGUFInferenceRequest: any => ({
+  legalResearch: (query: string): GGUFInferenceRequest => ({
     prompt: `Provide comprehensive legal research on: ${query}\n\nResearch:`,
     maxTokens: 2048,
     temperature: 0.4,

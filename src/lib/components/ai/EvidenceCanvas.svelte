@@ -1,8 +1,5 @@
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
 <script lang="ts">
-// @ts-nocheck
+  // @ts-nocheck
   import { onMount } from 'svelte';
   let canvasEl: HTMLCanvasElement;
   let fabricCanvas: any;
@@ -54,7 +51,7 @@
   async function analyzeCanvas() {
     if (!userPrompt.trim()) return;
     analyzing = true;
-    
+
     try {
       const canvasData = {
         task: "evidence_canvas_analysis",
@@ -70,64 +67,86 @@
         }],
         instructions: "Analyze canvas content and respond with structured evidence summary"
       };
-      
+
       console.log('Claude payload:', canvasData);
       // TODO: Send to Claude API endpoint
-      
+
     } catch (e) {
       console.error('Analysis failed:', e);
     } finally {
       analyzing = false;
     }
   }
+
 </script>
 
-
-<div class="evidence-canvas-wrapper">
-  <canvas bind:this={canvasEl} width="800" height="600"></canvas>
-</div>
-
-<div class="controls mt-4 space-y-4">
-  <div class="flex gap-4">
-    <input 
+    <input
       bind:value={userPrompt}
       placeholder="Ask Claude to analyze this canvas..."
       class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
       on:keydown={(e) => e.key === 'Enter' && analyzeCanvas()}
-    />
-    <button 
-      on:click={analyzeCanvas} 
-      disabled={analyzing || !userPrompt.trim()}
-      class="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
-    >
-      {analyzing ? 'Analyzing...' : 'Analyze'}
-    </button>
-  </div>
-  
-  <button 
-    on:click={downloadPDF} 
-    class="px-4 py-2 bg-blue-600 text-white rounded" 
-    disabled={pdfLoading} 
-    aria-busy={pdfLoading}
-  >
-    {pdfLoading ? 'Generating PDF...' : 'Download as PDF'}
-  </button>
-</div>
+    <style>
+    .evidence-canvas-wrapper {
+      display: flex;
 
-<style>
-.evidence-canvas-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 2rem auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  width: 820px;
-  height: 620px;
-  background: #fafafa;
-}
-canvas {
-  background: #fff;
-  border-radius: 8px;
-}
-</style>
+      <div class="evidence-canvas">
+        <div class="controls">
+          <input
+            bind:value={userPrompt}
+            placeholder="Ask Claude to analyze this canvas..."
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            on:keydown={(e) => e.key === 'Enter' && analyzeCanvas()}
+          />
+          <button
+            on:click={analyzeCanvas}
+            class="px-4 py-2 bg-indigo-600 text-white rounded"
+            disabled={analyzing}
+            aria-busy={analyzing}
+          >
+            {analyzing ? 'Analyzing...' : 'Analyze'}
+          </button>
+          <button
+            on:click={downloadPDF}
+            class="px-4 py-2 bg-blue-600 text-white rounded"
+            disabled={pdfLoading}
+            aria-busy={pdfLoading}
+          >
+            {pdfLoading ? 'Generating PDF...' : 'Download as PDF'}
+          </button>
+        </div>
+
+        <div class="evidence-canvas-wrapper">
+          <canvas bind:this={canvasEl} width="800" height="600"></canvas>
+        </div>
+      </div>
+
+      <style>
+      .evidence-canvas {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .evidence-canvas-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0.5rem 0 2rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        width: 820px;
+        max-width: 100%;
+        height: 620px;
+        background: #fafafa;
+        overflow: hidden;
+      }
+      canvas {
+        background: #fff;
+        border-radius: 8px;
+      }
+      </style>
+

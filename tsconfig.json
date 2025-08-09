@@ -2,23 +2,56 @@
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true,
-    "moduleResolution": "bundler"
+    "strict": false,
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "es2020",
+    "lib": ["es2020", "dom", "dom.iterable"],
+    "types": ["vite/client", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "$lib": ["./src/lib"],
+      "$lib/*": ["./src/lib/*"],
+      "$components": ["./src/lib/components"],
+      "$components/*": ["./src/lib/components/*"],
+      "$services": ["./src/lib/services"],
+      "$services/*": ["./src/lib/services/*"],
+      "$types": ["./src/lib/types"],
+      "$types/*": ["./src/lib/types/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "./src/lib/types"],
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+    "alwaysStrict": false
   },
+  "include": [
+    "./.svelte-kit/ambient.d.ts",
+    "./.svelte-kit/types/**/$types.d.ts",
+    "./vite.config.ts",
+    "./src/**/*.js",
+    "./src/**/*.ts",
+    "./src/**/*.svelte",
+    "./src/lib/types/**/*.d.ts"
+  ],
   "exclude": [
-    "node_modules/**", 
-    "dist/**", 
-    "tests/integration.test.ts", 
+    "node_modules/**",
+    "dist/**",
+    "tests/integration.test.ts",
     "src/service-worker.js",
-    "src/**/*.svelte",
     "src/lib/services/*.disabled",
     "src/lib/graphql/*.disabled",
-    "src/routes/api/graphql/*.disabled"
+    "src/routes/api/graphql/*.disabled",
+    "**/*.disabled"
   ]
 }

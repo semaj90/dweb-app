@@ -279,7 +279,9 @@
       "Bash(for:*)",
       "Bash(do sed -i '1i // @ts-nocheck' \"$file\")",
       "Bash(./fix-all-types.bat)",
-      "Bash(do sed -i '1i<!-- @ts-nocheck -->' \"$file\")"
+      "Bash(do sed -i '1i<!-- @ts-nocheck -->' \"$file\")",
+      "WebFetch(domain:docs.nomic.ai)",
+      "WebFetch(domain:python.langchain.com)"
     ],
     "deny": []
   }

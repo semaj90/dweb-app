@@ -311,7 +311,7 @@ export class UnslothFinetuningService {
       // Start resource monitoring
       this.startResourceMonitoring();
 
-      this.serviceStatus.update(s: any => ({
+      this.serviceStatus.update((s: any) => ({
         ...s,
         initialized: true,
         unslothAvailable,
@@ -324,7 +324,7 @@ export class UnslothFinetuningService {
 
     } catch (error) {
       console.error('❌ Unsloth initialization failed:', error);
-      this.serviceStatus.update(s: any => ({
+      this.serviceStatus.update((s: any) => ({
         ...s,
         error: error instanceof Error ? error.message : 'Unknown error'
       }));
@@ -338,7 +338,7 @@ export class UnslothFinetuningService {
     try {
       // In production, would check actual CUDA installation
       console.log('🔍 Checking CUDA availability...');
-      await new Promise(resolve: any => setTimeout(resolve, 500));
+      await new Promise((resolve: any) => setTimeout(resolve, 500));
       
       // Mock CUDA detection based on WebGPU availability
       if ('gpu' in navigator) {
@@ -381,7 +381,7 @@ export class UnslothFinetuningService {
       console.log('📚 Initializing Unsloth library...');
       
       // Mock Unsloth initialization
-      await new Promise(resolve: any => setTimeout(resolve, 1000));
+      await new Promise((resolve: any) => setTimeout(resolve, 1000));
       
       console.log('✅ Unsloth library ready');
       return true;
@@ -684,7 +684,7 @@ export class UnslothFinetuningService {
           this.updateJobQueue();
 
           // Simulate training time
-          await new Promise(resolve: any => setTimeout(resolve, 100));
+          await new Promise((resolve: any) => setTimeout(resolve, 100));
         }
 
         console.log(`✅ Completed epoch ${epoch + 1}/${job.config.epochs}`);
@@ -693,7 +693,7 @@ export class UnslothFinetuningService {
       // Validation phase
       job.status = 'validating';
       this.updateJobQueue();
-      await new Promise(resolve: any => setTimeout(resolve, 2000));
+      await new Promise((resolve: any) => setTimeout(resolve, 2000));
 
       // Complete job
       job.status = 'completed';
@@ -765,7 +765,7 @@ export class UnslothFinetuningService {
 
     this.jobQueue.set(allJobs);
 
-    this.serviceStatus.update(s: any => ({
+    this.serviceStatus.update((s: any) => ({
       ...s,
       activeJobs: this.activeJobs.size
     }));
@@ -793,7 +793,7 @@ export class UnslothFinetuningService {
    */
   public getJobStatus(jobId: string): FinetuningJob | undefined {
     return this.activeJobs.get(jobId) || 
-           this.jobHistory.find(job: any => job.id === jobId);
+           this.jobHistory.find((job: any) => job.id === jobId);
   }
 
   /**
@@ -822,7 +822,7 @@ export class UnslothFinetuningService {
 
     this.resourceMonitor = setInterval(() => {
       // Mock resource monitoring
-      this.resourceMetrics.update(metrics: any => ({
+      this.resourceMetrics.update((metrics: any) => ({
         ...metrics,
         gpuMemoryUsed: this.activeJobs.size > 0 ? 5.5 + Math.random() * 1.5 : 1.2,
         gpuUtilization: this.activeJobs.size > 0 ? 80 + Math.random() * 15 : Math.random() * 20,
@@ -867,7 +867,7 @@ export class UnslothFinetuningService {
     
     // Mock export process
     console.log(`📦 Exporting model to ${exportPath}...`);
-    await new Promise(resolve: any => setTimeout(resolve, 3000));
+    await new Promise((resolve: any) => setTimeout(resolve, 3000));
     
     console.log(`✅ Model exported: ${exportPath}`);
     return exportPath;
@@ -890,7 +890,7 @@ export class UnslothFinetuningService {
     }
     
     // Reset stores
-    this.serviceStatus.update(s: any => ({ ...s, initialized: false }));
+    this.serviceStatus.update((s: any) => ({ ...s, initialized: false }));
     this.trainingProgress.set({
       status: 'idle',
       progress: 0,
@@ -969,7 +969,7 @@ export const UnslothLegalHelpers = {
     name: 'Custom Contract Dataset',
     description: 'User-provided contract analysis training data',
     taskType: 'contract_analysis' as const,
-    samples: contracts.map(contract: any => ({
+    samples: contracts.map((contract: any) => ({
       input: contract,
       output: `Analysis: ${contract.substring(0, 50)}... [Generated analysis would go here]`,
       metadata: {
@@ -988,7 +988,7 @@ export const UnslothLegalHelpers = {
     }
   }),
   
-  optimizeForRTX3060: (config: Partial<UnslothConfig>): UnslothConfig: any => ({
+  optimizeForRTX3060: (config: Partial<UnslothConfig>): UnslothConfig => ({
     baseModel: 'gemma3-mohf16-q4_k_m.gguf',
     outputModel: 'gemma3-legal-finetuned',
     maxSeqLength: 4096,

@@ -1,56 +1,104 @@
-// Vector database implementation stub
-
-export interface VectorSearchOptions {
-  limit?: number;
-  threshold?: number;
-  filters?: Record<string, any>;
-}
-
-export interface VectorSearchResult {
-  id: string;
-  score: number;
-  metadata: Record<string, any>;
-  content?: string;
-}
+// Vector Database Service
+// Manages vector storage and similarity search
 
 export class VectorDB {
-  private vectors: Map<string, { vector: number[]; metadata: Record<string, any> }> = new Map();
+  private vectors: Map<string, { vector: number[]; metadata: any }>;
+  private dimension: number;
 
-  async addVector(id: string, vector: number[], metadata: Record<string, any> = {}) {
+  constructor(dimension: number = 384) {
+    this.vectors = new Map();
+    this.dimension = dimension;
+  }
+
+  /**
+   * Add vector to database
+   */
+  async add(id: string, vector: number[], metadata: any = {}): Promise<void> {
+    if (vector.length !== this.dimension) {
+      throw new Error(`Vector dimension mismatch. Expected ${this.dimension}, got ${vector.length}`);
+    }
+    
     this.vectors.set(id, { vector, metadata });
-    return { success: true, id };
   }
 
-  async search(queryVector: number[], options: VectorSearchOptions = {}): Promise<VectorSearchResult[]> {
-    const { limit = 10, threshold = 0.7 } = options;
-    
-    console.log('VectorDB: searching with vector of length', queryVector.length);
-    
-    // Mock search results
-    return Array.from({ length: Math.min(limit, 3) }, (_, i) => ({
-      id: `doc_${i}`,
-      score: 0.95 - (i * 0.1),
-      metadata: { title: `Document ${i}`, type: 'legal' },
-      content: `Mock content for document ${i}`
-    }));
+  /**
+   * Search for similar vectors
+   */
+  async search(queryVector: number[], topK: number = 5): Promise<Array<{
+    id: string;
+    score: number;
+    metadata: any;
+  }>> {
+    if (queryVector.length !== this.dimension) {
+      throw new Error(`Query vector dimension mismatch. Expected ${this.dimension}, got ${queryVector.length}`);
+    }
+
+    const results: Array<{ id: string; score: number; metadata: any }> = [];
+
+    // Calculate cosine similarity with all vectors
+    for (const [id, { vector, metadata }] of this.vectors.entries()) {
+      const score = this.cosineSimilarity(queryVector, vector);
+      results.push({ id, score, metadata });
+    }
+
+    // Sort by score and return top K
+    return results
+      .sort((a, b) => b.score - a.score)
+      .slice(0, topK);
   }
 
-  async deleteVector(id: string) {
+  /**
+   * Calculate cosine similarity between two vectors
+   */
+  private cosineSimilarity(a: number[], b: number[]): number {
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+
+    for (let i = 0; i < a.length; i++) {
+      dotProduct += a[i] * b[i];
+      normA += a[i] * a[i];
+      normB += b[i] * b[i];
+    }
+
+    const denominator = Math.sqrt(normA) * Math.sqrt(normB);
+    return denominator === 0 ? 0 : dotProduct / denominator;
+  }
+
+  /**
+   * Get vector by ID
+   */
+  async get(id: string): Promise<{ vector: number[]; metadata: any } | null> {
+    return this.vectors.get(id) || null;
+  }
+
+  /**
+   * Delete vector by ID
+   */
+  async delete(id: string): Promise<boolean> {
     return this.vectors.delete(id);
   }
 
-  async getStats() {
-    return {
-      totalVectors: this.vectors.size,
-      dimensions: 384,
-      collections: 1
-    };
+  /**
+   * Clear all vectors
+   */
+  async clear(): Promise<void> {
+    this.vectors.clear();
   }
 
-  async healthCheck() {
-    return { status: 'healthy', vectorCount: this.vectors.size };
+  /**
+   * Get database statistics
+   */
+  getStats() {
+    return {
+      count: this.vectors.size,
+      dimension: this.dimension
+    };
   }
 }
 
+// Export singleton instance
 export const vectorDB = new VectorDB();
+
+// Export for module compatibility
 export default vectorDB;

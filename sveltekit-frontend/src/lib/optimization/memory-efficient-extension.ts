@@ -269,7 +269,7 @@ class KMeansResourceManager {
 
   private updateCentroids(): void {
     for (let i = 0; i < this.k; i++) {
-      const clusterResources = this.resources.filter(r: any => r.cluster === i);
+      const clusterResources = this.resources.filter((r: any) => r.cluster === i);
       if (clusterResources.length === 0) continue;
       
       for (let j = 0; j < 5; j++) {
@@ -302,7 +302,7 @@ class KMeansResourceManager {
     timeout: number;
     retryCount: number;
   } {
-    const typeResources = this.resources.filter(r: any => r.type === type);
+    const typeResources = this.resources.filter((r: any) => r.type === type);
     if (typeResources.length === 0) {
       return { priority: 1, poolSize: 5, timeout: 5000, retryCount: 3 };
     }
@@ -326,7 +326,7 @@ class KMeansResourceManager {
 
   getClusterStats() {
     const clusterCounts = new Array(this.k).fill(0);
-    this.resources.forEach(r: any => {
+    this.resources.forEach((r: any) => {
       if (r.cluster !== undefined) {
         clusterCounts[r.cluster]++;
       }
@@ -452,7 +452,7 @@ class AsyncCommandPool {
       } catch (error) {
         lastError = error;
         if (attempt < strategy.retryCount) {
-          await new Promise(resolve: any => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+          await new Promise((resolve: any) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
         }
       }
     }
@@ -461,7 +461,7 @@ class AsyncCommandPool {
   }
 
   private async waitForSlot(): Promise<void> {
-    return new Promise(resolve: any => {
+    return new Promise((resolve: any) => {
       const checkSlot = () => {
         if (this.semaphore < this.maxConcurrentCommands) {
           resolve();
@@ -578,12 +578,12 @@ class AsyncCommandPool {
       }
     ];
 
-    commands.forEach(cmd: any => this.register(cmd));
+    commands.forEach((cmd: any) => this.register(cmd));
   }
 
   async executeAll(commandNames: string[]): Promise<Record<string, any>> {
     const results: Record<string, any> = {};
-    const promises = commandNames.map(async name: any => {
+    const promises = commandNames.map(async (name: any) => {
       try {
         results[name] = await this.execute(name);
       } catch (error) {

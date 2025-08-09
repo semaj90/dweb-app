@@ -318,7 +318,7 @@ function calculateValidationScore(text: string, confidence: number, context: Ana
   
   // Add points for legal terminology
   const legalTerms = ["statute", "precedent", "liability", "compliance", "violation"];
-  const termCount = legalTerms.filter(term: any => text.toLowerCase().includes(term)).length;
+  const termCount = legalTerms.filter((term: any) => text.toLowerCase().includes(term)).length;
   score += termCount * 2;
   
   // Add points for comprehensive analysis (longer content usually more thorough)
@@ -354,7 +354,7 @@ function determineComplexityLevel(text: string, context: AnalysisContext): "simp
   
   // Simple heuristics based on content length, legal terms, and structure
   const legalTermCount = ["statute", "precedent", "regulation", "jurisdiction", "liability"].filter(
-    term: any => lowerText.includes(term)
+    (term: any) => lowerText.includes(term)
   ).length;
   
   if (context.contentLength > 2000 && legalTermCount > 3) {

@@ -21,7 +21,7 @@ export interface Gemma3Config {
 
 // SSR-safe storage utilities
 const SSR_SAFE_STORAGE = {
-  getItem: (key: string): string | null: any => {
+  getItem: (key: string): string | null => {
     if (!browser) return null;
     try {
       return localStorage.getItem(key);
@@ -29,7 +29,7 @@ const SSR_SAFE_STORAGE = {
       return null;
     }
   },
-  setItem: (key: string, value: string): void: any => {
+  setItem: (key: string, value: string): void => {
     if (!browser) return;
     try {
       localStorage.setItem(key, value);
@@ -37,7 +37,7 @@ const SSR_SAFE_STORAGE = {
       // Silently fail in SSR or if storage is unavailable
     }
   },
-  removeItem: (key: string): void: any => {
+  removeItem: (key: string): void => {
     if (!browser) return;
     try {
       localStorage.removeItem(key);
@@ -176,25 +176,25 @@ function createPersistedStore<T>(key: string, defaultValue: T) {
 // Main AI stores
 export const aiConversation = createPersistedStore<AIConversationState>(
   "ai_conversation",
-  DEFAULT_CONVERSATION,
+  DEFAULT_CONVERSATION
 );
 export const aiSettings = createPersistedStore<AISettingsState>(
   "ai_settings",
-  DEFAULT_SETTINGS,
+  DEFAULT_SETTINGS
 );
 export const aiStatus = writable<AIStatusState>(DEFAULT_STATUS);
 
 // Conversation history store (separate for performance)
 export const conversationHistory = createPersistedStore<ConversationHistory[]>(
   "ai_conversation_history",
-  [],
+  []
 );
 
 // Derived stores for computed values
 export const isAIReady = derived(
   [aiStatus],
   ([$aiStatus]) =>
-    $aiStatus.localModelAvailable || $aiStatus.cloudModelAvailable,
+    $aiStatus.localModelAvailable || $aiStatus.cloudModelAvailable
 );
 
 export const currentModelInfo = derived([aiStatus], ([$aiStatus]) => ({
@@ -267,7 +267,7 @@ export const aiStore = {
       maxSources?: number;
       searchThreshold?: number;
       useCache?: boolean;
-    } = {},
+    } = {}
   ): Promise<AIResponse | null> {
     aiStatus.update((state) => ({ ...state, isLoading: true, error: null }));
 
@@ -374,19 +374,25 @@ export const aiStore = {
         title:
           conversation.messages[0]?.content.substring(0, 50) + "..." ||
           "Untitled Conversation",
-        messages: conversation.messages.map(msg: any => ({
+        messages: conversation.messages.map((msg: any) => ({
           id: msg.id,
           role: msg.role,
           content: msg.content,
           timestamp: msg.timestamp,
-          sources: msg.sources ? msg.sources.map(source: any => ({
-            id: source.id,
-            title: source.title,
-            content: source.content,
-            score: source.score,
-            type: (source.type || "document") as "case" | "evidence" | "statute" | "document"
-          })) : undefined,
-          metadata: msg.metadata
+          sources: msg.sources
+            ? msg.sources.map((source: any) => ({
+                id: source.id,
+                title: source.title,
+                content: source.content,
+                score: source.score,
+                type: (source.type || "document") as
+                  | "case"
+                  | "evidence"
+                  | "statute"
+                  | "document",
+              }))
+            : undefined,
+          metadata: msg.metadata,
         })),
         timestamp: Date.now(),
         metadata: {
@@ -396,7 +402,7 @@ export const aiStore = {
               ?.model || "unknown",
         },
       };
-      
+
       const newHistory = [newConversation, ...history];
 
       // Limit history length

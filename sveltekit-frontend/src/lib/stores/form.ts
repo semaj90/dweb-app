@@ -76,7 +76,7 @@ function createFormStore(options: FormOptions = {}) {
     return errs;
   });
 
-  const validateField = (field: FormField): string | null: any => {
+  const validateField = (field: FormField): string | null => {
     // Check required
     if (field.required && (!field.value || field.value === "")) {
       return `${field.name} is required`;
@@ -88,7 +88,7 @@ function createFormStore(options: FormOptions = {}) {
     return null;
   };
 
-  const validateForm = (state: FormState): boolean: any => {
+  const validateForm = (state: FormState): boolean => {
     let isValid = true;
     const updatedFields = { ...state.fields };
 
@@ -207,7 +207,7 @@ function createFormStore(options: FormOptions = {}) {
             Object.values(initialFields).map((field) => [
               field.name,
               field.value,
-            ]),
+            ])
           );
           await onSubmit(currentValues);
         } catch (error) {
@@ -227,7 +227,7 @@ function createFormStore(options: FormOptions = {}) {
     addField: (
       name: string,
       initialValue: any = "",
-      isRequired: boolean = false,
+      isRequired: boolean = false
     ) => {
       update((state) => ({
         ...state,

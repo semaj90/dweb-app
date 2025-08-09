@@ -1,45 +1,58 @@
 <!-- Enhanced Vector Search Interface with Ranking, Analytics, and Real-time Results -->
 <script lang="ts">
-  import { writable, derived, get } from 'svelte/store';
-  import { onMount, createEventDispatcher } from 'svelte';
-  import { Button } from 'bits-ui';
-  import { Input } from 'bits-ui';
-  import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
-  import { Badge } from 'bits-ui';
-  import { Tabs, TabsContent, TabsList, TabsTrigger } from 'bits-ui';
-  import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'bits-ui';
-  import { Slider } from 'bits-ui';
-  import { Progress } from 'bits-ui';
-  import { Checkbox } from 'bits-ui';
-  import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 'bits-ui';
-  import { 
-    Search, 
-    Filter, 
-    TrendingUp, 
-    FileText, 
-    Star, 
-    Clock, 
-    BarChart3, 
-    Zap,
-    Target,
+  import {
+    Badge,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    Checkbox,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    Input,
+    Progress,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Slider,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from "bits-ui";
+  import {
+    BarChart3,
     Brain,
-    Loader2,
     ChevronDown,
     ChevronUp,
-    Eye,
+    Clock,
     Download,
-    Share2
-  } from 'lucide-svelte';
+    Eye,
+    Filter,
+    Loader2,
+    Search,
+    Share2,
+    Target,
+    TrendingUp,
+    Zap,
+  } from "lucide-svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+  import { derived, get, writable } from "svelte/store";
 
   // Props
   let {
-    caseId = '',
-    userId = '',
+    caseId = "",
+    userId = "",
     maxResults = 20,
     enableAnalytics = true,
     enableFilters = true,
     showPreview = true,
-    class: className = ''
+    class: className = "",
   } = $props();
 
   // Event dispatcher
@@ -89,8 +102,8 @@
     similarityThreshold: number;
     maxResults: number;
     tags: string[];
-    sortBy: 'relevance' | 'similarity' | 'date' | 'title';
-    sortOrder: 'asc' | 'desc';
+    sortBy: "relevance" | "similarity" | "date" | "title";
+    sortOrder: "asc" | "desc";
   }
 
   interface SearchAnalytics {
@@ -109,7 +122,7 @@
   }
 
   // State management
-  const searchQuery = writable('');
+  const searchQuery = writable("");
   const searchResults = writable<SearchResult[]>([]);
   const isSearching = writable(false);
   const searchFilters = writable<SearchFilters>({
@@ -119,8 +132,8 @@
     similarityThreshold: 0.7,
     maxResults: maxResults,
     tags: [],
-    sortBy: 'relevance',
-    sortOrder: 'desc'
+    sortBy: "relevance",
+    sortOrder: "desc",
   });
   const searchAnalytics = writable<SearchAnalytics>({
     totalSearches: 0,
@@ -133,10 +146,10 @@
     performanceMetrics: {
       vectorSearchTime: 0,
       rankingTime: 0,
-      totalTime: 0
-    }
+      totalTime: 0,
+    },
   });
-  
+
   const showFilters = writable(false);
   const showAnalytics = writable(false);
   const selectedResult = writable<SearchResult | null>(null);
@@ -146,44 +159,47 @@
   const hasResults = derived(searchResults, ($results) => $results.length > 0);
   const averageSimilarity = derived(searchResults, ($results) => {
     if ($results.length === 0) return 0;
-    return $results.reduce((acc, result) => acc + result.similarity, 0) / $results.length;
+    return (
+      $results.reduce((acc, result) => acc + result.similarity, 0) /
+      $results.length
+    );
   });
   const topDocumentTypes = derived(searchResults, ($results) => {
     const types = new Map<string, number>();
-    $results.forEach(result => {
-      const type = result.metadata.documentType || 'unknown';
+    $results.forEach((result) => {
+      const type = result.metadata.documentType || "unknown";
       types.set(type, (types.get(type) || 0) + 1);
     });
     return Array.from(types.entries())
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5);
   });
 
   // Available options
   const documentTypes = [
-    { value: 'contract', label: 'Contract' },
-    { value: 'motion', label: 'Motion' },
-    { value: 'brief', label: 'Brief' },
-    { value: 'evidence', label: 'Evidence' },
-    { value: 'correspondence', label: 'Correspondence' },
-    { value: 'statute', label: 'Statute' },
-    { value: 'regulation', label: 'Regulation' },
-    { value: 'case_law', label: 'Case Law' },
-    { value: 'other', label: 'Other' }
+    { value: "contract", label: "Contract" },
+    { value: "motion", label: "Motion" },
+    { value: "brief", label: "Brief" },
+    { value: "evidence", label: "Evidence" },
+    { value: "correspondence", label: "Correspondence" },
+    { value: "statute", label: "Statute" },
+    { value: "regulation", label: "Regulation" },
+    { value: "case_law", label: "Case Law" },
+    { value: "other", label: "Other" },
   ];
 
   const jurisdictions = [
-    { value: 'federal', label: 'Federal' },
-    { value: 'state', label: 'State' },
-    { value: 'local', label: 'Local' },
-    { value: 'international', label: 'International' }
+    { value: "federal", label: "Federal" },
+    { value: "state", label: "State" },
+    { value: "local", label: "Local" },
+    { value: "international", label: "International" },
   ];
 
   const sortOptions = [
-    { value: 'relevance', label: 'Relevance' },
-    { value: 'similarity', label: 'Similarity' },
-    { value: 'date', label: 'Date' },
-    { value: 'title', label: 'Title' }
+    { value: "relevance", label: "Relevance" },
+    { value: "similarity", label: "Similarity" },
+    { value: "date", label: "Date" },
+    { value: "title", label: "Title" },
   ];
 
   // ============================================================================
@@ -199,7 +215,7 @@
 
     try {
       const filters = get(searchFilters);
-      
+
       // Build search request
       const searchRequest = {
         query: searchTerm,
@@ -220,10 +236,10 @@
       };
 
       // Make API call
-      const response = await fetch('/api/search/vector', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(searchRequest)
+      const response = await fetch("/api/search/vector", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(searchRequest),
       });
 
       if (!response.ok) {
@@ -231,48 +247,55 @@
       }
 
       const data = await response.json();
-      
+
       // Process results
-      const results: SearchResult[] = data.results.map((result: any, index: number) => ({
-        ...result,
-        rank: index + 1,
-        highlights: result.highlights || [],
-        snippet: result.snippet || result.content.substring(0, 200) + '...'
-      }));
+      const results: SearchResult[] = data.results.map(
+        (result: any, index: number) => ({
+          ...result,
+          rank: index + 1,
+          highlights: result.highlights || [],
+          snippet: result.snippet || result.content.substring(0, 200) + "...",
+        })
+      );
 
       searchResults.set(results);
-      
+
       // Update search history
-      searchHistory.update(history => {
-        const newHistory = [searchTerm, ...history.filter(h => h !== searchTerm)];
+      searchHistory.update((history) => {
+        const newHistory = [
+          searchTerm,
+          ...history.filter((h) => h !== searchTerm),
+        ];
         return newHistory.slice(0, 10); // Keep last 10 searches
       });
 
       // Update analytics
       if (enableAnalytics && data.analytics) {
-        searchAnalytics.update(analytics => ({
+        searchAnalytics.update((analytics) => ({
           ...analytics,
           totalSearches: analytics.totalSearches + 1,
-          averageResultCount: Math.round((analytics.averageResultCount + results.length) / 2),
+          averageResultCount: Math.round(
+            (analytics.averageResultCount + results.length) / 2
+          ),
           responseTime: Date.now() - startTime,
-          performanceMetrics: data.analytics.performanceMetrics || analytics.performanceMetrics,
-          averageSimilarity: get(averageSimilarity)
+          performanceMetrics:
+            data.analytics.performanceMetrics || analytics.performanceMetrics,
+          averageSimilarity: get(averageSimilarity),
         }));
       }
 
       // Dispatch events
-      dispatch('search', { query: searchTerm, results });
-      dispatch('analytics', { 
-        event: 'search_performed', 
-        data: { 
-          query: searchTerm, 
+      dispatch("search", { query: searchTerm, results });
+      dispatch("analytics", {
+        event: "search_performed",
+        data: {
+          query: searchTerm,
           resultCount: results.length,
-          responseTime: Date.now() - startTime
-        }
+          responseTime: Date.now() - startTime,
+        },
       });
-
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Search error:", error);
       searchResults.set([]);
     } finally {
       isSearching.set(false);
@@ -281,45 +304,49 @@
 
   function handleResultClick(result: SearchResult) {
     selectedResult.set(result);
-    
+
     // Track click analytics
     if (enableAnalytics) {
-      dispatch('analytics', {
-        event: 'result_clicked',
+      dispatch("analytics", {
+        event: "result_clicked",
         data: {
           resultId: result.id,
           rank: result.rank,
-          query: get(searchQuery)
-        }
+          query: get(searchQuery),
+        },
       });
     }
 
-    dispatch('select', { result });
+    dispatch("select", { result });
   }
 
-  function applySorting(results: SearchResult[], sortBy: string, sortOrder: string): SearchResult[] {
+  function applySorting(
+    results: SearchResult[],
+    sortBy: string,
+    sortOrder: string
+  ): SearchResult[] {
     return [...results].sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sortBy) {
-        case 'similarity':
+        case "similarity":
           comparison = b.similarity - a.similarity;
           break;
-        case 'date':
+        case "date":
           const dateA = new Date(a.metadata.createdAt || 0);
           const dateB = new Date(b.metadata.createdAt || 0);
           comparison = dateB.getTime() - dateA.getTime();
           break;
-        case 'title':
+        case "title":
           comparison = a.title.localeCompare(b.title);
           break;
-        case 'relevance':
+        case "relevance":
         default:
           comparison = b.relevance - a.relevance;
           break;
       }
-      
-      return sortOrder === 'asc' ? -comparison : comparison;
+
+      return sortOrder === "asc" ? -comparison : comparison;
     });
   }
 
@@ -328,7 +355,7 @@
   // ============================================================================
 
   function applyFilters() {
-    dispatch('filter', { filters: get(searchFilters) });
+    dispatch("filter", { filters: get(searchFilters) });
     if (get(searchQuery).trim()) {
       performSearch();
     }
@@ -342,8 +369,8 @@
       similarityThreshold: 0.7,
       maxResults: maxResults,
       tags: [],
-      sortBy: 'relevance',
-      sortOrder: 'desc'
+      sortBy: "relevance",
+      sortOrder: "desc",
     });
     applyFilters();
   }
@@ -357,37 +384,40 @@
   }
 
   function formatDate(dateString?: string): string {
-    if (!dateString) return 'Unknown';
+    if (!dateString) return "Unknown";
     return new Date(dateString).toLocaleDateString();
   }
 
   function formatFileSize(bytes?: number): string {
-    if (!bytes) return 'Unknown';
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (!bytes) return "Unknown";
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${Math.round(bytes / Math.pow(1024, i) * 100) / 100} ${sizes[i]}`;
+    return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
   }
 
   function getDocumentTypeColor(type?: string): string {
     const colors = {
-      contract: 'blue',
-      motion: 'green',
-      brief: 'purple',
-      evidence: 'red',
-      correspondence: 'yellow',
-      statute: 'indigo',
-      regulation: 'pink',
-      case_law: 'gray',
-      other: 'slate'
+      contract: "blue",
+      motion: "green",
+      brief: "purple",
+      evidence: "red",
+      correspondence: "yellow",
+      statute: "indigo",
+      regulation: "pink",
+      case_law: "gray",
+      other: "slate",
     };
-    return colors[type as keyof typeof colors] || 'gray';
+    return colors[type as keyof typeof colors] || "gray";
   }
 
   function highlightText(text: string, highlights: string[]): string {
     let highlightedText = text;
-    highlights.forEach(highlight => {
-      const regex = new RegExp(`(${highlight})`, 'gi');
-      highlightedText = highlightedText.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+    highlights.forEach((highlight) => {
+      const regex = new RegExp(`(${highlight})`, "gi");
+      highlightedText = highlightedText.replace(
+        regex,
+        '<mark class="bg-yellow-200 px-1 rounded">$1</mark>'
+      );
     });
     return highlightedText;
   }
@@ -398,12 +428,12 @@
 
   onMount(() => {
     // Load search history from localStorage
-    const savedHistory = localStorage.getItem('vector-search-history');
+    const savedHistory = localStorage.getItem("vector-search-history");
     if (savedHistory) {
       try {
         searchHistory.set(JSON.parse(savedHistory));
       } catch (e) {
-        console.warn('Failed to load search history');
+        console.warn("Failed to load search history");
       }
     }
 
@@ -413,20 +443,20 @@
     }
 
     // Auto-save search history
-    searchHistory.subscribe(history => {
-      localStorage.setItem('vector-search-history', JSON.stringify(history));
+    searchHistory.subscribe((history) => {
+      localStorage.setItem("vector-search-history", JSON.stringify(history));
     });
   });
 
   async function loadAnalytics() {
     try {
-      const response = await fetch('/api/search/analytics');
+      const response = await fetch("/api/search/analytics");
       if (response.ok) {
         const data = await response.json();
         searchAnalytics.set(data);
       }
     } catch (error) {
-      console.warn('Failed to load analytics:', error);
+      console.warn("Failed to load analytics:", error);
     }
   }
 </script>
@@ -442,17 +472,17 @@
           bind:value={$searchQuery}
           placeholder="Search legal documents with AI-powered semantic search..."
           class="search-input"
-          on:keydown={(e) => e.key === 'Enter' && performSearch()}
+          on:keydown={(e) => e.key === "Enter" && performSearch()}
           disabled={$isSearching}
         />
         {#if $isSearching}
           <Loader2 class="loading-icon animate-spin" size={20} />
         {/if}
       </div>
-      
+
       <div class="search-actions">
-        <Button 
-          on:click={() => performSearch()} 
+        <Button
+          on:click={() => performSearch()}
           disabled={$isSearching || !$searchQuery.trim()}
           class="search-button"
         >
@@ -466,9 +496,9 @@
         </Button>
 
         {#if enableFilters}
-          <Button 
-            variant="outline" 
-            on:click={() => showFilters.update(s => !s)}
+          <Button
+            variant="outline"
+            on:click={() => showFilters.update((s) => !s)}
             class="filter-button"
           >
             <Filter class="mr-2" size={16} />
@@ -482,9 +512,9 @@
         {/if}
 
         {#if enableAnalytics}
-          <Button 
-            variant="outline" 
-            on:click={() => showAnalytics.update(s => !s)}
+          <Button
+            variant="outline"
+            on:click={() => showAnalytics.update((s) => !s)}
           >
             <BarChart3 class="mr-2" size={16} />
             Analytics
@@ -535,12 +565,16 @@
             <label class="filter-label">Document Types</label>
             <div class="checkbox-group">
               {#each documentTypes as type}
-                <Checkbox 
-                  bind:checked={$searchFilters.documentTypes.includes(type.value)}
+                <Checkbox
+                  bind:checked={
+                    $searchFilters.documentTypes.includes(type.value
+                  }
                   on:change={() => {
-                    searchFilters.update(f => {
+                    searchFilters.update((f) => {
                       if (f.documentTypes.includes(type.value)) {
-                        f.documentTypes = f.documentTypes.filter(t => t !== type.value);
+                        f.documentTypes = f.documentTypes.filter(
+                          (t) => t !== type.value
+                        );
                       } else {
                         f.documentTypes = [...f.documentTypes, type.value];
                       }
@@ -559,14 +593,21 @@
             <label class="filter-label">Jurisdictions</label>
             <div class="checkbox-group">
               {#each jurisdictions as jurisdiction}
-                <Checkbox 
-                  bind:checked={$searchFilters.jurisdictions.includes(jurisdiction.value)}
+                <Checkbox
+                  bind:checked={
+                    $searchFilters.jurisdictions.includes(jurisdiction.value
+                  }
                   on:change={() => {
-                    searchFilters.update(f => {
+                    searchFilters.update((f) => {
                       if (f.jurisdictions.includes(jurisdiction.value)) {
-                        f.jurisdictions = f.jurisdictions.filter(j => j !== jurisdiction.value);
+                        f.jurisdictions = f.jurisdictions.filter(
+                          (j) => j !== jurisdiction.value
+                        );
                       } else {
-                        f.jurisdictions = [...f.jurisdictions, jurisdiction.value];
+                        f.jurisdictions = [
+                          ...f.jurisdictions,
+                          jurisdiction.value,
+                        ];
                       }
                       return f;
                     });
@@ -581,7 +622,9 @@
           <!-- Similarity Threshold -->
           <div class="filter-group">
             <label class="filter-label">
-              Similarity Threshold: {formatSimilarity($searchFilters.similarityThreshold)}
+              Similarity Threshold: {formatSimilarity(
+                $searchFilters.similarityThreshold
+              )}
             </label>
             <Slider
               bind:value={$searchFilters.similarityThreshold}
@@ -608,9 +651,7 @@
           </div>
         </div>
 
-        <Button on:click={applyFilters} class="w-full">
-          Apply Filters
-        </Button>
+        <Button on:click={applyFilters} class="w-full">Apply Filters</Button>
       </CardContent>
     </Card>
   {/if}
@@ -636,7 +677,7 @@
             <div class="stats-badges">
               {#each $topDocumentTypes as [type, count]}
                 <Badge variant={getDocumentTypeColor(type)}>
-                  {documentTypes.find(t => t.value === type)?.label || type}: {count}
+                  {documentTypes.find((t) => t.value === type)?.label || type}: {count}
                 </Badge>
               {/each}
             </div>
@@ -654,12 +695,22 @@
                 <div class="result-title-section">
                   <h4 class="result-title">{result.title}</h4>
                   <div class="result-meta">
-                    <Badge variant={getDocumentTypeColor(result.metadata.documentType)}>
-                      {documentTypes.find(t => t.value === result.metadata.documentType)?.label || 'Document'}
+                    <Badge
+                      variant={getDocumentTypeColor(
+                        result.metadata.documentType
+                      )}
+                    >
+                      {documentTypes.find(
+                        (t) => t.value === result.metadata.documentType
+                      )?.label || "Document"}
                     </Badge>
-                    <span class="result-date">{formatDate(result.metadata.createdAt)}</span>
+                    <span class="result-date"
+                      >{formatDate(result.metadata.createdAt)}</span
+                    >
                     {#if result.metadata.fileSize}
-                      <span class="result-size">{formatFileSize(result.metadata.fileSize)}</span>
+                      <span class="result-size"
+                        >{formatFileSize(result.metadata.fileSize)}</span
+                      >
                     {/if}
                   </div>
                 </div>
@@ -668,7 +719,9 @@
                   <div class="metric">
                     <Target size={14} />
                     <span class="metric-label">Similarity</span>
-                    <span class="metric-value">{formatSimilarity(result.similarity)}</span>
+                    <span class="metric-value"
+                      >{formatSimilarity(result.similarity)}</span
+                    >
                   </div>
                   <div class="metric">
                     <TrendingUp size={14} />
@@ -721,9 +774,7 @@
         <p class="no-results-description">
           Try adjusting your search terms or filters
         </p>
-        <Button variant="outline" on:click={resetFilters}>
-          Reset Filters
-        </Button>
+        <Button variant="outline" on:click={resetFilters}>Reset Filters</Button>
       </div>
     </div>
   {/if}
@@ -735,7 +786,7 @@
         <DialogHeader>
           <DialogTitle>Search Analytics</DialogTitle>
         </DialogHeader>
-        
+
         <Tabs value="overview" class="analytics-tabs">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -764,7 +815,9 @@
                   </div>
                   <div class="metric-info">
                     <p class="metric-label">Avg. Results</p>
-                    <p class="metric-value">{$searchAnalytics.averageResultCount}</p>
+                    <p class="metric-value">
+                      {$searchAnalytics.averageResultCount}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -776,7 +829,9 @@
                   </div>
                   <div class="metric-info">
                     <p class="metric-label">Avg. Response</p>
-                    <p class="metric-value">{$searchAnalytics.responseTime}ms</p>
+                    <p class="metric-value">
+                      {$searchAnalytics.responseTime}ms
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -788,7 +843,9 @@
                   </div>
                   <div class="metric-info">
                     <p class="metric-label">Avg. Similarity</p>
-                    <p class="metric-value">{formatSimilarity($searchAnalytics.averageSimilarity)}</p>
+                    <p class="metric-value">
+                      {formatSimilarity($searchAnalytics.averageSimilarity)}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -805,24 +862,38 @@
                   <div class="performance-bars">
                     <div class="performance-item">
                       <span class="performance-label">Vector Search</span>
-                      <Progress 
-                        value={$searchAnalytics.performanceMetrics.vectorSearchTime / $searchAnalytics.performanceMetrics.totalTime * 100} 
+                      <Progress
+                        value={($searchAnalytics.performanceMetrics
+                          .vectorSearchTime /
+                          $searchAnalytics.performanceMetrics.totalTime) *
+                          100}
                         class="performance-bar"
                       />
-                      <span class="performance-value">{$searchAnalytics.performanceMetrics.vectorSearchTime}ms</span>
+                      <span class="performance-value"
+                        >{$searchAnalytics.performanceMetrics
+                          .vectorSearchTime}ms</span
+                      >
                     </div>
                     <div class="performance-item">
                       <span class="performance-label">Ranking</span>
-                      <Progress 
-                        value={$searchAnalytics.performanceMetrics.rankingTime / $searchAnalytics.performanceMetrics.totalTime * 100} 
+                      <Progress
+                        value={($searchAnalytics.performanceMetrics
+                          .rankingTime /
+                          $searchAnalytics.performanceMetrics.totalTime) *
+                          100}
                         class="performance-bar"
                       />
-                      <span class="performance-value">{$searchAnalytics.performanceMetrics.rankingTime}ms</span>
+                      <span class="performance-value"
+                        >{$searchAnalytics.performanceMetrics
+                          .rankingTime}ms</span
+                      >
                     </div>
                     <div class="performance-item">
                       <span class="performance-label">Total</span>
                       <Progress value={100} class="performance-bar" />
-                      <span class="performance-value">{$searchAnalytics.performanceMetrics.totalTime}ms</span>
+                      <span class="performance-value"
+                        >{$searchAnalytics.performanceMetrics.totalTime}ms</span
+                      >
                     </div>
                   </div>
                 </CardContent>
@@ -849,7 +920,10 @@
               </Card>
             {:else}
               <div class="no-analytics">
-                <p>No query data available yet. Perform some searches to see analytics.</p>
+                <p>
+                  No query data available yet. Perform some searches to see
+                  analytics.
+                </p>
               </div>
             {/if}
           </TabsContent>
@@ -913,7 +987,7 @@
   }
 
   .filters-panel {
-    @apply border-2 border-dashed border-muted-foreground/25;
+    @apply border-2 border-dashed border-muted-foreground border-opacity-25;
   }
 
   .filter-grid {
@@ -1074,7 +1148,7 @@
   }
 
   .metric-icon {
-    @apply p-2 bg-primary/10 rounded-lg;
+    @apply p-2 bg-primary bg-opacity-10 rounded-lg;
   }
 
   .metric-info {

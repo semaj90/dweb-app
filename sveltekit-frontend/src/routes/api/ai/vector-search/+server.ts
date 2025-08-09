@@ -42,7 +42,7 @@ Respond in JSON format:
     const mockResponse = {
       response: `Based on the provided legal documents, I've analyzed the query "${userQuery}". The search returned ${sources.length} relevant documents with high semantic similarity. Key findings include evidence patterns and relevant legal precedents found in the document context.`,
       confidence: Math.min(0.9, sources.reduce((acc, s) => acc + s.relevanceScore, 0) / sources.length),
-      citedSources: sources.map(s: any => s.filename).filter(Boolean),
+      citedSources: sources.map((s: any) => s.filename).filter(Boolean),
       legalCitations: [],
       keyFindings: [
         "High relevance documents identified through vector similarity",
@@ -79,7 +79,7 @@ async function queryGeminiWithContext(
     const mockResponse = {
       response: `Gemini analysis for: "${userQuery}". Found ${sources.length} relevant legal documents. The semantic search successfully identified contextually relevant content with high confidence scores.`,
       confidence: Math.min(0.88, sources.reduce((acc, s) => acc + s.relevanceScore, 0) / sources.length),
-      citedSources: sources.map(s: any => s.filename).filter(Boolean)
+      citedSources: sources.map((s: any) => s.filename).filter(Boolean)
     };
 
     return mockResponse;
@@ -140,7 +140,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const enhancedResponse = {
       ...aiResponse,
       model,
-      searchResults: searchResults.map(r: any => ({
+      searchResults: searchResults.map((r: any) => ({
         id: r.id,
         filename: r.filename,
         relevanceScore: r.relevanceScore,

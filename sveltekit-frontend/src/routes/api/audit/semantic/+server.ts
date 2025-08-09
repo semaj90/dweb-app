@@ -103,10 +103,9 @@ export const POST: RequestHandler = async ({ request }) => {
     console.log(`[Real Semantic Audit] Generated ${auditResults.length} audit results`);
 
     // Step 3: Enhance results with search context
-    const enhancedResults: SemanticAuditResult[] = auditResults.map(result: any => ({
+    const enhancedResults: SemanticAuditResult[] = auditResults.map((result: any) => ({
       ...result,
-      searchContext: searchResults.filter(search: any =>
-        search.content.toLowerCase().includes(component.toLowerCase()) ||
+      searchContext: searchResults.filter((search: any) => search.content.toLowerCase().includes(component.toLowerCase()) ||
         search.content.toLowerCase().includes(result.step.toLowerCase())
       ).slice(0, 3) // Top 3 relevant search results
     }));

@@ -1,29 +1,50 @@
 <!-- Enhanced Document Uploader with Bits UI v2, AI Processing, and Real-time Status -->
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
-  import { writable, derived } from 'svelte/store';
-  import { Button } from 'bits-ui';
-  import { Progress } from 'bits-ui';
-  import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
-  import { Badge } from 'bits-ui';
-  import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 'bits-ui';
-  import { Label } from 'bits-ui';
-  import { Input } from 'bits-ui';
-  import { Textarea } from 'bits-ui';
-  import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'bits-ui';
-  import { Checkbox } from 'bits-ui';
-  import { FileText, Upload, X, CheckCircle, AlertTriangle, Loader2, Image, FileImage, File } from 'lucide-svelte';
-  
+  import {
+    Badge,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    Checkbox,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    Input,
+    Label,
+    Progress,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+    Textarea,
+  } from "bits-ui";
+  import {
+    AlertTriangle,
+    CheckCircle,
+    File,
+    FileImage,
+    FileText,
+    Loader2,
+    Upload,
+    X,
+  } from "lucide-svelte";
+  import { createEventDispatcher, onMount } from "svelte";
+  import { derived, writable } from "svelte/store";
+
   // Props with Svelte 5 syntax
   let {
-    acceptedTypes = '.pdf,.docx,.txt,.jpg,.jpeg,.png,.gif,.webp',
+    acceptedTypes = ".pdf,.docx,.txt,.jpg,.jpeg,.png,.gif,.webp",
     maxFileSize = 50 * 1024 * 1024, // 50MB
     maxFiles = 10,
-    caseId = '',
-    userId = '',
+    caseId = "",
+    userId = "",
     autoProcess = true,
     showMetadataForm = true,
-    class: className = ''
+    class: className = "",
   } = $props();
 
   // Event dispatcher
@@ -39,7 +60,7 @@
     id: string;
     file: File;
     preview?: string;
-    status: 'pending' | 'uploading' | 'processing' | 'completed' | 'error';
+    status: "pending" | "uploading" | "processing" | "completed" | "error";
     progress: number;
     error?: string;
     metadata: {
@@ -83,12 +104,12 @@
     return $files.reduce((acc, file) => acc + file.progress, 0) / $files.length;
   });
 
-  const completedFiles = derived(files, ($files) => 
-    $files.filter(file => file.status === 'completed')
+  const completedFiles = derived(files, ($files) =>
+    $files.filter((file) => file.status === "completed")
   );
 
-  const hasErrors = derived(files, ($files) => 
-    $files.some(file => file.status === 'error')
+  const hasErrors = derived(files, ($files) =>
+    $files.some((file) => file.status === "error")
   );
 
   // File input reference
@@ -97,22 +118,22 @@
 
   // Document types for legal AI
   const documentTypes = [
-    { value: 'contract', label: 'Contract' },
-    { value: 'motion', label: 'Motion' },
-    { value: 'brief', label: 'Brief' },
-    { value: 'evidence', label: 'Evidence' },
-    { value: 'correspondence', label: 'Correspondence' },
-    { value: 'statute', label: 'Statute' },
-    { value: 'regulation', label: 'Regulation' },
-    { value: 'case_law', label: 'Case Law' },
-    { value: 'other', label: 'Other' }
+    { value: "contract", label: "Contract" },
+    { value: "motion", label: "Motion" },
+    { value: "brief", label: "Brief" },
+    { value: "evidence", label: "Evidence" },
+    { value: "correspondence", label: "Correspondence" },
+    { value: "statute", label: "Statute" },
+    { value: "regulation", label: "Regulation" },
+    { value: "case_law", label: "Case Law" },
+    { value: "other", label: "Other" },
   ];
 
   const jurisdictions = [
-    { value: 'federal', label: 'Federal' },
-    { value: 'state', label: 'State' },
-    { value: 'local', label: 'Local' },
-    { value: 'international', label: 'International' }
+    { value: "federal", label: "Federal" },
+    { value: "state", label: "State" },
+    { value: "local", label: "Local" },
+    { value: "international", label: "International" },
   ];
 
   // ============================================================================
@@ -125,7 +146,10 @@
   }
 
   function handleDragLeave(event: DragEvent) {
-    if (!event.relatedTarget || !dropZone?.contains(event.relatedTarget as Node)) {
+    if (
+      !event.relatedTarget ||
+      !dropZone?.contains(event.relatedTarget as Node)
+    ) {
       isDragging.set(false);
     }
   }
@@ -142,7 +166,7 @@
     const target = event.target as HTMLInputElement;
     const selectedFiles = Array.from(target.files || []);
     processSelectedFiles(selectedFiles);
-    target.value = ''; // Reset input
+    target.value = ""; // Reset input
   }
 
   // ============================================================================
@@ -150,9 +174,9 @@
   // ============================================================================
 
   function processSelectedFiles(selectedFiles: File[]) {
-    const validFiles = selectedFiles.filter(file => {
+    const validFiles = selectedFiles.filter((file) => {
       // Check file type
-      const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+      const extension = "." + file.name.split(".").pop()?.toLowerCase();
       if (!acceptedTypes.includes(extension)) {
         console.warn(`File type ${extension} not accepted`);
         return false;
@@ -168,33 +192,33 @@
     });
 
     // Check total file count
-    files.update(currentFiles => {
+    files.update((currentFiles) => {
       if (currentFiles.length + validFiles.length > maxFiles) {
         console.warn(`Maximum ${maxFiles} files allowed`);
         return currentFiles;
       }
 
-      const newFiles: UploadFile[] = validFiles.map(file => ({
+      const newFiles: UploadFile[] = validFiles.map((file) => ({
         id: crypto.randomUUID(),
         file,
-        status: 'pending',
+        status: "pending",
         progress: 0,
         metadata: {
-          title: file.name.replace(/\.[^/.]+$/, ''),
-          documentType: 'other',
+          title: file.name.replace(/\.[^/.]+$/, ""),
+          documentType: "other",
           autoSummarize: true,
           extractEntities: true,
-          tags: []
-        }
+          tags: [],
+        },
       }));
 
       // Generate previews for images
-      newFiles.forEach(uploadFile => {
-        if (uploadFile.file.type.startsWith('image/')) {
+      newFiles.forEach((uploadFile) => {
+        if (uploadFile.file.type.startsWith("image/")) {
           const reader = new FileReader();
           reader.onload = (e) => {
             uploadFile.preview = e.target?.result as string;
-            files.update(f => [...f]); // Trigger reactivity
+            files.update((f) => [...f]); // Trigger reactivity
           };
           reader.readAsDataURL(uploadFile.file);
         }
@@ -215,15 +239,15 @@
 
   async function uploadFiles() {
     isProcessing.set(true);
-    
-    const currentFiles = $files.filter(file => file.status === 'pending');
-    
+
+    const currentFiles = $files.filter((file) => file.status === "pending");
+
     for (const uploadFile of currentFiles) {
       try {
         await uploadSingleFile(uploadFile);
       } catch (error) {
-        console.error('Upload error:', error);
-        updateFileStatus(uploadFile.id, 'error', 0, String(error));
+        console.error("Upload error:", error);
+        updateFileStatus(uploadFile.id, "error", 0, String(error));
       }
     }
 
@@ -231,20 +255,20 @@
   }
 
   async function uploadSingleFile(uploadFile: UploadFile) {
-    updateFileStatus(uploadFile.id, 'uploading', 10);
+    updateFileStatus(uploadFile.id, "uploading", 10);
 
     // Create FormData
     const formData = new FormData();
-    formData.append('file', uploadFile.file);
-    formData.append('caseId', caseId);
-    formData.append('userId', userId);
-    formData.append('metadata', JSON.stringify(uploadFile.metadata));
+    formData.append("file", uploadFile.file);
+    formData.append("caseId", caseId);
+    formData.append("userId", userId);
+    formData.append("metadata", JSON.stringify(uploadFile.metadata));
 
     try {
       // Upload file
-      const uploadResponse = await fetch('/api/documents/upload', {
-        method: 'POST',
-        body: formData
+      const uploadResponse = await fetch("/api/documents/upload", {
+        method: "POST",
+        body: formData,
       });
 
       if (!uploadResponse.ok) {
@@ -252,70 +276,80 @@
       }
 
       const uploadResult = await uploadResponse.json();
-      updateFileStatus(uploadFile.id, 'processing', 50);
+      updateFileStatus(uploadFile.id, "processing", 50);
 
       // Start AI processing
-      if (uploadFile.metadata.autoSummarize || uploadFile.metadata.extractEntities) {
-        const processingResponse = await fetch('/api/ai/process-document', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+      if (
+        uploadFile.metadata.autoSummarize ||
+        uploadFile.metadata.extractEntities
+      ) {
+        const processingResponse = await fetch("/api/ai/process-document", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             documentId: uploadResult.documentId,
             extractEntities: uploadFile.metadata.extractEntities,
             generateSummary: uploadFile.metadata.autoSummarize,
-            riskAssessment: true
-          })
+            riskAssessment: true,
+          }),
         });
 
         if (!processingResponse.ok) {
-          throw new Error(`AI processing failed: ${processingResponse.statusText}`);
+          throw new Error(
+            `AI processing failed: ${processingResponse.statusText}`
+          );
         }
 
         const processingResult = await processingResponse.json();
-        updateFileStatus(uploadFile.id, 'completed', 100);
+        updateFileStatus(uploadFile.id, "completed", 100);
 
         // Emit events
-        dispatch('complete', {
+        dispatch("complete", {
           fileId: uploadFile.id,
-          result: processingResult
+          result: processingResult,
         });
 
-        dispatch('upload', {
-          files: [{
-            id: uploadFile.id,
-            documentId: uploadResult.documentId,
-            filename: uploadFile.file.name,
-            size: uploadFile.file.size,
-            type: uploadFile.file.type,
-            url: uploadResult.url,
-            thumbnail: uploadFile.preview
-          }]
+        dispatch("upload", {
+          files: [
+            {
+              id: uploadFile.id,
+              documentId: uploadResult.documentId,
+              filename: uploadFile.file.name,
+              size: uploadFile.file.size,
+              type: uploadFile.file.type,
+              url: uploadResult.url,
+              thumbnail: uploadFile.preview,
+            },
+          ],
         });
-
       } else {
-        updateFileStatus(uploadFile.id, 'completed', 100);
+        updateFileStatus(uploadFile.id, "completed", 100);
       }
-
     } catch (error) {
-      updateFileStatus(uploadFile.id, 'error', 0, String(error));
-      dispatch('error', {
+      updateFileStatus(uploadFile.id, "error", 0, String(error));
+      dispatch("error", {
         fileId: uploadFile.id,
-        error: String(error)
+        error: String(error),
       });
     }
   }
 
-  function updateFileStatus(fileId: string, status: UploadFile['status'], progress: number, error?: string) {
-    files.update(currentFiles => 
-      currentFiles.map(file => 
-        file.id === fileId 
+  function updateFileStatus(
+    fileId: string,
+    status: UploadFile["status"],
+    progress: number,
+    error?: string
+  ) {
+    files.update((currentFiles) =>
+      currentFiles.map((file) =>
+        file.id === fileId
           ? { ...file, status, progress, ...(error && { error }) }
           : file
       )
     );
 
-    if (status === 'processing') {
-      dispatch('processing', { fileId, progress });
+    if (status === "processing") {
+      dispatch("processing", { fileId, progress });
     }
   }
 
@@ -324,7 +358,9 @@
   // ============================================================================
 
   function removeFile(fileId: string) {
-    files.update(currentFiles => currentFiles.filter(file => file.id !== fileId));
+    files.update((currentFiles) =>
+      currentFiles.filter((file) => file.id !== fileId)
+    );
   }
 
   function openMetadataDialog(file: UploadFile) {
@@ -332,9 +368,12 @@
     showMetadata.set(true);
   }
 
-  function updateFileMetadata(fileId: string, metadata: Partial<UploadFile['metadata']>) {
-    files.update(currentFiles =>
-      currentFiles.map(file =>
+  function updateFileMetadata(
+    fileId: string,
+    metadata: Partial<UploadFile["metadata"]>
+  ) {
+    files.update((currentFiles) =>
+      currentFiles.map((file) =>
         file.id === fileId
           ? { ...file, metadata: { ...file.metadata, ...metadata } }
           : file
@@ -343,26 +382,31 @@
   }
 
   function getFileIcon(file: File) {
-    if (file.type.startsWith('image/')) return FileImage;
-    if (file.type.includes('pdf')) return FileText;
+    if (file.type.startsWith("image/")) return FileImage;
+    if (file.type.includes("pdf")) return FileText;
     return File;
   }
 
   function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
-  function getStatusColor(status: UploadFile['status']): string {
+  function getStatusColor(status: UploadFile["status"]): string {
     switch (status) {
-      case 'completed': return 'green';
-      case 'error': return 'red';
-      case 'processing': return 'blue';
-      case 'uploading': return 'yellow';
-      default: return 'gray';
+      case "completed":
+        return "green";
+      case "error":
+        return "red";
+      case "processing":
+        return "blue";
+      case "uploading":
+        return "yellow";
+      default:
+        return "gray";
     }
   }
 
@@ -377,12 +421,12 @@
       e.stopPropagation();
     };
 
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
       document.addEventListener(eventName, preventDefaults, false);
     });
 
     return () => {
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
         document.removeEventListener(eventName, preventDefaults, false);
       });
     };
@@ -402,20 +446,21 @@
     role="button"
     tabindex="0"
     on:click={() => fileInput?.click()}
-    on:keydown={(e) => e.key === 'Enter' && fileInput?.click()}
+    on:keydown={(e) => e.key === "Enter" && fileInput?.click()}
   >
     <div class="drop-zone-content">
       <Upload class="drop-zone-icon" size={48} />
       <h3 class="drop-zone-title">
-        {$isDragging ? 'Drop files here' : 'Upload Legal Documents'}
+        {$isDragging ? "Drop files here" : "Upload Legal Documents"}
       </h3>
       <p class="drop-zone-description">
         Drag and drop files here, or click to select
       </p>
       <p class="drop-zone-specs">
-        Supports: PDF, DOCX, TXT, Images • Max {formatFileSize(maxFileSize)} • Up to {maxFiles} files
+        Supports: PDF, DOCX, TXT, Images • Max {formatFileSize(maxFileSize)} • Up
+        to {maxFiles} files
       </p>
-      
+
       <Button variant="outline" class="mt-4" disabled={$isProcessing}>
         <Upload class="mr-2" size={16} />
         Choose Files
@@ -439,7 +484,7 @@
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           <span>Upload Progress</span>
-          <Badge variant={$hasErrors ? 'destructive' : 'default'}>
+          <Badge variant={$hasErrors ? "destructive" : "default"}>
             {$completedFiles.length} / {$files.length} completed
           </Badge>
         </CardTitle>
@@ -473,16 +518,20 @@
 
               <!-- File Details -->
               <div class="file-details">
-                <h4 class="file-name">{file.metadata.title || file.file.name}</h4>
+                <h4 class="file-name">
+                  {file.metadata.title || file.file.name}
+                </h4>
                 <p class="file-meta">
                   {formatFileSize(file.file.size)} • {file.file.type}
-                  {#if file.metadata.documentType !== 'other'}
-                    • {documentTypes.find(t => t.value === file.metadata.documentType)?.label}
+                  {#if file.metadata.documentType !== "other"}
+                    • {documentTypes.find(
+                      (t) => t.value === file.metadata.documentType
+                    )?.label}
                   {/if}
                 </p>
-                
+
                 <!-- Progress Bar -->
-                {#if file.status !== 'pending' && file.status !== 'completed'}
+                {#if file.status !== "pending" && file.status !== "completed"}
                   <Progress value={file.progress} class="file-progress" />
                 {/if}
 
@@ -498,18 +547,18 @@
               <!-- Status & Actions -->
               <div class="file-actions">
                 <Badge variant={getStatusColor(file.status) as any}>
-                  {#if file.status === 'processing'}
+                  {#if file.status === "processing"}
                     <Loader2 class="mr-1 animate-spin" size={12} />
-                  {:else if file.status === 'completed'}
+                  {:else if file.status === "completed"}
                     <CheckCircle class="mr-1" size={12} />
-                  {:else if file.status === 'error'}
+                  {:else if file.status === "error"}
                     <AlertTriangle class="mr-1" size={12} />
                   {/if}
                   {file.status}
                 </Badge>
 
                 <div class="action-buttons">
-                  {#if showMetadataForm && file.status === 'pending'}
+                  {#if showMetadataForm && file.status === "pending"}
                     <Button
                       variant="ghost"
                       size="sm"
@@ -518,12 +567,13 @@
                       Edit
                     </Button>
                   {/if}
-                  
+
                   <Button
                     variant="ghost"
                     size="sm"
                     on:click={() => removeFile(file.id)}
-                    disabled={file.status === 'uploading' || file.status === 'processing'}
+                    disabled={file.status === "uploading" ||
+                      file.status === "processing"}
                   >
                     <X size={16} />
                   </Button>
@@ -539,7 +589,7 @@
     <div class="upload-actions mt-6">
       <Button
         on:click={uploadFiles}
-        disabled={$isProcessing || $files.every(f => f.status !== 'pending')}
+        disabled={$isProcessing || $files.every((f) => f.status !== "pending")}
         class="mr-4"
       >
         {#if $isProcessing}
@@ -547,7 +597,8 @@
           Processing...
         {:else}
           <Upload class="mr-2" size={16} />
-          Upload & Process ({$files.filter(f => f.status === 'pending').length} files)
+          Upload & Process ({$files.filter((f) => f.status === "pending")
+            .length} files)
         {/if}
       </Button>
 
@@ -567,7 +618,7 @@
       <DialogHeader>
         <DialogTitle>Document Metadata</DialogTitle>
       </DialogHeader>
-      
+
       {#if $selectedFile}
         <div class="metadata-form space-y-4">
           <div>
@@ -611,7 +662,9 @@
               </SelectTrigger>
               <SelectContent>
                 {#each jurisdictions as jurisdiction}
-                  <SelectItem value={jurisdiction.value}>{jurisdiction.label}</SelectItem>
+                  <SelectItem value={jurisdiction.value}
+                    >{jurisdiction.label}</SelectItem
+                  >
                 {/each}
               </SelectContent>
             </Select>
@@ -630,10 +683,7 @@
           </div>
 
           <div class="dialog-actions">
-            <Button
-              variant="outline"
-              on:click={() => showMetadata.set(false)}
-            >
+            <Button variant="outline" on:click={() => showMetadata.set(false)}>
               Cancel
             </Button>
             <Button
@@ -659,11 +709,11 @@
   }
 
   .drop-zone {
-    @apply border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center cursor-pointer transition-colors hover:border-primary/50 hover:bg-muted/50;
+    @apply border-2 border-dashed border-muted-foreground border-opacity-25 rounded-lg p-8 text-center cursor-pointer transition-colors hover:border-primary hover:border-opacity-50 hover:bg-muted hover:bg-opacity-50;
   }
 
   .drop-zone.dragging {
-    @apply border-primary bg-primary/5;
+    @apply border-primary bg-primary bg-opacity-5;
   }
 
   .drop-zone-content {

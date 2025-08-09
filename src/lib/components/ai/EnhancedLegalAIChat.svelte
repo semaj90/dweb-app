@@ -1,6 +1,5 @@
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
+
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { writable, derived } from 'svelte/store';
 	import { Button } from 'bits-ui';
@@ -15,7 +14,7 @@
 	import { ollamaService } from '$lib/services/ollama-service';
 	import { createMachine } from 'xstate';
 	import { useMachine } from '@xstate/svelte';
-	import type { ChatMessage, AIModel } from '$lib/types/ai';
+
 
 	// Component props
 	export let modelName: string = GEMMA3_CONFIG.model.name;
@@ -23,21 +22,21 @@
 	export let enableContext: boolean = true;
 	export let maxTokens: number = 2048;
 
-	// Event dispatcher (use custom event dispatching to avoid deprecated createEventDispatcher)
-	function dispatchEvent(name: string, detail: any) {
+	// Simple emitter to notify parent components
+	function emit(name: string, detail: any) {
 		const event = new CustomEvent(name, { detail });
-		dispatchEvent(event);
+		document.dispatchEvent(event);
 	}
 
 	// Stores
-	const messages = writable<ChatMessage[]>([]);
+	const messages = writable([]);
 	const isLoading = writable(false);
 	const currentModel = writable(modelName);
 	const streamingEnabled = writable(enableStreaming);
 	const contextEnabled = writable(enableContext);
 
 	// Available models
-	const availableModels = writable<AIModel[]>([]);
+	const availableModels = writable([]);
 
 	// Input state
 	let inputText = '';
@@ -262,70 +261,70 @@
 		inputText = template + ' ';
 		textareaElement?.focus();
 	}
-</script>
 
-<div class="legal-ai-chat">
-	<!-- Header with model selection and controls -->
-	<Card.Root class="mb-4">
-		<Card.Header>
-			<div class="flex items-center justify-between">
+
+
+
+
+
+
 						onSelectedChange={(selected: { value: string }) => changeModel(selected.value)}
-					<h3 class="text-lg font-semibold">Gemma3 Legal AI</h3>
-					<Badge variant={$state.matches('error') ? 'destructive' : 'default'}>
-						{$state.value}
-					</Badge>
-				</div>
+					Gemma3 Legal AI
 
-				<div class="flex items-center gap-2">
-					<!-- Model selection -->
+						{$state.value}
+
+
+
+
+
 					<Select.Root
 						value={$currentModel}
 						onSelectedChange={(selected) => changeModel(selected.value)}
 					>
-						<Select.Trigger class="w-48">
-							<Select.Value />
-						</Select.Trigger>
-						<Select.Content>
+
+
+
+
 							{#each $availableModels as model}
-								<Select.Item value={model.name}>
+
 									{model.name}
-								</Select.Item>
+
 							{/each}
-						</Select.Content>
-					</Select.Root>
 
-					<!-- Streaming toggle -->
-					<div class="flex items-center gap-2">
-						<Switch.Root bind:checked={$streamingEnabled}>
-							<Switch.Thumb />
-						</Switch.Root>
-						<span class="text-sm">Stream</span>
-					</div>
 
-					<!-- Context toggle -->
-					<div class="flex items-center gap-2">
-						<Switch.Root bind:checked={$contextEnabled}>
-							<Switch.Thumb />
-						</Switch.Root>
-						<span class="text-sm">Context</span>
-					</div>
 
-					<!-- Clear chat -->
-					<Button variant="outline" size="sm" on:click={clearChat}>
+
+
+
+
+
+						Stream
+
+
+
+
+
+
+
+						Context
+
+
+
+
 						Clear
-					</Button>
-				</div>
-			</div>
-		</Card.Header>
-	</Card.Root>
+
+
+
+
+
 
 						on:click={() => applyPromptTemplate(String(prompt))}
-	<Card.Root class="mb-4">
-		<Card.Header>
-			<h4 class="text-sm font-medium">Legal AI Templates</h4>
-		</Card.Header>
-		<Card.Content>
-			<div class="flex flex-wrap gap-2">
+
+
+			Legal AI Templates
+
+
+
 				{#each Object.entries(LEGAL_AI_PROMPTS) as [key, prompt]}
 					<Button
 						variant="outline"
@@ -333,83 +332,83 @@
 						on:click={() => applyPromptTemplate(prompt)}
 					>
 						{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-					</Button>
-				{/each}
-			</div>
-		</Card.Content>
-	</Card.Root>
 
-	<!-- Chat messages -->
-	<Card.Root class="flex-1 mb-4">
-		<ScrollArea.Root class="h-96">
-			<ScrollArea.Viewport class="p-4">
+				{/each}
+
+
+
+
+
+
+
+
 				{#if $messageCount === 0}
-					<div class="text-center text-muted-foreground py-8">
-						<p class="text-lg mb-2">👨‍⚖️ Gemma3 Legal AI Assistant</p>
-						<p class="text-sm">
+
+						👨‍⚖️ Gemma3 Legal AI Assistant
+
 							Ask me about legal research, document analysis, case law, or contract review.
-						</p>
-					</div>
+
+
 				{:else}
 					{#each $messages as message (message.id)}
-						<div class="message mb-4 {message.role === 'user' ? 'user-message' : 'assistant-message'}">
-							<div class="flex items-start gap-3">
-								<div class="avatar">
-									{#if message.role === 'user'}
-										<div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
-											U
-										</div>
-									{:else}
-										<div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
-											🏛️
-										</div>
-									{/if}
-								</div>
 
-								<div class="flex-1">
-									<div class="flex items-center gap-2 mb-1">
-										<span class="font-medium text-sm">
+
+
+									{#if message.role === 'user'}
+
+											U
+
+									{:else}
+
+											🏛️
+
+									{/if}
+
+
+
+
+
 											{message.role === 'user' ? 'You' : 'Legal AI'}
-										</span>
-										<span class="text-xs text-muted-foreground">
+
+
 											{message.timestamp.toLocaleTimeString()}
-										</span>
+
 										{#if message.model}
-											<Badge variant="outline" class="text-xs">
+
 												{message.model}
-											</Badge>
+
 										{/if}
 										{#if message.streaming}
-											<div class="typing-indicator">
-												<span></span>
-												<span></span>
-												<span></span>
-											</div>
-										{/if}
-									</div>
 
-									<div class="message-content {message.error ? 'text-red-600' : ''}">
-										{@html message.content.replace(/\n/g, '<br>')}
-									</div>
-								</div>
-							</div>
-						</div>
+
+
+
+
+										{/if}
+
+
+
+										{@html message.content.replace(/\n/g, '')}
+
+
+
+
 
 						{#if message !== $messages[$messages.length - 1]}
-							<Separator class="my-4" />
+
 						{/if}
 					{/each}
 				{/if}
-			</ScrollArea.Viewport>
-			<ScrollArea.Scrollbar />
-		</ScrollArea.Root>
-	</Card.Root>
 
-	<!-- Input area -->
-	<Card.Root>
-		<Card.Content class="pt-4">
-			<div class="flex gap-2">
-				<div class="flex-1">
+
+
+
+
+
+
+
+
+
 					<Textarea
 						bind:value={inputText}
 						bind:element={textareaElement}
@@ -418,19 +417,19 @@
 						on:keydown={handleKeydown}
 						disabled={$isLoading}
 					/>
-				</div>
 
-				<div class="flex flex-col gap-2">
+
+
 					<Button
 						on:click={sendMessage}
 						disabled={!$canSend}
 						class="px-6"
 					>
 						{#if $isLoading}
-							<div class="loading-spinner mr-2"></div>
+
 						{/if}
 						Send
-					</Button>
+
 
 					<Button
 						variant="outline"
@@ -438,8 +437,8 @@
 						on:click={() => inputText = ''}
 					>
 						Clear
-					</Button>
-<style>
+
+
 	.legal-ai-chat {
 		display: flex;
 		flex-direction: column;
@@ -505,7 +504,7 @@
 	@keyframes spin {
 		to { transform: rotate(360deg); }
 	}
-</style>
+
 		animation-delay: calc(var(--i) * 0.2s);
 	}
 
@@ -516,4 +515,4 @@
 	.loading-spinner {
 		@apply w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
 	}
-</style>
+

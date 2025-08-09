@@ -107,7 +107,7 @@ export const GET: RequestHandler = async () => {
         scaleUpCooldown: 300000, // 5 minutes
         scaleDownCooldown: 600000 // 10 minutes
       },
-      workers: workers.map(w: any => ({
+      workers: workers.map((w: any) => ({
         id: w.workerId,
         status: w.status,
         memoryUsage: w.memoryUsage.heapUsed,

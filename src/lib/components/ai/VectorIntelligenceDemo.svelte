@@ -1,6 +1,5 @@
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
+
+
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { useMachine } from '@xstate/svelte';
@@ -45,35 +44,35 @@
   function rateSuggestion(jobId: string, rating: number) {
     send({ type: 'RATE_SUGGESTION', jobId, rating });
   }
-</script>
 
-<div class="vector-demo">
-<div class="vector-intelligence-demo">
-  <h2>Agentic Legal AI Demo</h2>
-  <input placeholder="Search jobs..." on:input={(e) => searchJobs(e.target.value)} />
-  <ul>
+
+
+
+  Agentic Legal AI Demo
+   searchJobs(e.target.value)} />
+  
     {#each $jobStore as job}
-      <li>
-        <strong>{job.description}</strong> — {job.status}
-        <button on:click={() => acceptPatch(job.id)}>Accept Patch</button>
-        <button on:click={() => rateSuggestion(job.id, 5)}>👍</button>
-        <button on:click={() => rateSuggestion(job.id, 1)}>👎</button>
-      </li>
+      
+        {job.description} — {job.status}
+         acceptPatch(job.id)}>Accept Patch
+         rateSuggestion(job.id, 5)}>👍
+         rateSuggestion(job.id, 1)}>👎
+      
     {/each}
-  </ul>
-  <canvas id="webgpu-canvas" width="800" height="400"></canvas>
-  <div>
-    <h3>Search Results</h3>
-    <ul>
+  
+  
+  
+    Search Results
+    
       {#each searchResults as result}
-        <li>{result.description} — {result.status}</li>
+        {result.description} — {result.status}
       {/each}
-    </ul>
-  </div>
-</div>
-</div>
+    
+  
 
-<style>
+
+
+
 .vector-intelligence-demo {
   max-width: 800px;
   margin: 2rem auto;
@@ -97,4 +96,4 @@ canvas {
   border: 1px solid #aaa;
   border-radius: 4px;
 }
-</style>
+

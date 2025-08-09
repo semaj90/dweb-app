@@ -78,8 +78,7 @@ export function buildSearchFilters(
   searchColumns: PgColumn[],
   searchTerm: string
 ): SQL {
-  const searchFilters = searchColumns.map(col: any => 
-    like(col, `%${searchTerm}%`)
+  const searchFilters = searchColumns.map((col: any) => like(col, `%${searchTerm}%`)
   );
   return or(...searchFilters);
 }
@@ -97,7 +96,7 @@ export const filterBuilders = {
     eq(column, value),
     
   searchFilter: (columns: PgColumn[], term: string) =>
-    or(...columns.map(col: any => like(col, `%${term}%`))),
+    or(...columns.map((col: any) => like(col, `%${term}%`))),
     
   dateRangeFilter: (column: PgColumn, start: Date, end: Date) =>
     and(

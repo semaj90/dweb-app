@@ -1,6 +1,5 @@
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
+
+
   import { onMount } from 'svelte';
   import { useChatActor, chatActions, serviceStatus } from '$lib/stores/chatStore';
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/Card';
@@ -158,39 +157,39 @@
       default: return 'text-muted-foreground';
     }
   }
-</script>
 
-<svelte:head>
-  <title>Gemma3 Integration Test - Legal AI Chat</title>
-</svelte:head>
 
-<div class="container mx-auto px-4 py-6 space-y-6 max-w-7xl">
-  <header class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-foreground mb-2">Gemma3 Legal AI Integration Test</h1>
-    <p class="text-muted-foreground text-lg">
-      <span class="block">#context7 - Navigation Speed: <span class="font-semibold text-green-600">Instant transitions</span></span>
-      <span class="block">Integration Level: <span class="font-semibold text-blue-600">40%</span> (2/5 services active - perfect for development)</span>
-      <span class="block">Error Rate: <span class="font-semibold text-green-600">0%</span> (all systems stable)</span>
-    </p>
-  </header>
 
-  <!-- System Status Cards -->
-  <section aria-labelledby="system-status-heading" class="mb-6">
-    <h2 id="system-status-heading" class="sr-only">System Status</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  Gemma3 Integration Test - Legal AI Chat
+
+
+
+  
+    Gemma3 Legal AI Integration Test
+    
+      #context7 - Navigation Speed: Instant transitions
+      Integration Level: 40% (2/5 services active - perfect for development)
+      Error Rate: 0% (all systems stable)
+    
+  
+
+  
+  
+    System Status
+    
     {#each Object.entries(systemChecks) as [service, check]}
-      <Card>
-        <CardHeader class="pb-3">
-          <CardTitle class="flex items-center gap-2 text-sm">
+      
+        
+          
             <svelte:component
               this={getStatusIcon(check.status)}
               class="w-4 h-4 {getStatusColor(check.status)}"
               aria-hidden="true"
             />
-            <span class="font-medium">{service.toUpperCase()}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+            {service.toUpperCase()}
+          
+        
+        
           <Badge
             variant={check.status === 'connected' ? 'default' :
                     check.status === 'error' ? 'destructive' : 'secondary'}
@@ -198,25 +197,25 @@
             aria-label="{service} status: {check.status}"
           >
             {check.status}
-          </Badge>
-          <p class="text-sm text-muted-foreground">{check.message}</p>
-        </CardContent>
-      </Card>
+          
+          {check.message}
+        
+      
     {/each}
-    </div>
-  </section>
+    
+  
 
-  <!-- Quick Test Messages -->
-  <section aria-labelledby="quick-test-heading">
-    <Card>
-      <CardHeader>
-        <CardTitle id="quick-test-heading" class="flex items-center gap-2">
-          <Zap class="w-5 h-5" aria-hidden="true" />
+  
+  
+    
+      
+        
+          
           Quick Test Messages
-        </CardTitle>
-      </CardHeader>
-    <CardContent>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2">
+        
+      
+    
+      
         {#each testMessages as message, index}
           <Button
             variant="outline"
@@ -227,28 +226,28 @@
             aria-label="Send test message: {message}"
           >
             {message}
-          </Button>
+          
         {/each}
-      </div>
-    </CardContent>
-    </Card>
-  </section>
+      
+    
+    
+  
 
-  <!-- Chat Interface -->
-  <main aria-labelledby="chat-heading">
-    <Card class="flex flex-col h-[60vh] lg:h-[65vh] border-2">
-      <CardHeader class="border-b bg-card">
-        <div class="flex items-center justify-between">
-          <CardTitle id="chat-heading" class="flex items-center gap-2">
-            <span class="text-lg">Gemma3 Legal AI Chat</span>
+  
+  
+    
+      
+        
+          
+            Gemma3 Legal AI Chat
             {#if $state.matches('loading')}
-              <Badge variant="secondary" class="animate-pulse" aria-live="polite">Thinking...</Badge>
+              Thinking...
             {:else if $state.matches('error')}
-              <Badge variant="destructive" aria-live="assertive">Error</Badge>
+              Error
             {:else}
-              <Badge variant="default" aria-live="polite">Ready</Badge>
+              Ready
             {/if}
-          </CardTitle>
+          
           <Button
             variant="outline"
             size="sm"
@@ -257,57 +256,57 @@
             class="hover:bg-destructive hover:text-destructive-foreground transition-colors"
           >
             Clear Chat
-          </Button>
-        </div>
-      </CardHeader>
+          
+        
+      
 
-      <!-- Messages -->
-      <ScrollArea class="flex-1 p-4" aria-label="Chat messages">
-        <div bind:this={chatContainer} class="space-y-4" role="log" aria-live="polite">
+      
+      
+        
         {#each $state.context.messages as message, i (i)}
-          <div class="flex {message.role === 'user' ? 'justify-end' : 'justify-start'}" role="article">
+          
             <div class="max-w-[80%] rounded-lg p-3 shadow-sm {
               message.role === 'user'
                 ? 'bg-primary text-primary-foreground ml-4 border border-primary/20'
                 : 'bg-muted mr-4 border border-border'
             }">
-              <div class="text-sm mb-1 opacity-70 font-medium">
+              
                 {message.role === 'user' ? 'You' : 'Gemma3 Legal AI'}
-              </div>
-              <div class="whitespace-pre-wrap leading-relaxed">
-                {@html message.content.replace(/\n/g, '<br>')}
-              </div>
+              
+              
+                {@html message.content.replace(/\n/g, '')}
+              
               {#if $state.matches('loading') && i === $state.context.messages.length - 1}
-                <div class="flex items-center gap-1 mt-2 opacity-70">
-                  <div class="w-2 h-2 bg-current rounded-full animate-bounce"></div>
-                  <div class="w-2 h-2 bg-current rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                  <div class="w-2 h-2 bg-current rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                </div>
+                
+                  
+                  
+                  
+                
               {/if}
-            </div>
-          </div>
+            
+          
         {/each}
 
         {#if $state.context.messages.length === 0}
-          <div class="text-center py-12 text-muted-foreground" role="status">
-            <div class="max-w-md mx-auto">
-              <p class="text-xl mb-3 font-medium">Welcome to Gemma3 Legal AI</p>
-              <p class="text-sm leading-relaxed">
+          
+            
+              Welcome to Gemma3 Legal AI
+              
                 Ask questions about legal matters, contracts, case analysis, or use the quick test messages above to get started.
-              </p>
-            </div>
-          </div>
+              
+            
+          
         {/if}
 
         {#if $state.matches('error')}
-          <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-destructive" role="alert" aria-live="assertive">
-            <div class="flex items-center gap-2 font-medium mb-1">
-              <AlertCircle class="w-4 h-4" aria-hidden="true" />
-              <span>Error</span>
-            </div>
-            <p class="text-sm mb-3">
+          
+            
+              
+              Error
+            
+            
               {$state.context.error?.message || 'An unknown error occurred'}
-            </p>
+            
             <Button
               variant="outline"
               size="sm"
@@ -316,15 +315,15 @@
               aria-label="Dismiss error message"
             >
               Dismiss
-            </Button>
-          </div>
+            
+          
         {/if}
-      </div>
-    </ScrollArea>
+      
+    
 
-      <!-- Input -->
-      <footer class="border-t p-4 bg-card">
-        <form on:submit|preventDefault={handleSubmit} class="flex gap-2" role="search">
+      
+      
+        
           <Input
             type="text"
             placeholder="Ask about legal matters, case analysis, contracts..."
@@ -341,43 +340,43 @@
             aria-label={$state.matches('loading') ? 'Sending message' : 'Send message'}
           >
             {$state.matches('loading') ? 'Sending...' : 'Send'}
-          </Button>
-        </form>
-        <p class="text-xs text-muted-foreground mt-2 text-center">
+          
+        
+        
           Powered by Gemma3 running locally via Ollama
-        </p>
-      </footer>
-    </Card>
-  </main>
+        
+      
+    
+  
 
-  <!-- Debug Information -->
-  <aside aria-labelledby="debug-heading">
-    <Card>
-      <CardHeader>
-        <CardTitle id="debug-heading" class="text-lg">Debug Information</CardTitle>
-      </CardHeader>
-    <CardContent>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        <div>
-          <h4 class="font-medium mb-2">Chat State</h4>
-          <ul class="space-y-1 text-muted-foreground">
-            <li>Messages: {$state.context.messages.length}</li>
-            <li>Loading: {$state.matches('loading')}</li>
-            <li>Streaming: {$state.matches('streaming')}</li>
-            <li>Error: {$state.matches('error')}</li>
-            <li>Model: {$state.context.settings.model}</li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-medium mb-2">System Status</h4>
-          <ul class="space-y-1 text-muted-foreground">
-            <li>Ollama: {systemChecks.ollama.status}</li>
-            <li>Model: {systemChecks.model.status}</li>
-            <li>API: {systemChecks.api.status}</li>
-            <li>Temperature: {$state.context.settings.temperature}</li>
-          </ul>
-        </div>
-      </div>
+  
+  
+    
+      
+        Debug Information
+      
+    
+      
+        
+          Chat State
+          
+            Messages: {$state.context.messages.length}
+            Loading: {$state.matches('loading')}
+            Streaming: {$state.matches('streaming')}
+            Error: {$state.matches('error')}
+            Model: {$state.context.settings.model}
+          
+        
+        
+          System Status
+          
+            Ollama: {systemChecks.ollama.status}
+            Model: {systemChecks.model.status}
+            API: {systemChecks.api.status}
+            Temperature: {$state.context.settings.temperature}
+          
+        
+      
 
       <Button
         variant="outline"
@@ -387,13 +386,13 @@
         aria-label="Refresh system status checks"
       >
         Refresh System Status
-      </Button>
-    </CardContent>
-    </Card>
-  </aside>
-</div>
+      
+    
+    
+  
 
-<style>
+
+
   :global(.animate-bounce) {
     animation: bounce 1s infinite;
   }
@@ -418,4 +417,4 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
   }
-</style>
+

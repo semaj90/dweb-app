@@ -756,7 +756,7 @@ export class GPUClusterManager extends EventEmitter {
    */
   private selectOptimalContext(workloadType?: string): GPUContext | null {
     const availableContexts = Array.from(this.contexts.values())
-      .filter(ctx: any => !ctx.isActive)
+      .filter((ctx: any) => !ctx.isActive)
       .sort((a, b) => {
         // Prefer WebGPU for compute workloads
         if (workloadType?.includes('vector') || workloadType?.includes('matrix')) {
@@ -776,7 +776,7 @@ export class GPUClusterManager extends EventEmitter {
    */
   private switchContext(contextId: string): void {
     // Deactivate current contexts
-    this.contexts.forEach(ctx: any => ctx.isActive = false);
+    this.contexts.forEach((ctx: any) => ctx.isActive = false);
     
     // Activate target context
     const context = this.contexts.get(contextId);
@@ -803,10 +803,10 @@ export class GPUClusterManager extends EventEmitter {
       process.on('message', (message: any) => {
         if (message?.type === 'gpu-workload') {
           this.executeWorkload(message.workload)
-            .then(result: any => {
+            .then((result: any) => {
               process.send?.({ type: 'gpu-result', result, workloadId: message.workload?.id });
             })
-            .catch(error: any => {
+            .catch((error: any) => {
               process.send?.({ type: 'gpu-error', error: error.message, workloadId: message.workload?.id });
             });
         }
@@ -900,7 +900,7 @@ export class GPUClusterManager extends EventEmitter {
     
     const toRemove = shaders.slice(0, Math.floor(this.config.shaderCacheSize * 0.1));
     
-    toRemove.forEach(shader: any => {
+    toRemove.forEach((shader: any) => {
       this.shaderCache.delete(shader.id);
       
       // Clean up GPU resources
@@ -923,7 +923,7 @@ export class GPUClusterManager extends EventEmitter {
       .reduce((sum, ctx) => sum + ctx.memoryUsage, 0);
     
     const activeContexts = Array.from(this.contexts.values())
-      .filter(ctx: any => ctx.isActive).length;
+      .filter((ctx: any) => ctx.isActive).length;
     
     const cacheHitRate = this.cacheHits + this.cacheMisses > 0 ? 
       this.cacheHits / (this.cacheHits + this.cacheMisses) : 0;
@@ -970,7 +970,7 @@ export class GPUClusterManager extends EventEmitter {
   // Cleanup
   public async destroy(): Promise<void> {
     // Clean up GPU contexts
-    this.contexts.forEach(context: any => {
+    this.contexts.forEach((context: any) => {
       if (context.gl) {
         // Clean up WebGL context
         const loseContext = context.gl.getExtension('WEBGL_lose_context');
@@ -979,7 +979,7 @@ export class GPUClusterManager extends EventEmitter {
     });
 
     // Terminate GPU workers
-    this.gpuWorkers.forEach(worker: any => worker.terminate());
+    this.gpuWorkers.forEach((worker: any) => worker.terminate());
     
     this.contexts.clear();
     this.shaderCache.clear();

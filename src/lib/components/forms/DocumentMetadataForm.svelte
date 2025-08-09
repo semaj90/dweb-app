@@ -1,6 +1,5 @@
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
+
+
   import { superForm } from 'sveltekit-superforms/client';
   import { zod } from 'sveltekit-superforms/adapters';
   import { z } from 'zod';
@@ -54,7 +53,7 @@
     }).default({})
   });
 
-  type FormData = z.infer<typeof documentMetadataSchema>;
+  type FormData = z.infer;
 
   // XState machine for form state management
   const formMachine = createMachine({
@@ -214,7 +213,7 @@
   ];
 
   // Local state for form data
-  let formData = $state<FormData>({
+  let formData = $state({
     title: '',
     documentType: 'evidence',
     jurisdiction: 'federal',
@@ -314,35 +313,35 @@
     const error = $state.context.errors[field];
     return Array.isArray(error) ? error[0] : error || '';
   }
-</script>
 
-<Card.Root class={`document-metadata-form ${className}`}>
-  <div class="p-6">
-    <!-- Form Header -->
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-900">Document Metadata</h3>
-        <p class="text-sm text-gray-600 mt-1">
-          Provide information about the document for better AI analysis and organization
-        </p>
-      </div>
+
+
+  
+    
+    
       
-      <!-- State Indicator -->
+        Document Metadata
+        
+          Provide information about the document for better AI analysis and organization
+        
+      
+      
+      
       {#if getStateMessage()}
-        <div class={`text-sm font-medium ${getStateColor()}`}>
+        
           {getStateMessage()}
-        </div>
+        
       {/if}
-    </div>
+    
 
-    <form use:enhance on:submit|preventDefault={handleSubmit} class="space-y-6">
-      <!-- Basic Information -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Title -->
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+    
+      
+      
+        
+        
+          
             Document Title *
-          </label>
+          
           <Input.Root
             bind:value={formData.title}
             placeholder="Enter document title..."
@@ -350,95 +349,95 @@
             {...$constraints.title}
           />
           {#if isFieldError('title')}
-            <p class="text-sm text-red-600 mt-1">{getFieldError('title')}</p>
+            {getFieldError('title')}
           {/if}
-        </div>
+        
 
-        <!-- Document Type -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        
+        
+          
             Document Type *
-          </label>
-          <Select.Root bind:selected={formData.documentType}>
-            <Select.Trigger class={isFieldError('documentType') ? 'border-red-500' : ''}>
-              <Select.Value placeholder="Select document type..." />
-            </Select.Trigger>
-            <Select.Content>
+          
+          
+            
+              
+            
+            
               {#each documentTypes as type}
-                <Select.Item value={type.value}>
+                
                   {type.label}
-                </Select.Item>
+                
               {/each}
-            </Select.Content>
-          </Select.Root>
+            
+          
           {#if isFieldError('documentType')}
-            <p class="text-sm text-red-600 mt-1">{getFieldError('documentType')}</p>
+            {getFieldError('documentType')}
           {/if}
-        </div>
+        
 
-        <!-- Practice Area -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        
+        
+          
             Practice Area
-          </label>
-          <Select.Root bind:selected={formData.practiceArea}>
-            <Select.Trigger>
-              <Select.Value placeholder="Select practice area..." />
-            </Select.Trigger>
-            <Select.Content>
+          
+          
+            
+              
+            
+            
               {#each practiceAreas as area}
-                <Select.Item value={area.value}>
+                
                   {area.label}
-                </Select.Item>
+                
               {/each}
-            </Select.Content>
-          </Select.Root>
-        </div>
+            
+          
+        
 
-        <!-- Jurisdiction -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        
+        
+          
             Jurisdiction
-          </label>
-          <Select.Root bind:selected={formData.jurisdiction}>
-            <Select.Trigger>
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content>
+          
+          
+            
+              
+            
+            
               {#each jurisdictions as jurisdiction}
-                <Select.Item value={jurisdiction.value}>
+                
                   {jurisdiction.label}
-                </Select.Item>
+                
               {/each}
-            </Select.Content>
-          </Select.Root>
-        </div>
+            
+          
+        
 
-        <!-- Priority -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        
+        
+          
             Priority
-          </label>
-          <Select.Root bind:selected={formData.priority}>
-            <Select.Trigger>
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content>
+          
+          
+            
+              
+            
+            
               {#each priorities as priority}
-                <Select.Item value={priority.value}>
+                
                   {priority.label}
-                </Select.Item>
+                
               {/each}
-            </Select.Content>
-          </Select.Root>
-        </div>
-      </div>
+            
+          
+        
+      
 
-      <!-- Description -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      
+      
+        
           Description
-        </label>
+        
         <Textarea.Root
           bind:value={formData.description}
           placeholder="Optional description or notes about the document..."
@@ -446,49 +445,49 @@
           {...$constraints.description}
         />
         {#if isFieldError('description')}
-          <p class="text-sm text-red-600 mt-1">{getFieldError('description')}</p>
+          {getFieldError('description')}
         {/if}
-      </div>
+      
 
-      <!-- Case Information -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+      
+      
+        
+          
             Client Name
-          </label>
+          
           <Input.Root
             bind:value={formData.clientName}
             placeholder="Client or party name..."
           />
-        </div>
+        
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        
+          
             Case Number
-          </label>
+          
           <Input.Root
             bind:value={formData.caseNumber}
             placeholder="Associated case number..."
           />
-        </div>
+        
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        
+          
             Assigned Attorney
-          </label>
+          
           <Input.Root
             bind:value={formData.assignedAttorney}
             placeholder="Attorney name..."
           />
-        </div>
-      </div>
+        
+      
 
-      <!-- Tags -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      
+      
+        
           Tags
-        </label>
-        <div class="flex space-x-2 mb-3">
+        
+        
           <Input.Root
             bind:value={newTag}
             placeholder="Add a tag..."
@@ -502,124 +501,124 @@
             disabled={!newTag.trim()}
           >
             Add Tag
-          </Button.Root>
-        </div>
+          
+        
         {#if formData.tags.length > 0}
-          <div class="flex flex-wrap gap-2">
+          
             {#each formData.tags as tag}
               <Badge.Root 
                 variant="secondary" 
                 class="flex items-center space-x-1 cursor-pointer hover:bg-gray-200"
                 on:click={() => removeTag(tag)}
               >
-                <span>{tag}</span>
-                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </Badge.Root>
+                {tag}
+                
+                  
+                
+              
             {/each}
-          </div>
+          
         {/if}
-      </div>
+      
 
-      <!-- Advanced Options -->
-      <div class="border-t pt-6">
-        <h4 class="text-md font-medium text-gray-900 mb-4">AI Analysis Options</h4>
+      
+      
+        AI Analysis Options
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-3">
-            <Checkbox.Root bind:checked={formData.analysisOptions.includeEmbeddings}>
-              <div class="flex items-center space-x-2">
-                <Checkbox.Indicator />
-                <span class="text-sm">Generate vector embeddings</span>
-              </div>
-            </Checkbox.Root>
+        
+          
+            
+              
+                
+                Generate vector embeddings
+              
+            
 
-            <Checkbox.Root bind:checked={formData.analysisOptions.includeSummary}>
-              <div class="flex items-center space-x-2">
-                <Checkbox.Indicator />
-                <span class="text-sm">Generate AI summary</span>
-              </div>
-            </Checkbox.Root>
+            
+              
+                
+                Generate AI summary
+              
+            
 
-            <Checkbox.Root bind:checked={formData.analysisOptions.includeEntities}>
-              <div class="flex items-center space-x-2">
-                <Checkbox.Indicator />
-                <span class="text-sm">Extract entities and key terms</span>
-              </div>
-            </Checkbox.Root>
-          </div>
+            
+              
+                
+                Extract entities and key terms
+              
+            
+          
 
-          <div class="space-y-3">
-            <Checkbox.Root bind:checked={formData.analysisOptions.includeRiskAnalysis}>
-              <div class="flex items-center space-x-2">
-                <Checkbox.Indicator />
-                <span class="text-sm">Perform risk analysis</span>
-              </div>
-            </Checkbox.Root>
+          
+            
+              
+                
+                Perform risk analysis
+              
+            
 
-            <Checkbox.Root bind:checked={formData.analysisOptions.includeCompliance}>
-              <div class="flex items-center space-x-2">
-                <Checkbox.Indicator />
-                <span class="text-sm">Check compliance requirements</span>
-              </div>
-            </Checkbox.Root>
+            
+              
+                
+                Check compliance requirements
+              
+            
 
-            <Checkbox.Root bind:checked={formData.isConfidential}>
-              <div class="flex items-center space-x-2">
-                <Checkbox.Indicator />
-                <span class="text-sm">Mark as confidential</span>
-              </div>
-            </Checkbox.Root>
-          </div>
-        </div>
+            
+              
+                
+                Mark as confidential
+              
+            
+          
+        
 
-        <!-- Processing Priority -->
-        <div class="mt-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        
+        
+          
             Processing Priority
-          </label>
-          <Select.Root bind:selected={formData.analysisOptions.priority}>
-            <Select.Trigger class="w-full md:w-48">
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content>
+          
+          
+            
+              
+            
+            
               {#each priorities as priority}
-                <Select.Item value={priority.value}>
+                
                   {priority.label}
-                </Select.Item>
+                
               {/each}
-            </Select.Content>
-          </Select.Root>
-        </div>
-      </div>
+            
+          
+        
+      
 
-      <!-- Retention Date -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+      
+      
+        
           Retention Date (Optional)
-        </label>
+        
         <Input.Root
           type="date"
           bind:value={formData.retentionDate}
           class="w-full md:w-48"
         />
-        <p class="text-xs text-gray-500 mt-1">
+        
           Date when this document should be reviewed for retention/deletion
-        </p>
-      </div>
+        
+      
 
-      <!-- Form Actions -->
-      <div class="flex items-center justify-between pt-6 border-t">
-        <div class="text-sm text-gray-500">
+      
+      
+        
           {#if $state.context.isDirty}
             Form has unsaved changes
           {:else if $state.context.submitCount > 0}
             Form submitted {$state.context.submitCount} time{$state.context.submitCount === 1 ? '' : 's'}
           {/if}
-        </div>
+        
 
-        <div class="flex space-x-3">
+        
           <Button.Root
             type="button"
             variant="outline"
@@ -627,7 +626,7 @@
             disabled={$state.matches('submitting')}
           >
             Reset
-          </Button.Root>
+          
 
           <Button.Root
             type="submit"
@@ -639,15 +638,14 @@
             {:else}
               Submit
             {/if}
-          </Button.Root>
-        </div>
-      </div>
-    </form>
-  </div>
-</Card.Root>
+          
+        
+      
+    
+  
 
-<style>
+
+
   .document-metadata-form {
     @apply max-w-4xl mx-auto;
   }
-</style>

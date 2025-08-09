@@ -1,6 +1,5 @@
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
-<!-- @ts-nocheck -->
+
+
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import AIChat from '$lib/components/AIChat.svelte';
@@ -185,177 +184,177 @@
 	function formatTime(timestamp) {
 		return new Date(timestamp).toLocaleTimeString();
 	}
-</script>
 
-<svelte:head>
-	<title>Legal AI Assistant - RAG System Test</title>
-</svelte:head>
 
-<div class="min-h-screen bg-gray-900 text-gray-100 p-6">
-	<div class="max-w-7xl mx-auto space-y-6">
-		<!-- Header -->
-		<div class="text-center space-y-2">
-			<h1 class="text-4xl font-bold text-amber-400">
+
+	Legal AI Assistant - RAG System Test
+
+
+
+	
+		
+		
+			
 				Legal AI Assistant - RAG System Test
-			</h1>
-			<p class="text-gray-300">
+			
+			
 				Comprehensive testing and validation of the RAG-powered legal AI system
-			</p>
-		</div>
+			
+		
 
-		<!-- System Health Overview -->
-		<Card class="p-6">
-			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-semibold text-amber-400">System Health</h2>
-				<div class="flex items-center space-x-2">
-					<Badge variant={getStatusVariant($systemHealth.status)}>
+		
+		
+			
+				System Health
+				
+					
 						{$systemHealth.status}
-					</Badge>
-					<Button variant="outline" size="sm" on:click={runHealthChecks}>
+					
+					
 						Refresh
-					</Button>
-				</div>
-			</div>
+					
+				
+			
 
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+			
 				{#each Object.entries($systemHealth.services) as [key, service]}
-					<Card class="p-4 bg-gray-800">
-						<div class="flex items-center justify-between mb-2">
-							<h3 class="font-medium">{service.name}</h3>
-							<Badge variant={getStatusVariant(service.status)} class="text-xs">
+					
+						
+							{service.name}
+							
 								{service.status}
-							</Badge>
-						</div>
+							
+						
 
 						{#if service.error}
-							<p class="text-sm text-red-400">{service.error}</p>
+							{service.error}
 						{:else if service.details}
-							<div class="text-xs text-gray-400 space-y-1">
+							
 								{#if service.details.models}
-									<p>Models: {service.details.models.length}</p>
+									Models: {service.details.models.length}
 								{/if}
 								{#if service.details.rag}
-									<p>Document chunks: {service.details.rag.documentChunks}</p>
-									<p>Knowledge entries: {service.details.rag.knowledgeBaseEntries}</p>
+									Document chunks: {service.details.rag.documentChunks}
+									Knowledge entries: {service.details.rag.knowledgeBaseEntries}
 								{/if}
 								{#if service.details.embedding}
-									<p>Embedding model: {service.details.embedding.embeddingModel}</p>
+									Embedding model: {service.details.embedding.embeddingModel}
 								{/if}
-							</div>
+							
 						{/if}
 
-						<p class="text-xs text-gray-500 mt-2">
+						
 							Last check: {formatTime(service.timestamp)}
-						</p>
-					</Card>
+						
+					
 				{/each}
-			</div>
-		</Card>
+			
+		
 
-		<!-- Available Models -->
+		
 		{#if $availableModels.length > 0}
-			<Card class="p-6">
-				<h2 class="text-2xl font-semibold text-amber-400 mb-4">Available Models</h2>
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			
+				Available Models
+				
 					{#each $availableModels as model}
-						<Card class="p-4 bg-gray-800">
-							<h3 class="font-medium mb-2">{model.name}</h3>
-							<div class="text-xs text-gray-400 space-y-1">
-								<p>Size: {(model.size / 1024 / 1024 / 1024).toFixed(2)} GB</p>
-								<p>Modified: {new Date(model.modified_at).toLocaleDateString()}</p>
+						
+							{model.name}
+							
+								Size: {(model.size / 1024 / 1024 / 1024).toFixed(2)} GB
+								Modified: {new Date(model.modified_at).toLocaleDateString()}
 								{#if model.details?.family}
-									<p>Family: {model.details.family}</p>
+									Family: {model.details.family}
 								{/if}
-							</div>
-						</Card>
+							
+						
 					{/each}
-				</div>
-			</Card>
+				
+			
 		{/if}
 
-		<!-- RAG System Tests -->
-		<Card class="p-6">
-			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-semibold text-amber-400">RAG System Tests</h2>
-				<Button on:click={runRAGTests} class="bg-amber-600 hover:bg-amber-700">
+		
+		
+			
+				RAG System Tests
+				
 					Run Tests
-				</Button>
-			</div>
+				
+			
 
 			{#if Object.keys($testResults).length > 0}
-				<div class="space-y-4">
+				
 					{#each Object.entries($testResults) as [testName, result]}
-						<Card class="p-4 bg-gray-800">
-							<div class="flex items-center justify-between mb-2">
-								<h3 class="font-medium">{testName}</h3>
-								<Badge variant={getStatusVariant(result.status)}>
+						
+							
+								{testName}
+								
 									{result.status}
-								</Badge>
-							</div>
+								
+							
 
-							<div class="space-y-2 text-sm">
-								<p class="text-gray-300">
-									<strong>Query:</strong> {result.query}
-								</p>
+							
+								
+									Query: {result.query}
+								
 
 								{#if result.response}
-									<p class="text-gray-300">
-										<strong>Response:</strong> {result.response}
-									</p>
+									
+										Response: {result.response}
+									
 								{/if}
 
 								{#if result.sources !== undefined}
-									<p class="text-gray-400">
-										<strong>Sources:</strong> {result.sources} context sources used
-									</p>
+									
+										Sources: {result.sources} context sources used
+									
 								{/if}
 
 								{#if result.responseTime}
-									<p class="text-gray-400">
-										<strong>Performance:</strong>
+									
+										Performance:
 										{result.responseTime}ms response time,
 										{result.tokensUsed} tokens used
-									</p>
+									
 								{/if}
 
 								{#if result.error}
-									<p class="text-red-400">
-										<strong>Error:</strong> {result.error}
-									</p>
+									
+										Error: {result.error}
+									
 								{/if}
-							</div>
-						</Card>
+							
+						
 					{/each}
-				</div>
+				
 			{:else}
-				<p class="text-gray-400 text-center py-8">
+				
 					Click "Run Tests" to validate RAG system functionality
-				</p>
+				
 			{/if}
-		</Card>
+		
 
-		<!-- Interactive Chat Interface -->
-		<Card class="p-6">
-			<h2 class="text-2xl font-semibold text-amber-400 mb-4">Interactive Chat Test</h2>
+		
+		
+			Interactive Chat Test
 
-			<div class="mb-4 flex items-center space-x-4">
-				<label class="text-sm text-gray-300">
+			
+				
 					Test Case ID:
 					<select
 						bind:value={selectedCaseId}
 						class="ml-2 bg-gray-800 border border-gray-600 rounded px-2 py-1"
 					>
-						<option value="CASE-2024-001">CASE-2024-001 (Anderson Embezzlement)</option>
-						<option value={null}>No specific case</option>
-					</select>
-				</label>
+						CASE-2024-001 (Anderson Embezzlement)
+						No specific case
+					
+				
 
-				<Badge variant="outline" class="text-xs">
+				
 					RAG Enabled: Context retrieval + Legal knowledge
-				</Badge>
-			</div>
+				
+			
 
-			<div class="h-[600px]">
+			
 				<AIChat
 					caseId={selectedCaseId}
 					sessionId={testSessionId}
@@ -363,54 +362,54 @@
 					maxContextChunks={5}
 					placeholder="Test RAG functionality: Ask about embezzlement elements, evidence authentication, witness preparation, or case-specific questions..."
 				/>
-			</div>
-		</Card>
+			
+		
 
-		<!-- Quick Test Queries -->
-		<Card class="p-6">
-			<h2 class="text-2xl font-semibold text-amber-400 mb-4">Quick Test Queries</h2>
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<div class="space-y-2">
-					<h3 class="font-medium text-gray-300">Legal Knowledge Tests:</h3>
-					<ul class="text-sm text-gray-400 space-y-1">
-						<li>• "What are the elements of embezzlement?"</li>
-						<li>• "How do I authenticate digital evidence?"</li>
-						<li>• "What are Brady disclosure requirements?"</li>
-						<li>• "Explain witness preparation guidelines"</li>
-					</ul>
-				</div>
+		
+		
+			Quick Test Queries
+			
+				
+					Legal Knowledge Tests:
+					
+						• "What are the elements of embezzlement?"
+						• "How do I authenticate digital evidence?"
+						• "What are Brady disclosure requirements?"
+						• "Explain witness preparation guidelines"
+					
+				
 
-				<div class="space-y-2">
-					<h3 class="font-medium text-gray-300">RAG Context Tests:</h3>
-					<ul class="text-sm text-gray-400 space-y-1">
-						<li>• "Analyze the Anderson embezzlement case"</li>
-						<li>• "What evidence do we have for financial fraud?"</li>
-						<li>• "Timeline of the defendant's access to funds"</li>
-						<li>• "Recommend prosecution strategy"</li>
-					</ul>
-				</div>
-			</div>
-		</Card>
+				
+					RAG Context Tests:
+					
+						• "Analyze the Anderson embezzlement case"
+						• "What evidence do we have for financial fraud?"
+						• "Timeline of the defendant's access to funds"
+						• "Recommend prosecution strategy"
+					
+				
+			
+		
 
-		<!-- Footer -->
-		<div class="text-center text-gray-500 text-sm">
-			<p>Legal AI Assistant v2.0.0 - RAG-Powered System</p>
-			<p class="mt-1">
+		
+		
+			Legal AI Assistant v2.0.0 - RAG-Powered System
+			
 				System Status:
-				<span class="text-{$systemHealth.status === 'healthy' ? 'green' : 'amber'}-400">
+				
 					{$systemHealth.status}
-				</span>
+				
 				{#if $systemHealth.lastCheck}
 					| Last Check: {formatTime($systemHealth.lastCheck)}
 				{/if}
-			</p>
-		</div>
-	</div>
-</div>
+			
+		
+	
 
-<style>
+
+
 	:global(body) {
 		background-color: #111827;
 		font-family: 'Inter', sans-serif;
 	}
-</style>
+

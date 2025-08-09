@@ -122,7 +122,7 @@ export class WebAssemblyClusteringService {
       }
 
       const centroid = Array(dimensions).fill(0);
-      clusterPoints.forEach(point: any => {
+      clusterPoints.forEach((point: any) => {
         point.forEach((value, dim) => {
           centroid[dim] += value;
         });

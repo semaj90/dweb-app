@@ -236,7 +236,7 @@ export function memoize<Args extends any[], Return>(
 ): (...args: Args) => Return {
   const cache = new Map<string, Return>();
 
-  return (...args: Args): Return: any => {
+  return (...args: Args): Return => {
     const key = keyFn ? keyFn(...args) : JSON.stringify(args);
 
     if (cache.has(key)) {

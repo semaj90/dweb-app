@@ -105,7 +105,7 @@ export class VectorRankingService {
 
     // Sort by final score and apply threshold
     const filteredResults = rankedResults
-      .filter(r: any => r.score >= threshold)
+      .filter((r: any) => r.score >= threshold)
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
 
@@ -256,8 +256,8 @@ export class VectorRankingService {
       // Simple entity extraction - could be enhanced
       return entitiesText
         .split('\n')
-        .filter(line: any => line.includes(':'))
-        .map(line: any => line.split(':')[1]?.trim())
+        .filter((line: any) => line.includes(':'))
+        .map((line: any) => line.split(':')[1]?.trim())
         .filter(Boolean);
     } catch (error) {
       console.error('Entity extraction failed:', error);
@@ -331,12 +331,11 @@ export class VectorRankingService {
       ))
       .limit(20);
 
-    const documentEntities = documentNodes.map(n: any => n.label.toLowerCase());
-    const queryEntitiesLower = queryEntities.map(e: any => e.toLowerCase());
+    const documentEntities = documentNodes.map((n: any) => n.label.toLowerCase());
+    const queryEntitiesLower = queryEntities.map((e: any) => e.toLowerCase());
 
     // Calculate Jaccard similarity
-    const intersection = queryEntitiesLower.filter(e: any => 
-      documentEntities.some(de: any => de.includes(e) || e.includes(de))
+    const intersection = queryEntitiesLower.filter((e: any) => documentEntities.some((de: any) => de.includes(e) || e.includes(de))
     );
     
     const union = new Set([...queryEntitiesLower, ...documentEntities]);
@@ -396,7 +395,7 @@ export class VectorRankingService {
   ) {
     // This would typically track which results users click on
     // For now, we'll update the recommendation cache
-    const recommendations = results.slice(0, 5).map(r: any => ({
+    const recommendations = results.slice(0, 5).map((r: any) => ({
       id: r.id,
       score: r.score,
       metadata: r.metadata
@@ -448,7 +447,7 @@ export class VectorRankingService {
 
     // Use the average of recent query vectors
     const avgEmbedding = this.averageEmbeddings(
-      userQueries.map(q: any => q.embedding)
+      userQueries.map((q: any) => q.embedding)
     );
 
     // Search with the average embedding
@@ -475,7 +474,7 @@ export class VectorRankingService {
       }
     }
     
-    return avg.map(v: any => v / embeddings.length);
+    return avg.map((v: any) => v / embeddings.length);
   }
 }
 

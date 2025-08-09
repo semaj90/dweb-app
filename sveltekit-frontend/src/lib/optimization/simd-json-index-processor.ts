@@ -566,7 +566,7 @@ export class SIMDJSONIndexProcessor {
     const words = content.toLowerCase().split(/\s+/);
     const wordCount = new Map<string, number>();
     
-    words.forEach(word: any => {
+    words.forEach((word: any) => {
       wordCount.set(word, (wordCount.get(word) || 0) + 1);
     });
 
@@ -629,7 +629,7 @@ export class SIMDJSONIndexProcessor {
     const queryWords = query.toLowerCase().split(/\s+/);
     const highlights: string[] = [];
     
-    queryWords.forEach(word: any => {
+    queryWords.forEach((word: any) => {
       const regex = new RegExp(`(.{0,50}${word}.{0,50})`, 'gi');
       const matches = content.match(regex);
       if (matches) {

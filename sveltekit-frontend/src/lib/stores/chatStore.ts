@@ -489,7 +489,7 @@ interface XStateCompatibleState {
 
 export const xstateCompatibleStore = derived(
   chatStore,
-  ($chatStore): XStateCompatibleState: any => ({
+  ($chatStore): XStateCompatibleState => ({
     context: $chatStore,
     matches: (state: string) => {
       switch (state) {

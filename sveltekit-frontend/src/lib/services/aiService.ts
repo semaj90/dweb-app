@@ -446,7 +446,7 @@ function createAIService() {
 function extractTextFromSlateContent(nodes: any[]): string {
   if (!Array.isArray(nodes)) return "";
 
-  const extractFromNode = (node: any): string: any => {
+  const extractFromNode = (node: any): string => {
     if (typeof node === "string") return node;
 
     if (node.text !== undefined) {

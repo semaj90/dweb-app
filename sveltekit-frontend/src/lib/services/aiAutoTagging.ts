@@ -216,7 +216,7 @@ Return JSON format:
         ORDER BY embedding <=> '${embeddingStr}'::vector
         LIMIT ${limit}
       `));
-      return result.rows.map(row: any => ({
+      return result.rows.map((row: any) => ({
         id: row.id,
         title: row.title,
         similarity: row.similarity
@@ -311,7 +311,7 @@ Return JSON format:
         ORDER BY embedding <=> '${embeddingStr}'::vector
         LIMIT ${limit}
       `));
-      return result.rows.map(row: any => ({
+      return result.rows.map((row: any) => ({
         id: row.id,
         title: row.title,
         description: row.description,

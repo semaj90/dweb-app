@@ -90,7 +90,7 @@ export function vscodeErrorLogger(options: VSCodeErrorConfig = {}): Plugin {
         metadata: {
           lastUpdated: new Date().toISOString(),
           totalEntries: errorLog.length,
-          viteVersion: server?.config?.plugins?.find(p: any => p.name === 'vite:build')?.name || 'unknown',
+          viteVersion: server?.config?.plugins?.find((p: any) => p.name === 'vite:build')?.name || 'unknown',
           projectRoot: server?.config?.root || process.cwd()
         },
         errors: errorLog.slice(-config.maxEntries),
@@ -192,10 +192,10 @@ export function vscodeErrorLogger(options: VSCodeErrorConfig = {}): Plugin {
         timestamp: new Date().toISOString(),
         diagnostics: diagnostics,
         summary: {
-          totalErrors: diagnostics.filter(d: any => d.severity === 1).length,
-          totalWarnings: diagnostics.filter(d: any => d.severity === 2).length,
-          totalInfo: diagnostics.filter(d: any => d.severity === 3).length,
-          affectedFiles: Array.from(new Set(diagnostics.map(d: any => d.uri))).length
+          totalErrors: diagnostics.filter((d: any) => d.severity === 1).length,
+          totalWarnings: diagnostics.filter((d: any) => d.severity === 2).length,
+          totalInfo: diagnostics.filter((d: any) => d.severity === 3).length,
+          affectedFiles: Array.from(new Set(diagnostics.map((d: any) => d.uri))).length
         }
       };
 
@@ -338,8 +338,8 @@ export function vscodeErrorLogger(options: VSCodeErrorConfig = {}): Plugin {
     
     buildStart() {
       // Clear previous build errors
-      errorLog = errorLog.filter(entry: any => entry.buildPhase !== 'build');
-      diagnostics = diagnostics.filter(d: any => d.source !== 'vite-build');
+      errorLog = errorLog.filter((entry: any) => entry.buildPhase !== 'build');
+      diagnostics = diagnostics.filter((d: any) => d.source !== 'vite-build');
       
       addError({
         timestamp: new Date().toISOString(),

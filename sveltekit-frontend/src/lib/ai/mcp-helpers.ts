@@ -83,7 +83,7 @@ export async function getContextAwareSuggestions(
 export function analyzeErrorsForMCPSuggestions(errors: DiagnosticError[]): AutoMCPSuggestion[] {
   const suggestions: AutoMCPSuggestion[] = [];
   
-  errors.forEach(error: any => {
+  errors.forEach((error: any) => {
     if (error.message.includes('XState') || error.message.includes('xstate')) {
       suggestions.push({
         tool: 'get-library-docs',
@@ -137,7 +137,7 @@ export function analyzeFilesForStackSuggestions(activeFiles: string[]): AutoMCPS
   const suggestions: AutoMCPSuggestion[] = [];
   const detectedTech = new Set<string>();
   
-  activeFiles.forEach(file: any => {
+  activeFiles.forEach((file: any) => {
     if (file.includes('xstate') || file.includes('machine')) {
       detectedTech.add('xstate');
     }
@@ -153,7 +153,7 @@ export function analyzeFilesForStackSuggestions(activeFiles: string[]): AutoMCPS
   });
   
   // Generate suggestions based on detected technology
-  detectedTech.forEach(tech: any => {
+  detectedTech.forEach((tech: any) => {
     suggestions.push({
       tool: 'analyze-stack',
       confidence: 0.7,
@@ -171,7 +171,7 @@ export function analyzeFilesForStackSuggestions(activeFiles: string[]): AutoMCPS
 export function analyzePromptIntent(recentPrompts: string[]): AutoMCPSuggestion[] {
   const suggestions: AutoMCPSuggestion[] = [];
   
-  recentPrompts.forEach(prompt: any => {
+  recentPrompts.forEach((prompt: any) => {
     const lowerPrompt = prompt.toLowerCase();
     
     if (lowerPrompt.includes('best practices') || lowerPrompt.includes('optimize')) {
@@ -222,14 +222,14 @@ function detectArea(prompt: string): string {
 function extractFeature(prompt: string): string {
   // Extract feature name from integration prompts
   const words = prompt.split(' ');
-  const integrateIndex = words.findIndex(w: any => w.includes('integrat') || w.includes('add'));
+  const integrateIndex = words.findIndex((w: any) => w.includes('integrat') || w.includes('add'));
   return words[integrateIndex + 1] || 'unknown-feature';
 }
 
 function extractLibrary(prompt: string): string {
   // Extract library name from documentation requests
   const libraries = ['xstate', 'drizzle', 'sveltekit', 'tailwind', 'typescript'];
-  return libraries.find(lib: any => prompt.includes(lib)) || 'generic';
+  return libraries.find((lib: any) => prompt.includes(lib)) || 'generic';
 }
 
 // ============================================================================
@@ -247,8 +247,7 @@ export async function getContextAwareLibraryDocs(
     let enhancedTopic = topic;
     if (vsCodeContext && !topic) {
       // Auto-detect topic from current errors or files
-      const relevantErrors = vsCodeContext.errors.filter(e: any => 
-        e.message.toLowerCase().includes(libraryName.toLowerCase())
+      const relevantErrors = vsCodeContext.errors.filter((e: any) => e.message.toLowerCase().includes(libraryName.toLowerCase())
       );
       if (relevantErrors.length > 0) {
         enhancedTopic = 'troubleshooting';

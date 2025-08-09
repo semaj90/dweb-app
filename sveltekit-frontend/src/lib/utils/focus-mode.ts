@@ -230,7 +230,7 @@ export class FocusManager {
   /**
    * Handle mouse enter event for dimmed elements
    */
-  private handleMouseEnter = (event: Event): void: any => {
+  private handleMouseEnter = (event: Event): void => {
     const element = event.target as HTMLElement;
     element.style.opacity = "1";
   };
@@ -238,7 +238,7 @@ export class FocusManager {
   /**
    * Handle mouse leave event for dimmed elements
    */
-  private handleMouseLeave = (event: Event): void: any => {
+  private handleMouseLeave = (event: Event): void => {
     const element = event.target as HTMLElement;
     element.style.opacity = this.settings.dimOpacity.toString();
   };

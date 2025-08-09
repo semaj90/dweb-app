@@ -85,7 +85,7 @@ export class BullMQService {
    * Initialize all queues
    */
   private initializeQueues(): void {
-    Object.values(BullMQService.QUEUES).forEach(queueName: any => {
+    Object.values(BullMQService.QUEUES).forEach((queueName: any) => {
       const queue = new Queue(queueName, {
         connection: this.redis,
         defaultJobOptions: {
@@ -528,11 +528,11 @@ export class BullMQService {
     if (!queue) throw new Error(`Queue ${queueName} not found`);
 
     return {
-      waiting: await queue.getWaiting().then(jobs: any => jobs.length),
-      active: await queue.getActive().then(jobs: any => jobs.length),
-      completed: await queue.getCompleted().then(jobs: any => jobs.length),
-      failed: await queue.getFailed().then(jobs: any => jobs.length),
-      delayed: await queue.getDelayed().then(jobs: any => jobs.length)
+      waiting: await queue.getWaiting().then((jobs: any) => jobs.length),
+      active: await queue.getActive().then((jobs: any) => jobs.length),
+      completed: await queue.getCompleted().then((jobs: any) => jobs.length),
+      failed: await queue.getFailed().then((jobs: any) => jobs.length),
+      delayed: await queue.getDelayed().then((jobs: any) => jobs.length)
     };
   }
 
@@ -559,17 +559,17 @@ export class BullMQService {
   async close(): Promise<void> {
     // Close workers
     await Promise.all(
-      Array.from(this.workers.values()).map(worker: any => worker.close())
+      Array.from(this.workers.values()).map((worker: any) => worker.close())
     );
 
     // Close queue events
     await Promise.all(
-      Array.from(this.queueEvents.values()).map(events: any => events.close())
+      Array.from(this.queueEvents.values()).map((events: any) => events.close())
     );
 
     // Close queues
     await Promise.all(
-      Array.from(this.queues.values()).map(queue: any => queue.close())
+      Array.from(this.queues.values()).map((queue: any) => queue.close())
     );
 
     // Close Redis connection

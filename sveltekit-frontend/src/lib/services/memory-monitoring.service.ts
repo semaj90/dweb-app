@@ -37,7 +37,7 @@ export class MemoryMonitoringService {
   }
 
   private notifyCallbacks(data: any) {
-    this.callbacks.forEach(callback: any => {
+    this.callbacks.forEach((callback: any) => {
       try {
         callback(data);
       } catch (error) {
