@@ -1,24 +1,22 @@
 // @ts-nocheck
 // LangChain.js RAG Implementation for Legal AI Platform
 // Advanced RAG with Ollama integration and legal domain specialization
-import { ChatOpenAI } from "@langchain/openai";
-import { OpenAIEmbeddings } from "@langchain/openai";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { LLMChainExtractor } from "@langchain/community/document_compressors/chain_extract";
+import { ContextualCompressionRetriever } from "@langchain/community/retrievers/contextual_compression";
+import { MultiQueryRetriever } from "@langchain/community/retrievers/multi_query";
 import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
-import { QdrantClient } from "@qdrant/js-client-rest";
+import type { Document } from "@langchain/core/documents";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
 import {
-  RunnableSequence,
-  RunnablePassthrough,
   RunnableMap,
+  RunnablePassthrough,
+  RunnableSequence,
 } from "@langchain/core/runnables";
-import { StringOutputParser } from "@langchain/core/output_parsers";
-import { MultiQueryRetriever } from "langchain/retrievers/multi_query";
-import { ContextualCompressionRetriever } from "langchain/retrievers/contextual_compression";
-import { LLMChainExtractor } from "langchain/retrievers/document_compressors/chain_extract";
-import type { BaseRetriever } from "@langchain/core/retrievers";
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { QdrantClient } from "@qdrant/js-client-rest";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { formatDocumentsAsString } from "langchain/util/document";
-import type { Document } from "@langchain/core/documents";
 import type { LegalDocumentMetadata } from "./qdrant-service";
 
 export interface LegalRAGConfig {
@@ -66,6 +64,7 @@ export class LegalRAGService {
   private qdrantClient: QdrantClient;
   private textSplitter: RecursiveCharacterTextSplitter;
   private config: LegalRAGConfig;
+  private vectorStoreInitPromise: Promise<void> | null = null;
 
   // Legal-specific prompt templates
   private readonly LEGAL_PROMPTS = {
@@ -141,13 +140,10 @@ Only return the queries, one per line.`),
   constructor(config: LegalRAGConfig) {
     this.config = config;
 
-    // Initialize LLM for generation
     this.llm = new ChatOpenAI({
-      modelName: "gemma-3-legal",
-      openAIApiKey: config.apiKey,
-      configuration: {
-        baseURL: config.ollamaGenerationUrl,
-      },
+      model: "gemma-3-legal",
+      apiKey: config.apiKey,
+      baseURL: config.ollamaGenerationUrl,
       temperature: 0.1, // Low temperature for legal accuracy
       maxTokens: 4096,
       timeout: 120000,
@@ -155,11 +151,9 @@ Only return the queries, one per line.`),
 
     // Initialize embeddings
     this.embeddings = new OpenAIEmbeddings({
-      modelName: "nomic-embed-legal",
-      openAIApiKey: config.apiKey,
-      configuration: {
-        baseURL: config.ollamaEmbeddingUrl,
-      },
+      model: "nomic-embed-legal",
+      apiKey: config.apiKey,
+      baseURL: config.ollamaEmbeddingUrl,
       dimensions: config.embeddingDimensions,
     });
 
@@ -187,7 +181,11 @@ Only return the queries, one per line.`),
   /**
    * Initialize Qdrant vector store
    */
+  /**
+   * Initialize Qdrant vector store
+   */
   private async initializeVectorStore(): Promise<void> {
+    if (this.vectorStore) return;
     try {
       this.vectorStore = await QdrantVectorStore.fromExistingCollection(
         this.embeddings,
@@ -196,7 +194,7 @@ Only return the queries, one per line.`),
           collectionName: this.config.collectionName,
           contentPayloadKey: "content",
           metadataPayloadKey: "metadata",
-        },
+        }
       );
       console.log("✅ Legal RAG vector store initialized");
     } catch (error) {
@@ -206,17 +204,24 @@ Only return the queries, one per line.`),
   }
 
   /**
-   * Perform RAG query with advanced legal analysis
+   * Ensure vector store is initialized before use
+   */
+  private async ensureVectorStoreInitialized(): Promise<void> {
+    if (!this.vectorStore) {
+      await this.initializeVectorStore();
+    }
+  }
+
+  /**
+   * Main query method with enhanced legal RAG capabilities
    */
   async query(
     question: string,
-    options: RAGQueryOptions = {},
+    options: RAGQueryOptions = {}
   ): Promise<RAGResult> {
     const startTime = Date.now();
 
-    if (!this.vectorStore) {
-      throw new Error("Vector store not initialized");
-    }
+    await this.ensureVectorStoreInitialized();
 
     const {
       thinkingMode = false,
@@ -236,7 +241,7 @@ Only return the queries, one per line.`),
         filter: this.buildMetadataFilter(
           documentType,
           jurisdiction,
-          practiceArea,
+          practiceArea
         ),
       });
 
@@ -302,7 +307,7 @@ Only return the queries, one per line.`),
       // Calculate confidence based on document relevance scores
       const confidence = this.calculateConfidence(
         retrievedDocs,
-        confidenceThreshold,
+        confidenceThreshold
       );
 
       const processingTime = Date.now() - startTime;
@@ -323,9 +328,19 @@ Only return the queries, one per line.`),
       };
     } catch (error) {
       console.error("Error in RAG query:", error);
-      throw new Error(
-        `RAG query failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
+      return {
+        answer:
+          "I apologize, but I encountered an error processing your query. Please try again.",
+        sourceDocuments: [],
+        confidence: 0,
+        metadata: {
+          retrievedChunks: 0,
+          processingTime: Date.now() - startTime,
+          usedThinkingMode: thinkingMode,
+          usedCompression: useCompression,
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+      };
     }
   }
 
@@ -334,8 +349,10 @@ Only return the queries, one per line.`),
    */
   async indexDocument(
     text: string,
-    metadata: LegalDocumentMetadata,
+    metadata: LegalDocumentMetadata
   ): Promise<string[]> {
+    await this.ensureVectorStoreInitialized();
+
     if (!this.vectorStore) {
       throw new Error("Vector store not initialized");
     }
@@ -359,13 +376,13 @@ Only return the queries, one per line.`),
       const ids = await this.vectorStore.addDocuments(documents);
 
       console.log(
-        `✅ Indexed ${chunks.length} chunks for document ${metadata.documentId}`,
+        `✅ Indexed ${chunks.length} chunks for document ${metadata.documentId}`
       );
       return (ids as unknown as string[]) || [];
     } catch (error) {
       console.error("Error indexing document:", error);
       throw new Error(
-        `Document indexing failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Document indexing failed: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     }
   }
@@ -375,7 +392,7 @@ Only return the queries, one per line.`),
    */
   async summarizeWithContext(
     documentId: string,
-    options: RAGQueryOptions = {},
+    options: RAGQueryOptions = {}
   ): Promise<string> {
     const summaryQuery = `Provide a comprehensive summary of the key legal points, parties, obligations, and risks in this document.`;
 
@@ -394,7 +411,7 @@ Only return the queries, one per line.`),
   async compareDocuments(
     documentIds: string[],
     comparisonFocus: string,
-    options: RAGQueryOptions = {},
+    options: RAGQueryOptions = {}
   ): Promise<RAGResult> {
     const query = `Compare and contrast the following aspects across the provided documents: ${comparisonFocus}.
     Identify similarities, differences, and any potential conflicts or inconsistencies.`;
@@ -416,7 +433,7 @@ Only return the queries, one per line.`),
   async extractLegalEntities(
     query: string,
     documentType?: string,
-    options: RAGQueryOptions = {},
+    options: RAGQueryOptions = {}
   ): Promise<RAGResult> {
     const entityQuery = `Extract and list all ${query} mentioned in the legal documents.
     Provide specific references to where each item is mentioned.`;
@@ -424,33 +441,35 @@ Only return the queries, one per line.`),
     return await this.query(entityQuery, {
       ...options,
       documentType,
-      useCompression: true,
     });
   }
 
   /**
-   * Build metadata filter for legal documents
+   * Build metadata filter for Qdrant queries
    */
   private buildMetadataFilter(
     documentType?: string,
     jurisdiction?: string,
-    practiceArea?: string,
+    practiceArea?: string
   ): Record<string, any> {
-    const filter: Record<string, any> = {};
+    const must: any[] = [];
 
     if (documentType) {
-      filter.documentType = documentType;
+      must.push({ key: "documentType", match: { value: documentType } });
     }
 
     if (jurisdiction) {
-      filter.jurisdiction = jurisdiction;
+      must.push({ key: "jurisdiction", match: { value: jurisdiction } });
     }
 
     if (practiceArea) {
-      filter["classification.practiceArea"] = practiceArea;
+      must.push({
+        key: "classification.practiceArea",
+        match: { value: practiceArea },
+      });
     }
 
-    return Object.keys(filter).length > 0 ? filter : {};
+    return must.length ? { must } : {};
   }
 
   /**
@@ -458,7 +477,7 @@ Only return the queries, one per line.`),
    */
   private calculateConfidence(
     documents: Document[],
-    threshold: number,
+    threshold: number
   ): number {
     if (documents.length === 0) return 0;
 
@@ -471,13 +490,13 @@ Only return the queries, one per line.`),
       return Math.min(1.0, doc.pageContent.length / 1000);
     });
 
-    const avgScore =
+    const averageScore =
       scores.reduce((sum, score) => sum + score, 0) / scores.length;
-    return Math.max(0, Math.min(1, avgScore));
+    return Math.min(1.0, averageScore);
   }
 
   /**
-   * Get RAG service health status
+   * Health check for the RAG service
    */
   async healthCheck(): Promise<{
     status: string;
@@ -486,16 +505,17 @@ Only return the queries, one per line.`),
     documentsCount?: number;
   }> {
     try {
-      const collectionExists = await this.qdrantClient.getCollection(
-        this.config.collectionName,
+      const info = await this.qdrantClient.getCollection(
+        this.config.collectionName
       );
-      const info = await this.qdrantClient.getCollections();
+
+      const collectionExists = !!(info as any)?.result;
 
       return {
         status: "healthy",
         vectorStoreConnected: !!this.vectorStore,
-        collectionExists: !!collectionExists,
-        documentsCount: collectionExists.points_count || 0,
+        collectionExists,
+        documentsCount: (info as any)?.result?.points_count || 0,
       };
     } catch (error) {
       return {
@@ -526,23 +546,23 @@ Only return the queries, one per line.`),
     try {
       // For now, simulate document upload by indexing a simple document
       // In production, this would read the file and process it
-      const mockContent = `Document uploaded from ${filePath}. Case ID: ${options?.caseId || 'N/A'}. Type: ${options?.documentType || 'general'}.`;
-      
+      const mockContent = `Document uploaded from ${filePath}. Case ID: ${options?.caseId || "N/A"}. Type: ${options?.documentType || "general"}.`;
+
       const documentId = `doc_${Date.now()}`;
       const metadata: any = {
         documentId,
-        filename: filePath.split('/').pop() || filePath,
-        documentType: options?.documentType || 'general',
-        uploadedBy: 'system',
+        filename: filePath.split("/").pop() || filePath,
+        documentType: options?.documentType || "general",
+        uploadedBy: "system",
         uploadedAt: new Date().toISOString(),
         fileMetadata: {
           size: 0, // Would be actual file size
-          mimeType: 'text/plain'
+          mimeType: "text/plain",
         },
         ...options?.metadata,
         filePath,
         caseId: options?.caseId,
-        title: options?.title || `Document from ${filePath}`
+        title: options?.title || `Document from ${filePath}`,
       };
 
       const result = await this.indexDocument(mockContent, metadata);
@@ -550,12 +570,12 @@ Only return the queries, one per line.`),
       return {
         success: true,
         documentId,
-        chunks: 1
+        chunks: 1,
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -574,7 +594,7 @@ Only return the queries, one per line.`),
   }> {
     try {
       const health = await this.healthCheck();
-      
+
       // Mock statistics - in production, these would come from actual system metrics
       return {
         documentCount: 100, // Would query from vector store
@@ -582,19 +602,19 @@ Only return the queries, one per line.`),
         indexSize: 1024 * 1024, // Would get actual index size
         averageQueryTime: 150, // Would calculate from query logs
         averageResponseTime: 200, // Would track response times
-        indexStatus: health.status === 'healthy' ? 'healthy' : 'degraded',
-        uptime: Date.now() - (process.uptime() * 1000)
+        indexStatus: health.status === "healthy" ? "healthy" : "degraded",
+        uptime: Date.now() - process.uptime() * 1000,
       };
     } catch (error) {
-      console.error('Failed to get system stats:', error);
+      console.error("Failed to get system stats:", error);
       return {
         documentCount: 0,
         queryCount: 0,
         indexSize: 0,
         averageQueryTime: 0,
         averageResponseTime: 0,
-        indexStatus: 'error',
-        uptime: 0
+        indexStatus: "error",
+        uptime: 0,
       };
     }
   }

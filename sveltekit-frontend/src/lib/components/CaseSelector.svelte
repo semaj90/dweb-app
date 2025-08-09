@@ -10,7 +10,7 @@
 
   let showModal = false;
 
-  function selectCase(caseId) {
+  function selectCase(caseId: string) {
     user.selectCase(caseId);
     showModal = false;
 }

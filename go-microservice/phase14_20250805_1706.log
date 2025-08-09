@@ -1,0 +1,4 @@
+[FALLBACK] Using legal-ai-server.go 
+no required module provides package legal-ai-server.go; to add it:
+	go get legal-ai-server.go
+The system cannot find the file legal-server.exe.

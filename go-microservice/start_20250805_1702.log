@@ -1,0 +1,7 @@
+2025/08/05 17:02:51 ✅ PostgreSQL connection established
+2025/08/05 17:02:51 ✅ Ollama connection established at http://localhost:11434
+2025/08/05 17:02:51 🚀 Legal AI GPU Server starting on port 8080
+2025/08/05 17:02:51 🧠 AI Model: gemma3-legal via Ollama
+2025/08/05 17:02:51 💻 CPU Cores: 16
+2025/08/05 17:02:51 💾 Database: PostgreSQL + pgvector
+2025/08/05 17:07:54 🔄 Processing document: ID=test, Type=, Length=8 chars

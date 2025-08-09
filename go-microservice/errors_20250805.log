@@ -1,0 +1,2 @@
+no required module provides package legal-ai-server.go; to add it:
+	go get legal-ai-server.go

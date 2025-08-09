@@ -1,21 +1,38 @@
-// @ts-nocheck
 import { json } from "@sveltejs/kit";
-import { db, cases } from "$lib/server/db/index";
-import { qdrant } from "$lib/server/vector/qdrant";
+import type { RequestHandler } from "./$types";
 
-export async function POST({ request }) {
-  const { query, embedding } = await request.json();
+const GO_MICROSERVICE_URL = "http://localhost:8080";
 
-  // 1. Search with pgvector (fast, for most cases)
-  const pgvectorResults = await db.query.cases.findMany({
-    orderBy: (cases, { sql }) => sql`embedding <-> ${embedding}`,
-    limit: 10,
-  });
+export const POST: RequestHandler = async ({ request }) => {
+  let searchRequest: { query?: string } | null = null;
+  try {
+    searchRequest = await request.json();
 
-  // 2. Search with Qdrant (advanced, for more complex queries)
-  const qdrantResults = await qdrant.searchCases(query, {
-    limit: 10,
-  });
+    const response = await fetch(`${GO_MICROSERVICE_URL}/api/vector-search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(searchRequest),
+    });
 
-  return json({ pgvectorResults, qdrantResults });
-}
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return json(result);
+  } catch (error: unknown) {
+    console.error("Vector search failed:", error);
+    return json(
+      {
+        results: [],
+        total: 0,
+        query: searchRequest?.query || "",
+        took: "0ms",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
+};

@@ -1,0 +1,10 @@
+no required module provides package legal-ai-server.go; to add it:
+	go get legal-ai-server.go
+2025/08/05 17:07:50 ✅ PostgreSQL connection established
+2025/08/05 17:07:50 ✅ Ollama connection established at http://localhost:11434
+2025/08/05 17:07:50 🚀 Legal AI GPU Server starting on port 8080
+2025/08/05 17:07:50 🧠 AI Model: gemma3-legal via Ollama
+2025/08/05 17:07:50 💻 CPU Cores: 16
+2025/08/05 17:07:50 💾 Database: PostgreSQL + pgvector
+[GIN-debug] [ERROR] listen tcp :8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025/08/05 17:07:50 Failed to start server:listen tcp :8080: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.

@@ -1,26 +1,29 @@
 <!-- OllamaChatInterface.svelte - Svelte 5 + SvelteKit 2.0 Enhanced AI Chat -->
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
-  import { writable } from 'svelte/store';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
-  import { Badge } from '$lib/components/ui/badge';
-  import { Progress } from '$lib/components/ui/progress';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import TokenUsageManager from '$lib/components/TokenUsageManager.svelte';
+  import TokenUsageManager from "$lib/components/TokenUsageManager.svelte";
+  import { Badge } from "$lib/components/ui/badge";
+  import { Button } from "$lib/components/ui/button";
   import {
-    Send,
-    Brain,
-    Zap,
-    MessageSquare,
-    Loader2,
-    CheckCircle,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from "$lib/components/ui/card";
+  import { Input } from "$lib/components/ui/input";
+  import { ScrollArea } from "$lib/components/ui/scroll-area";
+  import type { ChatRequest, ChatResponse } from "$routes/api/ai/chat/+server";
+  import {
     AlertCircle,
+    Brain,
+    CheckCircle,
+    Loader2,
+    MessageSquare,
+    RefreshCw,
+    Send,
     Settings,
-    RefreshCw
-  } from 'lucide-svelte';
-  import type { ChatRequest, ChatResponse } from '$routes/api/ai/chat/+server';
+    Zap,
+  } from "lucide-svelte";
+  import { onMount, tick } from "svelte";
 
   // Props
   interface Props {
@@ -32,43 +35,45 @@
 
   let {
     caseId = undefined,
-    model = 'gemma3-legal',
+    model = "gemma3-legal",
     useRAG = true,
-    className = ''
+    className = "",
   }: Props = $props();
 
   // Reactive state using Svelte 5 runes
-  let message = $state('');
+  let message = $state("");
   let isLoading = $state(false);
   let showSettings = $state(false);
   let temperature = $state(0.7);
   let streamMode = $state(false);
 
   // Chat history and UI state
-  let chatHistory = $state<Array<{
-    id: string;
-    type: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
-    performance?: ChatResponse['performance'];
-    suggestions?: string[];
-    relatedCases?: string[];
-  }>>([]);
+  let chatHistory = $state<
+    Array<{
+      id: string;
+      type: "user" | "assistant";
+      content: string;
+      timestamp: Date;
+      performance?: ChatResponse["performance"];
+      suggestions?: string[];
+      relatedCases?: string[];
+    }>
+  >([]);
 
   let chatContainer: HTMLElement;
   let tokenManager: TokenUsageManager;
-  let ollamaStatus = $state<'unknown' | 'healthy' | 'unhealthy'>('unknown');
+  let ollamaStatus = $state<"unknown" | "healthy" | "unhealthy">("unknown");
   let availableModels = $state<string[]>([]);
 
   // Error and success states
-  let errorMessage = $state('');
-  let successMessage = $state('');
+  let errorMessage = $state("");
+  let successMessage = $state("");
 
   // Reactive computations
   const canSend = $derived(message.trim().length > 0 && !isLoading);
   const messageCount = $derived(chatHistory.length);
   const lastResponse = $derived(
-    chatHistory.find(msg => msg.type === 'assistant' && msg.performance)
+    chatHistory.find((msg) => msg.type === "assistant" && msg.performance)
   );
 
   // Initialize component
@@ -85,17 +90,17 @@
   // Health check function
   async function checkOllamaHealth() {
     try {
-      const response = await fetch('/api/ai/chat', { method: 'GET' });
+      const response = await fetch("/api/ai/chat", { method: "GET" });
       const data = await response.json();
 
-      ollamaStatus = data.status === 'healthy' ? 'healthy' : 'unhealthy';
+      ollamaStatus = data.status === "healthy" ? "healthy" : "unhealthy";
 
       if (data.models) {
         availableModels = data.models.map((m: any) => m.name);
       }
     } catch (error) {
-      ollamaStatus = 'unhealthy';
-      console.error('Health check failed:', error);
+      ollamaStatus = "unhealthy";
+      console.error("Health check failed:", error);
     }
   }
 
@@ -113,15 +118,15 @@
     // Add user message to history
     chatHistory.push({
       id: messageId,
-      type: 'user',
+      type: "user",
       content: userMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     // Clear input and set loading
-    message = '';
+    message = "";
     isLoading = true;
-    errorMessage = '';
+    errorMessage = "";
 
     try {
       const chatRequest: ChatRequest = {
@@ -130,13 +135,13 @@
         temperature,
         stream: streamMode,
         caseId,
-        useRAG
+        useRAG,
       };
 
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(chatRequest)
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(chatRequest),
       });
 
       if (!response.ok) {
@@ -152,17 +157,17 @@
       // Auto-scroll to bottom
       await tick();
       scrollToBottom();
-
     } catch (error) {
-      console.error('Chat error:', error);
-      errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error("Chat error:", error);
+      errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
 
       // Add error message to chat
       chatHistory.push({
         id: Date.now().toString(),
-        type: 'assistant',
+        type: "assistant",
         content: `❌ Error: ${errorMessage}`,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     } finally {
       isLoading = false;
@@ -173,13 +178,13 @@
     const data: ChatResponse = await response.json();
 
     chatHistory.push({
-      id: messageId + '_response',
-      type: 'assistant',
+      id: messageId + "_response",
+      type: "assistant",
       content: data.response,
       timestamp: new Date(),
       performance: data.performance,
       suggestions: data.suggestions,
-      relatedCases: data.relatedCases
+      relatedCases: data.relatedCases,
     });
 
     // Record token usage in TokenUsageManager
@@ -188,25 +193,28 @@
         promptTokens: data.performance.promptTokens || 0,
         responseTokens: data.performance.tokens || 0,
         model: model,
-        prompt: chatHistory[chatHistory.length - 2]?.content || '',
+        prompt: chatHistory[chatHistory.length - 2]?.content || "",
         response: data.response,
-        processingTime: data.performance.duration || 0
+        processingTime: data.performance.duration || 0,
       });
     }
   }
 
-  async function handleStreamingResponse(response: Response, messageId: string) {
+  async function handleStreamingResponse(
+    response: Response,
+    messageId: string
+  ) {
     const reader = response.body?.getReader();
-    if (!reader) throw new Error('No response body');
+    if (!reader) throw new Error("No response body");
 
     let assistantMessageIndex = chatHistory.length;
 
     // Add placeholder message
     chatHistory.push({
-      id: messageId + '_response',
-      type: 'assistant',
-      content: '',
-      timestamp: new Date()
+      id: messageId + "_response",
+      type: "assistant",
+      content: "",
+      timestamp: new Date(),
     });
 
     try {
@@ -233,7 +241,7 @@
   }
 
   function handleKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       sendMessage();
     }
@@ -245,8 +253,8 @@
 
   function clearChat() {
     chatHistory = [];
-    errorMessage = '';
-    successMessage = '';
+    errorMessage = "";
+    successMessage = "";
   }
 
   function exportChat() {
@@ -254,15 +262,15 @@
       timestamp: new Date().toISOString(),
       model,
       caseId,
-      messages: chatHistory
+      messages: chatHistory,
     };
 
     const blob = new Blob([JSON.stringify(chatData, null, 2)], {
-      type: 'application/json'
+      type: "application/json",
     });
 
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `legal-ai-chat-${Date.now()}.json`;
     a.click();
@@ -271,9 +279,9 @@
 
   // Reactive effects
   $effect(() => {
-    if (ollamaStatus === 'healthy') {
-      successMessage = 'AI service is ready';
-      setTimeout(() => successMessage = '', 3000);
+    if (ollamaStatus === "healthy") {
+      successMessage = "AI service is ready";
+      setTimeout(() => (successMessage = ""), 3000);
     }
   });
 </script>
@@ -287,7 +295,9 @@
         <CardTitle class="flex items-center gap-2">
           <Brain class="w-5 h-5" />
           Legal AI Assistant
-          <Badge variant={ollamaStatus === 'healthy' ? 'default' : 'destructive'}>
+          <Badge
+            variant={ollamaStatus === "healthy" ? "default" : "destructive"}
+          >
             {ollamaStatus}
           </Badge>
         </CardTitle>
@@ -304,7 +314,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => showSettings = !showSettings}
+            onclick={() => (showSettings = !showSettings)}
           >
             <Settings class="w-4 h-4" />
           </Button>
@@ -355,19 +365,11 @@
             <span class="text-xs text-muted-foreground">{temperature}</span>
           </div>
           <div class="flex items-center gap-2">
-            <input
-              type="checkbox"
-              bind:checked={streamMode}
-              id="stream-mode"
-            />
+            <input type="checkbox" bind:checked={streamMode} id="stream-mode" />
             <label for="stream-mode" class="text-sm">Stream responses</label>
           </div>
           <div class="flex items-center gap-2">
-            <input
-              type="checkbox"
-              bind:checked={useRAG}
-              id="use-rag"
-            />
+            <input type="checkbox" bind:checked={useRAG} id="use-rag" />
             <label for="use-rag" class="text-sm">Enhanced RAG</label>
           </div>
         </div>
@@ -385,14 +387,18 @@
 
   <!-- Status Messages -->
   {#if errorMessage}
-    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
+    <div
+      class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2"
+    >
       <AlertCircle class="w-4 h-4 text-red-600" />
       <span class="text-red-800">{errorMessage}</span>
     </div>
   {/if}
 
   {#if successMessage}
-    <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+    <div
+      class="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
+    >
       <CheckCircle class="w-4 h-4 text-green-600" />
       <span class="text-green-800">{successMessage}</span>
     </div>
@@ -405,20 +411,25 @@
         <div class="text-center text-muted-foreground py-8">
           <MessageSquare class="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p>Start a conversation with the Legal AI Assistant</p>
-          <p class="text-sm mt-2">Ask about legal procedures, case analysis, or research questions</p>
+          <p class="text-sm mt-2">
+            Ask about legal procedures, case analysis, or research questions
+          </p>
         </div>
       {:else}
         {#each chatHistory as msg}
           <div class="mb-6 {msg.type === 'user' ? 'text-right' : 'text-left'}">
-            <div class="inline-block max-w-[80%] {
-              msg.type === 'user'
+            <div
+              class="inline-block max-w-[80%] {msg.type === 'user'
                 ? 'bg-blue-600 text-white rounded-l-lg rounded-br-lg'
-                : 'bg-gray-100 text-gray-900 rounded-r-lg rounded-bl-lg'
-            } px-4 py-2" data-testid={msg.type === 'assistant' ? 'chat-response' : 'chat-message'}>
+                : 'bg-gray-100 text-gray-900 rounded-r-lg rounded-bl-lg'} px-4 py-2"
+              data-testid={msg.type === "assistant"
+                ? "chat-response"
+                : "chat-message"}
+            >
               <div class="whitespace-pre-wrap">{msg.content}</div>
 
               <!-- Performance Info for Assistant Messages -->
-              {#if msg.type === 'assistant' && msg.performance}
+              {#if msg.type === "assistant" && msg.performance}
                 <div class="text-xs opacity-70 mt-2 border-t pt-2">
                   {msg.performance.duration}ms • {msg.performance.tokens} tokens
                 </div>
@@ -480,7 +491,7 @@
         bind:value={message}
         placeholder="Ask the Legal AI Assistant..."
         onkeypress={handleKeyPress}
-        disabled={isLoading || ollamaStatus !== 'healthy'}
+        disabled={isLoading || ollamaStatus !== "healthy"}
         class="pr-12"
         data-testid="chat-input"
       />
@@ -488,7 +499,7 @@
 
     <Button
       onclick={sendMessage}
-      disabled={!canSend || ollamaStatus !== 'healthy'}
+      disabled={!canSend || ollamaStatus !== "healthy"}
       class="px-3"
       data-testid="send-button"
     >
@@ -500,11 +511,19 @@
     </Button>
 
     <!-- Additional Actions -->
-    <Button variant="outline" onclick={clearChat} disabled={chatHistory.length === 0}>
+    <Button
+      variant="outline"
+      onclick={clearChat}
+      disabled={chatHistory.length === 0}
+    >
       Clear
     </Button>
 
-    <Button variant="outline" onclick={exportChat} disabled={chatHistory.length === 0}>
+    <Button
+      variant="outline"
+      onclick={exportChat}
+      disabled={chatHistory.length === 0}
+    >
       Export
     </Button>
   </div>
@@ -513,34 +532,42 @@
   {#if messageCount > 0}
     <div class="mt-4 text-xs text-muted-foreground text-center">
       {messageCount} messages • Model: {model}
-      {#if caseId} • Case: {caseId}{/if}
+      {#if caseId}
+        • Case: {caseId}{/if}
     </div>
   {/if}
 </div>
 
 <style>
   .ollama-chat-interface {
-    @apply flex flex-col h-full max-w-4xl mx-auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 56rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .ollama-chat-interface :global(.scroll-area) {
-    @apply max-h-96 overflow-y-auto;
+    max-height: 24rem;
+    overflow-y: auto;
   }
 
   /* Custom scrollbar */
   .ollama-chat-interface :global(.scroll-area::-webkit-scrollbar) {
-    @apply w-2;
+    width: 0.5rem;
   }
 
   .ollama-chat-interface :global(.scroll-area::-webkit-scrollbar-track) {
-    @apply bg-gray-100;
+    background-color: #f5f5f5;
   }
 
   .ollama-chat-interface :global(.scroll-area::-webkit-scrollbar-thumb) {
-    @apply bg-gray-300 rounded;
+    background-color: #d1d5db;
+    border-radius: 0.25rem;
   }
 
   .ollama-chat-interface :global(.scroll-area::-webkit-scrollbar-thumb:hover) {
-    @apply bg-gray-400;
+    background-color: #9ca3af;
   }
 </style>

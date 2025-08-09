@@ -23,19 +23,18 @@
   // We create an internal store and sync it with the 'open' prop.
   const openStore = writable(open);
 
-  const {
-    elements: { trigger, overlay, content, title, close },
-    states: { open: isMeltOpen },
-  } = createDialog({
-    open: openStore,
-    onOpenChange: (state) => {
-      open = state.next;
-      if (!open) {
-        dispatch("close");
-}
-      return state.next;
-    },
-  });
+const {
+  elements: { trigger, overlay, content, title, close },
+  states: { open: isMeltOpen },
+} = createDialog({
+  open: openStore,
+  onOpenChange: (nextOpen: boolean) => {
+    open = nextOpen;
+    if (!open) {
+      dispatch("close");
+    }
+  },
+});
 
   // This reactive statement ensures that if the parent changes
   // the 'open' prop, our internal store is updated.
@@ -85,7 +84,7 @@
           >{/if}
 
         {#if message}<div class="container mx-auto px-4">{message}</div>{/if}
-      </div>
+        {#if $message}<div class="container mx-auto px-4">{$message}</div>{/if}
       <div class="container mx-auto px-4">
         <Button
           type="button"

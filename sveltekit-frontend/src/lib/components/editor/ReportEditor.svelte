@@ -419,17 +419,17 @@
 <Modal bind:open={showSettingsModal}>
   <div slot="title">Report Settings</div>
   <!-- Settings form would go here -->
-  <div class="settings-form"></div>
-    <p>Settings panel - TODO: Implement settings form</p>
-  </div>
-</Modal>
-
-<style>
   <div class="settings-form">
     <!-- TODO: Implement settings form for report options such as auto-save, layout selection, evidence preferences, and other report configurations -->
     <p>Settings panel - TODO: Implement settings form</p>
   </div>
 </Modal>
+
+<style>
+  .report-editor {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     background: #ffffff;
     transition: all 0.3s ease;
   }
