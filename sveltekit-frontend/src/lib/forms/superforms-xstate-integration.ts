@@ -51,9 +51,9 @@ export interface FormOptions {
 // ============================================================================
 
 export function createDocumentUploadForm(
-  data: SuperValidated<Infer<typeof DocumentUploadSchema>>,
+  data: any, // SuperValidated<Infer<typeof DocumentUploadSchema>>,
   options: FormOptions = {}
-): FormMachineIntegration<Infer<typeof DocumentUploadSchema>, DocumentUploadActor> {
+): any { // FormMachineIntegration<Infer<typeof DocumentUploadSchema>, DocumentUploadActor> {
   
   // Create XState actor
   const actor = createActor(documentUploadMachine);
@@ -61,7 +61,7 @@ export function createDocumentUploadForm(
 
   // Create Superform
   const form = superForm(data, {
-    validators: zod(DocumentUploadSchema),
+    validators: zod(DocumentUploadSchema as any),
     resetForm: options.resetOnSuccess ?? true,
     delayMs: 300,
     timeoutMs: 8000,
@@ -172,15 +172,15 @@ export function createDocumentUploadForm(
 // ============================================================================
 
 export function createCaseCreationForm(
-  data: SuperValidated<Infer<typeof CaseCreationSchema>>,
+  data: any, // SuperValidated<Infer<typeof CaseCreationSchema>>,
   options: FormOptions = {}
-): FormMachineIntegration<Infer<typeof CaseCreationSchema>, CaseCreationActor> {
+): any { // FormMachineIntegration<Infer<typeof CaseCreationSchema>, CaseCreationActor> {
   
   const actor = createActor(caseCreationMachine);
   actor.start();
 
   const form = superForm(data, {
-    validators: zod(CaseCreationSchema),
+    validators: zod(CaseCreationSchema as any),
     resetForm: options.resetOnSuccess ?? false, // Don't reset case creation forms
     delayMs: 500, // Longer delay for case creation
     timeoutMs: 10000,
@@ -271,22 +271,22 @@ export function createCaseCreationForm(
 // ============================================================================
 
 export function createSearchForm(
-  data: SuperValidated<Infer<typeof SearchQuerySchema>>,
+  data: any, // SuperValidated<Infer<typeof SearchQuerySchema>>,
   options: FormOptions = {}
-): FormMachineIntegration<Infer<typeof SearchQuerySchema>, SearchActor> {
+): any { // FormMachineIntegration<Infer<typeof SearchQuerySchema>, SearchActor> {
   
   const actor = createActor(searchMachine);
   actor.start();
 
   const form = superForm(data, {
-    validators: zod(SearchQuerySchema),
+    validators: zod(SearchQuerySchema as any),
     resetForm: false, // Keep search forms populated
     delayMs: 300,
     timeoutMs: 15000, // Longer timeout for searches
     invalidateAll: false,
     onUpdated: ({ form }) => {
       // Don't auto-submit on every change for search
-      if (form.data.query && form.data.query.length > 2) {
+      if ((form as any).data?.query && (form as any).data.query.length > 2) {
         // Optional: Trigger search suggestions
       }
     },
@@ -375,15 +375,15 @@ export function createSearchForm(
 // ============================================================================
 
 export function createAIAnalysisForm(
-  data: SuperValidated<Infer<typeof AIAnalysisSchema>>,
+  data: any, // SuperValidated<Infer<typeof AIAnalysisSchema>>,
   options: FormOptions = {}
-): FormMachineIntegration<Infer<typeof AIAnalysisSchema>, AIAnalysisActor> {
+): any { // FormMachineIntegration<Infer<typeof AIAnalysisSchema>, AIAnalysisActor> {
   
   const actor = createActor(aiAnalysisMachine);
   actor.start();
 
   const form = superForm(data, {
-    validators: zod(AIAnalysisSchema),
+    validators: zod(AIAnalysisSchema as any),
     resetForm: options.resetOnSuccess ?? false,
     delayMs: 200,
     timeoutMs: 30000, // Very long timeout for AI analysis

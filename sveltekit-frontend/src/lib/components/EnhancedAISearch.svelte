@@ -2,7 +2,7 @@
   // Enhanced AI Search Component with Bits UI and UnoCSS
   // Svelte 5 + Go Microservice + Gemma3-Legal Integration
 
-  import { enhancedAiPipeline } from "$lib/services/enhanced-ai-pipeline";
+  import { enhancedAIPipeline as enhancedAiPipeline } from "$lib/services/enhanced-ai-pipeline";
   import type {
     EnhancedSearchOptions,
     EnhancedSearchResult,
@@ -151,10 +151,8 @@
       </h2>
 
       <Button.Root
-        variant="outline"
-        size="sm"
         onclick={() => (showAdvanced = !showAdvanced)}
-        class="flex items-center gap-2"
+        class="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
       >
         <span class="i-tabler-settings w-4 h-4"></span>
         Advanced
@@ -207,11 +205,11 @@
           >
             Practice Area
           </label>
-          <Select.Root bind:selected={selectedPracticeArea}>
+          <Select.Root bind:value={selectedPracticeArea}>
             <Select.Trigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
-              <Select.Value placeholder="Select practice area" />
+              <span>{selectedPracticeArea?.label || "Select practice area"}</span>
             </Select.Trigger>
             <Select.Content
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
@@ -234,11 +232,11 @@
           >
             Jurisdiction
           </label>
-          <Select.Root bind:selected={selectedJurisdiction}>
+          <Select.Root bind:value={selectedJurisdiction}>
             <Select.Trigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
-              <Select.Value placeholder="Select jurisdiction" />
+              <span>{selectedJurisdiction?.label || "Select jurisdiction"}</span>
             </Select.Trigger>
             <Select.Content
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
@@ -261,11 +259,11 @@
           >
             RAG Mode
           </label>
-          <Select.Root bind:selected={searchOptions.ragMode}>
+          <Select.Root bind:value={searchOptions.ragMode}>
             <Select.Trigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
-              <Select.Value placeholder="Select mode" />
+              <span>{searchOptions.ragMode?.label || "Select mode"}</span>
             </Select.Trigger>
             <Select.Content
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"

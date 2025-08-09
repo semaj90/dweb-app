@@ -21,12 +21,12 @@ export const caseFormSchema = z.object({
     .optional(),
 
   priority: z.enum(["low", "medium", "high"], {
-    message: "Please select a priority level"
+    errorMap: () => ({ message: "Please select a priority level" })
   }),
 
   status: z
     .enum(["draft", "active", "pending", "closed"], {
-      message: "Please select a status"
+      errorMap: () => ({ message: "Please select a status" })
     })
     .default("draft"),
 
@@ -57,7 +57,7 @@ export const evidenceFormSchema = z.object({
   description: z.string().max(500, "Description too long").optional(),
 
   evidenceType: z.enum(["document", "image", "video", "audio", "digital"], {
-    message: "Please select evidence type"
+    errorMap: () => ({ message: "Please select evidence type" })
   }),
 
   tags: z
@@ -137,7 +137,7 @@ export const registerFormSchema = z
     confirmPassword: z.string(),
 
     role: z.enum(["prosecutor", "investigator", "legal_assistant", "admin"], {
-      message: "Please select a role"
+      errorMap: () => ({ message: "Please select a role" })
     }),
 
     agreeToTerms: z

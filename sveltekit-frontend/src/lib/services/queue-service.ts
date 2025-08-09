@@ -166,7 +166,7 @@ export async function cancelJob(jobId: string): Promise<boolean> {
  * Clear completed jobs (maintenance)
  */
 export async function clearCompletedJobs(): Promise<number> {
-  return await documentQueue.clean(24 * 60 * 60 * 1000, 100, 'completed'); // 24 hours
+  return (await documentQueue.clean(24 * 60 * 60 * 1000, 100, 'completed')).length; // 24 hours
 }
 
 /**

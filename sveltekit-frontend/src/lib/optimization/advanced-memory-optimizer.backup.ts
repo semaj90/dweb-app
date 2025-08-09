@@ -5,7 +5,7 @@
  */
 
 import { SelfOrganizingMapRAG } from "../ai/som-rag-system.js";
-import { DockerResourceOptimizer } from "./docker-resource-optimizer.js";
+// Docker dependency removed - using native memory optimization
 
 export interface LODLevel {
   id: string;

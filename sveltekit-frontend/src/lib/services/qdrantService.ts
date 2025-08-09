@@ -369,7 +369,7 @@ export class QdrantService {
 	}
 
 	// Add legal document with enhanced processing
-	public async addLegalDocument(document: Omit<LegalDocumentVector, 'id' | 'timestamp'>): Promise<string> {
+	public async addLegalDocument(document: LegalDocumentVector): Promise<string> {
 		if (!this.isConnected) throw new Error('Qdrant not connected');
 
 		const documentId = `legal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

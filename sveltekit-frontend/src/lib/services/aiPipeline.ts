@@ -40,7 +40,16 @@ export class AIPipeline {
   async processDocument(
     documentId: string,
     content: string,
-    options: DocumentProcessingOptions = {}
+    options: DocumentProcessingOptions = {
+      extractText: true,
+      generateEmbeddings: true,
+      generateSummary: true,
+      extractEntities: true,
+      analyzeSentiment: true,
+      classifyDocument: true,
+      chunkSize: 1000,
+      chunkOverlap: 200
+    }
   ): Promise<PipelineResult> {
     const result: PipelineResult = {
       success: false,

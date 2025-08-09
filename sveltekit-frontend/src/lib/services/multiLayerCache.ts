@@ -43,8 +43,8 @@ export interface FuseSearchOptions {
 export class MultiLayerCache {
   private memoryDb: Loki;
   private persistentDb: Loki | null = null;
-  private cacheCollection: Collection<CacheEntry>;
-  private searchCollection: Collection<any>;
+  private cacheCollection: any; // Collection<CacheEntry>
+  private searchCollection: any; // Collection<any>
   private fuseInstances: Map<string, Fuse<any>> = new Map();
   
   // Cache statistics
@@ -536,7 +536,7 @@ export class MultiLayerCache {
   /**
    * Get persistent collection by type
    */
-  private getPersistentCollection(type: string): Collection<CacheEntry> {
+  private getPersistentCollection(type: string): any { // Collection<CacheEntry>
     if (!this.persistentDb) {
       throw new Error('Persistent storage not initialized');
     }

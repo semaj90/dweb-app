@@ -17,13 +17,9 @@ export {
   create70GBDevCache,
 } from "./redis-som-cache.js";
 
-export {
-  DockerResourceOptimizer,
-  dockerOptimizer,
-  type DockerResourceMetrics,
-  type OptimizationConfig,
-  performanceUtils,
-} from "./docker-resource-optimizer.js";
+// Docker resource optimizer removed - using native optimization
+// export type DockerResourceMetrics = Record<string, any>;
+// export type OptimizationConfig = Record<string, any>;
 
 export {
   jsonWasmOptimizer,
@@ -46,13 +42,7 @@ import {
   create70GBDevCache,
 } from "./redis-som-cache.js";
 
-import {
-  DockerResourceOptimizer,
-  dockerOptimizer,
-  type DockerResourceMetrics,
-  type OptimizationConfig,
-  performanceUtils,
-} from "./docker-resource-optimizer.js";
+// Docker resource optimizer imports removed
 
 import {
   jsonWasmOptimizer,
@@ -102,7 +92,7 @@ export {
 export interface OptimizationSuite {
   vscode: any;
   cache: any;
-  docker: any;
+  // docker: any; // Removed Docker dependency
   json: any;
 }
 
@@ -111,7 +101,7 @@ export interface PerformanceMetrics {
   cpu_usage: number;
   cache_hit_rate: number;
   json_parse_time: number;
-  docker_efficiency: number;
+  // docker_efficiency: number; // Removed Docker metric
   wasm_acceleration: boolean;
 }
 

@@ -525,10 +525,10 @@ class OllamaCudaService {
 export const ollamaCudaService = OllamaCudaService.getInstance();
 export default ollamaCudaService;
 
-// Export types
-export type {
-  CudaConfig,
-  OllamaModelConfig,
-  ModelMetrics,
-  StreamingOptions
-};
+// Export types (already exported above as interfaces)
+// export type {
+//   CudaConfig,
+//   OllamaModelConfig,
+//   ModelMetrics,
+//   StreamingOptions
+// };

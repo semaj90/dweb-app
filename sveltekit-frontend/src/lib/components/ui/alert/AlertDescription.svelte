@@ -7,7 +7,5 @@
 </script>
 
 <div class="text-sm [&_p]:leading-relaxed {className}" {...restProps}>
-  {#if children}
-    {@render children()}
-  {/if}
+  <slot />
 </div>

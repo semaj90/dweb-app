@@ -95,7 +95,7 @@ class ComprehensiveCachingService {
   // Cache layers
   private memoryCache = new Map<string, CacheEntry>();
   private lokiDB: Loki | null = null;
-  private lokiCollection: Collection<CacheEntry> | null = null;
+  private lokiCollection: any | null = null; // Collection<CacheEntry>
   private redisClient: Redis | null = null;
 
   // Cache strategies

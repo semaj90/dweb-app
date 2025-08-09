@@ -708,10 +708,10 @@ class PerformanceOptimizationService {
 export const performanceOptimizationService = PerformanceOptimizationService.getInstance();
 export default performanceOptimizationService;
 
-// Export types
-export type {
-  PerformanceMetrics,
-  OptimizationConfig,
-  BatchRequest,
-  ConnectionPool
-};
+// Export types (already exported above as interfaces)
+// export type {
+//   PerformanceMetrics,
+//   OptimizationConfig,
+//   BatchRequest,
+//   ConnectionPool
+// };

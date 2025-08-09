@@ -18,7 +18,5 @@
   role="alert"
   {...restProps}
 >
-  {#if children}
-    {@render children()}
-  {/if}
+  <slot />
 </div>

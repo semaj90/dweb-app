@@ -15,11 +15,9 @@ import {
   EnhancedVSCodeExtensionManager,
   type CommandMetrics,
 } from "./enhanced-vscode-extension-manager.js";
-import {
-  DockerMemoryOptimizer,
-  type ContainerMetrics,
-  type ThroughputMetrics,
-} from "./docker-memory-optimizer-v2.js";
+// Docker memory optimizer removed - using native memory optimization
+// type ContainerMetrics = Record<string, any>;
+// type ThroughputMetrics = Record<string, any>;
 import {
   UltraHighPerformanceJSONProcessor,
   type JSONPerformanceMetrics,
