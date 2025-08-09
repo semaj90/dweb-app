@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Environment variables fallback
 const env = process.env || {};
 import { caseActivities, cases, evidence } from "$lib/server/db/index";

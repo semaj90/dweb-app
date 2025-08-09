@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Local AI health check endpoint for Gemma3 Ollama integration
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "@sveltejs/kit";

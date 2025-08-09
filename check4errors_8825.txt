@@ -1,0 +1,176 @@
+C:\Users\james\Desktop\deeds-web\deeds-web-app>fix-vscode-shell.bat
+
+C:\Users\james\Desktop\deeds-web\deeds-web-app>"C:\Users\james\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd" --version
+1.103.0
+e3550cfac4b63ca4eafca7b601f0d2885817fd1f
+x64
+
+
+C:\Users\james\Desktop\deeds-web\deeds-web-app>npm install -g @anthropic/claude-cli
+npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/@anthropic%2fclaude-cli - Not found
+npm error 404
+npm error 404  '@anthropic/claude-cli@*' is not in this registry.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: C:\Users\james\AppData\Local\npm-cache\_logs\2025-08-08T23_03_53_318Z-debug-0.log 
+
+C:\Users\james\Desktop\deeds-web\deeds-web-app>powershell -Command "Write-Host '�� Checking available Claude tools...' -ForegroundColor 
+Cyan; npm search claude-cli 2>$null; Write-Host ''; Write-Host '�� VS Code Shell Integration Status:' -ForegroundColor Blue; if ($env:VSCODE_SHELL_INTEGRATION) { Write-Host '✅ Shell integration is active' -ForegroundColor Green } else { Write-Host '⚠️ Shell integration not detected' -ForegroundColor Yellow }"
+🔍 Checking available Claude tools...
+@mneuhaus/claude-ci
+A command-line tool for automating Claude CLI interactions
+Version 1.1.0 published 2025-07-10 by mneuhaus
+Maintainers: mneuhaus
+Keywords: claude cli automation ai
+https://npm.im/@mneuhaus/claude-ci
+
+claude-cli-lib
+A standalone library for Claude CLI integration and management
+Version 1.0.0 published 2025-07-05 by jpegg
+Maintainers: jpegg
+Keywords: claude cli command-line process-management terminal pty
+https://npm.im/claude-cli-lib
+
+@calmhive/calmhive-cli
+🐝 Intelligent Claude CLI wrapper with rule injection, AFk background processing, voice interface, and adaptive retry
+Version 15.2.0 published 2025-07-10 by calmhive
+Maintainers: calmhive
+Keywords: claude cli ai assistant automation afk voice mcp
+https://npm.im/@calmhive/calmhive-cli
+
+claude-guard
+Community Edition: Lightweight security wrapper for Claude CLI with Claude settings integration and pattern-based permissions
+Version 2.2.0 published 2025-08-07 by dwebdev
+Maintainers: dwebdev
+Keywords: claude cli security wrapper pattern-matching claude-settings integration ai-safety
+https://npm.im/claude-guard
+
+mcp-claude-context-continuity
+MCP server that maintains conversation context for Claude CLI
+Version 1.0.1 published 2025-07-09 by tethiro
+Maintainers: tethiro
+Keywords: mcp claude claude-cli conversation context session
+https://npm.im/mcp-claude-context-continuity
+
+yes-claude
+A wrapper tool that automates interactions with the Claude CLI by automatically handling common prompts and responses.
+Version 1.9.0 published 2025-07-11 by snomiao
+Maintainers: snomiao
+Keywords: claude ai automation cli wrapper assistant anthropic auto-response
+https://npm.im/yes-claude
+
+claude-yes
+A wrapper tool that automates interactions with the Claude CLI by automatically handling common prompts and responses.
+Version 1.13.0 published 2025-08-08 by snomiao
+Maintainers: snomiao
+Keywords: claude ai automation cli wrapper assistant anthropic auto-response
+https://npm.im/claude-yes
+
+claude-auto-resume
+CLI tool that automatically resumes Claude CLI tasks when usage limits are lifted. Supports both npm install and npx usage. TypeScript-based with comprehensive tooling.
+Version 2.0.19 published 2025-07-14 by terryso
+Maintainers: terryso
+Keywords: claude ai cli automation resume typescript
+https://npm.im/claude-auto-resume
+
+claude-git-hooks
+Git hooks con Claude CLI para análisis de código y generación automática de mensajes de commit
+Version 1.2.1 published 2025-07-24 by pablo.rovito
+Maintainers: pablo.rovito
+Keywords: git hooks claude ai code-review commit-messages pre-commit automation
+https://npm.im/claude-git-hooks
+
+claude-yolo-extended
+Claude CLI wrapper with YOLO mode (bypass safety) and SAFE mode support, auto-updates, and colorful loading messages
+Version 1.9.0 published 2025-07-17 by ai-joe
+Maintainers: ai-joe
+Keywords: claude cli anthropic wrapper yolo safe-mode permissions
+https://npm.im/claude-yolo-extended
+
+agent-rules
+Rules and instructions for agentic coding tools like Cursor, Claude CLI, Gemini CLI, Qodo, Cline and more
+Version 1.1.2 published 2025-07-28 by lirantal_bot
+Maintainers: lirantal_bot
+Keywords: agent rules cursorrules cursor claude-cli agent instructions agentic coding security secure coding secure llm rules
+https://npm.im/agent-rules
+
+claude-yolo
+YOLO wrapper for Claude CLI with danger mode always enabled, auto-updates, and colorful loading messages
+Version 1.7.0 published 2025-03-08 by snaggle
+Maintainers: snaggle
+Keywords: claude cli anthropic wrapper yolo
+https://npm.im/claude-yolo
+
+claude-resume
+CLI tool that automatically resumes Claude CLI tasks when usage limits are lifted. Supports both npm install and npx usage. TypeScript-based with comprehensive tooling.
+Version 2.0.16 published 2025-07-13 by terryso
+Maintainers: terryso
+Keywords: claude ai cli automation resume typescript
+https://npm.im/claude-resume
+
+@standardbeagle/ps-claude
+Windows PowerShell wrapper for Claude CLI
+Version 1.2.1 published 2025-06-15 by andylbrummer
+Maintainers: andylbrummer
+Keywords: claude cli windows wsl powershell
+https://npm.im/@standardbeagle/ps-claude
+
+@wxyhjkd/claude-proxy
+Claude CLI with configurable proxy support - route requests through custom domains
+Version 1.0.7 published 2025-06-24 by wxyhjkd
+Maintainers: wxyhjkd
+Keywords: claude ai anthropic proxy configurable api cli
+https://npm.im/@wxyhjkd/claude-proxy
+
+claude-switch
+Claude CLI configuration management utility for switching between different API endpoints and authentication tokens
+Version 1.3.0 published 2025-07-24 by zxy6641
+Maintainers: zxy6641
+Keywords: claude cli config switch anthropic ai api
+https://npm.im/claude-switch
+
+auto-claude
+A wrapper tool that automates interactions with the Claude CLI by automatically handling common prompts and responses.
+Version 1.0.0 published 2025-07-06 by snomiao
+Maintainers: snomiao
+https://npm.im/auto-claude
+
+claude-loop
+Pure Claude CLI autonomy - iteratively fixes your repo until everything works. No hardcoded patterns, just raw AI power.
+Version 5.1.2 published 2025-06-23 by samihalawa
+Maintainers: samihalawa
+Keywords: claude ai debugging code-quality automated-fixing repository-scanner cli developer-tools code-analysis multi-agent
+https://npm.im/claude-loop
+
+@anthropic-ai/claude-code
+Use Claude, Anthropic's AI assistant, right from your terminal. Claude can understand your codebase, edit files, run terminal commands, 
+and handle entire workflows for you.
+Version 1.0.72 published 2025-08-08 by wolffiex
+Maintainers: zak-anthropic benjmann nikhil-anthropic ejlangev-ant jv-anthropic sbidasaria wolffiex igorkofman felixrieseberg-anthropic  
+https://npm.im/@anthropic-ai/claude-code
+
+@playwright/mcp
+Playwright Tools for MCP
+Version 0.0.32 published 2025-07-26 by playwright-bot
+Maintainers: pavelfeldman yurys mxschmitt dgozman-ms playwright-bot
+https://npm.im/@playwright/mcp
+
+
+📋 VS Code Shell Integration Status:
+⚠️ Shell integration not detected
+
+C:\Users\james\Desktop\deeds-web\deeds-web-app>npm install -g @anthropic-ai/claude-code
+
+added 10 packages, and changed 2 packages in 2s
+
+11 packages are looking for funding
+  run `npm fund` for details
+
+C:\Users\james\Desktop\deeds-web\deeds-web-app>powershell -Command "Write-Host '✅ Claude CLI installed successfully!' -ForegroundColor G
+reen; Write-Host 'Testing Claude CLI...' -ForegroundColor Cyan; try { claude --version; Write-Host '✅ Claude CLI is working!' -Foregroun
+dColor Green } catch { Write-Host '⚠️ Claude CLI needs setup' -ForegroundColor Yellow }"
+✅ Claude CLI installed successfully!
+Testing Claude CLI...
+⚠️ Claude CLI needs setup

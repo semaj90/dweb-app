@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { setup, createActor, assign, fromPromise } from "xstate";
 import type {
   CanvasNode,

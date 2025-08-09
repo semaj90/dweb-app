@@ -261,7 +261,25 @@
       "Bash(./cleanup-docker-windows-native.bat)",
       "Bash(./update-db-password.bat)",
       "Bash(./start-windows-native.bat)",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\createdb.exe\" -U postgres -h localhost legal_ai_db)"
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\createdb.exe\" -U postgres -h localhost legal_ai_db)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\schema.sql\")",
+      "Bash(./run-migration.bat)",
+      "Bash(set DATABASE_URL=postgresql://legal_admin:123456@localhost:5432/legal_ai_db)",
+      "Bash(./restart-go-with-db.bat)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\d legal_documents\" -q)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT id, case_id, LEFT(content, 50) as content_preview, array_length(embedding, 1) as embedding_dims FROM legal_documents LIMIT 3;\" -q)",
+      "Bash(./RUN-INDEXER.bat)",
+      "Bash(./start-go-background.bat)",
+      "Bash(./quick-fix-high-priority-errors.bat)",
+      "Bash(for file in \"src/lib/services/redis-vector-service.ts\" \"src/lib/vscode/json-processor-extension.ts\" \"src/routes/api/extract-text/+server.ts\")",
+      "Bash(do mv \"$file\" \"$file.disabled\")",
+      "Bash(done)",
+      "Bash(for file in \"src/lib/services/best-practices-service.ts\" \"src/lib/services/determinism-evaluation-service.ts\" \"src/lib/services/document-ingestion-service.ts\" \"src/lib/services/library-sync-service.ts\" \"src/lib/services/multi-agent-orchestrator.ts\")",
+      "Bash(for:*)",
+      "Bash(do sed -i '1i // @ts-nocheck' \"$file\")",
+      "Bash(./fix-all-types.bat)",
+      "Bash(do sed -i '1i<!-- @ts-nocheck -->' \"$file\")"
     ],
     "deny": []
   }

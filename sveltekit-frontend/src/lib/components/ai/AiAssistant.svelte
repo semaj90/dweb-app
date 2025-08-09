@@ -8,9 +8,25 @@
   import { getContext, onMount } from 'svelte';
 
   // UI components
-  import { Button } from '$lib/components/ui';
-  import { Card } from '$lib/components/ui';
+  import { Button } from '$lib/components/ui/button';
+  import { Card } from '$lib/components/ui/card';
   import { aiGlobalStore, aiGlobalActions } from '$lib/stores/ai';
+
+  // Type definition for AI store context
+  interface AIStoreContext {
+    loading?: boolean;
+    error?: string;
+    summary?: string;
+    stream?: string;
+    sources?: Array<{
+      id?: string;
+      title?: string;
+    }>;
+  }
+
+  interface AIStore {
+    context: AIStoreContext;
+  }
 
   // Get user from context (SSR-safe)
   const getUser = getContext('user');
@@ -30,12 +46,7 @@
   // Access store state via $aiGlobalStore, send actions via aiGlobalActions.send
   // The actorRef is not directly used in the component's script, but can be accessed via aiGlobalStore if needed.
   // const { snapshot, send, actorRef } = useAIGlobalStore(); // Old usage
-  // Use $aiGlobalStore for reactive state and aiGlobalActions for sending events.
-  // The snapshot is implicitly available via $aiGlobalStore.
-  // The send function is available via aiGlobalActions.summarize, aiGlobalActions.retry, aiGlobalActions.reset.
-  // For direct send, you can use aiGlobalActor.send if imported.
 
-  // Example: Move getSummaryCache() into onMount to avoid SSR issues
   onMount(() => {
     // getSummaryCache(); // Uncomment and use this if you need to initialize cache on client
   });
@@ -43,30 +54,30 @@
   // Trigger summary
   function handleSummarize() {
     if (!user?.id) return;
-    aiGlobalActions.summarize(caseId, contextItems, user.id);
+    aiGlobalActions.summarize(caseId, contextItems, user?.id || '');
   }
 
-  // Save summary to DB
-  async function saveSummary() {
-    if (!$aiGlobalStore.context.summary || !caseId) return;
-    await fetch('/api/summary/save', {
-      method: 'POST',
-      body: JSON.stringify({ caseId, summary: $aiGlobalStore.context.summary }),
-      headers: { 'Content-Type': 'application/json' }
-    });
-    // Optionally show a notification here
-  }
-</script>
+    // Save summary to DB
+    async function saveSummary() {
+      if (!(($aiGlobalStore as AIStore).context.summary) || !caseId) return;
+      await fetch('/api/summary/save', {
+        method: 'POST',
+        body: JSON.stringify({ caseId, summary: ($aiGlobalStore as AIStore).context.summary }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      // Optionally show a notification here
+    }
+  </script>
 
-<Card class="nier-card p-6">
-  <div class="flex items-center justify-between mb-4">
-    <h3 class="nier-title text-xl font-bold">AI Evidence Summary</h3>
+  <Card class="nier-card p-6">
+    <div class="nier-header mb-4">
+      <h3 class="nier-title text-lg font-bold mb-2">AI Evidence Summary</h3>
     <div class="flex gap-2">
       <Button
         onclick={handleSummarize}
         disabled={!user || $aiGlobalStore.context.loading}
         variant="primary"
-        class="nier-button"
+        class="relative overflow-hidden transition-all duration-300 hover:translate-y--0.5 hover:shadow-lg"
       >
         {!user ? 'Sign in to Summarize' : ($aiGlobalStore.context.loading ? 'Summarizing...' : 'Summarize Evidence')}
       </Button>
@@ -74,7 +85,7 @@
         onclick={saveSummary}
         disabled={!$aiGlobalStore.context.summary || $aiGlobalStore.context.loading}
         variant="primary"
-        class="nier-button"
+        class="relative overflow-hidden transition-all duration-300 hover:translate-y--0.5 hover:shadow-lg"
       >
         Save Summary
       </Button>
@@ -139,7 +150,7 @@
     transition: all 0.3s ease;
   }
 
-  :global(.nier-button:hover) {
+  :global(.nier-button\:hover) {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }

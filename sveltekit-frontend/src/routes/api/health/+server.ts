@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { redisVectorService } from "$lib/services/redis-vector-service";

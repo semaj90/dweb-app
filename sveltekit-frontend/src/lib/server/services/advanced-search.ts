@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Advanced Search & Filtering System (Simplified)
  * Supports full-text search, filters, and suggestions

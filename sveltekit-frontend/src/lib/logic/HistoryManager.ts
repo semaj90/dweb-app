@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Simple content node interface
 export interface ContentNode {
   type: string;

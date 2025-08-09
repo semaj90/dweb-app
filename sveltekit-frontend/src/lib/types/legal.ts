@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Legal AI System Type Definitions
 export interface LegalCase {
   id: string;

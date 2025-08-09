@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';

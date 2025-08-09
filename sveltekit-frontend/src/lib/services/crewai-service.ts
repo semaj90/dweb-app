@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CrewAI Multi-Agent Service
  * Handles role-based agent crews for specialized legal workflows

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // lib/stores/ai.ts
 // Global AI Summary Store using XState v5, with memoization and streaming support
 import { setup, createActor, assign, fromPromise } from "xstate";

@@ -3,7 +3,8 @@
 ## Custom Local Models Configuration
 
 Your local models are in:
-- `./gemma3Q4_K_M/mo16.gguf` 
+
+- `./gemma3Q4_K_M/mo16.gguf`
 - `./gemma3Q4_K_M/mohf16-Q4_K_M.gguf`
 - `./local-models/gemma3Q4_K_M/mo16.gguf`
 
@@ -19,7 +20,6 @@ ollama list
 ```
 
 ## Modelfile-legal
-```dockerfile
 FROM ./gemma3Q4_K_M/mohf16-Q4_K_M.gguf
 
 TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
@@ -40,7 +40,7 @@ SYSTEM """You are a specialized legal AI assistant for prosecutors and legal pro
 ```
 
 ## Modelfile-deeds
-```dockerfile
+
 FROM ./local-models/gemma3Q4_K_M/mo16.gguf
 
 TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
@@ -58,7 +58,8 @@ PARAMETER temperature 0.6
 PARAMETER num_ctx 4096
 
 SYSTEM """You are an expert in property law, real estate transactions, and deed analysis. You help with document review, legal compliance, and real estate law questions."""
-```
+
+````
 
 ## Updated batch_embed.go Configuration
 
@@ -66,16 +67,16 @@ SYSTEM """You are an expert in property law, real estate transactions, and deed 
 // Update model references in batch_embed.go
 func getOllamaEmbedding(text string, model string) ([]float32, error) {
     ollamaURL := "http://localhost:11434/api/embeddings"
-    
+
     // Use custom models
     if model == "" {
         model = "gemma-legal" // Default to your custom legal model
     }
-    
+
     reqBody := OllamaEmbedRequest{
         Model:  model,
         Prompt: text,
     }
     // ... rest of function
 }
-```
+````

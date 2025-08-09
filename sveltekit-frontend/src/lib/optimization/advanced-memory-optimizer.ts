@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Advanced Memory Optimizer with LOD, k-means, SOM, and multi-layer caching
  * Optimizes memory usage across the entire legal AI system

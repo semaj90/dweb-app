@@ -1,288 +1,475 @@
 <script lang="ts">
-  interface RegisterForm {
-    error?: string;
-    name?: string;
-    email?: string;
-    role?: string;
-    [key: string]: any;
-}
-  import { enhance } from '$app/forms';
-  import type { ActionData } from './$types';
-  export let form: RegisterForm = {};
+  import { superForm } from 'sveltekit-superforms';
+  import { registerSchema } from '$lib/schemas';
+  import { zod } from 'sveltekit-superforms/adapters';
+  import type { PageData } from './$types';
 
-  let loading = false;
-  let passwordStrength = 0;
-  let password = '';
-  let confirmPassword = '';
+  let { data }: { data: PageData } = $props();
 
-  function checkPasswordStrength(pwd: string) {
+  const { form, errors, enhance, submitting, message } = superForm(data.form, {
+    validators: zod(registerSchema),
+    resetForm: true,
+    scrollToError: 'smooth',
+    errorSelector: '[data-invalid]',
+    onUpdated: ({ form: f }) => {
+      if (f.message) {
+        console.log('Registration message:', f.message);
+      }
+    }
+  });
+
+  // Role options for the select dropdown
+  const roleOptions = [
+    { value: 'prosecutor', label: '⚖️ Prosecutor', desc: 'Lead legal proceedings and case strategy' },
+    { value: 'investigator', label: '🔍 Investigator', desc: 'Gather evidence and investigate cases' },
+    { value: 'admin', label: '👑 Administrator', desc: 'System management and oversight' },
+    { value: 'analyst', label: '📊 Legal Analyst', desc: 'Research and analyze legal precedents' }
+  ] as const;
+
+  // Password strength calculation
+  let passwordStrength = $derived.by(() => {
+    if (!$form.password) return 0;
     let strength = 0;
-    if (pwd.length >= 8) strength++;
-    if (/[a-z]/.test(pwd)) strength++;
-    if (/[A-Z]/.test(pwd)) strength++;
-    if (/[0-9]/.test(pwd)) strength++;
-    if (/[^a-zA-Z0-9]/.test(pwd)) strength++;
+    if ($form.password.length >= 8) strength++;
+    if (/[a-z]/.test($form.password)) strength++;
+    if (/[A-Z]/.test($form.password)) strength++;
+    if (/[0-9]/.test($form.password)) strength++;
+    if (/[^a-zA-Z0-9]/.test($form.password)) strength++;
     return strength;
-}
-  $: passwordStrength = checkPasswordStrength(password);
-  $: passwordsMatch = password === confirmPassword && confirmPassword !== '';
-  $: strengthText = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength] || 'Very Weak';
-  $: strengthColor = ['var(--del-color)', 'var(--color-orange)', 'var(--color-amber-500)', 'var(--ins-color)', 'var(--ins-color)'][passwordStrength] || 'var(--del-color)';
+  });
+
+  let passwordsMatch = $derived(
+    $form.password === $form.confirmPassword && $form.confirmPassword !== ''
+  );
+
+  let strengthText = $derived(
+    ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'][passwordStrength] || 'Very Weak'
+  );
 </script>
 
 <svelte:head>
-  <title>Legal Case Management - Register</title>
+  <title>Register - Legal Case Management</title>
   <meta name="description" content="Create your account for the Legal Case Management System" />
 </svelte:head>
 
-<main class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1Z"/>
-          </svg>
-        </div>
-        <div>
-          <h1>Join Legal Case Management</h1>
-          <p class="container mx-auto px-4">Start Your Journey</p>
-        </div>
-      </div>
-      
-      <p class="container mx-auto px-4">
-        Create your account to access powerful case management tools, 
-        evidence tracking, and streamlined legal workflows designed for modern legal professionals.
-      </p>
-      
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">✓</span>
-          <span>Complete case management system</span>
-        </div>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">✓</span>
-          <span>Secure evidence handling</span>
-        </div>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">✓</span>
-          <span>Advanced analytics & reporting</span>
-        </div>
-      </div>
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <div class="logo">⚖️</div>
+      <h1>Join Legal Case Management</h1>
+      <p>Create your professional account</p>
     </div>
-    
-    <div class="container mx-auto px-4">
-      <article>
-        <header>
-          <h2>Create Your Account</h2>
-        </header>
-        
-        <form method="POST" use:enhance={(({ formElement, formData, action, cancel, submitter }) => {
-          loading = true;
-          return async ({ result, update }) => {
-            loading = false;
-            await update();
-          };
-        })}>
-          
-          {#if form?.error}
-            <div class="container mx-auto px-4" role="alert">
-              <strong>Error:</strong> {form?.error}
-            </div>
-          {/if}
 
-          <label for="name">
-            Full Name
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={form?.name || ''}
-              placeholder="John Doe"
-              required
-              autocomplete="name"
-              aria-required="true"
-            />
-          </label>
-          
-          <label for="email">
-            Email Address
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={form?.email || ''}
-              placeholder="prosecutor@example.com"
-              required
-              autocomplete="email"
-              aria-required="true"
-            />
-          </label>
-          
-          <label for="password">
-            Password
-            <input
-              type="password"
-              id="password"
-              name="password"
-              bind:value={password}
-              placeholder="••••••••"
-              required
-              autocomplete="new-password"
-              minlength="8"
-              aria-required="true"
-            />
-            {#if password}
-              <small>
-                Password Strength: <span style="color: {strengthColor};">{strengthText}</span>
-                <progress value={passwordStrength} max="5" style="margin-top: 0.5rem;"></progress>
-              </small>
-            {/if}
-            <small>Must be at least 8 characters with mixed case, numbers & symbols</small>
-          </label>
-          
-          <label for="confirmPassword">
-            Confirm Password
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              bind:value={confirmPassword}
-              placeholder="••••••••"
-              required
-              autocomplete="new-password"
-              aria-required="true"
-            />
-            {#if confirmPassword && !passwordsMatch}
-              <small style="color: var(--del-color);">Passwords do not match</small>
-            {:else if confirmPassword && passwordsMatch}
-              <small style="color: var(--ins-color);">Passwords match ✓</small>
-            {/if}
-          </label>
-          
-          <label for="role">
-            Role
-            <select id="role" name="role" required aria-required="true">
-              <option value="">Select your role...</option>
-              <option value="prosecutor" selected={form?.role === 'prosecutor'}>Prosecutor</option>
-              <option value="investigator" selected={form?.role === 'investigator'}>Investigator</option>
-              <option value="admin" selected={form?.role === 'admin'}>Administrator</option>
-              <option value="analyst" selected={form?.role === 'analyst'}>Legal Analyst</option>
-            </select>
-          </label>
-          
-          <label>
-            <input type="checkbox" name="terms" required />
-            I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>
-          </label>
-          
-          <button type="submit" class="container mx-auto px-4" disabled={loading} aria-busy={loading}>
-            {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
-        </form>
-        
-        <footer>
-          Already have an account? <a href="/login">Sign in here</a>
-        </footer>
-      </article>
+    <form method="POST" use:enhance class="register-form">
+      {#if $message}
+        <div class="error-message" role="alert">
+          {$message}
+        </div>
+      {/if}
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          bind:value={$form.name}
+          data-invalid={$errors.name}
+          placeholder="John Doe"
+          required
+          class="form-input"
+          class:error={$errors.name}
+          autocomplete="name"
+        />
+        {#if $errors.name}
+          <div class="field-error">{$errors.name}</div>
+        {/if}
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          bind:value={$form.email}
+          data-invalid={$errors.email}
+          placeholder="prosecutor@example.com"
+          required
+          class="form-input"
+          class:error={$errors.email}
+          autocomplete="email"
+        />
+        {#if $errors.email}
+          <div class="field-error">{$errors.email}</div>
+        {/if}
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          bind:value={$form.password}
+          data-invalid={$errors.password}
+          placeholder="••••••••"
+          required
+          class="form-input"
+          class:error={$errors.password}
+          autocomplete="new-password"
+          minlength="8"
+        />
+        {#if $form.password}
+          <div class="password-strength">
+            <div class="strength-meter">
+              <div 
+                class="strength-fill" 
+                style="width: {(passwordStrength / 5) * 100}%; background-color: {
+                  passwordStrength <= 1 ? '#ef4444' : 
+                  passwordStrength <= 2 ? '#f97316' :
+                  passwordStrength <= 3 ? '#eab308' :
+                  passwordStrength <= 4 ? '#22c55e' : '#16a34a'
+                };"
+              ></div>
+            </div>
+            <span class="strength-text" style="color: {
+              passwordStrength <= 1 ? '#ef4444' : 
+              passwordStrength <= 2 ? '#f97316' :
+              passwordStrength <= 3 ? '#eab308' :
+              passwordStrength <= 4 ? '#22c55e' : '#16a34a'
+            };">
+              {strengthText}
+            </span>
+          </div>
+          <small class="form-help">
+            Use 8+ characters with uppercase, lowercase, numbers & symbols
+          </small>
+        {/if}
+        {#if $errors.password}
+          <div class="field-error">{$errors.password}</div>
+        {/if}
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          bind:value={$form.confirmPassword}
+          data-invalid={$errors.confirmPassword}
+          placeholder="••••••••"
+          required
+          class="form-input"
+          class:error={$errors.confirmPassword}
+          autocomplete="new-password"
+        />
+        {#if $form.confirmPassword && !passwordsMatch}
+          <div class="field-error">Passwords do not match</div>
+        {:else if $form.confirmPassword && passwordsMatch}
+          <div class="field-success">Passwords match ✓</div>
+        {/if}
+        {#if $errors.confirmPassword}
+          <div class="field-error">{$errors.confirmPassword}</div>
+        {/if}
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select
+          id="role"
+          name="role"
+          bind:value={$form.role}
+          data-invalid={$errors.role}
+          required
+          class="form-select"
+          class:error={$errors.role}
+        >
+          <option value="">Select your role...</option>
+          {#each roleOptions as option}
+            <option value={option.value}>
+              {option.label}
+            </option>
+          {/each}
+        </select>
+        {#if $form.role}
+          <small class="form-help">
+            {roleOptions.find(opt => opt.value === $form.role)?.desc}
+          </small>
+        {/if}
+        {#if $errors.role}
+          <div class="field-error">{$errors.role}</div>
+        {/if}
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            name="terms"
+            bind:checked={$form.terms}
+            data-invalid={$errors.terms}
+            required
+            class="form-checkbox"
+          />
+          <span class="checkbox-text">
+            I agree to the <a href="/terms" target="_blank">Terms of Service</a> 
+            and <a href="/privacy" target="_blank">Privacy Policy</a>
+          </span>
+        </label>
+        {#if $errors.terms}
+          <div class="field-error">{$errors.terms}</div>
+        {/if}
+      </div>
+
+      <button
+        type="submit"
+        disabled={$submitting}
+        class="register-button"
+      >
+        {#if $submitting}
+          <div class="spinner"></div>
+          Creating Account...
+        {:else}
+          Create Account
+        {/if}
+      </button>
+    </form>
+
+    <div class="register-footer">
+      <p class="login-link">
+        Already have an account? 
+        <a href="/login">Sign in here</a>
+      </p>
     </div>
   </div>
-</main>
+</div>
 
 <style>
   /* @unocss-include */
-  .auth-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    min-height: 80vh;
-    align-items: center;
-    padding: 2rem 0;
-}
-  .auth-info {
-    padding: 2rem;
-}
-  .auth-header {
+  .register-container {
+    min-height: 100vh;
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-  .brand-icon {
-    color: var(--harvard-crimson);
-    flex-shrink: 0;
-}
-  .auth-header h1 {
-    font-size: 2.5rem;
-    margin: 0;
-    line-height: 1.2;
-}
-  .auth-subtitle {
-    color: var(--text-muted);
-    margin: 0;
-    font-size: 1.1rem;
-}
-  .auth-description {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-    color: var(--text-muted);
-}
-  .feature-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-  .feature-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-  .feature-icon {
-    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    background: var(--ins-color);
-    color: white;
-    font-size: 0.875rem;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-  .auth-form {
-    padding: 1rem;
-}
-  .auth-form article {
-    margin: 0;
-    max-width: 400px;
-}
-  .auth-form h2 {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 2rem;
+  }
+
+  .register-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+  }
+
+  .register-header {
     text-align: center;
-    margin-bottom: 1.5rem;
-}
-  .error-alert {
-    padding: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .logo {
+    font-size: 3rem;
     margin-bottom: 1rem;
-    background: var(--del-background-color);
-    border: 1px solid var(--del-color);
-    border-radius: var(--border-radius);
-    color: var(--del-color);
-}
-  @media (max-width: 768px) {
-    .auth-layout {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-}
-    .auth-info {
+  }
+
+  .register-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+
+  .register-header p {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-input.error, .form-select.error {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 1px #dc2626;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .form-checkbox {
+    margin-top: 0.125rem;
+  }
+
+  .checkbox-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .checkbox-text a {
+    color: #3b82f6;
+    text-decoration: underline;
+  }
+
+  .password-strength {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .strength-meter {
+    flex: 1;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .strength-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .strength-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .form-help {
+    color: #6b7280;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .field-error {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .field-success {
+    color: #16a34a;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .error-message {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .register-button {
+    width: 100%;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .register-button:hover:not(:disabled) {
+    background: #2563eb;
+  }
+
+  .register-button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .register-footer {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .login-link {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .login-link a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .login-link a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .register-container {
       padding: 1rem;
-      text-align: center;
-}
-    .auth-header {
-      justify-content: center;
-}
-    .auth-header h1 {
-      font-size: 2rem;
-}}
+    }
+    
+    .register-card {
+      padding: 1.5rem;
+    }
+  }
 </style>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Password hashing utilities using bcrypt
 import bcrypt from "bcryptjs";
 

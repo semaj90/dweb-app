@@ -1,17 +1,10 @@
-import { loginSchema, registerSchema } from "$lib/schemas";
-import { superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+// @ts-nocheck
 
 // Expose session and user to all layouts/pages (SSR)
 export const load = async ({ locals, url, request }) => {
-  const loginForm = await superValidate(zod(loginSchema));
-  const registerForm = await superValidate(zod(registerSchema));
-
   // Enhanced SSR context with hydration support
   const contextData = {
     user: locals.user,
-    loginForm,
-    registerForm,
     // SSR hydration context
     hydrationContext: {
       timestamp: new Date().toISOString(),

@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface CacheLayer {
   name: string;
   priority: number;

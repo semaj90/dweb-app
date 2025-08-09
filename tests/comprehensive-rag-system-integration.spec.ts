@@ -239,7 +239,7 @@ test.describe("🏛️ Legal AI RAG System - Comprehensive Integration", () => {
 
       // Check available models
       const modelsList = page.locator('[data-testid="available-models"] li');
-      await expect(modelsList).toHaveCountGreaterThan(0);
+      await expect(modelsList).toHaveCount(1);
 
       // Verify required models are available
       await expect(
@@ -361,7 +361,7 @@ test.describe("🏛️ Legal AI RAG System - Comprehensive Integration", () => {
 
       // Step 5: Check retrieved context
       const retrievedDocs = page.locator('[data-testid="retrieved-document"]');
-      await expect(retrievedDocs).toHaveCountGreaterThan(0);
+      await expect(retrievedDocs).toHaveCount(1);
 
       // Verify relevance scores
       const relevanceScore = await page
@@ -565,7 +565,7 @@ test.describe("🏛️ Legal AI RAG System - Comprehensive Integration", () => {
       await page.goto("http://localhost:5173/ai-chat");
 
       // Simulate Ollama service interruption
-      await page.route("http://localhost:11434/**", (route) => route.abort());
+      await page.route("http://localhost:11434/**", (route: any) => route.abort());
 
       // Attempt to send message
       await page.fill(

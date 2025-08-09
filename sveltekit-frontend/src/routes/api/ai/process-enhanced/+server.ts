@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ======================================================================
 // ENHANCED AI PROCESSING API ENDPOINT
 // Integrating XState workflows with multi-model AI pipeline

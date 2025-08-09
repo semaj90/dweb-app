@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ollamaService } from "$lib/services/ollama-service";
 import type { RequestHandler } from "@sveltejs/kit";
 

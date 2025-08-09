@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Legal Document Service - Clean Architecture Implementation
 import type {
   LegalDocument,

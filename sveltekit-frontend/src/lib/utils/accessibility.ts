@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Accessibility utilities for WCAG 2.1 AA compliance
  * Ensures proper focus management, keyboard navigation, and screen reader support

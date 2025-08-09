@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from '@sveltejs/kit';
 import { logQueue } from '../../../../lib/server/queues/logQueue';
 

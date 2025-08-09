@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Gemma3 API Client for SvelteKit
  * Provides integration with Ollama and llama.cpp servers

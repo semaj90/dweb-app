@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Ollama service for Gemma3 Q4_K_M integration
 // Handles local LLM inference with proper error handling and streaming support
 

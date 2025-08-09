@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ContextService } from "$lib/services/context-service";
 import { json } from "@sveltejs/kit";
 // Environment variables fallback

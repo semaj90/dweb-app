@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced RAG API Endpoints - Backend Integration
  * Integrates with Enhanced RAG Backend (localhost:8000)

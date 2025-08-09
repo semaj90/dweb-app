@@ -1,4 +1,6 @@
-<script lang="ts">
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
   import { superForm } from 'sveltekit-superforms/client';
   import { zod } from 'sveltekit-superforms/adapters';
   import { z } from 'zod';

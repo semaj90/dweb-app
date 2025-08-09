@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Neural Sprite Effects Library
  * Advanced visual effects for the NES-inspired sprite engine

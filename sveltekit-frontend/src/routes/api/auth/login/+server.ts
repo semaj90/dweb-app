@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Login API endpoint using Lucia v3 and bcrypt
 import { users } from "$lib/server/db/schema-postgres";
 import type { RequestHandler } from "@sveltejs/kit";

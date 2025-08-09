@@ -1,8 +1,24 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./sveltekit-frontend" },
-    { "path": "./rag" },
-    { "path": "./vscode-llm-extension" }
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "bundler"
+  },
+  "exclude": [
+    "node_modules/**", 
+    "dist/**", 
+    "tests/integration.test.ts", 
+    "src/service-worker.js",
+    "src/**/*.svelte",
+    "src/lib/services/*.disabled",
+    "src/lib/graphql/*.disabled",
+    "src/routes/api/graphql/*.disabled"
   ]
 }

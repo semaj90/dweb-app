@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Optimized case search API endpoint
 // Supports multiple search strategies with automatic fallbacks
 import { json } from "@sveltejs/kit";

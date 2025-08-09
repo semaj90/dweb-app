@@ -17,6 +17,7 @@
     "format": "prettier --plugin-search-dir . --write .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:seed": "node simple-seed.mjs",
     "db:studio": "drizzle-kit studio",
     "ollama:start": "powershell -ExecutionPolicy Bypass -File ../scripts/start-ollama-service.ps1 start",
     "ollama:health": "powershell -ExecutionPolicy Bypass -File ../scripts/start-ollama-service.ps1 health",

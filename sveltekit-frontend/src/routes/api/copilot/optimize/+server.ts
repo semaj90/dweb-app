@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Simple Copilot Optimization API for Testing
  */

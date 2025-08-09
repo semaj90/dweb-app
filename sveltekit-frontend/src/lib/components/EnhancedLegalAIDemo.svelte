@@ -14,11 +14,13 @@
     currentlyProcessingStore,
     processingResultsStore,
     aiRecommendationsStore,
-    vectorSimilarityStore,
     graphRelationshipsStore,
     systemHealthStore,
     initializeEnhancedMachines
   } from '$lib/stores/enhancedStateMachines';
+
+  // Create local store for vector similarity since it's not exported
+  const vectorSimilarityStore = writable([]);
 
   import {
     enhancedLoki,

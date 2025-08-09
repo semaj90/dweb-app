@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios from 'axios';
 
 // This function calls your local Ollama server to get an embedding

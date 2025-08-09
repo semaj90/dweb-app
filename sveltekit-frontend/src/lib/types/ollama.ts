@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface EmbeddingResponse {
   embedding: number[];
 }

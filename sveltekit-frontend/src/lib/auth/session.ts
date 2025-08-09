@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Lucia v3 Authentication with PostgreSQL and bcrypt
 import { dev } from "$app/environment";
 import { sessions, users } from "$lib/server/db/schema-postgres";

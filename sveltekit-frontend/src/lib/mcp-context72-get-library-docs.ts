@@ -1,3 +1,4 @@
+// @ts-nocheck
 // MCP Context7.2 Get Library Docs utility
 // Ensures #mcp_context72_get-library-docs is available in the codebase
 

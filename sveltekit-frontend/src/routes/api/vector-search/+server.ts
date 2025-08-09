@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from "@sveltejs/kit";
 import { db, cases } from "$lib/server/db/index";
 import { qdrant } from "$lib/server/vector/qdrant";

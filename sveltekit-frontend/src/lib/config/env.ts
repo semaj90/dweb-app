@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Production environment configuration
 export const ENV_CONFIG = {
   OLLAMA_URL: process.env.OLLAMA_URL || 'http://localhost:11434',

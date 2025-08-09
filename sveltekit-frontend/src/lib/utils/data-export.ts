@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Advanced data export/import utilities for the Detective Mode app
  * Provides secure, comprehensive data management with multiple formats

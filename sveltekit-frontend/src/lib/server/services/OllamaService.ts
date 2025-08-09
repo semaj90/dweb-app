@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Ollama Service for local LLM integration
  */

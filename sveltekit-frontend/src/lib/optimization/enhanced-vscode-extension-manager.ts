@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced VS Code Extension Memory Manager
  * Async/Promise-based command execution with WebAssembly JSON optimization

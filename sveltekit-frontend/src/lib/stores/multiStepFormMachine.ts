@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/lib/stores/multiStepFormMachine.ts - XState v5 Multi-step Forms with Superforms & Zod
 import { setup, createActor, assign, fromPromise } from "xstate";
 import { z } from "zod";

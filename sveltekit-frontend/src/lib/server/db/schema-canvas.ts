@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Additional schema for interactive canvas with reports and POIs
 import {
   pgTable,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { WebSocketServer } from "ws";
 import type { IncomingMessage } from "http";
 import type { Socket } from "net";

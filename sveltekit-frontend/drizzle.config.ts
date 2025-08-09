@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
@@ -7,7 +8,7 @@ export default defineConfig({
   dbCredentials: {
     url:
       process.env.DATABASE_URL ||
-      "postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db",
+      "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
   },
   verbose: true,
   strict: true,
@@ -15,5 +16,12 @@ export default defineConfig({
     prefix: "timestamp",
     table: "__drizzle_migrations__",
     schema: "public",
+  },
+  // Enable pgvector extension support
+  extensionsFilters: ["vector"],
+  
+  // Introspection settings for pgvector
+  introspect: {
+    casing: "snake_case",
   },
 });

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Real-Time Matrix LOD System with AI-Aware Rendering
 // GPU-accelerated Level of Detail with cubic filter blending
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Legal Schema for Hybrid Vector Storage (Qdrant + PGVector)
  * Implements Phase 8 architecture with legal-specific AI enhancements

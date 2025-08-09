@@ -356,13 +356,13 @@
           </div>
 
           <!-- Action Buttons -->
-          <Button variant="ghost" size="sm" on:click={downloadConversation} disabled={messages.length <= 1}>
+          <Button variant="ghost" size="sm" onclick={downloadConversation} disabled={messages.length <= 1}>
             <Download class="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" on:click={clearMessages} disabled={messages.length <= 1}>
+          <Button variant="ghost" size="sm" onclick={clearMessages} disabled={messages.length <= 1}>
             <Trash2 class="h-4 w-4" />
           </Button>
-          <Dialog.Close asChild>
+          <Dialog.Close>
             <Button variant="ghost" size="sm">
               ✕
             </Button>
@@ -422,16 +422,16 @@
       <!-- Input -->
       <div class="p-4 border-t bg-gray-50">
         <div class="flex gap-2">
-          <Input
+          <input
             bind:this={inputElement}
             bind:value={currentMessage}
             placeholder={isConnected ? "Ask your legal question..." : "Connecting to AI service..."}
             disabled={!isConnected || isLoading}
-            class="flex-1"
-            on:keydown={handleKeydown}
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onkeydown={handleKeydown}
           />
           <Button
-            on:click={sendMessage}
+            onclick={sendMessage}
             disabled={!currentMessage.trim() || !isConnected || isLoading}
             class="px-4"
           >
@@ -459,8 +459,8 @@
     </Dialog.Content>
   </Dialog.Portal>
 </Dialog.Root>
-
 <style>
+
   /* Custom styles for enhanced appearance */
   :global(.chat-message-content) {
     line-height: 1.6;

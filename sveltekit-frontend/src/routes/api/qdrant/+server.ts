@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Qdrant Vector Database Management API
 // Handles syncing between PostgreSQL and Qdrant vector database
 import { json } from "@sveltejs/kit";

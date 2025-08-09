@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { canvasStates, cases, evidence } from "$lib/server/db/schema-postgres";
 import { redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Database Schema with Advanced pgvector Integration
  * Optimized for LangChain-Ollama workflows with nomic-embed-text

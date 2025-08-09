@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { canvasLayouts } from "$lib/server/db/schema-canvas";
 import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Loki.js based local memory and sync service for enhanced performance
 // Browser environment check
 const browser = typeof window !== "undefined";

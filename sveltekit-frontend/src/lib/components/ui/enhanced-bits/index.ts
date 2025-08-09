@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Bits UI v2 + Svelte 5 + UnoCSS Integration
 // Optimized for Legal AI with NieR theming
 

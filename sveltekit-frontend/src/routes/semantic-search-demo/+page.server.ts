@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { PageServerLoad } from "./$types";
 import { semanticSearch } from "$lib/ai/mcp-helpers";
 

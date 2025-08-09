@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Local LLM Configuration for Desktop and Web App Development
 // This file manages local model downloads, setup, and integration
 

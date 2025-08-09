@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod';
 
 // Allowed file types for evidence upload

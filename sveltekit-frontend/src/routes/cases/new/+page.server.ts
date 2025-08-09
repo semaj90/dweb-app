@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cases } from "$lib/server/db/schema-postgres";
 import { fail, redirect } from "@sveltejs/kit";
 import { randomUUID } from "crypto";

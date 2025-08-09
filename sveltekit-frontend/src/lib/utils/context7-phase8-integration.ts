@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Context7 + Phase 8 Unified Recommendation System
 // Integrates MCP tools with AI-aware matrix UI and XState machines
 

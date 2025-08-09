@@ -74,7 +74,7 @@ test.describe('Legal AI CRUD Operations', () => {
     await expect(page.locator('text=' + testUser.name)).toBeVisible();
   });
 
-  test('create a new case with Superforms validation', async ({ page }) => {
+  test('create a new case with Superforms validation', async ({ page }): Promise<void> => {
     // First login
     await page.goto('/login');
     await page.fill('input[name="email"]', testUser.email);
@@ -111,7 +111,7 @@ test.describe('Legal AI CRUD Operations', () => {
     
     // Store case URL for evidence upload test
     const caseUrl = page.url();
-    return caseUrl;
+    // // // // return caseUrl;
   });
 
   test('upload evidence with drag and drop using Svelte DnD', async ({ page }) => {

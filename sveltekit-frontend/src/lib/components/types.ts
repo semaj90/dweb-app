@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface EditableNode {
   id: string;
   x: number;

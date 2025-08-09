@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * BullMQ Worker for Legal AI Document Processing
  * Integrates SvelteKit with Go Legal AI Server

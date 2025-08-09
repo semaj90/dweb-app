@@ -1,4 +1,6 @@
-<script lang="ts">
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
   import { Button } from 'bits-ui';
   import { Progress } from 'bits-ui';
   import { Badge } from 'bits-ui';

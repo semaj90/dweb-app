@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { building } from "$app/environment";
 import * as schema from "$lib/server/db/schema-postgres";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";

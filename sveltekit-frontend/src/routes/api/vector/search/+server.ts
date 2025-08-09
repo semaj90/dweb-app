@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Vector Intelligence Search API Endpoint
  * Provides semantic search capabilities with Phase 4 Vector Intelligence

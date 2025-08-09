@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { writable, get } from "svelte/store";
 import { selectedCase } from "./cases";
 

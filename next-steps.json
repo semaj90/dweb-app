@@ -10,7 +10,7 @@
       "priority": "P0"
     },
     {
-      "id": "2", 
+      "id": "2",
       "action": "remove_incompatible_deps",
       "commands": [
         "go mod edit -droprequire github.com/bytedance/sonic",
@@ -56,7 +56,7 @@
       "status": "operational",
       "gpu": "RTX 3060 Ti",
       "vram": "7GB available",
-      "models": ["nomic-embed-text", "llama3"]
+      "models": ["nomic-embed-text", "gemma3Q4_K_M/mohf16-Q4_K_M.gguf"]
     },
     "services": {
       "port_8080": "running",

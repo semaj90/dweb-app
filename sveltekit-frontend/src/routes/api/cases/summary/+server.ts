@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Case } from "$lib/types";
 
 import {

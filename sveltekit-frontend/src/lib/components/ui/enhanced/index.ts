@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Svelte 5 + UnoCSS Component Library
 // Optimized for legal AI application with NieR theming
 

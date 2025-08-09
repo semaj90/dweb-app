@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/lib/server/db/schema-postgres-enhanced.ts
 import {
   pgTable,

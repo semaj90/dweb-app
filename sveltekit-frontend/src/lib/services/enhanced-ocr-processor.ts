@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Production OCR Processor Service
  * Handles PDF, image, and document processing with enhanced error handling

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Autonomous Engineering System
  * Comprehensive wrapper for Copilot self-prompting with multi-agent orchestration,

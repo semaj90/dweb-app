@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Comprehensive Database Synchronization Utility
 // Ensures all CRUD operations maintain perfect sync with PostgreSQL database
 

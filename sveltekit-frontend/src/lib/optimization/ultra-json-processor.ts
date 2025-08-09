@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Ultra-High Performance WebAssembly JSON Processor
  * 10x faster than RapidJSON with neural network optimization

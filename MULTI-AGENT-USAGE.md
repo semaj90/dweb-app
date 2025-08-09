@@ -20,7 +20,7 @@ Use these commands directly in your Claude Code session:
 # Analyze evidence document
 /analyze CASE-2024-001 ./evidence/witness_statement.txt
 
-# Extract persons from existing analysis  
+# Extract persons from existing analysis
 /extract_persons ./temp/analysis_CASE-2024-001_20240728/evidence_analysis.json
 ```
 
@@ -96,7 +96,7 @@ mutation AnalyzeEvidence($caseId: String!, $content: String!, $title: String!) {
 ```svelte
 <script>
   import { MultiAgentAnalysisCard } from '$lib/components/ai/MultiAgentAnalysisCard.svelte';
-  
+
   let analysisData = {
     caseId: 'CASE-2024-001',
     evidenceAnalysis: { /* from API */ },
@@ -114,7 +114,7 @@ mutation AnalyzeEvidence($caseId: String!, $content: String!, $title: String!) {
 ```svelte
 <script>
   import { PersonOfInterestCard } from '$lib/components/ai/PersonOfInterestCard.svelte';
-  
+
   let person = {
     name: 'John Doe',
     role: 'suspect',
@@ -122,7 +122,7 @@ mutation AnalyzeEvidence($caseId: String!, $content: String!, $title: String!) {
     confidence: 0.85,
     sourceContext: 'Mentioned in witness statement'
   };
-  
+
   let relationships = [
     {
       person1: 'John Doe',
@@ -141,7 +141,7 @@ mutation AnalyzeEvidence($caseId: String!, $content: String!, $title: String!) {
 ```svelte
 <script>
   import { EvidenceTimelineCard } from '$lib/components/ai/EvidenceTimelineCard.svelte';
-  
+
   let timelineEvents = [
     {
       date: '2024-07-15',
@@ -167,7 +167,7 @@ mutation AnalyzeEvidence($caseId: String!, $content: String!, $title: String!) {
 async function processEvidence(caseId, evidenceFile) {
   // Read evidence content
   const evidenceContent = await readFileContent(evidenceFile);
-  
+
   // Trigger multi-agent analysis
   const analysisResponse = await fetch('/api/multi-agent/analyze', {
     method: 'POST',
@@ -179,17 +179,17 @@ async function processEvidence(caseId, evidenceFile) {
       evidenceType: detectFileType(evidenceFile)
     })
   });
-  
+
   const analysis = await analysisResponse.json();
-  
+
   // 2. Auto-populate UI components
   updateAnalysisDisplay(analysis);
   updatePersonsOfInterest(analysis.personsData);
   updateTimeline(analysis.evidenceAnalysis.timelineEvents);
-  
+
   // 3. Update case with findings
   await updateCaseWithFindings(caseId, analysis.caseSynthesis);
-  
+
   return analysis;
 }
 
@@ -270,7 +270,6 @@ CREATE TABLE multi_agent_analyses (
 - **Monitoring**: Log agent performance and accuracy metrics
 
 ## Security Notes
-
 - **Evidence Encryption**: Encrypt sensitive evidence files at rest
 - **API Security**: Secure API endpoints with proper authentication
 - **Audit Trail**: Log all multi-agent processing activities

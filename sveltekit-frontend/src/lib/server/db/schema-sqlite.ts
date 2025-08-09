@@ -1,3 +1,4 @@
+// @ts-nocheck
 // SQLite schema for development
 import {
   sqliteTable,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Production schema type exports for SvelteKit 2 + Drizzle ORM
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
 import { 

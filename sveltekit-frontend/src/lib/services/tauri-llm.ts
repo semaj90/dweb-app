@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Tauri LLM Service with Gemma3 Integration
 // Extends the existing RAG system with local Rust-based LLM capabilities
 

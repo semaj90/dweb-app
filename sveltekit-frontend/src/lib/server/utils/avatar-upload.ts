@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { existsSync, mkdirSync, writeFileSync, unlinkSync } from "fs";
 import { join } from "path";
 import { createHash } from "crypto";

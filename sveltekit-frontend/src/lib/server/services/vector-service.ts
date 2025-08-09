@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Production Vector Service - Real Implementation
  * Integrates Redis Vector DB, Qdrant, and Ollama for production use

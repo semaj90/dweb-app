@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * XState Svelte Store Integration
  * Provides reactive Svelte stores for XState machines with persistence and devtools

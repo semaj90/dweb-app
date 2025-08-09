@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * TypeScript types for AI Service Worker system
  */

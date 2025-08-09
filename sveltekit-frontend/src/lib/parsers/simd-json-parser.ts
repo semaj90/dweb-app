@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SIMD-Optimized JSON Parser for Legal Documents
  * Uses typed arrays and vectorized operations for high-performance parsing

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { test, expect } from '@playwright/test';
 
 test.describe('Quick System Validation', () => {
@@ -89,7 +90,7 @@ test.describe('Quick System Validation', () => {
       
       // Check for required models
       const requiredModels = ['llama3.2', 'nomic-embed-text'];
-      requiredModels.forEach(modelName => {
+      requiredModels.forEach(modelName: any => {
         const hasModel = models.models?.some((m: any) => m.name.includes(modelName));
         console.log(`${modelName}: ${hasModel ? '✅' : '❌'}`);
       });

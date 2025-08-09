@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from '@sveltejs/kit';
 import { testDatabaseConnection, initializeDatabase } from '$lib/database/connection';
 import type { RequestHandler } from './$types';

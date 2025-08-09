@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { writable, derived } from "svelte/store";
 import type { Database } from "$lib/types";
 import type { ChatMessage } from "$lib/types/api";

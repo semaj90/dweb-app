@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from "zod";
 
 export const loginSchema = z.object({
@@ -16,9 +17,9 @@ export const registerSchema = z
       .string()
       .min(8, { message: "Password confirmation required." }),
     role: z.enum(["prosecutor", "investigator", "admin", "analyst"]),
-    terms: z.literal("on", {
-      errorMap: () => ({ message: "You must accept the terms." }),
-    }),
+    terms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions."
+    })
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",

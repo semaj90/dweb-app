@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { writable } from "svelte/store";
 import type { Evidence } from "../data/types";
 

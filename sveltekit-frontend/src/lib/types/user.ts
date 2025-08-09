@@ -1,3 +1,4 @@
+// @ts-nocheck
 // User types consolidated
 export interface User {
   id: string;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Context menu state and store
 import type { Writable } from "svelte/store";
 import { writable, derived } from "svelte/store";

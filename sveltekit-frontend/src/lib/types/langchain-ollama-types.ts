@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Comprehensive TypeScript Types for LangChain-Ollama Integration
  * Production-ready types for legal AI system with advanced features

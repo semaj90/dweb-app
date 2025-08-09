@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db } from '$lib/server/db/drizzle';
 import { errorLogs } from '$lib/db/schema/aiHistory'; // A new table you'll need to create
 

@@ -1,59 +1,35 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { user } from '$lib/stores/user';
-  
-  // Note: Authentication check is handled server-side to prevent redirect loops
-  
-  let email = 'admin@legal-ai.local';
-  let password = '';
-  let loading = false;
-  let error = '';
+  import { superForm } from 'sveltekit-superforms';
+  import { loginSchema, type LoginSchema } from '$lib/schemas';
+  import { zod } from 'sveltekit-superforms/adapters';
+  import type { PageData } from './$types';
 
-  async function handleLogin() {
-    if (!email || !password) {
-      error = 'Please fill in all fields';
-      return;
-    }
+  let { data }: { data: PageData } = $props();
 
-    loading = true;
-    error = '';
-
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store user data
-        user.setUser(data.user);
-        // Redirect to dashboard
-        goto('/dashboard');
-      } else {
-        error = data.message || 'Login failed';
+  const { form, errors, enhance, submitting } = superForm(data.form, {
+    validators: zod(loginSchema),
+    resetForm: false,
+    scrollToError: 'smooth',
+    errorSelector: '[data-invalid]',
+    onUpdated: ({ form: f }) => {
+      if (f.message) {
+        console.log('Form message:', f.message);
       }
-    } catch (err) {
-      error = 'Network error. Please try again.';
-      console.error('Login error:', err);
-    } finally {
-      loading = false;
     }
-  }
+  });
 
-  // Demo login for testing
-  function demoLogin() {
-    user.setUser({
-      id: '1',
-      email: 'admin@legal-ai.local',
-      name: 'System Administrator',
-      role: 'admin'
-    });
-    goto('/dashboard');
+  // Demo users for quick testing
+  const demoUsers = [
+    { email: 'prosecutor@legal.ai', password: 'password123', name: 'John Prosecutor', role: 'prosecutor' },
+    { email: 'detective@legal.ai', password: 'password123', name: 'Jane Detective', role: 'investigator' },
+    { email: 'admin@legal.ai', password: 'password123', name: 'Admin User', role: 'admin' },
+    { email: 'analyst@legal.ai', password: 'password123', name: 'Legal Analyst', role: 'analyst' }
+  ] as const;
+
+  // Quick demo login function
+  function quickLogin(demoUser: typeof demoUsers[0]) {
+    $form.email = demoUser.email;
+    $form.password = demoUser.password;
   }
 </script>
 
@@ -69,10 +45,16 @@
       <p>Administrator Login</p>
     </div>
 
-    <form on:submit|preventDefault={handleLogin} class="login-form">
-      {#if error}
+    <form method="POST" use:enhance class="login-form">
+      {#if data.registrationSuccess}
+        <div class="success-message">
+          {data.registrationSuccess}
+        </div>
+      {/if}
+      
+      {#if data.form?.message}
         <div class="error-message">
-          {error}
+          {data.form.message}
         </div>
       {/if}
 
@@ -80,32 +62,44 @@
         <label for="email">Email Address</label>
         <input
           id="email"
+          name="email"
           type="email"
-          bind:value={email}
-          placeholder="admin@legal-ai.local"
+          bind:value={$form.email}
+          data-invalid={$errors.email}
+          placeholder="Enter your email"
           required
           class="form-input"
+          class:error={$errors.email}
         />
+        {#if $errors.email}
+          <div class="field-error">{$errors.email}</div>
+        {/if}
       </div>
 
       <div class="form-group">
         <label for="password">Password</label>
         <input
           id="password"
+          name="password"
           type="password"
-          bind:value={password}
+          bind:value={$form.password}
+          data-invalid={$errors.password}
           placeholder="Enter your password"
           required
           class="form-input"
+          class:error={$errors.password}
         />
+        {#if $errors.password}
+          <div class="field-error">{$errors.password}</div>
+        {/if}
       </div>
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={$submitting}
         class="login-button"
       >
-        {#if loading}
+        {#if $submitting}
           <div class="spinner"></div>
           Signing in...
         {:else}
@@ -116,16 +110,25 @@
 
     <div class="login-footer">
       <div class="divider">
-        <span>or</span>
+        <span>or use demo accounts</span>
       </div>
       
-      <button
-        type="button"
-        on:click={demoLogin}
-        class="demo-button"
-      >
-        🚀 Demo Login (No Authentication)
-      </button>
+      <div class="demo-users">
+        {#each demoUsers as demoUser}
+          <button
+            type="button"
+            on:click={() => quickLogin(demoUser)}
+            class="demo-user-button"
+            title="Click to fill login form with {demoUser.name} credentials"
+          >
+            <div class="demo-user-info">
+              <span class="demo-name">{demoUser.name}</span>
+              <span class="demo-role">{demoUser.role}</span>
+            </div>
+            <span class="demo-email">{demoUser.email}</span>
+          </button>
+        {/each}
+      </div>
 
       <p class="login-links">
         <a href="/">← Back to Home</a>
@@ -181,6 +184,16 @@
     background: #fef2f2;
     border: 1px solid #fecaca;
     color: #dc2626;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .success-message {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
     padding: 0.75rem;
     border-radius: 0.5rem;
     margin-bottom: 1rem;
@@ -281,23 +294,67 @@
     font-size: 0.875rem;
   }
 
-  .demo-button {
-    width: 100%;
-    background: #f3f4f6;
-    color: #374151;
-    border: 1px solid #e5e7eb;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  .demo-users {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     margin-bottom: 1rem;
   }
 
-  .demo-button:hover {
-    background: #e5e7eb;
+  .demo-user-button {
+    width: 100%;
+    background: #f8fafc;
+    color: #374151;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+
+  .demo-user-button:hover {
+    background: #e2e8f0;
+    border-color: #3b82f6;
     transform: translateY(-1px);
+  }
+
+  .demo-user-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+
+  .demo-name {
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .demo-role {
+    font-size: 0.75rem;
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    text-transform: capitalize;
+  }
+
+  .demo-email {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-family: monospace;
+  }
+
+  .field-error {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .form-input.error {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 1px #dc2626;
   }
 
   .login-links {

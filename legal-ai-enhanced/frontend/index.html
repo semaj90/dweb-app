@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YoRHa Legal AI Neural System v3.0</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    
+    <!-- YoRHa Neural Interface Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --yorha-primary: #e6f3ff;
+            --yorha-secondary: #74b9ff;
+            --yorha-accent: #3498db;
+            --yorha-dark: #0a0a0a;
+            --yorha-dark-secondary: #1a1a2e;
+            --yorha-dark-tertiary: #16213e;
+            --yorha-border: #2c3e50;
+            --yorha-border-light: #34495e;
+            --yorha-success: #2ecc71;
+            --yorha-warning: #f39c12;
+            --yorha-error: #e74c3c;
+            --yorha-neural: #9b59b6;
+            --yorha-gpu: #e67e22;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--yorha-dark) 0%, var(--yorha-dark-secondary) 50%, var(--yorha-dark-tertiary) 100%);
+            color: var(--yorha-primary);
+            font-family: 'Rajdhani', 'Orbitron', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Neural Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(52, 152, 219, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(52, 152, 219, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: -1;
+            animation: neural-grid 20s linear infinite;
+        }
+        
+        @keyframes neural-grid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+        
+        /* Terminal Scanlines Effect */
+        .terminal-scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: 
+                linear-gradient(90deg, transparent 98%, rgba(0, 255, 0, 0.02) 100%),
+                linear-gradient(0deg, transparent 98%, rgba(0, 255, 0, 0.02) 100%);
+            background-size: 3px 3px;
+            animation: scanlines 0.1s linear infinite;
+            z-index: 1000;
+            mix-blend-mode: overlay;
+        }
+        
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(3px); }
+        }
+        
+        /* YoRHa Container */
+        .yorha-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+        
+        /* YoRHa Header */
+        .yorha-header {
+            background: linear-gradient(135deg, var(--yorha-border) 0%, var(--yorha-border-light) 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--yorha-accent);
+            box-shadow: 0 8px 32px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .yorha-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.1), transparent);
+            animation: neural-sweep 4s ease-in-out infinite;
+        }
+        
+        @keyframes neural-sweep {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
+        }
+        
+        .yorha-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-shadow: 0 0 20px var(--yorha-accent), 0 0 40px var(--yorha-secondary);
+            margin-bottom: 10px;
+            animation: neural-pulse 3s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
+        }
+        
+        @keyframes neural-pulse {
+            0%, 100% { 
+                text-shadow: 0 0 20px var(--yorha-accent), 0 0 40px var(--yorha-secondary);
+                transform: scale(1);
+            }
+            50% { 
+                text-shadow: 0 0 30px var(--yorha-accent), 0 0 60px var(--yorha-secondary), 0 0 80px var(--yorha-neural);
+                transform: scale(1.02);
+            }
+        }
+        
+        .yorha-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            color: var(--yorha-secondary);
+            font-weight: 500;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .neural-unit-id {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--yorha-accent);
+            opacity: 0.8;
+        }
+        
+        /* Main Content Area */
+        .yorha-main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            padding: 25px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 1200px) {
+            .yorha-main {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        /* YoRHa Panel */
+        .yorha-panel {
+            background: rgba(52, 73, 94, 0.85);
+            border: 2px solid var(--yorha-accent);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(15px) saturate(1.5);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .yorha-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--yorha-accent), var(--yorha-secondary), var(--yorha-neural));
+            animation: neural-flow 2s ease-in-out infinite;
+        }
+        
+        @keyframes neural-flow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .yorha-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 40px rgba(52, 152, 219, 0.2),
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+        
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            color: var(--yorha-secondary);
+            border-bottom: 1px solid var(--yorha-accent);
+            padding-bottom: 12px;
+            font-weight: 700;
+            position: relative;
+        }
+        
+        .panel-title::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--yorha-neural);
+            animation: neural-underline 3s ease-in-out infinite;
+        }
+        
+        @keyframes neural-underline {
+            0%, 100% { width: 0; }
+            50% { width: 100%; }
+        }
+        
+        /* Status Items */
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .status-item:hover {
+            background: rgba(0, 0, 0, 0.4);
+            transform: translateX(3px);
+        }
+        
+        .status-label {
+            font-size: 1.1rem;
+            color: var(--yorha-primary);
+        }
+        
+        .status-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        /* Status Colors */
+        .status-online {
+            color: var(--yorha-success);
+            background: rgba(46, 204, 113, 0.2);
+            border-color: var(--yorha-success);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+        }
+        
+        .status-offline {
+            color: var(--yorha-error);
+            background: rgba(231, 76, 60, 0.2);
+            border-color: var(--yorha-error);
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+        }
+        
+        .status-warning {
+            color: var(--yorha-warning);
+            background: rgba(243, 156, 18, 0.2);
+            border-color: var(--yorha-warning);
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+        }
+        
+        .status-cuda {
+            color: var(--yorha-gpu);
+            background: rgba(230, 126, 34, 0.2);
+            border-color: var(--yorha-gpu);
+            box-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
+        }
+        
+        .status-neural {
+            color: var(--yorha-neural);
+            background: rgba(155, 89, 182, 0.2);
+            border-color: var(--yorha-neural);
+            box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
+        }
+        
+        .status-item.status-online { border-left-color: var(--yorha-success); }
+        .status-item.status-offline { border-left-color: var(--yorha-error); }
+        .status-item.status-warning { border-left-color: var(--yorha-warning); }
+        .status-item.status-cuda { border-left-color: var(--yorha-gpu); }
+        .status-item.status-neural { border-left-color: var(--yorha-neural); }
+        
+        /* GPU Canvas */
+        .gpu-canvas {
+            width: 100%;
+            height: 350px;
+            border: 2px solid var(--yorha-accent);
+            border-radius: 10px;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #000000 100%);
+            cursor: crosshair;
+            transition: all 0.3s ease;
+        }
+        
+        .gpu-canvas:hover {
+            border-color: var(--yorha-secondary);
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Neural Processing Panel */
+        .neural-processing {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+        
+        .processing-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .yorha-button {
+            background: linear-gradient(135deg, var(--yorha-accent) 0%, var(--yorha-secondary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .yorha-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .yorha-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+        
+        .yorha-button:hover::before {
+            left: 100%;
+        }
+        
+        .yorha-button:active {
+            transform: translateY(0);
+        }
+        
+        /* Loading Animation */
+        .neural-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--yorha-accent);
+            border-right: 2px solid var(--yorha-secondary);
+            border-radius: 50%;
+            animation: neural-spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes neural-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Footer */
+        .yorha-footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--yorha-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(52, 152, 219, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .yorha-title {
+                font-size: 2.2rem;
+            }
+            
+            .yorha-main {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .yorha-panel {
+                padding: 20px;
+            }
+            
+            .processing-controls {
+                flex-direction: column;
+            }
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Performance Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+        
+        .metric-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--yorha-accent);
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--yorha-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Neural Activity Indicator */
+        .neural-activity {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--yorha-success);
+            box-shadow: 0 0 10px var(--yorha-success);
+            animation: neural-heartbeat 2s ease-in-out infinite;
+            z-index: 1001;
+        }
+        
+        @keyframes neural-heartbeat {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+        }
+        
+        .neural-activity.offline {
+            background: var(--yorha-error);
+            box-shadow: 0 0 10px var(--yorha-error);
+            animation: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Terminal Scanlines Effect -->
+    <div class="terminal-scanlines"></div>
+    
+    <!-- Neural Activity Indicator -->
+    <div class="neural-activity" id="neural-activity"></div>
+    
+    <div class="yorha-container">
+        <header class="yorha-header">
+            <div class="neural-unit-id">NEURAL UNIT: 2B-9S-A2</div>
+            <h1 class="yorha-title">YoRHa Legal AI System</h1>
+            <p class="yorha-subtitle">Advanced Neural Document Processing • GPU Enhanced • v3.0</p>
+        </header>
+        
+        <main class="yorha-main">
+            <div class="yorha-panel">
+                <h2 class="panel-title">🤖 Neural System Status</h2>
+                <div id="system-status">
+                    <div class="status-item status-offline">
+                        <span class="status-label">API Processing Unit</span>
+                        <span class="status-value" id="api-status">INITIALIZING</span>
+                    </div>
+                    <div class="status-item status-offline">
+                        <span class="status-label">Neural Database</span>
+                        <span class="status-value" id="db-status">SCANNING</span>
+                    </div>
+                    <div class="status-item status-warning">
+                        <span class="status-label">CUDA Acceleration</span>
+                        <span class="status-value" id="gpu-status">DETECTING</span>
+                    </div>
+                    <div class="status-item status-offline">
+                        <span class="status-label">Cache Network</span>
+                        <span class="status-value" id="cache-status">CONNECTING</span>
+                    </div>
+                    <div class="status-item status-neural">
+                        <span class="status-label">Neural Networks</span>
+                        <span class="status-value" id="neural-status">LOADING</span>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <span class="metric-value" id="processed-docs">0</span>
+                        <span class="metric-label">Documents Processed</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value" id="uptime">00:00:00</span>
+                        <span class="metric-label">System Uptime</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-value" id="gpu-temp">--°C</span>
+                        <span class="metric-label">GPU Temperature</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="yorha-panel">
+                <h2 class="panel-title">⚡ GPU Neural Visualization</h2>
+                <canvas id="gpu-canvas" class="gpu-canvas"></canvas>
+            </div>
+            
+            <div class="yorha-panel neural-processing">
+                <h2 class="panel-title">🧠 Neural Document Processing</h2>
+                <p style="margin-bottom: 15px; opacity: 0.8;">Upload documents for advanced AI analysis using YoRHa neural networks</p>
+                
+                <input type="file" id="file-input" accept=".pdf,.txt,.docx" multiple style="display: none;">
+                
+                <div class="processing-controls">
+                    <button class="yorha-button" onclick="selectFiles()">
+                        📁 Select Documents
+                    </button>
+                    <button class="yorha-button" onclick="processDocuments()" id="process-btn">
+                        🧠 Process with Neural AI
+                    </button>
+                    <button class="yorha-button" onclick="runBenchmark()">
+                        ⚡ GPU Benchmark
+                    </button>
+                    <button class="yorha-button" onclick="clearResults()">
+                        🗑️ Clear Results
+                    </button>
+                </div>
+                
+                <div id="processing-results" style="margin-top: 20px;"></div>
+            </div>
+        </main>
+        
+        <footer class="yorha-footer">
+            <p>YoRHa Legal AI System v3.0 - Neural Unit 2B-9S-A2 • For YoRHa Command - Glory to Mankind</p>
+            <p style="font-size: 0.8rem; margin-top: 5px; opacity: 0.7;">
+                Classification: Advanced Neural System • GPU Enhanced • Real-time Processing
+            </p>
+        </footer>
+    </div>
+
+    <!-- YoRHa Neural System Scripts -->
+    <script type="module">
+        // YoRHa Neural System Implementation
+        class YoRHaNeuralSystem {
+            constructor() {
+                this.apiUrl = 'http://localhost:8080';
+                this.wasmModule = null;
+                this.webglContext = null;
+                this.webgpuDevice = null;
+                this.systemStatus = {
+                    api: 'offline',
+                    database: 'offline',
+                    gpu: 'unknown',
+                    cache: 'offline',
+                    neural: 'loading'
+                };
+                this.systemMetrics = {
+                    processedDocs: 0,
+                    uptime: 0,
+                    gpuTemp: '--',
+                    startTime: Date.now()
+                };
+                this.isProcessing = false;
+                
+                this.init();
+            }
+            
+            async init() {
+                console.log('[YoRHa] Initializing neural systems...');
+                
+                // Initialize WebGL neural visualization
+                await this.initWebGL();
+                
+                // Initialize WebGPU if supported
+                await this.initWebGPU();
+                
+                // Load WASM neural modules
+                await this.loadWASM();
+                
+                // Start system monitoring
+                this.startSystemMonitoring();
+                
+                // Start uptime counter
+                this.startUptimeCounter();
+                
+                console.log('[YoRHa] Neural system initialization complete');
+                this.updateNeuralActivity(true);
+            }
+            
+            async initWebGL() {
+                const canvas = document.getElementById('gpu-canvas');
+                this.webglContext = canvas.getContext('webgl2') || canvas.getContext('webgl');
+                
+                if (!this.webglContext) {
+                    console.error('[YoRHa] WebGL not supported');
+                    return;
+                }
+                
+                console.log('[YoRHa] WebGL neural rendering initialized');
+                this.setupWebGLScene();
+            }
+            
+            async initWebGPU() {
+                if (!navigator.gpu) {
+                    console.log('[YoRHa] WebGPU not supported');
+                    return;
+                }
+                
+                try {
+                    const adapter = await navigator.gpu.requestAdapter();
+                    this.webgpuDevice = await adapter.requestDevice();
+                    console.log('[YoRHa] WebGPU neural acceleration initialized');
+                } catch (error) {
+                    console.error('[YoRHa] WebGPU initialization failed:', error);
+                }
+            }
+            
+            async loadWASM() {
+                try {
+                    // Simulate WASM loading for now
+                    console.log('[YoRHa] WASM neural modules loaded');
+                } catch (error) {
+                    console.error('[YoRHa] WASM loading failed:', error);
+                }
+            }
+            
+            setupWebGLScene() {
+                const gl = this.webglContext;
+                const canvas = gl.canvas;
+                
+                // Set canvas size
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                
+                // Neural rendering loop
+                this.renderLoop();
+            }
+            
+            renderLoop() {
+                const gl = this.webglContext;
+                
+                const render = (time) => {
+                    // Clear canvas with neural background
+                    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                    gl.clear(gl.COLOR_BUFFER_BIT);
+                    
+                    // Simple neural visualization
+                    this.renderNeuralVisualization(time);
+                    
+                    requestAnimationFrame(render);
+                };
+                
+                requestAnimationFrame(render);
+            }
+            
+            renderNeuralVisualization(time) {
+                const canvas = document.getElementById('gpu-canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                
+                // Neural network visualization
+                const width = canvas.width = canvas.clientWidth;
+                const height = canvas.height = canvas.clientHeight;
+                
+                // Clear canvas
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Draw neural network nodes
+                const nodes = 12;
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(width, height) / 3;
+                
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                
+                // Draw connections
+                for (let i = 0; i < nodes; i++) {
+                    const angle1 = (i / nodes) * Math.PI * 2;
+                    const x1 = centerX + Math.cos(angle1 + time * 0.001) * radius;
+                    const y1 = centerY + Math.sin(angle1 + time * 0.001) * radius;
+                    
+                    for (let j = i + 1; j < nodes; j++) {
+                        const angle2 = (j / nodes) * Math.PI * 2;
+                        const x2 = centerX + Math.cos(angle2 + time * 0.001) * radius;
+                        const y2 = centerY + Math.sin(angle2 + time * 0.001) * radius;
+                        
+                        const alpha = Math.sin(time * 0.002 + i + j) * 0.3 + 0.2;
+                        ctx.strokeStyle = `rgba(52, 152, 219, ${alpha})`;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+                
+                // Draw nodes
+                for (let i = 0; i < nodes; i++) {
+                    const angle = (i / nodes) * Math.PI * 2;
+                    const x = centerX + Math.cos(angle + time * 0.001) * radius;
+                    const y = centerY + Math.sin(angle + time * 0.001) * radius;
+                    
+                    const pulseSize = 8 + Math.sin(time * 0.005 + i) * 3;
+                    
+                    ctx.fillStyle = '#74b9ff';
+                    ctx.beginPath();
+                    ctx.arc(x, y, pulseSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.strokeStyle = '#e6f3ff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // Central processing core
+                const coreSize = 20 + Math.sin(time * 0.003) * 5;
+                ctx.fillStyle = '#9b59b6';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, coreSize, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#e6f3ff';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+            
+            async startSystemMonitoring() {
+                const checkStatus = async () => {
+                    try {
+                        // Check API status
+                        const response = await fetch(`${this.apiUrl}/health`, { 
+                            signal: AbortSignal.timeout(5000) 
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.systemStatus.api = 'online';
+                            this.systemStatus.database = 'online';
+                            this.systemStatus.cache = 'online';
+                            this.systemStatus.neural = 'operational';
+                            
+                            if (data.cuda_enabled) {
+                                this.systemStatus.gpu = 'cuda';
+                            } else if (data.gpu_enabled) {
+                                this.systemStatus.gpu = 'basic';
+                            } else {
+                                this.systemStatus.gpu = 'cpu';
+                            }
+                            
+                            // Update metrics
+                            this.systemMetrics.processedDocs = data.processed_documents || 0;
+                            this.systemMetrics.gpuTemp = data.gpu_temperature ? `${data.gpu_temperature}°C` : '--°C';
+                            
+                        } else {
+                            this.systemStatus.api = 'offline';
+                            this.systemStatus.database = 'offline';
+                            this.systemStatus.cache = 'offline';
+                            this.systemStatus.gpu = 'offline';
+                            this.systemStatus.neural = 'offline';
+                        }
+                        
+                    } catch (error) {
+                        this.systemStatus.api = 'offline';
+                        this.systemStatus.database = 'offline';
+                        this.systemStatus.cache = 'offline';
+                        this.systemStatus.gpu = 'unknown';
+                        this.systemStatus.neural = 'error';
+                    }
+                    
+                    this.updateStatusDisplay();
+                };
+                
+                // Initial check
+                await checkStatus();
+                
+                // Periodic checks
+                setInterval(checkStatus, 10000);
+            }
+            
+            startUptimeCounter() {
+                setInterval(() => {
+                    const uptime = Date.now() - this.systemMetrics.startTime;
+                    const hours = Math.floor(uptime / (1000 * 60 * 60));
+                    const minutes = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((uptime % (1000 * 60)) / 1000);
+                    
+                    this.systemMetrics.uptime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    document.getElementById('uptime').textContent = this.systemMetrics.uptime;
+                }, 1000);
+            }
+            
+            updateStatusDisplay() {
+                const statusMap = {
+                    'api-status': this.systemStatus.api,
+                    'db-status': this.systemStatus.database,
+                    'gpu-status': this.systemStatus.gpu,
+                    'cache-status': this.systemStatus.cache,
+                    'neural-status': this.systemStatus.neural
+                };
+                
+                Object.entries(statusMap).forEach(([id, status]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = status.toUpperCase();
+                        
+                        // Update parent status item class
+                        const statusItem = element.closest('.status-item');
+                        statusItem.className = 'status-item';
+                        
+                        if (status === 'online' || status === 'operational') {
+                            statusItem.classList.add('status-online');
+                        } else if (status === 'offline' || status === 'error') {
+                            statusItem.classList.add('status-offline');
+                        } else if (status === 'cuda') {
+                            statusItem.classList.add('status-cuda');
+                        } else if (status === 'loading' || status === 'unknown') {
+                            statusItem.classList.add('status-warning');
+                        } else {
+                            statusItem.classList.add('status-neural');
+                        }
+                    }
+                });
+                
+                // Update metrics
+                document.getElementById('processed-docs').textContent = this.systemMetrics.processedDocs;
+                document.getElementById('gpu-temp').textContent = this.systemMetrics.gpuTemp;
+                
+                // Update neural activity indicator
+                this.updateNeuralActivity(this.systemStatus.api === 'online');
+            }
+            
+            updateNeuralActivity(isOnline) {
+                const indicator = document.getElementById('neural-activity');
+                if (isOnline) {
+                    indicator.classList.remove('offline');
+                } else {
+                    indicator.classList.add('offline');
+                }
+            }
+            
+            async processDocuments() {
+                if (this.isProcessing) return;
+                
+                this.isProcessing = true;
+                const processBtn = document.getElementById('process-btn');
+                const originalText = processBtn.innerHTML;
+                processBtn.innerHTML = '<span class="neural-loading"></span>Processing...';
+                processBtn.disabled = true;
+                
+                try {
+                    const response = await fetch(`${this.apiUrl}/process`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            document: 'Sample YoRHa neural document processing test'
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        this.displayProcessingResult(result);
+                        this.systemMetrics.processedDocs++;
+                    } else {
+                        throw new Error('Processing failed');
+                    }
+                    
+                } catch (error) {
+                    this.displayProcessingResult({
+                        error: true,
+                        message: 'Neural processing failed - API unavailable'
+                    });
+                }
+                
+                this.isProcessing = false;
+                processBtn.innerHTML = originalText;
+                processBtn.disabled = false;
+            }
+            
+            displayProcessingResult(result) {
+                const resultsDiv = document.getElementById('processing-results');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                let resultHtml = '';
+                if (result.error) {
+                    resultHtml = `
+                        <div style="padding: 15px; background: rgba(231, 76, 60, 0.2); border: 1px solid var(--yorha-error); border-radius: 8px; margin-bottom: 10px;">
+                            <strong style="color: var(--yorha-error);">[${timestamp}] ❌ Processing Failed</strong><br>
+                            <span style="opacity: 0.9;">${result.message}</span>
+                        </div>
+                    `;
+                } else {
+                    resultHtml = `
+                        <div style="padding: 15px; background: rgba(46, 204, 113, 0.2); border: 1px solid var(--yorha-success); border-radius: 8px; margin-bottom: 10px;">
+                            <strong style="color: var(--yorha-success);">[${timestamp}] ✅ Neural Processing Complete</strong><br>
+                            <span style="opacity: 0.9;">
+                                Neural Unit: ${result.neural_unit || '2B-9S-A2'}<br>
+                                Processing Time: ${result.processing_time}<br>
+                                Confidence: ${result.neural_confidence}<br>
+                                GPU Accelerated: ${result.gpu_accelerated ? 'Yes' : 'No'}
+                            </span>
+                        </div>
+                    `;
+                }
+                
+                resultsDiv.innerHTML = resultHtml + resultsDiv.innerHTML;
+                
+                // Limit to last 5 results
+                const results = resultsDiv.children;
+                while (results.length > 5) {
+                    resultsDiv.removeChild(results[results.length - 1]);
+                }
+            }
+            
+            async runBenchmark() {
+                console.log('[YoRHa] Running GPU neural benchmark...');
+                
+                const documents = Array(10).fill('YoRHa neural benchmark document');
+                
+                try {
+                    const startTime = performance.now();
+                    
+                    const response = await fetch(`${this.apiUrl}/process-batch`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            documents: documents,
+                            batch_size: 8
+                        })
+                    });
+                    
+                    const endTime = performance.now();
+                    const totalTime = endTime - startTime;
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        this.displayProcessingResult({
+                            neural_unit: '2B-9S-A2',
+                            processing_time: `${totalTime.toFixed(2)}ms`,
+                            neural_confidence: 'Benchmark Complete',
+                            gpu_accelerated: result.acceleration_mode?.includes('CUDA') || false,
+                            message: `Processed ${result.total_documents} documents in ${result.processing_time}`
+                        });
+                    }
+                    
+                } catch (error) {
+                    this.displayProcessingResult({
+                        error: true,
+                        message: 'Benchmark failed - API unavailable'
+                    });
+                }
+            }
+            
+            clearResults() {
+                document.getElementById('processing-results').innerHTML = '';
+                console.log('[YoRHa] Processing results cleared');
+            }
+        }
+        
+        // Global functions for button handlers
+        let yorhaNeuralSystem;
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            yorhaNeuralSystem = new YoRHaNeuralSystem();
+        });
+        
+        window.selectFiles = () => {
+            document.getElementById('file-input').click();
+        };
+        
+        window.processDocuments = () => {
+            if (yorhaNeuralSystem) {
+                yorhaNeuralSystem.processDocuments();
+            }
+        };
+        
+        window.runBenchmark = () => {
+            if (yorhaNeuralSystem) {
+                yorhaNeuralSystem.runBenchmark();
+            }
+        };
+        
+        window.clearResults = () => {
+            if (yorhaNeuralSystem) {
+                yorhaNeuralSystem.clearResults();
+            }
+        };
+        
+        // File input handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileInput = document.getElementById('file-input');
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length > 0) {
+                    console.log(`[YoRHa] Selected ${files.length} files for neural processing:`, files.map(f => f.name));
+                    // Process files here
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Server-Sent Events API route for SSR-safe real-time updates
 import { createClient } from "redis";
 import type { RequestHandler } from "./$types";

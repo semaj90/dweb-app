@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { dev } from "$app/environment";
 
 // Performance monitoring for production

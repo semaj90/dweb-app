@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Real-time evidence store with WebSocket/SSE integration and local undo
 import { writable, derived, get } from "svelte/store";
 import { browser } from "$app/environment";

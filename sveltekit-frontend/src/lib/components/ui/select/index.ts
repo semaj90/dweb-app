@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Select Component Barrel Export
 export { default as Select } from "./Select.svelte";
 

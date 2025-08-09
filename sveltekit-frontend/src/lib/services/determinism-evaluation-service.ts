@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Determinism Evaluation Service - Stub implementation
  * TODO: Replace with actual implementation

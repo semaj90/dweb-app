@@ -19,7 +19,7 @@ const OLLAMA_MODELS = {
     },
     legal: {
         name: 'gemma2:9b',
-        size: '5.4GB', 
+        size: '5.4GB',
         description: 'Legal reasoning and analysis',
         priority: 'high'
     },
@@ -96,7 +96,7 @@ async function checkOllamaInstallation() {
     } catch (error) {
         console.log('❌ Ollama not found. Installing...');
         console.log('📥 Please install Ollama from: https://ollama.ai/download');
-        console.log('🐳 Or use Docker: docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama');
+      run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama');
         throw new Error('Ollama installation required');
     }
 }
@@ -105,7 +105,7 @@ async function configureOllamaService() {
     try {
         // Check if Ollama service is running
         const { stdout } = await execAsync(`curl -s ${OLLAMA_CONFIG.baseUrl}/api/tags || echo "not running"`);
-        
+
         if (stdout.includes('not running')) {
             console.log('🔄 Starting Ollama service...');
             // Start Ollama service in background
@@ -114,11 +114,11 @@ async function configureOllamaService() {
                 stdio: 'ignore'
             });
             ollamaProcess.unref();
-            
+
             // Wait for service to start
             await new Promise(resolve => setTimeout(resolve, 3000));
         }
-        
+
         console.log('✅ Ollama service configured and running');
     } catch (error) {
         console.warn('⚠️ Ollama service configuration issue:', error.message);
@@ -131,15 +131,15 @@ async function pullRequiredModels() {
         try {
             console.log(`📥 Pulling ${model.name} (${model.size})...`);
             console.log(`   📝 ${model.description}`);
-            
+
             const pullProcess = spawn('ollama', ['pull', model.name], {
                 stdio: 'pipe'
             });
-            
+
             pullProcess.stdout.on('data', (data) => {
                 process.stdout.write(`   ${data}`);
             });
-            
+
             await new Promise((resolve, reject) => {
                 pullProcess.on('close', (code) => {
                     if (code === 0) {
@@ -156,7 +156,7 @@ async function pullRequiredModels() {
                     }
                 });
             });
-            
+
         } catch (error) {
             if (model.priority === 'critical') {
                 throw error;
@@ -185,18 +185,18 @@ async function validateModels() {
     for (const test of validationTests) {
         try {
             console.log(`🧪 Testing ${test.model}...`);
-            
-            const testPayload = test.test === 'embedding' 
+
+            const testPayload = test.test === 'embedding'
                 ? { model: test.model, prompt: test.input }
                 : { model: test.model, prompt: test.input, stream: false };
-            
+
             const endpoint = test.test === 'embedding' ? '/api/embeddings' : '/api/generate';
-            
+
             const curlCommand = `curl -s -X POST ${OLLAMA_CONFIG.baseUrl}${endpoint} -H "Content-Type: application/json" -d '${JSON.stringify(testPayload)}'`;
-            
+
             const { stdout } = await execAsync(curlCommand);
             const response = JSON.parse(stdout);
-            
+
             if (test.test === 'embedding') {
                 if (response.embedding && response.embedding.length === OLLAMA_CONFIG.embeddingDimensions) {
                     console.log(`✅ ${test.model} embedding test passed (${response.embedding.length} dimensions)`);
@@ -210,7 +210,7 @@ async function validateModels() {
                     throw new Error('Invalid generation response');
                 }
             }
-            
+
         } catch (error) {
             console.log(`❌ ${test.model} validation failed: ${error.message}`);
             if (test.model === 'nomic-embed-text') {
@@ -259,13 +259,13 @@ async function createProductionConfig() {
         try {
             const fs = await import('fs');
             const path = await import('path');
-            
+
             // Ensure directory exists
             const dir = path.dirname(configPath);
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
             }
-            
+
             fs.writeFileSync(configPath, JSON.stringify(productionConfig, null, 2));
             console.log(`✅ Configuration written to ${configPath}`);
         } catch (error) {
@@ -308,21 +308,21 @@ class OllamaCache {
     async getEmbedding(text, model = 'nomic-embed-text', ttl = ${OLLAMA_CONFIG.cacheTTL}) {
         const key = this.generateCacheKey(text, model);
         const cached = this.embeddingCache.get(key);
-        
+
         if (cached && Date.now() - cached.timestamp < ttl) {
             this.stats.hits++;
             return cached.embedding;
         }
-        
+
         // Fetch from Ollama API
         const response = await fetch('${OLLAMA_CONFIG.baseUrl}/api/embeddings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ model, prompt: text })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.embedding) {
             this.embeddingCache.set(key, {
                 embedding: data.embedding,
@@ -333,28 +333,28 @@ class OllamaCache {
             this.stats.saves++;
             this.persistCache();
         }
-        
+
         return data.embedding;
     }
 
     async getResponse(prompt, model = 'gemma2:9b', ttl = ${OLLAMA_CONFIG.cacheTTL}) {
         const key = this.generateCacheKey(prompt, model);
         const cached = this.responseCache.get(key);
-        
+
         if (cached && Date.now() - cached.timestamp < ttl) {
             this.stats.hits++;
             return cached.response;
         }
-        
+
         // Fetch from Ollama API
         const response = await fetch('${OLLAMA_CONFIG.baseUrl}/api/generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ model, prompt, stream: false })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.response) {
             this.responseCache.set(key, {
                 response: data.response,
@@ -365,7 +365,7 @@ class OllamaCache {
             this.stats.saves++;
             this.persistCache();
         }
-        
+
         return data.response;
     }
 
@@ -377,7 +377,7 @@ class OllamaCache {
                 stats: this.stats,
                 timestamp: Date.now()
             };
-            
+
             fs.writeFileSync(
                 path.join(this.cacheDir, 'ollama-cache.json'),
                 JSON.stringify(cacheData, null, 2)
@@ -392,11 +392,11 @@ class OllamaCache {
             const cachePath = path.join(this.cacheDir, 'ollama-cache.json');
             if (fs.existsSync(cachePath)) {
                 const cacheData = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
-                
+
                 this.embeddingCache = new Map(cacheData.embeddings || []);
                 this.responseCache = new Map(cacheData.responses || []);
                 this.stats = cacheData.stats || this.stats;
-                
+
                 console.log('✅ Loaded persisted cache with', this.embeddingCache.size, 'embeddings and', this.responseCache.size, 'responses');
             }
         } catch (error) {

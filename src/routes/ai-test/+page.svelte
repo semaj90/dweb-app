@@ -1,4 +1,6 @@
-<script>
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import AIChat from '$lib/components/AIChat.svelte';

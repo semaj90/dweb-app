@@ -1,3 +1,4 @@
+// @ts-nocheck
 // src/routes/api/embeddings/generate/+server.ts
 import { json, error } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";

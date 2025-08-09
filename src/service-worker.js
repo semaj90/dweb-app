@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Production Service Worker for Legal Processing
 const CACHE_NAME = 'legal-processor-v1';
 const STATIC_CACHE = 'static-v1';

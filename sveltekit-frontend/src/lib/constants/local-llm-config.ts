@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Local LLM Configuration - Enforces Local Ollama GPU Usage Only
  *

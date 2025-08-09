@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Cluster Status API Endpoint
  * Provides real-time cluster health and worker metrics

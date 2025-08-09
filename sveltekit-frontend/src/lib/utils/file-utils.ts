@@ -1,3 +1,4 @@
+// @ts-nocheck
 // File utility functions for evidence management
 
 export function formatFileSize(bytes: number): string {

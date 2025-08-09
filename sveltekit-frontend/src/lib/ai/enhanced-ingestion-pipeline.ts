@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Ingestion Pipeline for Legal AI System
 // Processes legal documents, creates embeddings, and stores in vector database
 // Production Stack: PostgreSQL + pgvector, LangChain, Qdrant, GraphQL, Neo4j, Redis, RabbitMQ

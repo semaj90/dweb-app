@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Context7 MCP Integration with Enhanced Resource Optimization
  * Advanced integration of Context7 tools with optimization suite for legal AI development

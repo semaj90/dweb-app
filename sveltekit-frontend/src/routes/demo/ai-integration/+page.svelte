@@ -12,7 +12,7 @@
   import { Play, Pause, Brain, Cpu, Database, Zap, Globe, Activity, Terminal, Eye } from 'lucide-svelte';
 
   // XState Prefetch Machine
-  const { state: prefetchState, send: prefetchSend } = useMachine(prefetchMachine);
+  const { snapshot: prefetchState, send: prefetchSend } = useMachine(prefetchMachine);
 
   // Component State
   let systemHealth = $state({
@@ -288,17 +288,17 @@
   }
 
   // Reactive prefetch statistics
-  $: prefetchStats = {
+  let prefetchStats = $derived({
     state: $prefetchState.value,
     confidence: $prefetchState.context.confidence,
     cacheHits: $prefetchState.context.metrics.hits,
     cacheMisses: $prefetchState.context.metrics.misses,
     queueLength: $prefetchState.context.prefetchQueue.length
-  };
+  });
 
-  $: hitRate = prefetchStats.cacheHits + prefetchStats.cacheMisses > 0 
+  let hitRate = $derived(prefetchStats.cacheHits + prefetchStats.cacheMisses > 0 
     ? Math.round((prefetchStats.cacheHits / (prefetchStats.cacheHits + prefetchStats.cacheMisses)) * 100)
-    : 0;
+    : 0);
 </script>
 
 <div class="ai-integration-demo min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">

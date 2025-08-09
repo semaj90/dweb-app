@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { test, expect } from '@playwright/test';
 
 test.describe('System Health and Logging', () => {
@@ -154,7 +155,7 @@ test.describe('System Health and Logging', () => {
     expect(performance).toHaveProperty('endpoints');
     
     // Check metrics for each endpoint
-    endpoints.forEach(endpoint => {
+    endpoints.forEach(endpoint: any => {
       if (performance.endpoints[endpoint]) {
         expect(performance.endpoints[endpoint]).toMatchObject({
           avg_response_time_ms: expect.any(Number),

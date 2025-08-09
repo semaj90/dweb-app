@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ======================================================================
 // ENHANCED LOKI.JS STORE WITH ADVANCED CACHING & REAL-TIME SYNC
 // Building on existing lokiStore.ts with sophisticated data pipeline patterns

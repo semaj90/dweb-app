@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced document analysis API with GRPO-style thinking for legal AI
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";

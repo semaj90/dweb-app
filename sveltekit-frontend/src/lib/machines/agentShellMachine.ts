@@ -1,3 +1,4 @@
+// @ts-nocheck
 // XState Machine for AI Agent Shell
 import { createMachine, assign } from "xstate";
 

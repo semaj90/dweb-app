@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-08-08T05-54-22",
+  "totalErrors": 1020,
+  "totalFiles": 82,
+  "analysis": {
+    "analysis": [
+      {
+        "auto_fixable": false,
+        "category": "import_error",
+        "index": 0,
+        "original_error": "TS2304: Cannot find module 'node:worker_threads'",
+        "severity": "high",
+        "suggestion": "Verify import statements and ensure module is properly exported"
+      },
+      {
+        "auto_fixable": true,
+        "category": "general_error",
+        "index": 1,
+        "original_error": "TS7006: Parameter 'task' implicitly has an 'any' type",
+        "severity": "low",
+        "suggestion": "Review the error context and check TypeScript documentation"
+      },
+      {
+        "auto_fixable": true,
+        "category": "type_error",
+        "index": 2,
+        "original_error": "TS2322: Type 'any[]' is not assignable to type 'never[]'",
+        "severity": "medium",
+        "suggestion": "Check type compatibility and ensure proper type annotations"
+      },
+      {
+        "auto_fixable": true,
+        "category": "property_error",
+        "index": 3,
+        "original_error": "TS2339: Property 'onAuthStateChanged' does not exist",
+        "severity": "medium",
+        "suggestion": "Check property exists on type or add type assertion"
+      },
+      {
+        "auto_fixable": false,
+        "category": "import_error",
+        "index": 4,
+        "original_error": "TS2304: Cannot find name 'process'",
+        "severity": "high",
+        "suggestion": "Verify import statements and ensure module is properly exported"
+      }
+    ],
+    "analyzer_version": "v1.0.0",
+    "message": "Error analysis completed",
+    "status": "success",
+    "timestamp": "2025-08-07T22:54:22-07:00",
+    "total_errors": 5
+  },
+  "improvement": "Improving"
+}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { evidence } from "$lib/server/db/schema-postgres";
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";

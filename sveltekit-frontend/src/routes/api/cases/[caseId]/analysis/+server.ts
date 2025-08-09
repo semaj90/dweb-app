@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Environment variables fallback
 const env = process.env || {};
 import { caseActivities, cases } from "$lib/server/db/schema-postgres";

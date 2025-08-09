@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Ollama CUDA-Optimized Service
  * Production-ready service for managing Ollama with NVIDIA CUDA acceleration

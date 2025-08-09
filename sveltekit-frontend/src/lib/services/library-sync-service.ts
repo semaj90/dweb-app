@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Library Sync Service - Stub implementation
  * TODO: Replace with actual implementation

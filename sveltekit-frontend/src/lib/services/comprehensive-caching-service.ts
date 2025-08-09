@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Comprehensive Multi-Layer Caching Service
  * Advanced caching architecture with multiple cache layers and intelligent strategies

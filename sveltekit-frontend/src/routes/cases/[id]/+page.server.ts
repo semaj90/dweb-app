@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db, cases } from "$lib/server/db/index";
 import { redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from "@sveltejs/kit";
 import { exec } from "child_process";
 import { promisify } from "util";

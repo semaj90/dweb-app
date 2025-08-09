@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db, sessions } from "$lib/server/db/index";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "crypto";

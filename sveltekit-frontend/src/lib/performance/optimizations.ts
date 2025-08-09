@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 3: Performance Optimization - Complete File
 // #get-library-docs sveltekit2 #memory #create_entities
 

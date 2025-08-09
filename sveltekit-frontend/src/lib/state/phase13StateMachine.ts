@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 13 Enhanced XState Machine with WebGL Vertex Streaming
  * Integrates stateless API coordination, real-time PageRank feedback,

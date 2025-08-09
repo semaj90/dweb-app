@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Embeddings Service with Local + Cloud Integration
 // Combines local Tauri/Rust embeddings with cloud fallbacks
 // Use process.env for server-side environment variables

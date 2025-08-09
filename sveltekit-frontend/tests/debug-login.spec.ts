@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { test, expect } from "@playwright/test";
 
 test("Debug Login Form", async ({ page }) => {

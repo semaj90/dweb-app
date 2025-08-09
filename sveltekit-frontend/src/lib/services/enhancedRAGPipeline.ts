@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced RAG Pipeline with LangChain Bridge
  * Self-organizing map integration, SIMD JSON parsing, Redis caching

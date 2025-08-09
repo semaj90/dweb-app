@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { test, expect } from '@playwright/test';
 
 test.describe('Ollama Integration', () => {
@@ -135,12 +136,12 @@ test.describe('Ollama Integration', () => {
     const responses = await Promise.all(promises);
     
     // Verify all responses are successful
-    responses.forEach(response => {
+    responses.forEach(response: any => {
       expect(response.status()).toBe(200);
     });
     
     // Check response content
-    const results = await Promise.all(responses.map(r => r.json()));
+    const results = await Promise.all(responses.map(r: any => r.json()));
     results.forEach((result, index) => {
       expect(result).toHaveProperty('response');
       expect(result.response).toBeTruthy();

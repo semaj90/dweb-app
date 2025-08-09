@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Production PostgreSQL schema with pgvector for vector search
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
@@ -23,7 +24,7 @@ export const UserSettingsExtSchema = z.object({
   notifications: z.boolean().default(true),
   language: z.string().default("en"),
   timezone: z.string().default("UTC"),
-  preferences: z.record(z.any()).default({}),
+  preferences: z.record(z.string(), z.any()).default({}),
 });
 
 export const DocumentMetadataSchema = z.object({

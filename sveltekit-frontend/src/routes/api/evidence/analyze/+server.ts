@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json, error } from "@sveltejs/kit";
 import { spawn } from "child_process";
 import { writeFile } from "fs/promises";

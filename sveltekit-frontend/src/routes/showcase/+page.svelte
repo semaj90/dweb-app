@@ -246,8 +246,9 @@
           { icon: Scale, label: "Evidence" },
           { icon: Users, label: "Users" }
         ] as item}
-          <a href="#" class="flex items-center gap-3 p-2 rounded hover:bg-nier-surface-light text-nier-text">
-            <svelte:component this={item.icon} class="w-5 h-5" />
+          {@const IconComponent = item.icon}
+          <a href="/showcase" class="flex items-center gap-3 p-2 rounded hover:bg-nier-surface-light text-nier-text">
+            <IconComponent class="w-5 h-5" />
             {item.label}
           </a>
         {/each}
@@ -267,11 +268,12 @@
           { title: "Closed Cases", value: layoutData.stats.closedCases, icon: FileText },
           { title: "Evidence Items", value: layoutData.stats.evidenceCount, icon: Scale }
         ] as stat}
+          {@const StatIcon = stat.icon}
           <Card>
               <div class="p-4">
                 <div class="flex justify-between items-center mb-2">
                   <h4 class="text-sm font-medium text-nier-text-muted">{stat.title}</h4>
-                  <svelte:component this={stat.icon} class="w-5 h-5 text-nier-accent" />
+                  <StatIcon class="w-5 h-5 text-nier-accent" />
                 </div>
                 <p class="text-2xl font-bold text-nier-white">{stat.value}</p>
               </div>
@@ -318,12 +320,35 @@
   }
 
   .badge {
-    @apply inline-block px-2 py-1 text-xs font-medium rounded;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 0.25rem;
   }
 
-  .status-case { @apply bg-blue-500/20 text-blue-400; }
-  .status-evidence { @apply bg-purple-500/20 text-purple-400; }
-  .status-criminal { @apply bg-red-500/20 text-red-400; }
-  .status-document { @apply bg-gray-500/20 text-gray-400; }
-  .status-default { @apply bg-gray-500/20 text-gray-400; }
+  .status-case { 
+    background-color: rgb(59 130 246 / 0.2); 
+    color: rgb(96 165 250); 
+  }
+  
+  .status-evidence { 
+    background-color: rgb(168 85 247 / 0.2); 
+    color: rgb(196 181 253); 
+  }
+  
+  .status-criminal { 
+    background-color: rgb(239 68 68 / 0.2); 
+    color: rgb(248 113 113); 
+  }
+  
+  .status-document { 
+    background-color: rgb(107 114 128 / 0.2); 
+    color: rgb(156 163 175); 
+  }
+  
+  .status-default { 
+    background-color: rgb(107 114 128 / 0.2); 
+    color: rgb(156 163 175); 
+  }
 </style>

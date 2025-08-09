@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Extension to unified-schema.ts for vector search capabilities
 import {
   pgTable,

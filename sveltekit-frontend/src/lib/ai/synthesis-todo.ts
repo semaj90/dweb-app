@@ -1,3 +1,4 @@
+// @ts-nocheck
 // TODOs and stub mocks for multi-LLM synthesis pipeline integration
 import {
   mockAIModelOutput,

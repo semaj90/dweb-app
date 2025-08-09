@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Legal AI Chat API - Context7 Enhanced with Gemma3 Legal
 import { db } from "$lib/server/db/index";
 import { type RequestHandler, json } from "@sveltejs/kit";

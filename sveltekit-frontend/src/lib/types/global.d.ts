@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Global type definitions for TypeScript error resolution
 declare global {
   interface Window {

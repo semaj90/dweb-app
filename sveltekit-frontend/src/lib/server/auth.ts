@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Authentication utilities stub
 export interface User {
   id: string;

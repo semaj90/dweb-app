@@ -19,8 +19,8 @@
     Shield,
     Target
   } from 'lucide-svelte'
-import GamingAIButton from './GamingAIButton.svelte'
-import NierAIAssistant from './NierAIAssistant.svelte'
+import GamingAIButton from './GamingAIButton.svelte';
+import NierAIAssistant from './NierAIAssistant.svelte';
 
   interface AIMessage {
     id: string

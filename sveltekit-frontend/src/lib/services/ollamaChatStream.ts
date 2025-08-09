@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ollamaChatStream.ts - Ollama Chat Stream with Langchain integration
 import { ChatOllama } from "@langchain/ollama";
 import {

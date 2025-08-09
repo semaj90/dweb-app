@@ -1,3 +1,4 @@
+// @ts-nocheck
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";

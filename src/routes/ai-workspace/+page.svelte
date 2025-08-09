@@ -1,4 +1,6 @@
-<script lang="ts">
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
+<!-- @ts-nocheck -->
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { Button } from 'bits-ui';

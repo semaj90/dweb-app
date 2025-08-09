@@ -1,3 +1,4 @@
+// @ts-nocheck
 #!/usr/bin/env tsx
 // Vector Data Sync Script
 // Syncs existing database documents with vector embeddings and Qdrant

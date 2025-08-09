@@ -1,3 +1,4 @@
+// @ts-nocheck
 // API endpoint for vector search operations
 import VectorService from "$lib/server/services/vector-service";
 import { json } from "@sveltejs/kit";

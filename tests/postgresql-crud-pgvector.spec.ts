@@ -172,7 +172,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
 
   test('UPDATE: Modify document content and metadata', async () => {
     if (testDocumentIds.length === 0) {
-      test.skip('No test documents available for update');
+      test.skip(true, 'No test documents available for update');
       return;
     }
 
@@ -208,7 +208,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
 
   test('DELETE: Remove test documents', async () => {
     if (testDocumentIds.length === 0) {
-      test.skip('No test documents available for deletion');
+      test.skip(true, 'No test documents available for deletion');
       return;
     }
 
@@ -302,7 +302,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
       const results = await Promise.all(insertPromises);
       await dbClient.query('COMMIT');
 
-      results.forEach(result => {
+      results.forEach((result: any) => {
         testDocumentIds.push(result.rows[0].id);
       });
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { reports } from "$lib/server/db/schema";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db/index";

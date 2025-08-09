@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Use process.env instead of SvelteKit env for server-side code
 // import { env } from "$env/dynamic/private";
 

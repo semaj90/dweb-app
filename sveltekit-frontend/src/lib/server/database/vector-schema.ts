@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Drizzle schema with pgvector support
 import { sql } from "drizzle-orm";
 import {

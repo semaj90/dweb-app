@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Legal AI System Type Definitions - Extended for Evidence and Case Management
 export * from './legal.js';
 

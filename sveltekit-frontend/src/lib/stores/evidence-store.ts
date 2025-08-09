@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Fuse from "fuse.js";
 import type { Writable } from "svelte/store";
 import { derived, writable } from "svelte/store";

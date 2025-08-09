@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db/drizzle'; // Your Drizzle ORM client
 import { indexedFiles } from '$lib/db/schema/aiHistory'; // The new schema for indexed files

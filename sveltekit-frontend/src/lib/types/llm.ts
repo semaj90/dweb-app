@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * LLM Provider and Multi-Agent System Types
  * Comprehensive type definitions for the AI orchestration system

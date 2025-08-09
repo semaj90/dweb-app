@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from "@playwright/test";
+import { chromium, type FullConfig } from "@playwright/test";
 
 /**
  * Global Setup for Legal AI RAG Testing

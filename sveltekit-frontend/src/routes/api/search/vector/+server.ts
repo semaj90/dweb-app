@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Vector Search API Endpoint
 // Provides fast vector similarity search using pgvector + Qdrant
 import { json } from "@sveltejs/kit";

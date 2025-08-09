@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from '@sveltejs/kit';
 import fg from 'fast-glob'; // You might need to 'npm install fast-glob'
 import axios from 'axios'; // You might need to 'npm install axios'

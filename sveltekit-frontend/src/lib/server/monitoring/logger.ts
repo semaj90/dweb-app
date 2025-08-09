@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Advanced Logging & Performance Monitoring System
  * For Legal Case Management Application

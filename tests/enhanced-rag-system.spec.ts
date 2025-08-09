@@ -35,13 +35,13 @@ test.describe('Enhanced RAG System Tests', () => {
 
   test('should test RAG service initialization in development mode', async () => {
     // Test that the RAG service can initialize without Qdrant
-    const { EnhancedRAGService } = await import('../sveltekit-frontend/src/lib/services/enhanced-rag-service.ts');
+    const ragServiceModule = await import('../sveltekit-frontend/src/lib/services/enhanced-rag-service');
     
     // Set development environment variables
     process.env.SKIP_RAG_INITIALIZATION = 'true';
     process.env.USE_POSTGRESQL_ONLY = 'true';
     
-    const ragService = new EnhancedRAGService();
+    const ragService = new (ragServiceModule as any).default();
     
     // Should initialize without throwing errors
     expect(ragService).toBeDefined();
@@ -61,7 +61,7 @@ test.describe('Enhanced RAG System Tests', () => {
       // Test if Ollama is available
       const healthResponse = await fetch('http://localhost:11434/api/version');
       if (!healthResponse.ok) {
-        test.skip('Ollama not available');
+        test.skip(testCleanupIds.length === 0, 'Ollama not available');
         return;
       }
 
@@ -162,7 +162,7 @@ test.describe('Enhanced RAG System Tests', () => {
 
   test('should test semantic search and retrieval', async () => {
     if (testCleanupIds.length === 0) {
-      test.skip('No test documents available for search');
+      test.skip(testCleanupIds.length === 0, 'No test documents available for search');
       return;
     }
 
@@ -231,7 +231,7 @@ test.describe('Enhanced RAG System Tests', () => {
 
   test('should test RAG response generation', async () => {
     if (testCleanupIds.length === 0) {
-      test.skip('No test documents available for RAG generation');
+      test.skip(testCleanupIds.length === 0, 'No test documents available for RAG generation');
       return;
     }
 

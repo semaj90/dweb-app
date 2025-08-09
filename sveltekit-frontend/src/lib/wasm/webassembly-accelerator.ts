@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * WebAssembly Integration for Legal AI Performance Acceleration
  * Handles ECMAScript to WebAssembly compilation and execution

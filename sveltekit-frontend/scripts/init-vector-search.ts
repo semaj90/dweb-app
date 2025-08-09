@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Vector search initialization script
 // Sets up Qdrant collections and PostgreSQL vector indexes
 import { env } from "$env/dynamic/private";

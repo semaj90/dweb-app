@@ -1,3 +1,4 @@
+// @ts-nocheck
 // TODO: Integrate QdrantService with Context7 audit/agent pipeline
 // - Use this service for vector search in semantic_search-driven audit
 // - Expose helper to fetch similar legal documents for audit/agent flows

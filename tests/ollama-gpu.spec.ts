@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 /**
  * Ollama GPU Acceleration Tests
@@ -242,7 +242,7 @@ test.describe("Ollama GPU Acceleration Tests", () => {
 
     // Log benchmark results
     console.log("GPU Benchmark Results:");
-    benchmarkResults.forEach((result) => {
+    benchmarkResults.forEach((result: any) => {
       console.log(
         `${result.model}: ${result.tokens_per_second} tokens/s, ${result.vram_usage}MB VRAM`
       );

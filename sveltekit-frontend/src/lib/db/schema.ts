@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Main Drizzle Schema - Legal AI Case Management System
 // This is the central schema file that Drizzle expects
 

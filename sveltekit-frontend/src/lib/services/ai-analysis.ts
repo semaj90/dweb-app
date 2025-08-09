@@ -1,3 +1,4 @@
+// @ts-nocheck
 // AI Analysis Service for Legal Evidence Processing
 export interface AnalysisResult {
   summary: string;

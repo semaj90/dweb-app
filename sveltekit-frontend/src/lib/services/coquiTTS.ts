@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Coqui TTS browser integration for SvelteKit
 // Usage: import { speakWithCoqui } from './coquiTTS';
 

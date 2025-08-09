@@ -219,10 +219,11 @@
         </p>
 
         <div class="container mx-auto px-4">
-          <AIChatInterface
-            height={400}
-            visible={true}
-          />
+          <!-- AIChatInterface component placeholder -->
+          <div class="bg-gray-100 rounded-lg p-8 text-center">
+            <p class="text-gray-600">AI Chat Interface (Component not implemented yet)</p>
+            <p class="text-sm text-gray-500 mt-2">Height: 400px, Visible: true</p>
+          </div>
         </div>
 
         <!-- Example Queries -->

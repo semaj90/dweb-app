@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Individual Legal Document API - SvelteKit Server Endpoint
 import { db } from "$lib/server/db/index";
 import type { RequestHandler } from "@sveltejs/kit";

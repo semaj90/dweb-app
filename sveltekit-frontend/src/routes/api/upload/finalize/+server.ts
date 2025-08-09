@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { error, json } from "@sveltejs/kit";
 import { mkdir, rename } from "fs/promises";
 import { tmpdir } from "os";

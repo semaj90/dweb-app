@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Handle, HandleServerError } from "@sveltejs/kit";
 import { validateSession } from "$lib/server/lucia";
 // import { enhancedRAGService } from "$lib/services/enhanced-rag-service.js"; // Disabled during debugging

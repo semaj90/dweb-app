@@ -122,8 +122,8 @@ export class LegalAIClusterManager {
     console.log(`✅ Worker thread pool initialized with ${this.config.workerPoolSize} threads`);
   }
 
-  private setupWorkerEventHandlers(worker: cluster.Worker): void {
-    worker.on('exit', (code, signal) => {
+  private setupWorkerEventHandlers(worker: any): void {
+    worker.on('exit', (code: number | null, signal: string | null) => {
       console.log(`⚠️ Worker ${worker.process.pid} died (${signal || code}). Restarting...`);
       
       if (!worker.isDead()) {
@@ -135,11 +135,11 @@ export class LegalAIClusterManager {
       this.setupWorkerEventHandlers(newWorker);
     });
 
-    worker.on('error', (error) => {
+    worker.on('error', (error: Error) => {
       console.error(`❌ Worker ${worker.process.pid} error:`, error);
     });
 
-    worker.on('message', (message) => {
+    worker.on('message', (message: any) => {
       this.handleWorkerMessage(worker, message);
     });
   }
@@ -289,7 +289,7 @@ export class LegalAIClusterManager {
     }
   }
 
-  private handleWorkerMessage(worker: cluster.Worker, message: any): void {
+  private handleWorkerMessage(worker: any, message: any): void {
     // Handle inter-process communication between primary and worker processes
     switch (message.type) {
       case 'health_check':

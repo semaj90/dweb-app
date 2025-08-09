@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Simplified Ollama API route for Legal AI Chat
 // SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
 

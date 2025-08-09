@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";

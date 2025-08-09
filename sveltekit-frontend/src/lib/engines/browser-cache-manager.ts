@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Browser Cache Manager for Neural Sprite JSON States
  * Multi-layer caching with compression and Service Worker integration

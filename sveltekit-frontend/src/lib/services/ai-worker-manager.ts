@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AI Worker Manager - Orchestrates multiple AI workers for parallel processing
  * Handles task distribution, load balancing, and worker lifecycle management

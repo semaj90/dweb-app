@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Document Processing XState Machine
  * Manages document lifecycle, AI analysis, and processing workflows

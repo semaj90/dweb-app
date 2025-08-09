@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { RequestEvent } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";
 

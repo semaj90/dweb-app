@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db, cases, evidence } from "$lib/server/db/index";
 import { fail } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";

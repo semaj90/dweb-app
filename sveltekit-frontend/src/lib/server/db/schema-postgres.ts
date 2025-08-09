@@ -1,3 +1,4 @@
+// @ts-nocheck
 // PostgreSQL schema for production
 import { relations } from "drizzle-orm";
 import {

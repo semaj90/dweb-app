@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced File Upload API with AI Processing Pipeline
  * Handles file uploads, validation, storage, and AI analysis

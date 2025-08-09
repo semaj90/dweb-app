@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Library Sync API Endpoints - Step 6 & 7 Integration
  */

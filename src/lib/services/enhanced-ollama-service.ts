@@ -1,7 +1,7 @@
 // Enhanced Ollama Service with Gemma3 Legal AI Integration
 // Includes streaming, fallback, and error handling
 
-import { GEMMA3_CONFIG } from "$lib/config/gemma3-legal-config";
+import { GEMMA3_CONFIG, OLLAMA_CONFIG } from "$lib/config/gemma3-legal-config";
 import type {
   AIModel,
   ChatMessage,
@@ -34,9 +34,9 @@ class EnhancedOllamaService {
   private retryDelay: number = 1000;
 
   constructor() {
-    this.baseUrl = GEMMA3_CONFIG.model.endpoint;
-    this.currentModel = GEMMA3_CONFIG.model.name;
-    this.fallbackModel = GEMMA3_CONFIG.model.fallback;
+    this.baseUrl = OLLAMA_CONFIG.endpoint;
+    this.currentModel = OLLAMA_CONFIG.models.primary;
+    this.fallbackModel = OLLAMA_CONFIG.models.fallback;
     this.startHealthCheck();
   }
 
@@ -166,12 +166,12 @@ class EnhancedOllamaService {
         stream: false,
         options: {
           temperature:
-            options.temperature ?? GEMMA3_CONFIG.parameters.temperature,
-          top_p: options.top_p ?? GEMMA3_CONFIG.parameters.top_p,
-          top_k: options.top_k ?? GEMMA3_CONFIG.parameters.top_k,
+            options.temperature ?? OLLAMA_CONFIG.parameters.temperature,
+          top_p: options.top_p ?? OLLAMA_CONFIG.parameters.top_p,
+          top_k: options.top_k ?? OLLAMA_CONFIG.parameters.top_k,
           repeat_penalty:
-            options.repeat_penalty ?? GEMMA3_CONFIG.parameters.repeat_penalty,
-          num_ctx: options.num_ctx ?? GEMMA3_CONFIG.parameters.num_ctx,
+            options.repeat_penalty ?? OLLAMA_CONFIG.parameters.repeat_penalty,
+          num_ctx: options.num_ctx ?? OLLAMA_CONFIG.parameters.num_ctx,
         },
       };
 
@@ -244,12 +244,12 @@ class EnhancedOllamaService {
         stream: false,
         options: {
           temperature:
-            options.temperature ?? GEMMA3_CONFIG.parameters.temperature,
-          top_p: options.top_p ?? GEMMA3_CONFIG.parameters.top_p,
-          top_k: options.top_k ?? GEMMA3_CONFIG.parameters.top_k,
+            options.temperature ?? OLLAMA_CONFIG.parameters.temperature,
+          top_p: options.top_p ?? OLLAMA_CONFIG.parameters.top_p,
+          top_k: options.top_k ?? OLLAMA_CONFIG.parameters.top_k,
           repeat_penalty:
-            options.repeat_penalty ?? GEMMA3_CONFIG.parameters.repeat_penalty,
-          num_ctx: options.num_ctx ?? GEMMA3_CONFIG.parameters.num_ctx,
+            options.repeat_penalty ?? OLLAMA_CONFIG.parameters.repeat_penalty,
+          num_ctx: options.num_ctx ?? OLLAMA_CONFIG.parameters.num_ctx,
         },
         keep_alive: options.keepAlive ?? "5m",
       };
@@ -318,12 +318,12 @@ class EnhancedOllamaService {
       stream: true,
       options: {
         temperature:
-          options.temperature ?? GEMMA3_CONFIG.parameters.temperature,
-        top_p: options.top_p ?? GEMMA3_CONFIG.parameters.top_p,
-        top_k: options.top_k ?? GEMMA3_CONFIG.parameters.top_k,
+          options.temperature ?? OLLAMA_CONFIG.parameters.temperature,
+        top_p: options.top_p ?? OLLAMA_CONFIG.parameters.top_p,
+        top_k: options.top_k ?? OLLAMA_CONFIG.parameters.top_k,
         repeat_penalty:
-          options.repeat_penalty ?? GEMMA3_CONFIG.parameters.repeat_penalty,
-        num_ctx: options.num_ctx ?? GEMMA3_CONFIG.parameters.num_ctx,
+          options.repeat_penalty ?? OLLAMA_CONFIG.parameters.repeat_penalty,
+        num_ctx: options.num_ctx ?? OLLAMA_CONFIG.parameters.num_ctx,
       },
       keep_alive: options.keepAlive ?? "5m",
     };
@@ -430,10 +430,11 @@ class EnhancedOllamaService {
   }
 
   // Update configuration
-  updateConfig(config: Partial<typeof GEMMA3_CONFIG.model>) {
+  updateConfig(config: any) {
     if (config.name) this.currentModel = config.name;
     if (config.fallback) this.fallbackModel = config.fallback;
     if (config.endpoint) this.baseUrl = config.endpoint;
+    if (config.primary) this.currentModel = config.primary;
   }
 
   // Cleanup

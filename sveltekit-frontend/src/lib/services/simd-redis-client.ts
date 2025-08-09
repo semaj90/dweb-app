@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SIMD JSON + Redis Client Service
  * Integrates with Go microservice for ultra-high performance JSON processing

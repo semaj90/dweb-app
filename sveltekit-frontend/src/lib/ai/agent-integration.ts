@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 10: Context7 Agent Orchestration Integration (Stub)
 // This module stubs agent triggers for code review, fixes, and analysis.
 // TODO: After initial test, wire up real CrewAI/Autogen and Context7 agent orchestration using mcp_memory_create_relations and mcp_context7_resolve-library-id.

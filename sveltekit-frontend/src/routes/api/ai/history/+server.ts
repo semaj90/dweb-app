@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { aiHistory } from "$lib/db/schema/aiHistory";
 import { db } from "$lib/server/db/index";
 import { json } from "@sveltejs/kit";

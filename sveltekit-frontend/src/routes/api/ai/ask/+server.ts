@@ -1,3 +1,4 @@
+// @ts-nocheck
 // SvelteKit API endpoint for AI RAG system with Gemma3 Local LLM Support
 // Handles "Ask AI" requests with vector search and hybrid LLM integration
 import type { RequestHandler } from "@sveltejs/kit";

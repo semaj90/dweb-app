@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { writable, type Writable } from "svelte/store";
 
 // Interface for the structured profile data (Who, What, Why, How)

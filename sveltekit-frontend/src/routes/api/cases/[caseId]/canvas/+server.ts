@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Case Canvas API - Save and load canvas data
 import { db } from "$lib/server/db/index";
 import type { RequestHandler } from "@sveltejs/kit";

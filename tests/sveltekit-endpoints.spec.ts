@@ -29,8 +29,8 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       }
       
     } catch (error) {
-      if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-        test.skip('SvelteKit dev server not running - start with: npm run dev');
+      if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
+        test.skip(true, 'SvelteKit dev server not running - start with: npm run dev');
       } else {
         throw error;
       }
@@ -68,10 +68,10 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       }
       
     } catch (error) {
-      if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-        test.skip('SvelteKit dev server not running');
+      if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
+        test.skip();
       } else {
-        console.warn('Navigation test completed with warnings:', error.message);
+        console.warn('Navigation test completed with warnings:', (error as Error).message);
       }
     }
   });
@@ -127,10 +127,10 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       }
       
     } catch (error) {
-      if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-        test.skip('SvelteKit dev server not running');
+      if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
+        test.skip();
       } else {
-        console.warn('Chat interface test completed with warnings:', error.message);
+        console.warn('Chat interface test completed with warnings:', (error as Error).message);
       }
     }
   });
@@ -173,10 +173,10 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       }
       
     } catch (error) {
-      if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-        test.skip('SvelteKit dev server not running');
+      if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
+        test.skip();
       } else {
-        console.warn('API endpoints test completed with warnings:', error.message);
+        console.warn('API endpoints test completed with warnings:', (error as Error).message);
       }
     }
   });
@@ -219,7 +219,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
             
             console.log('✅ File input accepts test files');
           } catch (fileError) {
-            console.log('ℹ️ File input may have restrictions:', fileError.message);
+            console.log('ℹ️ File input may have restrictions:', (fileError as Error).message);
           }
         }
       } else {
@@ -227,10 +227,10 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       }
       
     } catch (error) {
-      if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-        test.skip('SvelteKit dev server not running');
+      if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
+        test.skip();
       } else {
-        console.warn('File upload test completed with warnings:', error.message);
+        console.warn('File upload test completed with warnings:', (error as Error).message);
       }
     }
   });
@@ -276,10 +276,10 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       }
       
     } catch (error) {
-      if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-        test.skip('SvelteKit dev server not running');
+      if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
+        test.skip();
       } else {
-        console.warn('Responsive design test completed with warnings:', error.message);
+        console.warn('Responsive design test completed with warnings:', (error as Error).message);
       }
     }
   });
@@ -322,7 +322,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       
       // Check console for any errors or warnings
       const consoleMessages: string[] = [];
-      page.on('console', (msg) => {
+      page.on('console', (msg: any) => {
         if (msg.type() === 'error' || msg.type() === 'warning') {
           consoleMessages.push(`${msg.type()}: ${msg.text()}`);
         }
@@ -342,10 +342,10 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       }
       
     } catch (error) {
-      if (error.message.includes('net::ERR_CONNECTION_REFUSED')) {
-        test.skip('SvelteKit dev server not running');
+      if ((error as Error).message.includes('net::ERR_CONNECTION_REFUSED')) {
+        test.skip();
       } else {
-        console.warn('Development features test completed with warnings:', error.message);
+        console.warn('Development features test completed with warnings:', (error as Error).message);
       }
     }
   });

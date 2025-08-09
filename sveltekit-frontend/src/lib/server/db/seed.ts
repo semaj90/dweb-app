@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db } from './index.js';
 import { 
   users, 

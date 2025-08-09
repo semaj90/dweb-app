@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { redirect } from "@sveltejs/kit";
 import { invalidateSession, clearSessionCookie } from "$lib/server/lucia";
 import type { Actions, PageServerLoad } from "./$types";

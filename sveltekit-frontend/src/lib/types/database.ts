@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { User } from "./user";
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 

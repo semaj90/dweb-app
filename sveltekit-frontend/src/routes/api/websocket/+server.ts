@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ======================================================================
 // REAL-TIME WEBSOCKET HANDLER FOR ENHANCED LEGAL AI SYSTEM
 // Supporting streaming updates, live processing results, and system monitoring

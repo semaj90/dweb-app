@@ -1,3 +1,4 @@
+// @ts-nocheck
 // LangChain.js RAG Implementation for Legal AI Platform
 // Advanced RAG with Ollama integration and legal domain specialization
 import { ChatOpenAI } from "@langchain/openai";

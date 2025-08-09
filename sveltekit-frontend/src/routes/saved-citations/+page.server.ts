@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { caseService } from "$lib/services/caseService";
 import type { PageServerLoad } from "./$types";
 

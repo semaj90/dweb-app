@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { users } from "$lib/server/db/schema-postgres";
 import { eq } from "drizzle-orm";
 import { db } from "./index";

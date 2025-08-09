@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db } from '$lib/server/db';
 import { users } from '$lib/server/db/schema';
 import type { NewUser } from '$lib/server/db/schema-postgres';

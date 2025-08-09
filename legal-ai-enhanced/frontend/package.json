@@ -1,0 +1,79 @@
+{
+  "name": "yorha-legal-ai-frontend",
+  "version": "3.0.0",
+  "description": "YoRHa Legal AI System - Advanced Neural Interface with GPU Acceleration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext js,jsx,ts,tsx",
+    "type-check": "tsc --noEmit",
+    "build-wasm": "emcc src/wasm/cpp/yorha-processor.cpp -O3 -s WASM=1 -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4 -s MODULARIZE=1 -s EXPORT_NAME=\"YoRHaWASM\" -s EXPORTED_FUNCTIONS=\"['_malloc', '_free']\" -s EXPORTED_RUNTIME_METHODS=\"['ccall', 'cwrap']\" -s ALLOW_MEMORY_GROWTH=1 -s MAXIMUM_MEMORY=1073741824 --bind -o src/wasm/yorha-processor.js",
+    "serve": "http-server dist -p 5173 --cors",
+    "yorha-deploy": "npm run build && npm run serve"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "three": "^0.158.0",
+    "@types/three": "^0.158.0",
+    "gl-matrix": "^3.4.3",
+    "gsap": "^3.12.2"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.1.1",
+    "vite": "^5.0.0",
+    "eslint": "^8.53.0",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "typescript": "^5.2.2",
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yorha-command/legal-ai-system.git"
+  },
+  "keywords": [
+    "yorha",
+    "legal-ai",
+    "neural-network",
+    "gpu-acceleration",
+    "cuda",
+    "webgl",
+    "webgpu",
+    "wasm",
+    "document-processing",
+    "artificial-intelligence"
+  ],
+  "author": "YoRHa Command - Neural Unit 2B-9S-A2",
+  "license": "YoRHa-Proprietary",
+  "yorha": {
+    "classification": "Neural Interface System",
+    "version": "3.0.0",
+    "neural_units": ["2B", "9S", "A2"],
+    "gpu_acceleration": true,
+    "cuda_support": true,
+    "webgl_version": "2.0",
+    "webgpu_support": true,
+    "wasm_threads": true
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

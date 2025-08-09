@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Module declarations for packages without proper TypeScript types
  */

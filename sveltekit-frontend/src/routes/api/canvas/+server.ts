@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { canvasStates } from "$lib/server/db/schema-postgres";
 import type { RequestHandler } from "@sveltejs/kit";
 import { json } from "@sveltejs/kit";

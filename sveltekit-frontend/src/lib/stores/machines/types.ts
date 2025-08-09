@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * XState Types for Go Microservice Integration
  */

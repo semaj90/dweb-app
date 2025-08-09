@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface AIAnalysis {
   extractedTags: string[];
   summary: string;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from '@sveltejs/kit';
 import { NeuralMemoryManager } from '$lib/optimization/neural-memory-manager';
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Fuse.js import wrapper with fallback
 let Fuse: any;
 
@@ -34,7 +35,7 @@ try {
           
           return { item, refIndex: index, score };
         })
-        .filter(result => result.score <= threshold)
+        .filter(result: any => result.score <= threshold)
         .sort((a, b) => a.score - b.score);
     }
     

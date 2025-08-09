@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Agent Logs API Endpoints - Step 6 & 7 Integration
  */

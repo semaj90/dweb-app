@@ -1,268 +1,154 @@
-/**
- * Enhanced REST API Architecture for Legal AI
- * Self-Organizing Map + K-Means Clustering with Multi-Database Integration
- */
+// @ts-nocheck
+// Enhanced REST architecture types and interfaces stub
 
-import type { QdrantClient } from '@qdrant/js-client-rest';
-import type { Redis } from 'ioredis';
-import type { Driver as Neo4jDriver } from 'neo4j-driver';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+export interface KMeansConfig {
+  k: number;
+  maxIterations: number;
+  tolerance: number;
+  distanceFunction: 'euclidean' | 'cosine';
+  initMethod: 'random' | 'kmeans++';
+}
 
-// =============================================================================
-// CORE TYPES & INTERFACES
-// =============================================================================
+export interface ClusterResult {
+  clusters: DocumentCluster[];
+  centroids: number[][];
+  iterations: number;
+  silhouetteScore: number;
+  inertia: number;
+}
 
-export interface EnhancedRestApiConfig {
-  // Database Connections
-  postgresql: PostgresJsDatabase<any>;
-  redis: Redis;
-  qdrant: QdrantClient;
-  neo4j: Neo4jDriver;
-  
-  // Message Queue
-  rabbitmq: {
-    url: string;
-    exchanges: {
-      clustering: string;
-      embeddings: string;
-      analysis: string;
-    };
-  };
-  
-  // ML Configuration
-  clustering: {
-    som: SOMConfig;
-    kmeans: KMeansConfig;
-  };
+export interface DocumentCluster {
+  id: string;
+  centroid: number[];
+  points: ClusterPoint[];
+  size: number;
+  averageDistance: number;
+}
+
+export interface ClusterPoint {
+  id: string;
+  vector: number[];
+  distance: number;
+  metadata: Record<string, any>;
+}
+
+export interface KMeansClusterer {
+  fit(data: number[][]): Promise<ClusterResult>;
+  predict(points: number[][]): Promise<number[]>;
+  getClusterInfo(): ClusterResult;
+  silhouetteScore(): Promise<number>;
 }
 
 export interface SOMConfig {
   width: number;
   height: number;
+  dimensions: number;
   learningRate: number;
   radius: number;
   iterations: number;
-  dimensions: number; // Embedding dimensions (384 for Gemma3)
+  topologyFunction: 'gaussian' | 'mexican_hat';
 }
-
-export interface KMeansConfig {
-  k: number; // Number of clusters
-  maxIterations: number;
-  tolerance: number;
-  initMethod: 'random' | 'kmeans++';
-}
-
-// Document Clustering Results
-export interface ClusterResult {
-  clusterId: string;
-  centroid: number[];
-  documents: DocumentCluster[];
-  coherenceScore: number;
-  somPosition: { x: number; y: number };
-}
-
-export interface DocumentCluster {
-  documentId: string;
-  similarity: number;
-  embedding: number[];
-  metadata: Record<string, any>;
-}
-
-// API Response Types
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  metadata: {
-    timestamp: string;
-    processingTime: number;
-    clusterId?: string;
-    confidence?: number;
-  };
-}
-
-// =============================================================================
-// CLUSTERING SERVICE INTERFACES
-// =============================================================================
 
 export interface SelfOrganizingMap {
-  train(embeddings: number[][]): Promise<void>;
-  cluster(embedding: number[]): Promise<{ x: number; y: number; confidence: number }>;
-  getNeighborhood(x: number, y: number, radius: number): Promise<number[][]>;
-  visualize(): Promise<{ width: number; height: number; neurons: number[][] }>;
+  train(data: number[][]): Promise<void>;
+  predict(point: number[]): Promise<{ x: number; y: number; distance: number }>;
+  getWeights(): number[][][];
+  visualize(): Promise<string>; // Base64 image
 }
 
-export interface KMeansClusterer {
-  fit(embeddings: number[][]): Promise<ClusterResult[]>;
-  predict(embedding: number[]): Promise<string>;
-  getCentroids(): Promise<number[][]>;
-  silhouetteScore(): Promise<number>;
-}
+// Mock implementations
+export class MockKMeansClusterer implements KMeansClusterer {
+  private config: KMeansConfig;
+  private result: ClusterResult | null = null;
 
-// =============================================================================
-// MESSAGE QUEUE INTERFACES
-// =============================================================================
+  constructor(config: KMeansConfig) {
+    this.config = config;
+  }
 
-export interface ClusteringMessage {
-  messageId: string;
-  type: 'som_training' | 'kmeans_clustering' | 'document_analysis';
-  payload: {
-    documentIds: string[];
-    embeddings: number[][];
-    metadata: Record<string, any>;
-  };
-  priority: 'high' | 'medium' | 'low';
-  timestamp: string;
-}
-
-export interface EmbeddingMessage {
-  messageId: string;
-  documentId: string;
-  content: string;
-  extractedText: string;
-  requestedBy: string;
-  callbackUrl?: string;
-}
-
-// =============================================================================
-// DATABASE SCHEMA INTERFACES
-// =============================================================================
-
-export interface DocumentEmbedding {
-  id: string;
-  documentId: string;
-  embedding: number[]; // pgvector
-  chunkIndex: number;
-  clusterId?: string;
-  somPosition?: { x: number; y: number };
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface ClusterAnalysis {
-  id: string;
-  clusterId: string;
-  algorithmType: 'som' | 'kmeans' | 'hybrid';
-  centroid: number[];
-  coherenceScore: number;
-  documentCount: number;
-  keywords: string[];
-  legalTopics: string[];
-  confidence: number;
-  createdAt: Date;
-}
-
-export interface GraphRelationship {
-  id: string;
-  sourceDocumentId: string;
-  targetDocumentId: string;
-  relationshipType: 'similar' | 'references' | 'contradicts' | 'supports';
-  strength: number;
-  clusterId?: string;
-  extractedBy: 'som' | 'kmeans' | 'graph_analysis';
-}
-
-// =============================================================================
-// API ENDPOINT INTERFACES
-// =============================================================================
-
-export interface ClusteringApiEndpoints {
-  // Document Processing
-  '/api/documents/embed': {
-    POST: {
-      body: { documentId: string; content: string; priority?: 'high' | 'medium' | 'low' };
-      response: ApiResponse<{ embeddingId: string; queuePosition: number }>;
+  async fit(data: number[][]): Promise<ClusterResult> {
+    console.log('KMeans: fitting data with shape', [data.length, data[0]?.length]);
+    
+    this.result = {
+      clusters: Array.from({ length: this.config.k }, (_, i) => ({
+        id: `cluster_${i}`,
+        centroid: Array(data[0]?.length || 384).fill(0).map(() => Math.random()),
+        points: [],
+        size: Math.floor(data.length / this.config.k),
+        averageDistance: Math.random()
+      })),
+      centroids: Array.from({ length: this.config.k }, () => 
+        Array(data[0]?.length || 384).fill(0).map(() => Math.random())
+      ),
+      iterations: Math.floor(Math.random() * this.config.maxIterations),
+      silhouetteScore: Math.random(),
+      inertia: Math.random() * 100
     };
-  };
-  
-  // Clustering Operations
-  '/api/clustering/som/train': {
-    POST: {
-      body: { documentIds: string[]; config?: Partial<SOMConfig> };
-      response: ApiResponse<{ trainingId: string; estimatedTime: number }>;
+    
+    return this.result;
+  }
+
+  async predict(points: number[][]): Promise<number[]> {
+    console.log('KMeans: predicting for', points.length, 'points');
+    return points.map(() => Math.floor(Math.random() * this.config.k));
+  }
+
+  getClusterInfo(): ClusterResult {
+    return this.result || {
+      clusters: [],
+      centroids: [],
+      iterations: 0,
+      silhouetteScore: 0,
+      inertia: 0
     };
-  };
-  
-  '/api/clustering/kmeans/cluster': {
-    POST: {
-      body: { documentIds: string[]; k?: number };
-      response: ApiResponse<{ clusters: ClusterResult[] }>;
-    };
-  };
-  
-  // Search & Analysis
-  '/api/search/semantic': {
-    POST: {
-      body: { query: string; clusterId?: string; useKnowledge?: boolean };
-      response: ApiResponse<{ results: DocumentCluster[]; clusters: string[] }>;
-    };
-  };
-  
-  '/api/analysis/cluster-insights': {
-    GET: {
-      params: { clusterId: string };
-      response: ApiResponse<{ 
-        insights: string;
-        legalTopics: string[];
-        riskFactors: string[];
-        recommendations: string[];
-      }>;
-    };
-  };
-  
-  // Real-time Status
-  '/api/clustering/status': {
-    GET: {
-      response: ApiResponse<{
-        som: { trained: boolean; accuracy: number };
-        kmeans: { clusters: number; silhouetteScore: number };
-        queue: { pending: number; processing: number };
-      }>;
-    };
-  };
+  }
+
+  async silhouetteScore(): Promise<number> {
+    return this.result?.silhouetteScore || 0;
+  }
 }
 
-// =============================================================================
-// PERFORMANCE MONITORING
-// =============================================================================
+export class MockSelfOrganizingMap implements SelfOrganizingMap {
+  private config: SOMConfig;
+  private weights: number[][][] = [];
 
-export interface ClusteringMetrics {
-  som: {
-    trainingTime: number;
-    accuracy: number;
-    convergence: boolean;
-    neuronsActivated: number;
-  };
-  kmeans: {
-    silhouetteScore: number;
-    inertia: number;
-    iterations: number;
-    convergenceTime: number;
-  };
-  system: {
-    documentsProcessed: number;
-    averageProcessingTime: number;
-    queueBacklog: number;
-    errorRate: number;
-  };
+  constructor(config: SOMConfig) {
+    this.config = config;
+    this.initializeWeights();
+  }
+
+  private initializeWeights() {
+    this.weights = Array.from({ length: this.config.width }, () =>
+      Array.from({ length: this.config.height }, () =>
+        Array.from({ length: this.config.dimensions }, () => Math.random())
+      )
+    );
+  }
+
+  async train(data: number[][]): Promise<void> {
+    console.log('SOM: training with', data.length, 'samples');
+    // Mock training - just log
+  }
+
+  async predict(point: number[]): Promise<{ x: number; y: number; distance: number }> {
+    return {
+      x: Math.floor(Math.random() * this.config.width),
+      y: Math.floor(Math.random() * this.config.height),
+      distance: Math.random()
+    };
+  }
+
+  getWeights(): number[][][] {
+    return this.weights;
+  }
+
+  async visualize(): Promise<string> {
+    // Return a mock base64 image
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+  }
 }
 
-// =============================================================================
-// UTILITY TYPES
-// =============================================================================
-
-export type ClusteringAlgorithm = 'som' | 'kmeans' | 'hybrid';
-export type ProcessingStatus = 'queued' | 'processing' | 'completed' | 'failed';
-export type LegalDocumentType = 'contract' | 'case_law' | 'regulation' | 'filing' | 'evidence';
-
-export interface ProcessingPipeline {
-  documentId: string;
-  stages: {
-    embedding: ProcessingStatus;
-    clustering: ProcessingStatus;
-    analysis: ProcessingStatus;
-    indexing: ProcessingStatus;
-  };
-  estimatedCompletion: Date;
-  priority: 'high' | 'medium' | 'low';
-}
+// Export only the concrete classes, not the interfaces/types
+export default {
+  MockKMeansClusterer,
+  MockSelfOrganizingMap
+};

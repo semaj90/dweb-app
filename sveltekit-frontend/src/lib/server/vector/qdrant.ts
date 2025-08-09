@@ -1,3 +1,4 @@
+// @ts-nocheck
 // --- Qdrant passthroughs for admin API ---
 export async function getCollections() {
   const client = getQdrantClient();

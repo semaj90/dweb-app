@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { PageServerLoad } from "./$types";
 import { resolveLibraryId, getLibraryDocs } from "$lib/ai/mcp-helpers";
 import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt";

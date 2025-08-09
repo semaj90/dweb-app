@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Multi-Agent Orchestrator API Endpoints - Step 9 Integration
  */

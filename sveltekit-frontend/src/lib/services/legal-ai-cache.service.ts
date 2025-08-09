@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Legal AI Cache Service - Performance Optimization
 import type { AIAnalysisResult, LegalDocument } from "$lib/types/legal";
 

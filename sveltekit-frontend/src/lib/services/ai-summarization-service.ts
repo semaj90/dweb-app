@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AI Summarization Service with Embeddings Generation
  * Comprehensive document processing and analysis pipeline

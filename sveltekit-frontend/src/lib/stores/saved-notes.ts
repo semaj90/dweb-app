@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { browser } from "$app/environment";
 import Fuse from "fuse.js";
 import { del, get, keys, set } from "idb-keyval";

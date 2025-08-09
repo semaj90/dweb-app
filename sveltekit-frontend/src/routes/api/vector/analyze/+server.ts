@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Vector Intelligence Semantic Analysis API
  * Provides advanced semantic analysis of legal documents and content

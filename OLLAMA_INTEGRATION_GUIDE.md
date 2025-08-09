@@ -9,7 +9,7 @@ This guide explains how to integrate and use Ollama with your SvelteKit 2.0 + Sv
 ### Option 1: Full Development Environment
 
 ```bash
-# Start everything (Docker + Ollama + SvelteKit)
+# Start everything (Ollama + SvelteKit)
 npm start
 
 # Or with GPU acceleration
@@ -63,7 +63,7 @@ npm run start:gpu           # GPU-accelerated development
 npm run start:prod          # Production deployment
 
 npm run dev:frontend        # SvelteKit development server only
-npm run dev:full            # Full stack (Docker + Ollama + Frontend)
+npm run dev:full            # Full stack (Ollama + Frontend)
 npm run dev:gpu             # GPU-accelerated full stack
 npm run dev:quick           # Quick development (assumes services running)
 ```
@@ -207,13 +207,13 @@ Visit the AI demo page to test the integration:
 
 ```bash
 # Check Docker status
-docker ps
+ps
 
 # Restart Ollama container
 npm run ollama:restart
 
 # Check logs
-docker logs deeds-ollama-gpu
+logs deeds-ollama-gpu
 ```
 
 ### Models Not Available
@@ -226,7 +226,7 @@ npm run ollama:models
 npm run ollama:setup
 
 # Manually pull model
-docker exec deeds-ollama-gpu ollama pull gemma3:7b
+exec deeds-ollama-gpu ollama pull gemma3:7b
 ```
 
 ### Frontend Connection Issues
@@ -249,7 +249,7 @@ npm run test:integration
 npm run start:gpu
 
 # Check system resources
-docker stats
+ stats
 
 # Optimize memory
 npm run deploy:optimized
@@ -260,8 +260,7 @@ npm run deploy:optimized
 - [SvelteKit 2.0 Documentation](https://kit.svelte.dev/)
 - [Svelte 5 Documentation](https://svelte.dev/)
 - [Ollama Documentation](https://ollama.ai/docs)
-- [Legal AI Models Guide](./docs/legal-ai-models.md)
-- [Docker Configuration](./docs/docker-setup.md)
+- [Legal AI Models Guide](./docs/legal-ai-models.md
 
 ## 🎉 Success Indicators
 

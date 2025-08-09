@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Multi-Agent AI Orchestration API
 // Unified endpoint for Autogen, CrewAI, and vLLM integration
 

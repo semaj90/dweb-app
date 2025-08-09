@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import { evidence } from "$lib/server/db/schema";

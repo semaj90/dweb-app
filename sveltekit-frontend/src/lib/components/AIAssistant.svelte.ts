@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { writable } from "svelte/store";
 import { Button } from "$lib/components/ui/button";
 

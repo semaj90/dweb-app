@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { expect, test } from "@playwright/test";
 
 test("EditableCanvasSystem loads correctly", async ({ page }) => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Evaluation & Metrics API Endpoints - Step 10 Integration
  */

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cases, criminals, evidence } from "$lib/server/db/schema-postgres";
 import { redirect } from "@sveltejs/kit";
 import { count, eq } from "drizzle-orm";

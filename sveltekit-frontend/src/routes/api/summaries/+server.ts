@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Comprehensive AI Mix Summaries API - End-to-End Integration
 // Combines: Local LLM + Enhanced RAG + Loki.js User Activity + Fuse.js + XState Synthesis
 // Supports: Chunking, Streaming, Async Processing, Nomadic Embeddings

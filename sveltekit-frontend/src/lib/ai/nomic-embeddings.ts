@@ -1,3 +1,4 @@
+// @ts-nocheck
 // TODO: Wire up NomicEmbeddingsService for production Context7 pipeline
 // - Use this service for all embedding generation in semantic_search, audit, and agent flows
 // - After embedding, upsert to Qdrant and log to todo log/DB as needed

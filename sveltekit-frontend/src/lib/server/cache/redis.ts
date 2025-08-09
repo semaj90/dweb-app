@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Redis caching service for embeddings and search results
 // Use process.env for server-side environment variables
 

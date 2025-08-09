@@ -40,7 +40,7 @@
 	];
 	
 	// Real-time metrics
-	let performanceMetrics = $derived(() => ({
+	let performanceMetrics = $derived({
 		totalQueries: aiResponses.length,
 		averageConfidence: aiResponses.length > 0 
 			? aiResponses.reduce((sum, r) => sum + (r.confidence || 0), 0) / aiResponses.length 
@@ -49,7 +49,7 @@
 			? aiResponses.reduce((sum, r) => sum + (r.processingTime || 0), 0) / aiResponses.length
 			: 0,
 		gpuProcessed: aiResponses.filter(r => r.gpuProcessed).length
-	}));
+	});
 	
 	onMount(async () => {
 		await loadSystemStatus();
@@ -459,7 +459,7 @@ This analysis leverages the full Legal AI system capabilities including Context7
 								<div class="flex-1">
 									<div class="text-sm font-medium text-gray-900">{response.query}</div>
 									<div class="text-xs text-gray-500 mt-1">
-										{new Date(response.timestamp).toLocaleTimeString()}
+										{new Date(response.timestamp as string | number | Date).toLocaleTimeString()}
 									</div>
 								</div>
 								<div class="flex items-center space-x-2 ml-4">

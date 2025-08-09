@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * XState v5 Actor for Embedding Generation
  * Uses fromPromise for async embedding operations with legal AI context

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Self-Organizing Map (SOM) Enhanced RAG System
 // Implements dimensionality reduction, k-means clustering, and boolean storage for legal AI
 

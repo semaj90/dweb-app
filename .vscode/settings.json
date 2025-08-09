@@ -3,7 +3,7 @@
   "go.buildTags": "cgo",
   "go.toolsEnvVars": {
     "CC": "C:\\Progra~1\\LLVM\\bin\\clang.exe",
-    "CXX": "C:\\Progra~1\\LLVM\\bin\\clang++.exe", 
+    "CXX": "C:\\Progra~1\\LLVM\\bin\\clang++.exe",
     "CGO_ENABLED": "1",
     "CGO_CFLAGS": "-IC:\\Progra~1\\NVIDIA~1\\CUDA\\v13.0\\include -mavx2 -mfma",
     "CGO_LDFLAGS": "-LC:\\Progra~1\\NVIDIA~1\\CUDA\\v13.0\\lib\\x64 -lcudart -lcublas",
@@ -20,7 +20,7 @@
   "go.coverOnSingleTest": true,
   "go.testFlags": ["-tags=cgo"],
   "go.testTimeout": "300s",
-  
+
   // Windows Native File Associations
   "files.associations": {
     "*.go": "go",
@@ -29,17 +29,17 @@
     "*.sql": "sql",
     "*.env*": "dotenv"
   },
-  
+
   // TypeScript Configuration for SvelteKit
   "typescript.suggest.autoImports": true,
   "typescript.preferences.importModuleSpecifier": "relative",
-  
+
   // SvelteKit Development
   "svelte.enable-ts-plugin": true,
   "svelte.plugin.svelte.format.enable": true,
-  
+
   // Windows Native Terminal
-  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.defaultProfile.windows": "Windows PowerShell",
   "terminal.integrated.profiles.windows": {
     "Command Prompt": {
       "path": "cmd.exe",
@@ -50,15 +50,15 @@
       "args": []
     }
   },
-  
+
   // Editor Configuration
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit",
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": null,
-  
+
   // Language Specific Formatters
   "[go]": {
     "editor.defaultFormatter": "golang.go"
@@ -69,10 +69,11 @@
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
-  
+
   // Windows Native Development Environment
   "legal-ai.nativeWindows": true,
   "legal-ai.useLocalServices": true,
   "legal-ai.postgresLocal": "localhost:5432",
-  "legal-ai.ollamaLocal": "localhost:11434"
+  "legal-ai.ollamaLocal": "localhost:11434",
+  "terminal.integrated.suggest.enabled": true
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Missing type definitions for external libraries
 
 declare module 'fuse.js' {

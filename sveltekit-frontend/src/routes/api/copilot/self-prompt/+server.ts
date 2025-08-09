@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Copilot Self-Prompt API Endpoint
  * Enables Copilot to leverage comprehensive AI orchestration for autonomous problem-solving

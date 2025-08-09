@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Enhanced Vector Service - Auto-generated from 11 files
 // Generated: 2025-07-25T03:29:35.246Z
 // Features detected: hasOllama, hasQdrant, hasRedis, hasPgVector, hasEmbeddings

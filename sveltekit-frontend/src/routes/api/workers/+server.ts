@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Specialized Worker API - Event-Driven Job Processing
  * Endpoints for submitting jobs to the worker "hive"

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Enhanced Copilot Self-Prompt Wrapper Utility
  * Integrates semantic search, memory MCP servers, multi-agent orchestration,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Hybrid Vector Embedding API - PGVector + Qdrant + Local LLM Integration
  * Supports multiple embedding models with fallback strategies

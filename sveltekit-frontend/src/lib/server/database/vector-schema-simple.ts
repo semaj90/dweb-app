@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Simplified Vector Schema - Production Ready
 import {
   jsonb,

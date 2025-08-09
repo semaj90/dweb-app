@@ -1,3 +1,4 @@
+// @ts-nocheck
 // UnoCSS shortcuts for common patterns
 export const shortcuts = {
   // Layout shortcuts

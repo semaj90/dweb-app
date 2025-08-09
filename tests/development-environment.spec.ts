@@ -40,11 +40,11 @@ test.describe('Development Environment Tests', () => {
     });
 
     let output = '';
-    statusProcess.stdout.on('data', (data) => {
+    statusProcess.stdout.on('data', (data: any) => {
       output += data.toString();
     });
 
-    await new Promise((resolve) => {
+    await new Promise((resolve: any) => {
       statusProcess.on('close', resolve);
     });
 
@@ -58,7 +58,7 @@ test.describe('Development Environment Tests', () => {
 
   test('should test PostgreSQL connection and pgvector extension', async () => {
     if (!dbClient) {
-      test.skip('PostgreSQL not available');
+      test.skip(!dbClient, 'PostgreSQL not available');
       return;
     }
 

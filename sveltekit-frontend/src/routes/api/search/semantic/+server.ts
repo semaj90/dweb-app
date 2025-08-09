@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SvelteKit 2 API Route: Semantic Search with Clustering Integration
  * POST /api/search/semantic

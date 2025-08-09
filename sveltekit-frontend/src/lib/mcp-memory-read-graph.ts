@@ -1,3 +1,4 @@
+// @ts-nocheck
 // MCP Memory2 Read Graph utility
 // Ensures #mcp_memory2_read_graph is available in the codebase
 

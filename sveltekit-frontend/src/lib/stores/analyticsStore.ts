@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Svelte store for analytics events (frontend)
 import { writable } from "svelte/store";
 

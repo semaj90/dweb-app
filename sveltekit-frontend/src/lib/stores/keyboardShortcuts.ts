@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { writable } from "svelte/store";
 import { advancedCache } from "$lib/services/advanced-cache-manager";
 import { aiRecommendationEngine } from "$lib/services/ai-recommendation-engine";

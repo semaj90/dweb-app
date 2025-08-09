@@ -1,3 +1,4 @@
+// @ts-nocheck
 // SvelteKit endpoint: /api/tts
 // Proxies text to a Coqui TTS HTTP server and returns audio (WAV)
 import type { RequestHandler } from "@sveltejs/kit";

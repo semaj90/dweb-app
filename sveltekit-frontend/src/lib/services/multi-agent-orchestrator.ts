@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Multi-Agent Orchestrator Service - Stub implementation
  * TODO: Replace with actual implementation

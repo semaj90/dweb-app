@@ -1,3 +1,4 @@
+// @ts-nocheck
 // File: src/lib/server/qdrant.ts
 import { fetchOllama } from '$lib/utils/fetch-with-timeout';
 

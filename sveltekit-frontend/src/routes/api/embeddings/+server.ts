@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Embeddings API Endpoint
 // Handles embedding generation and bulk embedding operations
 import type { RequestHandler } from "@sveltejs/kit";

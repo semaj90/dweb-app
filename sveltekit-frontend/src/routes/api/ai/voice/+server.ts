@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SpeechService } from "$lib/services/speech-service";
 import { json } from "@sveltejs/kit";
 

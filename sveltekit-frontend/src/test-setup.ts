@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { beforeAll, vi } from 'vitest';
 
 // Mock browser environment

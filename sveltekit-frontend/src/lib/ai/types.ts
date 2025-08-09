@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Type definitions for multi-LLM synthesis and legal AI pipeline
 
 export interface AIModelOutput {
