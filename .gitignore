@@ -12,3 +12,6 @@ data/nul
 .env*
 sveltekit-frontend/.env*
 config/environment/.env*
+
+# Local Emscripten SDK (installed by build scripts) — do not track
+src/lib/wasm/deps/emsdk/
