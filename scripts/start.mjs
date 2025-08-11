@@ -2,23 +2,22 @@
 
 /**
  * YoRHa Legal AI - Production Start Orchestrator
- * 
+ *
  * Starts all services for production deployment with:
  * - Health checks and retries
  * - Service dependency management
  * - Performance monitoring
  * - Graceful shutdown handling
- * 
+ *
  * @author YoRHa Legal AI Team
  * @version 2.0.0
  */
 
-import 'zx/globals';
 import chalk from 'chalk';
-import ora from 'ora';
-import { WebSocket } from 'ws';
-import fetch from 'node-fetch';
 import { program } from 'commander';
+import fetch from 'node-fetch';
+import ora from 'ora';
+import 'zx/globals';
 
 // Production configuration
 const PROD_CONFIG = {
@@ -60,20 +59,34 @@ const PROD_CONFIG = {
       retries: 3,
       timeout: 30000
     },
+    goOllama: {
+      name: 'Go Ollama SIMD Service',
+      port: 8081,
+      healthUrl: 'http://localhost:8081/health',
+      command: '.\\go-ollama-simd.exe',
+      cwd: path.join(process.cwd(), 'go-microservice'),
+      priority: 4.5,
+      retries: 3,
+      timeout: 20000,
+      env: {
+        'OLLAMA_URL': 'http://localhost:11434'
+      }
+    },
     goService: {
       name: 'Go Legal AI Service',
       port: 8080,
       grpcPort: 50051,
-      healthUrl: 'http://localhost:8080/api/health',
-      command: '.\\legal-ai-server.exe --production',
+      healthUrl: 'http://localhost:8080/health',
+      command: '.\\enhanced-legal-ai.exe --production',
+      cwd: path.join(process.cwd(), 'go-microservice'),
       priority: 5,
       retries: 3,
       timeout: 20000,
       env: {
         'GIN_MODE': 'release',
-        'DATABASE_URL': 'postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db',
+        'POSTGRES_URL': 'postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db',
         'REDIS_URL': 'redis://localhost:6379',
-        'OLLAMA_URL': 'http://localhost:11434',
+        'OLLAMA_HOST': 'http://localhost:11434',
         'QDRANT_URL': 'http://localhost:6333'
       }
     },
@@ -139,9 +152,9 @@ const healthCheckers = {
     const start = Date.now();
     try {
       const result = await $`echo "ping" | .\\redis-windows\\redis-cli.exe -h localhost -p 6379`;
-      return { 
-        healthy: result.stdout.includes('PONG'), 
-        latency: Date.now() - start 
+      return {
+        healthy: result.stdout.includes('PONG'),
+        latency: Date.now() - start
       };
     } catch (error) {
       return { healthy: false, error: error.message };
@@ -151,12 +164,12 @@ const healthCheckers = {
   async http(url) {
     const start = Date.now();
     try {
-      const response = await fetch(url, { 
+      const response = await fetch(url, {
         timeout: 10000,
         signal: AbortSignal.timeout(10000)
       });
-      return { 
-        healthy: response.ok, 
+      return {
+        healthy: response.ok,
         latency: Date.now() - start,
         status: response.status
       };
@@ -169,12 +182,12 @@ const healthCheckers = {
 // Production service management
 async function startProductionService(serviceName, config) {
   const spinner = ora(`🚀 Starting ${config.name} (Production)...`).start();
-  
+
   let attempts = 0;
   while (attempts < config.retries) {
     try {
       attempts++;
-      
+
       // Check if already running
       const healthCheck = await checkServiceHealth(serviceName, config);
       if (healthCheck.healthy) {
@@ -211,27 +224,27 @@ async function startProductionService(serviceName, config) {
       }
 
       if (proc && proc.pid) {
-        state.services.set(serviceName, { 
-          process: proc, 
+        state.services.set(serviceName, {
+          process: proc,
           config,
           startTime: Date.now()
         });
-        
+
         // Wait for service with timeout
         const healthCheckPromise = waitForHealthy(serviceName, config, config.timeout);
-        const timeoutPromise = new Promise((_, reject) => 
+        const timeoutPromise = new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Timeout')), config.timeout)
         );
-        
+
         await Promise.race([healthCheckPromise, timeoutPromise]);
-        
+
         spinner.succeed(`${config.name} started successfully (${attempts}/${config.retries})`);
-        
+
         // Warmup phase for services that need it
         if (config.warmup) {
           await warmupService(serviceName, config);
         }
-        
+
         return;
       } else {
         throw new Error('Failed to start process');
@@ -263,7 +276,7 @@ async function waitForHealthy(serviceName, config, timeout = 30000) {
 async function warmupService(serviceName, config) {
   if (serviceName === 'ollama' && config.warmup) {
     const spinner = ora(`🔥 Warming up ${config.name} models...`).start();
-    
+
     for (const model of config.warmup) {
       try {
         // Pre-load model
@@ -273,7 +286,7 @@ async function warmupService(serviceName, config) {
         log.warn(`Failed to warm up ${model}: ${error.message}`);
       }
     }
-    
+
     spinner.succeed(`${config.name} models warmed up`);
   }
 }
@@ -298,7 +311,7 @@ async function checkServiceHealth(serviceName, config) {
 
 async function performSystemHealthCheck() {
   const results = new Map();
-  
+
   for (const [name, config] of Object.entries(PROD_CONFIG.services)) {
     const health = await checkServiceHealth(name, config);
     results.set(name, {
@@ -307,7 +320,7 @@ async function performSystemHealthCheck() {
       port: config.port
     });
   }
-  
+
   return results;
 }
 
@@ -321,7 +334,7 @@ class ProductionMonitor {
 
   start() {
     log.info('📊 Starting production monitoring system...');
-    
+
     this.interval = setInterval(async () => {
       await this.collectMetrics();
       await this.checkAlerts();
@@ -339,7 +352,7 @@ class ProductionMonitor {
 
   async collectMetrics() {
     const healthResults = await performSystemHealthCheck();
-    
+
     for (const [service, health] of healthResults) {
       const metrics = this.metrics.get(service) || [];
       metrics.push({
@@ -348,12 +361,12 @@ class ProductionMonitor {
         latency: health.latency || null,
         error: health.error || null
       });
-      
+
       // Keep only last 100 metrics per service
       if (metrics.length > 100) {
         metrics.shift();
       }
-      
+
       this.metrics.set(service, metrics);
     }
   }
@@ -362,13 +375,13 @@ class ProductionMonitor {
     for (const [service, metrics] of this.metrics) {
       const recent = metrics.slice(-PROD_CONFIG.monitoring.alertThreshold);
       const failures = recent.filter(m => !m.healthy).length;
-      
+
       if (failures >= PROD_CONFIG.monitoring.alertThreshold) {
         const alertKey = `${service}_failures`;
         if (!this.alerts.has(alertKey)) {
           log.error(`🚨 ALERT: ${service} has failed ${failures} consecutive health checks`);
           this.alerts.set(alertKey, Date.now());
-          
+
           // Attempt to restart service
           await this.attemptServiceRestart(service);
         }
@@ -382,9 +395,9 @@ class ProductionMonitor {
   async attemptServiceRestart(serviceName) {
     const config = PROD_CONFIG.services[serviceName];
     if (!config) return;
-    
+
     log.warn(`🔄 Attempting to restart ${config.name}...`);
-    
+
     try {
       // Kill existing service if running
       const service = state.services.get(serviceName);
@@ -392,7 +405,7 @@ class ProductionMonitor {
         service.process.kill('SIGTERM');
         await sleep(5000);
       }
-      
+
       // Restart service
       await startProductionService(serviceName, config);
       log.success(`🔄 Successfully restarted ${config.name}`);
@@ -411,17 +424,17 @@ class ProductionMonitor {
 
   generateMetricsSummary() {
     const summaries = [];
-    
+
     for (const [service, metrics] of this.metrics) {
       const recent = metrics.slice(-20); // Last 20 checks
       const healthy = recent.filter(m => m.healthy).length;
       const avgLatency = recent
         .filter(m => m.latency)
         .reduce((sum, m) => sum + m.latency, 0) / recent.length;
-      
+
       summaries.push(`${service}: ${healthy}/${recent.length} (${avgLatency.toFixed(0)}ms)`);
     }
-    
+
     return summaries.join(', ');
   }
 }
@@ -429,7 +442,7 @@ class ProductionMonitor {
 // Main production orchestration
 async function main() {
   console.log(chalk.cyan.bold('🏭 YoRHa Legal AI - Production Orchestrator\n'));
-  
+
   // Parse command line arguments
   program
     .option('-m, --monitor', 'Enable production monitoring', true)
@@ -439,7 +452,7 @@ async function main() {
     .parse();
 
   const options = program.opts();
-  
+
   // Build frontend if requested
   if (options.build) {
     const buildSpinner = ora('🔨 Building SvelteKit frontend...').start();
@@ -451,59 +464,59 @@ async function main() {
       process.exit(1);
     }
   }
-  
+
   // Check production prerequisites
   await checkProductionPrerequisites();
-  
+
   // Start services in priority order
   const services = Object.entries(PROD_CONFIG.services)
     .sort(([, a], [, b]) => a.priority - b.priority);
-  
+
   log.info(`🚀 Starting ${services.length} production services...`);
-  
+
   for (const [serviceName, config] of services) {
     await startProductionService(serviceName, config);
     await sleep(3000); // Stagger production starts
   }
-  
+
   // Final system health check
   console.log(chalk.cyan('\n🏥 Production Health Check:'));
   const healthResults = await performSystemHealthCheck();
-  
+
   let allHealthy = true;
   for (const [name, result] of healthResults) {
-    const status = result.healthy ? 
-      chalk.green(`✓ HEALTHY (${result.latency}ms)`) : 
+    const status = result.healthy ?
+      chalk.green(`✓ HEALTHY (${result.latency}ms)`) :
       chalk.red('✗ UNHEALTHY');
-    
+
     console.log(`  ${result.service.padEnd(25)} ${status.padEnd(25)} Port: ${result.port}`);
     if (!result.healthy) allHealthy = false;
   }
-  
+
   if (!allHealthy) {
     log.error('❌ Production startup completed with health issues');
     process.exit(1);
   }
-  
+
   // Show production URLs
   console.log(chalk.cyan('\n🌍 Production URLs:'));
   console.log(`  Frontend:     ${chalk.blue('http://localhost:3000')}`);
   console.log(`  API Gateway:  ${chalk.blue('http://localhost:8080')}`);
   console.log(`  gRPC:         ${chalk.blue('localhost:50051')}`);
   console.log(`  Monitoring:   ${chalk.blue('http://localhost:8080/metrics')}`);
-  
+
   log.success('🚀 Production environment started successfully!');
-  
+
   // Start monitoring system
   if (options.monitor) {
     const monitor = new ProductionMonitor();
     monitor.start();
-    
+
     // Graceful shutdown handler
     const shutdown = async (signal) => {
       log.info(`\n🛑 Received ${signal}, performing graceful shutdown...`);
       monitor.stop();
-      
+
       // Stop all services
       for (const [name, service] of state.services) {
         if (service.process) {
@@ -511,17 +524,17 @@ async function main() {
           service.process.kill('SIGTERM');
         }
       }
-      
+
       // Wait for services to stop
       await sleep(10000);
-      
+
       log.success('🛑 Graceful shutdown completed');
       process.exit(0);
     };
-    
+
     process.on('SIGINT', () => shutdown('SIGINT'));
     process.on('SIGTERM', () => shutdown('SIGTERM'));
-    
+
     // Keep process alive if not daemon
     if (!options.daemon) {
       log.info('📊 Monitoring active. Press Ctrl+C to stop.');
@@ -532,16 +545,17 @@ async function main() {
 
 async function checkProductionPrerequisites() {
   const spinner = ora('🔍 Checking production prerequisites...').start();
-  
+
   const checks = [
     { name: 'Built Frontend', check: () => fs.existsSync('./sveltekit-frontend/build') },
-    { name: 'Go Service Binary', check: () => fs.existsSync('./legal-ai-server.exe') },
+  { name: 'Go Service Binary', check: () => fs.existsSync('./go-microservice/enhanced-legal-ai.exe') },
+  { name: 'Go Ollama SIMD Binary', check: () => fs.existsSync('./go-microservice/go-ollama-simd.exe') },
     { name: 'PostgreSQL Service', check: () => $`sc query postgresql-x64-17` },
     { name: 'Production Config', check: () => fs.existsSync('./production.env') }
   ];
-  
+
   const warnings = [];
-  
+
   for (const check of checks) {
     try {
       await check.check();
@@ -549,7 +563,7 @@ async function checkProductionPrerequisites() {
       warnings.push(check.name);
     }
   }
-  
+
   if (warnings.length > 0) {
     spinner.warn(`Production warnings: ${warnings.join(', ')}`);
     log.warn('🚨 Some production components may not be optimally configured');

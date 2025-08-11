@@ -2,24 +2,24 @@
 
 /**
  * YoRHa Legal AI - Comprehensive Health Check
- * 
+ *
  * Deep system validation and diagnostics:
  * - Service connectivity and API validation
  * - Database schema and data integrity
  * - Performance benchmarking
  * - Security auditing
  * - Configuration validation
- * 
+ *
  * @author YoRHa Legal AI Team
  * @version 2.0.0
  */
 
-import 'zx/globals';
 import chalk from 'chalk';
-import ora from 'ora';
-import fetch from 'node-fetch';
-import { WebSocket } from 'ws';
 import { program } from 'commander';
+import fetch from 'node-fetch';
+import ora from 'ora';
+import { WebSocket } from 'ws';
+import 'zx/globals';
 
 // Comprehensive health check configuration
 const HEALTH_CONFIG = {
@@ -37,6 +37,22 @@ const HEALTH_CONFIG = {
               success: result.exitCode === 0,
               details: result.stdout.trim(),
               latency: await measureQueryLatency()
+            };
+          }
+        },
+        {
+          name: 'Go Ollama SIMD Service',
+          test: async () => {
+            const start = Date.now();
+            const response = await fetch('http://localhost:8081/health', {
+              timeout: 10000,
+              signal: AbortSignal.timeout(10000)
+            });
+            const data = await response.json();
+            return {
+              success: response.ok && (data.status === 'healthy' || data.status === 'ready' || data.status === 'alive'),
+              details: data.ollama_url ? `Ollama: ${data.ollama_url}` : 'SIMD service health',
+              latency: Date.now() - start
             };
           }
         },
@@ -72,13 +88,13 @@ const HEALTH_CONFIG = {
           name: 'Go Microservice API',
           test: async () => {
             const start = Date.now();
-            const response = await fetch('http://localhost:8080/api/health', {
+            const response = await fetch('http://localhost:8080/health', {
               timeout: 10000,
               signal: AbortSignal.timeout(10000)
             });
             const data = await response.json();
             return {
-              success: response.ok && data.status === 'healthy',
+              success: response.ok && (data.status === 'healthy' || data.status === 'ready' || data.status === 'alive'),
               details: data.message || 'Health check response',
               latency: Date.now() - start
             };
@@ -184,7 +200,7 @@ const HEALTH_CONFIG = {
                 caseId: 'HEALTH-CHECK-001',
                 type: 'legal'
               });
-              
+
               const response = await fetch('http://localhost:8080/api/v1/documents', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -192,7 +208,7 @@ const HEALTH_CONFIG = {
                 timeout: 15000,
                 signal: AbortSignal.timeout(15000)
               });
-              
+
               return {
                 success: response.ok || response.status === 400, // 400 might be validation error, which is expected
                 details: `HTTP ${response.status} - API responding`
@@ -210,7 +226,7 @@ const HEALTH_CONFIG = {
                 query: 'legal document search test',
                 limit: 5
               });
-              
+
               const response = await fetch('http://localhost:8080/api/v1/search', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -218,7 +234,7 @@ const HEALTH_CONFIG = {
                 timeout: 15000,
                 signal: AbortSignal.timeout(15000)
               });
-              
+
               return {
                 success: response.ok || response.status === 404, // 404 might indicate no documents, which is fine
                 details: `HTTP ${response.status} - Search API responding`
@@ -235,7 +251,7 @@ const HEALTH_CONFIG = {
               const response = await fetch('http://localhost:11434/api/tags');
               const data = await response.json();
               const modelCount = data.models ? data.models.length : 0;
-              
+
               return {
                 success: response.ok,
                 details: `${modelCount} models available`
@@ -252,16 +268,16 @@ const HEALTH_CONFIG = {
               const timeout = setTimeout(() => {
                 resolve({ success: false, details: 'WebSocket connection timeout' });
               }, 10000);
-              
+
               try {
                 const ws = new WebSocket('ws://localhost:8080/ws');
-                
+
                 ws.on('open', () => {
                   clearTimeout(timeout);
                   ws.close();
                   resolve({ success: true, details: 'WebSocket connection successful' });
                 });
-                
+
                 ws.on('error', (error) => {
                   clearTimeout(timeout);
                   resolve({ success: false, details: error.message });
@@ -287,7 +303,7 @@ const HEALTH_CONFIG = {
             try {
               await $`"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe" -U legal_admin -d legal_ai_db -h localhost -c "SELECT COUNT(*) FROM legal_documents;" -t`;
               const queryTime = Date.now() - start;
-              
+
               return {
                 success: queryTime < 5000, // Should complete in under 5 seconds
                 details: `Query completed in ${queryTime}ms`,
@@ -305,7 +321,7 @@ const HEALTH_CONFIG = {
             try {
               const response = await fetch('http://localhost:8080/api/health');
               const responseTime = Date.now() - start;
-              
+
               return {
                 success: response.ok && responseTime < 2000,
                 details: `API responded in ${responseTime}ms`,
@@ -324,7 +340,7 @@ const HEALTH_CONFIG = {
               const port = process.env.NODE_ENV === 'production' ? 3000 : 5173;
               const response = await fetch(`http://localhost:${port}/`);
               const loadTime = Date.now() - start;
-              
+
               return {
                 success: response.ok && loadTime < 5000,
                 details: `Frontend loaded in ${loadTime}ms`,
@@ -351,9 +367,9 @@ const HEALTH_CONFIG = {
                 timeout: 30000,
                 signal: AbortSignal.timeout(30000)
               });
-              
+
               const inferenceTime = Date.now() - start;
-              
+
               if (response.ok) {
                 return {
                   success: inferenceTime < 30000,
@@ -384,7 +400,7 @@ const HEALTH_CONFIG = {
             try {
               // Test with wrong credentials (should fail)
               const result = await $`"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe" -U wronguser -d legal_ai_db -h localhost -c "SELECT 1;" -t`.catch(() => ({ exitCode: 1 }));
-              
+
               return {
                 success: result.exitCode !== 0, // Should fail with wrong credentials
                 details: result.exitCode !== 0 ? 'Authentication properly enforced' : 'Security concern: weak authentication'
@@ -399,15 +415,15 @@ const HEALTH_CONFIG = {
           test: async () => {
             try {
               // Make rapid requests to test rate limiting
-              const requests = Array(10).fill().map(() => 
+              const requests = Array(10).fill().map(() =>
                 fetch('http://localhost:8080/api/health', { timeout: 5000 })
               );
-              
+
               const responses = await Promise.allSettled(requests);
-              const rateLimited = responses.some(r => 
+              const rateLimited = responses.some(r =>
                 r.status === 'fulfilled' && r.value.status === 429
               );
-              
+
               return {
                 success: true, // Rate limiting is optional, so we don't fail
                 details: rateLimited ? 'Rate limiting active' : 'No rate limiting detected'
@@ -422,11 +438,11 @@ const HEALTH_CONFIG = {
           test: async () => {
             // Check if services are properly configured for production
             const isProduction = process.env.NODE_ENV === 'production';
-            
+
             return {
               success: true, // This is informational
-              details: isProduction ? 
-                'Production mode - ensure HTTPS is configured' : 
+              details: isProduction ?
+                'Production mode - ensure HTTPS is configured' :
                 'Development mode - HTTPS not required'
             };
           }
@@ -461,29 +477,29 @@ async function measureQueryLatency() {
 async function runHealthCheck(checkConfig) {
   const results = [];
   const spinner = ora(`🔍 Running ${checkConfig.name}...`).start();
-  
+
   try {
     for (const check of checkConfig.checks) {
       const checkSpinner = ora(`  ${check.name}...`).start();
-      
+
       try {
         const result = await Promise.race([
           check.test(),
-          new Promise((_, reject) => 
+          new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Check timeout')), checkConfig.timeout)
           )
         ]);
-        
+
         result.name = check.name;
         result.timestamp = Date.now();
         results.push(result);
-        
+
         if (result.success) {
           checkSpinner.succeed(`${check.name} - ${result.details}`);
         } else {
           checkSpinner.fail(`${check.name} - ${result.details}`);
         }
-        
+
       } catch (error) {
         const failedResult = {
           name: check.name,
@@ -494,45 +510,45 @@ async function runHealthCheck(checkConfig) {
         results.push(failedResult);
         checkSpinner.fail(`${check.name} - ${error.message}`);
       }
-      
+
       // Brief pause between checks
       await sleep(500);
     }
-    
+
     const successful = results.filter(r => r.success).length;
     const total = results.length;
-    
+
     if (successful === total) {
       spinner.succeed(`${checkConfig.name} - All ${total} checks passed`);
     } else {
       spinner.warn(`${checkConfig.name} - ${successful}/${total} checks passed`);
     }
-    
+
   } catch (error) {
     spinner.fail(`${checkConfig.name} failed: ${error.message}`);
   }
-  
+
   return results;
 }
 
 // Comprehensive health check runner
 async function runFullHealthCheck(options = {}) {
   console.log(chalk.cyan.bold('🏥 YoRHa Legal AI - Comprehensive Health Check\n'));
-  
+
   const startTime = Date.now();
   const allResults = new Map();
-  
+
   // Filter checks based on options
   let checksToRun = Object.entries(HEALTH_CONFIG.checks);
-  
+
   if (options.category) {
     checksToRun = checksToRun.filter(([name]) => name === options.category);
   }
-  
+
   if (options.priority) {
     checksToRun = checksToRun.filter(([, config]) => config.priority === options.priority);
   }
-  
+
   // Run health checks
   for (const [checkName, checkConfig] of checksToRun) {
     const results = await runHealthCheck(checkConfig);
@@ -542,53 +558,53 @@ async function runFullHealthCheck(options = {}) {
       results
     });
   }
-  
+
   // Generate comprehensive report
   console.log(chalk.cyan('\n📊 Health Check Summary:'));
-  
+
   let totalChecks = 0;
   let totalPassed = 0;
   let criticalFailed = 0;
   const benchmarks = {};
-  
+
   for (const [category, data] of allResults) {
     const passed = data.results.filter(r => r.success).length;
     const total = data.results.length;
     const failed = total - passed;
-    
+
     totalChecks += total;
     totalPassed += passed;
-    
+
     if (data.priority === 'critical' && failed > 0) {
       criticalFailed += failed;
     }
-    
+
     // Collect benchmarks
     data.results.forEach(result => {
       if (result.benchmark) {
         benchmarks[result.name] = result.benchmark;
       }
     });
-    
-    const statusColor = failed === 0 ? chalk.green : 
+
+    const statusColor = failed === 0 ? chalk.green :
                        data.priority === 'critical' ? chalk.red : chalk.yellow;
-    
+
     console.log(`  ${category.padEnd(20)} ${statusColor(`${passed}/${total} passed`)} ${chalk.gray(`(${data.priority})`)}`);
-    
+
     // Show failed checks
     data.results.filter(r => !r.success).forEach(result => {
       console.log(`    ${chalk.red('✗')} ${result.name}: ${chalk.gray(result.details)}`);
     });
   }
-  
+
   // Overall assessment
   const overallHealth = totalPassed / totalChecks;
   const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-  
+
   console.log(chalk.cyan('\n🎯 Overall Assessment:'));
-  
+
   let healthColor, healthStatus, exitCode;
-  
+
   if (criticalFailed > 0) {
     healthColor = chalk.red;
     healthStatus = 'CRITICAL ISSUES DETECTED';
@@ -606,40 +622,40 @@ async function runFullHealthCheck(options = {}) {
     healthStatus = 'SIGNIFICANT ISSUES DETECTED';
     exitCode = 1;
   }
-  
+
   console.log(`  Status:        ${healthColor(healthStatus)}`);
   console.log(`  Success Rate:  ${healthColor(`${Math.round(overallHealth * 100)}%`)} (${totalPassed}/${totalChecks})`);
   console.log(`  Duration:      ${chalk.blue(`${duration}s`)}`);
   console.log(`  Critical:      ${criticalFailed > 0 ? chalk.red(`${criticalFailed} failed`) : chalk.green('All passed')}`);
-  
+
   // Show benchmarks
   if (Object.keys(benchmarks).length > 0) {
     console.log(chalk.cyan('\n⏱️  Performance Benchmarks:'));
     for (const [check, time] of Object.entries(benchmarks)) {
-      const timeColor = time < 1000 ? chalk.green : 
+      const timeColor = time < 1000 ? chalk.green :
                        time < 5000 ? chalk.yellow : chalk.red;
       console.log(`  ${check.padEnd(25)} ${timeColor(`${time}ms`)}`);
     }
   }
-  
+
   // Recommendations
   if (overallHealth < 1) {
     console.log(chalk.cyan('\n💡 Recommendations:'));
-    
+
     if (criticalFailed > 0) {
       console.log('  🚨 Critical issues must be resolved before production use');
       console.log('  🔧 Check service configurations and dependencies');
       console.log('  📋 Review failed checks above for specific actions');
     }
-    
+
     if (Object.values(benchmarks).some(t => t > 5000)) {
       console.log('  ⚡ Consider performance optimization for slow components');
     }
-    
+
     console.log('  📊 Run: npm run status --watch for continuous monitoring');
     console.log('  🔄 Run: npm run health --category=connectivity to focus on specific areas');
   }
-  
+
   // Output JSON if requested
   if (options.json) {
     const jsonReport = {
@@ -655,10 +671,10 @@ async function runFullHealthCheck(options = {}) {
       categories: Object.fromEntries(allResults),
       benchmarks
     };
-    
+
     console.log('\n' + JSON.stringify(jsonReport, null, 2));
   }
-  
+
   return { exitCode, results: allResults, overallHealth };
 }
 
@@ -673,15 +689,15 @@ async function main() {
     .parse();
 
   const options = program.opts();
-  
+
   if (options.verbose) {
     process.env.DEBUG = '1';
   }
-  
+
   if (options.quick) {
     options.priority = 'critical';
   }
-  
+
   try {
     const { exitCode } = await runFullHealthCheck(options);
     process.exit(exitCode);

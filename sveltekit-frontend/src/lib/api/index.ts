@@ -11,7 +11,7 @@
 export interface ApiResponse<T = any> {
   data?: T;
   error?: string;
-  status: 'success' | 'error' | 'loading';
+  status: "success" | "error" | "loading";
   timestamp: string;
   requestId: string;
 }
@@ -31,7 +31,7 @@ export interface LegalDocument {
   title: string;
   content: string;
   extractedText: string;
-  documentType: 'legal' | 'evidence' | 'contract' | 'brief';
+  documentType: "legal" | "evidence" | "contract" | "brief";
   jurisdiction: string;
   uploadedAt: string;
   processedAt?: string;
@@ -57,7 +57,7 @@ export interface SemanticSearchQuery {
 export interface ChatMessage {
   id: string;
   sessionId: string;
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   content: string;
   timestamp: string;
   metadata?: {
@@ -76,22 +76,22 @@ export interface ChatMessage {
 export interface AuthUser {
   id: string;
   email: string;
-  role: 'admin' | 'prosecutor' | 'detective' | 'user';
+  role: "admin" | "prosecutor" | "detective" | "user";
   permissions: string[];
   lastLogin?: string;
   preferences: UserPreferences;
 }
 
 export interface UserPreferences {
-  theme: 'yorha-dark' | 'yorha-light' | 'professional';
-  language: 'en' | 'es' | 'fr';
+  theme: "yorha-dark" | "yorha-light" | "professional";
+  language: "en" | "es" | "fr";
   notifications: {
     email: boolean;
     browser: boolean;
     mobile: boolean;
   };
   dashboard: {
-    layout: 'grid' | 'list';
+    layout: "grid" | "list";
     widgets: string[];
   };
 }
@@ -104,7 +104,7 @@ export interface LoginCredentials {
 
 export interface RegisterData extends LoginCredentials {
   name: string;
-  role: 'prosecutor' | 'detective' | 'user';
+  role: "prosecutor" | "detective" | "user";
   organization?: string;
 }
 
@@ -114,7 +114,7 @@ export interface RegisterData extends LoginCredentials {
 
 export interface DocumentUploadOptions {
   caseId: string;
-  documentType: LegalDocument['documentType'];
+  documentType: LegalDocument["documentType"];
   title?: string;
   jurisdiction?: string;
   metadata?: Record<string, any>;
@@ -138,7 +138,7 @@ export interface DocumentProcessingResult {
     entities: Array<{ text: string; type: string; confidence: number }>;
     summary: string;
     topics: string[];
-    sentiment?: { score: number; label: 'positive' | 'negative' | 'neutral' };
+    sentiment?: { score: number; label: "positive" | "negative" | "neutral" };
   };
 }
 
@@ -148,7 +148,7 @@ export interface DocumentProcessingResult {
 
 export interface VectorSearchOptions {
   query: string | number[];
-  collection: 'documents' | 'cases' | 'precedents';
+  collection: "documents" | "cases" | "precedents";
   topK?: number;
   threshold?: number;
   metadataFilters?: Record<string, any>;
@@ -166,7 +166,7 @@ export interface VectorSearchResult {
 
 export interface EmbeddingRequest {
   text: string | string[];
-  model?: 'nomic-embed-text' | 'all-minilm-l6-v2' | 'custom';
+  model?: "nomic-embed-text" | "all-minilm-l6-v2" | "custom";
   normalize?: boolean;
   dimensions?: number;
 }
@@ -185,7 +185,7 @@ export interface EmbeddingResponse {
 
 export interface ChatSessionOptions {
   caseId?: string;
-  model?: 'llama3.1:8b' | 'gemma2:9b' | 'mixtral:8x7b';
+  model?: "llama3.1:8b" | "gemma2:9b" | "mixtral:8x7b";
   temperature?: number;
   maxTokens?: number;
   contextWindow?: number;
@@ -195,7 +195,7 @@ export interface ChatSessionOptions {
 }
 
 export interface StreamingChatResponse {
-  type: 'token' | 'complete' | 'error' | 'thinking';
+  type: "token" | "complete" | "error" | "thinking";
   content?: string;
   metadata?: {
     tokensGenerated?: number;
@@ -214,8 +214,8 @@ export interface LegalCase {
   id: string;
   title: string;
   description: string;
-  status: 'active' | 'closed' | 'archived' | 'pending';
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  status: "active" | "closed" | "archived" | "pending";
+  priority: "low" | "medium" | "high" | "critical";
   jurisdiction: string;
   assignedTo: string[];
   createdBy: string;
@@ -231,7 +231,7 @@ export interface LegalCase {
 export interface Evidence {
   id: string;
   caseId: string;
-  type: 'physical' | 'digital' | 'document' | 'testimony' | 'photo' | 'video';
+  type: "physical" | "digital" | "document" | "testimony" | "photo" | "video";
   title: string;
   description: string;
   source: string;
@@ -243,7 +243,12 @@ export interface Evidence {
     confidence: number;
     methodology: string;
   };
-  files: Array<{ id: string; filename: string; size: number; mimeType: string }>;
+  files: Array<{
+    id: string;
+    filename: string;
+    size: number;
+    mimeType: string;
+  }>;
 }
 
 export interface CaseNote {
@@ -252,7 +257,7 @@ export interface CaseNote {
   authorId: string;
   title: string;
   content: string;
-  type: 'general' | 'analysis' | 'action' | 'reminder';
+  type: "general" | "analysis" | "action" | "reminder";
   private: boolean;
   createdAt: string;
   updatedAt: string;
@@ -262,7 +267,12 @@ export interface CaseNote {
 export interface CaseTimelineEntry {
   id: string;
   caseId: string;
-  type: 'document_added' | 'evidence_collected' | 'note_created' | 'status_changed' | 'assignment_changed';
+  type:
+    | "document_added"
+    | "evidence_collected"
+    | "note_created"
+    | "status_changed"
+    | "assignment_changed";
   title: string;
   description: string;
   actorId: string;
@@ -273,7 +283,7 @@ export interface CaseTimelineEntry {
 export interface ChainOfCustodyEntry {
   id: string;
   evidenceId: string;
-  action: 'collected' | 'transferred' | 'analyzed' | 'stored' | 'accessed';
+  action: "collected" | "transferred" | "analyzed" | "stored" | "accessed";
   actor: string;
   location: string;
   timestamp: string;
@@ -358,38 +368,38 @@ export interface ServiceEndpoints {
 // =====================================
 
 // Authentication Services
-export * from './services/auth-service';
-export * from './services/user-service';
+export * from "./services/auth-service";
+export * from "./services/user-service";
 
-// Document Processing Services  
-export * from './services/document-service';
-export * from './services/upload-service';
-export * from './services/processing-service';
+// Document Processing Services
+export * from "./services/document-service";
+export * from "./services/processing-service";
+export * from "./services/upload-service";
 
 // Search & AI Services
-export * from './services/search-service';
-export * from './services/vector-service';
-export * from './services/embedding-service';
-export * from './services/chat-service';
-export * from './services/ollama-service';
+export * from "./services/chat-service";
+export * from "./services/embedding-service";
+export * from "./services/ollama-service";
+export * from "./services/search-service";
+export * from "./services/vector-service";
 
 // Case Management Services
-export * from './services/case-service';
-export * from './services/evidence-service';
-export * from './services/note-service';
+export * from "./services/case-service";
+export * from "./services/evidence-service";
+export * from "./services/note-service";
 
 // Infrastructure Services
-export * from './services/health-service';
-export * from './services/metrics-service';
-export * from './services/cache-service';
+export * from "./services/cache-service";
+export * from "./services/health-service";
+export * from "./services/metrics-service";
 
 // API Clients & Utilities
-export * from './clients/api-client';
-export * from './clients/websocket-client';
-export * from './clients/sse-client';
-export * from './utils/api-helpers';
-export * from './utils/error-handlers';
-export * from './utils/rate-limiter';
+export * from "./clients/api-client";
+export * from "./clients/sse-client";
+export * from "./clients/websocket-client";
+export * from "./utils/api-helpers";
+export * from "./utils/error-handlers";
+export * from "./utils/rate-limiter";
 
 // =====================================
 // Route Constants
@@ -398,90 +408,90 @@ export * from './utils/rate-limiter';
 export const API_ROUTES = {
   // Authentication
   AUTH: {
-    LOGIN: '/api/auth/login',
-    LOGOUT: '/api/auth/logout',
-    REGISTER: '/api/auth/register',
-    REFRESH: '/api/auth/refresh',
-    PROFILE: '/api/auth/profile',
-    CHANGE_PASSWORD: '/api/auth/change-password',
+    LOGIN: "/api/auth/login",
+    LOGOUT: "/api/auth/logout",
+    REGISTER: "/api/auth/register",
+    REFRESH: "/api/auth/refresh",
+    PROFILE: "/api/auth/profile",
+    CHANGE_PASSWORD: "/api/auth/change-password",
   },
-  
+
   // Document Management
   DOCUMENTS: {
-    LIST: '/api/documents',
-    UPLOAD: '/api/documents/upload',
-    GET: '/api/documents/:id',
-    UPDATE: '/api/documents/:id',
-    DELETE: '/api/documents/:id',
-    DOWNLOAD: '/api/documents/:id/download',
-    PROCESS: '/api/documents/:id/process',
-    EXTRACT_TEXT: '/api/documents/extract-text',
+    LIST: "/api/documents",
+    UPLOAD: "/api/documents/upload",
+    GET: "/api/documents/:id",
+    UPDATE: "/api/documents/:id",
+    DELETE: "/api/documents/:id",
+    DOWNLOAD: "/api/documents/:id/download",
+    PROCESS: "/api/documents/:id/process",
+    EXTRACT_TEXT: "/api/documents/extract-text",
   },
-  
+
   // Search & AI
   SEARCH: {
-    SEMANTIC: '/api/search/semantic',
-    FULLTEXT: '/api/search/fulltext',
-    HYBRID: '/api/search/hybrid',
-    SUGGESTIONS: '/api/search/suggestions',
+    SEMANTIC: "/api/search/semantic",
+    FULLTEXT: "/api/search/fulltext",
+    HYBRID: "/api/search/hybrid",
+    SUGGESTIONS: "/api/search/suggestions",
   },
-  
+
   CHAT: {
-    SESSIONS: '/api/chat/sessions',
-    STREAM: '/api/chat/stream',
-    HISTORY: '/api/chat/sessions/:id/history',
-    CLEAR: '/api/chat/sessions/:id/clear',
+    SESSIONS: "/api/chat/sessions",
+    STREAM: "/api/chat/stream",
+    HISTORY: "/api/chat/sessions/:id/history",
+    CLEAR: "/api/chat/sessions/:id/clear",
   },
-  
+
   // Vector Operations
   VECTORS: {
-    EMBED: '/api/vectors/embed',
-    SEARCH: '/api/vectors/search',
-    COLLECTIONS: '/api/vectors/collections',
-    UPSERT: '/api/vectors/upsert',
-    DELETE: '/api/vectors/delete',
+    EMBED: "/api/vectors/embed",
+    SEARCH: "/api/vectors/search",
+    COLLECTIONS: "/api/vectors/collections",
+    UPSERT: "/api/vectors/upsert",
+    DELETE: "/api/vectors/delete",
   },
-  
+
   // Case Management
   CASES: {
-    LIST: '/api/cases',
-    CREATE: '/api/cases',
-    GET: '/api/cases/:id',
-    UPDATE: '/api/cases/:id',
-    DELETE: '/api/cases/:id',
-    DOCUMENTS: '/api/cases/:id/documents',
-    EVIDENCE: '/api/cases/:id/evidence',
-    NOTES: '/api/cases/:id/notes',
-    TIMELINE: '/api/cases/:id/timeline',
-    EXPORT: '/api/cases/:id/export',
+    LIST: "/api/cases",
+    CREATE: "/api/cases",
+    GET: "/api/cases/:id",
+    UPDATE: "/api/cases/:id",
+    DELETE: "/api/cases/:id",
+    DOCUMENTS: "/api/cases/:id/documents",
+    EVIDENCE: "/api/cases/:id/evidence",
+    NOTES: "/api/cases/:id/notes",
+    TIMELINE: "/api/cases/:id/timeline",
+    EXPORT: "/api/cases/:id/export",
   },
-  
+
   // Evidence
   EVIDENCE: {
-    LIST: '/api/evidence',
-    CREATE: '/api/evidence',
-    GET: '/api/evidence/:id',
-    UPDATE: '/api/evidence/:id',
-    DELETE: '/api/evidence/:id',
-    CHAIN_OF_CUSTODY: '/api/evidence/:id/custody',
-    ANALYSIS: '/api/evidence/:id/analysis',
+    LIST: "/api/evidence",
+    CREATE: "/api/evidence",
+    GET: "/api/evidence/:id",
+    UPDATE: "/api/evidence/:id",
+    DELETE: "/api/evidence/:id",
+    CHAIN_OF_CUSTODY: "/api/evidence/:id/custody",
+    ANALYSIS: "/api/evidence/:id/analysis",
   },
-  
+
   // System & Health
   SYSTEM: {
-    HEALTH: '/api/health',
-    METRICS: '/api/metrics',
-    STATUS: '/api/status',
-    CONFIG: '/api/config',
-    LOGS: '/api/logs',
+    HEALTH: "/api/health",
+    METRICS: "/api/metrics",
+    STATUS: "/api/status",
+    CONFIG: "/api/config",
+    LOGS: "/api/logs",
   },
-  
+
   // External Services
   EXTERNAL: {
-    OLLAMA_HEALTH: 'http://localhost:11434/api/version',
-    GO_SERVICE_HEALTH: 'http://localhost:8080/api/health',
-    REDIS_PING: 'redis://localhost:6379/ping',
-    POSTGRES_HEALTH: 'postgresql://localhost:5432/health',
+    OLLAMA_HEALTH: "http://localhost:11434/api/version",
+    GO_SERVICE_HEALTH: "http://localhost:8080/health",
+    REDIS_PING: "redis://localhost:6379/ping",
+    POSTGRES_HEALTH: "postgresql://localhost:5432/health",
   },
 } as const;
 
@@ -510,52 +520,52 @@ export const HTTP_STATUS = {
 
 export const DEFAULT_CONFIG: ServiceEndpoints = {
   sveltekit: {
-    baseUrl: 'http://localhost:3000',
+    baseUrl: "http://localhost:3000",
     port: 3000,
-    healthCheck: '/health',
+    healthCheck: "/health",
   },
   goMicroservice: {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: "http://localhost:8080",
     port: 8080,
     grpcPort: 50051,
-    healthCheck: '/api/health',
+    healthCheck: "/health",
     endpoints: {
-      documents: '/api/v1/documents',
-      search: '/api/v1/search',
-      embeddings: '/api/v1/embeddings',
-      chat: '/api/v1/chat',
+      documents: "/api/v1/documents",
+      search: "/api/v1/search",
+      embeddings: "/api/v1/embeddings",
+      chat: "/api/v1/chat",
     },
   },
   ollama: {
-    baseUrl: 'http://localhost:11434',
+    baseUrl: "http://localhost:11434",
     port: 11434,
-    healthCheck: '/api/version',
+    healthCheck: "/api/version",
     endpoints: {
-      generate: '/api/generate',
-      chat: '/api/chat',
-      embeddings: '/api/embeddings',
-      models: '/api/tags',
+      generate: "/api/generate",
+      chat: "/api/chat",
+      embeddings: "/api/embeddings",
+      models: "/api/tags",
     },
   },
   redis: {
-    host: 'localhost',
+    host: "localhost",
     port: 6379,
     db: 0,
   },
   postgresql: {
-    host: 'localhost',
+    host: "localhost",
     port: 5432,
-    database: 'legal_ai_db',
-    username: 'legal_admin',
-    password: 'LegalAI2024!',
+    database: "legal_ai_db",
+    username: "legal_admin",
+    password: "LegalAI2024!",
   },
   qdrant: {
-    baseUrl: 'http://localhost:6333',
+    baseUrl: "http://localhost:6333",
     port: 6333,
     collections: {
-      documents: 'legal_documents',
-      cases: 'legal_cases',
-      precedents: 'legal_precedents',
+      documents: "legal_documents",
+      cases: "legal_cases",
+      precedents: "legal_precedents",
     },
   },
 };
@@ -565,11 +575,11 @@ export const DEFAULT_CONFIG: ServiceEndpoints = {
 // =====================================
 
 export const RUNTIME_ENV = {
-  isDevelopment: process.env.NODE_ENV === 'development',
-  isProduction: process.env.NODE_ENV === 'production',
-  isBrowser: typeof window !== 'undefined',
-  isServer: typeof window === 'undefined',
-  isTest: process.env.NODE_ENV === 'test',
+  isDevelopment: process.env.NODE_ENV === "development",
+  isProduction: process.env.NODE_ENV === "production",
+  isBrowser: typeof window !== "undefined",
+  isServer: typeof window === "undefined",
+  isTest: process.env.NODE_ENV === "test",
 } as const;
 
 export default {

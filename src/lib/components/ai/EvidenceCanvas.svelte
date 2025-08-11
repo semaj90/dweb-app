@@ -61,18 +61,58 @@
           objects: fabricCanvas?.getObjects().map(obj => ({
             type: obj.type,
             position: { x: obj.left, y: obj.top },
-            text: obj.text || null
+            text: obj.text || null,
+            style: {
+              fill: obj.fill,
+              width: obj.width,
+              height: obj.height
+            }
           })) || [],
           canvas_size: { width: canvasEl.width, height: canvasEl.height }
         }],
-        instructions: "Analyze canvas content and respond with structured evidence summary"
+        instructions: "Analyze canvas content and respond with structured evidence summary",
+        options: {
+          analyze_layout: true,
+          extract_entities: true,
+          generate_summary: true,
+          confidence_level: 0.8,
+          context_window: 4096
+        }
       };
 
       console.log('go-llama payload:', canvasData);
-      // TODO: Send to ollama, go-llama.cpp API endpoint for embeding, summarization ai features, .ts store?
+
+      // Send to go-ollama SIMD service
+      const response = await fetch('http://localhost:8081/api/evidence-canvas/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(canvasData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Analysis failed: ${response.status} ${response.statusText}`);
+      }
+
+      const analysisResult = await response.json();
+      console.log('Analysis result:', analysisResult);
+
+      // Display results in UI
+      if (analysisResult.status === 'success') {
+        alert(`Analysis Complete!\n\nSummary: ${analysisResult.summary}\n\nConfidence: ${(analysisResult.confidence * 100).toFixed(1)}%\n\nEntities found: ${analysisResult.entities?.length || 0}`);
+
+        // Store results for further processing
+        if (typeof window !== 'undefined') {
+          window.lastCanvasAnalysis = analysisResult;
+        }
+      } else {
+        throw new Error(analysisResult.error || 'Analysis failed');
+      }
 
     } catch (e) {
       console.error('Analysis failed:', e);
+      alert(`Analysis failed: ${e.message}`);
     } finally {
       analyzing = false;
     }
@@ -80,47 +120,38 @@
 
 </script>
 
-    <input
-      bind:value={userPrompt}
-      placeholder="Ask Claude to analyze this canvas..."
-      class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      on:keydown={(e) => e.key === 'Enter' && analyzeCanvas()}
-    <style>
-    .evidence-canvas-wrapper {
-      display: flex;
-
-      <div class="evidence-canvas">
-        <div class="controls">
-          <input
-            bind:value={userPrompt}
-            placeholder="Ask Claude to analyze this canvas..."
-            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            on:keydown={(e) => e.key === 'Enter' && analyzeCanvas()}
-          />
-          <button
-            on:click={analyzeCanvas}
-            class="px-4 py-2 bg-indigo-600 text-white rounded"
-            disabled={analyzing}
-            aria-busy={analyzing}
-          >
-            {analyzing ? 'Analyzing...' : 'Analyze'}
-          </button>
-          <button
-            on:click={downloadPDF}
-            class="px-4 py-2 bg-blue-600 text-white rounded"
-            disabled={pdfLoading}
-            aria-busy={pdfLoading}
-          >
-            {pdfLoading ? 'Generating PDF...' : 'Download as PDF'}
-          </button>
-        </div>
-
-        <div class="evidence-canvas-wrapper">
-          <canvas bind:this={canvasEl} width="800" height="600"></canvas>
-        </div>
+    <div class="evidence-canvas">
+      <div class="controls">
+        <input
+          bind:value={userPrompt}
+          placeholder="Ask the AI to analyze this canvas..."
+          class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          on:keydown={(e) => e.key === 'Enter' && analyzeCanvas()}
+        />
+        <button
+          on:click={analyzeCanvas}
+          class="px-4 py-2 bg-indigo-600 text-white rounded"
+          disabled={analyzing}
+          aria-busy={analyzing}
+        >
+          {analyzing ? 'Analyzing...' : 'Analyze'}
+        </button>
+        <button
+          on:click={downloadPDF}
+          class="px-4 py-2 bg-blue-600 text-white rounded"
+          disabled={pdfLoading}
+          aria-busy={pdfLoading}
+        >
+          {pdfLoading ? 'Generating PDF...' : 'Download as PDF'}
+        </button>
       </div>
 
-      <style>
+      <div class="evidence-canvas-wrapper">
+        <canvas bind:this={canvasEl} width="800" height="600"></canvas>
+      </div>
+    </div>
+
+    <style>
       .evidence-canvas {
         display: flex;
         flex-direction: column;
@@ -148,5 +179,5 @@
         background: #fff;
         border-radius: 8px;
       }
-      </style>
+    </style>
 

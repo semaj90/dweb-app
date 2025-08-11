@@ -2,23 +2,22 @@
 
 /**
  * YoRHa Legal AI - System Status Monitor
- * 
+ *
  * Real-time monitoring dashboard for all services:
  * - Service health and performance metrics
  * - Resource usage monitoring
  * - Network connectivity status
  * - Interactive dashboard with live updates
- * 
+ *
  * @author YoRHa Legal AI Team
  * @version 2.0.0
  */
 
-import 'zx/globals';
 import chalk from 'chalk';
-import ora from 'ora';
-import fetch from 'node-fetch';
-import { WebSocket } from 'ws';
 import { program } from 'commander';
+import fetch from 'node-fetch';
+import ora from 'ora';
+import 'zx/globals';
 
 // Status monitoring configuration
 const STATUS_CONFIG = {
@@ -53,7 +52,7 @@ const STATUS_CONFIG = {
           const start = Date.now();
           const result = await $`echo "ping" | .\\redis-windows\\redis-cli.exe -h localhost -p 6379`;
           const latency = Date.now() - start;
-          
+
           if (result.stdout.includes('PONG')) {
             // Get additional Redis info
             const infoResult = await $`echo "info memory" | .\\redis-windows\\redis-cli.exe -h localhost -p 6379`;
@@ -82,10 +81,10 @@ const STATUS_CONFIG = {
           // Check models
           const modelsResult = await fetch('http://localhost:11434/api/tags');
           const models = modelsResult.ok ? await modelsResult.json() : null;
-          
+
           // Check GPU status
           const gpuStatus = await checkGPUStatus();
-          
+
           return { models, gpu: gpuStatus };
         } catch (error) {
           return { error: error.message };
@@ -108,23 +107,43 @@ const STATUS_CONFIG = {
         }
       }
     },
+    goOllama: {
+      name: 'Go Ollama SIMD Service',
+      port: 8081,
+      healthUrl: 'http://localhost:8081/health',
+      priority: 'high',
+      category: 'ai',
+      extendedCheck: async () => {
+        try {
+          const endpoints = ['/health', '/api/simd/capabilities'];
+          const status = {};
+          for (const ep of endpoints) {
+            const res = await fetch(`http://localhost:8081${ep}`);
+            status[ep] = res.ok;
+          }
+          return { endpoints: status };
+        } catch (error) {
+          return { error: error.message };
+        }
+      }
+    },
     goService: {
       name: 'Go Legal AI Service',
       port: 8080,
       grpcPort: 50051,
-      healthUrl: 'http://localhost:8080/api/health',
+  healthUrl: 'http://localhost:8080/health',
       priority: 'critical',
       category: 'api',
       extendedCheck: async () => {
         try {
           // Check API endpoints
           const endpoints = [
-            '/api/health',
-            '/api/v1/documents',
-            '/api/v1/search',
-            '/api/metrics'
+    '/health',
+    '/api/v1/documents',
+    '/api/v1/search/semantic',
+    '/metrics'
           ];
-          
+
           const endpointStatus = {};
           for (const endpoint of endpoints) {
             try {
@@ -141,7 +160,7 @@ const STATUS_CONFIG = {
               endpointStatus[endpoint] = { error: error.message };
             }
           }
-          
+
           return { endpoints: endpointStatus };
         } catch (error) {
           return { error: error.message };
@@ -151,7 +170,7 @@ const STATUS_CONFIG = {
     sveltekit: {
       name: 'SvelteKit Frontend',
       port: process.env.NODE_ENV === 'production' ? 3000 : 5173,
-      healthUrl: process.env.NODE_ENV === 'production' ? 
+      healthUrl: process.env.NODE_ENV === 'production' ?
         'http://localhost:3000/' : 'http://localhost:5173/',
       priority: 'high',
       category: 'frontend',
@@ -160,10 +179,10 @@ const STATUS_CONFIG = {
           // Check key frontend routes
           const routes = ['/', '/health', '/api/health'];
           const routeStatus = {};
-          
+
           for (const route of routes) {
             try {
-              const baseUrl = process.env.NODE_ENV === 'production' ? 
+              const baseUrl = process.env.NODE_ENV === 'production' ?
                 'http://localhost:3000' : 'http://localhost:5173';
               const response = await fetch(`${baseUrl}${route}`, {
                 timeout: 10000,
@@ -178,7 +197,7 @@ const STATUS_CONFIG = {
               routeStatus[route] = { error: error.message };
             }
           }
-          
+
           return { routes: routeStatus };
         } catch (error) {
           return { error: error.message };
@@ -226,7 +245,7 @@ async function measureLatency(service) {
 function parseRedisMemory(infoOutput) {
   const lines = infoOutput.split('\n');
   const memory = {};
-  
+
   for (const line of lines) {
     if (line.startsWith('used_memory_human:')) {
       memory.used = line.split(':')[1].trim();
@@ -235,7 +254,7 @@ function parseRedisMemory(infoOutput) {
       memory.peak = line.split(':')[1].trim();
     }
   }
-  
+
   return memory;
 }
 
@@ -243,7 +262,7 @@ async function checkGPUStatus() {
   try {
     const result = await $`nvidia-smi --query-gpu=name,temperature.gpu,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits`;
     const lines = result.stdout.trim().split('\n');
-    
+
     return lines.map(line => {
       const [name, temp, util, memUsed, memTotal] = line.split(', ');
       return {
@@ -265,10 +284,10 @@ async function checkGPUStatus() {
 // Health checking functions
 async function checkServiceHealth(serviceName, config) {
   const start = Date.now();
-  
+
   try {
     let basicHealth = { status: 'unknown' };
-    
+
     // Custom health check
     if (config.customCheck) {
       basicHealth = await config.customCheck();
@@ -294,7 +313,7 @@ async function checkServiceHealth(serviceName, config) {
         };
       }
     }
-    
+
     // Extended health check
     let extended = {};
     if (config.extendedCheck) {
@@ -304,7 +323,7 @@ async function checkServiceHealth(serviceName, config) {
         extended = { extendedCheckError: error.message };
       }
     }
-    
+
     return {
       service: serviceName,
       name: config.name,
@@ -317,7 +336,7 @@ async function checkServiceHealth(serviceName, config) {
       ...basicHealth,
       ...extended
     };
-    
+
   } catch (error) {
     return {
       service: serviceName,
@@ -338,7 +357,7 @@ async function getSystemResources() {
       $`wmic OS get TotalVisibleMemorySize,FreePhysicalMemory /value`,
       $`wmic logicaldisk get size,freespace,caption /format:csv`
     ]);
-    
+
     let cpu = null;
     if (cpuResult.status === 'fulfilled') {
       const cpuLine = cpuResult.value.stdout.split('\n').find(line => line.includes('LoadPercentage='));
@@ -346,18 +365,18 @@ async function getSystemResources() {
         cpu = parseInt(cpuLine.split('=')[1]);
       }
     }
-    
+
     let memory = null;
     if (memResult.status === 'fulfilled') {
       const lines = memResult.value.stdout.split('\n');
       const totalLine = lines.find(line => line.includes('TotalVisibleMemorySize='));
       const freeLine = lines.find(line => line.includes('FreePhysicalMemory='));
-      
+
       if (totalLine && freeLine) {
         const total = parseInt(totalLine.split('=')[1]);
         const free = parseInt(freeLine.split('=')[1]);
         const used = total - free;
-        
+
         memory = {
           total: Math.round(total / 1024), // MB
           used: Math.round(used / 1024),
@@ -366,7 +385,7 @@ async function getSystemResources() {
         };
       }
     }
-    
+
     let disks = [];
     if (diskResult.status === 'fulfilled') {
       const lines = diskResult.value.stdout.split('\n').slice(1);
@@ -376,7 +395,7 @@ async function getSystemResources() {
           const caption = parts[1].trim();
           const freespace = parseInt(parts[2]) || 0;
           const size = parseInt(parts[3]) || 0;
-          
+
           if (size > 0) {
             disks.push({
               drive: caption,
@@ -389,7 +408,7 @@ async function getSystemResources() {
         }
       }
     }
-    
+
     return { cpu, memory, disks };
   } catch (error) {
     return { error: error.message };
@@ -404,54 +423,54 @@ function renderServiceStatus(health) {
     error: chalk.red,
     unknown: chalk.yellow
   };
-  
+
   const priorityIcons = {
     critical: '🔴',
     high: '🟡',
     medium: '🔵',
     low: '⚪'
   };
-  
+
   const statusColor = statusColors[health.status] || chalk.gray;
   const statusText = health.status.toUpperCase();
   const icon = priorityIcons[health.priority] || '⚫';
-  
+
   let line = `${icon} ${health.name.padEnd(25)} ${statusColor(statusText.padEnd(10))}`;
-  
+
   if (health.port) {
     line += ` Port:${health.port}`;
     if (health.grpcPort) {
       line += `,${health.grpcPort}`;
     }
   }
-  
+
   if (health.latency) {
-    const latencyColor = health.latency < 100 ? chalk.green : 
+    const latencyColor = health.latency < 100 ? chalk.green :
                         health.latency < 500 ? chalk.yellow : chalk.red;
     line += ` ${latencyColor(`${health.latency}ms`)}`;
   }
-  
+
   console.log(line);
-  
+
   // Show additional details for unhealthy services
   if (health.status !== 'healthy' && (health.error || health.details)) {
     const errorMsg = health.error || health.details;
     console.log(`    ${chalk.gray('└─')} ${chalk.red(errorMsg)}`);
   }
-  
+
   // Show extended information if available
   if (health.models && health.models.models) {
     const modelCount = health.models.models.length;
     console.log(`    ${chalk.gray('└─')} ${chalk.blue(`${modelCount} models loaded`)}`);
   }
-  
+
   if (health.gpu && health.gpu[0] && !health.gpu[0].error) {
     const gpu = health.gpu[0];
-    const tempColor = gpu.temperature < 80 ? chalk.green : 
+    const tempColor = gpu.temperature < 80 ? chalk.green :
                      gpu.temperature < 90 ? chalk.yellow : chalk.red;
     console.log(`    ${chalk.gray('└─')} GPU: ${tempColor(`${gpu.temperature}°C`)} ${gpu.utilization}% Memory:${gpu.memory.percent}%`);
   }
-  
+
   if (health.memory) {
     console.log(`    ${chalk.gray('└─')} Memory: ${health.memory.used || 'N/A'} peak:${health.memory.peak || 'N/A'}`);
   }
@@ -459,27 +478,27 @@ function renderServiceStatus(health) {
 
 function renderSystemResources(resources) {
   console.log(chalk.cyan('\n📊 System Resources:'));
-  
+
   if (resources.cpu !== null) {
-    const cpuColor = resources.cpu < 70 ? chalk.green : 
+    const cpuColor = resources.cpu < 70 ? chalk.green :
                     resources.cpu < 90 ? chalk.yellow : chalk.red;
     console.log(`  CPU Usage:        ${cpuColor(`${resources.cpu}%`)}`);
   }
-  
+
   if (resources.memory) {
-    const memColor = resources.memory.percent < 80 ? chalk.green : 
+    const memColor = resources.memory.percent < 80 ? chalk.green :
                     resources.memory.percent < 95 ? chalk.yellow : chalk.red;
     console.log(`  Memory Usage:     ${memColor(`${resources.memory.percent}%`)} (${resources.memory.used}/${resources.memory.total} MB)`);
   }
-  
+
   if (resources.disks && resources.disks.length > 0) {
     resources.disks.forEach(disk => {
-      const diskColor = disk.percent < 80 ? chalk.green : 
+      const diskColor = disk.percent < 80 ? chalk.green :
                        disk.percent < 95 ? chalk.yellow : chalk.red;
       console.log(`  Disk ${disk.drive}:         ${diskColor(`${disk.percent}%`)} (${disk.used}/${disk.total} GB)`);
     });
   }
-  
+
   if (resources.error) {
     console.log(`  ${chalk.red('System resource monitoring failed')}`);
   }
@@ -488,7 +507,7 @@ function renderSystemResources(resources) {
 function renderDashboardHeader() {
   const uptime = Math.round((Date.now() - monitorState.startTime) / 1000);
   const uptimeStr = `${Math.floor(uptime / 60)}m ${uptime % 60}s`;
-  
+
   console.clear();
   console.log(chalk.cyan.bold('🤖 YoRHa Legal AI - System Status Dashboard'));
   console.log(chalk.gray(`   Monitoring since ${new Date(monitorState.startTime).toLocaleTimeString()}`));
@@ -499,7 +518,7 @@ function renderDashboardHeader() {
 // Main status monitoring functions
 async function performFullHealthCheck() {
   const healthResults = new Map();
-  
+
   // Check all services in parallel
   const healthPromises = Object.entries(STATUS_CONFIG.services).map(
     async ([serviceName, config]) => {
@@ -507,26 +526,26 @@ async function performFullHealthCheck() {
       healthResults.set(serviceName, health);
     }
   );
-  
+
   await Promise.allSettled(healthPromises);
-  
+
   // Get system resources
   const systemResources = await getSystemResources();
-  
+
   return { services: healthResults, system: systemResources };
 }
 
 async function runInteractiveDashboard() {
   log.info('🖥️  Starting interactive dashboard (Press Ctrl+C to stop)...');
-  
+
   const refreshInterval = 5000; // 5 seconds
-  
+
   const updateDashboard = async () => {
     try {
       const { services, system } = await performFullHealthCheck();
-      
+
       renderDashboardHeader();
-      
+
       // Group services by category
       const categories = {
         database: [],
@@ -535,14 +554,14 @@ async function runInteractiveDashboard() {
         api: [],
         frontend: []
       };
-      
+
       for (const [, health] of services) {
         const category = health.category || 'other';
         if (categories[category]) {
           categories[category].push(health);
         }
       }
-      
+
       // Render services by category
       for (const [categoryName, categoryServices] of Object.entries(categories)) {
         if (categoryServices.length > 0) {
@@ -550,77 +569,77 @@ async function runInteractiveDashboard() {
           categoryServices.forEach(renderServiceStatus);
         }
       }
-      
+
       // Render system resources
       renderSystemResources(system);
-      
+
       // Summary
       const healthy = Array.from(services.values()).filter(s => s.status === 'healthy').length;
       const total = services.size;
-      const summaryColor = healthy === total ? chalk.green : 
+      const summaryColor = healthy === total ? chalk.green :
                           healthy > total * 0.7 ? chalk.yellow : chalk.red;
-      
+
       console.log(chalk.cyan('\n📈 Summary:'));
       console.log(`  Service Health:   ${summaryColor(`${healthy}/${total} services healthy`)}`);
-      
+
       // Store metrics history
       monitorState.metrics.set(Date.now(), { healthy, total, system });
-      
+
       // Keep only last 100 metrics
       if (monitorState.metrics.size > 100) {
         const oldestKey = Math.min(...monitorState.metrics.keys());
         monitorState.metrics.delete(oldestKey);
       }
-      
+
     } catch (error) {
       log.error(`Dashboard update failed: ${error.message}`);
     }
   };
-  
+
   // Initial update
   await updateDashboard();
-  
+
   // Set up refresh interval
   const interval = setInterval(updateDashboard, refreshInterval);
-  
+
   // Graceful shutdown
   process.on('SIGINT', () => {
     clearInterval(interval);
     console.log(chalk.cyan('\n📊 Dashboard monitoring stopped'));
     process.exit(0);
   });
-  
+
   // Keep process alive
   await new Promise(() => {});
 }
 
 async function runSingleCheck() {
   const spinner = ora('🔍 Checking system status...').start();
-  
+
   try {
     const { services, system } = await performFullHealthCheck();
-    
+
     spinner.stop();
     renderDashboardHeader();
-    
+
     // Render all services
     console.log(chalk.cyan('🏥 Service Health:'));
     for (const [, health] of services) {
       renderServiceStatus(health);
     }
-    
+
     renderSystemResources(system);
-    
+
     // Final summary
     const healthy = Array.from(services.values()).filter(s => s.status === 'healthy').length;
     const total = services.size;
-    
+
     if (healthy === total) {
       log.success(`🎯 All ${total} services are healthy`);
     } else {
       log.warn(`⚠ ${healthy}/${total} services are healthy`);
     }
-    
+
   } catch (error) {
     spinner.fail(`Status check failed: ${error.message}`);
     process.exit(1);
@@ -638,7 +657,7 @@ async function main() {
     .parse();
 
   const options = program.opts();
-  
+
   // Handle specific service check
   if (options.service) {
     const serviceConfig = STATUS_CONFIG.services[options.service];
@@ -647,19 +666,19 @@ async function main() {
       console.log(`Available services: ${Object.keys(STATUS_CONFIG.services).join(', ')}`);
       process.exit(1);
     }
-    
+
     const health = await checkServiceHealth(options.service, serviceConfig);
-    
+
     if (options.json) {
       console.log(JSON.stringify(health, null, 2));
     } else {
       console.log(chalk.cyan(`\n${serviceConfig.name} Status:`));
       renderServiceStatus(health);
     }
-    
+
     process.exit(health.status === 'healthy' ? 0 : 1);
   }
-  
+
   // Handle JSON output
   if (options.json) {
     const { services, system } = await performFullHealthCheck();
@@ -675,7 +694,7 @@ async function main() {
     console.log(JSON.stringify(result, null, 2));
     return;
   }
-  
+
   // Handle interactive mode
   if (options.watch) {
     await runInteractiveDashboard();

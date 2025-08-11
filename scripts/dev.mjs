@@ -2,7 +2,7 @@
 
 /**
  * YoRHa Legal AI - Development Environment Orchestrator
- * 
+ *
  * Orchestrates all services for development:
  * - PostgreSQL with pgvector
  * - Redis for caching
@@ -10,16 +10,15 @@
  * - Go microservice with gRPC/HTTP2
  * - SvelteKit frontend
  * - Qdrant vector database (optional)
- * 
+ *
  * @author YoRHa Legal AI Team
  * @version 2.0.0
  */
 
-import 'zx/globals';
 import chalk from 'chalk';
-import ora from 'ora';
-import { WebSocket } from 'ws';
 import fetch from 'node-fetch';
+import ora from 'ora';
+import 'zx/globals';
 
 // Configuration
 const CONFIG = {
@@ -55,14 +54,24 @@ const CONFIG = {
       priority: 4,
       optional: true
     },
+    goOllama: {
+      name: 'Go Ollama SIMD Service',
+      port: 8081,
+      healthUrl: 'http://localhost:8081/health',
+  command: 'go run ./cmd/go-ollama-simd',
+      cwd: path.join(process.cwd(), 'go-microservice'),
+      priority: 5
+    },
     goService: {
       name: 'Go Microservice',
       port: 8080,
       grpcPort: 50051,
-      healthUrl: 'http://localhost:8080/api/health',
-      command: '.\\legal-ai-server.exe',
-      cwd: process.cwd(),
-      priority: 5
+      healthUrl: 'http://localhost:8080/health',
+      // Run the enhanced gRPC/HTTP2 server directly in dev
+      command: 'go run enhanced-grpc-legal-server.go',
+      // Execute from the go-microservice directory
+      cwd: path.join(process.cwd(), 'go-microservice'),
+      priority: 6
     },
     sveltekit: {
       name: 'SvelteKit Frontend',
@@ -70,7 +79,7 @@ const CONFIG = {
       healthUrl: 'http://localhost:5173/',
       command: 'npm run dev',
       cwd: path.join(process.cwd(), 'sveltekit-frontend'),
-      priority: 6
+      priority: 7
     }
   }
 };
@@ -114,7 +123,7 @@ const healthCheckers = {
 
   async http(url) {
     try {
-      const response = await fetch(url, { 
+      const response = await fetch(url, {
         timeout: 5000,
         signal: AbortSignal.timeout(5000)
       });
@@ -128,7 +137,7 @@ const healthCheckers = {
 // Service management
 async function startService(serviceName, config) {
   const spinner = ora(`Starting ${config.name}...`).start();
-  
+
   try {
     // Check if already running
     if (await isServiceHealthy(serviceName, config)) {
@@ -157,11 +166,11 @@ async function startService(serviceName, config) {
 
     if (proc.pid) {
       state.services.set(serviceName, { process: proc, config });
-      
+
       // Wait for service to be healthy
       let attempts = 0;
       const maxAttempts = 30; // 30 seconds
-      
+
       while (attempts < maxAttempts) {
         await sleep(1000);
         if (await isServiceHealthy(serviceName, config)) {
@@ -170,7 +179,7 @@ async function startService(serviceName, config) {
         }
         attempts++;
       }
-      
+
       spinner.warn(`${config.name} started but health check failed`);
     } else {
       throw new Error('Failed to start process');
@@ -201,72 +210,72 @@ async function isServiceHealthy(serviceName, config) {
 
 async function checkAllServices() {
   const results = new Map();
-  
+
   for (const [name, config] of Object.entries(CONFIG.services)) {
     if (config.optional && !state.services.has(name)) {
       results.set(name, { status: 'skipped', healthy: false });
       continue;
     }
-    
+
     const healthy = await isServiceHealthy(name, config);
-    results.set(name, { 
-      status: healthy ? 'healthy' : 'unhealthy', 
+    results.set(name, {
+      status: healthy ? 'healthy' : 'unhealthy',
       healthy,
       port: config.port
     });
   }
-  
+
   return results;
 }
 
 // Main orchestration
 async function main() {
   console.log(chalk.cyan.bold('🤖 YoRHa Legal AI - Development Environment Orchestrator\n'));
-  
+
   // Check prerequisites
   await checkPrerequisites();
-  
+
   // Start services in priority order
   const sortedServices = Object.entries(CONFIG.services)
     .filter(([_, config]) => !config.optional || process.argv.includes('--include-optional'))
     .sort(([, a], [, b]) => a.priority - b.priority);
-  
+
   log.info(`Starting ${sortedServices.length} services in sequence...`);
-  
+
   for (const [serviceName, config] of sortedServices) {
     await startService(serviceName, config);
     await sleep(2000); // Stagger starts
   }
-  
+
   // Final health check
   console.log(chalk.cyan('\n📊 System Health Check:'));
   const healthResults = await checkAllServices();
-  
+
   for (const [name, result] of healthResults) {
     const config = CONFIG.services[name];
-    const status = result.healthy ? 
-      chalk.green('✓ HEALTHY') : 
+    const status = result.healthy ?
+      chalk.green('✓ HEALTHY') :
       result.status === 'skipped' ? chalk.yellow('⊘ SKIPPED') : chalk.red('✗ UNHEALTHY');
-    
+
     console.log(`  ${config.name.padEnd(25)} ${status.padEnd(15)} Port: ${config.port || 'N/A'}`);
   }
-  
+
   // Show URLs
   console.log(chalk.cyan('\n🌐 Service URLs:'));
   console.log(`  Frontend:     ${chalk.blue('http://localhost:5173')}`);
   console.log(`  Go API:       ${chalk.blue('http://localhost:8080')}`);
   console.log(`  Ollama:       ${chalk.blue('http://localhost:11434')}`);
   console.log(`  Qdrant:       ${chalk.blue('http://localhost:6333')}`);
-  
+
   // Development tips
   console.log(chalk.cyan('\n💡 Development Commands:'));
   console.log(`  Status:       ${chalk.gray('npm run status')}`);
   console.log(`  Health:       ${chalk.gray('npm run health')}`);
   console.log(`  Logs:         ${chalk.gray('npm run logs')}`);
   console.log(`  Stop:         ${chalk.gray('npm run stop')}`);
-  
+
   log.success('🚀 Development environment ready!');
-  
+
   // Keep script running and monitor services
   if (!process.argv.includes('--no-monitor')) {
     await monitorServices();
@@ -275,17 +284,18 @@ async function main() {
 
 async function checkPrerequisites() {
   const spinner = ora('Checking prerequisites...').start();
-  
+
   const checks = [
     { name: 'Node.js', check: () => $.which('node') },
     { name: 'PostgreSQL', check: () => fs.existsSync('C:\\Program Files\\PostgreSQL\\17\\bin\\pg_isready.exe') },
-    { name: 'Go Service', check: () => fs.existsSync('./legal-ai-server.exe') },
+    { name: 'Go toolchain', check: () => $.which('go') },
+    { name: 'Go Service Source', check: () => fs.existsSync(path.join(process.cwd(), 'go-microservice', 'enhanced-grpc-legal-server.go')) },
     { name: 'Redis', check: () => fs.existsSync('./redis-windows/redis-server.exe') },
     { name: 'Ollama', check: () => $.which('ollama') }
   ];
-  
+
   const failed = [];
-  
+
   for (const check of checks) {
     try {
       await check.check();
@@ -293,7 +303,7 @@ async function checkPrerequisites() {
       failed.push(check.name);
     }
   }
-  
+
   if (failed.length > 0) {
     spinner.fail(`Missing prerequisites: ${failed.join(', ')}`);
     console.log(chalk.yellow('📋 Setup Guide:'));
@@ -303,36 +313,36 @@ async function checkPrerequisites() {
     console.log('  4. Build Go microservice: go build -o legal-ai-server.exe');
     process.exit(1);
   }
-  
+
   spinner.succeed('Prerequisites check passed');
 }
 
 async function monitorServices() {
   log.info('🔍 Starting service monitoring (Ctrl+C to stop)...');
-  
+
   const monitorInterval = setInterval(async () => {
     const healthResults = await checkAllServices();
     const unhealthy = Array.from(healthResults.entries())
       .filter(([, result]) => !result.healthy && result.status !== 'skipped');
-    
+
     if (unhealthy.length > 0) {
       log.warn(`Unhealthy services detected: ${unhealthy.map(([name]) => name).join(', ')}`);
     }
   }, 30000); // Check every 30 seconds
-  
+
   // Graceful shutdown
   process.on('SIGINT', async () => {
     clearInterval(monitorInterval);
     log.info('\n🛑 Shutting down monitoring...');
-    
+
     if (process.argv.includes('--stop-on-exit')) {
       const stopScript = path.join(path.dirname(fileURLToPath(import.meta.url)), 'stop.mjs');
       await $`zx ${stopScript}`;
     }
-    
+
     process.exit(0);
   });
-  
+
   // Keep the process alive
   await new Promise(() => {});
 }
