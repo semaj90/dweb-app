@@ -20,67 +20,168 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- CSS Variables for Theme Integration -->
+    <!-- YoRHa Interface CSS Variables & Styles -->
     <style>
       :root {
-        /* Shadcn-compatible theme variables */
-        --background: 0 0% 100%;
-        --foreground: 240 10% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 240 10% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 3.9%;
-        --primary: 240 5.9% 10%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 240 4.8% 95.9%;
-        --secondary-foreground: 240 5.9% 10%;
-        --muted: 240 4.8% 95.9%;
-        --muted-foreground: 240 3.8% 46.1%;
-        --accent: 240 4.8% 95.9%;
-        --accent-foreground: 240 5.9% 10%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 5.9% 90%;
-        --input: 240 5.9% 90%;
-        --ring: 240 5.9% 10%;
-        --radius: 0.5rem;
-      }
-
-      [data-theme="dark"] {
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 240 5.9% 10%;
-        --secondary: 240 3.7% 15.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 240 3.7% 15.9%;
-        --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
-        --accent-foreground: 0 0% 98%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
-        --ring: 240 4.9% 83.9%;
+        /* YoRHa Terminal Color Scheme */
+        --yorha-primary: #e0e0e0;
+        --yorha-primary-dark: #b0b0b0;
+        --yorha-secondary: #ffd700;
+        --yorha-secondary-dark: #cc8800;
+        --yorha-accent: #00ff41;
+        --yorha-accent-dark: #00cc33;
+        --yorha-danger: #ff0041;
+        --yorha-danger-dark: #cc0033;
+        
+        /* YoRHa Background Colors */
+        --yorha-bg-primary: #0a0a0a;
+        --yorha-bg-secondary: #1a1a1a;
+        --yorha-bg-tertiary: #2a2a2a;
+        --yorha-bg-overlay: rgba(0, 0, 0, 0.9);
+        
+        /* YoRHa Text Colors */
+        --yorha-text-primary: #e0e0e0;
+        --yorha-text-secondary: #b0b0b0;
+        --yorha-text-muted: #808080;
+        --yorha-text-accent: #ffd700;
+        
+        /* YoRHa Terminal Fonts */
+        --yorha-font-primary: 'JetBrains Mono', 'Courier New', monospace;
+        --yorha-font-secondary: 'Orbitron', 'Arial', sans-serif;
+        --yorha-font-ui: 'Rajdhani', 'Arial', sans-serif;
+        
+        /* Shadcn-compatible theme variables (YoRHa themed) */
+        --background: 0 0% 4%;
+        --foreground: 0 0% 88%;
+        --card: 0 0% 10%;
+        --card-foreground: 0 0% 88%;
+        --popover: 0 0% 6%;
+        --popover-foreground: 0 0% 88%;
+        --primary: 51 100% 50%;
+        --primary-foreground: 0 0% 4%;
+        --secondary: 0 0% 69%;
+        --secondary-foreground: 0 0% 4%;
+        --muted: 0 0% 16%;
+        --muted-foreground: 0 0% 50%;
+        --accent: 126 100% 50%;
+        --accent-foreground: 0 0% 4%;
+        --destructive: 348 100% 50%;
+        --destructive-foreground: 0 0% 88%;
+        --border: 0 0% 38%;
+        --input: 0 0% 16%;
+        --ring: 51 100% 50%;
+        --radius: 0.25rem;
       }
 
       * {
         border-color: hsl(var(--border));
       }
 
-      body {
-        background-color: hsl(var(--background));
-        color: hsl(var(--foreground));
-        font-family: "Inter", system-ui, sans-serif;
+      html {
+        background: linear-gradient(135deg, var(--yorha-bg-primary) 0%, var(--yorha-bg-secondary) 50%, var(--yorha-bg-tertiary) 100%);
+        color: var(--yorha-text-primary);
+        font-family: var(--yorha-font-ui);
+        overflow-x: hidden;
       }
 
-      /* UnoCSS will generate the rest */
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: transparent;
+        font-family: var(--yorha-font-ui);
+        line-height: 1.6;
+      }
+      
+      /* YoRHa Terminal Grid Background */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+          linear-gradient(rgba(255, 215, 0, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 215, 0, 0.05) 1px, transparent 1px);
+        background-size: 24px 24px;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      /* YoRHa Terminal Scrollbar */
+      ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: var(--yorha-bg-primary);
+        border: 2px solid var(--yorha-bg-tertiary);
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--yorha-secondary) 0%, var(--yorha-secondary-dark) 100%);
+        border-radius: 0;
+        border: 1px solid var(--yorha-text-muted);
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, var(--yorha-accent) 0%, var(--yorha-accent-dark) 100%);
+      }
+
+      /* YoRHa Terminal Typography */
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--yorha-font-secondary);
+        color: var(--yorha-text-primary);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 400;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 0 0 10px var(--yorha-secondary);
+        border-bottom: 2px solid var(--yorha-secondary);
+        padding-bottom: 0.5rem;
+      }
+
+      /* YoRHa Terminal Input Styles */
+      input, textarea, select {
+        background: var(--yorha-bg-secondary);
+        border: 2px solid var(--yorha-text-muted);
+        color: var(--yorha-text-primary);
+        padding: 12px 16px;
+        border-radius: 0;
+        font-family: var(--yorha-font-primary);
+        transition: all 0.2s ease;
+      }
+      
+      input:focus, textarea:focus, select:focus {
+        border-color: var(--yorha-secondary);
+        box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+        background: var(--yorha-bg-tertiary);
+        outline: none;
+      }
+
+      /* YoRHa Terminal Link Styles */
+      a {
+        color: var(--yorha-secondary);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid transparent;
+      }
+      
+      a:hover {
+        color: var(--yorha-accent);
+        text-shadow: 0 0 4px currentColor;
+        border-bottom: 1px solid currentColor;
+      }
     </style>
 
     %sveltekit.head%
