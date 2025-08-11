@@ -6,7 +6,7 @@ Compact searchable component for embedding in other interfaces
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from "$lib/components/ui/badge";
-  import { 
+  import {
     Search,
     Loader2,
     FileText,
@@ -17,7 +17,7 @@ Compact searchable component for embedding in other interfaces
     Eye,
     X
   } from 'lucide-svelte';
-  
+
   import { vectorIntelligenceService } from '$lib/services/vector-intelligence-service.js';
   import type { VectorSearchResult } from '$lib/services/vector-intelligence-service.js';
 
@@ -33,7 +33,7 @@ Compact searchable component for embedding in other interfaces
     compact?: boolean;
   }
 
-  let { 
+  let {
     placeholder = 'Search documents, cases, evidence...',
     maxResults = 5,
     threshold = 0.7,
@@ -139,7 +139,7 @@ Compact searchable component for embedding in other interfaces
         <Search class="h-4 w-4 text-muted-foreground" />
       {/if}
     </div>
-    
+
     <input
       bind:this={inputElement}
       bind:value={searchQuery}
@@ -148,7 +148,7 @@ Compact searchable component for embedding in other interfaces
       class="vector-search-input pl-10 {searchQuery ? 'pr-10' : 'pr-3'} {compact ? 'h-8 text-sm' : 'h-10'}"
       onfocus={() => { if (searchResults.length > 0) isOpen = true; }}
     />
-    
+
     {#if searchQuery}
       <button
         type="button"
@@ -167,7 +167,7 @@ Compact searchable component for embedding in other interfaces
         <div class="text-xs text-muted-foreground mb-2 px-2">
           Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
         </div>
-        
+
         <div class="space-y-1">
           {#each searchResults as result}
             <button
@@ -181,23 +181,23 @@ Compact searchable component for embedding in other interfaces
                   <span class="text-sm font-medium truncate">{result.id}</span>
                 </div>
                 <div class="flex items-center gap-1">
-                  <Badge class={getConfidenceColor(result.similarity)} class="text-xs">
+                  <Badge class={`text-xs ${getConfidenceColor(result.similarity)}`}>
                     {Math.round(result.similarity * 100)}%
                   </Badge>
                   <Badge variant="outline" class="text-xs">{result.source}</Badge>
                 </div>
               </div>
-              
+
               <p class="text-xs text-muted-foreground line-clamp-2 mb-2">
                 {result.content.substring(0, 120)}...
               </p>
-              
+
               {#if result.highlights?.length > 0}
                 <div class="text-xs">
                   <span class="vector-highlight">{result.highlights[0]}</span>
                 </div>
               {/if}
-              
+
               {#if !compact}
                 <div class="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                   <span>Relevance: {result.relevanceScore.toFixed(2)}</span>
@@ -209,7 +209,7 @@ Compact searchable component for embedding in other interfaces
           {/each}
         </div>
       </div>
-      
+
       {#if searchResults.length === maxResults}
         <div class="border-t border-border p-2">
           <div class="text-xs text-muted-foreground text-center">
@@ -219,7 +219,7 @@ Compact searchable component for embedding in other interfaces
       {/if}
     </div>
   {/if}
-  
+
   <!-- No Results Message -->
   {#if isOpen && searchResults.length === 0 && !isSearching && searchQuery.length >= 2}
     <div class="absolute top-full left-0 right-0 z-50 mt-1 bg-popover border border-border rounded-md shadow-lg">

@@ -7,7 +7,7 @@ Compact AI recommendations component for sidebar/dashboard use
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import { 
+  import {
     Lightbulb,
     Target,
     AlertTriangle,
@@ -20,7 +20,7 @@ Compact AI recommendations component for sidebar/dashboard use
     FileText,
     Zap
   } from 'lucide-svelte';
-  
+
   import { vectorIntelligenceService } from '$lib/services/vector-intelligence-service.js';
   import type { IntelligenceRecommendation } from '$lib/services/vector-intelligence-service.js';
 
@@ -35,7 +35,7 @@ Compact AI recommendations component for sidebar/dashboard use
     onRecommendationClick?: (recommendation: IntelligenceRecommendation) => void;
   }
 
-  let { 
+  let {
     context = 'General legal assistance and case management',
     userRole = 'user',
     currentCaseId = undefined,
@@ -53,7 +53,7 @@ Compact AI recommendations component for sidebar/dashboard use
 
   onMount(() => {
     loadRecommendations();
-    
+
     if (autoRefresh) {
       refreshTimer = setInterval(loadRecommendations, refreshInterval * 60 * 1000);
     }
@@ -146,13 +146,13 @@ Compact AI recommendations component for sidebar/dashboard use
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const minutes = Math.floor(diff / 60000);
-    
+
     if (minutes < 1) return 'Just now';
     if (minutes < 60) return `${minutes}m ago`;
-    
+
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
-    
+
     const days = Math.floor(hours / 24);
     return `${days}d ago`;
   }
@@ -168,7 +168,7 @@ Compact AI recommendations component for sidebar/dashboard use
           <Badge variant="outline" class="text-xs">{recommendations.length}</Badge>
         {/if}
       </div>
-      
+
       <Button
         variant="ghost"
         size="sm"
@@ -179,7 +179,7 @@ Compact AI recommendations component for sidebar/dashboard use
         <RefreshCw class="h-3 w-3 {isLoading ? 'animate-spin' : ''}" />
       </Button>
     </CardTitle>
-    
+
     {#if lastUpdated && !compact}
       <p class="text-xs text-muted-foreground">
         Updated {formatTimeAgo(lastUpdated)}
@@ -219,20 +219,20 @@ Compact AI recommendations component for sidebar/dashboard use
               </div>
               <ChevronRight class="h-3 w-3 text-muted-foreground flex-shrink-0 mt-0.5" />
             </div>
-            
+
             <p class="text-xs text-muted-foreground mb-2 line-clamp-2">
               {rec.description}
             </p>
-            
+
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <Badge class={getPriorityColor(rec.priority)} class="text-xs">
+                <Badge class={`text-xs ${getPriorityColor(rec.priority)}`}>
                   <svelte:component this={getPriorityIcon(rec.priority)} class="h-2 w-2 mr-1" />
                   {rec.priority}
                 </Badge>
                 <Badge variant="outline" class="text-xs">{rec.category}</Badge>
               </div>
-              
+
               <div class="flex items-center gap-1">
                 <Star class="h-3 w-3 {getConfidenceColor(rec.confidence)}" />
                 <span class="text-xs {getConfidenceColor(rec.confidence)}">
@@ -240,7 +240,7 @@ Compact AI recommendations component for sidebar/dashboard use
                 </span>
               </div>
             </div>
-            
+
             {#if rec.estimatedImpact && !compact}
               <div class="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                 <span>Time: {rec.estimatedImpact.timeToComplete}min</span>
@@ -251,7 +251,7 @@ Compact AI recommendations component for sidebar/dashboard use
           </button>
         {/each}
       </div>
-      
+
       {#if !compact}
         <div class="mt-4 pt-3 border-t border-border">
           <div class="flex items-center justify-between text-xs text-muted-foreground">

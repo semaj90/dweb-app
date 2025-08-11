@@ -5,6 +5,8 @@ import '../lib/styles/nier.css';
 import '../lib/styles/theme.css';
 import Navigation from '$lib/components/Navigation.svelte';
 import YoRHaNotificationManager from '$lib/components/yorha/YoRHaNotificationManager.svelte';
+import YoRHaDialogManager from '$lib/components/yorha/YoRHaDialogManager.svelte';
+import YoRHaModalManager from '$lib/components/yorha/YoRHaModalManager.svelte';
 import { notificationStore as notificationStoreExport } from '$lib/stores/notifications';
 // import { aiService } from '$lib/services/ai-service';
 import { onMount } from 'svelte';
@@ -54,5 +56,9 @@ onMount(() => {
   <div class="container mx-auto p-4">
 	<slot />
   </div>
+  
+  <!-- Global UI Managers -->
   <YoRHaNotificationManager />
+  <YoRHaDialogManager />
+  <YoRHaModalManager />
 </main>
