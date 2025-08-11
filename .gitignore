@@ -101,3 +101,4 @@ deeds-web-app/src/lib/wasm/deps/emsdk/
 *.wat
 src/lib/wasm/deps/emsdk
 nul
+src/lib/wasm/deps/emsdk
