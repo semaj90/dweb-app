@@ -3,3 +3,12 @@ node_modules
 build
 .env
 data/nul
+
+# Ignore Windows reserved filename at repo root
+/nul
+
+# Environment files
+*.env
+.env*
+sveltekit-frontend/.env*
+config/environment/.env*
