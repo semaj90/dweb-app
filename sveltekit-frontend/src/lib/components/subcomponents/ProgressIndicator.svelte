@@ -1,17 +1,27 @@
 <!-- Progress Indicator Component -->
 <script lang="ts">
+  interface Props {
+    steps: Array<{;
+    currentStep: number;;
+    validationResults: Record<number, {;
+  }
+  let {
+    steps,
+    currentStep,
+    validationResults
+  }: Props = $props();
+
+
+
     import { createEventDispatcher } from 'svelte';
 
-    export let steps: Array<{
-        id: string;
+            id: string;
         title: string;
         description: string;
         required: boolean;
         estimatedTime: number;
     }>;
-    export let currentStep: number;
-    export let validationResults: Record<number, {
-        isValid: boolean;
+                isValid: boolean;
         errors: string[];
         warnings: string[];
     }> = {};

@@ -148,7 +148,7 @@
 
   <!-- Theme Controls -->
   <section class="theme-controls">
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <Card class="controls-card">
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
@@ -202,7 +202,7 @@
 
   <!-- Features Overview -->
   <section class="features-section">
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h2 class="section-title gradient-text-primary">
         Production-Level Features
       </h2>
@@ -226,7 +226,7 @@
 
   <!-- Component Showcase -->
   <section class="component-showcase">
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h2 class="section-title gradient-text-primary">
         Component System
       </h2>
@@ -419,7 +419,7 @@
 
   <!-- Theme Documentation -->
   <section class="theme-docs">
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h2 class="section-title gradient-text-primary">
         YoRHa Theme System
       </h2>

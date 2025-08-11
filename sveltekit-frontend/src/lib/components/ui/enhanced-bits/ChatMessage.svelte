@@ -1,8 +1,18 @@
 <!-- Chat Message: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
+  interface Props {
+    message: { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string };;
+  let {
+    message,
+    analyticsLog = > void = () => {}
+  }: Props = $props();
+
+    analyticsLog: (event: any) ;
+  }
+
+
   import { User, Bot, AlertTriangle } from 'lucide-svelte';
-  export let message: { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string };
-  export let analyticsLog: (event: any) => void = () => {};
+    export let analyticsLog: (event: any) => void = () => {};
 
   $: if (message && message.content) {
     analyticsLog({ event: 'chat_message_rendered', role: message.role, timestamp: Date.now() });

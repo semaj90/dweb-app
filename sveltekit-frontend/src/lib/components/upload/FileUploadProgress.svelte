@@ -1,9 +1,19 @@
 <script lang="ts">
+  interface Props {
+    progress?: any;
+    fileName?: any;
+    label?: any;
+  }
+  let {
+    progress = 0,
+    fileName = '',
+    label = ''
+  }: Props = $props();
+
+
+
   import { Progress } from 'bits-ui';
-  export let progress = 0;
-  export let fileName = '';
-  export let label = '';
-</script>
+      </script>
 
 <div class="w-full p-4 rounded-lg bg-white shadow flex flex-col gap-2 uno-border uno-border-gray-200">
   <div class="flex items-center justify-between mb-2">

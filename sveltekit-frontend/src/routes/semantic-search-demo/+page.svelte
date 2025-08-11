@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    data?: any;
+  }
+  let {
+    data
+  }: Props = $props();
+
+
+
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { semanticSearch } from '$lib/ai/mcp-helpers';

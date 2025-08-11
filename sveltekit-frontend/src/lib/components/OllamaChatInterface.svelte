@@ -8,7 +8,7 @@
     CardContent,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/card";
+  } from "$lib/components/ui/Card";
   import { Input } from "$lib/components/ui/input";
   import { ScrollArea } from "$lib/components/ui/scroll-area";
   import type { ChatRequest, ChatResponse } from "$routes/api/ai/chat/+server";

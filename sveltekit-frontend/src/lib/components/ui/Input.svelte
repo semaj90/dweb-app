@@ -1,4 +1,39 @@
 <script lang="ts">
+  interface Props {
+    label: $Props['label'] ;
+    error: $Props['error'] ;
+    hint: $Props['hint'] ;
+    variant: NonNullable<$Props['variant']> ;
+    size: NonNullable<$Props['size']> ;
+    icon: $Props['icon'] ;
+    iconPosition: NonNullable<$Props['iconPosition']> ;
+    clearable: NonNullable<$Props['clearable']> ;
+    loading: NonNullable<$Props['loading']> ;
+    success: NonNullable<$Props['success']> ;
+    value: $Props['value'] ;
+    disabled: $Props['disabled'] ;
+    required: $Props['required'] ;
+    readonly: $Props['readonly'] ;
+  }
+  let {
+    label = undefined,
+    error = undefined,
+    hint = undefined,
+    variant = 'default',
+    size = 'md',
+    icon = undefined,
+    iconPosition = 'left',
+    clearable = false,
+    loading = false,
+    success = false,
+    value = '',
+    disabled = false,
+    required = false,
+    readonly = false
+  }: Props = $props();
+
+
+
 	import { createEventDispatcher } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
@@ -17,21 +52,7 @@
 		required?: boolean | null | undefined;
 		readonly?: boolean | null | undefined;
 }
-	export let label: $$Props['label'] = undefined;
-	export let error: $$Props['error'] = undefined;
-	export let hint: $$Props['hint'] = undefined;
-	export let variant: NonNullable<$$Props['variant']> = 'default';
-	export let size: NonNullable<$$Props['size']> = 'md';
-	export let icon: $$Props['icon'] = undefined;
-	export let iconPosition: NonNullable<$$Props['iconPosition']> = 'left';
-	export let clearable: NonNullable<$$Props['clearable']> = false;
-	export let loading: NonNullable<$$Props['loading']> = false;
-	export let success: NonNullable<$$Props['success']> = false;
-	export let value: $$Props['value'] = '';
-	export let disabled: $$Props['disabled'] = false;
-	export let required: $$Props['required'] = false;
-	export let readonly: $$Props['readonly'] = false;
-
+														
 	const dispatch = createEventDispatcher<{
 		input: Event;
 		change: Event;
@@ -137,7 +158,7 @@
 		<!-- Left Icon -->
 		{#if icon && iconPosition === 'left'}
 			<div class={iconClasses}>
-				<iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
+				<iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
 			</div>
 		{/if}
 
@@ -161,20 +182,20 @@
 
 		<!-- Right Icon or Status -->
 		{#if loading}
-			<div class="container mx-auto px-4">
-				<div class="container mx-auto px-4"></div>
+			<div class="space-y-4">
+				<div class="space-y-4"></div>
 			</div>
 		{:else if success}
-			<div class="container mx-auto px-4">
-				<iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
+			<div class="space-y-4">
+				<iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
 			</div>
 		{:else if hasError}
-			<div class="container mx-auto px-4">
-				<iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
+			<div class="space-y-4">
+				<iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
 			</div>
 		{:else if icon && iconPosition === 'right'}
 			<div class={iconClasses}>
-				<iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
+				<iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
 			</div>
 		{/if}
 
@@ -182,12 +203,12 @@
 		{#if showClearButton}
 			<button
 				type="button"
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => handleClear()}
 				tabindex={-1}
 				aria-label="Clear input"
 			>
-				<iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
+				<iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
 			</button>
 		{/if}
 	</div>

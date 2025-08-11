@@ -33,13 +33,13 @@
   <title>Logging out... - WardenNet</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h2 class="container mx-auto px-4">Logging out...</h2>
+<div class="space-y-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <h2 class="space-y-4">Logging out...</h2>
       <p>Please wait while we log you out securely.</p>
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4"></span>
+      <div class="space-y-4">
+        <span class="space-y-4"></span>
       </div>
     </div>
   </div>

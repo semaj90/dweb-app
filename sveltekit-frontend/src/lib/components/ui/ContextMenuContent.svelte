@@ -1,10 +1,18 @@
 <script lang="ts">
+  interface Props {
+    class_: string ;
+  }
+  let {
+    class_ = ""
+  }: Props = $props();
+
+
+
   import { melt } from "@melt-ui/svelte";
   import { getContext } from "svelte";
   import { fly } from "svelte/transition";
 
-  export let class_: string = "";
-
+  
   const contextMenu = (getContext("contextMenu") as any) || {
     elements: { menu: { subscribe: () => {} } },
   };
@@ -16,7 +24,7 @@
 {#if $menu}
   <div
     use:melt={$menu}
-    class="container mx-auto px-4"
+    class="space-y-4"
     transition:fly={{ duration: 150, y: -10 }}
   >
     <slot />

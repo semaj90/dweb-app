@@ -29,10 +29,10 @@
 }
 </script>
 
-<section class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<section class="space-y-4">
+  <div class="space-y-4">
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       role="button"
       tabindex={0}
       on:mouseenter={handleSidebarMouseEnter}
@@ -45,14 +45,14 @@
       }}
     >
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         &#9776;
       </div>
     </div>
     {#if $showSidebar}
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
         role="complementary"
         on:mouseenter={handleSidebarMouseEnter}
         on:mouseleave={handleSidebarMouseLeave}
@@ -66,8 +66,8 @@
       </div>
     {/if}
   </div>
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <CanvasEditor
         bind:canvasState
         reportId={caseId}
@@ -76,8 +76,8 @@
         width={undefined}
         height={undefined}
       />
-      <button class="container mx-auto px-4" aria-label="Ask AI">
-        <svg width="32" height="32" fill="currentColor" class="container mx-auto px-4"
+      <button class="space-y-4" aria-label="Ask AI">
+        <svg width="32" height="32" fill="currentColor" class="space-y-4"
           ><circle
             cx="16"
             cy="16"
@@ -90,7 +90,7 @@
           /></svg
         >
       </button>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <!-- Infinite scroll logic: load more on scroll bottom, show evidence or canvas items -->
       </div>
     </div>

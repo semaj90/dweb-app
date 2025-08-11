@@ -3,6 +3,29 @@
   Features: Drag & drop, progress tracking, AI processing, validation, preview
 -->
 <script lang="ts">
+  interface Props {
+    caseId: string | undefined ;
+    multiple?: any;
+    compact?: any;
+    initialData: Partial<FileUpload> | undefined ;
+    disabled?: any;
+    maxFiles?: any;
+    maxSizeMB?: any;
+    acceptedTypes: string[] ;
+  }
+  let {
+    caseId = undefined,
+    multiple = false,
+    compact = false,
+    initialData = undefined,
+    disabled = false,
+    maxFiles = multiple ? 10 : 1,
+    maxSizeMB = 100,
+    acceptedTypes = [
+  }: Props = $props();
+
+
+
   import { Alert, AlertDescription } from "$lib/components/ui/alert";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
@@ -11,18 +34,14 @@
     CardContent,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/card";
+  } from "$lib/components/ui/Card";
   import { Checkbox } from "$lib/components/ui/checkbox";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Progress } from "$lib/components/ui/progress";
-  import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "$lib/components/ui/select";
+  import Select from "$lib/components/ui/select/Select.svelte";
+  import SelectValue from "$lib/components/ui/select/SelectValue.svelte";
+  import { SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
   import { Textarea } from "$lib/components/ui/textarea";
   import {
     defaultFileUploadValues,
@@ -34,7 +53,7 @@
   } from "$lib/schemas/file-upload";
   import {
     AlertCircle,
-    File,
+    File as FileIcon,
     FileText,
     Image,
     Loader2,
@@ -61,8 +80,7 @@
   export let disabled = false;
   export let maxFiles = multiple ? 10 : 1;
   export let maxSizeMB = 100;
-  export let acceptedTypes: string[] = [
-    "image/*",
+      "image/*",
     "video/*",
     "audio/*",
     ".pdf",
@@ -88,7 +106,7 @@
     { ...defaultFileUploadValues, ...initialData, caseId },
     {
       SPA: true,
-      validators: zodClient(fileUploadSchema),
+  validators: zodClient(fileUploadSchema) as any,
       resetForm: false,
       invalidateAll: false,
       onUpdate: ({ form }) => {
@@ -240,7 +258,7 @@
     if (file.type.startsWith("audio/")) return Music;
     if (file.type.includes("pdf") || file.type.includes("document"))
       return FileText;
-    return File;
+    return FileIcon;
   }
 
   async function handleFormSubmit() {
@@ -357,7 +375,7 @@
       on:dragleave={handleDragLeave}
       on:drop={handleDrop}
       on:click={openFileDialog}
-      on:keydown={(e) => e.key === "Enter" && openFileDialog()}
+  on:keydown={(e: KeyboardEvent) => e.key === "Enter" && openFileDialog()}
       role="button"
       tabindex="0"
       aria-label="File upload area"
@@ -447,7 +465,7 @@
 
     {#if !compact && selectedFiles.length > 0}
       <!-- Form Fields -->
-      <form use:enhance class="space-y-6" id={formId}>
+  <form use:enhance class="space-y-6" id={formId as any}>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Title -->
           <div class="space-y-2">

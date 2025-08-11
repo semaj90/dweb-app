@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    cases: Case[] ;
+  }
+  let {
+    cases = []
+  }: Props = $props();
+
+
+
   // Simple Case Stats Component - TODO: Enhance with full functionality
   //
   // 🚀 ENHANCEMENT ROADMAP (See: /ENHANCED_FEATURES_TODO.md)
@@ -18,8 +27,7 @@
 
   import type { Case } from '$lib/types/api';
 
-  export let cases: Case[] = [];
-
+  
   // TODO: Enhanced stats interface
   // interface AdvancedStats {
   //   resolutionTimeAvg: number;

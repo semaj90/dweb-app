@@ -184,13 +184,13 @@
   <title>Case {caseId} - Interactive Canvas</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Canvas Area -->
   <ContextMenu.Root>
     <ContextMenu.Trigger asChild>
       <div
         bind:this={canvasElement}
-        class="container mx-auto px-4"
+        class="space-y-4"
         role="application"
         aria-label="Case evidence canvas"
         on:contextmenu={handleCanvasContextMenu}
@@ -200,17 +200,17 @@
         on:dragleave={handleCanvasDragLeave}
       >
         <!-- Grid Background -->
-        <div class="container mx-auto px-4" aria-hidden="true"></div>
+        <div class="space-y-4" aria-hidden="true"></div>
 
         <!-- Drop Zone Indicator -->
         {#if isUploading}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <Upload class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <Upload class="space-y-4" />
               <p>Uploading... {Math.round(uploadProgress)}%</p>
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <div
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   style="width: {uploadProgress}%"
                 ></div>
               </div>
@@ -268,26 +268,26 @@
 
         <!-- Loading overlay -->
         {#if $isLoading}
-          <div class="container mx-auto px-4" aria-live="polite">
-            <div class="container mx-auto px-4" aria-hidden="true"></div>
+          <div class="space-y-4" aria-live="polite">
+            <div class="space-y-4" aria-hidden="true"></div>
             <p>Loading case data...</p>
           </div>
         {/if}
       </div>
     </ContextMenu.Trigger>
 
-    <ContextMenu.Content class="container mx-auto px-4">
+    <ContextMenu.Content class="space-y-4">
       <ContextMenu.Item
         on:click={() => createNewReport(contextMenuState.x, contextMenuState.y)}
       >
-        <FileText class="container mx-auto px-4" />
+        <FileText class="space-y-4" />
         New Report
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewEvidence(contextMenuState.x, contextMenuState.y)}
       >
-        <Image class="container mx-auto px-4" />
+        <Image class="space-y-4" />
         New Evidence
       </ContextMenu.Item>
       <ContextMenu.Separator />
@@ -295,21 +295,21 @@
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "suspect")}
       >
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
         Add Suspect
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "witness")}
       >
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
         Add Witness
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "victim")}
       >
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
         Add Victim
       </ContextMenu.Item>
       <ContextMenu.Item
@@ -320,45 +320,45 @@
             "co-conspirator"
           )}
       >
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
         Add Co-conspirator
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "informant")}
       >
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
         Add Informant
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() => createNewPOI(contextMenuState.x, contextMenuState.y)}
       >
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
         Add Other POI
       </ContextMenu.Item>
     </ContextMenu.Content>
   </ContextMenu.Root>
 
   <!-- Toolbar -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <Button variant="secondary" on:click={() => createNewReport(100, 100)}>
-        <FileText class="container mx-auto px-4" />
+        <FileText class="space-y-4" />
         New Report
       </Button>
 
       <Button variant="secondary" on:click={() => createNewEvidence(200, 100)}>
-        <Image class="container mx-auto px-4" />
+        <Image class="space-y-4" />
         New Evidence
       </Button>
 
       <Button variant="secondary" on:click={() => createNewPOI(300, 100)}>
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
         New POI
       </Button>
     </div>
 
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <Button variant="secondary" on:click={() => caseService.saveAll()}>
         Save All
       </Button>
@@ -366,22 +366,22 @@
   </div>
 
   <!-- Status Bar -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <span>Reports: {$reports.length}</span>
       <span>Evidence: {$evidence.length}</span>
       <span>POIs: {$pois.length}</span>
     </div>
 
     {#if $caseServiceError}
-      <div class="container mx-auto px-4" role="alert">
+      <div class="space-y-4" role="alert">
         Error: {$caseServiceError}
       </div>
     {/if}
   </div>
 
   <!-- Drop Zone Help -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <p>Drag and drop files here to add evidence</p>
   </div>
 </div>

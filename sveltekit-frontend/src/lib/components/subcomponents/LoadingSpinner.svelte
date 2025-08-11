@@ -1,5 +1,20 @@
 <!-- Loading Spinner Component -->
 <script lang="ts">
+  interface Props {
+    size: 'sm' | 'md' | 'lg' | 'xl' ;
+    color: 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white' ;
+    label: string ;
+    inline: boolean ;
+  }
+  let {
+    size = 'md',
+    color = 'blue',
+    label = 'Loading...',
+    inline = false
+  }: Props = $props();
+
+
+
     export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
     export let color: 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white' = 'blue';
     export let label: string = 'Loading...';

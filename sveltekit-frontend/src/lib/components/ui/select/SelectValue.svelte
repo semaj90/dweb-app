@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    class_: string ;
+  }
+  let {
+    class_ = ""
+  }: Props = $props();
+
+
+
   import { getContext } from "svelte";
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
@@ -16,7 +25,7 @@
   const { selected } = context;
 </script>
 
-<span class="container mx-auto px-4">
+<span class="space-y-4">
   {#if $selected}
     <slot value={$selected}>
       {$selected}

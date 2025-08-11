@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    selectedDocument: Document | null ;
+    searchQuery: string ;
+  }
+  let {
+    selectedDocument = null,
+    searchQuery = ''
+  }: Props = $props();
+
+
+
   import { onMount } from 'svelte';
 
   interface Document {

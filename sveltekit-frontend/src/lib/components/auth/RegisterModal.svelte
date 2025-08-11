@@ -1,14 +1,17 @@
 <script lang="ts">
+  interface Props {
+    onsuccess?: (event?: any) => void;
+  }
+
+
   import Modal from "../ui/Modal.svelte";
   // Adjust path to melt-ui or bits-ui as needed
-  import { createEventDispatcher } from "svelte";
-  let email = "";
+    let email = "";
   let password = "";
   let confirmPassword = "";
   let loading = false;
   let error = "";
-  const dispatch = createEventDispatcher();
-
+  
   async function handleRegister() {
     loading = true;
     error = "";
@@ -20,7 +23,7 @@
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Registration failed");
-      dispatch("success", data);
+      onsuccess?.();
     } catch (e) {
       error = e instanceof Error ? e.message : "Registration failed";
     } finally {
@@ -31,7 +34,7 @@
 <Modal open>
   <form on:submit|preventDefault={handleRegister}>
     <h2>Register</h2>
-    {#if error}<div class="container mx-auto px-4">{error}</div>{/if}
+    {#if error}<div class="space-y-4">{error}</div>{/if}
     <input type="email" bind:value={email} placeholder="Email" required />
     <input
       type="password"

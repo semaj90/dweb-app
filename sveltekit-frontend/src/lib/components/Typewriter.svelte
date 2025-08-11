@@ -1,7 +1,16 @@
 <script lang="ts">
-  export let text: string = '';
-  export let speed: number = 50;
-  
+  interface Props {
+    text: string ;
+    speed: number ;
+  }
+  let {
+    text = '',
+    speed = 50
+  }: Props = $props();
+
+
+
+      
   let output = '';
   let i = 0;
   let intervalId: NodeJS.Timeout | null = null;
@@ -26,7 +35,7 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   {output}
 </div>
 

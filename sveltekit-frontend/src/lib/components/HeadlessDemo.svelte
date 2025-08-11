@@ -1,10 +1,18 @@
 <script lang="ts">
+  interface Props {
+    items?: any;
+  }
+  let {
+    items = ['Active Cases', 'Pending Cases', 'Closed Cases']
+  }: Props = $props();
+
+
+
   import { createDialog, createSelect } from '@melt-ui/svelte';
   import { fade } from 'svelte/transition';
   
   export const title = 'Legal Case Manager';
-  export let items = ['Active Cases', 'Pending Cases', 'Closed Cases'];
-  
+    
   // Melt UI Dialog
   const {
     elements: { trigger, overlay, content, title: dialogTitle, description, close },
@@ -20,19 +28,19 @@
   });
 </script>
 
-<div class="container mx-auto px-4">
-  <h2 class="container mx-auto px-4">Headless UI Components Demo</h2>
+<div class="space-y-4">
+  <h2 class="space-y-4">Headless UI Components Demo</h2>
   
   <!-- Melt UI Button -->
-  <button class="container mx-auto px-4">
+  <button class="space-y-4">
     Primary Action Button
   </button>
   
   <!-- Melt UI Select -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <button 
       use:selectTrigger 
-      class="container mx-auto px-4"
+      class="space-y-4"
       aria-label="Case Type Filter"
     >
       {$selectedLabel || 'Select case type...'}
@@ -41,13 +49,13 @@
     {#if $selectOpen}
       <div 
         use:menu 
-        class="container mx-auto px-4"
+        class="space-y-4"
         transition:fade={{ duration: 150 }}
       >
         {#each items as item, index}
           <div 
             use:option
-            class="container mx-auto px-4"
+            class="space-y-4"
             data-value={item}
           >
             {item}
@@ -60,27 +68,27 @@
   <!-- Melt UI Dialog Trigger -->
   <button 
     use:trigger
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
     Open Case Details Dialog
   </button>
   
   <!-- Melt UI Dialog -->
   {#if $open}
-    <div use:overlay class="container mx-auto px-4" transition:fade={{ duration: 150 }}>
-      <div use:content class="container mx-auto px-4">
-        <h3 use:dialogTitle class="container mx-auto px-4">
+    <div use:overlay class="space-y-4" transition:fade={{ duration: 150 }}>
+      <div use:content class="space-y-4">
+        <h3 use:dialogTitle class="space-y-4">
           Case Management System
         </h3>
-        <p use:description class="container mx-auto px-4">
+        <p use:description class="space-y-4">
           This is a demo of Melt UI headless components integrated with PicoCSS styling and custom CSS variables.
         </p>
         
-        <div class="container mx-auto px-4">
-          <button use:close class="container mx-auto px-4">
+        <div class="space-y-4">
+          <button use:close class="space-y-4">
             Cancel
           </button>
-          <button class="container mx-auto px-4">
+          <button class="space-y-4">
             Save Changes
           </button>
         </div>

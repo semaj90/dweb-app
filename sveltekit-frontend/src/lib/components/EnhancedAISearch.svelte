@@ -48,33 +48,63 @@
     includeContext: true,
   });
 
-  // Practice areas options
+  // Practice areas options with proper mapping
   const practiceAreas = [
     { value: "contract_law", label: "Contract Law" },
+    { value: "tort_law", label: "Tort Law" },
     { value: "criminal_law", label: "Criminal Law" },
-    { value: "civil_litigation", label: "Civil Litigation" },
     { value: "corporate_law", label: "Corporate Law" },
-    { value: "family_law", label: "Family Law" },
-    { value: "immigration_law", label: "Immigration Law" },
-    { value: "intellectual_property", label: "Intellectual Property" },
     { value: "employment_law", label: "Employment Law" },
+    { value: "intellectual_property", label: "Intellectual Property" },
+    { value: "real_estate", label: "Real Estate" },
+    { value: "family_law", label: "Family Law" },
+    { value: "tax_law", label: "Tax Law" },
+    { value: "bankruptcy_law", label: "Bankruptcy Law" },
+    { value: "immigration_law", label: "Immigration Law" },
+    { value: "environmental_law", label: "Environmental Law" },
+    { value: "securities_law", label: "Securities Law" },
+    { value: "healthcare_law", label: "Healthcare Law" }
   ];
 
-  // Jurisdictions options
+  // Helper function to get practice area label
+  function getPracticeAreaLabel(value: PracticeArea): string {
+    const area = practiceAreas.find(p => p.value === value);
+    return area?.label || value.replace('_', ' ');
+  }
+
+  // Jurisdictions options with complete mapping
   const jurisdictions = [
     { value: "US", label: "United States" },
-    { value: "CA", label: "Canada" },
-    { value: "UK", label: "United Kingdom" },
-    { value: "AU", label: "Australia" },
+    { value: "federal", label: "Federal" },
+    { value: "state", label: "State" },
+    { value: "local", label: "Local" },
+    { value: "international", label: "International" },
     { value: "EU", label: "European Union" },
+    { value: "UK", label: "United Kingdom" },
+    { value: "CA", label: "Canada" },
+    { value: "AU", label: "Australia" }
   ];
 
-  // RAG modes
+  // Helper function to get jurisdiction label
+  function getJurisdictionLabel(value: Jurisdiction): string {
+    const jurisdiction = jurisdictions.find(j => j.value === value);
+    return jurisdiction?.label || value;
+  }
+
+  // RAG modes with proper typing
   const ragModes = [
     { value: "basic", label: "Basic Search" },
     { value: "enhanced", label: "Enhanced RAG" },
     { value: "hybrid", label: "Hybrid Mode" },
+    { value: "semantic", label: "Semantic Search" },
+    { value: "keyword", label: "Keyword Search" }
   ];
+
+  // Helper function to get RAG mode label
+  function getRagModeLabel(value: string): string {
+    const mode = ragModes.find(m => m.value === value);
+    return mode?.label || value;
+  }
 
   // Search function
   async function performSearch() {
@@ -209,7 +239,7 @@
             <Select.Trigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
-              <span>{selectedPracticeArea?.label || "Select practice area"}</span>
+              <span>{getPracticeAreaLabel(selectedPracticeArea)}</span>
             </Select.Trigger>
             <Select.Content
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
@@ -236,7 +266,7 @@
             <Select.Trigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
-              <span>{selectedJurisdiction?.label || "Select jurisdiction"}</span>
+              <span>{getJurisdictionLabel(selectedJurisdiction)}</span>
             </Select.Trigger>
             <Select.Content
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"
@@ -263,7 +293,7 @@
             <Select.Trigger
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700"
             >
-              <span>{searchOptions.ragMode?.label || "Select mode"}</span>
+              <span>{getRagModeLabel(searchOptions.ragMode || "enhanced")}</span>
             </Select.Trigger>
             <Select.Content
               class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg"

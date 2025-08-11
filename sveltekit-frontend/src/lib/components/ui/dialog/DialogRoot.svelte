@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    open: boolean ;
+    onOpenChange: ((open: boolean) ;
+  }
+  let {
+    open = false,
+    onOpenChange = > void) | undefined = undefined
+  }: Props = $props();
+
+
+
   import { createDialog } from '@melt-ui/svelte';
   import { writable } from 'svelte/store';
   

@@ -5,6 +5,15 @@ import type { User } from '$lib/types/user';
 
 
 <script lang="ts">
+  interface Props {
+    user: User | null ;
+  }
+  let {
+    user = null
+  }: Props = $props();
+
+
+
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import SearchInput from "./SearchInput.svelte";
@@ -18,8 +27,7 @@ import type { User } from '$lib/types/user';
 
 import type { User } from '$lib/types/user';
 
-  export let user: User | null = null;
-
+  
   let searchQuery = "";
   let userMenuOpen = false;
 
@@ -43,24 +51,24 @@ import type { User } from '$lib/types/user';
 }
 </script>
 
-<header class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<header class="space-y-4">
+  <div class="space-y-4">
     <!-- Logo and Brand -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => handleNavigation("/")}
         aria-label="Go to homepage"
       >
         <Palette size={24} />
-        <span class="container mx-auto px-4">Prosecutor Canvas</span>
+        <span class="space-y-4">Prosecutor Canvas</span>
       </button>
     </div>
 
     <!-- Navigation -->
-    <nav class="container mx-auto px-4" aria-label="Main navigation">
+    <nav class="space-y-4" aria-label="Main navigation">
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => handleNavigation("/dashboard")}
         aria-label="Dashboard"
       >
@@ -69,7 +77,7 @@ import type { User } from '$lib/types/user';
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => handleNavigation("/cases")}
         aria-label="Cases"
       >
@@ -78,7 +86,7 @@ import type { User } from '$lib/types/user';
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => handleNavigation("/interactive-canvas")}
         aria-label="Interactive Canvas"
       >
@@ -87,7 +95,7 @@ import type { User } from '$lib/types/user';
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => handleNavigation("/evidence/hash")}
         aria-label="Hash Verification"
         title="Verify evidence file integrity"
@@ -98,7 +106,7 @@ import type { User } from '$lib/types/user';
     </nav>
 
     <!-- Search -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <SearchInput
         placeholder="Search cases, evidence, notes..."
         value={searchQuery}
@@ -107,32 +115,32 @@ import type { User } from '$lib/types/user';
     </div>
 
     <!-- User Menu -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#if user}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => toggleUserMenu()}
             aria-label="User menu"
             aria-expanded={userMenuOpen}
           >
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#if user.avatarUrl}
                 <img src={user.avatarUrl} alt={user.name} />
               {:else}
-                <span class="container mx-auto px-4">
+                <span class="space-y-4">
                   {user.name?.charAt(0)?.toUpperCase() || "U"}
                 </span>
               {/if}
             </div>
-            <span class="container mx-auto px-4">{user.name}</span>
+            <span class="space-y-4">{user.name}</span>
             <MoreVertical size={16} />
           </button>
 
           {#if userMenuOpen}
-            <div class="container mx-auto px-4" role="menu">
+            <div class="space-y-4" role="menu">
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => handleNavigation("/profile")}
                 role="menuitem"
               >
@@ -141,7 +149,7 @@ import type { User } from '$lib/types/user';
               </button>
 
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => handleNavigation("/settings")}
                 role="menuitem"
               >
@@ -149,10 +157,10 @@ import type { User } from '$lib/types/user';
                 Settings
               </button>
 
-              <hr class="container mx-auto px-4" />
+              <hr class="space-y-4" />
 
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => handleLogout()}
                 role="menuitem"
               >
@@ -164,7 +172,7 @@ import type { User } from '$lib/types/user';
         </div>
       {:else}
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => handleNavigation("/login")}
           aria-label="Sign in"
         >
@@ -178,7 +186,7 @@ import type { User } from '$lib/types/user';
 <!-- Click outside to close menu -->
 {#if userMenuOpen}
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
     on:click={() => closeUserMenu()}
     on:keydown={(e) => e.key === "Escape" && closeUserMenu()}
     role="button"

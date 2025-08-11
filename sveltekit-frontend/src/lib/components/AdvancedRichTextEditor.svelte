@@ -1,5 +1,24 @@
 <!-- Lightweight Rich Text Editor with Enhanced Image Support -->
 <script lang="ts">
+  interface Props {
+    content: any ;
+    placeholder?: any;
+    autosave?: any;
+    reportId: string ;
+    caseId: string ;
+    disabled?: any;
+  }
+  let {
+    content = null,
+    placeholder = "Start writing your legal report...",
+    autosave = true,
+    reportId = "",
+    caseId = "",
+    disabled = false
+  }: Props = $props();
+
+
+
   import { Editor } from "@tiptap/core";
   import Image from "@tiptap/extension-image";
   import Placeholder from "@tiptap/extension-placeholder";
@@ -29,13 +48,7 @@
   import { onDestroy, onMount } from "svelte";
   import { writable } from "svelte/store";
 
-  export let content: any = null;
-  export let placeholder = "Start writing your legal report...";
-  export let autosave = true;
-  export let reportId: string = "";
-  export let caseId: string = "";
-  export let disabled = false;
-
+            
   let editor: Editor | null = null;
   let editorElement: HTMLElement;
   let wordCount = 0;

@@ -1,4 +1,17 @@
 <script lang="ts">
+  interface Props {
+    onedit?: (event?: any) => void;
+    ondelete?: (event?: any) => void;
+    onview?: (event?: any) => void;
+    ondownload?: (event?: any) => void;
+  }
+  let {
+    evidence,
+    disabled = false
+  }: Props = $props();
+
+
+
   import { formatDistanceToNow } from "date-fns";
   import {
     Archive,
@@ -12,13 +25,9 @@
     Trash2,
     Video,
   } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-
-  export let evidence: any;
-  export let disabled = false;
-
-  const dispatch = createEventDispatcher();
-
+  
+    
+  
   function getEvidenceIcon(type: string) {
     switch (type) {
       case "document":
@@ -67,25 +76,25 @@
 
   function handleEdit() {
     if (!disabled) {
-      dispatch("edit", evidence);
+      onedit?.();
     }
   }
 
   function handleDelete() {
     if (!disabled) {
-      dispatch("delete", evidence);
+      ondelete?.();
     }
   }
 
   function handleView() {
     if (!disabled) {
-      dispatch("view", evidence);
+      onview?.();
     }
   }
 
   function handleDownload() {
     if (!disabled) {
-      dispatch("download", evidence);
+      ondownload?.();
     }
   }
 </script>

@@ -1,12 +1,27 @@
 
 <script lang="ts">
+  interface Props {
+    onauditResults?: (event?: any) => void;
+    onauditError?: (event?: any) => void;
+    onagentReviewResult?: (event?: any) => void;
+    onagentReviewError?: (event?: any) => void;
+    onsendToCase?: (event?: any) => void;
+    onclose?: (event?: any) => void;
+  }
+  let {
+    x,
+    y,
+    item
+  }: Props = $props();
+
+
+
   import DropdownMenuContent from "$lib/components/ui/dropdown-menu/DropdownMenuContent.svelte";
   import DropdownMenuItem from "$lib/components/ui/dropdown-menu/DropdownMenuItem.svelte";
   import DropdownMenuRoot from "$lib/components/ui/dropdown-menu/DropdownMenuRoot.svelte";
   import DropdownMenuSeparator from "$lib/components/ui/dropdown-menu/DropdownMenuSeparator.svelte";
   import type { Case, Evidence } from "$lib/types/index";
-  import { createEventDispatcher, onMount, tick } from "svelte";
-
+  
 
 
   // --- Phase 10: Context7 Evidence Actions ---
@@ -21,9 +36,9 @@
       });
       if (!res.ok) throw new Error('Failed to audit evidence');
       const data = await res.json();
-      dispatch('auditResults', { results: data.results, evidence: item });
+      onauditResults?.();
     } catch (error) {
-      dispatch('auditError', { error: (error as Error).message, evidence: item });
+      onauditError?.().message, evidence: item });
     }
     closeMenu();
   }
@@ -38,19 +53,15 @@
       });
       if (!res.ok) throw new Error('Failed to trigger agent review');
       const data = await res.json();
-      dispatch('agentReviewResult', { result: data, evidence: item });
+      onagentReviewResult?.();
     } catch (error) {
-      dispatch('agentReviewError', { error: (error as Error).message, evidence: item });
+      onagentReviewError?.().message, evidence: item });
     }
     closeMenu();
   }
 
-  export let x: number;
-  export let y: number;
-  export let item: Evidence | null;
-
-  const dispatch = createEventDispatcher();
-  let cases: Case[] = [];
+      
+    let cases: Case[] = [];
   let menuOpen = true;
 
   onMount(async () => {
@@ -68,7 +79,7 @@
   });
 
   function sendToCase(caseId: string) {
-    dispatch("sendToCase", { caseId });
+    onsendToCase?.();
     closeMenu();
 }
   function viewEvidence() {
@@ -102,7 +113,7 @@
 }
   function closeMenu() {
     menuOpen = false;
-    dispatch("close");
+    onclose?.();
 }
 </script>
 <DropdownMenuRoot
@@ -119,55 +130,55 @@
   {#if menuOpen}
     <DropdownMenuContent
       menu={menuOpen}
-      class="container mx-auto px-4"
+      class="space-y-4"
       style="position:fixed;left:{x}px;top:{y}px;"
       on:keydown={(e) => {
         if (e.detail && e.detail.key === "Escape") closeMenu();
       }}
       aria-label="Evidence context menu"
     >
-      <div class="container mx-auto px-4">
-        <p class="container mx-auto px-4">
+      <div class="space-y-4">
+        <p class="space-y-4">
           Evidence Actions
         </p>
       </div>
       <DropdownMenuItem on:select={viewEvidence}>
-        <i class="container mx-auto px-4"></i>
-        <span class="container mx-auto px-4">View Details</span>
+        <i class="space-y-4"></i>
+        <span class="space-y-4">View Details</span>
       </DropdownMenuItem>
       <DropdownMenuItem on:select={editEvidence}>
-        <i class="container mx-auto px-4"></i>
-        <span class="container mx-auto px-4">Edit</span>
+        <i class="space-y-4"></i>
+        <span class="space-y-4">Edit</span>
       </DropdownMenuItem>
       <DropdownMenuItem on:select={downloadEvidence}>
-        <i class="container mx-auto px-4"></i>
-        <span class="container mx-auto px-4">Download</span>
+        <i class="space-y-4"></i>
+        <span class="space-y-4">Download</span>
       </DropdownMenuItem>
       <DropdownMenuItem on:select={duplicateEvidence}>
-        <i class="container mx-auto px-4"></i>
-        <span class="container mx-auto px-4">Duplicate</span>
+        <i class="space-y-4"></i>
+        <span class="space-y-4">Duplicate</span>
       </DropdownMenuItem>
       <DropdownMenuItem on:select={auditEvidence}>
-        <i class="container mx-auto px-4"></i>
-        <span class="container mx-auto px-4">Audit (Semantic/Vector)</span>
+        <i class="space-y-4"></i>
+        <span class="space-y-4">Audit (Semantic/Vector)</span>
       </DropdownMenuItem>
       <DropdownMenuItem on:select={triggerAgentReview}>
-        <i class="container mx-auto px-4"></i>
-        <span class="container mx-auto px-4">Trigger Agent Review</span>
+        <i class="space-y-4"></i>
+        <span class="space-y-4">Trigger Agent Review</span>
       </DropdownMenuItem>
       {#if cases.length > 0}
         <DropdownMenuSeparator />
-        <div class="container mx-auto px-4">
-          <p class="container mx-auto px-4">
+        <div class="space-y-4">
+          <p class="space-y-4">
             Send to Case
           </p>
         </div>
         {#each cases as case_}
           <DropdownMenuItem on:select={() => sendToCase(case_.id)}>
-            <i class="container mx-auto px-4"></i>
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">{case_.title}</div>
-              <div class="container mx-auto px-4">
+            <i class="space-y-4"></i>
+            <div class="space-y-4">
+              <div class="space-y-4">{case_.title}</div>
+              <div class="space-y-4">
                 {case_.caseNumber}
               </div>
             </div>
@@ -175,17 +186,17 @@
         {/each}
       {/if}
       <DropdownMenuSeparator />
-      <div class="container mx-auto px-4">
-        <p class="container mx-auto px-4">
+      <div class="space-y-4">
+        <p class="space-y-4">
           Danger Zone
         </p>
       </div>
       <DropdownMenuItem
         on:select={deleteEvidence}
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
-        <i class="container mx-auto px-4"></i>
-        <span class="container mx-auto px-4">Delete</span>
+        <i class="space-y-4"></i>
+        <span class="space-y-4">Delete</span>
       </DropdownMenuItem>
     </DropdownMenuContent>
   {/if}

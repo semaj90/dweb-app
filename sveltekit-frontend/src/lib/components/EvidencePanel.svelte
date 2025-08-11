@@ -1,10 +1,20 @@
 <script lang="ts">
+  interface Props {
+    caseId: string;;
+    onEvidenceDrop: (evidence: Evidence) ;
+  }
+  let {
+    caseId,
+    onEvidenceDrop = > void = () => {}
+  }: Props = $props();
+
+
+
   import type { Evidence } from "$lib/data/types";
   import { createEventDispatcher, onMount } from "svelte";
   import { writable } from "svelte/store";
 
-  export let caseId: string;
-  export let onEvidenceDrop: (evidence: Evidence) => void = () => {};
+    export let onEvidenceDrop: (evidence: Evidence) => void = () => {};
 
   const evidenceList = writable<Evidence[]>([]);
   const isUploading = writable(false);
@@ -47,10 +57,10 @@
   onMount(fetchEvidence);
 </script>
 
-<section class="container mx-auto px-4">
-  <h2 class="container mx-auto px-4">Evidence</h2>
-  <div class="container mx-auto px-4">
-    <label class="container mx-auto px-4">
+<section class="space-y-4">
+  <h2 class="space-y-4">Evidence</h2>
+  <div class="space-y-4">
+    <label class="space-y-4">
       <input
         type="file"
         accept="*"
@@ -60,27 +70,27 @@
       Upload Evidence
     </label>
     {#if $isUploading}
-      <span class="container mx-auto px-4">Uploading...</span>
+      <span class="space-y-4">Uploading...</span>
     {/if}
   </div>
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     {#each $evidenceList as evd (evd.id)}
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
         draggable={true}
         on:dragstart={(e) => handleDragStart(e, evd)}
         role="button"
         tabindex={0}
         aria-label="Drag evidence item"
       >
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">{evd.fileType}</span>
-          <span class="container mx-auto px-4"
+        <div class="space-y-4">
+          <span class="space-y-4">{evd.fileType}</span>
+          <span class="space-y-4"
             >{Array.isArray(evd.tags) ? evd.tags.join(", ") : ""}</span
           >
         </div>
-        <div class="container mx-auto px-4">{evd.title}</div>
-        <div class="container mx-auto px-4">{evd.description}</div>
+        <div class="space-y-4">{evd.title}</div>
+        <div class="space-y-4">{evd.description}</div>
       </div>
     {/each}
   </div>

@@ -2,18 +2,25 @@
 // File: AIAssistantButton.svelte
 
 <script>
-  import { createEventDispatcher } from 'svelte';
-  import { Button } from 'bits-ui';
+  interface Props {
+    onresponse?: (event?: any) => void;
+    onerror?: (event?: any) => void;
+  }
+  let {
+    query = '',
+    isProcessing = false,
+    systemStatus = 'unknown',
+    responseTime = 0
+  }: Props = $props();
+
+
+
+    import { Button } from 'bits-ui';
   import { Badge } from 'bits-ui';
   import { Loader2, Brain, Zap, AlertTriangle } from 'lucide-svelte';
   
-  export let query = '';
-  export let isProcessing = false;
-  export let systemStatus = 'unknown';
-  export let responseTime = 0;
-  
-  const dispatch = createEventDispatcher();
-  
+          
+    
   let apiLogs = [];
   let currentTest = null;
   
@@ -57,18 +64,14 @@
         const result = await response.json();
         systemStatus = 'operational';
         logAPI('Gemma3 Legal', 200, time);
-        dispatch('response', { 
-          source: 'gemma3',
-          content: result.response,
-          metadata: { time, confidence: 0.92 }
-        });
+        onresponse?.();
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       systemStatus = 'offline';
       logAPI('Gemma3 Legal', 0, Date.now() - startTime, error.message);
-      dispatch('error', { source: 'gemma3', error: error.message });
+      onerror?.();
     }
     
     isProcessing = false;
@@ -103,9 +106,7 @@
         systemStatus = 'operational';
         logAPI('Synthesis API', response.status, time);
         const result = await response.json();
-        dispatch('response', {
-          source: 'synthesis',
-          content: JSON.stringify(result, null, 2),
+        onresponse?.(),
           metadata: { time, status: response.status }
         });
       } else {
@@ -113,7 +114,7 @@
       }
     } catch (error) {
       logAPI('Synthesis API', 0, Date.now() - startTime, error.message);
-      dispatch('error', { source: 'synthesis', error: error.message });
+      onerror?.();
     }
     
     isProcessing = false;
@@ -144,9 +145,7 @@
       if (response.ok) {
         const result = await response.json();
         logAPI('RAG Studio', 200, time);
-        dispatch('response', {
-          source: 'rag',
-          content: JSON.stringify(result, null, 2),
+        onresponse?.(),
           metadata: { time, documents: result.documents?.length }
         });
       } else {
@@ -154,7 +153,7 @@
       }
     } catch (error) {
       logAPI('RAG Studio', 0, Date.now() - startTime, error.message);
-      dispatch('error', { source: 'rag', error: error.message });
+      onerror?.();
     }
     
     isProcessing = false;

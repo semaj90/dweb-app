@@ -3,19 +3,28 @@ Custody Timeline Component
 Displays the chronological chain of custody events with detailed audit trail
 -->
 <script lang="ts">
+  interface Props {
+    events: Array<{;
+    currentStage: string;;
+  }
+  let {
+    events,
+    currentStage
+  }: Props = $props();
+
+
+
   import { Badge } from '$lib/components/ui/badge';
   import { CheckCircle, AlertTriangle, Clock, FileCheck, Users, Shield, UserCheck } from 'lucide-svelte';
 
-  export let events: Array<{
-    id: string;
+      id: string;
     eventType: 'intake' | 'transfer' | 'verification' | 'analysis' | 'approval' | 'finalization';
     timestamp: string;
     userId: string;
     details: Record<string, any>;
     signature?: string;
   }>;
-  export let currentStage: string;
-
+  
   function getEventIcon(eventType: string) {
     switch (eventType) {
       case 'intake':

@@ -117,7 +117,7 @@
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}
@@ -133,53 +133,53 @@
     {multiple}
     {disabled}
     onchange={handleFileSelect}
-    class="container mx-auto px-4"
+    class="space-y-4"
   />
 
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       {#if isDragOver}
-        <div class="container mx-auto px-4">
-          <Upload class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <Upload class="space-y-4" />
         </div>
       {:else}
-        <div class="container mx-auto px-4">
-          <Upload class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <Upload class="space-y-4" />
         </div>
       {/if}
     </div>
 
-    <div class="container mx-auto px-4">
-      <p class="container mx-auto px-4">
+    <div class="space-y-4">
+      <p class="space-y-4">
         {isDragOver ? 'Drop files here' : 'Drag and drop files here'}
       </p>
 
-      <p class="container mx-auto px-4">
-        or <span class="container mx-auto px-4">browse files</span>
+      <p class="space-y-4">
+        or <span class="space-y-4">browse files</span>
       </p>
 
       {#if accept !== '*/*'}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#each getAcceptedFileInfo() as { icon: Icon, label }}
-            <div class="container mx-auto px-4">
-              <Icon class="container mx-auto px-4" />
+            <div class="space-y-4">
+              <Icon class="space-y-4" />
               {label}
             </div>
           {/each}
         </div>
       {/if}
 
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         Max file size: {formatFileSize(maxSize)}
       </p>
     </div>
   </div>
 
   {#if errors.length > 0}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#each errors as error}
-        <div class="container mx-auto px-4">
-          <AlertCircle class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <AlertCircle class="space-y-4" />
           {error}
         </div>
       {/each}

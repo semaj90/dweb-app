@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    caseId: string ;
+  }
+  let {
+    caseId = ""
+  }: Props = $props();
+
+
+
   import { page } from "$app/stores";
   import { Button } from "$lib/components/ui/button";
   import Tooltip from "$lib/components/ui/Tooltip.svelte";
@@ -28,8 +37,7 @@
   import { onMount } from "svelte";
 
   // Props
-  export let caseId: string = "";
-
+  
   // State
   let evidenceFiles: any[] = [];
   let filteredFiles: any[] = [];
@@ -334,19 +342,19 @@
   <title>Evidence Files - Case {caseId}</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
     <div>
-      <h1 class="container mx-auto px-4">Evidence Files</h1>
-      <p class="container mx-auto px-4">
+      <h1 class="space-y-4">Evidence Files</h1>
+      <p class="space-y-4">
         Manage evidence files for Case {caseId}
       </p>
     </div>
 
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <Tooltip content="Refresh files">
         <Button
           variant="outline"
@@ -362,10 +370,10 @@
       <Tooltip content="Upload files">
         <Button
           on:click={() => (showUploadModal = true)}
-          class="container mx-auto px-4"
+          class="space-y-4"
           disabled={!caseId}
         >
-          <Upload class="container mx-auto px-4" />
+          <Upload class="space-y-4" />
           Upload Files
         </Button>
       </Tooltip>
@@ -373,17 +381,17 @@
   </div>
 
   <!-- Search and Filters -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <!-- Search -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Search
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
         <input
           type="text"
           placeholder="Search files by name, description..."
-          class="container mx-auto px-4"
+          class="space-y-4"
           bind:value={searchQuery}
           aria-label="Search evidence files"
         />
@@ -391,7 +399,7 @@
 
       <!-- Category Filter -->
       <select
-        class="container mx-auto px-4"
+        class="space-y-4"
         bind:value={selectedCategory}
         aria-label="Filter by category"
       >
@@ -409,18 +417,18 @@
           aria-label="Toggle view mode"
         >
           {#if viewMode === "grid"}
-            <List class="container mx-auto px-4" />
+            <List class="space-y-4" />
           {:else}
-            <Grid class="container mx-auto px-4" />
+            <Grid class="space-y-4" />
           {/if}
         </Button>
       </Tooltip>
     </div>
 
     <!-- Sort Options -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <select
-        class="container mx-auto px-4"
+        class="space-y-4"
         bind:value={sortBy}
         aria-label="Sort by"
       >
@@ -431,7 +439,7 @@
       </select>
 
       <select
-        class="container mx-auto px-4"
+        class="space-y-4"
         bind:value={sortOrder}
         aria-label="Sort order"
       >
@@ -443,16 +451,16 @@
 
   <!-- Bulk Actions -->
   {#if showBulkActions}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">{selectedFiles.size} file(s) selected</span>
-        <div class="container mx-auto px-4">
-          <Button variant="outline" size="sm" class="container mx-auto px-4">
-            <Download class="container mx-auto px-4" />
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <span class="space-y-4">{selectedFiles.size} file(s) selected</span>
+        <div class="space-y-4">
+          <Button variant="outline" size="sm" class="space-y-4">
+            <Download class="space-y-4" />
             Download
           </Button>
-          <Button variant="outline" size="sm" class="container mx-auto px-4">
-            <Trash2 class="container mx-auto px-4" />
+          <Button variant="outline" size="sm" class="space-y-4">
+            <Trash2 class="space-y-4" />
             Delete
           </Button>
           <Button
@@ -473,26 +481,26 @@
 
   <!-- Content -->
   {#if loading}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4"></div>
-      <span class="container mx-auto px-4">Loading evidence files...</span>
+    <div class="space-y-4">
+      <div class="space-y-4"></div>
+      <span class="space-y-4">Loading evidence files...</span>
     </div>
   {:else if error}
-    <div class="container mx-auto px-4" role="alert">
-      <AlertCircle class="container mx-auto px-4" />
+    <div class="space-y-4" role="alert">
+      <AlertCircle class="space-y-4" />
       <div>
-        <h3 class="container mx-auto px-4">Error Loading Files</h3>
-        <div class="container mx-auto px-4">{error}</div>
+        <h3 class="space-y-4">Error Loading Files</h3>
+        <div class="space-y-4">{error}</div>
       </div>
       <Button variant="outline" size="sm" on:click={() => loadEvidenceFiles()}>
-        <RefreshCw class="container mx-auto px-4" />
+        <RefreshCw class="space-y-4" />
         Retry
       </Button>
     </div>
   {:else if filteredFiles.length === 0}
     <!-- Drop Zone for Empty State -->
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       class:border-primary={dragActive}
       on:dragover={handleDragOver}
       on:dragleave={handleDragLeave}
@@ -501,13 +509,13 @@
       tabindex={0}
       aria-label="Drop files here to upload"
     >
-      <Upload class="container mx-auto px-4" />
-      <h3 class="container mx-auto px-4">
+      <Upload class="space-y-4" />
+      <h3 class="space-y-4">
         {searchQuery || selectedCategory
           ? "No matching files found"
           : "No evidence files yet"}
       </h3>
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         {searchQuery || selectedCategory
           ? "Try adjusting your search criteria"
           : "Drag and drop files here or click to upload"}
@@ -517,14 +525,14 @@
         <input
           type="file"
           multiple
-          class="container mx-auto px-4"
+          class="space-y-4"
           id="file-upload"
           on:change={handleFileSelect}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
         />
         <label for="file-upload">
-          <Button class="container mx-auto px-4">
-            <Plus class="container mx-auto px-4" />
+          <Button class="space-y-4">
+            <Plus class="space-y-4" />
             Choose Files
           </Button>
         </label>
@@ -532,8 +540,8 @@
     </div>
   {:else}
     <!-- Files Header -->
-    <div class="container mx-auto px-4">
-      <span class="container mx-auto px-4">
+    <div class="space-y-4">
+      <span class="space-y-4">
         {filteredFiles.length} file{filteredFiles.length !== 1 ? "s" : ""} found
       </span>
 
@@ -541,12 +549,12 @@
         variant="ghost"
         size="sm"
         on:click={() => selectAllFiles()}
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         {#if selectedFiles.size === filteredFiles.length}
-          <CheckSquare class="container mx-auto px-4" />
+          <CheckSquare class="space-y-4" />
         {:else}
-          <Square class="container mx-auto px-4" />
+          <Square class="space-y-4" />
         {/if}
         Select All
       </Button>
@@ -554,46 +562,46 @@
 
     <!-- Files Grid/List -->
     {#if viewMode === "grid"}
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#each filteredFiles as file}
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <!-- Selection and Actions -->
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <input
                   type="checkbox"
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   checked={selectedFiles.has(file.id)}
                   on:change={() => toggleFileSelection(file.id)}
                   aria-label="Select file {file.title || file.fileName}"
                 />
 
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <Button variant="ghost" size="sm" tabindex={0} role="button">
-                    <MoreHorizontal class="container mx-auto px-4" />
+                    <MoreHorizontal class="space-y-4" />
                   </Button>
                   <ul
                     tabindex={0}
                     role="menu"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     <li>
-                      <a href={getFileUrl(file)} target="_blank" class="container mx-auto px-4">
-                        <Eye class="container mx-auto px-4" />
+                      <a href={getFileUrl(file)} target="_blank" class="space-y-4">
+                        <Eye class="space-y-4" />
                         View
                       </a>
                     </li>
                     <li>
-                      <a href={getFileUrl(file)} download class="container mx-auto px-4">
-                        <Download class="container mx-auto px-4" />
+                      <a href={getFileUrl(file)} download class="space-y-4">
+                        <Download class="space-y-4" />
                         Download
                       </a>
                     </li>
                     <li>
-                      <button class="container mx-auto px-4">
-                        <Trash2 class="container mx-auto px-4" />
+                      <button class="space-y-4">
+                        <Trash2 class="space-y-4" />
                         Delete
                       </button>
                     </li>
@@ -602,36 +610,36 @@
               </div>
 
               <!-- File Preview/Icon -->
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {#if file.evidenceType === "image"}
                   <img
                     src={getFileUrl(file)}
                     alt={file.title || file.fileName}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     loading="lazy"
                   />
                 {:else}
                   {@const IconComponent = getFileIcon(file.evidenceType)}
-                  <IconComponent class="container mx-auto px-4" />
+                  <IconComponent class="space-y-4" />
                 {/if}
               </div>
 
               <!-- File Info -->
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <h3
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   title={file.title || file.fileName}
                 >
                   {file.title || file.fileName}
                 </h3>
 
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <div>Size: {formatFileSize(file.fileSize || 0)}</div>
                   <div>
                     Uploaded: {new Date(file.uploadedAt).toLocaleDateString()}
                   </div>
                   {#if file.description}
-                    <div class="container mx-auto px-4" title={file.description}>
+                    <div class="space-y-4" title={file.description}>
                       {file.description}
                     </div>
                   {/if}
@@ -643,43 +651,43 @@
       </div>
     {:else}
       <!-- List View -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#each filteredFiles as file}
           {@const IconComponent = getFileIcon(file.evidenceType)}
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <input
                 type="checkbox"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 checked={selectedFiles.has(file.id)}
                 on:change={() => toggleFileSelection(file.id)}
                 aria-label="Select file {file.title || file.fileName}"
               />
 
               <IconComponent
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
 
-              <div class="container mx-auto px-4">
-                <h3 class="container mx-auto px-4">
+              <div class="space-y-4">
+                <h3 class="space-y-4">
                   {file.title || file.fileName}
                 </h3>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <span>{formatFileSize(file.fileSize || 0)}</span>
                   <span>{new Date(file.uploadedAt).toLocaleDateString()}</span>
                   {#if file.description}
-                    <span class="container mx-auto px-4">{file.description}</span>
+                    <span class="space-y-4">{file.description}</span>
                   {/if}
                 </div>
               </div>
 
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <Tooltip content="View file">
                   <a href={getFileUrl(file)} target="_blank">
                     <Button variant="outline" size="sm">
-                      <Eye class="container mx-auto px-4" />
+                      <Eye class="space-y-4" />
                     </Button>
                   </a>
                 </Tooltip>
@@ -687,7 +695,7 @@
                 <Tooltip content="Download file">
                   <a href={getFileUrl(file)} download>
                     <Button variant="outline" size="sm">
-                      <Download class="container mx-auto px-4" />
+                      <Download class="space-y-4" />
                     </Button>
                   </a>
                 </Tooltip>
@@ -702,19 +710,19 @@
 
 <!-- Upload Modal -->
 {#if showUploadModal}
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">Upload Evidence File</h3>
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">Upload Evidence File</h3>
 
       {#if uploadFiles && uploadFiles.length > 0}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- File Info -->
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <File class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <File class="space-y-4" />
               <div>
-                <div class="container mx-auto px-4">{uploadFiles[0].name}</div>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">{uploadFiles[0].name}</div>
+                <div class="space-y-4">
                   {formatFileSize(uploadFiles[0].size)}
                 </div>
               </div>
@@ -722,13 +730,13 @@
           </div>
 
           <!-- Description -->
-          <div class="container mx-auto px-4">
-            <label class="container mx-auto px-4" for="upload-description">
-              <span class="container mx-auto px-4">Description</span>
+          <div class="space-y-4">
+            <label class="space-y-4" for="upload-description">
+              <span class="space-y-4">Description</span>
             </label>
             <textarea
               id="upload-description"
-              class="container mx-auto px-4"
+              class="space-y-4"
               placeholder="Describe this evidence file..."
               bind:value={uploadDescription}
               rows={4}
@@ -736,14 +744,14 @@
           </div>
 
           <!-- Tags -->
-          <div class="container mx-auto px-4">
-            <label class="container mx-auto px-4" for="upload-tags">
-              <span class="container mx-auto px-4">Tags</span>
+          <div class="space-y-4">
+            <label class="space-y-4" for="upload-tags">
+              <span class="space-y-4">Tags</span>
             </label>
             <input
               id="upload-tags"
               type="text"
-              class="container mx-auto px-4"
+              class="space-y-4"
               placeholder="crime-scene, photograph, evidence (comma-separated)"
               bind:value={uploadTags}
             />
@@ -751,13 +759,13 @@
 
           <!-- Upload Progress -->
           {#if uploading}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
+            <div class="space-y-4">
+              <div class="space-y-4">
                 <span>Uploading...</span>
                 <span>{uploadProgress}%</span>
               </div>
               <progress
-                class="container mx-auto px-4"
+                class="space-y-4"
                 value={uploadProgress}
                 max="100"
               ></progress>
@@ -766,7 +774,7 @@
         </div>
       {/if}
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Button
           variant="outline"
           on:click={() => {
@@ -782,13 +790,13 @@
         <Button
           on:click={() => uploadSingleFile()}
           disabled={uploading || !uploadFiles}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           {#if uploading}
-            <div class="container mx-auto px-4"></div>
+            <div class="space-y-4"></div>
             Uploading...
           {:else}
-            <Upload class="container mx-auto px-4" />
+            <Upload class="space-y-4" />
             Upload File
           {/if}
         </Button>
@@ -801,7 +809,7 @@
 <input
   type="file"
   multiple
-  class="container mx-auto px-4"
+  class="space-y-4"
   id="bulk-upload"
   on:change={handleFileSelect}
   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"

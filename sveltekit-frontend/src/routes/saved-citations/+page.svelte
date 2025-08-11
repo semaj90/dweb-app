@@ -184,65 +184,65 @@
   <title>Saved Citations - Legal AI Assistant</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h1 class="container mx-auto px-4">Saved Citations</h1>
-        <p class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <h1 class="space-y-4">Saved Citations</h1>
+        <p class="space-y-4">
           Manage your collection of legal citations and references
         </p>
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">{totalCitations}</span>
-          <span class="container mx-auto px-4">Total</span>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <span class="space-y-4">{totalCitations}</span>
+          <span class="space-y-4">Total</span>
         </div>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">{favoriteCitations}</span>
-          <span class="container mx-auto px-4">Favorites</span>
+        <div class="space-y-4">
+          <span class="space-y-4">{favoriteCitations}</span>
+          <span class="space-y-4">Favorites</span>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Toolbar -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Search class="container mx-auto px-4" />
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <Search class="space-y-4" />
         <Input
           type="text"
           placeholder="Search citations..."
           bind:value={searchQuery}
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
       </div>
 
-      <select bind:value={selectedCategory} class="container mx-auto px-4">
+      <select bind:value={selectedCategory} class="space-y-4">
         {#each categories as category}
           <option value={category.value}>{category.label}</option>
         {/each}
       </select>
     </div>
 
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <Button on:click={() => (showAddDialog = true)}>
-        <Plus class="container mx-auto px-4" />
+        <Plus class="space-y-4" />
         Add Citation
       </Button>
     </div>
   </div>
 
   <!-- Citations Grid -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     {#each filteredCitations as citation (citation.id)}
       <CardRoot class="citation-card">
         <CardHeader className="citation-header">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">{citation.title}</h3>
+          <div class="space-y-4">
+            <h3 class="space-y-4">{citation.title}</h3>
 
             <DropdownMenuRoot let:trigger let:menu>
               <DropdownMenuTrigger {trigger}>
@@ -277,13 +277,13 @@
             </DropdownMenuRoot>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <Badge variant="secondary" class="mr-2">
               {citation.category}
             </Badge>
             {#if citation.isFavorite}
               <Badge variant="secondary" class="mr-2">
-                <Star class="container mx-auto px-4" />
+                <Star class="space-y-4" />
                 Favorite
               </Badge>
             {/if}
@@ -291,17 +291,17 @@
         </CardHeader>
 
         <CardContent className="citation-content">
-          <p class="container mx-auto px-4">{citation.content}</p>
-          <p class="container mx-auto px-4">Source: {citation.source}</p>
+          <p class="space-y-4">{citation.content}</p>
+          <p class="space-y-4">Source: {citation.source}</p>
 
           {#if citation.notes}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <p>{citation.notes}</p>
             </div>
           {/if}
 
           {#if citation.tags.length > 0}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each citation.tags as tag}
                 <Badge variant="secondary" class="mr-2">
                   <Tag class="w-3 h-3 mr-1" />
@@ -311,8 +311,8 @@
             </div>
           {/if}
 
-          <div class="container mx-auto px-4">
-            <span class="container mx-auto px-4">
+          <div class="space-y-4">
+            <span class="space-y-4">
               Saved {new Date(citation.savedAt).toLocaleDateString()}
             </span>
 
@@ -327,11 +327,11 @@
     {/each}
 
     {#if filteredCitations.length === 0}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           {#if searchQuery || selectedCategory !== "all"}
-            <h3 class="container mx-auto px-4">No citations found</h3>
-            <p class="container mx-auto px-4">
+            <h3 class="space-y-4">No citations found</h3>
+            <p class="space-y-4">
               No citations match your current search criteria.
             </p>
             <Button
@@ -344,13 +344,13 @@
               Clear filters
             </Button>
           {:else}
-            <h3 class="container mx-auto px-4">No saved citations</h3>
-            <p class="container mx-auto px-4">
+            <h3 class="space-y-4">No saved citations</h3>
+            <p class="space-y-4">
               You haven't saved any citations yet. Start by adding citations
               from reports or create new ones.
             </p>
             <Button on:click={() => (showAddDialog = true)}>
-              <Plus class="container mx-auto px-4" />
+              <Plus class="space-y-4" />
               Add your first citation
             </Button>
           {/if}
@@ -375,8 +375,8 @@
       />
     </DialogHeader>
 
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <label for="title">Title</label>
         <Input
           id="title"
@@ -385,7 +385,7 @@
         />
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="content">Content</label>
         <textarea
           id="content"
@@ -395,7 +395,7 @@
         ></textarea>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="source">Source</label>
         <Input
           id="source"
@@ -404,8 +404,8 @@
         />
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <label for="category">Category</label>
           <select id="category" bind:value={newCitation.category}>
             {#each categories.slice(1) as category}
@@ -414,7 +414,7 @@
           </select>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="tags">Tags</label>
           <Input
             id="tags"
@@ -424,7 +424,7 @@
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="notes">Notes (optional)</label>
         <textarea
           id="notes"
@@ -462,13 +462,13 @@
         <DialogTitle title="Edit Citation" />
       </DialogHeader>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <label for="edit-title">Title</label>
           <Input id="edit-title" bind:value={editingCitation.title} />
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="edit-content">Content</label>
           <textarea
             id="edit-content"
@@ -477,13 +477,13 @@
           ></textarea>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="edit-source">Source</label>
           <Input id="edit-source" bind:value={editingCitation.source} />
         </div>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <label for="edit-category">Category</label>
             <select id="edit-category" bind:value={editingCitation.category}>
               {#each categories.slice(1) as category}
@@ -492,13 +492,13 @@
             </select>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <label for="edit-tags">Tags</label>
             <Input id="edit-tags" bind:value={editingCitation.tags} />
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="edit-notes">Notes</label>
           <textarea id="edit-notes" bind:value={editingCitation.notes} rows="4"
           ></textarea>

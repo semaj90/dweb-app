@@ -1,15 +1,30 @@
 <script lang="ts">
+  interface Props {
+    value: string ;
+    placeholder: string ;
+    disabled: boolean ;
+    readonly: boolean ;
+    rows: number ;
+    cols: number | undefined ;
+    maxlength: number | undefined ;
+    resize: "none" | "both" | "horizontal" | "vertical" ;
+  }
+  let {
+    value = "",
+    placeholder = "",
+    disabled = false,
+    readonly = false,
+    rows = 3,
+    cols = undefined,
+    maxlength = undefined,
+    resize = "vertical"
+  }: Props = $props();
+
+
+
   import { cn } from "../../../utils";
 
-  export let value: string = "";
-  export let placeholder: string = "";
-  export let disabled: boolean = false;
-  export let readonly: boolean = false;
-  export let rows: number = 3;
-  export let cols: number | undefined = undefined;
-  export let maxlength: number | undefined = undefined;
-  export let resize: "none" | "both" | "horizontal" | "vertical" = "vertical";
-
+                
   let className: string = "";
   export { className as class };
 </script>

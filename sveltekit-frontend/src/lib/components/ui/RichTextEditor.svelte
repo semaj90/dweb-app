@@ -1,4 +1,23 @@
 <script lang="ts">
+  interface Props {
+    content?: any;
+    placeholder?: any;
+    editable?: any;
+    showToolbar?: any;
+    autoSave?: any;
+    autoSaveDelay?: any;
+  }
+  let {
+    content = "",
+    placeholder = "Start writing your note...",
+    editable = true,
+    showToolbar = true,
+    autoSave = false,
+    autoSaveDelay = 2000
+  }: Props = $props();
+
+
+
   import { Editor } from "@tiptap/core";
   import Image from "@tiptap/extension-image";
   import Placeholder from "@tiptap/extension-placeholder";
@@ -18,13 +37,7 @@
     change: { html: string; markdown: string; json: any };
   }>();
 
-  export let content = "";
-  export let placeholder = "Start writing your note...";
-  export let editable = true;
-  export let showToolbar = true;
-  export let autoSave = false;
-  export let autoSaveDelay = 2000;
-
+            
   let element: HTMLElement;
   let editor: Editor;
   let isReady = false;
@@ -200,11 +213,11 @@
 
 {#if showToolbar && editable}
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
     <!-- Heading Dropdown -->
     <select
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:change={(e) =>
         setHeading(parseInt((e.target as HTMLInputElement).value))}
     >
@@ -214,70 +227,70 @@
       <option value="3">Heading 3</option>
     </select>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Text Formatting -->
     <button
       type="button"
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:click={() => toggleBold()}
       title="Bold"
     >
-      <Bold class="container mx-auto px-4" />
+      <Bold class="space-y-4" />
     </button>
 
     <button
       type="button"
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:click={() => toggleItalic()}
       title="Italic"
     >
-      <Italic class="container mx-auto px-4" />
+      <Italic class="space-y-4" />
     </button>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Lists -->
     <button
       type="button"
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:click={() => toggleBulletList()}
       title="Bullet List"
     >
-      <List class="container mx-auto px-4" />
+      <List class="space-y-4" />
     </button>
 
     <button
       type="button"
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:click={() => toggleOrderedList()}
       title="Numbered List"
     >
-      <ListOrdered class="container mx-auto px-4" />
+      <ListOrdered class="space-y-4" />
     </button>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Image -->
     <button
       type="button"
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:click={() => addImage()}
       title="Add Image"
     >
-      <ImageIcon class="container mx-auto px-4" />
+      <ImageIcon class="space-y-4" />
     </button>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Save Button -->
     <button
       type="button"
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:click={() => saveContent()}
       title="Save Content"
     >
-      <Save class="container mx-auto px-4" />
+      <Save class="space-y-4" />
       Save
     </button>
   </div>
@@ -285,7 +298,7 @@
 
 <div
   bind:this={element}
-  class="container mx-auto px-4"
+  class="space-y-4"
 ></div>
 
 <style>

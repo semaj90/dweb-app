@@ -1,5 +1,18 @@
 <!-- Real-time Evidence Grid with WebSocket and local sync -->
 <script lang="ts">
+  interface Props {
+    caseId: string | undefined ;
+    searchQuery: string ;
+    selectedTypes: string[] ;
+  }
+  let {
+    caseId = undefined,
+    searchQuery = "",
+    selectedTypes = []
+  }: Props = $props();
+
+
+
   import type { Evidence } from '$lib/types';
   import Button from "$lib/components/ui/button";
   import { evidenceStore } from "$lib/stores/evidenceStore";
@@ -29,10 +42,7 @@
   import { onMount } from "svelte";
 
   // Props
-  export let caseId: string | undefined = undefined;
-  export let searchQuery: string = "";
-  export let selectedTypes: string[] = [];
-  export const showAdvancedFilters: boolean = false;
+        export const showAdvancedFilters: boolean = false;
 
   // Store subscriptions
   let evidence: Evidence[] = [];
@@ -290,46 +300,46 @@
 
 <!-- Connection Status Bar -->
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
 >
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Connection Status -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#if connectionStatus === "connected"}
-        <Wifi class="container mx-auto px-4" />
-        <span class="container mx-auto px-4">Connected</span>
+        <Wifi class="space-y-4" />
+        <span class="space-y-4">Connected</span>
       {:else}
-        <WifiOff class="container mx-auto px-4" />
-        <span class="container mx-auto px-4">Offline</span>
+        <WifiOff class="space-y-4" />
+        <span class="space-y-4">Offline</span>
       {/if}
     </div>
 
     <!-- Sync Status -->
     {#if syncStatus.pending > 0}
-      <div class="container mx-auto px-4">
-        <RefreshCw class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <RefreshCw class="space-y-4" />
         <span>Syncing ({syncStatus.pending} pending)</span>
       </div>
     {/if}
 
     {#if syncStatus.failed > 0}
-      <span class="container mx-auto px-4">{syncStatus.failed} failed</span>
+      <span class="space-y-4">{syncStatus.failed} failed</span>
     {/if}
 
     <!-- Stats -->
-    <span class="container mx-auto px-4">Total: {filteredEvidence.length}</span>
+    <span class="space-y-4">Total: {filteredEvidence.length}</span>
 
     {#if selectedEvidence.size > 0}
-      <span class="container mx-auto px-4">Selected: {selectedEvidence.size}</span>
+      <span class="space-y-4">Selected: {selectedEvidence.size}</span>
     {/if}
 
     {#if lastUpdateTime}
-      <span class="container mx-auto px-4">Updated: {formatDate(lastUpdateTime)}</span>
+      <span class="space-y-4">Updated: {formatDate(lastUpdateTime)}</span>
     {/if}
   </div>
 
   <!-- Action Buttons -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <Button
       variant="ghost"
       size="sm"
@@ -337,7 +347,7 @@
       disabled={!evidenceStore.canUndo()}
       title="Undo (Ctrl+Z)"
     >
-      <Undo2 class="container mx-auto px-4" />
+      <Undo2 class="space-y-4" />
     </Button>
 
     <Button
@@ -347,7 +357,7 @@
       disabled={!evidenceStore.canRedo()}
       title="Redo (Ctrl+Y)"
     >
-      <Redo2 class="container mx-auto px-4" />
+      <Redo2 class="space-y-4" />
     </Button>
 
     <Button
@@ -357,24 +367,24 @@
       disabled={isLoading}
       title="Sync with server"
     >
-      <RefreshCw class="container mx-auto px-4" />
+      <RefreshCw class="space-y-4" />
     </Button>
   </div>
 </div>
 
 <!-- Error Banner -->
 {#if error}
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <p class="container mx-auto px-4">{error}</p>
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <p class="space-y-4">{error}</p>
       </div>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => (error = null)}
         >
-          <span class="container mx-auto px-4">Dismiss</span>
+          <span class="space-y-4">Dismiss</span>
           ✕
         </button>
       </div>
@@ -383,20 +393,20 @@
 {/if}
 
 <!-- Toolbar -->
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <!-- Left: Search and Filters -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Search -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Search
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
         <input
           type="text"
           placeholder="Search evidence..."
           bind:value={searchQuery}
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
       </div>
 
@@ -404,7 +414,7 @@
       <select
         multiple
         bind:value={selectedTypes}
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         <option value="">All Types</option>
         <option value="document">Documents</option>
@@ -417,10 +427,10 @@
       </select>
 
       <!-- Sort -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <select
           bind:value={sortBy}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           <option value="date">Date</option>
           <option value="title">Title</option>
@@ -434,16 +444,16 @@
           on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
         >
           {#if sortOrder === "asc"}
-            <SortAsc class="container mx-auto px-4" />
+            <SortAsc class="space-y-4" />
           {:else}
-            <SortDesc class="container mx-auto px-4" />
+            <SortDesc class="space-y-4" />
           {/if}
         </Button>
       </div>
     </div>
 
     <!-- Right: View and Actions -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- View Mode Toggle -->
       <Button
         variant="ghost"
@@ -451,9 +461,9 @@
         on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
       >
         {#if viewMode === "grid"}
-          <List class="container mx-auto px-4" />
+          <List class="space-y-4" />
         {:else}
-          <Grid class="container mx-auto px-4" />
+          <Grid class="space-y-4" />
         {/if}
       </Button>
 
@@ -472,7 +482,7 @@
             }
           }
         >
-          <Trash2 class="container mx-auto px-4" />
+          <Trash2 class="space-y-4" />
           Delete
         </Button>
       {:else}
@@ -483,7 +493,7 @@
 
       <!-- Add Evidence -->
       <Button on:click={() => createEvidence()}>
-        <span class="container mx-auto px-4">+</span>
+        <span class="space-y-4">+</span>
         Add Evidence
       </Button>
     </div>
@@ -491,24 +501,24 @@
 </div>
 
 <!-- Content Area -->
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   {#if isLoading && evidence.length === 0}
     <!-- Loading State -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <RefreshCw class="container mx-auto px-4" />
-        <p class="container mx-auto px-4">Loading evidence...</p>
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <RefreshCw class="space-y-4" />
+        <p class="space-y-4">Loading evidence...</p>
       </div>
     </div>
   {:else if paginatedEvidence.length === 0}
     <!-- Empty State -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Archive class="container mx-auto px-4" />
-        <h3 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <Archive class="space-y-4" />
+        <h3 class="space-y-4">
           No Evidence Found
         </h3>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           {filteredEvidence.length === 0 && evidence.length > 0
             ? "No evidence matches your current filters."
             : "No evidence has been added yet."}
@@ -520,31 +530,31 @@
     <!-- Evidence Grid/List -->
     {#if viewMode === "grid"}
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         {#each paginatedEvidence as item (item.id)}
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             <!-- Header -->
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
+            <div class="space-y-4">
+              <div class="space-y-4">
                 <input
                   type="checkbox"
                   checked={selectedEvidence.has(item.id)}
                   on:change={() => toggleSelection(item.id)}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
                 <svelte:component
                   this={getTypeIcon(item.type)}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
               </div>
 
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {#if item.classification?.relevance !== undefined}
                   <span
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {Math.round(item.classification.relevance * 100)}%
                   </span>
@@ -555,7 +565,7 @@
                   size="sm"
                   on:click={() => (editingEvidence = item.id)}
                 >
-                  <Eye class="container mx-auto px-4" />
+                  <Eye class="space-y-4" />
                 </Button>
 
                 <Button
@@ -563,26 +573,26 @@
                   size="sm"
                   on:click={() => deleteEvidence(item.id)}
                 >
-                  <Trash2 class="container mx-auto px-4" />
+                  <Trash2 class="space-y-4" />
                 </Button>
               </div>
             </div>
 
             <!-- Content -->
             {#if editingEvidence === item.id}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <input
                   type="text"
                   bind:value={item.title}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   placeholder="Evidence title"
                 />
                 <textarea
                   bind:value={item.description}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   placeholder="Description"
                 ></textarea>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <Button
                     size="sm"
                     on:click={() =>
@@ -603,25 +613,25 @@
                 </div>
               </div>
             {:else}
-              <h3 class="container mx-auto px-4">
+              <h3 class="space-y-4">
                 {item.title}
               </h3>
 
               {#if item.description}
-                <p class="container mx-auto px-4">
+                <p class="space-y-4">
                   {item.description}
                 </p>
               {/if}
 
               <!-- Metadata -->
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <Tag class="container mx-auto px-4" />
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <Tag class="space-y-4" />
                   <span>{item.type}</span>
                 </div>
                 {#if item.timeline?.createdAt}
-                  <div class="container mx-auto px-4">
-                    <Calendar class="container mx-auto px-4" />
+                  <div class="space-y-4">
+                    <Calendar class="space-y-4" />
                     <span>{formatDate(item.timeline.createdAt)}</span>
                   </div>
                 {/if}
@@ -629,10 +639,10 @@
 
               <!-- Tags -->
               {#if item.tags?.length}
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {#each item.tags as tag}
                     <span
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                       >{tag}</span
                     >
                   {/each}
@@ -644,12 +654,12 @@
       </div>
     {:else}
       <!-- List View -->
-      <div class="container mx-auto px-4">
-        <table class="container mx-auto px-4">
-          <thead class="container mx-auto px-4">
+      <div class="space-y-4">
+        <table class="space-y-4">
+          <thead class="space-y-4">
             <tr>
               <th
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 <input
                   type="checkbox"
@@ -657,97 +667,97 @@
                     (e.target as HTMLInputElement).checked
                       ? selectAll()
                       : clearSelection()}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
               </th>
               <th
-                class="container mx-auto px-4"
+                class="space-y-4"
                 >Evidence</th
               >
               <th
-                class="container mx-auto px-4"
+                class="space-y-4"
                 >Type</th
               >
               <th
-                class="container mx-auto px-4"
+                class="space-y-4"
                 >Date</th
               >
               <th
-                class="container mx-auto px-4"
+                class="space-y-4"
                 >Relevance</th
               >
-              <th class="container mx-auto px-4"
-                ><span class="container mx-auto px-4">Actions</span></th
+              <th class="space-y-4"
+                ><span class="space-y-4">Actions</span></th
               >
             </tr>
           </thead>
-          <tbody class="container mx-auto px-4">
+          <tbody class="space-y-4">
             {#each paginatedEvidence as item (item.id)}
               <tr
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
-                <td class="container mx-auto px-4">
+                <td class="space-y-4">
                   <input
                     type="checkbox"
                     checked={selectedEvidence.has(item.id)}
                     on:change={() => toggleSelection(item.id)}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   />
                 </td>
-                <td class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <td class="space-y-4">
+                  <div class="space-y-4">
                     <svelte:component
                       this={getTypeIcon(item.type)}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
                     <div>
-                      <div class="container mx-auto px-4">
+                      <div class="space-y-4">
                         {item.title}
                       </div>
                       {#if item.description}
-                        <div class="container mx-auto px-4">
+                        <div class="space-y-4">
                           {item.description}
                         </div>
                       {/if}
                     </div>
                   </div>
                 </td>
-                <td class="container mx-auto px-4"
+                <td class="space-y-4"
                   >{item.type}</td
                 >
-                <td class="container mx-auto px-4">
+                <td class="space-y-4">
                   {item.timeline?.createdAt
                     ? formatDate(item.timeline.createdAt)
                     : "-"}
                 </td>
-                <td class="container mx-auto px-4">
+                <td class="space-y-4">
                   {#if item.classification?.relevance !== undefined}
                     <span
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       {Math.round(item.classification.relevance * 100)}%
                     </span>
                   {:else}
-                    <span class="container mx-auto px-4">-</span>
+                    <span class="space-y-4">-</span>
                   {/if}
                 </td>
                 <td
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <Button
                       variant="ghost"
                       size="sm"
                       on:click={() => (editingEvidence = item.id)}
                     >
-                      <Eye class="container mx-auto px-4" />
+                      <Eye class="space-y-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       on:click={() => deleteEvidence(item.id)}
                     >
-                      <Trash2 class="container mx-auto px-4" />
+                      <Trash2 class="space-y-4" />
                     </Button>
                   </div>
                 </td>
@@ -760,15 +770,15 @@
 
     <!-- Pagination -->
     {#if totalPages > 1}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           Showing {currentPage * pageSize + 1} to {Math.min(
             (currentPage + 1) * pageSize,
             filteredEvidence.length
           )} of {filteredEvidence.length} results
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <Button
             variant="outline"
             size="sm"
@@ -778,7 +788,7 @@
             Previous
           </Button>
 
-          <span class="container mx-auto px-4">
+          <span class="space-y-4">
             Page {currentPage + 1} of {totalPages}
           </span>
 

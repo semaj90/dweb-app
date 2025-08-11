@@ -125,7 +125,7 @@
   <meta name="description" content="Professional legal report editor with rich text editing, evidence management, and advanced search capabilities." />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <ReportEditor />
 </div>
 

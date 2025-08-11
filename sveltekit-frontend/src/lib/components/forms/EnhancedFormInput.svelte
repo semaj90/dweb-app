@@ -3,6 +3,55 @@
   Demonstrates the validation utilities in practice
 -->
 <script lang="ts">
+  interface Props {
+    name: string;;
+    label: string;;
+    type: | "text";
+    value: string ;
+    placeholder: string ;
+    required: boolean ;
+    disabled: boolean ;
+    readonly: boolean ;
+    autocomplete: string ;
+    maxlength: number | undefined ;
+    minlength: number | undefined ;
+    pattern: string | undefined ;
+    step: string | undefined ;
+    min: string | undefined ;
+    max: string | undefined ;
+    rows: number ;
+    validator: FormValidator | null ;
+    config: FormFieldConfig | null ;
+    helpText: string ;
+    showValidation: boolean ;
+    showPasswordToggle: boolean ;
+  }
+  let {
+    name,
+    label,
+    type,
+    value = "",
+    placeholder = "",
+    required = false,
+    disabled = false,
+    readonly = false,
+    autocomplete = "",
+    maxlength = undefined,
+    minlength = undefined,
+    pattern = undefined,
+    step = undefined,
+    min = undefined,
+    max = undefined,
+    rows = 3,
+    validator = null,
+    config = null,
+    helpText = "",
+    showValidation = true,
+    showPasswordToggle = true
+  }: Props = $props();
+
+
+
   import {
     FormValidator,
     type FormFieldConfig,
@@ -11,36 +60,14 @@
   import { AlertCircle, CheckCircle, Eye, EyeOff, Info } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let name: string;
-  export let label: string;
-  export let type:
-    | "text"
-    | "email"
+          | "email"
     | "password"
     | "url"
     | "tel"
     | "number"
     | "date"
     | "textarea" = "text";
-  export let value: string = "";
-  export let placeholder: string = "";
-  export let required: boolean = false;
-  export let disabled: boolean = false;
-  export let readonly: boolean = false;
-  export let autocomplete: string = "";
-  export let maxlength: number | undefined = undefined;
-  export let minlength: number | undefined = undefined;
-  export let pattern: string | undefined = undefined;
-  export let step: string | undefined = undefined;
-  export let min: string | undefined = undefined;
-  export let max: string | undefined = undefined;
-  export let rows: number = 3;
-  export let validator: FormValidator | null = null;
-  export let config: FormFieldConfig | null = null;
-  export let helpText: string = "";
-  export let showValidation: boolean = true;
-  export let showPasswordToggle: boolean = true;
-
+                                    
   const dispatch = createEventDispatcher<{
     input: { value: string; validation: ValidationResult };
     change: { value: string; validation: ValidationResult };
@@ -141,24 +168,24 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Label -->
-  <label for={name} class="container mx-auto px-4">
-    <span class="container mx-auto px-4">
+  <label for={name} class="space-y-4">
+    <span class="space-y-4">
       {label}
       {#if required}
-        <span class="container mx-auto px-4" aria-label="required">*</span>
+        <span class="space-y-4" aria-label="required">*</span>
       {/if}
     </span>
     {#if helpText}
-      <span class="container mx-auto px-4" data-tip={helpText}>
-        <Info class="container mx-auto px-4" />
+      <span class="space-y-4" data-tip={helpText}>
+        <Info class="space-y-4" />
       </span>
     {/if}
   </label>
 
   <!-- Input Field -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     {#if type === "textarea"}
       <textarea
         bind:this={inputElement}
@@ -173,7 +200,7 @@
         {maxlength}
         {minlength}
         {rows}
-        class="container mx-auto px-4"
+        class="space-y-4"
         class:textarea-error={showErrorState}
         class:textarea-success={showSuccessState}
         class:textarea-disabled={disabled}
@@ -202,7 +229,7 @@
         {step}
         {min}
         {max}
-        class="container mx-auto px-4"
+        class="space-y-4"
         class:input-error={showErrorState}
         class:input-success={showSuccessState}
         class:input-disabled={disabled}
@@ -219,15 +246,15 @@
       {#if type === "password" && showPasswordToggle}
         <button
           type="button"
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => togglePasswordVisibility()}
           aria-label={showPassword ? "Hide password" : "Show password"}
           tabindex={-1}
         >
           {#if showPassword}
-            <EyeOff class="container mx-auto px-4" />
+            <EyeOff class="space-y-4" />
           {:else}
-            <Eye class="container mx-auto px-4" />
+            <Eye class="space-y-4" />
           {/if}
         </button>
       {/if}
@@ -235,12 +262,12 @@
       <!-- Validation Icons -->
       {#if showValidation}
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           {#if showErrorState}
-            <AlertCircle class="container mx-auto px-4" />
+            <AlertCircle class="space-y-4" />
           {:else if showSuccessState}
-            <CheckCircle class="container mx-auto px-4" />
+            <CheckCircle class="space-y-4" />
           {/if}
         </div>
       {/if}
@@ -248,29 +275,29 @@
   </div>
 
   <!-- Help Text and Validation Messages -->
-  <div class="container mx-auto px-4">
-    <span class="container mx-auto px-4" id="{name}-help">
+  <div class="space-y-4">
+    <span class="space-y-4" id="{name}-help">
       {#if showErrorState}
         <span
-          class="container mx-auto px-4"
+          class="space-y-4"
           id="{name}-error"
           role="alert"
         >
-          <AlertCircle class="container mx-auto px-4" />
+          <AlertCircle class="space-y-4" />
           {errors[0]}
         </span>
       {:else if hasWarnings && showValidation}
-        <span class="container mx-auto px-4">
-          <Info class="container mx-auto px-4" />
+        <span class="space-y-4">
+          <Info class="space-y-4" />
           {warnings[0]}
         </span>
       {:else if helpText && !isDirty}
-        <span class="container mx-auto px-4">{helpText}</span>
+        <span class="space-y-4">{helpText}</span>
       {/if}
     </span>
 
     {#if maxlength}
-      <span class="container mx-auto px-4">
+      <span class="space-y-4">
         <span
           class:text-warning={value.length > maxlength * 0.8}
           class:text-error={value.length >= maxlength}
@@ -283,10 +310,10 @@
 
   <!-- All Error Messages (for screen readers) -->
   {#if showValidation && errors.length > 1}
-    <ul class="container mx-auto px-4" role="alert">
+    <ul class="space-y-4" role="alert">
       {#each errors.slice(1) as error}
-        <li class="container mx-auto px-4">
-          <AlertCircle class="container mx-auto px-4" />
+        <li class="space-y-4">
+          <AlertCircle class="space-y-4" />
           {error}
         </li>
       {/each}
@@ -295,10 +322,10 @@
 
   <!-- All Warning Messages -->
   {#if showValidation && warnings.length > 0 && !hasErrors}
-    <ul class="container mx-auto px-4">
+    <ul class="space-y-4">
       {#each warnings as warning}
-        <li class="container mx-auto px-4">
-          <Info class="container mx-auto px-4" />
+        <li class="space-y-4">
+          <Info class="space-y-4" />
           {warning}
         </li>
       {/each}

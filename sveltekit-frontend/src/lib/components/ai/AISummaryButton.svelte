@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  let summary = "";
-  let loading = false;
-  const dispatch = createEventDispatcher();
+  interface Props {
+    onsummary?: (event?: any) => void;
+  }
 
+
+    let summary = "";
+  let loading = false;
+  
   async function getSummary(text: string) {
     loading = true;
     const res = await fetch("/api/ai/ollama-gemma3", {
@@ -14,12 +17,12 @@
     const data = await res.json();
     summary = data.response;
     loading = false;
-    dispatch("summary", { summary });
+    onsummary?.();
 }
 </script>
 
 <button
-  class="container mx-auto px-4"
+  class="space-y-4"
   on:click={() => getSummary($$props.text)}
   disabled={loading}
 >
@@ -31,8 +34,8 @@
 </button>
 
 {#if summary}
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">AI Summary</div>
+  <div class="space-y-4">
+    <div class="space-y-4">AI Summary</div>
     <div>{summary}</div>
   </div>
 {/if}

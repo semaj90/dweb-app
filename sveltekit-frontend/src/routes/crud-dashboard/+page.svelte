@@ -2,8 +2,8 @@
   import CRUDDashboard from "$lib/components/CRUDDashboard.svelte";
 </script>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <h1>Complete CRUD Dashboard</h1>
     <p>
       Comprehensive view of all database operations and entities working in

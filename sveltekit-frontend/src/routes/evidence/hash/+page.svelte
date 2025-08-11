@@ -75,71 +75,71 @@
   <title>Evidence Hash Verification - Legal Case Management</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <h1 class="container mx-auto px-4">🔐 Evidence Hash Verification</h1>
-    <p class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
+    <h1 class="space-y-4">🔐 Evidence Hash Verification</h1>
+    <p class="space-y-4">
       Verify file integrity and search for evidence using SHA256 hashes
     </p>
   </div>
 
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h2 class="container mx-auto px-4">Hash Search & Verification</h2>
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <h2 class="space-y-4">Hash Search & Verification</h2>
       
-      <div class="container mx-auto px-4">
-        <label for="hash-input" class="container mx-auto px-4">
+      <div class="space-y-4">
+        <label for="hash-input" class="space-y-4">
           SHA256 Hash (64 characters)
         </label>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <input
             id="hash-input"
             type="text"
             bind:value={hashInput}
             placeholder="Enter SHA256 hash..."
-            class="container mx-auto px-4"
+            class="space-y-4"
             maxlength="64"
           />
           <button 
             on:click={() => searchByHash()} 
             disabled={loading || !hashInput}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             {loading ? 'Searching...' : 'Search'}
           </button>
         </div>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           Example: 81d9c48f998f9025eb8f72e28a6c4f921ed407dd75891a9e9a8778c9ad5711bd
         </p>
       </div>
 
       {#if error}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <strong>Error:</strong> {error}
         </div>
       {/if}
 
       {#if searchResult}
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">Search Results</h3>
+        <div class="space-y-4">
+          <h3 class="space-y-4">Search Results</h3>
           
           {#if searchResult.found}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <strong>✅ {searchResult.message}</strong>
             </div>
             
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each searchResult.evidence as item}
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
-                      <h4 class="container mx-auto px-4">{item.title}</h4>
-                      <span class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      <h4 class="space-y-4">{item.title}</h4>
+                      <span class="space-y-4">
                         ID: {item.id}
                       </span>
                     </div>
                     
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <div>
                         <p><strong>File:</strong> {item.fileName || 'N/A'}</p>
                         <p><strong>Size:</strong> {item.fileSize ? (item.fileSize / 1024).toFixed(1) + ' KB' : 'N/A'}</p>
@@ -152,11 +152,11 @@
                       </div>
                     </div>
                     
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <strong>Hash:</strong> {item.hash}
                       <button 
                         on:click={() => copyToClipboard(item.hash)}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                         title="Copy hash"
                       >
                         📋
@@ -164,14 +164,14 @@
                     </div>
                     
                     {#if item.description}
-                      <p class="container mx-auto px-4">{item.description}</p>
+                      <p class="space-y-4">{item.description}</p>
                     {/if}
                     
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <button 
                         on:click={() => verifyIntegrity(item.id)}
                         disabled={loading}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         Verify Integrity
                       </button>
@@ -180,7 +180,7 @@
                         <a 
                           href={item.fileUrl}
                           target="_blank"
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                         >
                           View File
                         </a>
@@ -191,7 +191,7 @@
               {/each}
             </div>
           {:else}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <strong>⚠️ {searchResult.message}</strong>
             </div>
           {/if}
@@ -200,11 +200,11 @@
     </div>
   </div>
 
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h2 class="container mx-auto px-4">About Hash Verification</h2>
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <h2 class="space-y-4">About Hash Verification</h2>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <p>
           This tool allows you to search for evidence files by their SHA256 hash and verify file integrity.
         </p>
@@ -224,8 +224,8 @@
           <li>Cross-reference files across different cases</li>
         </ul>
         
-        <div class="container mx-auto px-4">
-          <p class="container mx-auto px-4">
+        <div class="space-y-4">
+          <p class="space-y-4">
             <strong>Security Note:</strong> SHA256 hashes provide cryptographic assurance that files have not been altered.
             Each file has a unique hash that changes if even a single byte is modified.
           </p>

@@ -1,9 +1,17 @@
 <script lang="ts">
+  interface Props {
+    showDetails?: any;
+  }
+  let {
+    showDetails = false
+  }: Props = $props();
+
+
+
   import { onMount, onDestroy } from 'svelte';
   import { memoryMonitoring } from '$lib/services/memory-monitoring.service';
   
-  export let showDetails = false;
-  
+    
   let memoryData = {
     currentLOD: { name: 'medium', level: 2 },
     memoryPressure: 0.5,

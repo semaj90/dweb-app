@@ -281,7 +281,12 @@
       "Bash(./fix-all-types.bat)",
       "Bash(do sed -i '1i<!-- @ts-nocheck -->' \"$file\")",
       "WebFetch(domain:docs.nomic.ai)",
-      "WebFetch(domain:python.langchain.com)"
+      "WebFetch(domain:python.langchain.com)",
+      "Bash(pwsh:*)",
+      "Bash(./redis-windows/redis-server.exe:*)",
+      "Bash(net start:*)",
+      "Bash(redis-cli:*)",
+      "Bash(npm:*)"
     ],
     "deny": []
   }

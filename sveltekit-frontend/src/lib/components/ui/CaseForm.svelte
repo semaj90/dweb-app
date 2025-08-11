@@ -132,22 +132,22 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <h1 class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
+    <h1 class="space-y-4">
       Create New Case
     </h1>
-    <p class="container mx-auto px-4">
+    <p class="space-y-4">
       Fill out the form below to create a new legal case. All required fields
       must be completed.
     </p>
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <p>
-        💡 Tip: Use <kbd class="container mx-auto px-4"
+        💡 Tip: Use <kbd class="space-y-4"
           >Ctrl+S</kbd
         >
         to save,
-        <kbd class="container mx-auto px-4">Ctrl+R</kbd>
+        <kbd class="space-y-4">Ctrl+R</kbd>
         to reset
       </p>
     </div>
@@ -163,7 +163,7 @@
       submitVariant="primary"
       showResetButton={true}
       loading={isSubmitting}
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
       <div
         slot="default"
@@ -175,15 +175,15 @@
         let:isDirty
       >
         <!-- Basic Information -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <h2
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             Basic Information
           </h2>
 
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               <Input
                 label="Case Title"
                 placeholder="Enter a descriptive title for the case"
@@ -201,16 +201,16 @@
               />
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <label
                 for="case-description"
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
-                Description <span class="container mx-auto px-4">*</span>
+                Description <span class="space-y-4">*</span>
               </label>
               <textarea
                 id="case-description"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 rows="4"
                 placeholder="Provide a detailed description of the case"
                 value={values.description || ""}
@@ -225,7 +225,7 @@
                 on:blur={() => formApi.touchField("description")}
               ></textarea>
               {#if errors.description}
-                <p class="container mx-auto px-4">
+                <p class="space-y-4">
                   {errors.description}
                 </p>
               {/if}
@@ -234,13 +234,13 @@
             <div>
               <label
                 for="case-priority"
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
-                Priority <span class="container mx-auto px-4">*</span>
+                Priority <span class="space-y-4">*</span>
               </label>
               <select
                 id="case-priority"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 value={values.priority || "medium"}
                 on:change={(e) =>
                   formApi.setField(
@@ -275,14 +275,14 @@
         </div>
 
         <!-- Assignment -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <h2
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             Assignment & Tags
           </h2>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <div>
               <Input
                 label="Assigned To"
@@ -300,8 +300,8 @@
             </div>
 
             <div>
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
                   <Input
                     label="Tags"
                     placeholder="Enter tags separated by commas"
@@ -333,23 +333,23 @@
 
         <!-- Form Status -->
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#if isDirty}
-              <span class="container mx-auto px-4">
-                <div class="container mx-auto px-4"></div>
+              <span class="space-y-4">
+                <div class="space-y-4"></div>
                 Unsaved changes
               </span>
             {:else}
-              <span class="container mx-auto px-4">
-                <div class="container mx-auto px-4"></div>
+              <span class="space-y-4">
+                <div class="space-y-4"></div>
                 All changes saved
               </span>
             {/if}
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             Valid: {isValid ? "✅" : "❌"} | Fields: {Object.keys(values)
               .length} | Errors: {Object.keys(errors).length}
           </div>

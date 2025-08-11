@@ -1,11 +1,21 @@
 <script lang="ts">
+  interface Props {
+    size: 'small' | 'medium' | 'large' ;
+    clickable?: any;
+    showUploadButton?: any;
+  }
+  let {
+    size = 'medium',
+    clickable = false,
+    showUploadButton = false
+  }: Props = $props();
+
+
+
 	import { onMount } from 'svelte';
 	import { avatarStore } from "../stores/avatarStore";
 	
-	export let size: 'small' | 'medium' | 'large' = 'medium';
-	export let clickable = false;
-	export let showUploadButton = false;
-	
+				
 	let fileInput: HTMLInputElement;
 	let dragOver = false;
 	

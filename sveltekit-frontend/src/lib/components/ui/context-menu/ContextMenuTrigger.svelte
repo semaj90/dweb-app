@@ -1,6 +1,14 @@
 <script lang="ts">
-  export let trigger: any;
-</script>
+  interface Props {
+    trigger: any;;
+  }
+  let {
+    trigger
+  }: Props = $props();
+
+
+
+  </script>
 
 <div use:trigger {...$$restProps}>
   <slot />

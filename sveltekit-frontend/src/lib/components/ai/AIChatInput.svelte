@@ -1,20 +1,29 @@
 <!-- AI Chat Input Component -->
 <script lang="ts">
+  interface Props {
+    oninput?: (event?: any) => void;
+    onsend?: (event?: any) => void;
+    onfocus?: (event?: any) => void;
+    onblur?: (event?: any) => void;
+  }
+  let {
+    placeholder = "Type your message...",
+    disabled = false,
+    autoFocus = false,
+    value = "",
+    maxLength = 2000,
+    rows = 1,
+    maxRows = 6
+  }: Props = $props();
+
+
+
   import { browser } from "$app/environment";
-  import { createEventDispatcher, onMount } from "svelte";
-
+  
   // Props
-  export let placeholder = "Type your message...";
-  export let disabled = false;
-  export let autoFocus = false;
-  export let value = "";
-  export let maxLength = 2000;
-  export let rows = 1;
-  export let maxRows = 6;
-
+              
   // Event dispatcher
-  const dispatch = createEventDispatcher();
-
+  
   // Elements
   let textarea: HTMLTextAreaElement;
   let isMultiline = false;
@@ -30,7 +39,7 @@
   function handleInput(event: Event) {
     const target = event.target as HTMLTextAreaElement;
     value = target.value;
-    dispatch("input", value);
+    oninput?.();
     adjustTextareaHeight();
   }
   // Handle key press
@@ -51,7 +60,7 @@
     const trimmedValue = value.trim();
     if (!trimmedValue || disabled) return;
 
-    dispatch("send", trimmedValue);
+    onsend?.();
     value = "";
     resetTextareaHeight();
   }
@@ -90,10 +99,10 @@
   }
   // Handle focus/blur events
   function handleFocus() {
-    dispatch("focus");
+    onfocus?.();
   }
   function handleBlur() {
-    dispatch("blur");
+    onblur?.();
   }
   // Character count
   $: characterCount = value.length;

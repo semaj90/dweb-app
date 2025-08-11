@@ -1,15 +1,22 @@
 <script lang="ts">
+  interface Props {
+    onresponse?: (event?: any) => void;
+    oncitation?: (event?: any) => void;
+  }
+  let {
+    caseId = undefined,
+    placeholder = "Ask AI about this case...",
+    maxHeight = "400px",
+    showReferences = true
+  }: Props = $props();
+
+
+
   import { Bot, Download, Loader2, MessageSquare, Quote, Search, Settings, User as UserIcon } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-
-  export let caseId: string | undefined = undefined;
-  export const evidenceIds: string[] = [];
-  export let placeholder = "Ask AI about this case...";
-  export let maxHeight = "400px";
-  export let showReferences = true;
-
-  const dispatch = createEventDispatcher();
-
+  
+    export const evidenceIds: string[] = [];
+      
+  
   // State
   let query = "";
   let isLoading = false;
@@ -72,11 +79,7 @@
       messages = [...messages, assistantMessage];
 
       // Dispatch event for parent components
-      dispatch("response", {
-        query: currentQuery,
-        response: data.answer,
-        references: data.references,
-      });
+      onresponse?.();
     } catch (error) {
       console.error("AI chat error:", error);
       const errorMessage = {
@@ -99,7 +102,7 @@
     showCitationDialog = true;
 }
   function insertCitation() {
-    dispatch("citation", selectedCitation);
+    oncitation?.();
     showCitationDialog = false;
 }
   function clearChat() {
@@ -124,47 +127,47 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <Bot class="container mx-auto px-4" />
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <Bot class="space-y-4" />
       <span>AI Assistant</span>
       {#if caseId}
-        <span class="container mx-auto px-4">Case: {caseId}</span>
+        <span class="space-y-4">Case: {caseId}</span>
       {/if}
 <!-- End main container -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => (showSettings = !showSettings)}
         title="Settings"
       >
-        <Settings class="container mx-auto px-4" />
+        <Settings class="space-y-4" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => downloadChat()}
         title="Download chat"
         disabled={messages.length === 0}
       >
-        <Download class="container mx-auto px-4" />
+        <Download class="space-y-4" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => clearChat()}
         title="Clear chat"
         disabled={messages.length === 0}
       >
-        <MessageSquare class="container mx-auto px-4" />
+        <MessageSquare class="space-y-4" />
       </button>
     </div>
   </div>
 
   <!-- Settings Panel -->
   {#if showSettings}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <label for="model-select">Model:</label>
         <select id="model-select" bind:value={selectedModel}>
           <option value="gpt-4">GPT-4</option>
@@ -173,7 +176,7 @@
         </select>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="temperature-slider">Temperature:</label>
         <input
           id="temperature-slider"
@@ -186,7 +189,7 @@
         <span>{temperature}</span>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="threshold-slider">Search Threshold:</label>
         <input
           id="threshold-slider"
@@ -199,7 +202,7 @@
         <span>{searchThreshold}</span>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="max-results-input">Max Results:</label>
         <input
           id="max-results-input"
@@ -213,30 +216,30 @@
   {/if}
 
   <!-- Chat Messages -->
-  <div class="container mx-auto px-4" style="max-height: {maxHeight}">
+  <div class="space-y-4" style="max-height: {maxHeight}">
     {#each messages as message}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           {#if message.role === "user"}
-            <UserIcon class="container mx-auto px-4" />
+            <UserIcon class="space-y-4" />
           {:else}
-            <Bot class="container mx-auto px-4" />
+            <Bot class="space-y-4" />
           {/if}
-          <span class="container mx-auto px-4">
+          <span class="space-y-4">
             {message.timestamp.toLocaleTimeString()}
           </span>
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {message.content}
         </div>
         {#if message.references && message.references.length > 0 && showReferences}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>References:</h4>
             <ul>
               {#each message.references as ref}
                 <li>
                   <button
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     on:click={() => showCitation(ref.citation)}
                   >
                     {ref.title}
@@ -249,21 +252,21 @@
       </div>
     {/each}
     {#if isLoading}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Bot class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <Bot class="space-y-4" />
           <span>Thinking...</span>
         </div>
-        <div class="container mx-auto px-4">
-          <Loader2 class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <Loader2 class="space-y-4" />
         </div>
       </div>
     {/if}
   </div>
 
   <!-- Input Area -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <textarea
         bind:value={query}
         on:keydown={handleKeyDown}
@@ -272,14 +275,14 @@
         disabled={isLoading}
       ></textarea>
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => handleSubmit()}
         disabled={!query.trim() || isLoading}
       >
         {#if isLoading}
-          <Loader2 class="container mx-auto px-4" />
+          <Loader2 class="space-y-4" />
         {:else}
-          <Search class="container mx-auto px-4" />
+          <Search class="space-y-4" />
         {/if}
       </button>
     </div>

@@ -3,7 +3,7 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Progress } from "$lib/components/ui/progress";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/Card";
   import { Alert, AlertDescription, AlertTitle } from "$lib/components/ui/alert";
   import { FileUp, BrainCircuit, Search, Loader2 } from "lucide-svelte";
 

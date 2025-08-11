@@ -59,7 +59,7 @@ function createNotificationStore() {
   }
 
   // Convenience methods for different notification types
-  function info(message: string, options: Omit<NotificationOptions, 'type') = {}): string {
+  function info(message: string, options: Omit<NotificationOptions, 'type'> = {}): string {
     return add(message, { ...options, type: 'info' });
   }
 

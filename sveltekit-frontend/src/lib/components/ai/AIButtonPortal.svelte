@@ -1,15 +1,23 @@
 <script lang="ts">
+  interface Props {
+    position: | "bottom-right";
+    show?: any;
+  }
+  let {
+    position,
+    show = true
+  }: Props = $props();
+
+
+
   import { Button } from "$lib/components/ui/button";
-  export let position:
-    | "bottom-right"
-    | "bottom-left"
+      | "bottom-left"
     | "top-right"
     | "top-left" = "bottom-right";
-  export let show = true;
-</script>
+  </script>
 
 {#if show}
-  <div class="container mx-auto px-4" data-position={position}>
+  <div class="space-y-4" data-position={position}>
     <Button />
   </div>
 {/if}

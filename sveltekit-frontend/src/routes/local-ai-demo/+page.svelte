@@ -232,107 +232,107 @@
   <title>Enhanced RAG Demo - Local AI + Cloud Integration</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <!-- Header -->
-    <div class="container mx-auto px-4">
-      <h1 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h1 class="space-y-4">
         Enhanced RAG System Demo
       </h1>
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         Production-ready Retrieval-Augmented Generation with <strong
           >Local Rust LLMs</strong
         >, Legal-BERT models, PostgreSQL + pgvector, Qdrant, and intelligent
         fallback mechanisms.
       </p>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <span
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Shield class="container mx-auto px-4" />
+          <Shield class="space-y-4" />
           Privacy-First Local AI
         </span>
         <span
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Cpu class="container mx-auto px-4" />
+          <Cpu class="space-y-4" />
           Rust + Legal-BERT
         </span>
         <span
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Cloud class="container mx-auto px-4" />
+          <Cloud class="space-y-4" />
           Cloud Fallback
         </span>
       </div>
     </div>
 
     <!-- System Status -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h2 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h2 class="space-y-4">
             Enhanced System Status
           </h2>
           <button
             on:click={() => checkSystemStatus()}
-            class="container mx-auto px-4"
+            class="space-y-4"
             disabled={isLoadingStatus}
           >
             {isLoadingStatus ? "Checking..." : "Refresh"}
           </button>
         </div>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <Database class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <Database class="space-y-4" />
             <div>
-              <p class="container mx-auto px-4">Database</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Database</p>
+              <p class="space-y-4">
                 {systemStatus.database ? "Connected" : "Offline"}
               </p>
             </div>
           </div>
 
-          <div class="container mx-auto px-4">
-            <Zap class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <Zap class="space-y-4" />
             <div>
-              <p class="container mx-auto px-4">Qdrant</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Qdrant</p>
+              <p class="space-y-4">
                 {systemStatus.qdrant ? "Ready" : "Unavailable"}
               </p>
             </div>
           </div>
 
-          <div class="container mx-auto px-4">
-            <Brain class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <Brain class="space-y-4" />
             <div>
-              <p class="container mx-auto px-4">Embeddings</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Embeddings</p>
+              <p class="space-y-4">
                 {systemStatus.embeddings ? "Active" : "Disabled"}
               </p>
             </div>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <Search
-              class="container mx-auto px-4"
+              class="space-y-4"
             />
             <div>
-              <p class="container mx-auto px-4">Vector Search</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Vector Search</p>
+              <p class="space-y-4">
                 {systemStatus.vectorSearch ? "Operational" : "Error"}
               </p>
             </div>
           </div>
 
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Cpu class="container mx-auto px-4" />
+            <Cpu class="space-y-4" />
             <div>
-              <p class="container mx-auto px-4">Local LLM</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Local LLM</p>
+              <p class="space-y-4">
                 {systemStatus.tauriLLM ? "Available" : "Not Available"}
               </p>
             </div>
@@ -341,34 +341,34 @@
 
         <!-- Local Models Status -->
         {#if systemStatus.tauriLLM && systemStatus.localModels.length > 0}
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">
               Local AI Models
             </h3>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each systemStatus.localModels as model}
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
-                    <h4 class="container mx-auto px-4">{model.name}</h4>
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <h4 class="space-y-4">{model.name}</h4>
                     <span
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       {model.isLoaded ? "Loaded" : "Available"}
                     </span>
                   </div>
-                  <div class="container mx-auto px-4">
-                    <p><span class="container mx-auto px-4">Type:</span> {model.type}</p>
+                  <div class="space-y-4">
+                    <p><span class="space-y-4">Type:</span> {model.type}</p>
                     <p>
-                      <span class="container mx-auto px-4">Domain:</span>
+                      <span class="space-y-4">Domain:</span>
                       {model.domain}
                     </p>
                     <p>
-                      <span class="container mx-auto px-4">Architecture:</span>
+                      <span class="space-y-4">Architecture:</span>
                       {model.architecture}
                     </p>
                     {#if model.dimensions}
                       <p>
-                        <span class="container mx-auto px-4">Dimensions:</span>
+                        <span class="space-y-4">Dimensions:</span>
                         {model.dimensions}
                       </p>
                     {/if}
@@ -376,7 +376,7 @@
                   {#if !model.isLoaded}
                     <button
                       on:click={() => loadLocalModel(model.id)}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Load Model
                     </button>
@@ -390,49 +390,49 @@
     </div>
 
     <!-- Main Demo Area -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- AI Assistant -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">
               Enhanced AI Legal Assistant
             </h3>
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               Ask questions using local Legal-BERT models or cloud LLMs with
               automatic fallback.
             </p>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <!-- Provider Selection -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <label
                 for="ai-provider-select"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 >AI Provider</label
               >
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <button
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   on:click={() => (selectedProvider = "auto")}
                 >
-                  <Brain class="container mx-auto px-4" />
+                  <Brain class="space-y-4" />
                   Auto
                 </button>
                 <button
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   on:click={() => (selectedProvider = "local")}
                   disabled={!systemStatus.tauriLLM}
                 >
-                  <Cpu class="container mx-auto px-4" />
+                  <Cpu class="space-y-4" />
                   Local Only
                 </button>
                 <button
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   on:click={() => (selectedProvider = "cloud")}
                 >
-                  <Cloud class="container mx-auto px-4" />
+                  <Cloud class="space-y-4" />
                   Cloud Only
                 </button>
               </div>
@@ -450,14 +450,14 @@
         </div>
 
         <!-- Legal Demo Queries -->
-        <div class="container mx-auto px-4">
-          <h4 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <h4 class="space-y-4">
             Legal Domain Sample Questions:
           </h4>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each legalDemoQueries as query}
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => (testQuery = query)}
               >
                 "{query}"
@@ -468,49 +468,49 @@
       </div>
 
       <!-- Legal Document Analysis & Vector Search -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <!-- Document Analysis -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">
               Legal Document Analysis
             </h3>
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               Analyze legal documents using local Legal-BERT models for
               classification and risk assessment.
             </p>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <textarea
               bind:value={legalAnalysisText}
               placeholder="Paste a legal document excerpt for analysis..."
-              class="container mx-auto px-4"
+              class="space-y-4"
             ></textarea>
 
             <button
               on:click={() => analyzeLegalDocument()}
               disabled={!legalAnalysisText.trim() || isAnalyzing}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {isAnalyzing ? "Analyzing..." : "Analyze Document"}
             </button>
 
             {#if analysisResults}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {#if analysisResults.error}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <strong>Error:</strong>
                     {analysisResults.error}
                   </div>
                 {:else}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#if analysisResults.classification}
                       <div>
-                        <h5 class="container mx-auto px-4">
+                        <h5 class="space-y-4">
                           Classification:
                         </h5>
-                        <p class="container mx-auto px-4">
+                        <p class="space-y-4">
                           {analysisResults.classification.category}
                           ({Math.round(
                             analysisResults.classification.confidence * 100
@@ -521,8 +521,8 @@
 
                     {#if analysisResults && analysisResults.summary}
                       <div>
-                        <h5 class="container mx-auto px-4">Summary:</h5>
-                        <p class="container mx-auto px-4">
+                        <h5 class="space-y-4">Summary:</h5>
+                        <p class="space-y-4">
                           {analysisResults.summary}
                         </p>
                       </div>
@@ -530,11 +530,11 @@
 
                     {#if analysisResults.keyEntities}
                       <div>
-                        <h5 class="container mx-auto px-4">Key Entities:</h5>
-                        <div class="container mx-auto px-4">
+                        <h5 class="space-y-4">Key Entities:</h5>
+                        <div class="space-y-4">
                           {#each analysisResults.keyEntities.slice(0, 5) as entity}
                             <span
-                              class="container mx-auto px-4"
+                              class="space-y-4"
                             >
                               {entity}
                             </span>
@@ -545,10 +545,10 @@
 
                     {#if analysisResults && analysisResults.riskAssessment}
                       <div>
-                        <h5 class="container mx-auto px-4">
+                        <h5 class="space-y-4">
                           Risk Assessment:
                         </h5>
-                        <p class="container mx-auto px-4">
+                        <p class="space-y-4">
                           {analysisResults.riskAssessment}
                         </p>
                       </div>
@@ -561,43 +561,43 @@
         </div>
 
         <!-- Vector Search Test -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">
               Vector Search Test
             </h3>
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               Test vector similarity search with hybrid local/cloud embedding
               generation.
             </p>
           </div>
 
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               <input
                 bind:value={testQuery}
                 placeholder="Enter search query..."
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
               <button
                 on:click={() => testVectorSearch()}
                 disabled={!testQuery.trim() || isTestingSearch}
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {isTestingSearch ? "Searching..." : "Search"}
               </button>
             </div>
 
             {#if testResults}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {#if testResults.error}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <strong>Error:</strong>
                     {testResults.error}
                   </div>
                 {:else}
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
                       Found {testResults.results?.length || 0} results in {testResults.executionTime ||
                         0}ms (Source: {testResults.source || "unknown"})
                     </div>
@@ -605,33 +605,33 @@
                     {#if testResults.results && testResults.results.length > 0}
                       {#each testResults.results as result}
                         <div
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                         >
-                          <div class="container mx-auto px-4">
-                            <h5 class="container mx-auto px-4">
+                          <div class="space-y-4">
+                            <h5 class="space-y-4">
                               {result.title}
                             </h5>
-                            <div class="container mx-auto px-4">
-                              <span class="container mx-auto px-4">
+                            <div class="space-y-4">
+                              <span class="space-y-4">
                                 {Math.round(result.score * 100)}% match
                               </span>
                               <svelte:component
                                 this={getProviderIcon(result.source)}
-                                class="container mx-auto px-4"
+                                class="space-y-4"
                               />
                             </div>
                           </div>
-                          <p class="container mx-auto px-4">
+                          <p class="space-y-4">
                             {result.content.substring(0, 200)}...
                           </p>
-                          <div class="container mx-auto px-4">
+                          <div class="space-y-4">
                             <span>Type: {result.type}</span>
                             <span>Source: {result.source}</span>
                           </div>
                         </div>
                       {/each}
                     {:else}
-                      <p class="container mx-auto px-4">No results found.</p>
+                      <p class="space-y-4">No results found.</p>
                     {/if}
                   </div>
                 {/if}
@@ -643,14 +643,14 @@
     </div>
 
     <!-- Architecture Information -->
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">
         Enhanced RAG Architecture
       </h3>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <div>
-          <h4 class="container mx-auto px-4">Local AI (Rust)</h4>
-          <ul class="container mx-auto px-4">
+          <h4 class="space-y-4">Local AI (Rust)</h4>
+          <ul class="space-y-4">
             <li>• Legal-BERT embeddings</li>
             <li>• Document classification</li>
             <li>• Privacy-first processing</li>
@@ -658,8 +658,8 @@
           </ul>
         </div>
         <div>
-          <h4 class="container mx-auto px-4">Vector Databases</h4>
-          <ul class="container mx-auto px-4">
+          <h4 class="space-y-4">Vector Databases</h4>
+          <ul class="space-y-4">
             <li>• PostgreSQL + pgvector</li>
             <li>• Qdrant for advanced search</li>
             <li>• HNSW indexing</li>
@@ -667,8 +667,8 @@
           </ul>
         </div>
         <div>
-          <h4 class="container mx-auto px-4">Cloud Fallbacks</h4>
-          <ul class="container mx-auto px-4">
+          <h4 class="space-y-4">Cloud Fallbacks</h4>
+          <ul class="space-y-4">
             <li>• OpenAI embeddings</li>
             <li>• GPT-3.5/4 chat</li>
             <li>• Ollama local LLMs</li>
@@ -676,8 +676,8 @@
           </ul>
         </div>
         <div>
-          <h4 class="container mx-auto px-4">Performance</h4>
-          <ul class="container mx-auto px-4">
+          <h4 class="space-y-4">Performance</h4>
+          <ul class="space-y-4">
             <li>• Redis caching</li>
             <li>• IndexedDB storage</li>
             <li>• Batch processing</li>
@@ -688,11 +688,11 @@
     </div>
 
     <!-- Setup Instructions -->
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">
         Setup Instructions
       </h3>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <p><strong>1. Start services:</strong> <code>npm run db:start</code></p>
         <p>
           <strong>2. Initialize vector search:</strong>

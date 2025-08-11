@@ -9,7 +9,7 @@
     CardFooter,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/card";
+  } from "$lib/components/ui/Card";
   import {
     Dialog,
     DialogContent,

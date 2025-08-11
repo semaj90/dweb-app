@@ -4,6 +4,25 @@ Main UI component for managing the complete custody workflow with real-time coll
 and AI-powered verification features.
 -->
 <script lang="ts">
+  interface Props {
+    evidenceId: string;;
+    caseId: string;;
+    userId: string;;
+    originalHash: string;;
+    onWorkflowComplete: ((result: any) ;
+    onWorkflowError: ((error: string) ;
+  }
+  let {
+    evidenceId,
+    caseId,
+    userId,
+    originalHash,
+    onWorkflowComplete = > void) | undefined = undefined,
+    onWorkflowError = > void) | undefined = undefined
+  }: Props = $props();
+
+
+
   import { onMount } from 'svelte';
   import { createActor } from 'xstate';
   import { evidenceCustodyMachine, type EvidenceCustodyContext, type EvidenceCustodyEvent } from '$lib/state/evidenceCustodyMachine';
@@ -19,13 +38,7 @@ and AI-powered verification features.
   import { toast } from '$lib/components/ui/toast';
 
   // Props
-  export let evidenceId: string;
-  export let caseId: string;
-  export let userId: string;
-  export let originalHash: string;
-  export let onWorkflowComplete: ((result: any) => void) | undefined = undefined;
-  export let onWorkflowError: ((error: string) => void) | undefined = undefined;
-
+            
   // State machine actor
   let custodyActor = $state(createActor(evidenceCustodyMachine));
   let currentState = $state(custodyActor.getSnapshot());

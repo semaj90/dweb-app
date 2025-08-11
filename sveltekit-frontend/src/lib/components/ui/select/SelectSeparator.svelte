@@ -1,4 +1,4 @@
-<div class="container mx-auto px-4"></div>
+<div class="space-y-4"></div>
 
 <style>
   /* @unocss-include */

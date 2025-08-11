@@ -1,4 +1,19 @@
 <script lang="ts">
+  interface Props {
+    triggerText?: any;
+    placeholder?: any;
+    onInsert: (text: string) ;
+    textareaElement: HTMLTextAreaElement | undefined ;
+  }
+  let {
+    triggerText = "#",
+    placeholder = "Type a command...",
+    onInsert = > void = () => {},
+    textareaElement = undefined
+  }: Props = $props();
+
+
+
   import { goto } from "$app/navigation";
   import { citationStore } from "$lib/stores/citations";
   import { createPopover, melt } from "@melt-ui/svelte";
@@ -217,52 +232,52 @@
 {#if $open}
   <div
     use:melt={$content}
-    class="container mx-auto px-4"
+    class="space-y-4"
     transition:fly={{ y: -10, duration: 150 }}
   >
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <Search size={16} />
       <input
         bind:this={inputElement}
         bind:value={searchQuery}
         {placeholder}
-        class="container mx-auto px-4"
+        class="space-y-4"
         autocomplete="off"
         spellcheck="false"
       />
     </div>
 
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#each Object.entries(groupedCommands) as [category, categoryCommands], categoryIndex}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">{category}</div>
+        <div class="space-y-4">
+          <div class="space-y-4">{category}</div>
           {#each categoryCommands as command, commandIndex}
             {@const globalIndex = filteredCommands.findIndex(
               (c) => c.id === command.id
             )}
             <button
-              class="container mx-auto px-4"
+              class="space-y-4"
               class:selected={globalIndex === selectedIndex}
               on:click={() => executeCommand(command)}
               on:mouseenter={() => (selectedIndex = globalIndex)}
             >
               <svelte:component this={command.icon} size={16} />
-              <span class="container mx-auto px-4">{command.label}</span>
+              <span class="space-y-4">{command.label}</span>
             </button>
           {/each}
         </div>
       {/each}
 
       {#if filteredCommands.length === 0}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <Search size={24} />
           <p>No commands found for "{searchQuery}"</p>
         </div>
       {/if}
     </div>
 
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <kbd>↑↓</kbd> Navigate
         <kbd>Enter</kbd> Select
         <kbd>Esc</kbd> Close

@@ -1,15 +1,29 @@
 <script lang="ts">
+  interface Props {
+    icon: Snippet;;
+    tooltip: string ;
+    triggerClass: string ;
+    contentClass: string ;
+    delayDuration: number ;
+    sideOffset: number ;
+    children: any;;
+  }
+  let {
+    icon,
+    tooltip = "AI Assistant",
+    triggerClass = "",
+    contentClass = "",
+    delayDuration = 200,
+    sideOffset = 8,
+    children
+  }: Props = $props();
+
+
+
   import { Tooltip } from "bits-ui";
   import { type Snippet } from "svelte";
   // Svelte 5 runes, UnoCSS, nier.css, context7 best practices
-  export let icon: Snippet;
-  export let tooltip: string = "AI Assistant";
-  export let triggerClass: string = "";
-  export let contentClass: string = "";
-  export let delayDuration: number = 200;
-  export let sideOffset: number = 8;
-  export let children: any;
-</script>
+              </script>
 
 <Tooltip.Provider>
   <Tooltip.Root {delayDuration}>

@@ -1,5 +1,11 @@
 <!-- Enhanced Canvas Evidence Board with Fabric.js Integration -->
 <script lang="ts">
+  interface Props {
+    onevidenceUpdated?: (event?: any) => void;
+    onsave?: (event?: any) => void;
+  }
+
+
   import { browser } from "$app/environment";
   import Button from "$lib/components/ui/Button.svelte";
   import { notifications } from "$lib/stores/notification";
@@ -17,10 +23,8 @@
     ZoomIn,
     ZoomOut,
   } from "lucide-svelte";
-  import { createEventDispatcher, onDestroy, onMount } from "svelte";
-
-  const dispatch = createEventDispatcher();
-
+  
+  
   // --- XState workflow state machine ---
   // Dynamically imported in onMount for SSR safety
   let canvasService: any = null;
@@ -326,10 +330,7 @@
 
     objects.forEach((obj: any) => {
       if (obj.evidenceId) {
-        dispatch("evidenceUpdated", {
-          evidenceId: obj.evidenceId,
-          position: { x: obj.left, y: obj.top },
-        });
+        onevidenceUpdated?.();
 }
     });
 }
@@ -405,7 +406,7 @@
         message: "Failed to save evidence board.",
       });
 }
-    dispatch("save", { canvasData, positions });
+    onsave?.();
 }
   async function exportCanvas() {
     if (!fabricCanvas) return;
@@ -446,15 +447,15 @@
 }}
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Toolbar -->
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Tool Selection -->
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         <Button
           variant={selectedTool === "select" ? "primary" : "outline"}
@@ -462,7 +463,7 @@
           on:click={() => selectTool("select")}
           disabled={readonly}
         >
-          <Move class="container mx-auto px-4" />
+          <Move class="space-y-4" />
         </Button>
         <Button
           variant={selectedTool === "draw" ? "primary" : "outline"}
@@ -478,35 +479,35 @@
           on:click={() => selectTool("text")}
           disabled={readonly}
         >
-          <Type class="container mx-auto px-4" />
+          <Type class="space-y-4" />
         </Button>
       </div>
 
       <!-- Shapes -->
       {#if !readonly}
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           <Button
             variant="outline"
             size="sm"
             on:click={() => addShape("rectangle")}
           >
-            <Square class="container mx-auto px-4" />
+            <Square class="space-y-4" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             on:click={() => addShape("circle")}
           >
-            <Circle class="container mx-auto px-4" />
+            <Circle class="space-y-4" />
           </Button>
         </div>
       {/if}
 
       <!-- History -->
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         <Button
           variant="outline"
@@ -514,7 +515,7 @@
           on:click={() => undo()}
           disabled={readonly || historyIndex <= 0}
         >
-          <Undo class="container mx-auto px-4" />
+          <Undo class="space-y-4" />
         </Button>
         <Button
           variant="outline"
@@ -522,20 +523,20 @@
           on:click={() => redo()}
           disabled={readonly || historyIndex >= canvasHistory.length - 1}
         >
-          <Redo class="container mx-auto px-4" />
+          <Redo class="space-y-4" />
         </Button>
       </div>
 
       <!-- Zoom -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Button variant="outline" size="sm" on:click={() => zoomOut()}>
-          <ZoomOut class="container mx-auto px-4" />
+          <ZoomOut class="space-y-4" />
         </Button>
-        <span class="container mx-auto px-4"
+        <span class="space-y-4"
           >{Math.round(zoom * 100)}%</span
         >
         <Button variant="outline" size="sm" on:click={() => zoomIn()}>
-          <ZoomIn class="container mx-auto px-4" />
+          <ZoomIn class="space-y-4" />
         </Button>
         <Button variant="outline" size="sm" on:click={() => resetZoom()}
           >Reset</Button
@@ -544,39 +545,39 @@
     </div>
 
     <!-- Actions -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#if !readonly}
         <Button variant="outline" size="sm" on:click={() => deleteSelected()}>
-          <Trash2 class="container mx-auto px-4" />
+          <Trash2 class="space-y-4" />
         </Button>
         <Button variant="outline" size="sm" on:click={() => saveCanvas()}>
-          <Save class="container mx-auto px-4" />
+          <Save class="space-y-4" />
           Save
         </Button>
       {/if}
       <Button variant="outline" size="sm" on:click={() => exportCanvas()}>
-        <Download class="container mx-auto px-4" />
+        <Download class="space-y-4" />
         Export
       </Button>
     </div>
   </div>
 
   <!-- Canvas Container -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <div
       bind:this={canvasContainer}
-      class="container mx-auto px-4"
+      class="space-y-4"
     ></div>
 
     {#if !fabricLoaded}
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           ></div>
-          <p class="container mx-auto px-4">Loading canvas...</p>
+          <p class="space-y-4">Loading canvas...</p>
         </div>
       </div>
     {/if}
@@ -585,11 +586,11 @@
   <!-- Instructions -->
   {#if fabricLoaded && evidenceItems.length === 0}
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
-      <Image class="container mx-auto px-4" />
-      <p class="container mx-auto px-4">Evidence Board</p>
-      <p class="container mx-auto px-4">
+      <Image class="space-y-4" />
+      <p class="space-y-4">Evidence Board</p>
+      <p class="space-y-4">
         Add evidence items to start building your case visualization
       </p>
     </div>

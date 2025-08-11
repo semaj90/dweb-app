@@ -1,21 +1,31 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   
-  export let open = false;
-  export let title = '';
-  export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
-  export let closeOnOutsideClick = true;
-  export let closeOnEscape = true;
+  interface Props {
+    open?: boolean;
+    title?: string;
+    size?: 'sm' | 'md' | 'lg' | 'xl';
+    closeOnOutsideClick?: boolean;
+    closeOnEscape?: boolean;
+    onclose?: () => void;
+  }
   
-  const dispatch = createEventDispatcher();
+  let {
+    open = $bindable(false),
+    title = '',
+    size = 'md',
+    closeOnOutsideClick = true,
+    closeOnEscape = true,
+    onclose
+  }: Props = $props();
   
   let modalElement: HTMLDivElement;
   
   function handleClose() {
     open = false;
-    dispatch('close');
-}
+    onclose?.();
+  }
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Escape' && closeOnEscape) {
       handleClose();

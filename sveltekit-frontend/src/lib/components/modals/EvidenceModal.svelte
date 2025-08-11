@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    item: {;
+    open?: any;
+  }
+  let {
+    item,
+    open = false
+  }: Props = $props();
+
+
+
   import Dialog from 'bits-ui/Dialog.svelte';
   import Button from 'bits-ui/Button.svelte';
   import { onMount } from 'svelte';
@@ -6,8 +17,7 @@
   import { evidenceSchema } from '$lib/server/schemas';
   import { createMachine } from 'xstate';
   // Explicit type for item
-  export let item: {
-    jsonData: {
+      jsonData: {
       title: string;
       description: string;
       tags?: string[];
@@ -15,8 +25,7 @@
       type?: string;
     };
   };
-  export let open = false;
-  let form: any = null;
+    let form: any = null;
   let title = '';
   let description = '';
   let tagsString = '';

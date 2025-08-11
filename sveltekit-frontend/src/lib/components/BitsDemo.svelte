@@ -79,23 +79,23 @@
 </script>
 
 
-<div class="container mx-auto px-4">
-  <h2 class="container mx-auto px-4">Bits UI Components Demo</h2>
+<div class="space-y-4">
+  <h2 class="space-y-4">Bits UI Components Demo</h2>
 
   <!-- Melt-UI Notification Demo Section -->
-  <div class="container mx-auto px-4">
-    <h3 class="container mx-auto px-4">Melt-UI Notifications Demo</h3>
-    <div class="container mx-auto px-4">
-      <button class="container mx-auto px-4" onclick={() => showSuccessNotification()}>
+  <div class="space-y-4">
+    <h3 class="space-y-4">Melt-UI Notifications Demo</h3>
+    <div class="space-y-4">
+      <button class="space-y-4" onclick={() => showSuccessNotification()}>
         Success Notification
       </button>
-      <button class="container mx-auto px-4" onclick={() => showWarningNotification()}>
+      <button class="space-y-4" onclick={() => showWarningNotification()}>
         Warning Notification
       </button>
-      <button class="container mx-auto px-4" onclick={() => showErrorNotification()}>
+      <button class="space-y-4" onclick={() => showErrorNotification()}>
         Error Notification
       </button>
-      <button class="container mx-auto px-4" onclick={() => showInfoNotification()}>
+      <button class="space-y-4" onclick={() => showInfoNotification()}>
         Info Notification
       </button>
     </div>
@@ -103,22 +103,22 @@
 
   <!-- Bits UI Button -->
   <BitsButton.Root
-    class="container mx-auto px-4"
+    class="space-y-4"
     onclick={showSuccessNotification}
   >
     Create New Case
   </BitsButton.Root>
 
   <!-- Bits UI Select -->
-  <div class="container mx-auto px-4">
-    <label class="container mx-auto px-4" for="practice-area-select">Legal Practice Area</label>
+  <div class="space-y-4">
+    <label class="space-y-4" for="practice-area-select">Legal Practice Area</label>
     <Select.Root bind:value={selectedCaseType} type="single">
-      <Select.Trigger class="container mx-auto px-4" id="practice-area-select">
+      <Select.Trigger class="space-y-4" id="practice-area-select">
         {selectedCaseType || "Select practice area..."}
       </Select.Trigger>
-      <Select.Content class="container mx-auto px-4">
+      <Select.Content class="space-y-4">
         {#each caseTypes as type}
-          <Select.Item value={type.value} class="container mx-auto px-4">
+          <Select.Item value={type.value} class="space-y-4">
             {type.label}
           </Select.Item>
         {/each}
@@ -128,43 +128,43 @@
 
   <!-- Bits UI Dialog -->
   <Dialog.Root bind:open={dialogOpen}>
-    <Dialog.Trigger class="container mx-auto px-4">
+    <Dialog.Trigger class="space-y-4">
       Case Management Options
     </Dialog.Trigger>
     <Dialog.Portal>
-      <Dialog.Overlay class="container mx-auto px-4" />
-      <Dialog.Content class="container mx-auto px-4">
-        <Dialog.Title class="container mx-auto px-4">
+      <Dialog.Overlay class="space-y-4" />
+      <Dialog.Content class="space-y-4">
+        <Dialog.Title class="space-y-4">
           Case Management System
         </Dialog.Title>
-        <Dialog.Description class="container mx-auto px-4">
+        <Dialog.Description class="space-y-4">
           Choose an action for this legal case
         </Dialog.Description>
-        <Dialog.Description class="container mx-auto px-4">
+        <Dialog.Description class="space-y-4">
           Manage your legal cases with our comprehensive case management system.
           Track evidence, deadlines, and case progress all in one place.
         </Dialog.Description>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <h4>Evidence Management</h4>
             <p>Upload, organize and analyze case evidence</p>
           </div>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>Timeline Tracking</h4>
             <p>Keep track of important dates and deadlines</p>
           </div>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>AI Analysis</h4>
             <p>Get AI-powered insights on your cases</p>
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
-          <Dialog.Close class="container mx-auto px-4">
+        <div class="space-y-4">
+          <Dialog.Close class="space-y-4">
             Close
           </Dialog.Close>
-          <BitsButton.Root class="container mx-auto px-4">
+          <BitsButton.Root class="space-y-4">
             Get Started
           </BitsButton.Root>
         </div>
@@ -174,24 +174,24 @@
 
   <!-- Bits UI Alert Dialog -->
   <AlertDialog.Root bind:open={alertOpen}>
-    <AlertDialog.Trigger class="container mx-auto px-4">
+    <AlertDialog.Trigger class="space-y-4">
       Delete Case
     </AlertDialog.Trigger>
     <AlertDialog.Portal>
-      <AlertDialog.Overlay class="container mx-auto px-4" />
-      <AlertDialog.Content class="container mx-auto px-4">
-        <AlertDialog.Title class="container mx-auto px-4">
+      <AlertDialog.Overlay class="space-y-4" />
+      <AlertDialog.Content class="space-y-4">
+        <AlertDialog.Title class="space-y-4">
           Delete Case Confirmation
         </AlertDialog.Title>
-        <AlertDialog.Description class="container mx-auto px-4">
+        <AlertDialog.Description class="space-y-4">
           Are you sure you want to delete this case? This action cannot be undone and will permanently remove all case data, evidence, and related documents.
         </AlertDialog.Description>
 
-        <div class="container mx-auto px-4">
-          <AlertDialog.Cancel class="container mx-auto px-4">
+        <div class="space-y-4">
+          <AlertDialog.Cancel class="space-y-4">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="container mx-auto px-4" onclick={showErrorNotification}>
+          <AlertDialog.Action class="space-y-4" onclick={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>
@@ -199,8 +199,8 @@
     </AlertDialog.Portal>
   </AlertDialog.Root>
 
-  <div class="container mx-auto px-4">
-    <p class="container mx-auto px-4">
+  <div class="space-y-4">
+    <p class="space-y-4">
       <strong>Demo:</strong> Bits UI components provide accessible, unstyled components.
       Melt-UI notifications provide toast/alert functionality.
     </p>
@@ -208,27 +208,27 @@
 </div>
 
 <!-- Melt-UI Toast/Notification Container -->
-<div class="container mx-auto px-4" use:portal>
+<div class="space-y-4" use:portal>
   {#each $toasts as { id, data } (id)}
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       animate:flip={{ duration: 500 }}
       in:fly={{ duration: 150, x: '100%' }}
       out:fly={{ duration: 150, x: '100%'  }}
       use:melt={$content(id)}
     >
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if (data as ToastData).title}
-          <div class="container mx-auto px-4" use:melt={$title(id)}>
+          <div class="space-y-4" use:melt={$title(id)}>
             {(data as ToastData).title}
           </div>
         {/if}
-        <button class="container mx-auto px-4" use:melt={$close(id)} aria-label="Close notification">
+        <button class="space-y-4" use:melt={$close(id)} aria-label="Close notification">
           ✕
         </button>
       </div>
       {#if (data as ToastData).description}
-        <div class="container mx-auto px-4" use:melt={$description(id)}>
+        <div class="space-y-4" use:melt={$description(id)}>
           {(data as ToastData).description}
         </div>
       {/if}

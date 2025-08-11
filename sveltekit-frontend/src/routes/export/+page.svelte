@@ -121,15 +121,15 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <header class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Download class="container mx-auto px-4" />
+  <header class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <Download class="space-y-4" />
         <div>
-          <h1 class="container mx-auto px-4">Data Export</h1>
-          <p class="container mx-auto px-4">
+          <h1 class="space-y-4">Data Export</h1>
+          <p class="space-y-4">
             Export cases, evidence, and analytics in multiple formats
           </p>
         </div>
@@ -137,32 +137,32 @@
     </div>
   </header>
 
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <!-- Export Configuration -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h2 class="container mx-auto px-4">
-            <FileText class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h2 class="space-y-4">
+            <FileText class="space-y-4" />
             Export Configuration
           </h2>
 
           <!-- Format Selection -->
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               Export Format
             </div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each [{ value: "json", label: "JSON", description: "Structured data format" }, { value: "csv", label: "CSV", description: "Spreadsheet compatible" }, { value: "xml", label: "XML", description: "Standard markup format" }] as formatOption}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                       on:click={() =>
                         (format = formatOption.value as "json" | "csv" | "xml")}
                     >
-                      <div class="container mx-auto px-4">{formatOption.label}</div>
-                      <div class="container mx-auto px-4">
+                      <div class="space-y-4">{formatOption.label}</div>
+                      <div class="space-y-4">
                         {formatOption.description}
                       </div>
                     </button>
@@ -176,82 +176,82 @@
           </div>
 
           <!-- Data Selection -->
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               Data to Include
             </div>
-            <div class="container mx-auto px-4">
-              <label class="container mx-auto px-4">
+            <div class="space-y-4">
+              <label class="space-y-4">
                 <input
                   type="checkbox"
                   bind:checked={includeCases}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
-                <span class="container mx-auto px-4">Cases</span>
+                <span class="space-y-4">Cases</span>
               </label>
-              <label class="container mx-auto px-4">
+              <label class="space-y-4">
                 <input
                   type="checkbox"
                   bind:checked={includeEvidence}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
-                <span class="container mx-auto px-4">Evidence</span>
+                <span class="space-y-4">Evidence</span>
               </label>
-              <label class="container mx-auto px-4">
+              <label class="space-y-4">
                 <input
                   type="checkbox"
                   bind:checked={includeAnalytics}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
-                <span class="container mx-auto px-4">Analytics & Statistics</span>
+                <span class="space-y-4">Analytics & Statistics</span>
               </label>
             </div>
           </div>
 
           <!-- Date Range -->
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <label
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <Calendar class="container mx-auto px-4" />
+              <Calendar class="space-y-4" />
               Date Range (Optional)
             </label>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <div>
-                <label for="date-from" class="container mx-auto px-4"
+                <label for="date-from" class="space-y-4"
                   >From</label
                 >
                 <input
                   id="date-from"
                   type="date"
                   bind:value={dateFrom}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
               </div>
               <div>
-                <label for="date-to" class="container mx-auto px-4"
+                <label for="date-to" class="space-y-4"
                   >To</label
                 >
                 <input
                   id="date-to"
                   type="date"
                   bind:value={dateTo}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
               </div>
             </div>
           </div>
 
           <!-- Case Selection -->
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               <label
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
-                <Filter class="container mx-auto px-4" />
+                <Filter class="space-y-4" />
                 Case Filter (Optional)
               </label>
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -271,43 +271,43 @@
 
             {#if availableCases.length > 0}
               <div
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {#each availableCases as caseItem}
                   <label
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     <input
                       type="checkbox"
                       checked={selectedCaseIds.includes(caseItem.id)}
                       on:change={() => toggleCaseSelection(caseItem.id)}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <span class="container mx-auto px-4">
-                      <span class="container mx-auto px-4">{caseItem.title}</span>
-                      <span class="container mx-auto px-4">({caseItem.id})</span>
+                    <span class="space-y-4">
+                      <span class="space-y-4">{caseItem.title}</span>
+                      <span class="space-y-4">({caseItem.id})</span>
                     </span>
                   </label>
                 {/each}
               </div>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">
                 {selectedCaseIds.length} of {availableCases.length} cases selected
               </p>
             {:else}
-              <p class="container mx-auto px-4">No cases available</p>
+              <p class="space-y-4">No cases available</p>
             {/if}
           </div>
 
           <!-- Error/Success Messages -->
           {#if exportError}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
+            <div class="space-y-4">
+              <div class="space-y-4">
                 <AlertTriangle
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
                 <div>
-                  <h4 class="container mx-auto px-4">Export Failed</h4>
-                  <p class="container mx-auto px-4">{exportError}</p>
+                  <h4 class="space-y-4">Export Failed</h4>
+                  <p class="space-y-4">{exportError}</p>
                 </div>
               </div>
             </div>
@@ -315,15 +315,15 @@
 
           {#if exportSuccess}
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <CheckCircle
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
                 <div>
-                  <h4 class="container mx-auto px-4">Export Successful</h4>
-                  <p class="container mx-auto px-4">
+                  <h4 class="space-y-4">Export Successful</h4>
+                  <p class="space-y-4">
                     Your data has been downloaded successfully.
                   </p>
                 </div>
@@ -337,15 +337,15 @@
               <Button
                 on:click={() => exportData()}
                 disabled={exportLoading || (!includeCases && !includeEvidence)}
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {#if exportLoading}
                   <div
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   ></div>
                   Exporting...
                 {:else}
-                  <Download class="container mx-auto px-4" />
+                  <Download class="space-y-4" />
                   Export Data
                 {/if}
               </Button>
@@ -358,37 +358,37 @@
       </div>
 
       <!-- Export Summary -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">
-            <Database class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h3 class="space-y-4">
+            <Database class="space-y-4" />
             Export Summary
           </h3>
 
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">Format</div>
-              <div class="container mx-auto px-4">{format.toUpperCase()}</div>
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <div class="space-y-4">Format</div>
+              <div class="space-y-4">{format.toUpperCase()}</div>
             </div>
 
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">Data Types</div>
-              <div class="container mx-auto px-4">
+            <div class="space-y-4">
+              <div class="space-y-4">Data Types</div>
+              <div class="space-y-4">
                 {#if includeCases}
-                  <div class="container mx-auto px-4">
-                    <CheckCircle class="container mx-auto px-4" />
+                  <div class="space-y-4">
+                    <CheckCircle class="space-y-4" />
                     Cases
                   </div>
                 {/if}
                 {#if includeEvidence}
-                  <div class="container mx-auto px-4">
-                    <CheckCircle class="container mx-auto px-4" />
+                  <div class="space-y-4">
+                    <CheckCircle class="space-y-4" />
                     Evidence
                   </div>
                 {/if}
                 {#if includeAnalytics}
-                  <div class="container mx-auto px-4">
-                    <CheckCircle class="container mx-auto px-4" />
+                  <div class="space-y-4">
+                    <CheckCircle class="space-y-4" />
                     Analytics
                   </div>
                 {/if}
@@ -396,20 +396,20 @@
             </div>
 
             {#if dateFrom || dateTo}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">Date Range</div>
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">Date Range</div>
+                <div class="space-y-4">
                   {dateFrom || "Beginning"} to {dateTo || "End"}
                 </div>
               </div>
             {/if}
 
             {#if selectedCaseIds.length > 0}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
                   Selected Cases
                 </div>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {selectedCaseIds.length} case{selectedCaseIds.length !== 1
                     ? "s"
                     : ""} selected
@@ -419,9 +419,9 @@
           </div>
 
           <!-- Export Instructions -->
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">Export Instructions</h4>
-            <ul class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h4 class="space-y-4">Export Instructions</h4>
+            <ul class="space-y-4">
               <li>• Select your preferred format</li>
               <li>• Choose data types to include</li>
               <li>• Optionally filter by date or cases</li>

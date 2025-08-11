@@ -1,11 +1,21 @@
 <script lang="ts">
+  interface Props {
+    person: {;
+    relationships: Array<{;
+  }
+  let {
+    person,
+    relationships
+  }: Props = $props();
+
+
+
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   // import { Avatar } from '$lib/components/ui/Avatar.svelte';
   
-  export let person: {
-    name: string;
+      name: string;
     role: 'suspect' | 'witness' | 'victim' | 'associate' | 'unknown';
     details?: {
       age?: number;
@@ -18,8 +28,7 @@
     sourceContext?: string;
   };
 
-  export let relationships: Array<{
-    person1: string;
+      person1: string;
     person2: string;
     relationship: string;
     context?: string;

@@ -1,6 +1,17 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { toolbarStore } from "../stores/canvas";
+  interface Props {
+    ontoolSelected?: (event?: any) => void;
+    onformatToggled?: (event?: any) => void;
+    onalignmentChanged?: (event?: any) => void;
+    oncolorChanged?: (event?: any) => void;
+    onfontSizeChanged?: (event?: any) => void;
+    onstrokeWidthChanged?: (event?: any) => void;
+    onaction?: (event?: any) => void;
+    onzoomChanged?: (event?: any) => void;
+  }
+
+
+		import { toolbarStore } from "../stores/canvas";
 	
 	import { 
 		Bold, 
@@ -23,8 +34,7 @@
 		ZoomOut 
 	} from 'lucide-svelte';
 
-	const dispatch = createEventDispatcher();
-
+	
 	// Tool categories
 	const tools = [
 		{ id: 'select', icon: MousePointer2, label: 'Select', category: 'selection' },
@@ -61,7 +71,7 @@
 			...state,
 			selectedTool: toolId
 		}));
-		dispatch('toolSelected', { tool: toolId });
+		ontoolSelected?.();
 }
 	function toggleFormatting(formatType: string) {
 		toolbarStore.update(state => ({
@@ -71,7 +81,7 @@
 				[formatType]: !(state.formatting as any)[formatType]
 }
 		}));
-		dispatch('formatToggled', { type: formatType, value: !(formatting as any)[formatType] });
+		onformatToggled?.()[formatType] });
 }
 	function setAlignment(alignment: string) {
 		toolbarStore.update(state => ({
@@ -81,7 +91,7 @@
 				textAlign: alignment
 }
 		}));
-		dispatch('alignmentChanged', { alignment });
+		onalignmentChanged?.();
 }
 	function handleColorChange(event: Event, type: 'color' | 'backgroundColor') {
 		const target = event.target as HTMLInputElement;
@@ -94,7 +104,7 @@
 				[type]: color
 }
 		}));
-		dispatch('colorChanged', { type, color });
+		oncolorChanged?.();
 }
 	function handleFontSizeChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -107,7 +117,7 @@
 				fontSize
 }
 		}));
-		dispatch('fontSizeChanged', { fontSize });
+		onfontSizeChanged?.();
 }
 	function handleStrokeWidthChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -120,10 +130,10 @@
 				strokeWidth
 }
 		}));
-		dispatch('strokeWidthChanged', { strokeWidth });
+		onstrokeWidthChanged?.();
 }
 	function handleAction(action: string) {
-		dispatch('action', { action });
+		onaction?.();
 }
 	function handleZoom(delta: number) {
 		const newZoom = Math.max(10, Math.min(500, zoom + delta));
@@ -131,17 +141,17 @@
 			...state,
 			zoom: newZoom
 		}));
-		dispatch('zoomChanged', { zoom: newZoom });
+		onzoomChanged?.();
 }
 </script>
 
-<div class="container mx-auto px-4" role="toolbar" aria-label="Canvas tools">
+<div class="space-y-4" role="toolbar" aria-label="Canvas tools">
 	<!-- Tool Selection -->
-	<div class="container mx-auto px-4">
-		<div class="container mx-auto px-4">
+	<div class="space-y-4">
+		<div class="space-y-4">
 			{#each tools as tool}
 				<button
-					class="container mx-auto px-4"
+					class="space-y-4"
 					class:active={selectedTool === tool.id}
 					on:click={() => selectTool(tool.id)}
 					aria-label={tool.label}
@@ -153,14 +163,14 @@
 		</div>
 	</div>
 
-	<div class="container mx-auto px-4"></div>
+	<div class="space-y-4"></div>
 
 	<!-- Text Formatting -->
-	<div class="container mx-auto px-4">
-		<div class="container mx-auto px-4">
+	<div class="space-y-4">
+		<div class="space-y-4">
 			{#each formatActions as action}
 				<button
-					class="container mx-auto px-4"
+					class="space-y-4"
 					class:active={(formatting as any)[action.id]}
 					on:click={() => toggleFormatting(action.id)}
 					aria-label={action.label}
@@ -172,10 +182,10 @@
 			{/each}
 		</div>
 
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			{#each alignActions as action}
 				<button
-					class="container mx-auto px-4"
+					class="space-y-4"
 					class:active={formatting.textAlign === action.id}
 					on:click={() => setAlignment(action.id)}
 					aria-label={action.label}
@@ -187,8 +197,8 @@
 			{/each}
 		</div>
 
-		<div class="container mx-auto px-4">
-			<label class="container mx-auto px-4">
+		<div class="space-y-4">
+			<label class="space-y-4">
 				<input
 					type="color"
 					value={formatting.color}
@@ -196,10 +206,10 @@
 					title="Text Color"
 					disabled={selectedTool !== 'text'}
 				/>
-				<span class="container mx-auto px-4" style="background-color: {formatting.color}"></span>
+				<span class="space-y-4" style="background-color: {formatting.color}"></span>
 			</label>
 
-			<label class="container mx-auto px-4">
+			<label class="space-y-4">
 				<input
 					type="range"
 					min="8"
@@ -209,17 +219,17 @@
 					title="Font Size: {formatting.fontSize}px"
 					disabled={selectedTool !== 'text'}
 				/>
-				<span class="container mx-auto px-4">{formatting.fontSize}px</span>
+				<span class="space-y-4">{formatting.fontSize}px</span>
 			</label>
 		</div>
 	</div>
 
-	<div class="container mx-auto px-4"></div>
+	<div class="space-y-4"></div>
 
 	<!-- Drawing Tools -->
-	<div class="container mx-auto px-4">
-		<div class="container mx-auto px-4">
-			<label class="container mx-auto px-4">
+	<div class="space-y-4">
+		<div class="space-y-4">
+			<label class="space-y-4">
 				<input
 					type="color"
 					value={drawing.strokeColor}
@@ -227,10 +237,10 @@
 					title="Stroke Color"
 					disabled={!['draw', 'rectangle', 'circle'].includes(selectedTool)}
 				/>
-				<span class="container mx-auto px-4" style="background-color: {drawing.strokeColor}"></span>
+				<span class="space-y-4" style="background-color: {drawing.strokeColor}"></span>
 			</label>
 
-			<label class="container mx-auto px-4">
+			<label class="space-y-4">
 				<input
 					type="range"
 					min="1"
@@ -240,18 +250,18 @@
 					title="Stroke Width: {drawing.strokeWidth}px"
 					disabled={!['draw', 'rectangle', 'circle'].includes(selectedTool)}
 				/>
-				<span class="container mx-auto px-4">{drawing.strokeWidth}px</span>
+				<span class="space-y-4">{drawing.strokeWidth}px</span>
 			</label>
 		</div>
 	</div>
 
-	<div class="container mx-auto px-4"></div>
+	<div class="space-y-4"></div>
 
 	<!-- Actions -->
-	<div class="container mx-auto px-4">
-		<div class="container mx-auto px-4">
+	<div class="space-y-4">
+		<div class="space-y-4">
 			<button
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => handleAction('undo')}
 				disabled={!canUndo}
 				aria-label="Undo"
@@ -261,7 +271,7 @@
 			</button>
 
 			<button
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => handleAction('redo')}
 				disabled={!canRedo}
 				aria-label="Redo"
@@ -271,9 +281,9 @@
 			</button>
 		</div>
 
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			<button
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => handleAction('copy')}
 				aria-label="Copy"
 				title="Copy"
@@ -282,7 +292,7 @@
 			</button>
 
 			<button
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => handleAction('delete')}
 				aria-label="Delete"
 				title="Delete"
@@ -292,13 +302,13 @@
 		</div>
 	</div>
 
-	<div class="container mx-auto px-4"></div>
+	<div class="space-y-4"></div>
 
 	<!-- Zoom Controls -->
-	<div class="container mx-auto px-4">
-		<div class="container mx-auto px-4">
+	<div class="space-y-4">
+		<div class="space-y-4">
 			<button
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => handleZoom(-10)}
 				aria-label="Zoom Out"
 				title="Zoom Out"
@@ -306,10 +316,10 @@
 				<ZoomOut size={18} />
 			</button>
 
-			<span class="container mx-auto px-4">{zoom}%</span>
+			<span class="space-y-4">{zoom}%</span>
 
 			<button
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => handleZoom(10)}
 				aria-label="Zoom In"
 				title="Zoom In"

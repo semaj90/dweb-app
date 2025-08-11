@@ -1,10 +1,20 @@
 <script lang="ts">
+  interface Props {
+    value: any;;
+    class_: string ;
+  }
+  let {
+    value,
+    class_ = ""
+  }: Props = $props();
+
+
+
   import { getContext } from "svelte";
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
 
-  export let value: any;
-  export let class_: string = "";
+    export let class_: string = "";
 
   const context =
     getContext<SelectContext>("select") ||
@@ -25,7 +35,7 @@
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   role="option"
   aria-selected={isSelected ? "true" : "false"}
   on:click={() => handleClick()}

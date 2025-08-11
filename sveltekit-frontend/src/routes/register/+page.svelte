@@ -1,13 +1,10 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
-  import { registerSchema } from '$lib/schemas';
-  import { zod } from 'sveltekit-superforms/adapters';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
   const { form, errors, enhance, submitting, message } = superForm(data.form, {
-    validators: zod(registerSchema),
     resetForm: true,
     scrollToError: 'smooth',
     errorSelector: '[data-invalid]',
@@ -123,10 +120,10 @@
         {#if $form.password}
           <div class="password-strength">
             <div class="strength-meter">
-              <div 
-                class="strength-fill" 
+              <div
+                class="strength-fill"
                 style="width: {(passwordStrength / 5) * 100}%; background-color: {
-                  passwordStrength <= 1 ? '#ef4444' : 
+                  passwordStrength <= 1 ? '#ef4444' :
                   passwordStrength <= 2 ? '#f97316' :
                   passwordStrength <= 3 ? '#eab308' :
                   passwordStrength <= 4 ? '#22c55e' : '#16a34a'
@@ -134,7 +131,7 @@
               ></div>
             </div>
             <span class="strength-text" style="color: {
-              passwordStrength <= 1 ? '#ef4444' : 
+              passwordStrength <= 1 ? '#ef4444' :
               passwordStrength <= 2 ? '#f97316' :
               passwordStrength <= 3 ? '#eab308' :
               passwordStrength <= 4 ? '#22c55e' : '#16a34a'
@@ -214,7 +211,7 @@
             class="form-checkbox"
           />
           <span class="checkbox-text">
-            I agree to the <a href="/terms" target="_blank">Terms of Service</a> 
+            I agree to the <a href="/terms" target="_blank">Terms of Service</a>
             and <a href="/privacy" target="_blank">Privacy Policy</a>
           </span>
         </label>
@@ -239,7 +236,7 @@
 
     <div class="register-footer">
       <p class="login-link">
-        Already have an account? 
+        Already have an account?
         <a href="/login">Sign in here</a>
       </p>
     </div>
@@ -467,7 +464,7 @@
     .register-container {
       padding: 1rem;
     }
-    
+
     .register-card {
       padding: 1.5rem;
     }

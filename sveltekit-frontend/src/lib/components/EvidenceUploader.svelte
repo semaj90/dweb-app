@@ -1,12 +1,19 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { writable } from 'svelte/store';
+  interface Props {
+    onuploaded?: (event?: any) => void;
+  }
+  let {
+    caseId,
+    maxFileSize = 50 * 1024 * 1024
+  }: Props = $props();
 
-  export let caseId: string;
-  export let maxFileSize = 50 * 1024 * 1024; // 50MB default
 
-  const dispatch = createEventDispatcher();
 
+    import { writable } from 'svelte/store';
+
+    export let maxFileSize = 50 * 1024 * 1024; // 50MB default
+
+  
   let files: FileList | null = null;
   let dragActive = false;
   let uploading = false;
@@ -85,10 +92,7 @@
           uploadProgress.set(((i + 1) / files.length) * 100);
           
           // Dispatch success event
-          dispatch('uploaded', {
-            file,
-            evidence: result.evidence
-          });
+          onuploaded?.();
         } else {
           const error = await response.json();
           uploadStatus.set(`Upload failed: ${error.error}`);
@@ -128,9 +132,9 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <div 
-    class="container mx-auto px-4"
+    class="space-y-4"
     class:drag-active={dragActive}
     class:uploading
     on:dragover={handleDragOver}
@@ -151,29 +155,29 @@
     />
 
     {#if uploading}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">⏳</div>
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">⏳</div>
+        <div class="space-y-4">
           {$uploadStatus}
         </div>
         {#if $uploadProgress > 0}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4" style="width: {$uploadProgress}%"></div>
+          <div class="space-y-4">
+            <div class="space-y-4" style="width: {$uploadProgress}%"></div>
           </div>
         {/if}
       </div>
     {:else}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">📤</div>
+      <div class="space-y-4">
+        <div class="space-y-4">📤</div>
         <h3>Upload Evidence</h3>
         <p>Drag and drop files here or click to browse</p>
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">🖼️ Images</span>
-          <span class="container mx-auto px-4">🎥 Videos</span>
-          <span class="container mx-auto px-4">📄 Documents</span>
-          <span class="container mx-auto px-4">🎵 Audio</span>
+        <div class="space-y-4">
+          <span class="space-y-4">🖼️ Images</span>
+          <span class="space-y-4">🎥 Videos</span>
+          <span class="space-y-4">📄 Documents</span>
+          <span class="space-y-4">🎵 Audio</span>
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           Max file size: {formatFileSize(maxFileSize)}
         </div>
       </div>
@@ -182,14 +186,14 @@
 
   <!-- File preview if files selected but not uploaded yet -->
   {#if files && files.length > 0 && !uploading}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h4>Selected Files ({files.length})</h4>
       {#each Array.from(files) as file}
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">{getFileIcon(file.type)}</span>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{file.name}</div>
-            <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <span class="space-y-4">{getFileIcon(file.type)}</span>
+          <div class="space-y-4">
+            <div class="space-y-4">{file.name}</div>
+            <div class="space-y-4">
               {formatFileSize(file.size)} • {file.type}
             </div>
           </div>

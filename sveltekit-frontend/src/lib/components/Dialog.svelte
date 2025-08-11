@@ -1,15 +1,24 @@
 <script lang="ts">
 	import { aiStore } from "$lib/stores/canvas";
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
 	import { fade, fly } from 'svelte/transition';
 
 	import { Bot, Send, User as UserIcon, X } from "lucide-svelte";
 
-	export let title = 'AI Assistant';
-	export let open = false;
+	interface Props {
+		title?: string;
+		open?: boolean;
+		onclose?: () => void;
+		onsubmit?: (data: any) => void;
+	}
 
-	const dispatch = createEventDispatcher();
+	let {
+		title = 'AI Assistant',
+		open = $bindable(false),
+		onclose,
+		onsubmit
+	}: Props = $props();
 
 	let dialogElement: HTMLElement;
 	let promptInput: HTMLTextAreaElement;
@@ -166,7 +175,7 @@
 
 {#if open}
 	<div
-		class="container mx-auto px-4"
+		class="space-y-4"
 		transition:fade={{ duration: 200 }}
 		on:click={handleBackdropClick}
 		on:keydown={handleKeydown}
@@ -176,15 +185,15 @@
 		tabindex={-1}
 	>
 		<div
-			class="container mx-auto px-4"
+			class="space-y-4"
 			bind:this={dialogElement}
 			transition:fly={{ y: 50, duration: 300, easing: quintOut }}
 		>
 			<!-- Header -->
-			<div class="container mx-auto px-4">
-				<h2 id="dialog-title" class="container mx-auto px-4">{title}</h2>
+			<div class="space-y-4">
+				<h2 id="dialog-title" class="space-y-4">{title}</h2>
 				<button
-					class="container mx-auto px-4"
+					class="space-y-4"
 					on:click={() => handleClose()}
 					aria-label="Close dialog"
 				>
@@ -193,12 +202,12 @@
 			</div>
 
 			<!-- Vibe Selection -->
-			<div class="container mx-auto px-4">
-				<h3 class="container mx-auto px-4">Select AI Vibe:</h3>
-				<div class="container mx-auto px-4">
+			<div class="space-y-4">
+				<h3 class="space-y-4">Select AI Vibe:</h3>
+				<div class="space-y-4">
 					{#each vibes as vibe}
 						<button
-							class="container mx-auto px-4"
+							class="space-y-4"
 							class:active={selectedVibe === vibe.id}
 							on:click={() => handleVibeChange(vibe.id)}
 							title={vibe.description}
@@ -210,10 +219,10 @@
 			</div>
 
 			<!-- Messages -->
-			<div class="container mx-auto px-4" bind:this={messagesContainer}>
+			<div class="space-y-4" bind:this={messagesContainer}>
 				{#if history.length === 0}
-					<div class="container mx-auto px-4">
-						<div class="container mx-auto px-4">
+					<div class="space-y-4">
+						<div class="space-y-4">
 							<Bot size={48} />
 						</div>
 						<h3>AI Assistant Ready</h3>
@@ -227,24 +236,24 @@
 					</div>
 				{:else}
 					{#each history as message}
-						<div class="container mx-auto px-4" class:user={message.role === 'user'} class:error={message.isError}>
-							<div class="container mx-auto px-4">
+						<div class="space-y-4" class:user={message.role === 'user'} class:error={message.isError}>
+							<div class="space-y-4">
 								{#if message.role === 'user'}
 									<UserIcon size={20} />
 								{:else}
 									<Bot size={20} />
 								{/if}
 							</div>
-							<div class="container mx-auto px-4">
-								<div class="container mx-auto px-4">
-									<span class="container mx-auto px-4">
+							<div class="space-y-4">
+								<div class="space-y-4">
+									<span class="space-y-4">
 										{message.role === 'user' ? 'You' : 'AI Assistant'}
 									</span>
-									<span class="container mx-auto px-4">
+									<span class="space-y-4">
 										{formatTimestamp(message.timestamp)}
 									</span>
 								</div>
-								<div class="container mx-auto px-4">
+								<div class="space-y-4">
 									{message.content}
 								</div>
 							</div>
@@ -253,18 +262,18 @@
 				{/if}
 
 				{#if isGenerating}
-					<div class="container mx-auto px-4">
-						<div class="container mx-auto px-4">
+					<div class="space-y-4">
+						<div class="space-y-4">
 							<Bot size={20} />
 						</div>
-						<div class="container mx-auto px-4">
-							<div class="container mx-auto px-4">
-								<div class="container mx-auto px-4">
+						<div class="space-y-4">
+							<div class="space-y-4">
+								<div class="space-y-4">
 									<span></span>
 									<span></span>
 									<span></span>
 								</div>
-								<span class="container mx-auto px-4">AI is thinking...</span>
+								<span class="space-y-4">AI is thinking...</span>
 							</div>
 						</div>
 					</div>
@@ -272,8 +281,8 @@
 			</div>
 
 			<!-- Input -->
-			<div class="container mx-auto px-4">
-				<div class="container mx-auto px-4">				<textarea
+			<div class="space-y-4">
+				<div class="space-y-4">				<textarea
 					bind:this={promptInput}
 					bind:value={currentPrompt}
 					placeholder="Ask the AI assistant anything about your case..."
@@ -287,7 +296,7 @@
 					}}
 				></textarea>
 					<button
-						class="container mx-auto px-4"
+						class="space-y-4"
 						on:click={() => handleSubmit()}
 						disabled={!currentPrompt.trim() || isGenerating}
 						aria-label="Send message"
@@ -295,10 +304,10 @@
 						<Send size={20} />
 					</button>
 				</div>
-				<div class="container mx-auto px-4">
+				<div class="space-y-4">
 					<span>Press Ctrl+Enter to send</span>
 					{#if history.length > 0}
-						<button class="container mx-auto px-4" on:click={() => clearHistory()}>
+						<button class="space-y-4" on:click={() => clearHistory()}>
 							Clear History
 						</button>
 					{/if}

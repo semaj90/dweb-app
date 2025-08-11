@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    for_: string ;
+    class_: string ;
+  }
+  let {
+    for_ = '',
+    class_ = ''
+  }: Props = $props();
+
+
+
   // Basic Label component
   export let for_: string = '';
   export let class_: string = '';

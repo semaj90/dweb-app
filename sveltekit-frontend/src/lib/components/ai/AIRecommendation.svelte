@@ -24,13 +24,13 @@
   });
 </script>
 
-<div class="container mx-auto px-4">
-  <h3 class="container mx-auto px-4">Recommended Next Actions</h3>
-  <ul class="container mx-auto px-4">
+<div class="space-y-4">
+  <h3 class="space-y-4">Recommended Next Actions</h3>
+  <ul class="space-y-4">
     {#each recommendations as item}
-      <li class="container mx-auto px-4">
-        <div class="container mx-auto px-4">{item.prompt}</div>
-        <div class="container mx-auto px-4">{item.response}</div>
+      <li class="space-y-4">
+        <div class="space-y-4">{item.prompt}</div>
+        <div class="space-y-4">{item.response}</div>
       </li>
     {/each}
   </ul>

@@ -1,4 +1,23 @@
 <script lang="ts">
+  interface Props {
+    cases: Case[] ;
+    filteredCases: Case[] ;
+    searchQuery: string ;
+    statusFilter: string ;
+    sortBy: string ;
+    sortOrder: 'asc' | 'desc' ;
+  }
+  let {
+    cases = [],
+    filteredCases = [],
+    searchQuery = '',
+    statusFilter = 'all',
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  }: Props = $props();
+
+
+
   // Simple Case Filters Component - TODO: Enhance with full functionality
   // 
   // 🚀 ENHANCEMENT ROADMAP (See: /ENHANCED_FEATURES_TODO.md)
@@ -30,13 +49,7 @@
   //   lastActivityDays: number;
   // }
   
-  export let cases: Case[] = [];
-  export let filteredCases: Case[] = [];
-  export let searchQuery: string = '';
-  export let statusFilter: string = 'all';
-  export let sortBy: string = 'createdAt';
-  export let sortOrder: 'asc' | 'desc' = 'desc';
-  
+              
   $: {
     // TODO: IMPLEMENT ADVANCED FILTERING LOGIC
     // =======================================
@@ -78,29 +91,29 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <input 
       type="text" 
       bind:value={searchQuery}
       placeholder="Search cases..."
-      class="container mx-auto px-4"
+      class="space-y-4"
     />
     
-    <select bind:value={statusFilter} class="container mx-auto px-4">
+    <select bind:value={statusFilter} class="space-y-4">
       <option value="all">All Statuses</option>
       <option value="active">Active</option>
       <option value="pending">Pending</option>
       <option value="closed">Closed</option>
     </select>
     
-    <select bind:value={sortBy} class="container mx-auto px-4">
+    <select bind:value={sortBy} class="space-y-4">
       <option value="createdAt">Created Date</option>
       <option value="title">Title</option>
       <option value="status">Status</option>
     </select>
     
-    <select bind:value={sortOrder} class="container mx-auto px-4">
+    <select bind:value={sortOrder} class="space-y-4">
       <option value="desc">Descending</option>
       <option value="asc">Ascending</option>
     </select>

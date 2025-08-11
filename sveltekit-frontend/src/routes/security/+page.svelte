@@ -12,21 +12,21 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <a href="/dashboard" class="container mx-auto px-4">
+  <div class="space-y-4">
+    <a href="/dashboard" class="space-y-4">
       <Button variant="outline" size="sm">
-        <ArrowLeft class="container mx-auto px-4" />
+        <ArrowLeft class="space-y-4" />
         Back to Dashboard
       </Button>
     </a>
     <div>
-      <h1 class="container mx-auto px-4">
-        <Shield class="container mx-auto px-4" />
+      <h1 class="space-y-4">
+        <Shield class="space-y-4" />
         Security Dashboard
       </h1>
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         Comprehensive security monitoring and event management
       </p>
     </div>

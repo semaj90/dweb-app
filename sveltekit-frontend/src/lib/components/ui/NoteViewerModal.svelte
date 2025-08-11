@@ -1,4 +1,41 @@
 <script lang="ts">
+  interface Props {
+    noteId: string;;
+    title: string ;
+    content: string ;
+    markdown: string ;
+    html: string ;
+    contentJson: any ;
+    noteType: string ;
+    tags: string[] ;
+    userId: string ;
+    caseId: string | undefined ;
+    createdAt: Date ;
+    isOpen?: any;
+    mode: "view" | "edit" ;
+    canEdit?: any;
+    onSave: ((data: any) ;
+  }
+  let {
+    noteId,
+    title = "",
+    content = "",
+    markdown = "",
+    html = "",
+    contentJson = null,
+    noteType = "general",
+    tags = [],
+    userId = "",
+    caseId = undefined,
+    createdAt = new Date(),
+    isOpen = false,
+    mode = "view",
+    canEdit = true,
+    onSave = > void) | undefined = undefined
+  }: Props = $props();
+
+
+
   import { createDialog, melt } from "@melt-ui/svelte";
   import { Bookmark, BookmarkCheck, Calendar, Edit3, Eye, Tag, User as UserIcon, X } from "lucide-svelte";
   import { marked } from "marked";
@@ -10,22 +47,7 @@
   } from '$lib/stores/saved-notes';
   import RichTextEditor from "./RichTextEditor.svelte";
 
-  export let noteId: string;
-  export let title: string = "";
-  export let content: string = "";
-  export let markdown: string = "";
-  export let html: string = "";
-  export let contentJson: any = null;
-  export let noteType: string = "general";
-  export let tags: string[] = [];
-  export let userId: string = "";
-  export let caseId: string | undefined = undefined;
-  export let createdAt: Date = new Date();
-  export let isOpen = false;
-  export let mode: "view" | "edit" = "view";
-  export let canEdit = true;
-  export let onSave: ((data: any) => void) | undefined = undefined;
-
+                              
   let isSaved = false;
   let editedContent = content;
   let editedTitle = title;
@@ -131,67 +153,67 @@
 {#if isOpen}
   <div
     use:melt={$overlay}
-    class="container mx-auto px-4"
+    class="space-y-4"
     transition:fade={{ duration: 150 }}
   >
     <div
       use:melt={$dialogContent}
-      class="container mx-auto px-4"
+      class="space-y-4"
       transition:fly={{ y: -20, duration: 200 }}
     >
       <!-- Header -->
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#if mode === "edit"}
             <input
               bind:value={editedTitle}
-              class="container mx-auto px-4"
+              class="space-y-4"
               placeholder="Note title..."
             />
           {:else}
             <h2
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {title || "Untitled Note"}
             </h2>
           {/if}
 
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Calendar class="container mx-auto px-4" />
+            <Calendar class="space-y-4" />
             {createdAt.toLocaleDateString()}
 
             {#if userId}
-              <UserIcon class="container mx-auto px-4" />
-              <span class="container mx-auto px-4">{userId}</span>
+              <UserIcon class="space-y-4" />
+              <span class="space-y-4">{userId}</span>
             {/if}
 
             <span
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {noteType}
             </span>
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#if canEdit}
             {#if mode === "view"}
               <button
                 type="button"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => startEdit()}
                 title="Edit Note"
               >
-                <Edit3 class="container mx-auto px-4" />
+                <Edit3 class="space-y-4" />
               </button>
             {:else}
               <button
                 type="button"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => cancelEdit()}
               >
                 Cancel
@@ -201,44 +223,44 @@
 
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
             title={isSaved ? "Remove from saved" : "Save for later"}
           >
             {#if isSaved}
-              <BookmarkCheck class="container mx-auto px-4" />
+              <BookmarkCheck class="space-y-4" />
             {:else}
-              <Bookmark class="container mx-auto px-4" />
+              <Bookmark class="space-y-4" />
             {/if}
           </button>
 
           <button
             type="button"
             use:melt={$close}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <X class="container mx-auto px-4" />
+            <X class="space-y-4" />
           </button>
         </div>
       </div>
 
       <!-- Tags Section -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Tag class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <Tag class="space-y-4" />
 
           {#if mode === "edit"}
             {#each editedTags as tag}
               <span
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {tag}
                 <button
                   type="button"
                   on:click={() => removeTag(tag)}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
-                  <X class="container mx-auto px-4" />
+                  <X class="space-y-4" />
                 </button>
               </span>
             {/each}
@@ -246,13 +268,13 @@
             <input
               bind:value={newTag}
               on:keydown={(e) => e.key === "Enter" && addTag()}
-              class="container mx-auto px-4"
+              class="space-y-4"
               placeholder="Add tag..."
             />
           {:else}
             {#each tags as tag}
               <span
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {tag}
               </span>
@@ -262,7 +284,7 @@
       </div>
 
       <!-- Content -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if mode === "edit"}
           <RichTextEditor
             content={editedContent}
@@ -271,15 +293,15 @@
             autoSave={false}
           />
         {:else if displayHtml}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {@html displayHtml}
           </div>
         {:else if content}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {content}
           </div>
         {:else}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             No content available
           </div>
         {/if}
@@ -288,9 +310,9 @@
       <!-- Footer -->
       {#if mode === "view"}
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#if caseId}
               <span>Associated with case: {caseId}</span>
             {:else}
@@ -298,9 +320,9 @@
             {/if}
           </div>
 
-          <div class="container mx-auto px-4">
-            <Eye class="container mx-auto px-4" />
-            <span class="container mx-auto px-4"
+          <div class="space-y-4">
+            <Eye class="space-y-4" />
+            <span class="space-y-4"
               >Read-only</span
             >
           </div>

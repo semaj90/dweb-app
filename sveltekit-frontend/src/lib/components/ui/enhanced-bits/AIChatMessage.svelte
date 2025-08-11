@@ -1,7 +1,17 @@
 <!-- AI Chat Message: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
-  export let message: { role: string; content: string; timestamp?: string; references?: any[] };
-  export let showReferences = false;
+  interface Props {
+    message: { role: string; content: string; timestamp?: string; references?: any[] };;
+  let {
+    message,
+    showReferences = false
+  }: Props = $props();
+
+    showReferences?: any;
+  }
+
+
+    export let showReferences = false;
 
   let isUser = message.role === 'user';
 </script>

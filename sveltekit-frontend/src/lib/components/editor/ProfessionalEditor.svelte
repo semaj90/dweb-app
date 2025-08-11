@@ -1,13 +1,21 @@
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte';
-  import { writable } from 'svelte/store';
+  interface Props {
+    onsave?: (event?: any) => void;
+  }
+  let {
+    content = '',
+    title = 'Untitled Document',
+    autoSave = true,
+    autoSaveInterval = 5000
+  }: Props = $props();
+
+
+
+    import { writable } from 'svelte/store';
   import { Save, Maximize, Minimize, Eye, EyeOff, FileText, Keyboard } from 'lucide-svelte';
 
   // Props
-  export let content: string = '';
-  export let title: string = 'Untitled Document';
-  export let autoSave: boolean = true;
-  export let autoSaveInterval: number = 5000; // 5 seconds
+        export let autoSaveInterval: number = 5000; // 5 seconds
 
   // State management
   let editorElement: HTMLDivElement;
@@ -20,8 +28,7 @@
   let readingTime = 0;
   let hasUnsavedChanges = false;
 
-  const dispatch = createEventDispatcher();
-
+  
   // Auto-save functionality
   let autoSaveTimer: NodeJS.Timeout;
   
@@ -39,7 +46,7 @@
   }
 
   function saveDocument() {
-    dispatch('save', { content, title });
+    onsave?.();
     hasUnsavedChanges = false;
     lastSaved = new Date();
   }

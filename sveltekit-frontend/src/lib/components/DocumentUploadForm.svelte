@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    formData: {;
+  }
+  let {
+    formData
+  }: Props = $props();
+
+
+
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -7,8 +16,7 @@
 
   const dispatch = createEventDispatcher();
 
-  export let formData: {
-    uploaded_files: File[];
+      uploaded_files: File[];
     ocr_results: OCRResult[];
     processing_status: 'pending' | 'processing' | 'completed' | 'error';
   };

@@ -1,4 +1,9 @@
 <script lang="ts">
+  interface Props {
+
+  }
+
+
   import type { User } from '$lib/types/user';
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
@@ -15,10 +20,8 @@
     Users,
     X,
   } from "lucide-svelte";
-  import { createEventDispatcher, onMount } from "svelte";
-
-  const dispatch = createEventDispatcher();
-
+  
+  
   // Convert to Svelte 5 $props
   let {
     open = $bindable(false),
@@ -532,7 +535,7 @@
     tabindex={0}
     aria-modal="true"
     aria-labelledby="command-palette-title"
-    onclick={(e) => { if (e.target === e.currentTarget) open = false; }}
+    onclick={(e) => { if ((e.target as HTMLButtonElement) === e.currentTarget) open = false; }}
     onkeydown={(e) => (e.key === "Escape" ? (open = false) : null)}
   >
     <div class="command-palette">
@@ -620,12 +623,12 @@
 {/if}
 
 <!-- Keyboard Shortcuts Help Modal -->
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   {@render shortcutsHelp?.()}
 </div>
 
 <!-- Shortcut definitions for screen readers -->
-<div class="container mx-auto px-4" aria-live="polite" id="shortcuts-announcements"></div>
+<div class="space-y-4" aria-live="polite" id="shortcuts-announcements"></div>
 
 <style>
   /* @unocss-include */

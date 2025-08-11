@@ -1,12 +1,21 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
-  import { writable } from 'svelte/store';
+  interface Props {
+    onaiAnalysisComplete?: (event?: any) => void;
+    onautoSaved?: (event?: any) => void;
+    onsave?: (event?: any) => void;
+    onshowNotification?: (event?: any) => void;
+  }
+  let {
+    selectedNode = null,
+    readOnly = false
+  }: Props = $props();
+
+
+
+    import { writable } from 'svelte/store';
   
-  const dispatch = createEventDispatcher();
-  
-  export let selectedNode: any = null;
-  export let readOnly = false;
-  
+    
+      
   // Enhanced form fields with auto-population
   let formData = writable({
     // Basic fields
@@ -242,7 +251,7 @@
         });
         
         // Notify parent components
-        dispatch('aiAnalysisComplete', { node, aiTags });
+        onaiAnalysisComplete?.();
 }
     } catch (error) {
       console.error('Enhanced AI analysis failed:', error);
@@ -377,7 +386,7 @@
       if (response.ok) {
         hasUnsavedChanges = false;
         lastSavedAt = new Date();
-        dispatch('autoSaved', updatedNode);
+        onautoSaved?.();
 }
     } catch (error) {
       console.warn('Auto-save failed:', error);
@@ -423,20 +432,14 @@
         hasUnsavedChanges = false;
         lastSavedAt = new Date();
         
-        dispatch('save', result.evidence);
-        dispatch('showNotification', {
-          type: 'success',
-          message: 'Evidence saved successfully'
-        });
+        onsave?.();
+        onshowNotification?.();
       } else {
         throw new Error('Save failed');
 }
     } catch (error) {
       console.error('Save failed:', error);
-      dispatch('showNotification', {
-        type: 'error',
-        message: 'Failed to save evidence'
-      });
+      onshowNotification?.();
     } finally {
       isSaving = false;
 }
@@ -453,16 +456,10 @@
       // Trigger fresh AI analysis
       await triggerEnhancedAIAnalysis(selectedNode, $formData);
       
-      dispatch('showNotification', {
-        type: 'success',
-        message: 'AI re-analysis completed'
-      });
+      onshowNotification?.();
     } catch (error) {
       console.error('Re-analysis failed:', error);
-      dispatch('showNotification', {
-        type: 'error',
-        message: 'AI re-analysis failed'
-      });
+      onshowNotification?.();
     } finally {
       isLoading = false;
 }
@@ -481,23 +478,23 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   {#if selectedNode}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h2 class="container mx-auto px-4">Evidence Inspector</h2>
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <h2 class="space-y-4">Evidence Inspector</h2>
         
         <!-- Action buttons -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#if hasUnsavedChanges}
-            <span class="container mx-auto px-4">
-              <div class="container mx-auto px-4"></div>
+            <span class="space-y-4">
+              <div class="space-y-4"></div>
               Unsaved changes
             </span>
           {/if}
           
           {#if lastSavedAt}
-            <span class="container mx-auto px-4">
+            <span class="space-y-4">
               Saved {new Date(lastSavedAt).toLocaleTimeString()}
             </span>
           {/if}
@@ -505,10 +502,10 @@
           <button 
             on:click={reanalyzeWithAI}
             disabled={isLoading}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             {#if isLoading}
-              <div class="container mx-auto px-4"></div>
+              <div class="space-y-4"></div>
             {:else}
               🤖
             {/if}
@@ -518,73 +515,73 @@
       </div>
       
       <!-- File info header -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">{evidenceTypes.find(t => t.value === $formData.evidenceType)?.icon || '📁'}</span>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <span class="space-y-4">{evidenceTypes.find(t => t.value === $formData.evidenceType)?.icon || '📁'}</span>
           <div>
-            <div class="container mx-auto px-4">{selectedNode.name}</div>
-            <div class="container mx-auto px-4">{selectedNode.type}</div>
+            <div class="space-y-4">{selectedNode.name}</div>
+            <div class="space-y-4">{selectedNode.type}</div>
           </div>
         </div>
         
         {#if $formData.qualityScore > 0}
-          <div class="container mx-auto px-4">
-            <span class="container mx-auto px-4">Quality Score:</span>
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <span class="space-y-4">Quality Score:</span>
+            <div class="space-y-4">
               <div 
-                class="container mx-auto px-4"
+                class="space-y-4"
                 style="width: {$formData.qualityScore * 100}%"
               ></div>
             </div>
-            <span class="container mx-auto px-4">{Math.round($formData.qualityScore * 100)}%</span>
+            <span class="space-y-4">{Math.round($formData.qualityScore * 100)}%</span>
           </div>
         {/if}
       </div>
       
       <!-- Loading state -->
       {#if isLoading}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4"></div>
-            <div class="container mx-auto px-4">Analyzing with AI...</div>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <div class="space-y-4"></div>
+            <div class="space-y-4">Analyzing with AI...</div>
           </div>
         </div>
       {:else}
         <!-- Form sections -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           
           <!-- Basic Information -->
           <section>
-            <h3 class="container mx-auto px-4">Basic Information</h3>
-            <div class="container mx-auto px-4">
+            <h3 class="space-y-4">Basic Information</h3>
+            <div class="space-y-4">
               <div>
-                <label class="container mx-auto px-4">Title</label>
+                <label class="space-y-4">Title</label>
                 <input
                   bind:value={$formData.title}
                   placeholder="Enter evidence title"
                   disabled={readOnly}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
               </div>
               
               <div>
-                <label class="container mx-auto px-4">Description</label>
+                <label class="space-y-4">Description</label>
                 <textarea
                   bind:value={$formData.description}
                   placeholder="Enter description or summary"
                   disabled={readOnly}
                   rows={3}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 ></textarea>
               </div>
               
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <div>
-                  <label class="container mx-auto px-4">Evidence Type</label>
+                  <label class="space-y-4">Evidence Type</label>
                   <select 
                     bind:value={$formData.evidenceType}
                     disabled={readOnly}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {#each evidenceTypes as type}
                       <option value={type.value}>{type.icon} {type.label}</option>
@@ -593,11 +590,11 @@
                 </div>
                 
                 <div>
-                  <label class="container mx-auto px-4">Legal Relevance</label>
+                  <label class="space-y-4">Legal Relevance</label>
                   <select 
                     bind:value={$formData.legalRelevance}
                     disabled={readOnly}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {#each relevanceOptions as option}
                       <option value={option.value}>{option.label}</option>
@@ -606,13 +603,13 @@
                 </div>
               </div>
               
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <div>
-                  <label class="container mx-auto px-4">Confidentiality</label>
+                  <label class="space-y-4">Confidentiality</label>
                   <select 
                     bind:value={$formData.confidentialityLevel}
                     disabled={readOnly}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {#each confidentialityLevels as level}
                       <option value={level.value}>{level.label}</option>
@@ -621,11 +618,11 @@
                 </div>
                 
                 <div>
-                  <label class="container mx-auto px-4">Urgency</label>
+                  <label class="space-y-4">Urgency</label>
                   <select 
                     bind:value={$formData.urgencyLevel}
                     disabled={readOnly}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {#each urgencyLevels as level}
                       <option value={level.value}>{level.label}</option>
@@ -638,15 +635,15 @@
           
           <!-- Tags Section -->
           <section>
-            <h3 class="container mx-auto px-4">Tags</h3>
-            <div class="container mx-auto px-4">
+            <h3 class="space-y-4">Tags</h3>
+            <div class="space-y-4">
               <!-- AI-generated tags -->
               {#if $formData.tags.length > 0}
                 <div>
-                  <label class="container mx-auto px-4">AI-Generated Tags</label>
-                  <div class="container mx-auto px-4">
+                  <label class="space-y-4">AI-Generated Tags</label>
+                  <div class="space-y-4">
                     {#each $formData.tags as tag}
-                      <span class="container mx-auto px-4">{tag}</span>
+                      <span class="space-y-4">{tag}</span>
                     {/each}
                   </div>
                 </div>
@@ -654,15 +651,15 @@
               
               <!-- Custom tags -->
               <div>
-                <label class="container mx-auto px-4">Custom Tags</label>
-                <div class="container mx-auto px-4">
+                <label class="space-y-4">Custom Tags</label>
+                <div class="space-y-4">
                   {#each $formData.customTags as tag}
-                    <span class="container mx-auto px-4">
+                    <span class="space-y-4">
                       {tag}
                       {#if !readOnly}
                         <button 
                           on:click={() => removeCustomTag(tag)}
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                         >×</button>
                       {/if}
                     </span>
@@ -670,16 +667,16 @@
                 </div>
                 
                 {#if !readOnly}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <input
                       bind:value={customTag}
                       placeholder="Add custom tag"
                       on:keydown={(e) => e.key === 'Enter' && addCustomTag()}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
                     <button 
                       on:click={addCustomTag} 
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >Add</button>
                   </div>
                 {/if}
@@ -689,29 +686,29 @@
           
           <!-- Entities Section -->
           <section>
-            <h3 class="container mx-auto px-4">Extracted Entities</h3>
-            <div class="container mx-auto px-4">
+            <h3 class="space-y-4">Extracted Entities</h3>
+            <div class="space-y-4">
               
               <!-- People -->
               {#if $formData.people.length > 0 || !readOnly}
                 <div>
-                  <div class="container mx-auto px-4">
-                    <label class="container mx-auto px-4">People</label>
+                  <div class="space-y-4">
+                    <label class="space-y-4">People</label>
                     {#if $formData.extractionConfidence.people > 0}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         {Math.round($formData.extractionConfidence.people * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#each $formData.people as person}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         👤 {person}
                         {#if !readOnly}
                           <button 
                             on:click={() => removePerson(person)}
-                            class="container mx-auto px-4"
+                            class="space-y-4"
                           >×</button>
                         {/if}
                       </span>
@@ -719,16 +716,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <input
                         bind:value={customPerson}
                         placeholder="Add person"
                         on:keydown={(e) => e.key === 'Enter' && addCustomPerson()}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       />
                       <button 
                         on:click={addCustomPerson} 
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -738,23 +735,23 @@
               <!-- Locations -->
               {#if $formData.locations.length > 0 || !readOnly}
                 <div>
-                  <div class="container mx-auto px-4">
-                    <label class="container mx-auto px-4">Locations</label>
+                  <div class="space-y-4">
+                    <label class="space-y-4">Locations</label>
                     {#if $formData.extractionConfidence.locations > 0}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         {Math.round($formData.extractionConfidence.locations * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#each $formData.locations as location}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         📍 {location}
                         {#if !readOnly}
                           <button 
                             on:click={() => removeLocation(location)}
-                            class="container mx-auto px-4"
+                            class="space-y-4"
                           >×</button>
                         {/if}
                       </span>
@@ -762,16 +759,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <input
                         bind:value={customLocation}
                         placeholder="Add location"
                         on:keydown={(e) => e.key === 'Enter' && addCustomLocation()}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       />
                       <button 
                         on:click={addCustomLocation} 
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -781,23 +778,23 @@
               <!-- Organizations -->
               {#if $formData.organizations.length > 0 || !readOnly}
                 <div>
-                  <div class="container mx-auto px-4">
-                    <label class="container mx-auto px-4">Organizations</label>
+                  <div class="space-y-4">
+                    <label class="space-y-4">Organizations</label>
                     {#if $formData.extractionConfidence.organizations > 0}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         {Math.round($formData.extractionConfidence.organizations * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#each $formData.organizations as org}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         🏢 {org}
                         {#if !readOnly}
                           <button 
                             on:click={() => removeOrganization(org)}
-                            class="container mx-auto px-4"
+                            class="space-y-4"
                           >×</button>
                         {/if}
                       </span>
@@ -805,16 +802,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <input
                         bind:value={customOrganization}
                         placeholder="Add organization"
                         on:keydown={(e) => e.key === 'Enter' && addCustomOrganization()}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       />
                       <button 
                         on:click={addCustomOrganization} 
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -824,18 +821,18 @@
               <!-- Dates -->
               {#if $formData.dates.length > 0}
                 <div>
-                  <div class="container mx-auto px-4">
-                    <label class="container mx-auto px-4">Dates</label>
+                  <div class="space-y-4">
+                    <label class="space-y-4">Dates</label>
                     {#if $formData.extractionConfidence.dates > 0}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         {Math.round($formData.extractionConfidence.dates * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#each $formData.dates as date}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         📅 {formatDate(date)}
                       </span>
                     {/each}
@@ -848,12 +845,12 @@
           <!-- Key Facts -->
           {#if $formData.keyFacts.length > 0}
             <section>
-              <h3 class="container mx-auto px-4">Key Facts</h3>
-              <ul class="container mx-auto px-4">
+              <h3 class="space-y-4">Key Facts</h3>
+              <ul class="space-y-4">
                 {#each $formData.keyFacts as fact}
-                  <li class="container mx-auto px-4">
-                    <span class="container mx-auto px-4">•</span>
-                    <span class="container mx-auto px-4">{fact}</span>
+                  <li class="space-y-4">
+                    <span class="space-y-4">•</span>
+                    <span class="space-y-4">{fact}</span>
                   </li>
                 {/each}
               </ul>
@@ -863,20 +860,20 @@
           <!-- Actions & Recommendations -->
           {#if $formData.actions.length > 0 || $formData.recommendations.length > 0 || !readOnly}
             <section>
-              <h3 class="container mx-auto px-4">Actions & Recommendations</h3>
-              <div class="container mx-auto px-4">
+              <h3 class="space-y-4">Actions & Recommendations</h3>
+              <div class="space-y-4">
                 
                 <!-- Action Items -->
                 <div>
-                  <label class="container mx-auto px-4">Action Items</label>
-                  <div class="container mx-auto px-4">
+                  <label class="space-y-4">Action Items</label>
+                  <div class="space-y-4">
                     {#each $formData.actions as action}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         ⚡ {action}
                         {#if !readOnly}
                           <button 
                             on:click={() => removeAction(action)}
-                            class="container mx-auto px-4"
+                            class="space-y-4"
                           >×</button>
                         {/if}
                       </span>
@@ -884,16 +881,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <input
                         bind:value={customAction}
                         placeholder="Add action item"
                         on:keydown={(e) => e.key === 'Enter' && addCustomAction()}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       />
                       <button 
                         on:click={addCustomAction} 
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -902,11 +899,11 @@
                 <!-- AI Recommendations -->
                 {#if $formData.recommendations.length > 0}
                   <div>
-                    <label class="container mx-auto px-4">AI Recommendations</label>
-                    <ul class="container mx-auto px-4">
+                    <label class="space-y-4">AI Recommendations</label>
+                    <ul class="space-y-4">
                       {#each $formData.recommendations as recommendation}
-                        <li class="container mx-auto px-4">
-                          <span class="container mx-auto px-4">💡</span>
+                        <li class="space-y-4">
+                          <span class="space-y-4">💡</span>
                           <span>{recommendation}</span>
                         </li>
                       {/each}
@@ -920,14 +917,14 @@
           <!-- Red Flags -->
           {#if $formData.redFlags.length > 0}
             <section>
-              <h3 class="container mx-auto px-4">
-                <span class="container mx-auto px-4">⚠️</span>
+              <h3 class="space-y-4">
+                <span class="space-y-4">⚠️</span>
                 Red Flags
               </h3>
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {#each $formData.redFlags as flag}
-                  <div class="container mx-auto px-4">
-                    <span class="container mx-auto px-4">{flag}</span>
+                  <div class="space-y-4">
+                    <span class="space-y-4">{flag}</span>
                   </div>
                 {/each}
               </div>
@@ -937,15 +934,15 @@
           <!-- Additional Legal Information -->
           {#if $formData.statutes.length > 0 || $formData.monetaryAmounts.length > 0 || $formData.potentialWitnesses.length > 0 || $formData.relatedCases.length > 0}
             <section>
-              <h3 class="container mx-auto px-4">Legal Information</h3>
-              <div class="container mx-auto px-4">
+              <h3 class="space-y-4">Legal Information</h3>
+              <div class="space-y-4">
                 
                 {#if $formData.statutes.length > 0}
                   <div>
-                    <label class="container mx-auto px-4">Relevant Statutes</label>
-                    <div class="container mx-auto px-4">
+                    <label class="space-y-4">Relevant Statutes</label>
+                    <div class="space-y-4">
                       {#each $formData.statutes as statute}
-                        <span class="container mx-auto px-4">⚖️ {statute}</span>
+                        <span class="space-y-4">⚖️ {statute}</span>
                       {/each}
                     </div>
                   </div>
@@ -953,10 +950,10 @@
                 
                 {#if $formData.monetaryAmounts.length > 0}
                   <div>
-                    <label class="container mx-auto px-4">Monetary Amounts</label>
-                    <div class="container mx-auto px-4">
+                    <label class="space-y-4">Monetary Amounts</label>
+                    <div class="space-y-4">
                       {#each $formData.monetaryAmounts as amount}
-                        <span class="container mx-auto px-4">💰 {amount}</span>
+                        <span class="space-y-4">💰 {amount}</span>
                       {/each}
                     </div>
                   </div>
@@ -964,10 +961,10 @@
                 
                 {#if $formData.potentialWitnesses.length > 0}
                   <div>
-                    <label class="container mx-auto px-4">Potential Witnesses</label>
-                    <div class="container mx-auto px-4">
+                    <label class="space-y-4">Potential Witnesses</label>
+                    <div class="space-y-4">
                       {#each $formData.potentialWitnesses as witness}
-                        <span class="container mx-auto px-4">👁️ {witness}</span>
+                        <span class="space-y-4">👁️ {witness}</span>
                       {/each}
                     </div>
                   </div>
@@ -975,10 +972,10 @@
                 
                 {#if $formData.relatedCases.length > 0}
                   <div>
-                    <label class="container mx-auto px-4">Related Cases</label>
-                    <div class="container mx-auto px-4">
+                    <label class="space-y-4">Related Cases</label>
+                    <div class="space-y-4">
                       {#each $formData.relatedCases as case_ref}
-                        <span class="container mx-auto px-4">📁 {case_ref}</span>
+                        <span class="space-y-4">📁 {case_ref}</span>
                       {/each}
                     </div>
                   </div>
@@ -990,14 +987,14 @@
         
         <!-- Save button -->
         {#if !readOnly}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <button 
               on:click={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {#if isSaving}
-                <div class="container mx-auto px-4"></div>
+                <div class="space-y-4"></div>
                 Saving...
               {:else}
                 💾 Save Evidence
@@ -1009,11 +1006,11 @@
     </div>
   {:else}
     <!-- No selection state -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">📋</div>
-      <div class="container mx-auto px-4">Enhanced Inspector</div>
-      <div class="container mx-auto px-4">Select evidence to view AI-powered analysis and auto-populated fields</div>
-      <div class="container mx-auto px-4">Powered by advanced natural language processing</div>
+    <div class="space-y-4">
+      <div class="space-y-4">📋</div>
+      <div class="space-y-4">Enhanced Inspector</div>
+      <div class="space-y-4">Select evidence to view AI-powered analysis and auto-populated fields</div>
+      <div class="space-y-4">Powered by advanced natural language processing</div>
     </div>
   {/if}
 </div>

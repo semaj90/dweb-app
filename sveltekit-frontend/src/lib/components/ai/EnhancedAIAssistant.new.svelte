@@ -1,5 +1,17 @@
 <!-- Enhanced AI Assistant - Simplified Version -->
 <script lang="ts">
+  interface Props {
+
+  }
+  let {
+    caseId = undefined,
+    placeholder = "Ask AI about this case...",
+    maxHeight = "400px",
+    showReferences = true
+  }: Props = $props();
+
+
+
   import {
     Brain,
     Loader2,
@@ -8,16 +20,10 @@
     Settings,
     Trash2,
   } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-
-  export let caseId: string | undefined = undefined;
-  export const evidenceIds: string[] = []; // External reference for evidence context
-  export let placeholder = "Ask AI about this case...";
-  export let maxHeight = "400px";
-  export let showReferences = true;
-
-  const dispatch = createEventDispatcher();
-
+  
+    export const evidenceIds: string[] = []; // External reference for evidence context
+      
+  
   // State
   let query = "";
   let isLoading = false;
@@ -85,49 +91,49 @@ I can provide more specific guidance if you share additional details about your 
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <Brain class="container mx-auto px-4" />
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <Brain class="space-y-4" />
       <h3>Legal AI Assistant</h3>
       {#if caseId}
-        <span class="container mx-auto px-4">Case: {caseId}</span>
+        <span class="space-y-4">Case: {caseId}</span>
       {/if}
     </div>
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => (showSettings = !showSettings)}
         title="Settings"
       >
-        <Settings class="container mx-auto px-4" />
+        <Settings class="space-y-4" />
       </button>
-      <button class="container mx-auto px-4" on:click={() => clearMessages()} title="Clear">
-        <Trash2 class="container mx-auto px-4" />
+      <button class="space-y-4" on:click={() => clearMessages()} title="Clear">
+        <Trash2 class="space-y-4" />
       </button>
     </div>
   </div>
 
   <!-- Messages -->
-  <div class="container mx-auto px-4" style="max-height: {maxHeight}">
+  <div class="space-y-4" style="max-height: {maxHeight}">
     {#each messages as message}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           {message.content}
         </div>
 
         {#if message.references && showReferences}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>References:</h4>
             {#each message.references as reference}
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => handleReferenceClick(reference)}
               >
-                <Quote class="container mx-auto px-4" />
-                <span class="container mx-auto px-4">{reference.title}</span>
-                <span class="container mx-auto px-4">{reference.citation}</span>
+                <Quote class="space-y-4" />
+                <span class="space-y-4">{reference.title}</span>
+                <span class="space-y-4">{reference.citation}</span>
               </button>
             {/each}
           </div>
@@ -136,9 +142,9 @@ I can provide more specific guidance if you share additional details about your 
     {/each}
 
     {#if isLoading}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Loader2 class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <Loader2 class="space-y-4" />
           Analyzing your query...
         </div>
       </div>
@@ -146,35 +152,35 @@ I can provide more specific guidance if you share additional details about your 
   </div>
 
   <!-- Input -->
-  <form class="container mx-auto px-4" on:submit|preventDefault={handleSubmit}>
+  <form class="space-y-4" on:submit|preventDefault={handleSubmit}>
     <input
       type="text"
       bind:value={query}
       {placeholder}
       disabled={isLoading}
-      class="container mx-auto px-4"
+      class="space-y-4"
     />
     <button
       type="submit"
       disabled={!query.trim() || isLoading}
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
-      <Search class="container mx-auto px-4" />
+      <Search class="space-y-4" />
     </button>
   </form>
 
   <!-- Settings Panel -->
   {#if showSettings}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h4>Settings</h4>
-        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
+        <button class="space-y-4" on:click={() => (showSettings = false)}
           >×</button
         >
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <label for="model">Model:</label>
           <select id="model" bind:value={selectedModel}>
             <option value="gpt-4">GPT-4</option>
@@ -183,7 +189,7 @@ I can provide more specific guidance if you share additional details about your 
           </select>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="temp">Temperature: {temperature}</label>
           <input
             id="temp"
@@ -195,7 +201,7 @@ I can provide more specific guidance if you share additional details about your 
           />
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="threshold">Search Threshold: {searchThreshold}</label>
           <input
             id="threshold"
@@ -207,7 +213,7 @@ I can provide more specific guidance if you share additional details about your 
           />
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="max">Max Results:</label>
           <input
             id="max"
@@ -224,7 +230,7 @@ I can provide more specific guidance if you share additional details about your 
   <!-- Citation Dialog -->
   {#if showCitationDialog}
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="citation-dialog-title"
@@ -233,7 +239,7 @@ I can provide more specific guidance if you share additional details about your 
       on:keydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
     >
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
         role="document"
         on:click|stopPropagation
         on:keydown={(e) => {
@@ -241,23 +247,23 @@ I can provide more specific guidance if you share additional details about your 
             showCitationDialog = false;
           }
         }}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <h4 id="citation-dialog-title">
-            <Quote class="container mx-auto px-4" /> Legal Citation
+            <Quote class="space-y-4" /> Legal Citation
           </h4>
         </div>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <p>{selectedCitation}</p>
           </div>
 
-          <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
+          <div class="space-y-4">
+            <button class="space-y-4" on:click={() => insertCitation()}>
               Insert Citation
             </button>
             <button
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy
@@ -265,9 +271,9 @@ I can provide more specific guidance if you share additional details about your 
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => (showCitationDialog = false)}
           >
             Close

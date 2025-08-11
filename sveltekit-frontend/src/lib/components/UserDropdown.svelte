@@ -1,10 +1,18 @@
 <script lang="ts">
+  interface Props {
+    user: any ;
+  }
+  let {
+    user = null
+  }: Props = $props();
+
+
+
 	import { onMount } from 'svelte';
 	import { avatarStore } from "../stores/avatarStore";
 	import Avatar from './Avatar.svelte';
 	
-	export let user: any = null;
-	
+		
 	let dropdownOpen = false;
 	let dropdownElement: HTMLElement;
 	
@@ -32,19 +40,19 @@
 }
 </script>
 
-<div class="container mx-auto px-4" bind:this={dropdownElement}>
+<div class="space-y-4" bind:this={dropdownElement}>
 	<button 
-		class="container mx-auto px-4"
+		class="space-y-4"
 		on:click={() => toggleDropdown()}
 		aria-expanded={dropdownOpen}
 		aria-haspopup="true"
 	>
 		<Avatar size="small" />
-		<span class="container mx-auto px-4">
+		<span class="space-y-4">
 			{user?.name || user?.email || 'User'}
 		</span>
 		<svg 
-			class="container mx-auto px-4" 
+			class="space-y-4" 
 			class:rotated={dropdownOpen}
 			width="16" 
 			height="16" 
@@ -62,48 +70,48 @@
 	</button>
 	
 	{#if dropdownOpen}
-		<div class="container mx-auto px-4">
-			<div class="container mx-auto px-4">
+		<div class="space-y-4">
+			<div class="space-y-4">
 				<Avatar size="large" clickable={true} />
-				<div class="container mx-auto px-4">
-					<div class="container mx-auto px-4">{user?.name || 'User'}</div>
-					<div class="container mx-auto px-4">{user?.email || ''}</div>
-					<div class="container mx-auto px-4">{user?.role || ''}</div>
+				<div class="space-y-4">
+					<div class="space-y-4">{user?.name || 'User'}</div>
+					<div class="space-y-4">{user?.email || ''}</div>
+					<div class="space-y-4">{user?.role || ''}</div>
 				</div>
 			</div>
 			
-			<div class="container mx-auto px-4"></div>
+			<div class="space-y-4"></div>
 			
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<h4>Avatar Options</h4>
 				<Avatar size="medium" showUploadButton={true} />
 			</div>
 			
-			<div class="container mx-auto px-4"></div>
+			<div class="space-y-4"></div>
 			
-			<div class="container mx-auto px-4">
-				<a href="/profile" class="container mx-auto px-4">
+			<div class="space-y-4">
+				<a href="/profile" class="space-y-4">
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM8 9a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6Z" fill="currentColor"/>
 					</svg>
 					Profile Settings
 				</a>
 				
-				<a href="/dashboard" class="container mx-auto px-4">
+				<a href="/dashboard" class="space-y-4">
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path d="M1 3h14v2H1V3ZM1 7h14v2H1V7ZM1 11h14v2H1v-2Z" fill="currentColor"/>
 					</svg>
 					Dashboard
 				</a>
 				
-				<a href="/cases" class="container mx-auto px-4">
+				<a href="/cases" class="space-y-4">
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path d="M3 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6.414a1 1 0 0 0-.293-.707l-3.414-3.414A1 1 0 0 0 9.586 2H3Z" fill="currentColor"/>
 					</svg>
 					My Cases
 				</a>
 				
-				<button type="button" class="container mx-auto px-4" on:click={() => handleLogout()}>
+				<button type="button" class="space-y-4" on:click={() => handleLogout()}>
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path d="M6 15H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3M13 11l3-3-3-3M8 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 					</svg>

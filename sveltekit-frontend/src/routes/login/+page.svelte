@@ -1,13 +1,11 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
-  import { loginSchema, type LoginSchema } from '$lib/schemas';
-  import { zod } from 'sveltekit-superforms/adapters';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
+  // Use server-provided SuperValidated form
   const { form, errors, enhance, submitting } = superForm(data.form, {
-    validators: zod(loginSchema),
     resetForm: false,
     scrollToError: 'smooth',
     errorSelector: '[data-invalid]',
@@ -51,7 +49,7 @@
           {data.registrationSuccess}
         </div>
       {/if}
-      
+
       {#if data.form?.message}
         <div class="error-message">
           {data.form.message}
@@ -112,12 +110,12 @@
       <div class="divider">
         <span>or use demo accounts</span>
       </div>
-      
+
       <div class="demo-users">
         {#each demoUsers as demoUser}
           <button
             type="button"
-            on:click={() => quickLogin(demoUser)}
+            onclick={() => quickLogin(demoUser)}
             class="demo-user-button"
             title="Click to fill login form with {demoUser.name} credentials"
           >
@@ -378,7 +376,7 @@
     .login-container {
       padding: 1rem;
     }
-    
+
     .login-card {
       padding: 1.5rem;
     }

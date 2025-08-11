@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    data: PageData;;
+  }
+  let {
+    data
+  }: Props = $props();
+
+
+
   import type { Evidence } from '$lib/types';
   import { browser } from "$app/environment";
   import { page } from "$app/stores";
@@ -21,8 +30,7 @@
 
   import type { PageData } from "./$types";
   // ... other imports ...
-  export let data: PageData;
-
+  
   // State management
   let validationModal = {
     open: false,
@@ -502,14 +510,14 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header Section -->
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
     <div>
-      <h1 class="container mx-auto px-4">Evidence Management</h1>
-      <p class="container mx-auto px-4">
+      <h1 class="space-y-4">Evidence Management</h1>
+      <p class="space-y-4">
         {#if caseId}
           Evidence for Case #{caseId}
         {:else}
@@ -520,9 +528,9 @@
     </div>
 
     <!-- Enhanced Action Buttons with AI Analysis -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- AI Analysis Toggle -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <ThinkingStyleToggle 
           bind:enabled={thinkingStyleEnabled}
           premium={true}
@@ -540,7 +548,7 @@
           aria-label="Refresh evidence"
         >
           <span class:animate-spin={loading}>
-            <RefreshCw class="container mx-auto px-4" />
+            <RefreshCw class="space-y-4" />
           </span>
         </Button>
       </Tooltip>
@@ -550,11 +558,11 @@
           variant="outline"
           size="sm"
           on:click={() => (showFilters = !showFilters)}
-          class="container mx-auto px-4"
+          class="space-y-4"
           aria-label="Toggle filters"
           aria-expanded={showFilters}
         >
-          <Filter class="container mx-auto px-4" />
+          <Filter class="space-y-4" />
           Filters
         </Button>
       </Tooltip>
@@ -567,9 +575,9 @@
           aria-label="Toggle view mode"
         >
           {#if viewMode === "grid"}
-            <List class="container mx-auto px-4" />
+            <List class="space-y-4" />
           {:else}
-            <Grid class="container mx-auto px-4" />
+            <Grid class="space-y-4" />
           {/if}
         </Button>
       </Tooltip>
@@ -579,16 +587,16 @@
           variant="outline"
           size="sm"
           on:click={() => handleAdvancedUpload()}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Upload class="container mx-auto px-4" />
+          <Upload class="space-y-4" />
           Advanced Upload
         </Button>
       </Tooltip>
 
       <Tooltip content="Standard evidence upload">
-        <Button on:click={() => openUploadModal()} class="container mx-auto px-4">
-          <Plus class="container mx-auto px-4" />
+        <Button on:click={() => openUploadModal()} class="space-y-4">
+          <Plus class="space-y-4" />
           Upload Evidence
         </Button>
       </Tooltip>
@@ -596,25 +604,25 @@
   </div>
 
   <!-- Search and Filters -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Search Bar -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <Search
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
         <input
           type="text"
           placeholder="Search evidence by title, description, collector, or tags..."
-          class="container mx-auto px-4"
+          class="space-y-4"
           bind:value={searchQuery}
           aria-label="Search evidence"
         />
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <select
-          class="container mx-auto px-4"
+          class="space-y-4"
           bind:value={sortBy}
           aria-label="Sort by field"
         >
@@ -633,9 +641,9 @@
           aria-label="Toggle sort order"
         >
           {#if sortOrder === "asc"}
-            <SortAsc class="container mx-auto px-4" />
+            <SortAsc class="space-y-4" />
           {:else}
-            <SortDesc class="container mx-auto px-4" />
+            <SortDesc class="space-y-4" />
           {/if}
         </Button>
       </div>
@@ -644,14 +652,14 @@
     <!-- Advanced Filters -->
     {#if showFilters}
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         <div>
-          <label for="type-filter" class="container mx-auto px-4">Evidence Type</label
+          <label for="type-filter" class="space-y-4">Evidence Type</label
           >
           <select
             id="type-filter"
-            class="container mx-auto px-4"
+            class="space-y-4"
             bind:value={selectedType}
             aria-label="Filter by evidence type"
           >
@@ -666,10 +674,10 @@
         </div>
 
         <div>
-          <label for="status-filter" class="container mx-auto px-4">Status</label>
+          <label for="status-filter" class="space-y-4">Status</label>
           <select
             id="status-filter"
-            class="container mx-auto px-4"
+            class="space-y-4"
             bind:value={selectedStatus}
             aria-label="Filter by status"
           >
@@ -682,43 +690,43 @@
         </div>
 
         <div>
-          <label for="collector-filter" class="container mx-auto px-4"
+          <label for="collector-filter" class="space-y-4"
             >Collected By</label
           >
           <input
             id="collector-filter"
             type="text"
             placeholder="Officer name..."
-            class="container mx-auto px-4"
+            class="space-y-4"
             bind:value={selectedCollector}
             aria-label="Filter by collector"
           />
         </div>
 
         <div>
-          <label for="date-from" class="container mx-auto px-4">Date From</label>
+          <label for="date-from" class="space-y-4">Date From</label>
           <input
             id="date-from"
             type="date"
-            class="container mx-auto px-4"
+            class="space-y-4"
             bind:value={dateFrom}
             aria-label="Filter from date"
           />
         </div>
 
         <div>
-          <label for="date-to" class="container mx-auto px-4">Date To</label>
+          <label for="date-to" class="space-y-4">Date To</label>
           <input
             id="date-to"
             type="date"
-            class="container mx-auto px-4"
+            class="space-y-4"
             bind:value={dateTo}
             aria-label="Filter to date"
           />
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Button
           variant="outline"
           size="sm"
@@ -739,30 +747,30 @@
 
   <!-- Enhanced Bulk Actions with AI Analysis -->
   {#if showBulkActions}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
-        <div class="container mx-auto px-4">
-          <CheckSquare class="container mx-auto px-4" />
-          <span class="container mx-auto px-4"
+        <div class="space-y-4">
+          <CheckSquare class="space-y-4" />
+          <span class="space-y-4"
             >{selectedEvidence.size} evidence item(s) selected</span
           >
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <Button
             variant="outline"
             size="sm"
             on:click={() => bulkOperation("analyze")}
             disabled={bulkOperationLoading}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             {#if thinkingStyleEnabled}
-              <Brain class="container mx-auto px-4" />
+              <Brain class="space-y-4" />
               Analyze (Thinking)
             {:else}
-              <Zap class="container mx-auto px-4" />
+              <Zap class="space-y-4" />
               Quick Analyze
             {/if}
           </Button>
@@ -772,9 +780,9 @@
             size="sm"
             on:click={() => bulkOperation("verify")}
             disabled={bulkOperationLoading}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <CheckCircle class="container mx-auto px-4" />
+            <CheckCircle class="space-y-4" />
             Verify
           </Button>
 
@@ -783,9 +791,9 @@
             size="sm"
             on:click={() => bulkOperation("archive")}
             disabled={bulkOperationLoading}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Archive class="container mx-auto px-4" />
+            <Archive class="space-y-4" />
             Archive
           </Button>
 
@@ -794,9 +802,9 @@
             size="sm"
             on:click={() => bulkOperation("export")}
             disabled={bulkOperationLoading}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Download class="container mx-auto px-4" />
+            <Download class="space-y-4" />
             Export
           </Button>
 
@@ -805,9 +813,9 @@
             size="sm"
             on:click={() => bulkOperation("delete")}
             disabled={bulkOperationLoading}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Trash2 class="container mx-auto px-4" />
+            <Trash2 class="space-y-4" />
             Delete
           </Button>
 
@@ -830,26 +838,26 @@
 
   <!-- Evidence List/Grid -->
   {#if loading}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4"></div>
-      <span class="container mx-auto px-4">Loading evidence...</span>
+    <div class="space-y-4">
+      <div class="space-y-4"></div>
+      <span class="space-y-4">Loading evidence...</span>
     </div>
   {:else if error}
-    <div class="container mx-auto px-4" role="alert">
-      <XCircle class="container mx-auto px-4" />
+    <div class="space-y-4" role="alert">
+      <XCircle class="space-y-4" />
       <div>
-        <h3 class="container mx-auto px-4">Error Loading Evidence</h3>
-        <div class="container mx-auto px-4">{error}</div>
+        <h3 class="space-y-4">Error Loading Evidence</h3>
+        <div class="space-y-4">{error}</div>
       </div>
       <Button variant="outline" size="sm" on:click={() => refreshEvidence()}>
-        <RefreshCw class="container mx-auto px-4" />
+        <RefreshCw class="space-y-4" />
         Retry
       </Button>
     </div>
   {:else if filteredEvidence.length === 0}
-    <div class="container mx-auto px-4">
-      <FileCheck class="container mx-auto px-4" />
-      <h3 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <FileCheck class="space-y-4" />
+      <h3 class="space-y-4">
         {searchQuery ||
         selectedType ||
         selectedStatus ||
@@ -859,7 +867,7 @@
           ? "No matching evidence found"
           : "No evidence found"}
       </h3>
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         {searchQuery ||
         selectedType ||
         selectedStatus ||
@@ -870,17 +878,17 @@
           : "Upload files, documents, and digital evidence to get started"}
       </p>
       {#if !searchQuery && !selectedType && !selectedStatus && !selectedCollector && !dateFrom && !dateTo}
-        <div class="container mx-auto px-4">
-          <Button on:click={() => openUploadModal()} class="container mx-auto px-4">
-            <Plus class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <Button on:click={() => openUploadModal()} class="space-y-4">
+            <Plus class="space-y-4" />
             Upload Evidence
           </Button>
           <Button
             variant="outline"
             on:click={() => handleAdvancedUpload()}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Upload class="container mx-auto px-4" />
+            <Upload class="space-y-4" />
             Advanced Upload
           </Button>
         </div>
@@ -888,9 +896,9 @@
     </div>
   {:else}
     <!-- Evidence Header Controls -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <span class="space-y-4">
           Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(
             currentPage * itemsPerPage,
             filteredEvidence.length
@@ -902,13 +910,13 @@
             variant="ghost"
             size="sm"
             on:click={() => selectAllEvidence()}
-            class="container mx-auto px-4"
+            class="space-y-4"
             aria-label="Select all visible evidence"
           >
             {#if selectedEvidence.size === visibleEvidence.length}
-              <CheckSquare class="container mx-auto px-4" />
+              <CheckSquare class="space-y-4" />
             {:else}
-              <Square class="container mx-auto px-4" />
+              <Square class="space-y-4" />
             {/if}
             Select All
           </Button>
@@ -917,26 +925,26 @@
     </div>
 
     <!-- Enhanced Evidence Grid/List View with AI Analysis -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#if viewMode === "grid"}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#each visibleEvidence as evidence}
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <!-- Selection Checkbox -->
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <input
                     type="checkbox"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     checked={selectedEvidence.has(evidence.id)}
                     on:change={() => toggleEvidenceSelection(evidence.id)}
                     aria-label="Select evidence {evidence.title ||
                       'Untitled Evidence'}"
                   />
 
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <Tooltip content="Evidence actions">
                       <Button
                         variant="ghost"
@@ -945,50 +953,50 @@
                         role="button"
                         aria-label="Evidence actions menu"
                       >
-                        <MoreHorizontal class="container mx-auto px-4" />
+                        <MoreHorizontal class="space-y-4" />
                       </Button>
                     </Tooltip>
                     <ul
                       tabindex={0}
                       role="menu"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       <li>
-                        <a href="/evidence/{evidence.id}" class="container mx-auto px-4">
-                          <Eye class="container mx-auto px-4" />
+                        <a href="/evidence/{evidence.id}" class="space-y-4">
+                          <Eye class="space-y-4" />
                           View Details
                         </a>
                       </li>
                       <li>
                         <button 
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                           on:click={() => analyzeEvidence(evidence)}
                           disabled={analysisInProgress.has(evidence.id)}
                         >
                           {#if thinkingStyleEnabled}
-                            <Brain class="container mx-auto px-4" />
+                            <Brain class="space-y-4" />
                             Analyze (Thinking)
                           {:else}
-                            <Zap class="container mx-auto px-4" />
+                            <Zap class="space-y-4" />
                             Quick Analyze
                           {/if}
                         </button>
                       </li>
                       <li>
-                        <a href="/evidence/{evidence.id}/edit" class="container mx-auto px-4">
-                          <Edit class="container mx-auto px-4" />
+                        <a href="/evidence/{evidence.id}/edit" class="space-y-4">
+                          <Edit class="space-y-4" />
                           Edit Evidence
                         </a>
                       </li>
                       <li>
-                        <button class="container mx-auto px-4">
-                          <Hash class="container mx-auto px-4" />
+                        <button class="space-y-4">
+                          <Hash class="space-y-4" />
                           Verify Hash
                         </button>
                       </li>
                       <li>
-                        <button class="container mx-auto px-4">
-                          <Trash2 class="container mx-auto px-4" />
+                        <button class="space-y-4">
+                          <Trash2 class="space-y-4" />
                           Delete
                         </button>
                       </li>
@@ -997,41 +1005,41 @@
                 </div>
 
                 <!-- Evidence Content -->
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
                     <svelte:component
                       this={getEvidenceTypeIcon(evidence.evidenceType)}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <h2 class="container mx-auto px-4">
+                    <h2 class="space-y-4">
                       {evidence.title || "Untitled Evidence"}
                     </h2>
                   </div>
 
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
                       {evidence.evidenceType || "Unknown"}
                     </div>
                     <div
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       {evidence.isAdmissible ? "Admissible" : "Pending"}
                     </div>
                     {#if evidence.hash}
-                      <div class="container mx-auto px-4">
-                        <Shield class="container mx-auto px-4" />
+                      <div class="space-y-4">
+                        <Shield class="space-y-4" />
                         Verified
                       </div>
                     {/if}
                     {#if evidence.aiAnalysis && Object.keys(evidence.aiAnalysis).length > 0}
-                      <div class="container mx-auto px-4">
-                        <Brain class="container mx-auto px-4" />
+                      <div class="space-y-4">
+                        <Brain class="space-y-4" />
                         AI Analyzed
                       </div>
                     {/if}
                   </div>
 
-                  <p class="container mx-auto px-4">
+                  <p class="space-y-4">
                     {evidence.description
                       ? evidence.description.length > 120
                         ? evidence.description.substring(0, 120) + "..."
@@ -1039,22 +1047,22 @@
                       : "No description available"}
                   </p>
 
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
-                      <Calendar class="container mx-auto px-4" />
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      <Calendar class="space-y-4" />
                       Collected: {evidence.uploadedAt
                         ? new Date(evidence.uploadedAt).toLocaleDateString()
                         : "Unknown"}
                     </div>
                     {#if evidence.collectedBy}
-                      <div class="container mx-auto px-4">
-                        <UserIcon class="container mx-auto px-4" />
+                      <div class="space-y-4">
+                        <UserIcon class="space-y-4" />
                         By: {evidence.collectedBy}
                       </div>
                     {/if}
                     {#if evidence.fileSize}
-                      <div class="container mx-auto px-4">
-                        <Activity class="container mx-auto px-4" />
+                      <div class="space-y-4">
+                        <Activity class="space-y-4" />
                         Size: {(evidence.fileSize / 1024 / 1024).toFixed(2)} MB
                       </div>
                     {/if}
@@ -1062,29 +1070,29 @@
                 </div>
 
                 <!-- Enhanced Actions with AI Analysis -->
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <Button 
                     size="sm" 
                     variant="outline"
                     on:click={() => analyzeEvidence(evidence)}
                     disabled={analysisInProgress.has(evidence.id)}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {#if analysisInProgress.has(evidence.id)}
-                      <div class="container mx-auto px-4"></div>
+                      <div class="space-y-4"></div>
                       Analyzing...
                     {:else if thinkingStyleEnabled}
-                      <Brain class="container mx-auto px-4" />
+                      <Brain class="space-y-4" />
                       Think
                     {:else}
-                      <Zap class="container mx-auto px-4" />
+                      <Zap class="space-y-4" />
                       Analyze
                     {/if}
                   </Button>
                   
-                  <a href="/evidence/{evidence.id}" class="container mx-auto px-4">
+                  <a href="/evidence/{evidence.id}" class="space-y-4">
                     <Button size="sm">
-                      <Eye class="container mx-auto px-4" />
+                      <Eye class="space-y-4" />
                       View
                     </Button>
                   </a>
@@ -1095,15 +1103,15 @@
         </div>
       {:else}
         <!-- Enhanced List View -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#each visibleEvidence as evidence}
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <input
                   type="checkbox"
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   checked={selectedEvidence.has(evidence.id)}
                   on:change={() => toggleEvidenceSelection(evidence.id)}
                   aria-label="Select evidence {evidence.title ||
@@ -1112,38 +1120,38 @@
 
                 <svelte:component
                   this={getEvidenceTypeIcon(evidence.evidenceType)}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
 
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
-                      <h3 class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      <h3 class="space-y-4">
                         {evidence.title || "Untitled Evidence"}
                       </h3>
-                      <p class="container mx-auto px-4">
+                      <p class="space-y-4">
                         {evidence.description || "No description available"}
                       </p>
                     </div>
 
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
+                    <div class="space-y-4">
+                      <div class="space-y-4">
                         {evidence.evidenceType || "Unknown"}
                       </div>
                       <div
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         {evidence.isAdmissible ? "Admissible" : "Pending"}
                       </div>
                       {#if evidence.hash}
-                        <div class="container mx-auto px-4">
-                          <Shield class="container mx-auto px-4" />
+                        <div class="space-y-4">
+                          <Shield class="space-y-4" />
                           Verified
                         </div>
                       {/if}
                       {#if evidence.aiAnalysis && Object.keys(evidence.aiAnalysis).length > 0}
-                        <div class="container mx-auto px-4">
-                          <Brain class="container mx-auto px-4" />
+                        <div class="space-y-4">
+                          <Brain class="space-y-4" />
                           AI Analyzed
                         </div>
                       {/if}
@@ -1151,57 +1159,57 @@
                   </div>
 
                   <div
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
-                    <div class="container mx-auto px-4">
-                      <Calendar class="container mx-auto px-4" />
+                    <div class="space-y-4">
+                      <Calendar class="space-y-4" />
                       {evidence.uploadedAt
                         ? new Date(evidence.uploadedAt).toLocaleDateString()
                         : "Unknown"}
                     </div>
                     {#if evidence.collectedBy}
-                      <div class="container mx-auto px-4">
-                        <UserIcon class="container mx-auto px-4" />
+                      <div class="space-y-4">
+                        <UserIcon class="space-y-4" />
                         {evidence.collectedBy}
                       </div>
                     {/if}
                     {#if evidence.fileSize}
-                      <div class="container mx-auto px-4">
-                        <Activity class="container mx-auto px-4" />
+                      <div class="space-y-4">
+                        <Activity class="space-y-4" />
                         {(evidence.fileSize / 1024 / 1024).toFixed(2)} MB
                       </div>
                     {/if}
                   </div>
                 </div>
 
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <Button 
                     size="sm" 
                     variant="outline"
                     on:click={() => analyzeEvidence(evidence)}
                     disabled={analysisInProgress.has(evidence.id)}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {#if analysisInProgress.has(evidence.id)}
-                      <div class="container mx-auto px-4"></div>
+                      <div class="space-y-4"></div>
                       Analyzing...
                     {:else if thinkingStyleEnabled}
-                      <Brain class="container mx-auto px-4" />
+                      <Brain class="space-y-4" />
                       Think
                     {:else}
-                      <Zap class="container mx-auto px-4" />
+                      <Zap class="space-y-4" />
                       Analyze
                     {/if}
                   </Button>
 
-                  <a href="/evidence/{evidence.id}" class="container mx-auto px-4">
+                  <a href="/evidence/{evidence.id}" class="space-y-4">
                     <Button size="sm" variant="outline">
-                      <Eye class="container mx-auto px-4" />
+                      <Eye class="space-y-4" />
                       View
                     </Button>
                   </a>
 
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <Tooltip content="More actions">
                       <Button
                         variant="ghost"
@@ -1211,29 +1219,29 @@
                         aria-label="More actions for {evidence.title ||
                           'Untitled Evidence'}"
                       >
-                        <MoreHorizontal class="container mx-auto px-4" />
+                        <MoreHorizontal class="space-y-4" />
                       </Button>
                     </Tooltip>
                     <ul
                       tabindex={0}
                       role="menu"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       <li>
-                        <a href="/evidence/{evidence.id}/edit" class="container mx-auto px-4">
-                          <Edit class="container mx-auto px-4" />
+                        <a href="/evidence/{evidence.id}/edit" class="space-y-4">
+                          <Edit class="space-y-4" />
                           Edit Evidence
                         </a>
                       </li>
                       <li>
-                        <button class="container mx-auto px-4">
-                          <Hash class="container mx-auto px-4" />
+                        <button class="space-y-4">
+                          <Hash class="space-y-4" />
                           Verify Hash
                         </button>
                       </li>
                       <li>
-                        <button class="container mx-auto px-4">
-                          <Trash2 class="container mx-auto px-4" />
+                        <button class="space-y-4">
+                          <Trash2 class="space-y-4" />
                           Delete
                         </button>
                       </li>
@@ -1249,12 +1257,12 @@
 
     <!-- Pagination -->
     {#if totalPages > 1}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <Button
             variant="outline"
             size="sm"
-            class="container mx-auto px-4"
+            class="space-y-4"
             disabled={currentPage === 1}
             on:click={() => (currentPage = Math.max(1, currentPage - 1))}
             aria-label="Previous page"
@@ -1269,7 +1277,7 @@
             <Button
               variant={page === currentPage ? "default" : "outline"}
               size="sm"
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => (currentPage = page)}
               aria-label="Go to page {page}"
               aria-current={page === currentPage ? "page" : undefined}
@@ -1281,7 +1289,7 @@
           <Button
             variant="outline"
             size="sm"
-            class="container mx-auto px-4"
+            class="space-y-4"
             disabled={currentPage === totalPages}
             on:click={() =>
               (currentPage = Math.min(totalPages, currentPage + 1))}
@@ -1307,15 +1315,15 @@
 
 <!-- AI Analysis Results Modal -->
 {#if analysisModal.open && analysisModal.evidence && analysisModal.result}
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">
           {#if thinkingStyleEnabled}
-            <Brain class="container mx-auto px-4" />
+            <Brain class="space-y-4" />
             Thinking Style Analysis
           {:else}
-            <Zap class="container mx-auto px-4" />
+            <Zap class="space-y-4" />
             Quick Analysis
           {/if}
           - {analysisModal.evidence.title}
@@ -1325,24 +1333,24 @@
         </Button>
       </div>
       
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">{formatAnalysisForDisplay(analysisModal.result)}</div>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">{formatAnalysisForDisplay(analysisModal.result)}</div>
         </div>
         
         {#if analysisModal.result.reasoning_steps && analysisModal.result.reasoning_steps.length > 0}
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">Reasoning Steps:</h4>
-            <ol class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h4 class="space-y-4">Reasoning Steps:</h4>
+            <ol class="space-y-4">
               {#each analysisModal.result.reasoning_steps as step}
-                <li class="container mx-auto px-4">{step}</li>
+                <li class="space-y-4">{step}</li>
               {/each}
             </ol>
           </div>
         {/if}
       </div>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Button variant="outline" on:click={closeAnalysisModal}>Close</Button>
         <Button on:click={() => {
           // Save analysis or perform other actions
@@ -1350,14 +1358,14 @@
         }}>Save Analysis</Button>
       </div>
     </div>
-    <div class="container mx-auto px-4" on:click={closeAnalysisModal}></div>
+    <div class="space-y-4" on:click={closeAnalysisModal}></div>
   </div>
 {/if}
 
 {#if showAdvancedUpload}
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">Advanced Evidence Upload</h3>
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">Advanced Evidence Upload</h3>
       <AdvancedFileUpload
         accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.json"
         multiple={true}
@@ -1368,7 +1376,7 @@
       />
     </div>
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       role="button"
       tabindex={0}
       aria-label="Close modal"

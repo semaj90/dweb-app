@@ -303,70 +303,70 @@
   <meta name="description" content="User profile and application settings" />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <h1 class="container mx-auto px-4">
-      <Settings class="container mx-auto px-4" />
+    <h1 class="space-y-4">
+      <Settings class="space-y-4" />
       Settings
     </h1>
-    <p class="container mx-auto px-4">
+    <p class="space-y-4">
       Manage your profile, preferences, and security settings
     </p>
   </div>
 
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Settings Navigation -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <nav class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <nav class="space-y-4">
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             class:bg-blue-100={activeTab === "profile"}
             class:text-blue-700={activeTab === "profile"}
             class:hover:bg-gray-100={activeTab !== "profile"}
             on:click={() => (activeTab = "profile")}
           >
-            <UserIcon class="container mx-auto px-4" />
+            <UserIcon class="space-y-4" />
             Profile
           </button>
 
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             class:bg-blue-100={activeTab === "preferences"}
             class:text-blue-700={activeTab === "preferences"}
             class:hover:bg-gray-100={activeTab !== "preferences"}
             on:click={() => (activeTab = "preferences")}
           >
-            <Palette class="container mx-auto px-4" />
+            <Palette class="space-y-4" />
             Preferences
           </button>
 
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             class:bg-blue-100={activeTab === "security"}
             class:text-blue-700={activeTab === "security"}
             class:hover:bg-gray-100={activeTab !== "security"}
             on:click={() => (activeTab = "security")}
           >
-            <Shield class="container mx-auto px-4" />
+            <Shield class="space-y-4" />
             Security
           </button>
 
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             class:bg-blue-100={activeTab === "data"}
             class:text-blue-700={activeTab === "data"}
             class:hover:bg-gray-100={activeTab !== "data"}
             on:click={() => (activeTab = "data")}
           >
-            <Download class="container mx-auto px-4" />
+            <Download class="space-y-4" />
             Data & Privacy
           </button>
         </nav>
@@ -374,55 +374,55 @@
     </div>
 
     <!-- Settings Content -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#if isLoading}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <RefreshCw
-            class="container mx-auto px-4"
+            class="space-y-4"
           />
-          <p class="container mx-auto px-4">Loading settings...</p>
+          <p class="space-y-4">Loading settings...</p>
         </div>
       {:else}
         <!-- Profile Tab -->
         {#if activeTab === "profile"}
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
-              <UserIcon class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <h2 class="space-y-4">
+              <UserIcon class="space-y-4" />
               Profile Information
             </h2>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <!-- Avatar Section -->
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
                   {#if avatarPreview}
                     <img
                       src={avatarPreview}
                       alt="Avatar preview"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
                   {:else}
                     <div
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
-                      <UserIcon class="container mx-auto px-4" />
+                      <UserIcon class="space-y-4" />
                     </div>
                   {/if}
                 </div>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <label
                     for="avatar"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Profile Picture
                   </label>
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <input
                       id="avatar"
                       type="file"
                       accept="image/*"
                       on:change={handleAvatarChange}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
                     <Button
                       variant="outline"
@@ -430,7 +430,7 @@
                       on:click={() =>
                         document.getElementById("avatar")?.click()}
                     >
-                      <Upload class="container mx-auto px-4" />
+                      <Upload class="space-y-4" />
                       Upload
                     </Button>
                     {#if avatarPreview}
@@ -439,7 +439,7 @@
                         size="sm"
                         on:click={() => clearAvatar()}
                       >
-                        <Trash2 class="container mx-auto px-4" />
+                        <Trash2 class="space-y-4" />
                         Remove
                       </Button>
                     {/if}
@@ -448,11 +448,11 @@
               </div>
 
               <!-- Profile Fields -->
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <div>
                   <label
                     for="name"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Full Name
                   </label>
@@ -460,7 +460,7 @@
                     id="name"
                     type="text"
                     bind:value={profile.name}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -468,7 +468,7 @@
                 <div>
                   <label
                     for="email"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Email Address
                   </label>
@@ -476,7 +476,7 @@
                     id="email"
                     type="email"
                     bind:value={profile.email}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -484,14 +484,14 @@
                 <div>
                   <label
                     for="role"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Role
                   </label>
                   <select
                     id="role"
                     bind:value={profile.role}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {#each roles as role}
                       <option value={role.value}>{role.label}</option>
@@ -502,7 +502,7 @@
                 <div>
                   <label
                     for="department"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Department
                   </label>
@@ -510,7 +510,7 @@
                     id="department"
                     type="text"
                     bind:value={profile.department}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     placeholder="Enter your department"
                   />
                 </div>
@@ -518,7 +518,7 @@
                 <div>
                   <label
                     for="phone"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Phone Number
                   </label>
@@ -526,7 +526,7 @@
                     id="phone"
                     type="tel"
                     bind:value={profile.phone}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     placeholder="Enter your phone number"
                   />
                 </div>
@@ -535,7 +535,7 @@
               <div>
                 <label
                   for="bio"
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
                   Bio
                 </label>
@@ -543,7 +543,7 @@
                   id="bio"
                   bind:value={profile.bio}
                   rows={4}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   placeholder="Tell us a bit about yourself..."
                 ></textarea>
               </div>
@@ -553,28 +553,28 @@
 
         <!-- Preferences Tab -->
         {#if activeTab === "preferences"}
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
-              <Palette class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <h2 class="space-y-4">
+              <Palette class="space-y-4" />
               Application Preferences
             </h2>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <!-- Appearance -->
               <div>
-                <h3 class="container mx-auto px-4">Appearance</h3>
-                <div class="container mx-auto px-4">
+                <h3 class="space-y-4">Appearance</h3>
+                <div class="space-y-4">
                   <div>
                     <label
                       for="theme"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Theme
                     </label>
                     <select
                       id="theme"
                       bind:value={preferences.theme}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       {#each themes as theme}
                         <option value={theme.value}>{theme.label}</option>
@@ -585,14 +585,14 @@
                   <div>
                     <label
                       for="language"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Language
                     </label>
                     <select
                       id="language"
                       bind:value={preferences.language}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       {#each languages as language}
                         <option value={language.value}>{language.label}</option>
@@ -603,14 +603,14 @@
                   <div>
                     <label
                       for="timezone"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Timezone
                     </label>
                     <select
                       id="timezone"
                       bind:value={preferences.timezone}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       {#each timezones as timezone}
                         <option value={timezone.value}>{timezone.label}</option>
@@ -622,45 +622,45 @@
 
               <!-- Notifications -->
               <div>
-                <h3 class="container mx-auto px-4">Notifications</h3>
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <h3 class="space-y-4">Notifications</h3>
+                <div class="space-y-4">
+                  <div class="space-y-4">
                     <input
                       id="notifications"
                       type="checkbox"
                       bind:checked={preferences.enableNotifications}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <label for="notifications" class="container mx-auto px-4">
+                    <label for="notifications" class="space-y-4">
                       Enable in-app notifications
                     </label>
                   </div>
 
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <input
                       id="email-notifications"
                       type="checkbox"
                       bind:checked={preferences.enableEmailNotifications}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
                     <label
                       for="email-notifications"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Enable email notifications
                     </label>
                   </div>
 
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <input
                       id="sms-notifications"
                       type="checkbox"
                       bind:checked={preferences.enableSMSNotifications}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
                     <label
                       for="sms-notifications"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Enable SMS notifications
                     </label>
@@ -670,16 +670,16 @@
 
               <!-- Interface -->
               <div>
-                <h3 class="container mx-auto px-4">Interface</h3>
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <h3 class="space-y-4">Interface</h3>
+                <div class="space-y-4">
+                  <div class="space-y-4">
                     <input
                       id="auto-save"
                       type="checkbox"
                       bind:checked={preferences.autoSave}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <label for="auto-save" class="container mx-auto px-4">
+                    <label for="auto-save" class="space-y-4">
                       Enable auto-save
                     </label>
                   </div>
@@ -687,14 +687,14 @@
                   <div>
                     <label
                       for="items-per-page"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Items per page
                     </label>
                     <select
                       id="items-per-page"
                       bind:value={preferences.itemsPerPage}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       <option value={10}>10</option>
                       <option value={20}>20</option>
@@ -710,51 +710,51 @@
 
         <!-- Security Tab -->
         {#if activeTab === "security"}
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
-              <Shield class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <h2 class="space-y-4">
+              <Shield class="space-y-4" />
               Security Settings
             </h2>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <!-- Password Change -->
               <div>
-                <h3 class="container mx-auto px-4">Change Password</h3>
-                <div class="container mx-auto px-4">
+                <h3 class="space-y-4">Change Password</h3>
+                <div class="space-y-4">
                   <div>
                     <label
                       for="current-password"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Current Password
                     </label>
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <input
                         id="current-password"
                         type={showPasswords ? "text" : "password"}
                         bind:value={security.currentPassword}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                         placeholder="Enter current password"
                       />
                       <button
                         type="button"
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                         on:click={() => (showPasswords = !showPasswords)}
                       >
                         {#if showPasswords}
-                          <EyeOff class="container mx-auto px-4" />
+                          <EyeOff class="space-y-4" />
                         {:else}
-                          <Eye class="container mx-auto px-4" />
+                          <Eye class="space-y-4" />
                         {/if}
                       </button>
                     </div>
                   </div>
 
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <div>
                       <label
                         for="new-password"
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         New Password
                       </label>
@@ -762,7 +762,7 @@
                         id="new-password"
                         type={showPasswords ? "text" : "password"}
                         bind:value={security.newPassword}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                         placeholder="Enter new password"
                       />
                     </div>
@@ -770,7 +770,7 @@
                     <div>
                       <label
                         for="confirm-password"
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         Confirm Password
                       </label>
@@ -778,7 +778,7 @@
                         id="confirm-password"
                         type={showPasswords ? "text" : "password"}
                         bind:value={security.confirmPassword}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                         placeholder="Confirm new password"
                       />
                     </div>
@@ -788,17 +788,17 @@
 
               <!-- Two-Factor Authentication -->
               <div>
-                <h3 class="container mx-auto px-4">
+                <h3 class="space-y-4">
                   Two-Factor Authentication
                 </h3>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <input
                     id="two-factor"
                     type="checkbox"
                     bind:checked={security.twoFactorEnabled}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   />
-                  <label for="two-factor" class="container mx-auto px-4">
+                  <label for="two-factor" class="space-y-4">
                     Enable two-factor authentication
                   </label>
                 </div>
@@ -806,19 +806,19 @@
 
               <!-- Session Management -->
               <div>
-                <h3 class="container mx-auto px-4">Session Management</h3>
-                <div class="container mx-auto px-4">
+                <h3 class="space-y-4">Session Management</h3>
+                <div class="space-y-4">
                   <div>
                     <label
                       for="session-timeout"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Session Timeout (minutes)
                     </label>
                     <select
                       id="session-timeout"
                       bind:value={security.sessionTimeout}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       <option value={15}>15 minutes</option>
                       <option value={30}>30 minutes</option>
@@ -828,14 +828,14 @@
                     </select>
                   </div>
 
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <input
                       id="remember-me"
                       type="checkbox"
                       bind:checked={security.allowRememberMe}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <label for="remember-me" class="container mx-auto px-4">
+                    <label for="remember-me" class="space-y-4">
                       Allow "Remember me" option
                     </label>
                   </div>
@@ -847,41 +847,41 @@
 
         <!-- Data & Privacy Tab -->
         {#if activeTab === "data"}
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
-              <Download class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <h2 class="space-y-4">
+              <Download class="space-y-4" />
               Data & Privacy
             </h2>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <!-- Data Export -->
               <div>
-                <h3 class="container mx-auto px-4">Export Your Data</h3>
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
+                <h3 class="space-y-4">Export Your Data</h3>
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
                       <input
                         id="include-personal"
                         type="checkbox"
                         bind:checked={dataSettings.includePersonalData}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       />
                       <label
                         for="include-personal"
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         Include personal data
                       </label>
                     </div>
 
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       <input
                         id="include-logs"
                         type="checkbox"
                         bind:checked={dataSettings.includeSystemLogs}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       />
-                      <label for="include-logs" class="container mx-auto px-4">
+                      <label for="include-logs" class="space-y-4">
                         Include system logs
                       </label>
                     </div>
@@ -890,14 +890,14 @@
                   <div>
                     <label
                       for="export-format"
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Export Format
                     </label>
                     <select
                       id="export-format"
                       bind:value={dataSettings.exportFormat}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       <option value="json">JSON</option>
                       <option value="csv">CSV</option>
@@ -906,7 +906,7 @@
                   </div>
 
                   <Button on:click={() => exportUserData()}>
-                    <Download class="container mx-auto px-4" />
+                    <Download class="space-y-4" />
                     Export My Data
                   </Button>
                 </div>
@@ -914,16 +914,16 @@
 
               <!-- Auto Backup -->
               <div>
-                <h3 class="container mx-auto px-4">Automatic Backup</h3>
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <h3 class="space-y-4">Automatic Backup</h3>
+                <div class="space-y-4">
+                  <div class="space-y-4">
                     <input
                       id="auto-backup"
                       type="checkbox"
                       bind:checked={dataSettings.autoBackup}
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <label for="auto-backup" class="container mx-auto px-4">
+                    <label for="auto-backup" class="space-y-4">
                       Enable automatic backups
                     </label>
                   </div>
@@ -932,14 +932,14 @@
                     <div>
                       <label
                         for="backup-frequency"
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         Backup Frequency
                       </label>
                       <select
                         id="backup-frequency"
                         bind:value={dataSettings.backupFrequency}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -951,16 +951,16 @@
               </div>
 
               <!-- Danger Zone -->
-              <div class="container mx-auto px-4">
-                <h3 class="container mx-auto px-4">
+              <div class="space-y-4">
+                <h3 class="space-y-4">
                   Danger Zone
                 </h3>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <div>
-                    <h4 class="container mx-auto px-4">
+                    <h4 class="space-y-4">
                       Reset All Settings
                     </h4>
-                    <p class="container mx-auto px-4">
+                    <p class="space-y-4">
                       This will reset all your preferences to default values.
                       This action cannot be undone.
                     </p>
@@ -968,7 +968,7 @@
                       variant="outline"
                       on:click={() => resetToDefaults()}
                     >
-                      <RefreshCw class="container mx-auto px-4" />
+                      <RefreshCw class="space-y-4" />
                       Reset to Defaults
                     </Button>
                   </div>
@@ -979,22 +979,22 @@
         {/if}
 
         <!-- Save Actions -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               Changes are saved automatically when you update settings
             </div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <Button variant="outline" on:click={() => loadSettings()}>
-                <RefreshCw class="container mx-auto px-4" />
+                <RefreshCw class="space-y-4" />
                 Reset Changes
               </Button>
               <Button on:click={() => saveSettings()} disabled={isSaving}>
                 {#if isSaving}
-                  <RefreshCw class="container mx-auto px-4" />
+                  <RefreshCw class="space-y-4" />
                   Saving...
                 {:else}
-                  <Save class="container mx-auto px-4" />
+                  <Save class="space-y-4" />
                   Save Settings
                 {/if}
               </Button>

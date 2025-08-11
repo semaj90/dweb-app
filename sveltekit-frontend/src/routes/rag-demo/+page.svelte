@@ -136,12 +136,12 @@
   <title>RAG System Demo - AI Legal Assistant</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <!-- Header -->
-    <div class="container mx-auto px-4">
-      <h1 class="container mx-auto px-4">RAG System Demo</h1>
-      <p class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h1 class="space-y-4">RAG System Demo</h1>
+      <p class="space-y-4">
         Production-ready Retrieval-Augmented Generation system with PostgreSQL +
         pgvector, Qdrant vector database, and intelligent legal assistant
         capabilities.
@@ -149,57 +149,57 @@
     </div>
 
     <!-- System Status -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h2 class="container mx-auto px-4">System Status</h2>
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h2 class="space-y-4">System Status</h2>
           <button
             on:click={() => checkSystemStatus()}
-            class="container mx-auto px-4"
+            class="space-y-4"
             disabled={isLoadingStatus}
           >
             {isLoadingStatus ? "Checking..." : "Refresh"}
           </button>
         </div>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <Database class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <Database class="space-y-4" />
             <div>
-              <p class="container mx-auto px-4">Database</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Database</p>
+              <p class="space-y-4">
                 {systemStatus.database ? "Connected" : "Offline"}
               </p>
             </div>
           </div>
 
-          <div class="container mx-auto px-4">
-            <Zap class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <Zap class="space-y-4" />
             <div>
-              <p class="container mx-auto px-4">Qdrant</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Qdrant</p>
+              <p class="space-y-4">
                 {systemStatus.qdrant ? "Ready" : "Unavailable"}
               </p>
             </div>
           </div>
 
-          <div class="container mx-auto px-4">
-            <Brain class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <Brain class="space-y-4" />
             <div>
-              <p class="container mx-auto px-4">Embeddings</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Embeddings</p>
+              <p class="space-y-4">
                 {systemStatus.embeddings ? "Active" : "Disabled"}
               </p>
             </div>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <Search
-              class="container mx-auto px-4"
+              class="space-y-4"
             />
             <div>
-              <p class="container mx-auto px-4">Vector Search</p>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">Vector Search</p>
+              <p class="space-y-4">
                 {systemStatus.vectorSearch ? "Operational" : "Error"}
               </p>
             </div>
@@ -209,21 +209,21 @@
     </div>
 
     <!-- Main Demo Area -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- AI Assistant -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">
               AI Legal Assistant
             </h3>
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               Ask questions about legal procedures, cases, and evidence. The AI
               uses vector search to find relevant information.
             </p>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <AskAI
               placeholder="Ask about legal procedures, cases, or evidence..."
               showReferences={true}
@@ -236,14 +236,14 @@
         </div>
 
         <!-- Demo Queries -->
-        <div class="container mx-auto px-4">
-          <h4 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <h4 class="space-y-4">
             Try these sample questions:
           </h4>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each demoQueries as query}
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => (testQuery = query)}
               >
                 "{query}"
@@ -254,43 +254,43 @@
       </div>
 
       <!-- Vector Search Test -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">
               Vector Search Test
             </h3>
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               Test the vector similarity search directly to see raw results.
             </p>
           </div>
 
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               <input
                 bind:value={testQuery}
                 placeholder="Enter search query..."
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
               <button
                 on:click={() => testVectorSearch()}
                 disabled={!testQuery.trim() || isTestingSearch}
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {isTestingSearch ? "Searching..." : "Search"}
               </button>
             </div>
 
             {#if testResults}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {#if testResults.error}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <strong>Error:</strong>
                     {testResults.error}
                   </div>
                 {:else}
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
                       Found {testResults.results?.length || 0} results in {testResults.executionTime ||
                         0}ms (Source: {testResults.source || "unknown"})
                     </div>
@@ -298,27 +298,27 @@
                     {#if testResults.results && testResults.results.length > 0}
                       {#each testResults.results as result}
                         <div
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                         >
-                          <div class="container mx-auto px-4">
-                            <h5 class="container mx-auto px-4">
+                          <div class="space-y-4">
+                            <h5 class="space-y-4">
                               {result.title}
                             </h5>
-                            <span class="container mx-auto px-4">
+                            <span class="space-y-4">
                               {Math.round(result.score * 100)}% match
                             </span>
                           </div>
-                          <p class="container mx-auto px-4">
+                          <p class="space-y-4">
                             {result.content.substring(0, 200)}...
                           </p>
-                          <div class="container mx-auto px-4">
+                          <div class="space-y-4">
                             <span>Type: {result.type}</span>
                             <span>Source: {result.source}</span>
                           </div>
                         </div>
                       {/each}
                     {:else}
-                      <p class="container mx-auto px-4">No results found.</p>
+                      <p class="space-y-4">No results found.</p>
                     {/if}
                   </div>
                 {/if}
@@ -328,26 +328,26 @@
         </div>
 
         <!-- System Information -->
-        <div class="container mx-auto px-4">
-          <h4 class="container mx-auto px-4">System Information</h4>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <h4 class="space-y-4">System Information</h4>
+          <div class="space-y-4">
+            <div class="space-y-4">
               <span>Vector Database:</span>
               <span>PostgreSQL + pgvector / Qdrant</span>
             </div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <span>Embedding Model:</span>
               <span>OpenAI text-embedding-ada-002</span>
             </div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <span>LLM:</span>
               <span>GPT-3.5-turbo / Ollama (Local)</span>
             </div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <span>Search Types:</span>
               <span>Similarity, Hybrid, Semantic</span>
             </div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <span>Caching:</span>
               <span>Redis + IndexedDB</span>
             </div>
@@ -355,31 +355,31 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="container mx-auto px-4">
-          <h4 class="container mx-auto px-4">Quick Actions</h4>
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <h4 class="space-y-4">Quick Actions</h4>
+          <div class="space-y-4">
             <a
               href="/api/embeddings"
               target="_blank"
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               → View Embeddings API Status
             </a>
             <a
               href="/api/qdrant"
               target="_blank"
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               → View Qdrant Collection Status
             </a>
             <button
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => window.open("/cases", "_blank")}
             >
               → Browse Case Database
             </button>
             <button
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => window.open("/evidence", "_blank")}
             >
               → Browse Evidence Collection
@@ -390,11 +390,11 @@
     </div>
 
     <!-- Setup Instructions -->
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">
         Setup Instructions
       </h3>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <p>
           <strong>1. Start the services:</strong> <code>npm run db:start</code>
         </p>

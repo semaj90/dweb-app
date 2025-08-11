@@ -1,20 +1,30 @@
 <script lang="ts">
+  interface Props {
+    onsuggestionsReceived?: (event?: any) => void;
+    onactionsReceived?: (event?: any) => void;
+    onmessage?: (event?: any) => void;
+    onclose?: (event?: any) => void;
+    onaction?: (event?: any) => void;
+  }
+  let {
+    conversationId = crypto.randomUUID(),
+    userId,
+    caseId = null,
+    open = false,
+    title = "Legal AI Assistant"
+  }: Props = $props();
+
+
+
   import type { User } from '$lib/types';
-  import { afterUpdate, createEventDispatcher, onMount, tick } from "svelte";
-  import { elasticOut, quintOut } from "svelte/easing";
+    import { elasticOut, quintOut } from "svelte/easing";
   import { writable } from "svelte/store";
   import { fade, fly, scale } from "svelte/transition";
 // Icons from lucide-svelte
   import { Bot, Brain, FileText, RotateCw, Scale, Send, Sparkles, User as UserIcon, X, Zap } from "lucide-svelte";
 
-  export let conversationId: string = crypto.randomUUID();
-  export let userId: string;
-  export let caseId: string | null = null;
-  export let open: boolean = false;
-  export let title: string = "Legal AI Assistant";
-
-  const dispatch = createEventDispatcher();
-
+          
+  
   // Chat state
   let messages = writable<
     Array<{
@@ -183,10 +193,10 @@
 
         // Dispatch events for suggestions and actions
         if (result.suggestions?.length > 0) {
-          dispatch("suggestionsReceived", result.suggestions);
+          onsuggestionsReceived?.();
 }
         if (result.actions?.length > 0) {
-          dispatch("actionsReceived", result.actions);
+          onactionsReceived?.();
 }
         // Store message embedding for future context
         if (aiMessage.content) {
@@ -306,11 +316,7 @@
       });
 
       // Emit event for parent component
-      dispatch("message", {
-        userMessage,
-        assistantMessage: data,
-        contextUsed: data.contextUsed,
-      });
+      onmessage?.();
     } catch (error) {
       console.error("Chat error:", error);
 
@@ -336,7 +342,7 @@
 }}
   function closeChat() {
     open = false;
-    dispatch("close");
+    onclose?.();
 }
   function clearConversation() {
     messages.set([]);
@@ -350,7 +356,7 @@
     }).format(timestamp);
 }
   function handleActionClick(action: any) {
-    dispatch("action", action);
+    onaction?.();
 }
 </script>
 

@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    formData: {;
+    ocrResults: OCRResult[];;
+  }
+  let {
+    formData,
+    ocrResults
+  }: Props = $props();
+
+
+
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -7,15 +18,13 @@
 
   const dispatch = createEventDispatcher();
 
-  export let formData: {
-    extracted_entities: Array<{ type: string; value: string; confidence: number }>;
+      extracted_entities: Array<{ type: string; value: string; confidence: number }>;
     key_facts: string[];
     legal_issues: string[];
     precedents: Array<{ case_name: string; relevance: number; summary: string }>;
   };
 
-  export let ocrResults: OCRResult[];
-
+  
   let isAnalyzing = false;
   let analysisProgress = writable(0);
   let currentAnalysisStep = writable('');

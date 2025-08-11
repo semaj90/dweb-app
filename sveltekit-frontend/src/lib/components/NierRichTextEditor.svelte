@@ -1,5 +1,16 @@
 <!-- NieR: Automata Themed Rich Text Editor using bits-ui -->
 <script lang="ts">
+  interface Props {
+    content?: any;
+    placeholder?: any;
+  }
+  let {
+    content = "",
+    placeholder = "Initialize data input..."
+  }: Props = $props();
+
+
+
   import { Editor } from "@tiptap/core";
   import StarterKit from "@tiptap/starter-kit";
   import { onMount } from "svelte";
@@ -7,9 +18,7 @@
   import { Select } from "$lib/components/ui/select";
   import { Separator } from "$lib/components/ui/separator";
   
-  export let content = "";
-  export let placeholder = "Initialize data input...";
-  
+      
   let editor: Editor | null = null;
   let editorElement: HTMLElement;
   

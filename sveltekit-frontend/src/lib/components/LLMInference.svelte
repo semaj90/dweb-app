@@ -32,9 +32,9 @@
 }}
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <h2>Local LLM Inference (Tauri Desktop)</h2>
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <label for="model">Model:</label>
     <select id="model" bind:value={selectedModel}>
       {#each models as model}
@@ -42,18 +42,18 @@
       {/each}
     </select>
   </div>
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <label for="prompt">Prompt:</label>
     <textarea id="prompt" rows="4" bind:value={prompt} placeholder="Enter your prompt..."></textarea>
   </div>
-  <button class="container mx-auto px-4" on:click={() => handleInference()} disabled={loading || !selectedModel || !prompt.trim()}>
+  <button class="space-y-4" on:click={() => handleInference()} disabled={loading || !selectedModel || !prompt.trim()}>
     {loading ? 'Running...' : 'Run Inference'}
   </button>
   {#if error}
-    <div class="container mx-auto px-4">{error}</div>
+    <div class="space-y-4">{error}</div>
   {/if}
   {#if result}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h3>Result:</h3>
       <pre>{result}</pre>
     </div>

@@ -1,9 +1,18 @@
 <script lang="ts">
+  interface Props {
+    data: any;;
+    formType: "login" | "register";;
+  }
+  let {
+    data,
+    formType
+  }: Props = $props();
+
+
+
   import { superForm } from "sveltekit-superforms";
 
-  export let data: any;
-  export let formType: "login" | "register";
-
+    
   const { form, enhance, errors, message } = superForm(data, {
     resetForm: true,
   });

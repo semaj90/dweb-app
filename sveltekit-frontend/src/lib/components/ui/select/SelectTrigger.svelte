@@ -1,11 +1,20 @@
 <script lang="ts">
+  interface Props {
+    trigger: any;;
+    selectedLabel: any;;
+  }
+  let {
+    trigger,
+    selectedLabel
+  }: Props = $props();
+
+
+
   import { melt } from '@melt-ui/svelte';
   
-  export let trigger: any;
-  export let selectedLabel: any;
-</script>
+    </script>
 
-<button use:melt={trigger} class="container mx-auto px-4">
+<button use:melt={trigger} class="space-y-4">
   <slot {selectedLabel} />
 </button>
 

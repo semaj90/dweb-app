@@ -1,18 +1,24 @@
 <script lang="ts">
+  interface Props {
+    onclose?: (event?: any) => void;
+  }
+  let {
+    open = false,
+    title = "",
+    description = "",
+    side = "right",
+    size = "md"
+  }: Props = $props();
+
+
+
   import { X } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-
-  export let open = false;
-  export let title = "";
-  export let description = "";
-  export let side: "left" | "right" | "top" | "bottom" = "right";
-  export let size: "sm" | "md" | "lg" | "xl" = "md";
-
-  const dispatch = createEventDispatcher();
-
+  
+          
+  
   function handleClose() {
     open = false;
-    dispatch("close");
+    onclose?.();
 }
   function handleBackdropClick(e: MouseEvent) {
     if (e.target === e.currentTarget) {
@@ -22,29 +28,29 @@
 
 {#if open}
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
     role="dialog"
     aria-modal="true"
     aria-label={title ? title : "Drawer"}
     on:click={handleBackdropClick}
   >
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         {#if title}
-          <h2 class="container mx-auto px-4">{title}</h2>
+          <h2 class="space-y-4">{title}</h2>
         {/if}
         {#if description}
-          <p class="container mx-auto px-4">{description}</p>
+          <p class="space-y-4">{description}</p>
         {/if}
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           aria-label="Close drawer"
           on:click={handleClose}
         >
           <X size="24" />
         </button>
       </div>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <slot />
       </div>
     </div>

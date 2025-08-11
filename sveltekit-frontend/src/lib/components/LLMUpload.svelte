@@ -19,16 +19,16 @@
 }}
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <h2>Upload Local LLM Model</h2>
-  <button class="container mx-auto px-4" on:click={() => handleUpload()} disabled={loading}>
+  <button class="space-y-4" on:click={() => handleUpload()} disabled={loading}>
     {loading ? 'Uploading...' : 'Select & Upload Model'}
   </button>
   {#if uploadResult}
-    <div class="container mx-auto px-4">{uploadResult}</div>
+    <div class="space-y-4">{uploadResult}</div>
   {/if}
   {#if error}
-    <div class="container mx-auto px-4">{error}</div>
+    <div class="space-y-4">{error}</div>
   {/if}
 </div>
 

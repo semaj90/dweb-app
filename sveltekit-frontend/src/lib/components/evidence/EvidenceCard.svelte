@@ -1,4 +1,27 @@
 <script lang="ts">
+  interface Props {
+    evidence: ExtendedEvidence;;
+    onView: (evidence: Evidence) ;
+    onEdit: (evidence: Evidence) ;
+    onDelete: (evidence: Evidence) ;
+    onDownload: (evidence: Evidence) ;
+    draggable?: any;
+    compact?: any;
+    expandOnHover?: any;
+  }
+  let {
+    evidence,
+    onView = > void = () => {},
+    onEdit = > void = () => {},
+    onDelete = > void = () => {},
+    onDownload = > void = () => {},
+    draggable = true,
+    compact = false,
+    expandOnHover = false
+  }: Props = $props();
+
+
+
   import { createTooltip, melt } from "@melt-ui/svelte";
   import {
     Download,
@@ -23,15 +46,7 @@
     updatedAt?: Date | string;
   };
 
-  export let evidence: ExtendedEvidence;
-  export let onView: (evidence: Evidence) => void = () => {};
-  export let onEdit: (evidence: Evidence) => void = () => {};
-  export let onDelete: (evidence: Evidence) => void = () => {};
-  export let onDownload: (evidence: Evidence) => void = () => {};
-  export let draggable = true;
-  export let compact = false;
-  export let expandOnHover = false;
-  export const showPreview = true;
+                  export const showPreview = true;
 
   const {
     elements: { trigger: tooltipTrigger, content: tooltipContent },

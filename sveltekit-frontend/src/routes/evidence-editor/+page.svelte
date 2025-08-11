@@ -23,18 +23,18 @@
   <meta name="description" content="Advanced visual evidence management with AI-powered tagging and analysis" />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <div>
-        <h1 class="container mx-auto px-4">Visual Evidence Editor</h1>
-        <p class="container mx-auto px-4">
+        <h1 class="space-y-4">Visual Evidence Editor</h1>
+        <p class="space-y-4">
           Drag and drop evidence files for AI-powered analysis and tagging
         </p>
       </div>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Button 
           on:click={toggleReadOnly}
           variant={readOnly ? "default" : "outline"}
@@ -43,7 +43,7 @@
           {readOnly ? 'Enable Editing' : 'Read Only'}
         </Button>
         
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#if caseId}
             Case: {caseId}
           {:else}
@@ -55,15 +55,15 @@
   </div>
   
   <!-- Main Editor -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <VisualEvidenceEditor {caseId} {readOnly} />
   </div>
 </div>
 
 <!-- Help Overlay (initially hidden) -->
-<div class="container mx-auto px-4" style="display: none;" id="help-overlay">
-  <h3 class="container mx-auto px-4">Quick Start Guide</h3>
-  <ul class="container mx-auto px-4">
+<div class="space-y-4" style="display: none;" id="help-overlay">
+  <h3 class="space-y-4">Quick Start Guide</h3>
+  <ul class="space-y-4">
     <li>• Drag files onto the canvas to add evidence</li>
     <li>• Files are automatically analyzed with AI</li>
     <li>• Click evidence to view details in the inspector</li>
@@ -72,7 +72,7 @@
   </ul>
   <Button 
     size="sm" 
-    class="container mx-auto px-4"
+    class="space-y-4"
     on:click={() => {
       const helpOverlay = document.getElementById('help-overlay');
       if (helpOverlay) {

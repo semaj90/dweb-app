@@ -23,10 +23,14 @@ export interface Evidence {
   title: string;
   description?: string;
   type: 'document' | 'image' | 'video' | 'audio' | 'physical' | 'digital';
+  evidenceType: 'document' | 'image' | 'video' | 'audio';
   caseId: string;
   uploadedBy: string;
-  uploadedAt: string;
+  uploadedAt: string | Date;
   fileUrl?: string;
+  fileName?: string;
+  mimeType?: string;
+  fileSize?: number;
   metadata?: Record<string, any>;
   tags?: string[];
 }

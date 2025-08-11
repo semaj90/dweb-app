@@ -70,12 +70,12 @@
       renderer.image = ({ href, title, text }) => {
         const titleAttr = title ? ` title="${title}"` : "";
         const altAttr = text ? ` alt="${text}"` : "";
-        return `<img src="${href}"${titleAttr}${altAttr} class="container mx-auto px-4" loading="lazy" />`;
+        return `<img src="${href}"${titleAttr}${altAttr} class="space-y-4" loading="lazy" />`;
       };
 
       // Customize code block rendering
       renderer.code = ({ text, lang }) => {
-        const langClass = lang ? ` class="container mx-auto px-4"` : "";
+        const langClass = lang ? ` class="space-y-4"` : "";
         return `<pre><code${langClass}>${text}</code></pre>`;
       };
 
@@ -84,7 +84,7 @@
       renderedHtml = await marked.parse(markdown);
     } catch (error) {
       console.error("Error rendering markdown:", error);
-      renderedHtml = `<p class="container mx-auto px-4">Error rendering markdown: ${error instanceof Error ? error.message : "Unknown error"}</p>`;
+      renderedHtml = `<p class="space-y-4">Error rendering markdown: ${error instanceof Error ? error.message : "Unknown error"}</p>`;
 }}
   // Re-render when markdown changes using $effect
   $effect(() => {
@@ -95,7 +95,7 @@
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   class:prose-sm={className.includes("prose-sm")}
   class:prose-lg={className.includes("prose-lg")}
   class:prose-xl={className.includes("prose-xl")}
@@ -104,9 +104,9 @@
     {@html renderedHtml}
   {:else if markdown}
     <!-- Fallback for SSR or if rendering fails -->
-    <div class="container mx-auto px-4">{markdown}</div>
+    <div class="space-y-4">{markdown}</div>
   {:else}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       No content to display
     </div>
   {/if}

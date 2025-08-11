@@ -3,13 +3,23 @@ Workflow Progress Component
 Visual progress indicator for the Evidence Chain of Custody workflow
 -->
 <script lang="ts">
+  interface Props {
+    progress: number;;
+    stage: string;;
+    stageName: string;;
+  }
+  let {
+    progress,
+    stage,
+    stageName
+  }: Props = $props();
+
+
+
   import { Progress } from '$lib/components/ui/progress';
   import { CheckCircle, Clock, AlertCircle } from 'lucide-svelte';
 
-  export let progress: number;
-  export let stage: string;
-  export let stageName: string;
-
+      
   // Define workflow stages
   const workflowStages = [
     { id: 'idle', name: 'Idle', description: 'Waiting to start' },

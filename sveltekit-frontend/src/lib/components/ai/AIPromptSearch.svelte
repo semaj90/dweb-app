@@ -19,19 +19,19 @@
   $: results = query && fuse ? fuse.search(query).map((r) => r.item) : history;
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <input
     type="text"
     bind:value={query}
     placeholder="Search AI history..."
-    class="container mx-auto px-4"
+    class="space-y-4"
   />
-  <ul class="container mx-auto px-4">
+  <ul class="space-y-4">
     {#each results as item}
-      <li class="container mx-auto px-4">
-        <div class="container mx-auto px-4">{item.prompt}</div>
-        <div class="container mx-auto px-4">{item.response}</div>
-        <div class="container mx-auto px-4">{item.timestamp}</div>
+      <li class="space-y-4">
+        <div class="space-y-4">{item.prompt}</div>
+        <div class="space-y-4">{item.response}</div>
+        <div class="space-y-4">{item.timestamp}</div>
       </li>
     {/each}
   </ul>

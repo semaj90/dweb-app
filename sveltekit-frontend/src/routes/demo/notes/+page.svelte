@@ -153,42 +153,42 @@ Priority: High
   <title>Rich Text Editor Demo - Warden-Net</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <!-- Header -->
-    <div class="container mx-auto px-4">
-      <h1 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h1 class="space-y-4">
         Rich Text Editor Demo
       </h1>
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         Test the WYSIWYG editor, markdown rendering, and note management system
       </p>
     </div>
 
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Main Editor Column -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <!-- Rich Text Editor -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
-              <BookOpen class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h2 class="space-y-4">
+              <BookOpen class="space-y-4" />
               Rich Text Editor
             </h2>
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               Create and edit notes with full WYSIWYG support
             </p>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <input
               bind:value={currentNote.title}
-              class="container mx-auto px-4"
+              class="space-y-4"
               placeholder="Note title..."
             />
 
-            <div class="container mx-auto px-4">
-              <select bind:value={currentNote.noteType} class="container mx-auto px-4">
+            <div class="space-y-4">
+              <select bind:value={currentNote.noteType} class="space-y-4">
                 <option value="general">General</option>
                 <option value="evidence">Evidence</option>
                 <option value="poi">Person of Interest</option>
@@ -198,7 +198,7 @@ Priority: High
               <input
                 type="text"
                 placeholder="Add tags (comma separated)"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:blur={(e) => {
                   const tags = (e.target as HTMLInputElement).value.split(',').map(t => t.trim()).filter(t => t);
                   currentNote.tags = tags;
@@ -218,14 +218,14 @@ Priority: High
         </div>
 
         <!-- File Upload -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h2 class="space-y-4">
               File Upload
             </h2>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <DragDropZone
               accept="image/*,.pdf,.doc,.docx,.txt"
               maxSize={10485760}
@@ -235,42 +235,42 @@ Priority: High
         </div>
 
         <!-- Markdown Renderer Demo -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h2 class="space-y-4">
               Markdown Renderer (LLM Output Demo)
             </h2>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <MarkdownRenderer markdown={demoMarkdown} class="prose-sm" />
           </div>
         </div>
       </div>
 
       <!-- Sidebar - Saved Notes -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <!-- Search and Filters -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">
-              <Search class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h2 class="space-y-4">
+              <Search class="space-y-4" />
               Saved Notes
             </h2>
           </div>
 
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <Search class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <Search class="space-y-4" />
               <input
                 bind:value={searchQuery}
                 type="text"
                 placeholder="Search notes..."
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
             </div>
 
-            <select bind:value={selectedNoteType} class="container mx-auto px-4">
+            <select bind:value={selectedNoteType} class="space-y-4">
               <option value="">All Types</option>
               <option value="general">General</option>
               <option value="evidence">Evidence</option>
@@ -281,53 +281,53 @@ Priority: High
             <button
               type="button"
               on:click={() => createNewNote()}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <Plus class="container mx-auto px-4" />
+              <Plus class="space-y-4" />
               New Note
             </button>
           </div>
         </div>
 
         <!-- Notes List -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">
               Recent Notes ({$filteredNotes.length})
             </h3>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each $filteredNotes as note (note.id)}
               <button
                 type="button"
                 on:click={() => viewNote(note)}
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {note.title}
                 </div>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {note.content.slice(0, 100)}...
                 </div>
-                <div class="container mx-auto px-4">
-                  <span class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <span class="space-y-4">
                     {note.noteType}
                   </span>
-                  <span class="container mx-auto px-4">
+                  <span class="space-y-4">
                     {new Date(note.savedAt).toLocaleDateString()}
                   </span>
                 </div>
                 {#if note.tags.length > 0}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#each note.tags.slice(0, 3) as tag}
-                      <span class="container mx-auto px-4">
-                        <Tag class="container mx-auto px-4" />
+                      <span class="space-y-4">
+                        <Tag class="space-y-4" />
                         {tag}
                       </span>
                     {/each}
                     {#if note.tags.length > 3}
-                      <span class="container mx-auto px-4">
+                      <span class="space-y-4">
                         +{note.tags.length - 3} more
                       </span>
                     {/if}
@@ -335,10 +335,10 @@ Priority: High
                 {/if}
               </button>
             {:else}
-              <div class="container mx-auto px-4">
-                <BookOpen class="container mx-auto px-4" />
+              <div class="space-y-4">
+                <BookOpen class="space-y-4" />
                 <p>No notes found</p>
-                <p class="container mx-auto px-4">Create your first note to get started</p>
+                <p class="space-y-4">Create your first note to get started</p>
               </div>
             {/each}
           </div>

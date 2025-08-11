@@ -1,28 +1,50 @@
 <script lang="ts">
+  interface Props {
+    onUpload: (files: FileList) ;
+    acceptedTypes: string ;
+    maxFiles: number ;
+    maxFileSize: number ;
+    disabled: boolean ;
+    multiple: boolean ;
+    showProgress: boolean ;
+    showPreview: boolean ;
+    allowedMimeTypes: string[] ;
+    autoUpload: boolean ;
+    uploadEndpoint: string ;
+    retryAttempts: number ;
+    chunkSize: number ;
+  }
+  let {
+    onUpload = > void = () => {},
+    acceptedTypes = '.pdf,.jpg,.jpeg,.png,.mp4,.avi,.mov,.mp3,.wav',
+    maxFiles = 10,
+    maxFileSize = 50 * 1024 * 1024,
+    disabled = false,
+    multiple = true,
+    showProgress = true,
+    showPreview = true,
+    allowedMimeTypes = [,
+    autoUpload = false,
+    uploadEndpoint = '/api/parse/',
+    retryAttempts = 3,
+    chunkSize = 1024 * 1024
+  }: Props = $props();
+
+
+
   import { createEventDispatcher } from 'svelte';
-  
-  export let onUpload: (files: FileList) => void = () => {};
-  export let acceptedTypes: string = '.pdf,.jpg,.jpeg,.png,.mp4,.avi,.mov,.mp3,.wav';
-  export let maxFiles: number = 10;
-  export let maxFileSize: number = 50 * 1024 * 1024; // 50MB default
-  export let disabled: boolean = false;
-  export let multiple: boolean = true;
-  export let showProgress: boolean = true;
-  export let showPreview: boolean = true;
-  export let allowedMimeTypes: string[] = [
-    'application/pdf',
+
+        export let maxFileSize: number = 50 * 1024 * 1024; // 50MB default
+              'application/pdf',
     'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
     'video/mp4', 'video/avi', 'video/mov', 'video/webm',
     'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/mpeg'
   ];
-  export let autoUpload: boolean = false;
-  export let uploadEndpoint: string = '/api/parse/';
-  export let retryAttempts: number = 3;
-  export let chunkSize: number = 1024 * 1024; // 1MB chunks for large files (future use)
-  
+        export let chunkSize: number = 1024 * 1024; // 1MB chunks for large files (future use)
+
   // Prevent unused export warning - this is for future chunked upload implementation
   $: void chunkSize;
-  
+
   interface UploadResult {
     file: File;
     result?: any;
@@ -43,7 +65,7 @@
     'files-selected': { files: FileList };
     'validation-error': { errors: string[] };
   }>();
-  
+
   let isDragOver = false;
   let isUploading = false;
   let uploadProgress = 0;
@@ -54,16 +76,16 @@
   let processedFiles = 0;
   let dragCounter = 0; // Track drag enter/leave events
   let fileInput: HTMLInputElement;
-  
+
   // Debounce timer for drag events
   let dragLeaveTimer: NodeJS.Timeout;
-  
+
   function handleDragEnter(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (disabled) return;
-    
+
     dragCounter++;
     if (!isDragOver) {
       isDragOver = true;
@@ -72,9 +94,9 @@
   function handleDragOver(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (disabled) return;
-    
+
     // Ensure we're allowing the drop
     if (e.dataTransfer) {
       e.dataTransfer.dropEffect = 'copy';
@@ -82,11 +104,11 @@
   function handleDragLeave(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (disabled) return;
-    
+
     dragCounter--;
-    
+
     // Use a timer to handle rapid drag enter/leave events
     dragLeaveTimer = setTimeout(() => {
       if (dragCounter <= 0) {
@@ -98,18 +120,18 @@
   async function handleDrop(e: DragEvent) {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // Reset drag state
     isDragOver = false;
     dragCounter = 0;
     clearTimeout(dragLeaveTimer);
-    
+
     if (disabled) return;
-    
+
     const droppedFiles = e.dataTransfer?.files;
     if (droppedFiles && droppedFiles.length > 0) {
       dispatch('files-selected', { files: droppedFiles });
-      
+
       if (autoUpload) {
         await processFiles(droppedFiles);
       } else {
@@ -119,7 +141,7 @@
     const target = e.target as HTMLInputElement;
     if (target.files && target.files.length > 0 && !disabled) {
       dispatch('files-selected', { files: target.files });
-      
+
       if (autoUpload) {
         await processFiles(target.files);
       } else {
@@ -141,7 +163,7 @@
     uploadProgress = 0;
     processedFiles = 0;
     totalFiles = 0;
-    
+
     // Reset file input
     if (fileInput) {
       fileInput.value = '';
@@ -156,21 +178,21 @@
 }}
   function removeFile(index: number) {
     if (!files || isUploading) return;
-    
+
     const fileArray = Array.from(files);
     fileArray.splice(index, 1);
-    
+
     // Create new FileList-like object
     const dt = new DataTransfer();
     fileArray.forEach(file => dt.items.add(file));
     files = dt.files;
-    
+
     if (files.length === 0) {
       clearFiles();
 }}
   async function processFiles(fileList: FileList) {
     if (fileList.length === 0) return;
-    
+
     // Clear previous state
     uploadErrors = [];
     uploadResults = [];
@@ -178,9 +200,9 @@
     uploadProgress = 0;
     totalFiles = fileList.length;
     processedFiles = 0;
-    
+
     dispatch('upload-start', { files: fileList });
-    
+
     try {
       // Validate files first
       const validationErrors = validateFiles(fileList);
@@ -190,7 +212,7 @@
         throw new Error(validationErrors.join(', '));
 }
       const fileArray = Array.from(fileList);
-      
+
       // Process files with better progress tracking and retry logic
       for (let i = 0; i < fileArray.length; i++) {
         const file = fileArray[i];
@@ -198,24 +220,24 @@
         let success = false;
         let result: any = null;
         let lastError: string = '';
-        
+
         dispatch('file-start', { file, index: i });
-        
+
         // Retry logic
         while (!success && retryCount < retryAttempts) {
           try {
             result = await uploadFileWithProgress(file, (progress) => {
               dispatch('file-progress', { file, progress, index: i });
             });
-            
+
             uploadResults.push({ file, result, success: true, retryCount });
             dispatch('file-success', { file, result, index: i });
             success = true;
-            
+
           } catch (error) {
             retryCount++;
             lastError = error instanceof Error ? error.message : 'Unknown error';
-            
+
             if (retryCount < retryAttempts) {
               // Wait before retry (exponential backoff)
               await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000));
@@ -231,10 +253,10 @@
 }
       const successfulFiles = uploadResults.filter(r => r.success);
       const failedFiles = uploadResults.filter(r => !r.success);
-      
+
       if (successfulFiles.length > 0) {
-        dispatch('upload-complete', { 
-          files: successfulFiles.map(r => r.file), 
+        dispatch('upload-complete', {
+          files: successfulFiles.map(r => r.file),
           results: successfulFiles.map(r => r.result),
           failed: failedFiles.length
         });
@@ -253,7 +275,7 @@
   function validateFiles(fileList: FileList): string[] {
     const errors: string[] = [];
     const fileArray = Array.from(fileList);
-    
+
     // Check file count
     if (fileArray.length > maxFiles) {
       errors.push(`Too many files selected. Maximum ${maxFiles} allowed.`);
@@ -295,7 +317,7 @@
         errors.push(`${file.name}: Invalid filename characters detected`);
 }
     });
-    
+
     // Check for duplicate files
     const duplicates = findDuplicateFiles(fileArray);
     if (duplicates.length > 0) {
@@ -306,7 +328,7 @@
   function findDuplicateFiles(files: File[]): string[] {
     const seen = new Map<string, string>();
     const duplicates: string[] = [];
-    
+
     files.forEach(file => {
       const key = `${file.name}-${file.size}-${file.lastModified}`;
       if (seen.has(key)) {
@@ -315,7 +337,7 @@
         seen.set(key, file.name);
 }
     });
-    
+
     return duplicates;
 }
   function formatFileSize(bytes: number): string {
@@ -329,12 +351,12 @@
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append('file', file);
-      
+
       // Auto-detect API endpoint based on file type
       const endpoint = getUploadEndpoint(file);
-      
+
       const xhr = new XMLHttpRequest();
-      
+
       // Track upload progress
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable && onProgress) {
@@ -342,7 +364,7 @@
           onProgress(progress);
 }
       };
-      
+
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
@@ -355,20 +377,20 @@
           reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
 }
       };
-      
+
       xhr.onerror = () => reject(new Error('Network error occurred'));
       xhr.ontimeout = () => reject(new Error('Upload timeout'));
-      
+
       // Set timeout (30 seconds)
       xhr.timeout = 30000;
-      
+
       xhr.open('POST', endpoint);
       xhr.send(formData);
     });
 }
   function getUploadEndpoint(file: File): string {
     const extension = file.name.split('.').pop()?.toLowerCase();
-    
+
     if (extension && ['pdf'].includes(extension)) {
       return `${uploadEndpoint}pdf`;
     } else if (extension && ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) {
@@ -420,27 +442,31 @@
 }}
   function truncateFileName(fileName: string, maxLength: number = 25): string {
     if (fileName.length <= maxLength) return fileName;
-    
+
     const extension = fileName.split('.').pop();
     const name = fileName.substring(0, fileName.lastIndexOf('.'));
     const truncatedName = name.substring(0, maxLength - extension!.length - 4) + '...';
-    
+
     return `${truncatedName}.${extension}`;
 }
 </script>
 
-<div class="container mx-auto px-4" role="region" aria-label="File upload area">
+<div class="space-y-4" role="region" aria-label="File upload area">
   <!-- Drop Zone -->
-  <div 
-    class="container mx-auto px-4"
+  <div
+    class="space-y-4"
     class:border-primary={isDragOver && !disabled}
     class:bg-light={isDragOver && !disabled}
     class:border-success={files && !isUploading}
     class:disabled={disabled}
-    on:dragenter={handleDragEnter}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+  on:dragenter={handleDragEnter}
+  on:dragover={handleDragOver}
+  on:dragleave={handleDragLeave}
+  on:drop={handleDrop}
+  role="button"
+  tabindex={disabled ? -1 : 0}
+  aria-disabled={disabled}
+  aria-label="Upload area. Press Enter or Space to choose files, or drag and drop."
     on:keydown={handleKeyDown}
     role="button"
     tabindex={disabled ? -1 : 0}
@@ -449,18 +475,18 @@
   >
     {#if isUploading}
       <!-- Upload Progress -->
-      <div class="container mx-auto px-4" role="status" aria-live="polite">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4" role="status">
-            <span class="container mx-auto px-4">Uploading...</span>
+      <div class="space-y-4" role="status" aria-live="polite">
+        <div class="space-y-4">
+          <div class="space-y-4" role="status">
+            <span class="space-y-4">Uploading...</span>
           </div>
-          <h5 class="container mx-auto px-4">Processing Files...</h5>
+          <h5 class="space-y-4">Processing Files...</h5>
         </div>
-        
+
         {#if showProgress}
-          <div class="container mx-auto px-4" style="height: 8px;">
-            <div 
-              class="container mx-auto px-4"
+          <div class="space-y-4" style="height: 8px;">
+            <div
+              class="space-y-4"
               style="width: {uploadProgress}%"
               role="progressbar"
               aria-valuenow={uploadProgress}
@@ -468,32 +494,32 @@
               aria-valuemax={100}
             ></div>
           </div>
-          <div class="container mx-auto px-4">
-            <small class="container mx-auto px-4">{Math.round(uploadProgress)}% complete</small>
-            <small class="container mx-auto px-4">{processedFiles} of {totalFiles} files</small>
+          <div class="space-y-4">
+            <small class="space-y-4">{Math.round(uploadProgress)}% complete</small>
+            <small class="space-y-4">{processedFiles} of {totalFiles} files</small>
           </div>
         {/if}
-        
+
         <!-- Individual file progress -->
         {#if uploadResults.length > 0}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each uploadResults as result, index}
-              <div class="container mx-auto px-4">
-                <small class="container mx-auto px-4">
-                  <i class="container mx-auto px-4"></i>
+              <div class="space-y-4">
+                <small class="space-y-4">
+                  <i class="space-y-4"></i>
                   {truncateFileName(result.file.name)}
                 </small>
                 {#if result.success}
-                  <span class="container mx-auto px-4">
-                    <i class="container mx-auto px-4"></i>
+                  <span class="space-y-4">
+                    <i class="space-y-4"></i>
                   </span>
                 {:else if result.error}
-                  <span class="container mx-auto px-4">
-                    <i class="container mx-auto px-4"></i>
+                  <span class="space-y-4">
+                    <i class="space-y-4"></i>
                   </span>
                 {:else}
-                  <div class="container mx-auto px-4" role="status">
-                    <span class="container mx-auto px-4">Processing...</span>
+                  <div class="space-y-4" role="status">
+                    <span class="space-y-4">Processing...</span>
                   </div>
                 {/if}
               </div>
@@ -501,86 +527,86 @@
           </div>
         {/if}
       </div>
-      
+
     {:else if uploadErrors.length > 0}
       <!-- Error State -->
-      <div class="container mx-auto px-4" role="alert">
-        <div class="container mx-auto px-4">
-          <i class="container mx-auto px-4"></i>
-          <h5 class="container mx-auto px-4">Upload Failed</h5>
+      <div class="space-y-4" role="alert">
+        <div class="space-y-4">
+          <i class="space-y-4"></i>
+          <h5 class="space-y-4">Upload Failed</h5>
         </div>
-        
-        <div class="container mx-auto px-4">
+
+        <div class="space-y-4">
           {#each uploadErrors as error}
-            <div class="container mx-auto px-4">
-              <i class="container mx-auto px-4"></i>
+            <div class="space-y-4">
+              <i class="space-y-4"></i>
               {error}
             </div>
           {/each}
         </div>
-        
-        <div class="container mx-auto px-4">
-          <button 
-            type="button" 
-            class="container mx-auto px-4" 
+
+        <div class="space-y-4">
+          <button
+            type="button"
+            class="space-y-4"
             on:click={() => retryUpload()}
             disabled={!files}
           >
-            <i class="container mx-auto px-4"></i>
+            <i class="space-y-4"></i>
             Retry Upload
           </button>
-          <button 
-            type="button" 
-            class="container mx-auto px-4" 
+          <button
+            type="button"
+            class="space-y-4"
             on:click={() => clearFiles()}
           >
-            <i class="container mx-auto px-4"></i>
+            <i class="space-y-4"></i>
             Clear Files
           </button>
         </div>
       </div>
-      
+
     {:else if files && showPreview}
       <!-- File Preview -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h5 class="container mx-auto px-4">
-            <i class="container mx-auto px-4"></i>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h5 class="space-y-4">
+            <i class="space-y-4"></i>
             {files.length} File{files.length !== 1 ? 's' : ''} Ready
           </h5>
-          <button 
-            type="button" 
-            class="container mx-auto px-4" 
+          <button
+            type="button"
+            class="space-y-4"
             on:click={() => clearFiles()}
             aria-label="Clear all files"
           >
-            <i class="container mx-auto px-4"></i>
+            <i class="space-y-4"></i>
           </button>
         </div>
-        
-        <div class="container mx-auto px-4">
+
+        <div class="space-y-4">
           {#each Array.from(files) as file, index}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
-                        <i class="container mx-auto px-4"></i>
-                        <small class="container mx-auto px-4">{truncateFileName(file.name, 20)}</small>
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      <div class="space-y-4">
+                        <i class="space-y-4"></i>
+                        <small class="space-y-4">{truncateFileName(file.name, 20)}</small>
                       </div>
-                      <div class="container mx-auto px-4">
+                      <div class="space-y-4">
                         <div>{formatFileSize(file.size)}</div>
                         <div>{new Date(file.lastModified).toLocaleDateString()}</div>
                       </div>
                     </div>
-                    <button 
-                      type="button" 
-                      class="container mx-auto px-4" 
+                    <button
+                      type="button"
+                      class="space-y-4"
                       on:click={() => removeFile(index)}
                       aria-label="Remove {file.name}"
                     >
-                      <i class="container mx-auto px-4"></i>
+                      <i class="space-y-4"></i>
                     </button>
                   </div>
                 </div>
@@ -588,60 +614,60 @@
             </div>
           {/each}
         </div>
-        
+
         {#if !autoUpload}
-          <div class="container mx-auto px-4">
-            <button 
-              type="button" 
-              class="container mx-auto px-4" 
+          <div class="space-y-4">
+            <button
+              type="button"
+              class="space-y-4"
               on:click={() => startUpload()}
               disabled={isUploading}
             >
-              <i class="container mx-auto px-4"></i>
+              <i class="space-y-4"></i>
               Upload {files.length} File{files.length !== 1 ? 's' : ''}
             </button>
           </div>
         {/if}
       </div>
-      
+
     {:else}
       <!-- Default Drop Zone -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <i class="container mx-auto px-4"></i>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <i class="space-y-4"></i>
           <h5>
             {isDragOver ? 'Drop files here' : 'Drag & Drop Evidence Files'}
           </h5>
-          <p class="container mx-auto px-4" id="upload-instructions">
+          <p class="space-y-4" id="upload-instructions">
             Or click to browse files
           </p>
         </div>
-        
+
         <!-- File Input -->
         <input
           bind:this={fileInput}
           type="file"
           {multiple}
           accept={acceptedTypes}
-          class="container mx-auto px-4"
+          class="space-y-4"
           id="file-input-{Math.random().toString(36).substr(2, 9)}"
           on:change={handleFileInput}
           {disabled}
           aria-describedby="file-constraints"
         >
-        
-        <button 
+
+        <button
           type="button"
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => browseFiles()}
           {disabled}
         >
-          <i class="container mx-auto px-4"></i>
+          <i class="space-y-4"></i>
           Browse Files
         </button>
-        
-        <div class="container mx-auto px-4">
-          <small class="container mx-auto px-4" id="file-constraints">
+
+        <div class="space-y-4">
+          <small class="space-y-4" id="file-constraints">
             <strong>Supported:</strong> PDF, Images, Videos, Audio<br>
             <strong>Max size:</strong> {formatFileSize(maxFileSize)} per file<br>
             <strong>Max files:</strong> {maxFiles}
@@ -650,19 +676,19 @@
       </div>
     {/if}
   </div>
-  
+
   <!-- Additional Status Information -->
   {#if uploadResults.length > 0 && !isUploading}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             {uploadResults.filter(r => r.success).length} Successful
           </div>
         </div>
         {#if uploadResults.filter(r => !r.success).length > 0}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               {uploadResults.filter(r => !r.success).length} Failed
             </div>
           </div>
@@ -739,14 +765,14 @@
   /* Drag and drop visual feedback */
   .drop-zone.border-primary {
     border-color: var(--bs-primary) !important;
-    background: linear-gradient(135deg, 
-      rgba(13, 110, 253, 0.1), 
+    background: linear-gradient(135deg,
+      rgba(13, 110, 253, 0.1),
       rgba(13, 110, 253, 0.05));
 }
   .drop-zone.border-success {
     border-color: var(--bs-success) !important;
-    background: linear-gradient(135deg, 
-      rgba(25, 135, 84, 0.1), 
+    background: linear-gradient(135deg,
+      rgba(25, 135, 84, 0.1),
       rgba(25, 135, 84, 0.05));
 }
   /* Responsive adjustments */
@@ -768,22 +794,22 @@
 }
   /* Animation keyframes */
   @keyframes fadeIn {
-    from { 
-      opacity: 0; 
+    from {
+      opacity: 0;
       transform: scale(0.95);
 }
-    to { 
-      opacity: 1; 
+    to {
+      opacity: 1;
       transform: scale(1);
 }}
   @keyframes slideUp {
-    from { 
-      opacity: 0; 
-      transform: translateY(20px); 
+    from {
+      opacity: 0;
+      transform: translateY(20px);
 }
-    to { 
-      opacity: 1; 
-      transform: translateY(0); 
+    to {
+      opacity: 1;
+      transform: translateY(0);
 }}
   /* File type specific colors */
   .text-danger { color: #dc3545 !important; }

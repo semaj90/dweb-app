@@ -1,4 +1,21 @@
 <script lang="ts">
+  interface Props {
+    reportId: string ;
+    acceptedTypes: string[] ;
+    maxFileSize?: any;
+    maxFiles?: any;
+    multiple?: any;
+  }
+  let {
+    reportId = '',
+    acceptedTypes = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx'],
+    maxFileSize = 10 * 1024 * 1024,
+    maxFiles = 5,
+    multiple = true
+  }: Props = $props();
+
+
+
 	import { browser } from '$app/environment';
 	import {
 	  AlertCircle,
@@ -14,12 +31,8 @@
 	import { loki } from "../stores/lokiStore";
 	import TagList from './TagList.svelte';
 
-	export let reportId: string = '';
-	export let acceptedTypes: string[] = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.txt', '.doc', '.docx'];
-	export let maxFileSize = 10 * 1024 * 1024; // 10MB
-	export let maxFiles = 5;
-	export let multiple = true;
-
+			export let maxFileSize = 10 * 1024 * 1024; // 10MB
+		
 	const dispatch = createEventDispatcher<{
 		upload: { files: globalThis.File[]; tags: string[] };
 		filesChanged: FileUpload[];
@@ -255,20 +268,20 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
 	<input
 		bind:this={fileInput}
 		type="file"
 		{multiple}
 		accept={acceptedTypes.join(',')}
 		on:change={handleFileSelect}
-		class="container mx-auto px-4"
+		class="space-y-4"
 		aria-label="Select files for upload"
 	/>
 
 	<!-- Drop Zone -->
 	<div
-		class="container mx-auto px-4"
+		class="space-y-4"
 		class:drag-active={dragActive}
 		class:has-files={uploads.length > 0}
 		on:dragover={handleDragOver}
@@ -280,21 +293,21 @@
 		on:keydown={(e) => e.key === 'Enter' && triggerFileSelect()}
 	>
 		{#if uploads.length === 0}
-			<div class="container mx-auto px-4">
-				<Upload class="container mx-auto px-4" size={48} />
-				<h3 class="container mx-auto px-4">Upload Evidence Files</h3>
-				<p class="container mx-auto px-4">
+			<div class="space-y-4">
+				<Upload class="space-y-4" size={48} />
+				<h3 class="space-y-4">Upload Evidence Files</h3>
+				<p class="space-y-4">
 					Drag and drop files here, or click to browse
 				</p>
-				<p class="container mx-auto px-4">
+				<p class="space-y-4">
 					Supports: {acceptedTypes.join(', ')} • Max {formatFileSize(maxFileSize)} per file • Up to {maxFiles} files
 				</p>
 			</div>
 		{:else}
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<CloudUpload size={24} />
 				<span>{uploads.length} file{uploads.length !== 1 ? 's' : ''} ready</span>
-				<button type="button" class="container mx-auto px-4" on:click|stopPropagation={triggerFileSelect}>
+				<button type="button" class="space-y-4" on:click|stopPropagation={triggerFileSelect}>
 					Add more
 				</button>
 			</div>
@@ -303,21 +316,21 @@
 
 	<!-- File List -->
 	{#if uploads.length > 0}
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			{#each uploads as upload (upload.id)}
-				<div class="container mx-auto px-4" class:uploading={upload.status === 'uploading'}>
-					<div class="container mx-auto px-4">
-						<div class="container mx-auto px-4">
+				<div class="space-y-4" class:uploading={upload.status === 'uploading'}>
+					<div class="space-y-4">
+						<div class="space-y-4">
 							{#if upload.preview}
-								<img src={upload.preview} alt="File preview" class="container mx-auto px-4" />
+								<img src={upload.preview} alt="File preview" class="space-y-4" />
 							{:else}
 								<svelte:component this={getFileIcon(upload.file)} size={24} />
 							{/if}
 						</div>
 						
-						<div class="container mx-auto px-4">
-							<div class="container mx-auto px-4">{upload.file.name}</div>
-							<div class="container mx-auto px-4">
+						<div class="space-y-4">
+							<div class="space-y-4">{upload.file.name}</div>
+							<div class="space-y-4">
 								{formatFileSize(upload.file.size)}
 								{#if upload.status === 'uploading'}
 									• Uploading... {upload.progress}%
@@ -329,22 +342,22 @@
 							</div>
 						</div>
 
-						<div class="container mx-auto px-4">
+						<div class="space-y-4">
 							{#if upload.status === 'uploading'}
-								<div class="container mx-auto px-4">
-									<div class="container mx-auto px-4" style="--progress: {upload.progress}%"></div>
+								<div class="space-y-4">
+									<div class="space-y-4" style="--progress: {upload.progress}%"></div>
 								</div>
 							{:else if upload.status === 'success'}
-								<CheckCircle size={20} class="container mx-auto px-4" />
+								<CheckCircle size={20} class="space-y-4" />
 							{:else if upload.status === 'error'}
-								<AlertCircle size={20} class="container mx-auto px-4" />
+								<AlertCircle size={20} class="space-y-4" />
 							{/if}
 						</div>
 
 						{#if upload.status !== 'uploading'}
 							<button
 								type="button"
-								class="container mx-auto px-4"
+								class="space-y-4"
 								on:click={() => removeFile(upload.id)}
 								aria-label="Remove {upload.file.name}"
 							>
@@ -354,7 +367,7 @@
 					</div>
 
 					{#if upload.status === 'pending' || upload.status === 'error'}
-						<div class="container mx-auto px-4">
+						<div class="space-y-4">
 							<TagList
 								bind:tags={upload.tags}
 								{availableTags}
@@ -366,8 +379,8 @@
 					{/if}
 
 					{#if upload.status === 'uploading'}
-						<div class="container mx-auto px-4">
-							<div class="container mx-auto px-4" style="width: {upload.progress}%"></div>
+						<div class="space-y-4">
+							<div class="space-y-4" style="width: {upload.progress}%"></div>
 						</div>
 					{/if}
 				</div>
@@ -375,10 +388,10 @@
 		</div>
 
 		<!-- Upload Actions -->
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			<button
 				type="button"
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => uploadFiles()}
 				disabled={uploads.every(u => u.status !== 'pending')}
 			>
@@ -391,7 +404,7 @@
 			{#if uploads.some(u => u.status === 'success')}
 				<button
 					type="button"
-					class="container mx-auto px-4"
+					class="space-y-4"
 					on:click={() => clearCompleted()}
 				>
 					Clear Completed

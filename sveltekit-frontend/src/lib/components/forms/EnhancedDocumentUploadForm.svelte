@@ -2,6 +2,23 @@
 <!-- Production-ready form with state management, validation, and progress tracking -->
 
 <script lang="ts">
+  interface Props {
+    data: SuperValidated<Infer<typeof DocumentUploadSchema>>;;
+    onSuccess: ((result: any) ;
+    onError: ((error: string) ;
+    caseId: string | undefined ;
+    autoSave?: any;
+  }
+  let {
+    data,
+    onSuccess = > void) | undefined = undefined,
+    onError = > void) | undefined = undefined,
+    caseId = undefined,
+    autoSave = true
+  }: Props = $props();
+
+
+
   import {
     createDocumentUploadForm,
     FORM_STORAGE_KEYS,
@@ -42,12 +59,7 @@
   import type { Infer, SuperValidated } from "sveltekit-superforms";
 
   // Props
-  export let data: SuperValidated<Infer<typeof DocumentUploadSchema>>;
-  export let onSuccess: ((result: any) => void) | undefined = undefined;
-  export let onError: ((error: string) => void) | undefined = undefined;
-  export let caseId: string | undefined = undefined;
-  export let autoSave = true;
-
+          
   // Form state management
   const formIntegration = createDocumentUploadForm(data, {
     onSuccess,

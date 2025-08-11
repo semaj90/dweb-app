@@ -42,11 +42,11 @@
 		return {
 			title: 'Input Required',
 			content: `
-				<div class="container mx-auto px-4">
-					<p class="container mx-auto px-4">${props.message}</p>
+				<div class="space-y-4">
+					<p class="space-y-4">${props.message}</p>
 					<input
 						type="text"
-						class="container mx-auto px-4"
+						class="space-y-4"
 						placeholder="${props.placeholder || ''}"
 						value="${inputValue}"
 						autofocus
@@ -96,7 +96,7 @@
 <!-- Render all active modals -->
 {#each $modals.modals as modal (modal.id)}
 	<div
-		class="container mx-auto px-4"
+		class="space-y-4"
 		on:click={(e) => handleBackdropClick(e, modal)}
 		on:keydown={(e) => handleKeydown(e, modal)}
 		role="dialog"
@@ -108,7 +108,7 @@
 	>
 		<!-- Backdrop -->
 		<div
-			class="container mx-auto px-4"
+			class="space-y-4"
 			aria-hidden="true"
 		></div>
 
@@ -131,12 +131,12 @@
 		>
 			<!-- Header -->
 			{#if modal.title || modal.closable !== false}
-				<div class="container mx-auto px-4">
-					<div class="container mx-auto px-4">
+				<div class="space-y-4">
+					<div class="space-y-4">
 						{#if modal.title}
 							<h2
 								id="{modal.id}-title"
-								class="container mx-auto px-4"
+								class="space-y-4"
 							>
 								{modal.title}
 							</h2>
@@ -145,18 +145,18 @@
 
 					{#if modal.closable !== false}
 						<button
-							class="container mx-auto px-4"
+							class="space-y-4"
 							on:click={() => modals.close(modal.id)}
 							aria-label="Close modal"
 						>
-							<iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
+							<iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
 						</button>
 					{/if}
 				</div>
 			{/if}
 
 			<!-- Content -->
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				{#if modal.component && typeof modal.component === 'string' && modal.component in builtInComponents}
 					{@const builtInModal = (builtInComponents as any)[modal.component]({
 						props: modal.props,
@@ -173,7 +173,7 @@
 
 					<!-- Built-in component actions -->
 					{#if builtInModal.actions}
-						<div class="container mx-auto px-4">
+						<div class="space-y-4">
 							{#each builtInModal.actions as action}
 								<Button
 									variant={action.variant}
@@ -194,7 +194,7 @@
 					/>
 				{:else}
 					<!-- Default slot content -->
-					<div class="container mx-auto px-4">
+					<div class="space-y-4">
 						Modal content goes here
 					</div>
 				{/if}

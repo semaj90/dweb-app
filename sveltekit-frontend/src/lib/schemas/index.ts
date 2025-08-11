@@ -1,3 +1,2 @@
-// @ts-nocheck
-// Export all schemas from here for easy importing
+// Export selected schemas explicitly to avoid accidental imports of deprecated files
 export * from "./auth";

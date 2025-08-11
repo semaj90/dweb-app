@@ -1,4 +1,17 @@
 <script lang="ts">
+  interface Props {
+    showInline?: any;
+    autoHide?: any;
+    maxWidth?: any;
+  }
+  let {
+    showInline = false,
+    autoHide = true,
+    maxWidth = "max-w-lg"
+  }: Props = $props();
+
+
+
   import type { User } from '$lib/types';
   import { Button } from "$lib/components/ui/button/index.js";
   import {

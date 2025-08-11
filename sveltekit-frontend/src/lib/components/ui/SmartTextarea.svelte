@@ -126,7 +126,7 @@
   });
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <textarea
     bind:this={textarea}
     bind:value
@@ -134,7 +134,7 @@
     {rows}
     {disabled}
     {readonly}
-    class="container mx-auto px-4"
+    class="space-y-4"
     on:input={handleInput}
     on:keydown={handleKeydown}
     on:blur={handleBlur}
@@ -146,7 +146,7 @@
 
   {#if showCommandMenu}
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       style="position: fixed; left: {commandMenuPosition.x}px; top: {commandMenuPosition.y}px; z-index: 1000;"
     >
       <CommandMenu

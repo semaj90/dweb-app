@@ -55,22 +55,22 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <h1 class="container mx-auto px-4">
+<section class="space-y-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <h1 class="space-y-4">
         <Typewriter text={heroText} speed={100} />
       </h1>
       
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         Harness the power of AI to analyze evidence, build stronger cases, and streamline your prosecution workflow
       </p>
       
-      <div class="container mx-auto px-4">
-        <a href="/cases" class="container mx-auto px-4">
+      <div class="space-y-4">
+        <a href="/cases" class="space-y-4">
           View Cases
         </a>
-        <a href="/upload" class="container mx-auto px-4">
+        <a href="/upload" class="space-y-4">
           Upload Evidence
         </a>
       </div>
@@ -79,31 +79,31 @@
 </section>
 
 <!-- Quick Actions Section -->
-<section class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <h2 class="container mx-auto px-4">Quick Actions</h2>
+<section class="space-y-4">
+  <div class="space-y-4">
+    <h2 class="space-y-4">Quick Actions</h2>
     
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- AI Search -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
         </div>
-        <h3 class="container mx-auto px-4">AI-Powered Search</h3>
-        <p class="container mx-auto px-4">Search through cases and evidence using natural language queries</p>
+        <h3 class="space-y-4">AI-Powered Search</h3>
+        <p class="space-y-4">Search through cases and evidence using natural language queries</p>
         
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <input 
             id="aiSearchInput"
             type="text" 
             placeholder="Search cases, evidence, or legal precedents..."
-            class="container mx-auto px-4"
+            class="space-y-4"
           />
           <button 
             id="aiSearchBtn"
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             Search
           </button>
@@ -111,28 +111,28 @@
       </div>
       
       <!-- Quick Upload -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
           </svg>
         </div>
-        <h3 class="container mx-auto px-4">Quick Evidence Upload</h3>
-        <p class="container mx-auto px-4">Drag and drop files for instant AI analysis</p>
+        <h3 class="space-y-4">Quick Evidence Upload</h3>
+        <p class="space-y-4">Drag and drop files for instant AI analysis</p>
         
         <UploadArea on:upload={handleQuickUpload} />
       </div>
       
       <!-- Case Analytics -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
           </svg>
         </div>
-        <h3 class="container mx-auto px-4">Case Analytics</h3>
-        <p class="container mx-auto px-4">View insights and patterns across your cases</p>
-        <a href="/dashboard" class="container mx-auto px-4">
+        <h3 class="space-y-4">Case Analytics</h3>
+        <p class="space-y-4">View insights and patterns across your cases</p>
+        <a href="/dashboard" class="space-y-4">
           View Dashboard
         </a>
       </div>
@@ -142,33 +142,33 @@
 
 <!-- Recent Cases Section -->
 {#if recentCases && recentCases.length > 0}
-<section class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <h2 class="container mx-auto px-4">Recent Cases</h2>
-      <div class="container mx-auto px-4">
+<section class="space-y-4">
+  <div class="space-y-4">
+    <h2 class="space-y-4">Recent Cases</h2>
+      <div class="space-y-4">
       {#each recentCases.slice(0, 6) as caseItem}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">{caseItem.title}</h3>
-            <span class="container mx-auto px-4">{caseItem.status || 'Active'}</span>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">{caseItem.title}</h3>
+            <span class="space-y-4">{caseItem.status || 'Active'}</span>
           </div>
           
-          <p class="container mx-auto px-4">{caseItem.description || 'No description available'}</p>
+          <p class="space-y-4">{caseItem.description || 'No description available'}</p>
           
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <span>Case #{caseItem.id}</span>
             <span>{new Date(caseItem.createdAt).toLocaleDateString()}</span>
           </div>
           
-          <a href="/cases/{caseItem.id}" class="container mx-auto px-4">
+          <a href="/cases/{caseItem.id}" class="space-y-4">
             View Details →
           </a>
         </div>
       {/each}
     </div>
     
-    <div class="container mx-auto px-4">
-      <a href="/cases" class="container mx-auto px-4">
+    <div class="space-y-4">
+      <a href="/cases" class="space-y-4">
         View All Cases
       </a>
     </div>
@@ -177,49 +177,49 @@
 {/if}
 
 <!-- Features Section -->
-<section class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <h2 class="container mx-auto px-4">Powerful Features</h2>
+<section class="space-y-4">
+  <div class="space-y-4">
+    <h2 class="space-y-4">Powerful Features</h2>
     
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
           </svg>
         </div>
-        <h3 class="container mx-auto px-4">Document Analysis</h3>
-        <p class="container mx-auto px-4">AI-powered analysis of legal documents and evidence</p>
+        <h3 class="space-y-4">Document Analysis</h3>
+        <p class="space-y-4">AI-powered analysis of legal documents and evidence</p>
       </div>
       
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        <h3 class="container mx-auto px-4">Case Tracking</h3>
-        <p class="container mx-auto px-4">Comprehensive case management and progress tracking</p>
+        <h3 class="space-y-4">Case Tracking</h3>
+        <p class="space-y-4">Comprehensive case management and progress tracking</p>
       </div>
       
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
           </svg>
         </div>
-        <h3 class="container mx-auto px-4">Smart Insights</h3>
-        <p class="container mx-auto px-4">Generate insights and recommendations from case data</p>
+        <h3 class="space-y-4">Smart Insights</h3>
+        <p class="space-y-4">Generate insights and recommendations from case data</p>
       </div>
       
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
           </svg>
         </div>
-        <h3 class="container mx-auto px-4">Secure & Private</h3>
-        <p class="container mx-auto px-4">Bank-level security for sensitive legal information</p>
+        <h3 class="space-y-4">Secure & Private</h3>
+        <p class="space-y-4">Bank-level security for sensitive legal information</p>
       </div>
     </div>
   </div>

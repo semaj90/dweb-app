@@ -1,12 +1,18 @@
 <script lang="ts">
-  import { createEventDispatcher, setContext } from 'svelte';
-  import { writable } from 'svelte/store';
+  interface Props {
+    onvalueChange?: (event?: any) => void;
+  }
+  let {
+    value = '',
+    onValueChange = > void) | undefined = undefined
+  }: Props = $props();
 
-  const dispatch = createEventDispatcher();
 
-  export let value: string = '';
-  export let onValueChange: ((value: string) => void) | undefined = undefined;
 
+    import { writable } from 'svelte/store';
+
+  
+    
   const activeTab = writable(value);
   
   // Set context for child components
@@ -14,7 +20,7 @@
     activeTab,
     setActiveTab: (newValue: string) => {
       activeTab.set(newValue);
-      dispatch('valueChange', newValue);
+      onvalueChange?.();
       if (onValueChange) {
         onValueChange(newValue);
       }

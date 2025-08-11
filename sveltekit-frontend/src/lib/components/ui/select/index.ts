@@ -1,29 +1,15 @@
-// @ts-nocheck
-// Select Component Barrel Export
+// Barrel exports to match usage in forms
 export { default as Select } from "./Select.svelte";
-
-// Re-export from enhanced-bits for better integration
-export { default as EnhancedSelect } from "../enhanced-bits/Select.svelte";
-
-// Standard Bits UI Select components
-export { Select as BitsSelect } from "bits-ui";
-
-// Individual Select components from bits-ui - using correct component access pattern
-import { Select } from "bits-ui";
-
-export const SelectRoot = Select.Root;
-export const SelectContent = Select.Content;
-export const SelectItem = Select.Item;
-export const SelectTrigger = Select.Trigger;
-export const SelectGroup = Select.Group;
-export const SelectGroupHeading = Select.GroupHeading;
-export const SelectViewport = Select.Viewport;
-export const SelectPortal = Select.Portal;
-export const SelectScrollUpButton = Select.ScrollUpButton;
-export const SelectScrollDownButton = Select.ScrollDownButton;
-
-// Local components that aren't in bits-ui
 export { default as SelectValue } from "./SelectValue.svelte";
+
+// Re-export common Bits UI components under expected names
+import { Select as BitsSelect } from "bits-ui";
+export const SelectContent = BitsSelect.Content;
+export const SelectItem = BitsSelect.Item;
+export const SelectTrigger = BitsSelect.Trigger;
+export const SelectPortal = BitsSelect.Portal;
+export const SelectGroup = BitsSelect.Group;
+export const SelectViewport = BitsSelect.Viewport;
 
 // TypeScript interface definition
 export interface SelectOption {

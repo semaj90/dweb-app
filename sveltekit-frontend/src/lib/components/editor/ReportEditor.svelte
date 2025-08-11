@@ -204,7 +204,7 @@
         <!-- Evidence Search -->
         <section class="sidebar-section">
           <div class="section-header">
-        <section class="container mx-auto px-4">
+        <section class="space-y-4">
           <div>
             <h3>Evidence Library</h3>
             <button
@@ -224,7 +224,7 @@
         <!-- Evidence Grid -->
         <section class="evidence-section">
           {#if $report.settings.layout === "masonry"}
-        <section class="container mx-auto px-4">
+        <section class="space-y-4">
           {#if $report.settings.layout === "masonry"}
             <MasonryGrid
               items={evidenceSearchResults}
@@ -265,7 +265,7 @@
         </section>
         <section class="stats-section sidebar-section">
           <div class="stats-grid">
-        <section class="container mx-auto px-4">
+        <section class="space-y-4">
           <div>
             <div>
               <span>Words</span>
@@ -293,7 +293,7 @@
     <!-- Main Editor Area -->
     <main class="editor-main">
       <!-- Editor Header -->
-    <main class="container mx-auto px-4">
+    <main class="space-y-4">
       <!-- Editor Header -->
       <div>
         <div>

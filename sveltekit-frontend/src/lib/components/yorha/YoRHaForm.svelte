@@ -1,6 +1,5 @@
 <!-- YoRHa Form Component with Terminal Styling -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
 
   interface FormField {
     id: string;
@@ -29,6 +28,8 @@
     cancelLabel?: string;
     loading?: boolean;
     showCancel?: boolean;
+    onsubmit?: (data: Record<string, any>) => void;
+    oncancel?: () => void;
   }
 
   let {
@@ -38,10 +39,10 @@
     submitLabel = "Execute",
     cancelLabel = "Abort",
     loading = false,
-    showCancel = true
+    showCancel = true,
+    onsubmit,
+    oncancel
   }: FormProps = $props();
-
-  const dispatch = createEventDispatcher();
 
   let formData = $state<Record<string, any>>({});
   let errors = $state<Record<string, string>>({});
@@ -118,13 +119,15 @@
 
     errors = newErrors;
 
-    if (!hasErrors) {
-      dispatch('submit', formData);
+    if (!hasErrors && onsubmit) {
+      onsubmit(formData);
     }
   }
 
   function handleCancel() {
-    dispatch('cancel');
+    if (oncancel) {
+      oncancel();
+    }
   }
 
   function handleKeyDown(event: KeyboardEvent) {
@@ -176,7 +179,7 @@
               placeholder={field.placeholder || ''}
               disabled={field.disabled || loading}
               class="field-input"
-              oninput={(e) => handleFieldChange(field.id, e.target.value)}
+              oninput={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).value)}
             />
 
           {:else if field.type === 'textarea'}
@@ -187,7 +190,7 @@
               disabled={field.disabled || loading}
               class="field-textarea"
               rows="4"
-              oninput={(e) => handleFieldChange(field.id, e.target.value)}
+              oninput={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).value)}
             ></textarea>
 
           {:else if field.type === 'select'}
@@ -196,7 +199,7 @@
               bind:value={formData[field.id]}
               disabled={field.disabled || loading}
               class="field-select"
-              onchange={(e) => handleFieldChange(field.id, e.target.value)}
+              onchange={(e) => handleFieldChange(field.id, (e.target as HTMLSelectElement).value)}
             >
               <option value="">{field.placeholder || 'Select an option'}</option>
               {#each field.options || [] as option}
@@ -212,7 +215,7 @@
                 bind:checked={formData[field.id]}
                 disabled={field.disabled || loading}
                 class="field-checkbox"
-                onchange={(e) => handleFieldChange(field.id, e.target.checked)}
+                onchange={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).checked)}
               />
               <div class="checkbox-indicator"></div>
               <span class="checkbox-text">{field.placeholder || field.label}</span>
@@ -229,7 +232,7 @@
                     bind:group={formData[field.id]}
                     disabled={field.disabled || loading}
                     class="field-radio"
-                    onchange={(e) => handleFieldChange(field.id, e.target.value)}
+                    onchange={(e) => handleFieldChange(field.id, (e.target as HTMLSelectElement).value)}
                   />
                   <div class="radio-indicator"></div>
                   <span class="radio-text">{option.label}</span>
@@ -243,7 +246,7 @@
               type="file"
               disabled={field.disabled || loading}
               class="field-file"
-              onchange={(e) => handleFieldChange(field.id, e.target.files?.[0])}
+              onchange={(e) => handleFieldChange(field.id, (e.target as HTMLInputElement).files?.[0])}
             />
           {/if}
 

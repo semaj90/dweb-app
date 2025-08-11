@@ -13,10 +13,8 @@
     Target,
     X,
   } from "lucide-svelte";
-  import { createEventDispatcher, onMount } from "svelte";
-
-  const dispatch = createEventDispatcher();
-
+  
+  
   interface OnboardingStep {
     id: string;
     title: string;
@@ -40,6 +38,8 @@
     progressDelay?: number;
     showMinimap?: boolean;
     allowSkip?: boolean;
+      onclose?: (event?: any) => void;
+    oncomplete?: (event?: any) => void;
   }
 
   let {
@@ -50,7 +50,9 @@
     progressDelay = 3000,
     showMinimap = true,
     allowSkip = true
-  }: Props = $props();
+  ,
+    onclose,
+    oncomplete}: Props = $props();
 
   let overlayEl: HTMLElement;
   let autoProgressTimer: NodeJS.Timeout;
@@ -186,10 +188,10 @@
 }
   function closeOnboarding() {
     open = false;
-    dispatch("close");
+    onclose?.();
 }
   function completeOnboarding() {
-    dispatch("complete");
+    oncomplete?.();
     closeOnboarding();
 }
   function getTooltipPosition() {

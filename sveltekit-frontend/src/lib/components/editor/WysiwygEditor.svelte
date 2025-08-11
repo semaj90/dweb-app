@@ -2,19 +2,32 @@
 // Combines Hugerte with Melt UI components for legal document editing
 
 <script lang="ts">
+  interface Props {
+    content?: any;
+    placeholder?: any;
+    readonly?: any;
+    height?: any;
+    enableAI?: any;
+    enableCitation?: any;
+  }
+  let {
+    content = '',
+    placeholder = 'Start typing your legal document...',
+    readonly = false,
+    height = '400px',
+    enableAI = true,
+    enableCitation = true
+  }: Props = $props();
+
+
+
   import { onMount, createEventDispatcher } from 'svelte';
   import { createDialog, melt } from '@melt-ui/svelte';
   import { writable } from 'svelte/store';
   import type { Writable } from 'svelte/store';
 
   // Props
-  export let content = '';
-  export let placeholder = 'Start typing your legal document...';
-  export let readonly = false;
-  export let height = '400px';
-  export let enableAI = true;
-  export let enableCitation = true;
-  export const enableCollaboration = false;
+              export const enableCollaboration = false;
 
   // Events
   const dispatch = createEventDispatcher<{
@@ -277,7 +290,7 @@
   function insertCitation(citation: any) {
     if (hugerte) {
       const citationHtml = `
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <strong>${citation.title}</strong><br>
           <em>${citation.citation}</em>
         </div>
@@ -288,7 +301,7 @@
   function insertAIContent() {
     if (hugerte && aiResults) {
       const aiHtml = `
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <strong>AI Suggestion:</strong><br>
           ${aiResults.replace(/\n/g, '<br>')}
         </div>
@@ -311,13 +324,13 @@
 </script>
 
 <!-- Main Editor Container -->
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Editor Toolbar -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <button
         use:melt={$aiTrigger}
-        class="container mx-auto px-4"
+        class="space-y-4"
         disabled={!enableAI}
       >
         🤖 AI Assistant
@@ -325,23 +338,23 @@
 
       <button
         use:melt={$citeTrigger}
-        class="container mx-auto px-4"
+        class="space-y-4"
         disabled={!enableCitation}
       >
         📚 Citations
       </button>
     </div>
 
-    <div class="container mx-auto px-4">
-      <span class="container mx-auto px-4">Words: {$wordCount}</span>
-      <span class="container mx-auto px-4">Characters: {$charCount}</span>
+    <div class="space-y-4">
+      <span class="space-y-4">Words: {$wordCount}</span>
+      <span class="space-y-4">Characters: {$charCount}</span>
     </div>
   </div>
 
   <!-- Main Editor -->
   <div
     bind:this={editorElement}
-    class="container mx-auto px-4"
+    class="space-y-4"
     style="height: {height};"
   ></div>
 </div>
@@ -349,31 +362,31 @@
 <!-- AI Assistant Dialog -->
 <div use:melt={$aiPortalled}>
   {#if $aiOpen}
-    <div use:melt={$aiOverlay} class="container mx-auto px-4"></div>
-    <div use:melt={$aiContent} class="container mx-auto px-4">
-      <h2 use:melt={$aiTitle} class="container mx-auto px-4">AI Legal Assistant</h2>
+    <div use:melt={$aiOverlay} class="space-y-4"></div>
+    <div use:melt={$aiContent} class="space-y-4">
+      <h2 use:melt={$aiTitle} class="space-y-4">AI Legal Assistant</h2>
 
       {#if selectedText}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <strong>Selected text:</strong>
           <p>"{selectedText}"</p>
         </div>
       {/if}
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="ai-query">What would you like help with?</label>
         <textarea
           id="ai-query"
           bind:value={aiQuery}
           placeholder="E.g., 'Analyze this clause', 'Suggest improvements', 'Find relevant precedents'..."
           rows="4"
-          class="container mx-auto px-4"
+          class="space-y-4"
         ></textarea>
 
         <button
           on:click={() => processAIRequest()}
           disabled={isProcessingAI || !aiQuery.trim()}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           {#if isProcessingAI}
             Processing...
@@ -383,17 +396,17 @@
         </button>
 
         {#if aiResults}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <strong>AI Response:</strong>
-            <div class="container mx-auto px-4">{aiResults}</div>
-            <button on:click={() => insertAIContent()} class="container mx-auto px-4">
+            <div class="space-y-4">{aiResults}</div>
+            <button on:click={() => insertAIContent()} class="space-y-4">
               Insert into Document
             </button>
           </div>
         {/if}
       </div>
 
-      <button use:melt={$aiClose} class="container mx-auto px-4">×</button>
+      <button use:melt={$aiClose} class="space-y-4">×</button>
     </div>
   {/if}
 </div>
@@ -401,40 +414,40 @@
 <!-- Citation Helper Dialog -->
 <div use:melt={$citePortalled}>
   {#if $citeOpen}
-    <div use:melt={$citeOverlay} class="container mx-auto px-4"></div>
-    <div use:melt={$citeContent} class="container mx-auto px-4">
-      <h2 use:melt={$citeTitle} class="container mx-auto px-4">Citation Helper</h2>
+    <div use:melt={$citeOverlay} class="space-y-4"></div>
+    <div use:melt={$citeContent} class="space-y-4">
+      <h2 use:melt={$citeTitle} class="space-y-4">Citation Helper</h2>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="cite-query">Search for citations:</label>
         <input
           id="cite-query"
           bind:value={citationQuery}
           placeholder="Enter legal concept, case name, or statute..."
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
 
         <button
           on:click={() => searchCitations()}
           disabled={!citationQuery.trim()}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           Search
         </button>
 
         {#if citationResults.length > 0}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>Found Citations:</h4>
             {#each citationResults as citation}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">{citation.title}</div>
-                <div class="container mx-auto px-4">{citation.citation}</div>
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">{citation.title}</div>
+                <div class="space-y-4">{citation.citation}</div>
+                <div class="space-y-4">
                   Relevance: {Math.round(citation.relevance * 100)}%
                 </div>
                 <button
                   on:click={() => insertCitation(citation)}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
                   Insert Citation
                 </button>
@@ -444,7 +457,7 @@
         {/if}
       </div>
 
-      <button use:melt={$citeClose} class="container mx-auto px-4">×</button>
+      <button use:melt={$citeClose} class="space-y-4">×</button>
     </div>
   {/if}
 </div>

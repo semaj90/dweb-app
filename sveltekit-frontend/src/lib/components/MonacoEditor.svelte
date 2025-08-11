@@ -23,7 +23,7 @@ onDestroy(() => {
 });
 </script>
 
-<div bind:this={editorContainer} class="container mx-auto px-4" aria-label="Monaco code editor" tabindex={0}></div>
+<div bind:this={editorContainer} class="space-y-4" aria-label="Monaco code editor" tabindex={0}></div>
 
 <style>
   /* @unocss-include */

@@ -1,10 +1,22 @@
 <script lang="ts">
+  interface Props {
+    overlay: any;;
+    content: any;;
+    openState: any;;
+    size: 'sm' | 'md' | 'lg' | 'xl' | 'full' ;
+  }
+  let {
+    overlay,
+    content,
+    openState,
+    size = 'md'
+  }: Props = $props();
+
+
+
   import { fade, fly } from 'svelte/transition';
   
-  export let overlay: any;
-  export let content: any;
-  export let openState: any;
-  export let size: 'sm' | 'md' | 'lg' | 'xl' | 'full' = 'md';
+        export let size: 'sm' | 'md' | 'lg' | 'xl' | 'full' = 'md';
 
   const sizeClasses = {
     sm: 'max-w-sm',
@@ -19,14 +31,14 @@
   <!-- Overlay -->
   <div
     use:overlay
-    class="container mx-auto px-4"
+    class="space-y-4"
     transition:fade={{ duration: 200 }}
   ></div>
   
   <!-- Content -->
   <div
     use:content
-    class="container mx-auto px-4"
+    class="space-y-4"
     transition:fly={{ y: -20, duration: 200  }}
     {...$$restProps}
   >

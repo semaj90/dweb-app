@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    caseId: string | null ;
+    readOnly?: any;
+  }
+  let {
+    caseId = null,
+    readOnly = false
+  }: Props = $props();
+
+
+
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import CanvasEditor from './CanvasEditor.svelte';
@@ -9,9 +20,7 @@
   export const selectedNode = writable(null);
   
   // Props
-  export let caseId: string | null = null;
-  export let readOnly = false;
-  
+      
   let canvasComponent: CanvasEditor;
   let currentSelectedNode: any = null;
   
@@ -33,12 +42,12 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Golden Ratio Layout: 61.8% main canvas, 19.1% inspector, 19.1% AI assistant -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     
     <!-- Main Canvas Area -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <CanvasEditor 
         bind:this={canvasComponent}
         {caseId}
@@ -49,7 +58,7 @@
     </div>
     
     <!-- Inspector Panel -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <InspectorPanel 
         selectedNode={currentSelectedNode}
         {readOnly}
@@ -58,7 +67,7 @@
     </div>
     
     <!-- AI Assistant Panel -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <AIAssistantPanel 
         selectedNode={currentSelectedNode}
         on:tagsUpdate={(e) => {

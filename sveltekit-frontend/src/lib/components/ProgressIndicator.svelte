@@ -1,7 +1,18 @@
 <script lang="ts">
-  export let currentStep: number;
-  export let totalSteps: number;
-  export let stepLabels: string[] = [];
+  interface Props {
+    currentStep: number;;
+    totalSteps: number;;
+    stepLabels: string[] ;
+  }
+  let {
+    currentStep,
+    totalSteps,
+    stepLabels = []
+  }: Props = $props();
+
+
+
+      export let stepLabels: string[] = [];
 
   function getStepStatus(stepIndex: number): 'completed' | 'current' | 'upcoming' {
     if (stepIndex < currentStep) return 'completed';

@@ -46,6 +46,18 @@ export {
   Tooltip as UiTooltip,
 };
 
+// Standard Bits UI v2 components (optimized)
+export { default as ContextMenuStandard } from './context-menu/ContextMenuStandard.svelte';
+export { default as DialogStandard } from './dialog/DialogStandard.svelte';
+export { default as SelectStandard } from './select/SelectStandard.svelte';
+export { default as FormStandard } from './forms/FormStandard.svelte';
+
+// Lazy loading for performance optimization
+export const LazyCommandMenu = () => import('./CommandMenu.svelte');
+export const LazyRichTextEditor = () => import('./RichTextEditor.svelte');
+export const LazyMarkdownRenderer = () => import('./MarkdownRenderer.svelte');
+export const LazyDragDropZone = () => import('./DragDropZone.svelte');
+
 // Legacy exports for compatibility
 export { default as BitsUnoDemo } from "./BitsUnoDemo.svelte";
 export { default as CaseForm } from "./CaseForm.svelte";
@@ -55,3 +67,13 @@ export { default as Form } from "./Form.svelte";
 export { default as MarkdownRenderer } from "./MarkdownRenderer.svelte";
 export { default as RichTextEditor } from "./RichTextEditor.svelte";
 export { default as SmartTextarea } from "./SmartTextarea.svelte";
+
+// Performance utilities
+export const preloadComponent = async (loader: () => Promise<any>) => {
+  try {
+    return await loader();
+  } catch (error) {
+    console.warn('Failed to preload component:', error);
+    return null;
+  }
+};

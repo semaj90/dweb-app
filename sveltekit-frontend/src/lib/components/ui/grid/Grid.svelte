@@ -1,5 +1,22 @@
 <!-- Grid Item Component -->
 <script lang="ts" context="module">
+  interface Props {
+    columns: number ;
+    gap: "none" | "sm" | "md" | "lg" | "xl" ;
+    responsive: boolean ;
+    minHeight: string ;
+    maxHeight: string ;
+  }
+  let {
+    columns = 12,
+    gap = "md",
+    responsive = true,
+    minHeight = "auto",
+    maxHeight = "none"
+  }: Props = $props();
+
+
+
   export interface GridItemProps {
     colSpan?: number;
     rowSpan?: number;
@@ -14,13 +31,8 @@
 <script lang="ts">
   import { cn } from '$lib/utils';
 
-  export let columns: number = 12;
-  export let gap: "none" | "sm" | "md" | "lg" | "xl" = "md";
-  export let responsive: boolean = true;
-  export const resizable: boolean = false;
-  export let minHeight: string = "auto";
-  export let maxHeight: string = "none";
-
+        export const resizable: boolean = false;
+    
   const gapClasses = {
     none: "gap-0",
     sm: "gap-2",

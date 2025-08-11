@@ -1,3 +1,3 @@
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <slot />
 </div>

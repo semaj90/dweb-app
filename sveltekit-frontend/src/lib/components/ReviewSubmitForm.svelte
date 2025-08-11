@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    formData: {;
+    allFormData: any;;
+  }
+  let {
+    formData,
+    allFormData
+  }: Props = $props();
+
+
+
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -6,16 +17,14 @@
 
   const dispatch = createEventDispatcher();
 
-  export let formData: {
-    final_review: string;
+      final_review: string;
     quality_score: number;
     completeness_check: boolean;
     reviewed_sections: string[];
     submission_notes: string;
   };
 
-  export let allFormData: any;
-
+  
   let isSubmitting = false;
   let submissionProgress = writable(0);
   let currentSubmissionStep = writable('');

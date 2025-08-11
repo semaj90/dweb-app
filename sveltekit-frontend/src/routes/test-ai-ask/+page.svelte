@@ -167,58 +167,58 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <header class="container mx-auto px-4">
+<div class="space-y-4">
+  <header class="space-y-4">
     <h1>🤖 Gemma3 Q4_K_M Integration Test</h1>
-    <p class="container mx-auto px-4">
+    <p class="space-y-4">
       Testing SSR-safe AI store, Ollama service integration, and shared UI
       components
     </p>
 
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">Page Ready:</span>
-        <span class="container mx-auto px-4" class:ready={isPageReady}
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <span class="space-y-4">Page Ready:</span>
+        <span class="space-y-4" class:ready={isPageReady}
           >{isPageReady ? "✅" : "⏳"}</span
         >
       </div>
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">AI Initializing:</span>
-        <span class="container mx-auto px-4" class:loading={$status.isInitializing}
+      <div class="space-y-4">
+        <span class="space-y-4">AI Initializing:</span>
+        <span class="space-y-4" class:loading={$status.isInitializing}
           >{$status.isInitializing ? "⏳" : "✅"}</span
         >
       </div>
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">Local AI:</span>
-        <span class="container mx-auto px-4" class:ready={$status.localModelAvailable}
+      <div class="space-y-4">
+        <span class="space-y-4">Local AI:</span>
+        <span class="space-y-4" class:ready={$status.localModelAvailable}
           >{$status.localModelAvailable ? "✅" : "❌"}</span
         >
       </div>
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">Cloud AI:</span>
-        <span class="container mx-auto px-4" class:ready={$status.cloudModelAvailable}
+      <div class="space-y-4">
+        <span class="space-y-4">Cloud AI:</span>
+        <span class="space-y-4" class:ready={$status.cloudModelAvailable}
           >{$status.cloudModelAvailable ? "✅" : "❌"}</span
         >
       </div>
     </div>
   </header>
 
-  <main class="container mx-auto px-4">
+  <main class="space-y-4">
     {#if !isPageReady}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4"></div>
+      <div class="space-y-4">
+        <div class="space-y-4"></div>
         <p>Initializing test environment...</p>
       </div>
     {:else}
       <!-- Main AI Chat Interface -->
-      <section class="container mx-auto px-4">
+      <section class="space-y-4">
         <h2>🗨️ Interactive AI Chat</h2>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           Test the full AI chat experience with SSR-safe state management and
           real-time interactions.
         </p>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- AIChatInterface component placeholder -->
           <div class="bg-gray-100 rounded-lg p-8 text-center">
             <p class="text-gray-600">AI Chat Interface (Component not implemented yet)</p>
@@ -227,13 +227,13 @@
         </div>
 
         <!-- Example Queries -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <h3>📝 Quick Test Queries</h3>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each exampleQueries as query}
               <button
                 type="button"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => aiStore.sendMessage(query)}
                 disabled={$status.isLoading}
               >
@@ -245,14 +245,14 @@
       </section>
 
       <!-- Manual API Testing -->
-      <section class="container mx-auto px-4">
+      <section class="space-y-4">
         <h2>🔧 Manual API Testing</h2>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           Direct API endpoint testing for debugging and validation.
         </p>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <label for="manual-query">Test Query:</label>
             <textarea
               id="manual-query"
@@ -262,10 +262,10 @@
             ></textarea>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <button
               type="button"
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => testAPIDirectly()}
               disabled={manualTestLoading}
             >
@@ -274,7 +274,7 @@
 
             <button
               type="button"
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => checkHealthEndpoints()}
             >
               🏥 Check Health
@@ -283,59 +283,59 @@
         </div>
 
         {#if manualTestError}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>❌ Error</h4>
             <pre>{manualTestError}</pre>
           </div>
         {/if}
 
         {#if manualTestResponse}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>✅ Response</h4>
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Provider:</span>
-                <span class="container mx-auto px-4">{manualTestResponse.provider}</span>
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span class="space-y-4">Provider:</span>
+                <span class="space-y-4">{manualTestResponse.provider}</span>
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Model:</span>
-                <span class="container mx-auto px-4">{manualTestResponse.model}</span>
+              <div class="space-y-4">
+                <span class="space-y-4">Model:</span>
+                <span class="space-y-4">{manualTestResponse.model}</span>
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Confidence:</span>
-                <span class="container mx-auto px-4"
+              <div class="space-y-4">
+                <span class="space-y-4">Confidence:</span>
+                <span class="space-y-4"
                   >{Math.round(manualTestResponse.confidence * 100)}%</span
                 >
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Execution Time:</span>
-                <span class="container mx-auto px-4">{manualTestResponse.executionTime}ms</span>
+              <div class="space-y-4">
+                <span class="space-y-4">Execution Time:</span>
+                <span class="space-y-4">{manualTestResponse.executionTime}ms</span>
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">From Cache:</span>
-                <span class="container mx-auto px-4"
+              <div class="space-y-4">
+                <span class="space-y-4">From Cache:</span>
+                <span class="space-y-4"
                   >{manualTestResponse.fromCache ? "Yes" : "No"}</span
                 >
               </div>
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <h5>Answer:</h5>
               <p>{manualTestResponse.answer}</p>
             </div>
 
             {#if manualTestResponse.sources && manualTestResponse.sources.length > 0}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <h5>Sources ({manualTestResponse.sources.length}):</h5>
                 {#each manualTestResponse.sources as source}
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
-                      <span class="container mx-auto px-4">{source.title}</span>
-                      <span class="container mx-auto px-4"
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      <span class="space-y-4">{source.title}</span>
+                      <span class="space-y-4"
                         >{Math.round(source.score * 100)}%</span
                       >
                     </div>
-                    <p class="container mx-auto px-4">{source.content}</p>
+                    <p class="space-y-4">{source.content}</p>
                   </div>
                 {/each}
               </div>
@@ -345,26 +345,26 @@
       </section>
 
       <!-- Store State Debug -->
-      <section class="container mx-auto px-4">
+      <section class="space-y-4">
         <h2>🐛 Store State Debug</h2>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           Real-time view of AI store state for debugging and validation.
         </p>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <h4>🔧 Status Store</h4>
             <pre>{JSON.stringify($status, null, 2)}</pre>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>⚙️ Settings Store</h4>
             <pre>{JSON.stringify($settings, null, 2)}</pre>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>💬 Conversation Store</h4>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <p><strong>ID:</strong> {$conversation.id || "None"}</p>
               <p><strong>Messages:</strong> {$conversation.messages.length}</p>
               <p><strong>Active:</strong> {$conversation.isActive}</p>
@@ -378,24 +378,24 @@
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => aiStore.clearConversation()}
           >
             🗑️ Clear Conversation
           </button>
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => aiStore.reset()}
           >
             🔄 Reset All Stores
           </button>
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => aiStore.initialize()}
           >
             🔄 Reinitialize AI
@@ -403,42 +403,42 @@
         </div>
       </section>
       <!-- Instructions -->
-      <section class="container mx-auto px-4">
+      <section class="space-y-4">
         <h2>🔧 Setup Instructions</h2>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           Quick setup guide for local LLM integration with Ollama and llama.cpp.
         </p>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <h4>📦 1. Start Local LLM Services</h4>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <code>npm run llm:start</code>
             </div>
             <p>This starts both Ollama and llama.cpp with the Gemma3 model.</p>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>🧪 2. Test Integration</h4>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <code>npm run llm:test</code>
             </div>
             <p>Run comprehensive tests to verify all services are working.</p>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>🌐 3. Start Web Application</h4>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <code>npm run dev</code>
             </div>
             <p>Start the SvelteKit development server on port 5173.</p>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h4>🏥 4. Check Service Health</h4>
             <button
               type="button"
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => checkHealthEndpoints()}
             >
               Check Health Status
@@ -447,7 +447,7 @@
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <h4>🛠️ Troubleshooting</h4>
           <ul>
             <li>
@@ -473,61 +473,61 @@
   </main>
 </div>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <h1 class="container mx-auto px-4">🤖 Gemma3 Local LLM Test</h1>
-    <p class="container mx-auto px-4">
+    <h1 class="space-y-4">🤖 Gemma3 Local LLM Test</h1>
+    <p class="space-y-4">
       Test the AI assistant with local Gemma3 inference for legal queries
     </p>
   </div>
 
   <!-- Sample Queries -->
-  <div class="container mx-auto px-4">
-    <h2 class="container mx-auto px-4">
+  <div class="space-y-4">
+    <h2 class="space-y-4">
       📝 Sample Legal Queries
     </h2>
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#each sampleQueries as sampleQuery}
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => selectQuery(sampleQuery)}
         >
-          <span class="container mx-auto px-4">{sampleQuery}</span>
+          <span class="space-y-4">{sampleQuery}</span>
         </button>
       {/each}
     </div>
   </div>
 
   <!-- Query Input -->
-  <div class="container mx-auto px-4">
-    <label for="query" class="container mx-auto px-4">
+  <div class="space-y-4">
+    <label for="query" class="space-y-4">
       💬 Ask the Legal AI Assistant
     </label>
     <textarea
       id="query"
       bind:value={query}
       placeholder="Enter your legal question here..."
-      class="container mx-auto px-4"
+      class="space-y-4"
       rows={1}
     ></textarea>
 
     <button
       on:click={() => testGemma3()}
       disabled={isLoading || !query.trim()}
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
       {#if isLoading}
-        <span class="container mx-auto px-4">
+        <span class="space-y-4">
           <svg
-            class="container mx-auto px-4"
+            class="space-y-4"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
           >
             <circle
-              class="container mx-auto px-4"
+              class="space-y-4"
               cx="12"
               cy="12"
               r="10"
@@ -535,7 +535,7 @@
               stroke-width="4"
             ></circle>
             <path
-              class="container mx-auto px-4"
+              class="space-y-4"
               fill="currentColor"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
@@ -550,11 +550,11 @@
 
   <!-- Error Display -->
   {#if error}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <svg
-            class="container mx-auto px-4"
+            class="space-y-4"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -565,9 +565,9 @@
             />
           </svg>
         </div>
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">Error</h3>
-          <p class="container mx-auto px-4">{error}</p>
+        <div class="space-y-4">
+          <h3 class="space-y-4">Error</h3>
+          <p class="space-y-4">{error}</p>
         </div>
       </div>
     </div>
@@ -575,17 +575,17 @@
 
   <!-- Response Display -->
   {#if response}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Response Header -->
-      <div class="container mx-auto px-4">
-        <h2 class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h2 class="space-y-4">
           ✅ AI Response
         </h2>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <span class="container mx-auto px-4">Provider:</span>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <span class="space-y-4">Provider:</span>
             <span
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {response.provider === "local"
                 ? "🏠 Local"
@@ -594,27 +594,27 @@
                   : "🔧 Hybrid"}
             </span>
           </div>
-          <div class="container mx-auto px-4">
-            <span class="container mx-auto px-4">Model:</span>
-            <span class="container mx-auto px-4">{response.model}</span>
+          <div class="space-y-4">
+            <span class="space-y-4">Model:</span>
+            <span class="space-y-4">{response.model}</span>
           </div>
-          <div class="container mx-auto px-4">
-            <span class="container mx-auto px-4">Confidence:</span>
-            <span class="container mx-auto px-4"
+          <div class="space-y-4">
+            <span class="space-y-4">Confidence:</span>
+            <span class="space-y-4"
               >{(response.confidence * 100).toFixed(1)}%</span
             >
           </div>
-          <div class="container mx-auto px-4">
-            <span class="container mx-auto px-4">Time:</span>
-            <span class="container mx-auto px-4">{response.executionTime}ms</span>
+          <div class="space-y-4">
+            <span class="space-y-4">Time:</span>
+            <span class="space-y-4">{response.executionTime}ms</span>
           </div>
         </div>
       </div>
 
       <!-- Answer -->
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">📋 Answer</h3>
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">📋 Answer</h3>
+        <div class="space-y-4">
           {@html response.answer
             .replace(/\n/g, "<br>")
             .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")}
@@ -623,24 +623,24 @@
 
       <!-- Sources -->
       {#if response.sources && response.sources.length > 0}
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <h3 class="space-y-4">
             📚 Sources ({response.sources.length})
           </h3>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each response.sources as source, index}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">{source.title}</h4>
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <h4 class="space-y-4">{source.title}</h4>
                   <span
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {(source.score * 100).toFixed(1)}% match
                   </span>
                 </div>
-                <p class="container mx-auto px-4">{source.content}</p>
+                <p class="space-y-4">{source.content}</p>
                 <span
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
                   {source.type}
                 </span>
@@ -653,11 +653,11 @@
   {/if}
 
   <!-- Instructions -->
-  <div class="container mx-auto px-4">
-    <h3 class="container mx-auto px-4">
+  <div class="space-y-4">
+    <h3 class="space-y-4">
       🔧 Testing Instructions
     </h3>
-    <ul class="container mx-auto px-4">
+    <ul class="space-y-4">
       <li>• This page tests the Gemma3 local LLM integration</li>
       <li>
         • Queries are processed using local AI (no data sent to external

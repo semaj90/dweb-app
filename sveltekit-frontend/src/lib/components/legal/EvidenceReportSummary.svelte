@@ -1,4 +1,19 @@
 <script lang="ts">
+  interface Props {
+    evidenceId: string;;
+    caseId: string;;
+    reportData: EvidenceReport;;
+    allowExport: boolean ;
+  }
+  let {
+    evidenceId,
+    caseId,
+    reportData,
+    allowExport = true
+  }: Props = $props();
+
+
+
   import { aiSummaryMachine } from "$lib/machines/aiSummaryMachine";
   import { useMachine } from "@xstate/svelte";
   import {
@@ -12,11 +27,7 @@
   } from "lucide-svelte";
   import AISummaryReader from "./AISummaryReader.svelte";
 
-  export let evidenceId: string;
-  export let caseId: string;
-  export let reportData: EvidenceReport;
-  export let allowExport: boolean = true;
-
+        
   interface EvidenceReport {
     id: string;
     title: string;

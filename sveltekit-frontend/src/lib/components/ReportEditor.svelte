@@ -1,14 +1,26 @@
 <script lang="ts">
+  interface Props {
+    report: Report | null ;
+    caseId: string;;
+    onSave: (report: Report) ;
+    autoSaveEnabled?: any;
+    readOnly?: any;
+  }
+  let {
+    report = null,
+    caseId,
+    onSave = > Promise<void> = async () => {},
+    autoSaveEnabled = true,
+    readOnly = false
+  }: Props = $props();
+
+
+
   import { browser } from "$app/environment";
   import type { CitationPoint, Report, ReportSection } from "$lib/data/types";
   import { onDestroy, onMount } from "svelte";
 
-  export let report: Report | null = null;
-  export let caseId: string;
-  export let onSave: (report: Report) => Promise<void> = async () => {};
-  export let autoSaveEnabled = true;
-  export let readOnly = false;
-
+          
   let editorElement: HTMLDivElement;
   let citationSidebar: HTMLDivElement;
   let isDirty = false;
@@ -152,7 +164,7 @@
   function insertCitation(citation: CitationPoint) {
     if (readOnly) return;
 
-    const citationHtml = `<span class="container mx-auto px-4" data-citation-id="${citation.id}" title="${citation.source}">[${citation.source}]</span>`;
+    const citationHtml = `<span class="space-y-4" data-citation-id="${citation.id}" title="${citation.source}">[${citation.source}]</span>`;
 
     if (currentSelection) {
       // Insert at current cursor position
@@ -353,42 +365,42 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header with title and controls -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <input
       bind:value={title}
-      class="container mx-auto px-4"
+      class="space-y-4"
       placeholder="Report Title"
       disabled={readOnly}
     />
 
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">{wordCount} words</span>
-        <span class="container mx-auto px-4">{characterCount} characters</span>
-        <span class="container mx-auto px-4">{estimatedReadTime} min read</span>
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <span class="space-y-4">{wordCount} words</span>
+        <span class="space-y-4">{characterCount} characters</span>
+        <span class="space-y-4">{estimatedReadTime} min read</span>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if isLoading}
-          <span class="container mx-auto px-4">Saving...</span>
+          <span class="space-y-4">Saving...</span>
         {:else if lastSaved}
-          <span class="container mx-auto px-4">Saved {lastSaved.toLocaleTimeString()}</span>
+          <span class="space-y-4">Saved {lastSaved.toLocaleTimeString()}</span>
         {:else if isDirty}
-          <span class="container mx-auto px-4">Unsaved changes</span>
+          <span class="space-y-4">Unsaved changes</span>
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => (showAiPanel = !showAiPanel)}
         >
           AI Assist
         </button>
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => saveReport()}
           disabled={!isDirty || isLoading}
         >
@@ -399,10 +411,10 @@
   </div>
 
   <!-- Main editing area -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Formatting toolbar -->
     {#if !readOnly}
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <button
           type="button"
           on:click={() => formatText("bold")}
@@ -424,7 +436,7 @@
         >
           <u>U</u>
         </button>
-        <div class="container mx-auto px-4"></div>
+        <div class="space-y-4"></div>
         <button
           type="button"
           on:click={() => insertCitationPrompt()}
@@ -438,7 +450,7 @@
     <!-- Content editor -->
     <div
       bind:this={editorElement}
-      class="container mx-auto px-4"
+      class="space-y-4"
       class:read-only={readOnly}
       role="textbox"
       aria-multiline="true"
@@ -449,29 +461,29 @@
   <!-- Citation sidebar -->
   <div
     bind:this={citationSidebar}
-    class="container mx-auto px-4"
+    class="space-y-4"
     style="display: none;"
   >
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h3>Citations</h3>
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => (citationSidebar.style.display = "none")}>×</button
       >
     </div>
 
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <input type="text" placeholder="Search citations..." />
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#each availableCitations as citation}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{citation.text}</div>
-            <div class="container mx-auto px-4">{citation.source}</div>
+          <div class="space-y-4">
+            <div class="space-y-4">{citation.text}</div>
+            <div class="space-y-4">{citation.source}</div>
             <button
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => insertCitation(citation)}
             >
               Add
@@ -484,23 +496,23 @@
 
   <!-- AI suggestions panel -->
   {#if showAiPanel}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h3>AI Suggestions</h3>
-        <button class="container mx-auto px-4" on:click={() => (showAiPanel = false)}
+        <button class="space-y-4" on:click={() => (showAiPanel = false)}
           >×</button
         >
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if isGeneratingAi}
-          <div class="container mx-auto px-4">Generating suggestions...</div>
+          <div class="space-y-4">Generating suggestions...</div>
         {:else if aiSuggestions.length > 0}
           {#each aiSuggestions as suggestion}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <p>{suggestion}</p>
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => insertAiSuggestion(suggestion)}
               >
                 Use This
@@ -516,13 +528,13 @@
 
   <!-- Selected citations display -->
   {#if selectedCitations.length > 0}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h4>Citations in this report:</h4>
       {#each selectedCitations as citation}
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">[{citation.source}]</span>
+        <div class="space-y-4">
+          <span class="space-y-4">[{citation.source}]</span>
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => removeCitation(citation.id)}>×</button
           >
         </div>

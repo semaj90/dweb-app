@@ -1,20 +1,27 @@
 <script lang="ts">
+  interface Props {
+    onsuccess?: (event?: any) => void;
+    onclose?: (event?: any) => void;
+  }
+  let {
+    data,
+    open = false
+  }: Props = $props();
+
+
+
   import { Button } from "$lib/components/ui/button";
   import { createDialog, melt } from "@melt-ui/svelte";
-  import { createEventDispatcher } from "svelte";
-  import { writable } from "svelte/store";
+    import { writable } from "svelte/store";
   import { superForm } from "sveltekit-superforms";
 
-  export let data: any;
-  export let open = false;
-
-  const dispatch = createEventDispatcher();
-
+    
+  
   const { form, errors, submitting, message, enhance } = superForm(
     data.loginForm,
     {
       onUpdated: ({ form }) => {
-        if (form.valid) dispatch("success");
+        if (form.valid) onsuccess?.();
       },
 }
   );
@@ -31,7 +38,7 @@ const {
   onOpenChange: (nextOpen: boolean) => {
     open = nextOpen;
     if (!open) {
-      dispatch("close");
+      onclose?.();
     }
   },
 });
@@ -46,14 +53,14 @@ const {
 <button use:melt={$trigger} style="display: none;">Open Modal</button>
 
 {#if $isMeltOpen}
-  <div use:melt={$overlay} class="container mx-auto px-4"></div>
-  <div use:melt={$content} class="container mx-auto px-4">
-    <h2 use:melt={$title} class="container mx-auto px-4">Login</h2>
-    <button use:melt={$close} class="container mx-auto px-4">X</button>
+  <div use:melt={$overlay} class="space-y-4"></div>
+  <div use:melt={$content} class="space-y-4">
+    <h2 use:melt={$title} class="space-y-4">Login</h2>
+    <button use:melt={$close} class="space-y-4">X</button>
 
-    <form class="container mx-auto px-4" method="POST" action="?/login" use:enhance>
-      <div class="container mx-auto px-4">
-        <label for="email" class="container mx-auto px-4">Email</label>
+    <form class="space-y-4" method="POST" action="?/login" use:enhance>
+      <div class="space-y-4">
+        <label for="email" class="space-y-4">Email</label>
         <input
           type="email"
           name="email"
@@ -62,13 +69,13 @@ const {
           placeholder="Email"
           required
           aria-invalid={$errors.email ? "true" : undefined}
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
-        {#if $errors.email}<span class="container mx-auto px-4"
+        {#if $errors.email}<span class="space-y-4"
             >{$errors.email}</span
           >{/if}
 
-        <label for="password" class="container mx-auto px-4">Password</label>
+        <label for="password" class="space-y-4">Password</label>
         <input
           type="password"
           name="password"
@@ -77,15 +84,15 @@ const {
           placeholder="Password"
           required
           aria-invalid={$errors.password ? "true" : undefined}
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
-        {#if $errors.password}<span class="container mx-auto px-4"
+        {#if $errors.password}<span class="space-y-4"
             >{$errors.password}</span
           >{/if}
 
-        {#if message}<div class="container mx-auto px-4">{message}</div>{/if}
-        {#if $message}<div class="container mx-auto px-4">{$message}</div>{/if}
-      <div class="container mx-auto px-4">
+        {#if message}<div class="space-y-4">{message}</div>{/if}
+        {#if $message}<div class="space-y-4">{$message}</div>{/if}
+      <div class="space-y-4">
         <Button
           type="button"
           variant="ghost"

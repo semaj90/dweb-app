@@ -55,7 +55,7 @@
   let currentPage = $state(1);
   let searchQuery = $state('');
 
-  const filteredData = $derived(() => {
+  const filteredData = $derived.by(() => {
     let filtered = data;
     
     if (searchQuery) {
@@ -87,13 +87,13 @@
     return filtered;
   });
 
-  const paginatedData = $derived(() => {
+  const paginatedData = $derived.by(() => {
     if (!pagination) return filteredData;
     const start = (currentPage - 1) * pageSize;
     return filteredData.slice(start, start + pageSize);
   });
 
-  const totalPages = $derived(() => 
+  const totalPages = $derived(
     Math.ceil(filteredData.length / pageSize)
   );
 

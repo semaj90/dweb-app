@@ -1,4 +1,32 @@
 <script lang="ts">
+  interface Props {
+    onfilesAdded?: (event?: any) => void;
+    onuploadComplete?: (event?: any) => void;
+    onfileRemoved?: (event?: any) => void;
+  }
+  let {
+    multiple = true,
+    accept = "*/*",
+    maxFileSize = 100 * 1024 * 1024,
+    maxTotalSize = 500 * 1024 * 1024,
+    maxFiles = 10,
+    allowedTypes = [],
+    uploadUrl = "/api/upload",
+    chunkSize = 1024 * 1024,
+    enableChunking = true,
+    enablePreview = true,
+    enablePasteUpload = true,
+    enableCameraCapture = false,
+    enableAudioRecording = false,
+    autoUpload = false,
+    compressionQuality = 0.8,
+    enableCompression = true,
+    showProgress = true,
+    disabled = false
+  }: Props = $props();
+
+
+
   import { browser } from "$app/environment";
   import Button from "$lib/components/ui/Button.svelte";
   import { notifications } from "$lib/stores/notification";
@@ -17,31 +45,14 @@
     Upload,
     Video,
   } from "lucide-svelte";
-  import { createEventDispatcher, onMount } from "svelte";
-
-  const dispatch = createEventDispatcher();
-
+  
+  
   // Props
-  export let multiple = true;
-  export let accept = "*/*";
-  export let maxFileSize = 100 * 1024 * 1024; // 100MB
+      export let maxFileSize = 100 * 1024 * 1024; // 100MB
   export let maxTotalSize = 500 * 1024 * 1024; // 500MB
-  export let maxFiles = 10;
-  export let allowedTypes: string[] = [];
-  export let uploadUrl = "/api/upload";
-  export let chunkSize = 1024 * 1024; // 1MB chunks for large files
-  export let enableChunking = true;
-  export let enablePreview = true;
-  export const enableDragDrop = true;
-  export let enablePasteUpload = true;
-  export let enableCameraCapture = false;
-  export let enableAudioRecording = false;
-  export let autoUpload = false;
-  export let compressionQuality = 0.8;
-  export let enableCompression = true;
-  export let showProgress = true;
-  export let disabled = false;
-
+        export let chunkSize = 1024 * 1024; // 1MB chunks for large files
+      export const enableDragDrop = true;
+                
   // State
   let fileInput: HTMLInputElement;
   let dropZone: HTMLElement;
@@ -200,7 +211,7 @@
       `${validFiles.length} file(s) added. Total: ${files.length} files`
     );
 
-    dispatch("filesAdded", { files: validFiles });
+    onfilesAdded?.();
 }
   async function compressFile(file: File): Promise<File> {
     if (!enableCompression || !file.type.startsWith("image/")) {
@@ -271,7 +282,7 @@
     isUploading = false;
     updateTotalProgress();
 
-    dispatch("uploadComplete", { files: filesToUpload });
+    onuploadComplete?.();
 }
   async function uploadFile(fileItem: FileUploadItem) {
     fileItem.status = "uploading";
@@ -382,7 +393,7 @@
     updateTotalProgress();
 
     FocusManager.announceToScreenReader("File removed");
-    dispatch("fileRemoved", { fileId });
+    onfileRemoved?.();
 }
   function retryUpload(fileId: string) {
     const fileItem = files.find((f) => f.id === fileId);
@@ -516,11 +527,11 @@
 }}
 </script>
 
-<div class="container mx-auto px-4" class:disabled>
+<div class="space-y-4" class:disabled>
   <!-- Drop zone -->
   <div
     bind:this={dropZone}
-    class="container mx-auto px-4"
+    class="space-y-4"
     class:drag-over={isDragOver}
     class:disabled
     on:drop={handleDrop}
@@ -537,32 +548,32 @@
       }
     }}
   >
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <Upload class="container mx-auto px-4" />
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <Upload class="space-y-4" />
       </div>
 
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">
           {isDragOver ? "Drop files here" : "Upload Files"}
         </h3>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           Click to browse or drag and drop files
           {#if enablePasteUpload}
             or paste from clipboard
           {/if}
         </p>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <p>Max file size: {formatFileSize(maxFileSize)}</p>
           <p>Max total: {formatFileSize(maxTotalSize)}</p>
           <p>Max files: {maxFiles}</p>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Button {disabled}>
-          <Paperclip class="container mx-auto px-4" />
+          <Paperclip class="space-y-4" />
           Choose Files
         </Button>
 
@@ -572,7 +583,7 @@
             on:click={handleCameraCaptureClick}
             {disabled}
           >
-            <Camera class="container mx-auto px-4" />
+            <Camera class="space-y-4" />
             Camera
           </Button>
         {/if}
@@ -584,7 +595,7 @@
             {disabled}
             class={isRecording ? "bg-red-100 text-red-700" : ""}
           >
-            <Mic class="container mx-auto px-4" />
+            <Mic class="space-y-4" />
             {isRecording ? "Stop Recording" : "Record Audio"}
           </Button>
         {/if}
@@ -600,19 +611,19 @@
     {accept}
     {disabled}
     on:change={handleFileSelect}
-    class="container mx-auto px-4"
+    class="space-y-4"
     aria-hidden="true"
   />
 
   <!-- File list -->
   {#if files.length > 0}
-    <div class="container mx-auto px-4" role="region" aria-label="Selected files">
-      <div class="container mx-auto px-4">
-        <h4 class="container mx-auto px-4">
+    <div class="space-y-4" role="region" aria-label="Selected files">
+      <div class="space-y-4">
+        <h4 class="space-y-4">
           Selected Files ({files.length}/{maxFiles})
         </h4>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#if !autoUpload && files.some((f) => f.status === "pending")}
             <Button
               size="sm"
@@ -620,9 +631,9 @@
               disabled={isUploading}
             >
               {#if isUploading}
-                <Loader2 class="container mx-auto px-4" />
+                <Loader2 class="space-y-4" />
               {:else}
-                <Upload class="container mx-auto px-4" />
+                <Upload class="space-y-4" />
               {/if}
               Upload All
             </Button>
@@ -641,66 +652,66 @@
 
       <!-- Total progress -->
       {#if showProgress && isUploading}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4" style="width: {totalProgress}%"></div>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <div class="space-y-4" style="width: {totalProgress}%"></div>
           </div>
-          <span class="container mx-auto px-4">{Math.round(totalProgress)}%</span>
+          <span class="space-y-4">{Math.round(totalProgress)}%</span>
         </div>
       {/if}
 
       <!-- Individual files -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#each files as file (file.id)}
-          <div class="container mx-auto px-4" class:uploading={file.status === "uploading"}>
+          <div class="space-y-4" class:uploading={file.status === "uploading"}>
             <!-- Preview -->
             {#if file.preview}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <img src={file.preview} alt={file.name} />
               </div>
             {:else}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <svelte:component
                   this={getFileIcon(file.type)}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
               </div>
             {/if}
 
             <!-- File info -->
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4" title={file.name}>
+            <div class="space-y-4">
+              <div class="space-y-4" title={file.name}>
                 {file.name}
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">{formatFileSize(file.size)}</span>
-                <span class="container mx-auto px-4">
+              <div class="space-y-4">
+                <span class="space-y-4">{formatFileSize(file.size)}</span>
+                <span class="space-y-4">
                   {file.status}
                 </span>
                 {#if file.error}
-                  <span class="container mx-auto px-4" title={file.error}>
-                    <AlertTriangle class="container mx-auto px-4" />
+                  <span class="space-y-4" title={file.error}>
+                    <AlertTriangle class="space-y-4" />
                   </span>
                 {/if}
               </div>
 
               <!-- Progress bar -->
               {#if file.status === "uploading" && showProgress}
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
                     <div
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                       style="width: {file.progress}%"
                     ></div>
                   </div>
-                  <span class="container mx-auto px-4">{Math.round(file.progress)}%</span
+                  <span class="space-y-4">{Math.round(file.progress)}%</span
                   >
                 </div>
               {/if}
             </div>
 
             <!-- Actions -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#if file.status === "success" && file.url}
                 <Button
                   variant="ghost"
@@ -708,7 +719,7 @@
                   on:click={() => window.open(file.url, "_blank")}
                   aria-label="View {file.name}"
                 >
-                  <Eye class="container mx-auto px-4" />
+                  <Eye class="space-y-4" />
                 </Button>
               {/if}
 
@@ -719,7 +730,7 @@
                   on:click={() => retryUpload(file.id)}
                   aria-label="Retry upload of {file.name}"
                 >
-                  <Upload class="container mx-auto px-4" />
+                  <Upload class="space-y-4" />
                 </Button>
               {/if}
 
@@ -730,7 +741,7 @@
                 disabled={file.status === "uploading"}
                 aria-label="Remove {file.name}"
               >
-                <Trash2 class="container mx-auto px-4" />
+                <Trash2 class="space-y-4" />
               </Button>
             </div>
           </div>

@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    data: PageData;;
+  }
+  let {
+    data
+  }: Props = $props();
+
+
+
 	import AIFabButton from "$lib/components/AIFabButton.svelte";
 	import CanvasEditor from "$lib/components/CanvasEditor.svelte";
 	import FileUploadSection from "$lib/components/FileUploadSection.svelte";
@@ -10,8 +19,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { PageData } from "./$types";
 
-	export let data: PageData;
-
+	
 	// Case ID - extract from data or generate
 	let caseId = (data as any)?.reportData?.id || (data as any)?.reportId || 'demo-case-' + Date.now();
 
@@ -162,18 +170,18 @@
 	<title>Interactive Canvas - Prosecutor Case Management</title>
 </svelte:head>
 
-<div class="container mx-auto px-4" class:fullscreen={isFullscreen}>
+<div class="space-y-4" class:fullscreen={isFullscreen}>
 	<!-- Header -->
 	<NierHeader />
 
 	<!-- Main Content Area -->
-	<div class="container mx-auto px-4" bind:this={mainContainer}>
+	<div class="space-y-4" bind:this={mainContainer}>
 		<!-- Sidebar -->
 		<Sidebar />
 
 		<!-- Canvas Container -->
 		<div 
-			class="container mx-auto px-4"
+			class="space-y-4"
 			class:sidebar-open={sidebarOpen}
 			on:drop={handleFileDrop}
 			on:dragover={handleDragOver}
@@ -181,12 +189,12 @@
 			aria-label="Interactive canvas workspace"
 		>
 			<!-- Toolbar -->
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<Toolbar />
 			</div>
 
 			<!-- Canvas Editor -->
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<CanvasEditor 
 					width={canvasWidth}
 					height={canvasHeight - 80}
@@ -197,26 +205,26 @@
 			</div>
 
 			<!-- File Upload Zone with Progress -->
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<FileUploadSection />
 				
 				<!-- Upload Progress Indicators -->
 				{#if Object.keys(uploadingFiles).length > 0}
-					<div class="container mx-auto px-4">
+					<div class="space-y-4">
 						<h4>🔄 Uploading Files</h4>
 						{#each Object.entries(uploadingFiles) as [fileId, file]}
-							<div class="container mx-auto px-4">
-								<div class="container mx-auto px-4">
-									<span class="container mx-auto px-4">{file.name}</span>
-									<span class="container mx-auto px-4">({(file.size / 1024 / 1024).toFixed(1)} MB)</span>
+							<div class="space-y-4">
+								<div class="space-y-4">
+									<span class="space-y-4">{file.name}</span>
+									<span class="space-y-4">({(file.size / 1024 / 1024).toFixed(1)} MB)</span>
 								</div>
-								<div class="container mx-auto px-4">
+								<div class="space-y-4">
 									<div 
-										class="container mx-auto px-4" 
+										class="space-y-4" 
 										style="width: {uploadProgress[fileId] || 0}%"
 									></div>
 								</div>
-								<div class="container mx-auto px-4">
+								<div class="space-y-4">
 									{#if uploadProgress[fileId] < 30}
 										🔐 Calculating hash...
 									{:else if uploadProgress[fileId] < 100}
@@ -226,8 +234,8 @@
 									{/if}
 								</div>
 								{#if file.hash}
-									<div class="container mx-auto px-4">
-										🔑 <span class="container mx-auto px-4">{file.hash.substring(0, 16)}...</span>
+									<div class="space-y-4">
+										🔑 <span class="space-y-4">{file.hash.substring(0, 16)}...</span>
 									</div>
 								{/if}
 							</div>
@@ -237,16 +245,16 @@
 
 				<!-- Completed Uploads -->
 				{#if Object.keys(completedUploads).length > 0}
-					<div class="container mx-auto px-4">
+					<div class="space-y-4">
 						<h4>✅ Upload Complete</h4>
 						{#each Object.entries(completedUploads) as [fileId, upload]}
-							<div class="container mx-auto px-4">
-								<span class="container mx-auto px-4">{upload.name}</span>
-								<div class="container mx-auto px-4">
-									<span class="container mx-auto px-4">Hash:</span>
-									<span class="container mx-auto px-4">{upload.hash.substring(0, 12)}...{upload.hash.substring(-4)}</span>
+							<div class="space-y-4">
+								<span class="space-y-4">{upload.name}</span>
+								<div class="space-y-4">
+									<span class="space-y-4">Hash:</span>
+									<span class="space-y-4">{upload.hash.substring(0, 12)}...{upload.hash.substring(-4)}</span>
 									<button 
-										class="container mx-auto px-4"
+										class="space-y-4"
 										on:click={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
 									>
 										🔍 Verify

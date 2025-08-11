@@ -20,6 +20,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     const searchOptions: EnhancedSearchOptions = {
+      query: query,
       limit: options.limit || 5,
       useCache: options.useCache !== false,
       temperature: options.temperature || 0.1,

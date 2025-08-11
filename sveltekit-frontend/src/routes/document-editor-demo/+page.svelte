@@ -36,27 +36,27 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Demo Controls -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <h1 class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <h1 class="space-y-4">
           Legal Document Editor Demo
         </h1>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- Document Type Selector -->
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <label
               for="document-type-selector"
-              class="container mx-auto px-4">Type:</label
+              class="space-y-4">Type:</label
             >
             <select
               id="document-type-selector"
               bind:value={selectedDocumentType}
               on:change={() => switchDocumentType(selectedDocumentType)}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               <option value="brief">Brief</option>
               <option value="motion">Motion</option>
@@ -68,19 +68,19 @@
           <!-- New Document Button -->
           <button
             on:click={() => createNewDocument()}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             New Document
           </button>
 
           <!-- Readonly Toggle -->
-          <label class="container mx-auto px-4">
+          <label class="space-y-4">
             <input
               type="checkbox"
               bind:checked={isReadonly}
-              class="container mx-auto px-4"
+              class="space-y-4"
             />
-            <span class="container mx-auto px-4">Read-only</span>
+            <span class="space-y-4">Read-only</span>
           </label>
         </div>
       </div>

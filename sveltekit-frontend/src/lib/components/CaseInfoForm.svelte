@@ -1,12 +1,20 @@
 <script lang="ts">
+  interface Props {
+    formData: {;
+  }
+  let {
+    formData
+  }: Props = $props();
+
+
+
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade } from 'svelte/transition';
 
   const dispatch = createEventDispatcher();
 
-  export let formData: {
-    title: string;
+      title: string;
     client_name: string;
     case_type: string;
     jurisdiction: string;

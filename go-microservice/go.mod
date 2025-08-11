@@ -14,6 +14,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.9
 	github.com/gorilla/websocket v1.5.3
 	github.com/jackc/pgx/v5 v5.7.5
+	github.com/klauspost/cpuid/v2 v2.3.0
 	github.com/minio/simdjson-go v0.4.5
 	github.com/neo4j/neo4j-go-driver/v5 v5.28.1
 	github.com/pgvector/pgvector-go v0.3.0
@@ -40,7 +41,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
-	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

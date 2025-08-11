@@ -1,12 +1,20 @@
 <script lang="ts">
+  interface Props {
+    message: any;;
+  }
+  let {
+    message
+  }: Props = $props();
+
+
+
   import Button from "$lib/components/ui/Button.svelte";
   import { chatActions } from "$lib/stores/chatStore";
   import { notifications } from "$lib/stores/notification";
   import { Bot, Clock, Copy, Heart, MoreVertical, Star, StarOff, ThumbsUp, User as UserIcon } from "lucide-svelte";
   import "../chat/chat-message.css";
 
-  export let message: any;
-
+  
   // Type-safe fallback for message.role
   $: isUser = message.role === "user" || message.type === "user";
   $: isAssistant = message.role === "assistant" || message.type === "assistant";
@@ -56,42 +64,42 @@
 }}
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Avatar -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     {#if isUser}
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
-        <UserIcon class="container mx-auto px-4" />
+        <UserIcon class="space-y-4" />
       </div>
     {:else}
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
-        <Bot class="container mx-auto px-4" />
+        <Bot class="space-y-4" />
       </div>
     {/if}
   </div>
 
   <!-- Message Content -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Message Bubble -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         <!-- Proactive Indicator -->
         {#if isProactive}
-          <div class="container mx-auto px-4">
-            <Clock class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <Clock class="space-y-4" />
             <span>Proactive suggestion</span>
           </div>
         {/if}
 
         <!-- Message Text -->
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           {@html message.content}
         </div>
@@ -99,51 +107,51 @@
         <!-- Emotional Tone Indicator for AI Messages -->
         {#if isAssistant && emotionalTone && emotionalTone !== "neutral"}
           {@const ToneIcon = getEmotionalToneIcon(emotionalTone)}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#if ToneIcon}
-              <svelte:component this={ToneIcon} class="container mx-auto px-4" />
+              <svelte:component this={ToneIcon} class="space-y-4" />
             {/if}
-            <span class="container mx-auto px-4">{emotionalTone}</span>
+            <span class="space-y-4">{emotionalTone}</span>
           </div>
         {/if}
       </div>
 
       <!-- Message Actions -->
       <div
-        class="container mx-auto px-4"
+        class="space-y-4"
       >
         <!-- Timestamp -->
-        <span class="container mx-auto px-4">
+        <span class="space-y-4">
           {formatTime(message.timestamp)}
         </span>
 
         <!-- Actions (visible on hover) -->
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           <!-- Copy -->
           <Button
             variant="ghost"
             size="sm"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => copyToClipboard()}
             title="Copy message"
           >
-            <Copy class="container mx-auto px-4" />
+            <Copy class="space-y-4" />
           </Button>
 
           <!-- Save/Unsave -->
           <Button
             variant="ghost"
             size="sm"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => toggleSaved()}
             title={message.saved ? "Remove from saved" : "Save message"}
           >
             {#if message.saved}
-              <Star class="container mx-auto px-4" />
+              <Star class="space-y-4" />
             {:else}
-              <StarOff class="container mx-auto px-4" />
+              <StarOff class="space-y-4" />
             {/if}
           </Button>
 
@@ -151,10 +159,10 @@
           <Button
             variant="ghost"
             size="sm"
-            class="container mx-auto px-4"
+            class="space-y-4"
             title="More options"
           >
-            <MoreVertical class="container mx-auto px-4" />
+            <MoreVertical class="space-y-4" />
           </Button>
         </div>
       </div>
@@ -162,9 +170,9 @@
 
     <!-- Metadata (for AI messages) -->
     {#if isAssistant && message.metadata}
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if message.metadata.model}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <span>Model: {message.metadata.model}</span>
             {#if message.metadata.latency}
               <span>• {message.metadata.latency}ms</span>

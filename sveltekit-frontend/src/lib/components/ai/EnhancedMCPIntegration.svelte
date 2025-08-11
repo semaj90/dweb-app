@@ -1,4 +1,19 @@
 <script lang="ts">
+  interface Props {
+    caseId: string | undefined ;
+    enableRealtimeUpdates: boolean ;
+    showMetrics: boolean ;
+    enableClusterMode: boolean ;
+  }
+  let {
+    caseId = undefined,
+    enableRealtimeUpdates = true,
+    showMetrics = true,
+    enableClusterMode = true
+  }: Props = $props();
+
+
+
 	/**
 	 * Enhanced MCP Integration Component for SvelteKit Frontend
 	 * Connects cluster system, MCP tools, and Context7 integration
@@ -9,11 +24,7 @@
 	import { page } from '$app/stores';
 	
 	// Props using Svelte 5 syntax compatibility
-	export let caseId: string | undefined = undefined;
-	export let enableRealtimeUpdates: boolean = true;
-	export let showMetrics: boolean = true;
-	export let enableClusterMode: boolean = true;
-	
+					
 	// Reactive state using writable stores for Svelte 4/5 compatibility
 	const mcpStatus = writable<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
 	const clusterMetrics = writable<{

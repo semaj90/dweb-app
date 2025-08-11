@@ -1,13 +1,19 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { Search, X } from 'lucide-svelte';
+  interface Props {
+    onsearch?: (event?: any) => void;
+  }
+  let {
+    placeholder = 'Search...',
+    value = '',
+    debounceTime = 300
+  }: Props = $props();
 
-	export let placeholder = 'Search...';
-	export let value = '';
-	export let debounceTime = 300;
 
-	const dispatch = createEventDispatcher();
 
+		import { Search, X } from 'lucide-svelte';
+
+			
+	
 	let debounceTimer: NodeJS.Timeout;
 	let inputElement: HTMLInputElement;
 	let isFocused = false;
@@ -15,13 +21,13 @@
 	function handleInput() {
 		clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(() => {
-			dispatch('search', { query: value });
+			onsearch?.();
 		}, debounceTime);
 }
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Enter') {
 			clearTimeout(debounceTimer);
-			dispatch('search', { query: value });
+			onsearch?.();
 		} else if (event.key === 'Escape') {
 			clearValue();
 			inputElement.blur();
@@ -34,13 +40,13 @@
 }
 	function clearValue() {
 		value = '';
-		dispatch('search', { query: '' });
+		onsearch?.();
 		inputElement.focus();
 }
 </script>
 
-<div class="container mx-auto px-4" class:focused={isFocused}>
-	<div class="container mx-auto px-4">
+<div class="space-y-4" class:focused={isFocused}>
+	<div class="space-y-4">
 		<Search size={18} />
 	</div>
 	
@@ -48,7 +54,7 @@
 		bind:this={inputElement}
 		bind:value
 		{placeholder}
-		class="container mx-auto px-4"
+		class="space-y-4"
 		type="text"
 		on:input={handleInput}
 		on:keydown={handleKeydown}
@@ -59,7 +65,7 @@
 	
 	{#if value}
 		<button
-			class="container mx-auto px-4"
+			class="space-y-4"
 			on:click={() => clearValue()}
 			aria-label="Clear search"
 			type="button"

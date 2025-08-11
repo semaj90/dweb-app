@@ -1,13 +1,16 @@
 <script lang="ts">
+  interface Props {
+    onclose?: (event?: any) => void;
+  }
+
+
   import { aiService } from '$lib/services/aiService';
   import * as Dialog from '$lib/components/ui/dialog';
   import Button from "$lib/components/ui/button";
   import Badge from '$lib/components/ui/Badge.svelte';
   import { Sparkles, Copy, X, AlertCircle, Check } from 'lucide-svelte';
-  import { createEventDispatcher } from 'svelte';
-
-  const dispatch = createEventDispatcher();
-  let copied = false;
+  
+    let copied = false;
 
   // Use the Svelte store reactively
   $: summary = $aiService.summary;
@@ -28,7 +31,7 @@
 }}}
   function closeModal() {
     aiService.reset();
-    dispatch('close');
+    onclose?.();
 }
 </script>
 
@@ -39,55 +42,55 @@
     <Dialog.Description>AI-generated summary of your content</Dialog.Description>
   </Dialog.Header>
 
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     {#if isLoading}
       <!-- Loading State -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4"></div>
-          <span class="container mx-auto px-4">Analyzing content...</span>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4"></div>
+          <span class="space-y-4">Analyzing content...</span>
         </div>
       </div>
     {:else if error}
       <!-- Error State -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <AlertCircle class="container mx-auto px-4" />
-          <span class="container mx-auto px-4">AI Error</span>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <AlertCircle class="space-y-4" />
+          <span class="space-y-4">AI Error</span>
         </div>
-        <p class="container mx-auto px-4">{error}</p>
+        <p class="space-y-4">{error}</p>
       </div>
     {:else if summary}
       <!-- Summary Content -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <Button on:click={() => copyToClipboard()} variant="ghost" size="sm" aria-label="Copy summary to clipboard">
-            <Copy class="container mx-auto px-4" />
-            <span class="container mx-auto px-4">Copy</span>
+            <Copy class="space-y-4" />
+            <span class="space-y-4">Copy</span>
           </Button>
           {#if copied}
-            <span class="container mx-auto px-4"><Check class="container mx-auto px-4" />Copied!</span>
+            <span class="space-y-4"><Check class="space-y-4" />Copied!</span>
           {/if}
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {summary}
         </div>
         {#if lastSummarizedContent}
-          <div class="container mx-auto px-4">
-            <span class="container mx-auto px-4">Source:</span> {lastSummarizedContent}
+          <div class="space-y-4">
+            <span class="space-y-4">Source:</span> {lastSummarizedContent}
           </div>
         {/if}
       </div>
     {:else}
-      <div class="container mx-auto px-4">No summary available.</div>
+      <div class="space-y-4">No summary available.</div>
     {/if}
   </div>
 
   <Dialog.Footer>
     <Dialog.Close asChild>
       <Button on:click={() => closeModal()} variant="secondary" aria-label="Close summary modal">
-        <X class="container mx-auto px-4" />
-        <span class="container mx-auto px-4">Close</span>
+        <X class="space-y-4" />
+        <span class="space-y-4">Close</span>
       </Button>
     </Dialog.Close>
   </Dialog.Footer>

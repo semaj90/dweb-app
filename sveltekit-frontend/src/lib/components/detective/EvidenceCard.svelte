@@ -1,12 +1,20 @@
 <script lang="ts">
+  interface Props {
+    item: Evidence;;
+  }
+  let {
+    item
+  }: Props = $props();
+
+
+
   import Badge from "$lib/components/ui/Badge.svelte";
   import Button from "$lib/components/ui/button/Button.svelte";
-  import { Card, CardContent, CardHeader } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader } from "$lib/components/ui/Card";
   import type { Evidence } from "$lib/types/index";
   import { createEventDispatcher } from "svelte";
 
-  export let item: Evidence;
-
+  
   const dispatch = createEventDispatcher();
 
   function getEvidenceIcon(type: string) {

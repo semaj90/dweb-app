@@ -131,11 +131,11 @@
       const notification = document.createElement('div');
       notification.className = 'fixed top-20 right-4 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
       notification.innerHTML = `
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             ${randomUser.name.charAt(0)}
           </div>
-          <span class="container mx-auto px-4">${randomUser.name} joined the case</span>
+          <span class="space-y-4">${randomUser.name} joined the case</span>
         </div>
       `;
       
@@ -160,73 +160,73 @@
 
 {#if mounted}
   <!-- Navigation Bar -->
-  <nav class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <i class="container mx-auto px-4"></i>
+  <nav class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <i class="space-y-4"></i>
             </div>
-            <h1 class="container mx-auto px-4">Detective Mode</h1>
+            <h1 class="space-y-4">Detective Mode</h1>
           </div>
           
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <button 
               on:click={() => currentView = 'board'}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <i class="container mx-auto px-4"></i>
+              <i class="space-y-4"></i>
               Evidence Board
             </button>
             
             <button 
               on:click={() => currentView = 'create-case'}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <i class="container mx-auto px-4"></i>
+              <i class="space-y-4"></i>
               Create Case
             </button>
             
             <button 
               on:click={() => currentView = 'auth-demo'}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <i class="container mx-auto px-4"></i>
+              <i class="space-y-4"></i>
               Auth Demo
             </button>
             
             <button 
               on:click={() => simulateCollaboration()}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <i class="container mx-auto px-4"></i>
+              <i class="space-y-4"></i>
               Demo Collab
             </button>
           </div>
         </div>
         
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- Demo Status Badge -->
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4"></div>
-            <span class="container mx-auto px-4">Live Demo</span>
+          <div class="space-y-4">
+            <div class="space-y-4"></div>
+            <span class="space-y-4">Live Demo</span>
           </div>
           
           {#if $auth.isAuthenticated}
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">Welcome, {$auth.user?.name || $auth.user?.email}</span>
+            <div class="space-y-4">
+              <span class="space-y-4">Welcome, {$auth.user?.name || $auth.user?.email}</span>
               <button 
                 on:click={() => auth.logout()}
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 Logout
               </button>
             </div>
           {:else}
-            <div class="container mx-auto px-4">
-              <i class="container mx-auto px-4"></i>
-              <span class="container mx-auto px-4">Not authenticated</span>
+            <div class="space-y-4">
+              <i class="space-y-4"></i>
+              <span class="space-y-4">Not authenticated</span>
             </div>
           {/if}
         </div>
@@ -235,38 +235,38 @@
   </nav>
 
   <!-- Main Content -->
-  <main class="container mx-auto px-4">
+  <main class="space-y-4">
     {#if currentView === 'board'}
       <DetectiveBoard 
         caseId="demo-case-001" 
         evidence={sampleEvidence} 
       />
     {:else if currentView === 'create-case'}
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <CaseForm 
           on:success={handleCaseFormSuccess}
           on:cancel={handleCaseFormCancel}
         />
       </div>
     {:else if currentView === 'auth-demo'}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h2 class="container mx-auto px-4">Authentication Demo</h2>
-            <p class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h2 class="space-y-4">Authentication Demo</h2>
+            <p class="space-y-4">
               This demonstrates the Svelte Context API alternative to $lib for authentication.
             </p>
             
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <h3 class="container mx-auto px-4">Auth State</h3>
-                <pre class="container mx-auto px-4">{JSON.stringify($auth, null, 2)}</pre>
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <h3 class="space-y-4">Auth State</h3>
+                <pre class="space-y-4">{JSON.stringify($auth, null, 2)}</pre>
               </div>
               
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <button 
                   on:click={() => auth.login('test@example.com', 'password123')}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   disabled={$auth.isLoading}
                 >
                   Mock Login
@@ -274,7 +274,7 @@
                 
                 <button 
                   on:click={() => auth.logout()}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   disabled={!$auth.isAuthenticated}
                 >
                   Logout
@@ -282,7 +282,7 @@
                 
                 <button 
                   on:click={() => auth.checkAuth()}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   disabled={$auth.isLoading}
                 >
                   Check Auth
@@ -290,37 +290,37 @@
               </div>
             </div>
             
-            <div class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">Features Demonstrated</h3>
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">✅ UnoCSS Only</h4>
-                  <p class="container mx-auto px-4">PicoCSS removed, using UnoCSS utility classes throughout</p>
+            <div class="space-y-4">
+              <h3 class="space-y-4">Features Demonstrated</h3>
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <h4 class="space-y-4">✅ UnoCSS Only</h4>
+                  <p class="space-y-4">PicoCSS removed, using UnoCSS utility classes throughout</p>
                 </div>
                 
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">✅ Drag & Drop</h4>
-                  <p class="container mx-auto px-4">Evidence cards with svelte-dnd-action in 3-column layout</p>
+                <div class="space-y-4">
+                  <h4 class="space-y-4">✅ Drag & Drop</h4>
+                  <p class="space-y-4">Evidence cards with svelte-dnd-action in 3-column layout</p>
                 </div>
                 
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">✅ Context Menus</h4>
-                  <p class="container mx-auto px-4">Right-click menus using Melt UI primitives</p>
+                <div class="space-y-4">
+                  <h4 class="space-y-4">✅ Context Menus</h4>
+                  <p class="space-y-4">Right-click menus using Melt UI primitives</p>
                 </div>
                 
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">✅ Superforms + Zod</h4>
-                  <p class="container mx-auto px-4">Type-safe forms with validation and error handling</p>
+                <div class="space-y-4">
+                  <h4 class="space-y-4">✅ Superforms + Zod</h4>
+                  <p class="space-y-4">Type-safe forms with validation and error handling</p>
                 </div>
                 
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">✅ Auth Context</h4>
-                  <p class="container mx-auto px-4">Svelte Context API alternative to $lib for global state</p>
+                <div class="space-y-4">
+                  <h4 class="space-y-4">✅ Auth Context</h4>
+                  <p class="space-y-4">Svelte Context API alternative to $lib for global state</p>
                 </div>
                 
-                <div class="container mx-auto px-4">
-                  <h4 class="container mx-auto px-4">✅ File Upload</h4>
-                  <p class="container mx-auto px-4">Progress bar with drag/drop support</p>
+                <div class="space-y-4">
+                  <h4 class="space-y-4">✅ File Upload</h4>
+                  <p class="space-y-4">Progress bar with drag/drop support</p>
                 </div>
               </div>
             </div>
@@ -332,11 +332,11 @@
 
 {:else}
   <!-- Loading Screen -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4"></div>
-      <p class="container mx-auto px-4">Loading Detective Mode...</p>
-      <p class="container mx-auto px-4">Initializing Google Slides-like interface</p>
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4"></div>
+      <p class="space-y-4">Loading Detective Mode...</p>
+      <p class="space-y-4">Initializing Google Slides-like interface</p>
     </div>
   </div>
 {/if}

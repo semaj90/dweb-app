@@ -89,17 +89,17 @@
   <title>Performance Dashboard - Legal Case Management</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <h1>Performance Dashboard</h1>
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <button 
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => toggleAutoRefresh()}
       >
         {autoRefresh ? '🔄 Auto Refresh On' : '⏸️ Auto Refresh Off'}
       </button>
-      <button class="container mx-auto px-4" on:click={() => loadMetrics()}>
+      <button class="space-y-4" on:click={() => loadMetrics()}>
         🔄 Refresh Now
       </button>
     </div>
@@ -107,35 +107,35 @@
 
   <!-- System Health Cards -->
   {#if $health}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h3>Database</h3>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {$health.database}
         </div>
       </div>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h3>CPU Usage</h3>
-        <div class="container mx-auto px-4">{$health.cpu}%</div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4" style="width: {$health.cpu}%"></div>
+        <div class="space-y-4">{$health.cpu}%</div>
+        <div class="space-y-4">
+          <div class="space-y-4" style="width: {$health.cpu}%"></div>
         </div>
       </div>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h3>Memory Usage</h3>
-        <div class="container mx-auto px-4">{$health.memory}%</div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4" style="width: {$health.memory}%"></div>
+        <div class="space-y-4">{$health.memory}%</div>
+        <div class="space-y-4">
+          <div class="space-y-4" style="width: {$health.memory}%"></div>
         </div>
       </div>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h3>Storage</h3>
-        <div class="container mx-auto px-4">{$health.storage}%</div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4" style="width: {$health.storage}%"></div>
+        <div class="space-y-4">{$health.storage}%</div>
+        <div class="space-y-4">
+          <div class="space-y-4" style="width: {$health.storage}%"></div>
         </div>
       </div>
     </div>
@@ -143,35 +143,35 @@
 
   <!-- Performance Metrics -->
   {#if $metrics}
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h3>Total Requests</h3>
-        <div class="container mx-auto px-4">{$metrics.totalRequests.toLocaleString()}</div>
+        <div class="space-y-4">{$metrics.totalRequests.toLocaleString()}</div>
       </div>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h3>Average Response Time</h3>
-        <div class="container mx-auto px-4">{formatTime($metrics.averageResponseTime)}</div>
+        <div class="space-y-4">{formatTime($metrics.averageResponseTime)}</div>
       </div>
       
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h3>Error Rate</h3>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {($metrics.errorRate * 100).toFixed(2)}%
         </div>
       </div>
     </div>
 
     <!-- Slowest Endpoints -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h2>Slowest Endpoints</h2>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#each $metrics.slowestEndpoints as endpoint}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{endpoint.endpoint}</div>
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">{formatTime(endpoint.avgTime)}</span>
-              <span class="container mx-auto px-4">{endpoint.requests} requests</span>
+          <div class="space-y-4">
+            <div class="space-y-4">{endpoint.endpoint}</div>
+            <div class="space-y-4">
+              <span class="space-y-4">{formatTime(endpoint.avgTime)}</span>
+              <span class="space-y-4">{endpoint.requests} requests</span>
             </div>
           </div>
         {/each}
@@ -179,14 +179,14 @@
     </div>
 
     <!-- Peak Hours Chart -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h2>Peak Hours</h2>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#each $metrics.peakHours as peak}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4" style="height: {(peak.requests / Math.max(...$metrics.peakHours.map(p => p.requests))) * 100}%"></div>
-            <div class="container mx-auto px-4">{formatHour(peak.hour)}</div>
-            <div class="container mx-auto px-4">{peak.requests}</div>
+          <div class="space-y-4">
+            <div class="space-y-4" style="height: {(peak.requests / Math.max(...$metrics.peakHours.map(p => p.requests))) * 100}%"></div>
+            <div class="space-y-4">{formatHour(peak.hour)}</div>
+            <div class="space-y-4">{peak.requests}</div>
           </div>
         {/each}
       </div>
@@ -194,16 +194,16 @@
   {/if}
 
   <!-- Recent Logs -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <h2>Recent System Logs</h2>
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#each $logs as log}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">{new Date(log.timestamp).toLocaleString()}</div>
-          <div class="container mx-auto px-4">{log.level.toUpperCase()}</div>
-          <div class="container mx-auto px-4">{log.message}</div>
+        <div class="space-y-4">
+          <div class="space-y-4">{new Date(log.timestamp).toLocaleString()}</div>
+          <div class="space-y-4">{log.level.toUpperCase()}</div>
+          <div class="space-y-4">{log.message}</div>
           {#if log.metadata}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {JSON.stringify(log.metadata, null, 2)}
             </div>
           {/if}

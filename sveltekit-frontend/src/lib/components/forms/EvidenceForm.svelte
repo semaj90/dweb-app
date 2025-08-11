@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    evidence: Evidence | null ;
+    data: any ;
+  }
+  let {
+    evidence = null,
+    data = null
+  }: Props = $props();
+
+
+
   import { invalidateAll } from "$app/navigation";
   import { createEventDispatcher } from "svelte";
   import { superForm } from "sveltekit-superforms";
@@ -36,19 +47,19 @@
   );
 </script>
 
-<form method="POST" use:enhance class="container mx-auto px-4">
+<form method="POST" use:enhance class="space-y-4">
   {#if evidence}
     <input type="hidden" name="id" bind:value={$form.id} />
   {/if}
 
   {#if data?.form?.message}
-    <div class="container mx-auto px-4">{data.form.message}</div>
+    <div class="space-y-4">{data.form.message}</div>
   {/if}
 
   <div>
     <Label for_="title">Title</Label>
     <Input id="title" name="title" bind:value={$form.title} required />
-    {#if $errors.title}<span class="container mx-auto px-4">{$errors.title}</span
+    {#if $errors.title}<span class="space-y-4">{$errors.title}</span
       >{/if}
   </div>
 
@@ -62,11 +73,11 @@
     <button
       use:melt={$trigger}
       aria-label="Select evidence type"
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
       <span>{$selectedLabel || "Select a type"}</span>
     </button>
-    <div use:melt={$menu} class="container mx-auto px-4">
+    <div use:melt={$menu} class="space-y-4">
       <div use:melt={$option({ value: "document", label: "Document" })}>
         Document
       </div>
@@ -76,7 +87,7 @@
       <div use:melt={$option({ value: "other", label: "Other" })}>Other</div>
     </div>
     <input type="hidden" name="type" bind:value={$form.type} />
-    {#if $errors.type}<span class="container mx-auto px-4">{$errors.type}</span
+    {#if $errors.type}<span class="space-y-4">{$errors.type}</span
       >{/if}
   </div>
 
@@ -88,17 +99,17 @@
       bind:value={$form.url}
       placeholder="https://example.com/evidence"
     />
-    {#if $errors.url}<span class="container mx-auto px-4">{$errors.url}</span>{/if}
+    {#if $errors.url}<span class="space-y-4">{$errors.url}</span>{/if}
   </div>
 
   <div>
     <Label for_="tags">Tags (comma-separated)</Label>
     <Input id="tags" name="tags" bind:value={$form.tags} placeholder="tag1, tag2, tag3" />
-    {#if $errors.tags}<span class="container mx-auto px-4">{$errors.tags}</span
+    {#if $errors.tags}<span class="space-y-4">{$errors.tags}</span
       >{/if}
   </div>
 
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <Button type="button" variant="ghost" on:click={() => dispatch("cancel")}
       >Cancel</Button
     >

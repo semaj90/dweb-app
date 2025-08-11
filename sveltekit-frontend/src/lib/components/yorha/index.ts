@@ -11,7 +11,7 @@ export {
   legalAITableConfigs,
   type TableState,
   type TableNotification
-} from '$lib/stores/tables.js';
+} from '$lib/stores/tables';
 
 // Table-related types for components
 export interface YoRHaTableColumn {
@@ -300,12 +300,18 @@ export const statusFormatters = {
   }
 };
 
+// Import for default export
+import { 
+  tableManager as importedTableManager, 
+  createTableStats as importedCreateTableStats 
+} from '$lib/stores/tables';
+
 // Export all components and utilities
 export default {
   YoRHaTable: () => import('./YoRHaTable.svelte'),
   YoRHaDataGrid: () => import('./YoRHaDataGrid.svelte'),
-  tableManager,
-  createTableStats,
+  tableManager: importedTableManager,
+  createTableStats: importedCreateTableStats,
   yorhaTablePresets,
   yorhaGridPresets,
   statusFormatters

@@ -13,7 +13,7 @@ import Redis from "ioredis";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { Pool } from "pg";
 import postgres from "postgres";
-import { legalDocuments } from "../database/vector-schema";
+import { legalDocuments } from "../server/db/schema-postgres";
 
 // Go Microservice Integration Types
 export interface GoMicroserviceConfig {
@@ -814,19 +814,12 @@ Provide a brief contextual summary that connects these documents:`;
 
       // Store document metadata in database
       await this.db.insert(legalDocuments).values({
-        id: documentId,
         title: metadata.title,
         content: content,
         documentType: metadata.documentType,
-        practiceArea: metadata.practiceArea,
         jurisdiction: metadata.jurisdiction,
-        fileSize: content.length,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        metadata: {
-          caseId: metadata.caseId,
-          ...metadata,
-        },
+        topics: metadata.practiceArea ? [metadata.practiceArea] : [],
+        keywords: [],
       });
 
       console.log(`📄 Document ingested successfully: ${documentId}`);

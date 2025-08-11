@@ -10,13 +10,13 @@
 
 {#if isOpen}
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <div class="container mx-auto px-4">
-      <h2 class="container mx-auto px-4">Upload Evidence</h2>
-      <p class="container mx-auto px-4">Modal is working!</p>
+    <div class="space-y-4">
+      <h2 class="space-y-4">Upload Evidence</h2>
+      <p class="space-y-4">Modal is working!</p>
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => closeModal()}
       >
         Close

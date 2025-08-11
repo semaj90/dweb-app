@@ -1,24 +1,45 @@
 <script lang="ts">
+  interface Props {
+    items: any[] ;
+    columnWidth?: any;
+    gutter?: any;
+    itemSelector?: any;
+    containerClass?: any;
+    fitWidth?: any;
+    horizontalOrder?: any;
+    percentPosition?: any;
+    resize?: any;
+    initLayout?: any;
+    transitionDuration?: any;
+    dragDisabled?: any;
+    dropTargetStyle?: any;
+    dropFromOthersDisabled?: any;
+  }
+  let {
+    items = [],
+    columnWidth = 300,
+    gutter = 16,
+    itemSelector = '.masonry-item',
+    containerClass = 'masonry-container',
+    fitWidth = true,
+    horizontalOrder = false,
+    percentPosition = false,
+    resize = true,
+    initLayout = true,
+    transitionDuration = '0.3s',
+    dragDisabled = false,
+    dropTargetStyle = {},
+    dropFromOthersDisabled = false
+  }: Props = $props();
+
+
+
   import { onMount, onDestroy } from 'svelte';
   import { dndzone } from 'svelte-dnd-action';
   import { fly } from 'svelte/transition';
   import Masonry from 'masonry-layout';
   
-  export let items: any[] = [];
-  export let columnWidth = 300;
-  export let gutter = 16;
-  export let itemSelector = '.masonry-item';
-  export let containerClass = 'masonry-container';
-  export let fitWidth = true;
-  export let horizontalOrder = false;
-  export let percentPosition = false;
-  export let resize = true;
-  export let initLayout = true;
-  export let transitionDuration = '0.3s';
-  export let dragDisabled = false;
-  export let dropTargetStyle = {};
-  export let dropFromOthersDisabled = false;
-  
+                              
   let container: HTMLElement;
   let masonry: any;
   let isInitialized = false;
@@ -126,7 +147,7 @@
 >
   {#each items as item, index (item.id)}
     <div 
-      class="container mx-auto px-4"
+      class="space-y-4"
       transition:fly={{ y: 20, duration: 300, delay: index * 50 }}
     >
       <slot {item} {index} />

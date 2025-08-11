@@ -1,21 +1,29 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import SearchInput from './SearchInput.svelte';
+  interface Props {
+    onsearch?: (event?: any) => void;
+    onsortChanged?: (event?: any) => void;
+    onfiltersChanged?: (event?: any) => void;
+  }
+  let {
+    placeholder = 'Search...',
+    value = '',
+    showFilters = true,
+    sortOptions = [
+  }: Props = $props();
+
+
+
+		import SearchInput from './SearchInput.svelte';
 	
 	import { Filter, ArrowUpDown } from 'lucide-svelte';
 
-	export let placeholder = 'Search...';
-	export let value = '';
-	export let showFilters = true;
-	export let sortOptions = [
-		{ id: 'relevance', label: 'Relevance' },
+						{ id: 'relevance', label: 'Relevance' },
 		{ id: 'date', label: 'Date' },
 		{ id: 'name', label: 'Name' },
 		{ id: 'type', label: 'Type' }
 	];
 
-	const dispatch = createEventDispatcher();
-
+	
 	let selectedSort = 'relevance';
 	let filtersOpen = false;
 	
@@ -27,11 +35,11 @@
 	};
 
 	function handleSearch(event: CustomEvent) {
-		dispatch('search', event.detail);
+		onsearch?.();
 }
 	function handleSortChange(sortId: string) {
 		selectedSort = sortId;
-		dispatch('sortChanged', { sort: sortId });
+		onsortChanged?.();
 }
 	function toggleFilters() {
 		filtersOpen = !filtersOpen;
@@ -54,14 +62,11 @@
 		dispatchFilters();
 }
 	function dispatchFilters() {
-		dispatch('filtersChanged', {
-			fileTypes: selectedFileTypes,
-			dateRange: dateRange
-		});
+		onfiltersChanged?.();
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
 	<!-- Main Search Input -->
 	<SearchInput 
 		{placeholder}
@@ -71,13 +76,13 @@
 
 	<!-- Controls -->
 	{#if showFilters}
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			<!-- Sort Dropdown -->
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<select
 					bind:value={selectedSort}
 					on:change={() => handleSortChange(selectedSort)}
-					class="container mx-auto px-4"
+					class="space-y-4"
 					aria-label="Sort by"
 				>
 					{#each sortOptions as option}
@@ -89,7 +94,7 @@
 
 			<!-- Filter Button -->
 			<button
-				class="container mx-auto px-4"
+				class="space-y-4"
 				class:active={filtersOpen}
 				on:click={() => toggleFilters()}
 				aria-label="Toggle filters"
@@ -103,11 +108,11 @@
 
 <!-- Advanced Filters -->
 {#if filtersOpen}
-	<div class="container mx-auto px-4">
-		<div class="container mx-auto px-4">
-			<span class="container mx-auto px-4">File Type:</span>
-			<div class="container mx-auto px-4">
-				<label class="container mx-auto px-4">
+	<div class="space-y-4">
+		<div class="space-y-4">
+			<span class="space-y-4">File Type:</span>
+			<div class="space-y-4">
+				<label class="space-y-4">
 					<input 
 						type="checkbox" 
 						value="image" 
@@ -116,7 +121,7 @@
 					/>
 					Images
 				</label>
-				<label class="container mx-auto px-4">
+				<label class="space-y-4">
 					<input 
 						type="checkbox" 
 						value="document" 
@@ -125,7 +130,7 @@
 					/>
 					Documents
 				</label>
-				<label class="container mx-auto px-4">
+				<label class="space-y-4">
 					<input 
 						type="checkbox" 
 						value="video" 
@@ -134,7 +139,7 @@
 					/>
 					Videos
 				</label>
-				<label class="container mx-auto px-4">
+				<label class="space-y-4">
 					<input 
 						type="checkbox" 
 						value="audio" 
@@ -146,12 +151,12 @@
 			</div>
 		</div>
 
-		<div class="container mx-auto px-4">
-			<span class="container mx-auto px-4">Date Range:</span>
-			<div class="container mx-auto px-4">
+		<div class="space-y-4">
+			<span class="space-y-4">Date Range:</span>
+			<div class="space-y-4">
 				<input 
 					type="date" 
-					class="container mx-auto px-4" 
+					class="space-y-4" 
 					aria-label="From date"
 					bind:value={dateRange.from}
 					on:change={handleDateChange}
@@ -159,7 +164,7 @@
 				<span>to</span>
 				<input 
 					type="date" 
-					class="container mx-auto px-4" 
+					class="space-y-4" 
 					aria-label="To date"
 					bind:value={dateRange.to}
 					on:change={handleDateChange}
@@ -167,10 +172,10 @@
 			</div>
 		</div>
 
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			<button 
 				type="button" 
-				class="container mx-auto px-4"
+				class="space-y-4"
 				on:click={() => {
 					selectedFileTypes = [];
 					dateRange = { from: '', to: '' };

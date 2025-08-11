@@ -1,5 +1,22 @@
 <!-- Enhanced Interactive Canvas with Fabric.js, No VDOM, Auto-save with Loki.js -->
 <script lang="ts">
+  interface Props {
+    caseId: string;;
+    canvasId: string ;
+    width?: any;
+    height?: any;
+    readOnly?: any;
+  }
+  let {
+    caseId,
+    canvasId = "",
+    width = 1200,
+    height = 800,
+    readOnly = false
+  }: Props = $props();
+
+
+
   import type { User } from '$lib/types';
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
   import { evidenceStore } from "$lib/stores/evidenceStore";
@@ -35,12 +52,7 @@
   import { onDestroy, onMount } from "svelte";
   import { get, writable } from "svelte/store";
 
-  export let caseId: string;
-  export let canvasId: string = "";
-  export let width = 1200;
-  export let height = 800;
-  export let readOnly = false;
-
+          
   let canvasElement: HTMLCanvasElement;
   let canvas: fabric.Canvas | null = null;
   let lokiDb: Loki | null = null;
@@ -986,22 +998,22 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Main Toolbar -->
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
     <!-- File Operations -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => saveCanvas()}
         title="Save Canvas"
       >
         <Save size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => undo()}
         disabled={!state.canUndo}
         title="Undo"
@@ -1009,7 +1021,7 @@
         <Undo size="18" />
       </button>
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => redo()}
         disabled={!state.canRedo}
         title="Redo"
@@ -1018,13 +1030,13 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Tools -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#each tools as tool}
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           class:active={state.tool === tool.id}
           on:click={() => setTool(tool.id)}
           title={tool.label}
@@ -1034,20 +1046,20 @@
       {/each}
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Canvas Controls -->
-    <div class="container mx-auto px-4">
-      <button class="container mx-auto px-4" on:click={() => zoomOut()} title="Zoom Out">
+    <div class="space-y-4">
+      <button class="space-y-4" on:click={() => zoomOut()} title="Zoom Out">
         <ZoomOut size="18" />
       </button>
-      <span class="container mx-auto px-4">{state.zoom}%</span>
-      <button class="container mx-auto px-4" on:click={() => zoomIn()} title="Zoom In">
+      <span class="space-y-4">{state.zoom}%</span>
+      <button class="space-y-4" on:click={() => zoomIn()} title="Zoom In">
         <ZoomIn size="18" />
       </button>
 
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         class:active={state.showGrid}
         on:click={() => toggleGrid()}
         title="Toggle Grid"
@@ -1056,27 +1068,27 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Object Actions -->
-    <div class="container mx-auto px-4">
-      <button class="container mx-auto px-4" on:click={() => copySelected()} title="Copy">
+    <div class="space-y-4">
+      <button class="space-y-4" on:click={() => copySelected()} title="Copy">
         <Copy size="18" />
       </button>
-      <button class="container mx-auto px-4" on:click={() => pasteClipboard()} title="Paste">
+      <button class="space-y-4" on:click={() => pasteClipboard()} title="Paste">
         <Copy size="18" />
       </button>
-      <button class="container mx-auto px-4" on:click={() => deleteSelected()} title="Delete">
+      <button class="space-y-4" on:click={() => deleteSelected()} title="Delete">
         <Trash2 size="18" />
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- AI Features -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => generateAISummary()}
         title="Generate AI Summary"
       >
@@ -1084,34 +1096,34 @@
       </button>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Export -->
-    <div class="container mx-auto px-4">
-      <button class="container mx-auto px-4">
+    <div class="space-y-4">
+      <button class="space-y-4">
         <Download size="18" />
       </button>
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <button on:click={() => exportCanvas("png")}>Export as PNG</button>
         <button on:click={() => exportCanvas("svg")}>Export as SVG</button>
         <button on:click={() => exportCanvas("json")}>Export as JSON</button>
       </div>
     </div>
 
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
 
     <!-- Canvas Info -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       Objects: {state.objectCount} | Selected: {state.selectedObjects.length}
     </div>
   </div>
 
   <!-- Content Area -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Evidence Sidebar -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <Search size="16" />
           <input
             type="text"
@@ -1119,57 +1131,57 @@
             bind:value={state.searchQuery}
             on:input={(e) =>
               searchEvidence((e.target as HTMLInputElement).value)}
-            class="container mx-auto px-4"
+            class="space-y-4"
           />
         </div>
 
-        <h3 class="container mx-auto px-4">Evidence Items</h3>
-        <div class="container mx-auto px-4">
+        <h3 class="space-y-4">Evidence Items</h3>
+        <div class="space-y-4">
           {#each state.searchQuery ? searchResults : evidenceItems as evidence}
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => addEvidenceToCanvas(evidence)}
               on:keydown={(e) =>
                 e.key === "Enter" && addEvidenceToCanvas(evidence)}
               role="button"
               tabindex={0}
             >
-              <div class="container mx-auto px-4">{evidence.title}</div>
-              <div class="container mx-auto px-4">{evidence.evidenceType}</div>
+              <div class="space-y-4">{evidence.title}</div>
+              <div class="space-y-4">{evidence.evidenceType}</div>
             </div>
           {/each}
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">Quick Add</h3>
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">Quick Add</h3>
+        <div class="space-y-4">
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => addTimelineToCanvas()}
           >
-            <Clock size="16" class="container mx-auto px-4" />
+            <Clock size="16" class="space-y-4" />
             Timeline
           </button>
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => addPersonToCanvas()}
           >
-            <Users size="16" class="container mx-auto px-4" />
+            <Users size="16" class="space-y-4" />
             Person
           </button>
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => addLocationToCanvas()}
           >
-            <MapPin size="16" class="container mx-auto px-4" />
+            <MapPin size="16" class="space-y-4" />
             Location
           </button>
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => setTool("note")}
           >
-            <FileText size="16" class="container mx-auto px-4" />
+            <FileText size="16" class="space-y-4" />
             Note
           </button>
         </div>
@@ -1177,8 +1189,8 @@
     </div>
 
     <!-- Canvas Area -->
-    <div class="container mx-auto px-4">
-      <canvas bind:this={canvasElement} class="container mx-auto px-4"></canvas>
+    <div class="space-y-4">
+      <canvas bind:this={canvasElement} class="space-y-4"></canvas>
     </div>
   </div>
 </div>

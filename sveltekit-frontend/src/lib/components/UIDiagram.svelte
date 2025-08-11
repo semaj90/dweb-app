@@ -17,7 +17,7 @@
   });
 </script>
 
-<div class="container mx-auto px-4" bind:this={container}>
+<div class="space-y-4" bind:this={container}>
   {@html svg}
 </div>
 

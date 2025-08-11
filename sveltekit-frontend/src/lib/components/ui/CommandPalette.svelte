@@ -1,11 +1,19 @@
 <script lang="ts">
+  interface Props {
+    open?: any;
+  }
+  let {
+    open = false
+  }: Props = $props();
+
+
+
   import type { User } from '$lib/types';
   import { onMount, createEventDispatcher } from 'svelte';
   import { Search, File, Briefcase, User as UserIcon, Settings, Command } from "lucide-svelte";
   import { cn } from '$lib/utils';
   
-  export let open = false;
-  
+    
   // Define the command item type
   interface CommandItem {
     id: string;

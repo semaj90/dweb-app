@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    report: Report;;
+  }
+  let {
+    report
+  }: Props = $props();
+
+
+
 import { onMount } from "svelte";
 import type { Report } from '$lib/data/types';
 // UI Components
@@ -6,7 +15,6 @@ import * as ContextMenu from '$lib/components/ui/context-menu';
 // Icons
 import { Link, Sparkles } from "lucide-svelte";
 
-export let report: Report;
 
 let nodeElement: HTMLDivElement;
 let isDragging = false;
@@ -61,7 +69,7 @@ let dragStartY = 0;
   <ContextMenu.Trigger>
     <div
       bind:this={nodeElement}
-      class="container mx-auto px-4"
+      class="space-y-4"
       style={`left: ${position.x}px; top: ${position.y}px; z-index: 10;`}
       on:mousedown={handleMouseDown}
       on:keydown={(e) => {
@@ -88,11 +96,11 @@ let dragStartY = 0;
     <ContextMenu.Item
       on:select={() => saveCitation(window.getSelection()?.toString() || "")}
     >
-      <Link class="container mx-auto px-4" />
+      <Link class="space-y-4" />
       Save as Citation
     </ContextMenu.Item>
     <ContextMenu.Item on:select={summarizeReport}>
-      <Sparkles class="container mx-auto px-4" />
+      <Sparkles class="space-y-4" />
       AI Summary
     </ContextMenu.Item>
   </ContextMenu.Content>

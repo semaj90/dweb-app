@@ -1,5 +1,18 @@
 <!-- AI Dialog: Svelte 5, Bits UI, UnoCSS, transitions, analytics logging -->
 <script lang="ts">
+  interface Props {
+    open?: any;
+    title?: any;
+    onClose: () ;
+  }
+  let {
+    open = false,
+    title = '',
+    onClose = > void = () => {}
+  }: Props = $props();
+
+
+
   import { fade, scale } from 'svelte/transition';
   export let open = false;
   export let title = '';

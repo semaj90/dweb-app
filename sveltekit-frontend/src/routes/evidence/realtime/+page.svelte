@@ -171,36 +171,36 @@
   <title>Real-time Evidence Management - Demo</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <header class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h1 class="container mx-auto px-4">
+  <header class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h1 class="space-y-4">
             Real-time Evidence Management
           </h1>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#if isConnected}
-              <Wifi class="container mx-auto px-4" />
-              <span class="container mx-auto px-4">Connected</span>
+              <Wifi class="space-y-4" />
+              <span class="space-y-4">Connected</span>
             {:else}
-              <WifiOff class="container mx-auto px-4" />
-              <span class="container mx-auto px-4">Offline</span>
+              <WifiOff class="space-y-4" />
+              <span class="space-y-4">Offline</span>
             {/if}
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#if !demoMode}
             <Button on:click={() => startDemoMode()}>
-              <Activity class="container mx-auto px-4" />
+              <Activity class="space-y-4" />
               Start Demo
             </Button>
           {/if}
 
           <Button variant="outline" on:click={() => clearAllEvidence()}>
-            <Database class="container mx-auto px-4" />
+            <Database class="space-y-4" />
             Clear All
           </Button>
         </div>
@@ -209,34 +209,34 @@
   </header>
 
   <!-- Stats Dashboard -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <!-- Total Evidence -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <Database class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <Database class="space-y-4" />
           </div>
-          <div class="container mx-auto px-4">
-            <p class="container mx-auto px-4">Total Evidence</p>
-            <p class="container mx-auto px-4">{stats.total}</p>
+          <div class="space-y-4">
+            <p class="space-y-4">Total Evidence</p>
+            <p class="space-y-4">{stats.total}</p>
           </div>
         </div>
       </div>
 
       <!-- Connection Status -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             {#if isConnected}
-              <Wifi class="container mx-auto px-4" />
+              <Wifi class="space-y-4" />
             {:else}
-              <WifiOff class="container mx-auto px-4" />
+              <WifiOff class="space-y-4" />
             {/if}
           </div>
-          <div class="container mx-auto px-4">
-            <p class="container mx-auto px-4">Connection</p>
-            <p class="container mx-auto px-4">
+          <div class="space-y-4">
+            <p class="space-y-4">Connection</p>
+            <p class="space-y-4">
               {isConnected ? "Online" : "Offline"}
             </p>
           </div>
@@ -244,38 +244,38 @@
       </div>
 
       <!-- Sync Status -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             {#if syncStatus.inProgress}
-              <RefreshCw class="container mx-auto px-4" />
+              <RefreshCw class="space-y-4" />
             {:else}
-              <BarChart3 class="container mx-auto px-4" />
+              <BarChart3 class="space-y-4" />
             {/if}
           </div>
-          <div class="container mx-auto px-4">
-            <p class="container mx-auto px-4">Sync Status</p>
-            <p class="container mx-auto px-4">
+          <div class="space-y-4">
+            <p class="space-y-4">Sync Status</p>
+            <p class="space-y-4">
               {syncStatus.pending > 0
                 ? `${syncStatus.pending} pending`
                 : "Synced"}
             </p>
             {#if syncStatus.failed > 0}
-              <p class="container mx-auto px-4">{syncStatus.failed} failed</p>
+              <p class="space-y-4">{syncStatus.failed} failed</p>
             {/if}
           </div>
         </div>
       </div>
 
       <!-- Recent Evidence -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <Clock class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <Clock class="space-y-4" />
           </div>
-          <div class="container mx-auto px-4">
-            <p class="container mx-auto px-4">Recent (7 days)</p>
-            <p class="container mx-auto px-4">
+          <div class="space-y-4">
+            <p class="space-y-4">Recent (7 days)</p>
+            <p class="space-y-4">
               {stats.recentCount}
             </p>
           </div>
@@ -285,13 +285,13 @@
 
     <!-- Evidence Type Breakdown -->
     {#if Object.keys(stats.byType).length > 0}
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">Evidence by Type</h3>
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">Evidence by Type</h3>
+        <div class="space-y-4">
           {#each Object.entries(stats.byType) as [type, count]}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">{count}</div>
-              <div class="container mx-auto px-4">{type}</div>
+            <div class="space-y-4">
+              <div class="space-y-4">{count}</div>
+              <div class="space-y-4">{type}</div>
             </div>
           {/each}
         </div>
@@ -299,16 +299,16 @@
     {/if}
 
     <!-- Case Filter -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <label for="case-filter" class="container mx-auto px-4"
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <label for="case-filter" class="space-y-4"
             >Case Filter:</label
           >
           <select
             id="case-filter"
             bind:value={selectedCaseId}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             <option value={undefined}>All Cases</option>
             {#each Object.keys(stats.byCase) as caseId}
@@ -319,12 +319,12 @@
           </select>
         </div>
 
-        <div class="container mx-auto px-4">
-          <label class="container mx-auto px-4">
+        <div class="space-y-4">
+          <label class="space-y-4">
             <input
               type="checkbox"
               bind:checked={showAdvancedFilters}
-              class="container mx-auto px-4"
+              class="space-y-4"
             />
             <span>Advanced Filters</span>
           </label>
@@ -334,21 +334,21 @@
 
     <!-- Advanced Filters -->
     {#if showAdvancedFilters}
-      <div class="container mx-auto px-4">
-        <h4 class="container mx-auto px-4">Advanced Filters</h4>
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h4 class="space-y-4">Advanced Filters</h4>
+        <div class="space-y-4">
           <!-- Search -->
           <div>
             <label
               for="search-input"
-              class="container mx-auto px-4">Search</label
+              class="space-y-4">Search</label
             >
             <input
               id="search-input"
               type="text"
               bind:value={searchQuery}
               placeholder="Search evidence..."
-              class="container mx-auto px-4"
+              class="space-y-4"
             />
           </div>
 
@@ -356,14 +356,14 @@
           <div>
             <label
               for="evidence-types"
-              class="container mx-auto px-4"
+              class="space-y-4"
               >Evidence Types</label
             >
             <select
               id="evidence-types"
               multiple
               bind:value={selectedTypes}
-              class="container mx-auto px-4"
+              class="space-y-4"
               size="3"
             >
               <option value="document">Documents</option>
@@ -378,14 +378,14 @@
 
           <!-- Quick Actions -->
           <div>
-            <h4 class="container mx-auto px-4">
+            <h4 class="space-y-4">
               Quick Actions
             </h4>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <Button
                 size="sm"
                 variant="outline"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => (selectedTypes = ["video", "image"])}
               >
                 Visual Evidence
@@ -393,7 +393,7 @@
               <Button
                 size="sm"
                 variant="outline"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => (selectedTypes = ["testimony", "document"])}
               >
                 Testimonial
@@ -401,7 +401,7 @@
               <Button
                 size="sm"
                 variant="outline"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => {
                   selectedTypes = [];
                   searchQuery = "";
@@ -417,11 +417,11 @@
 
     <!-- Error Display -->
     {#if error}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <svg
-              class="container mx-auto px-4"
+              class="space-y-4"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -432,9 +432,9 @@
               />
             </svg>
           </div>
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">Error</h3>
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">Error</h3>
+            <div class="space-y-4">
               <p>{error}</p>
             </div>
           </div>
@@ -444,12 +444,12 @@
 
     <!-- Demo Mode Banner -->
     {#if demoMode}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Activity class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <Activity class="space-y-4" />
           <div>
-            <h3 class="container mx-auto px-4">Demo Mode Active</h3>
-            <p class="container mx-auto px-4">
+            <h3 class="space-y-4">Demo Mode Active</h3>
+            <p class="space-y-4">
               Watch as evidence is added in real-time. All changes are
               synchronized across connections and stored locally.
             </p>
@@ -459,7 +459,7 @@
     {/if}
 
     <!-- Main Evidence Grid -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <RealTimeEvidenceGrid
         caseId={selectedCaseId}
         {searchQuery}
@@ -469,18 +469,18 @@
     </div>
 
     <!-- Monaco Editor Demo -->
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">Monaco Editor Demo</h3>
+    <div class="space-y-4">
+      <h3 class="space-y-4">Monaco Editor Demo</h3>
       <MonacoEditor />
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         This is a live code editor powered by Monaco. Supports JavaScript,
         TypeScript, and more.
       </p>
     </div>
 
     <!-- Tiptap Rich Text Editor Demo -->
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">
         Rich Text Editor Demo (Tiptap)
       </h3>
       <RichTextEditor
@@ -488,21 +488,21 @@
         showToolbar={true}
         autoSave={true}
       />
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         This is a modern, accessible rich text editor powered by Tiptap.
         Supports headings, lists, images, markdown export, and more.
       </p>
     </div>
 
     <!-- System Information -->
-    <div class="container mx-auto px-4">
-      <h3 class="container mx-auto px-4">System Information</h3>
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">System Information</h3>
+      <div class="space-y-4">
         <div>
-          <h4 class="container mx-auto px-4">
+          <h4 class="space-y-4">
             Real-time Features
           </h4>
-          <ul class="container mx-auto px-4">
+          <ul class="space-y-4">
             <li>✅ WebSocket connection with Redis pub/sub</li>
             <li>✅ Server-Sent Events (SSE) fallback</li>
             <li>✅ Local storage with Loki.js</li>
@@ -513,10 +513,10 @@
         </div>
 
         <div>
-          <h4 class="container mx-auto px-4">
+          <h4 class="space-y-4">
             Technical Stack
           </h4>
-          <ul class="container mx-auto px-4">
+          <ul class="space-y-4">
             <li>🔧 SvelteKit frontend</li>
             <li>🔧 Redis for pub/sub</li>
             <li>🔧 PostgreSQL database</li>

@@ -18,7 +18,7 @@ const createMockPool = () =>
 // Database configuration
 const connectionString =
   process.env.DATABASE_URL ||
-  "postgresql://legal_admin:LegalAI2024!@localhost:5432/legal_ai_db";
+  "postgresql://legal_admin:123456@localhost:5432/legal_ai_db";
 
 // Create pool - use mock during build or when DATABASE_URL indicates build environment
 const isBuilding =

@@ -1,4 +1,17 @@
 <script lang="ts">
+  interface Props {
+    caseId: string;;
+    documents: CaseDocument[] ;
+    evidenceReports: EvidenceReport[] ;
+  }
+  let {
+    caseId,
+    documents = [],
+    evidenceReports = []
+  }: Props = $props();
+
+
+
   import { useMachine } from '@xstate/svelte';
   import { createMachine, assign } from 'xstate';
   import AISummaryReader from './AISummaryReader.svelte';
@@ -19,10 +32,7 @@
   } from 'lucide-svelte';
   import { fly, fade } from 'svelte/transition';
 
-  export let caseId: string;
-  export let documents: CaseDocument[] = [];
-  export let evidenceReports: EvidenceReport[] = [];
-
+      
   interface CaseDocument {
     id: string;
     title: string;

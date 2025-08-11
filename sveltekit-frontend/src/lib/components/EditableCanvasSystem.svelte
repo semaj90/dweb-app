@@ -1,15 +1,26 @@
 <script lang="ts">
+  interface Props {
+    userId: string;;
+    canvasId: string | null ;
+    readonly?: any;
+    maxNodes?: any;
+  }
+  let {
+    userId,
+    canvasId = null,
+    readonly = false,
+    maxNodes = 100
+  }: Props = $props();
+
+
+
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { writable, derived } from 'svelte/store';
   import type { EditableNode, CanvasState } from '$lib/components/types';
   import type { Evidence } from '$lib/types';
 
   // Component props with validation
-  export let userId: string;
-  export let canvasId: string | null = null;
-  export let readonly = false;
-  export let maxNodes = 100;
-
+        
   // Event dispatcher for parent communication
   const dispatch = createEventDispatcher<{
     nodeCreated: EditableNode;

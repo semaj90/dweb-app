@@ -1,8 +1,15 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  
-  const dispatch = createEventDispatcher();
-  
+  interface Props {
+    onupload?: (event?: any) => void;
+  }
+  let {
+    minimal = false
+  }: Props = $props();
+
+
+
+    
+    
   export let minimal = false; // New prop for minimal canvas mode
   
   let isDragOver = false;
@@ -41,7 +48,7 @@
         await uploadFile(file);
         uploadProgress = ((i + 1) / files.length) * 100;
 }
-      dispatch('upload', files);
+      onupload?.();
     } catch (error) {
       console.error('Upload failed:', error);
     } finally {
@@ -89,24 +96,24 @@
   on:change={handleFileSelect}
   multiple
   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
-  class="container mx-auto px-4"
+  class="space-y-4"
 />
 
 {#if minimal}
   <!-- Minimal Upload Button for Canvas -->
   <button
-    class="container mx-auto px-4"
+    class="space-y-4"
     on:click={() => openFileDialog()}
     title="Upload Evidence"
     aria-label="Upload Evidence"
     tabindex={0}
   >
-    <i class="container mx-auto px-4" aria-hidden="true"></i>
+    <i class="space-y-4" aria-hidden="true"></i>
   </button>
 {:else}
   <!-- Full Upload Zone for Columns -->
   <div 
-    class="container mx-auto px-4"
+    class="space-y-4"
     on:dragover={handleDragOver}
     on:dragleave={handleDragLeave}
     on:drop={handleDrop}
@@ -118,34 +125,34 @@
   >
     {#if isUploading}
       <!-- Upload Progress -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4"></div>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4"></div>
         </div>
         <div>
-          <p class="container mx-auto px-4">Uploading evidence...</p>
-          <div class="container mx-auto px-4">
+          <p class="space-y-4">Uploading evidence...</p>
+          <div class="space-y-4">
             <div 
-              class="container mx-auto px-4"
+              class="space-y-4"
               style="width: {uploadProgress}%"
             ></div>
           </div>
-          <p class="container mx-auto px-4">{Math.round(uploadProgress)}% complete</p>
+          <p class="space-y-4">{Math.round(uploadProgress)}% complete</p>
         </div>
       </div>
     {:else}
       <!-- Upload Interface -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <i class="container mx-auto px-4" aria-hidden="true"></i>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <i class="space-y-4" aria-hidden="true"></i>
         </div>
         <div>
-          <p class="container mx-auto px-4">Drop evidence files here</p>
-          <p class="container mx-auto px-4">
-            or <span class="container mx-auto px-4">browse files</span>
+          <p class="space-y-4">Drop evidence files here</p>
+          <p class="space-y-4">
+            or <span class="space-y-4">browse files</span>
           </p>
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <p>Supports: Images, Videos, Audio, Documents</p>
           <p>Max file size: 100MB</p>
         </div>

@@ -1,11 +1,20 @@
 <script lang="ts">
+  interface Props {
+    value?: any;
+    max?: any;
+  }
+  let {
+    value = 0,
+    max = 100
+  }: Props = $props();
+
+
+
 	import { cn } from '$lib/utils';
 	
 	let className = '';
 	export { className as class };
-	export let value = 0;
-	export let max = 100;
-	
+			
 	$: percentage = Math.min((value / max) * 100, 100);
 </script>
 

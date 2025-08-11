@@ -3,31 +3,44 @@ Integrity Verification Component
 Displays detailed integrity verification results with AI analysis
 -->
 <script lang="ts">
+  interface Props {
+    integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';;
+    verificationResults: {;
+    originalHash: string;;
+    currentHash: string | undefined;;
+    aiAnalysis: {;
+    showDetails: boolean ;
+  }
+  let {
+    integrityStatus,
+    verificationResults,
+    originalHash,
+    currentHash,
+    aiAnalysis,
+    showDetails = false
+  }: Props = $props();
+
+
+
   import { Badge } from '$lib/components/ui/badge';
   import { Progress } from '$lib/components/ui/progress';
   import { CheckCircle, XCircle, AlertTriangle, Shield, Hash, Clock, Brain } from 'lucide-svelte';
 
-  export let integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';
-  export let verificationResults: {
-    hashMatch: boolean;
+        hashMatch: boolean;
     metadataIntact: boolean;
     timestampValid: boolean;
     digitalSignatureValid: boolean;
     aiAnalysisScore: number;
     riskAssessment: string;
   } | undefined;
-  export let originalHash: string;
-  export let currentHash: string | undefined;
-  export let aiAnalysis: {
-    authenticity: number;
+          authenticity: number;
     completeness: number;
     relevance: number;
     riskLevel: 'low' | 'medium' | 'high' | 'critical';
     recommendations: string[];
     flaggedAnomalies: string[];
   } | undefined;
-  export let showDetails: boolean = false;
-
+  
   function getStatusIcon(status: string) {
     switch (status) {
       case 'verified':

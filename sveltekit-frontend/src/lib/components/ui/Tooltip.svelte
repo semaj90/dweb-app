@@ -29,14 +29,14 @@
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   role="tooltip"
   on:mouseenter={handleMouseEnter}
   on:mouseleave={handleMouseLeave}
 >
   {@render children?.()}
   {#if showTooltip && content}
-    <div class="container mx-auto px-4" role="tooltip">
+    <div class="space-y-4" role="tooltip">
       {content}
     </div>
   {/if}

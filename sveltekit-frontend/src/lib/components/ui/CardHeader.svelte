@@ -1,8 +1,16 @@
 <script lang="ts">
-  export let className: string = '';
-  $: classes = className;
+  interface Props {
+    className: string ;
+  }
+  let {
+    className = ''
+  }: Props = $props();
+
+
+
+    $: classes = className;
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <slot />
 </div>

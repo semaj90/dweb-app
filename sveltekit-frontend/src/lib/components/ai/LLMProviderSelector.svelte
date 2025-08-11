@@ -1,5 +1,16 @@
 <!-- LLM Provider Selector with Bits UI v2 and Real-time Status -->
 <script lang="ts">
+  interface Props {
+    selectedProvider: LLMProvider | null ;
+    disabled?: any;
+  }
+  let {
+    selectedProvider = null,
+    disabled = false
+  }: Props = $props();
+
+
+
 	import { createSelect, melt } from '@melt-ui/svelte';
 	import { Badge } from 'bits-ui';
 	import { Card, CardContent } from 'bits-ui';

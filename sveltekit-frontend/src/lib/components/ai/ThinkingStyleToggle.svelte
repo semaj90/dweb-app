@@ -1,16 +1,27 @@
 <!-- Enhanced ThinkingStyleToggle with Nier Automata + Harvard Crimson Theme -->
 <script lang="ts">
+  interface Props {
+    enabled?: any;
+    loading?: any;
+    premium?: any;
+    size: 'sm' | 'md' | 'lg' ;
+  }
+  let {
+    enabled = false,
+    loading = false,
+    premium = true,
+    size = 'md'
+  }: Props = $props();
+
+
+
   import { createEventDispatcher } from 'svelte';
   import { fade, slide, scale } from 'svelte/transition';
   import { Brain, Zap, Settings, Crown, Info } from 'lucide-svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import { cn } from '$lib/utils';
   
-  export let enabled = false;
-  export let loading = false;
-  export let premium = true;
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  
+          
   const dispatch = createEventDispatcher<{
     toggle: { enabled: boolean };
     configure: void;

@@ -1,28 +1,34 @@
-// @ts-nocheck
+import { registerSchema } from "$lib/schemas/auth";
+import { db } from "$lib/server/db/index";
 import { users } from "$lib/server/db/schema-postgres";
+import { hash } from "@node-rs/argon2";
 import { fail, redirect } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
-import { hash } from "@node-rs/argon2";
-import { registerSchema } from "$lib/schemas";
-import { superValidate, message } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
+import { message, superValidate } from "sveltekit-superforms";
 import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ locals }) => {
+import { message, superValidate } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
   // If user is already logged in, redirect to dashboard
   if (locals.user) {
     throw redirect(303, "/dashboard");
   }
-  
-  const form = await superValidate(zod(registerSchema));
+
+  // Provide a SuperValidated form to the client
+  const form = await superValidate(registerSchema, {
+    id: "register",
+  const form = await superValidate(zod(registerSchema, { jsonSchema: false }), { id: 'register' });
+  });
   return { form };
 };
 
 export const actions: Actions = {
-  default: async ({ request }) => {
-    const form = await superValidate(request, zod(registerSchema));
-    
+    const form = await superValidate(request, zod(registerSchema, { jsonSchema: false }), { id: 'register' });
+    const form = await superValidate(request, registerSchema, {
+      id: "register",
+      jsonSchema: false,
+    });
+
     if (!form.valid) {
       return fail(400, { form });
     }
@@ -35,7 +41,9 @@ export const actions: Actions = {
         .limit(1);
 
       if (existingUser.length > 0) {
-        return message(form, "An account with this email already exists.", { status: 400 });
+        return message(form, "An account with this email already exists.", {
+          status: 400,
+        });
       }
 
       // Hash password
@@ -71,8 +79,10 @@ export const actions: Actions = {
       if (error instanceof Response) {
         throw error;
       }
-      
-      return message(form, "Registration failed. Please try again.", { status: 500 });
+
+      return message(form, "Registration failed. Please try again.", {
+        status: 500,
+      });
     }
   },
 };

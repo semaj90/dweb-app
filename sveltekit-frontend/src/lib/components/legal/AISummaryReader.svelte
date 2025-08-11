@@ -1,4 +1,21 @@
 <script lang="ts">
+  interface Props {
+    documentId: string | null ;
+    caseId: string | null ;
+    initialContent: string ;
+    documentType: | "evidence";
+    compact: boolean ;
+  }
+  let {
+    documentId = null,
+    caseId = null,
+    initialContent = "",
+    documentType,
+    compact = false
+  }: Props = $props();
+
+
+
   import {
     aiSummaryMachine,
     type SummarySection,
@@ -18,17 +35,11 @@
   import { onMount } from "svelte";
   import { fade, fly } from "svelte/transition";
 
-  export let documentId: string | null = null;
-  export let caseId: string | null = null;
-  export let initialContent: string = "";
-  export let documentType:
-    | "evidence"
-    | "report"
+            | "report"
     | "contract"
     | "case_law"
     | "general" = "evidence";
-  export let compact: boolean = false;
-
+  
   const { state, send } = useMachine(aiSummaryMachine);
 
   // Reactive state helpers

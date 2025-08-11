@@ -6,7 +6,7 @@
     CardContent,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/card";
+  } from "$lib/components/ui/Card";
   import * as ContextMenu from "$lib/components/ui/context-menu";
   import { onDestroy, onMount } from "svelte";
   import { dndzone } from "svelte-dnd-action";
@@ -365,8 +365,8 @@
       style:left="{contextMenu.x}px"
       style:top="{contextMenu.y}px"
     >
-      <div class="container mx-auto px-4">
-        <p class="container mx-auto px-4">Evidence Actions</p>
+      <div class="space-y-4">
+        <p class="space-y-4">Evidence Actions</p>
       </div>
       <ContextMenu.Item
         on:select={() =>
@@ -404,8 +404,8 @@
         }}>Trigger Agent Review</ContextMenu.Item
       >
       <ContextMenu.Separator />
-      <div class="container mx-auto px-4">
-        <p class="container mx-auto px-4">Save/Link</p>
+      <div class="space-y-4">
+        <p class="space-y-4">Save/Link</p>
       </div>
       <ContextMenu.Item
         on:mouseenter={() => showMiniModal("citation")}
@@ -432,8 +432,8 @@
         >Add to MCP Context (LLM)</ContextMenu.Item
       >
       <ContextMenu.Separator />
-      <div class="container mx-auto px-4">
-        <p class="container mx-auto px-4">Send to Case</p>
+      <div class="space-y-4">
+        <p class="space-y-4">Send to Case</p>
       </div>
       <ContextMenu.Item
         on:select={() => {

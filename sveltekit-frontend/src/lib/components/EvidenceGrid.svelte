@@ -210,29 +210,25 @@
 }}
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   {#if showHeader}
     <!-- Header with search and controls -->
-    <div
-      class="container mx-auto px-4"
-    >
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Search
-            class="container mx-auto px-4"
-          />
+    <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="relative flex-1">
+          <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             bind:this={searchInput}
             type="text"
             placeholder="Search evidence..."
             value={searchQuery}
             oninput={handleSearch}
-            class="container mx-auto px-4"
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="flex items-center gap-3">
         <!-- Sort dropdown -->
         <select
           value={sortBy}
@@ -242,12 +238,12 @@
               toggleSort(value);
             }
           }}
-          class="container mx-auto px-4"
+          class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         >
-          <option value="uploadedAt">Date</option>
-          <option value="title">Title</option>
-          <option value="evidenceType">Type</option>
-          <option value="fileSize">Size</option>
+          <option value="uploadedAt">Sort by Date</option>
+          <option value="title">Sort by Title</option>
+          <option value="evidenceType">Sort by Type</option>
+          <option value="fileSize">Sort by Size</option>
         </select>
 
         <!-- Sort direction -->
@@ -255,12 +251,12 @@
           variant="secondary"
           size="sm"
           onclick={() => toggleSort(sortBy)}
-          class="container mx-auto px-4"
+          class="flex items-center gap-2"
         >
           {#if sortOrder === "asc"}
-            <SortAsc class="container mx-auto px-4" />
+            <SortAsc class="w-4 h-4" />
           {:else}
-            <SortDesc class="container mx-auto px-4" />
+            <SortDesc class="w-4 h-4" />
           {/if}
         </Button>
 
@@ -269,12 +265,12 @@
           variant="secondary"
           size="sm"
           onclick={() => toggleViewMode()}
-          class="container mx-auto px-4"
+          class="flex items-center gap-2"
         >
           {#if viewMode === "grid"}
-            <List class="container mx-auto px-4" />
+            <List class="w-4 h-4" />
           {:else}
-            <Grid class="container mx-auto px-4" />
+            <Grid class="w-4 h-4" />
           {/if}
         </Button>
       </div>
@@ -282,13 +278,11 @@
 
     <!-- Selection controls -->
     {#if selectedItems.size > 0}
-      <div
-        class="container mx-auto px-4"
-      >
-        <span class="container mx-auto px-4">
+      <div class="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg mt-4">
+        <span class="text-sm text-blue-700 dark:text-blue-300">
           {selectedItems.size} item{selectedItems.size !== 1 ? "s" : ""} selected
         </span>
-        <div class="container mx-auto px-4">
+        <div class="flex items-center gap-2">
           <Button
             variant="secondary"
             size="sm"
@@ -296,12 +290,12 @@
           >
             Clear
           </Button>
-          <Button variant="secondary" size="sm">
-            <Download class="container mx-auto px-4" />
+          <Button variant="secondary" size="sm" class="flex items-center gap-2">
+            <Download class="w-4 h-4" />
             Download
           </Button>
-          <Button variant="secondary" size="sm">
-            <Archive class="container mx-auto px-4" />
+          <Button variant="secondary" size="sm" class="flex items-center gap-2">
+            <Archive class="w-4 h-4" />
             Archive
           </Button>
         </div>
@@ -311,21 +305,18 @@
 
   <!-- Loading state -->
   {#if isLoading}
-    <div class="container mx-auto px-4">
-      <div
-        class="container mx-auto px-4"
-      ></div>
-      <span class="container mx-auto px-4">Loading evidence...</span>
+    <div class="flex items-center justify-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span class="ml-3 text-gray-600 dark:text-gray-400">Loading evidence...</span>
     </div>
   {:else if error}
     <!-- Error state -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">Error loading evidence</div>
-      <p class="container mx-auto px-4">{error}</p>
+    <div class="text-center py-12">
+      <div class="text-red-600 dark:text-red-400 mb-2">Error loading evidence</div>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
       <Button
         variant="secondary"
         size="sm"
-        class="container mx-auto px-4"
         onclick={() => evidenceActions.loadEvidence(caseId)}
       >
         Try Again
@@ -333,10 +324,10 @@
     </div>
   {:else if filteredData.length === 0}
     <!-- Empty state -->
-    <div class="container mx-auto px-4">
-      <File class="container mx-auto px-4" />
-      <h3 class="container mx-auto px-4">No evidence found</h3>
-      <p class="container mx-auto px-4">
+    <div class="text-center py-12">
+      <File class="w-12 h-12 mx-auto mb-4 text-gray-400" />
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No evidence found</h3>
+      <p class="text-gray-600 dark:text-gray-400">
         {searchQuery
           ? "Try adjusting your search terms."
           : "Upload some evidence to get started."}
@@ -344,51 +335,51 @@
     </div>
   {:else}
     <!-- Evidence grid/list -->
-    <div class="container mx-auto px-4">
+    <div class="mt-6">
       {#if viewMode === "grid"}
         <!-- Grid view -->
         <div
-          class="container mx-auto px-4"
+          class="grid gap-4"
           style="grid-template-columns: repeat({columns}, minmax(0, 1fr))"
         >
           {#each filteredData as item (item.id)}
             <div
-              class="container mx-auto px-4"
+              class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-shadow cursor-pointer {selectedItems.has(item.id) ? 'ring-2 ring-blue-500' : ''}"
               onclick={() => toggleSelection(item)}
               oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
               <!-- Preview/Thumbnail -->
               <div
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {#if item.fileUrl && isImageFile(item.mimeType || "")}
                   <img
                     src={item.fileUrl}
                     alt={item.title}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     loading="lazy"
                   />
                 {:else}
                   <svelte:component
                     this={getFileIcon(item.evidenceType, item.mimeType)}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   />
                 {/if}
 
                 <!-- Overlay with selection checkbox -->
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <input
                     type="checkbox"
                     checked={selectedItems.has(item.id)}
                     onchange={() => toggleSelection(item)}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   />
                 </div>
 
                 <!-- File type badge -->
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <span
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     {getFileCategory(item.mimeType || item.evidenceType)}
                   </span>
@@ -396,20 +387,20 @@
               </div>
 
               <!-- Content -->
-              <div class="container mx-auto px-4">
-                <h3 class="container mx-auto px-4">
+              <div class="space-y-4">
+                <h3 class="space-y-4">
                   {item.title}
                 </h3>
 
                 {#if item.description}
-                  <p class="container mx-auto px-4">
+                  <p class="space-y-4">
                     {item.description}
                   </p>
                 {/if}
 
                 <!-- Metadata -->
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
                     <span>{formatDate(item.uploadedAt)}</span>
                     {#if item.fileSize}
                       <span>{formatFileSize(item.fileSize)}</span>
@@ -417,17 +408,17 @@
                   </div>
 
                   {#if item.tags && item.tags.length > 0}
-                    <div class="container mx-auto px-4">
+                    <div class="space-y-4">
                       {#each item.tags.slice(0, 3) as tag}
                         <span
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                         >
                           {tag}
                         </span>
                       {/each}
                       {#if item.tags.length > 3}
                         <span
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                         >
                           +{item.tags.length - 3}
                         </span>
@@ -441,10 +432,10 @@
         </div>
       {:else}
         <!-- List view -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           {#each filteredData as item (item.id)}
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
               onclick={() => toggleSelection(item)}
               oncontextmenu={(e) => { e.preventDefault(); showContextMenu(e, item); }}
             >
@@ -452,38 +443,38 @@
               <input
                 type="checkbox"
                 checked={selectedItems.has(item.id)}
-                on:change={() => toggleSelection(item)}
-                class="container mx-auto px-4"
+                onchange={() => toggleSelection(item)}
+                class="space-y-4"
               />
 
               <!-- File icon -->
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <svelte:component
                   this={getFileIcon(item.evidenceType, item.mimeType)}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 />
               </div>
 
               <!-- Content -->
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
-                    <h3 class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <h3 class="space-y-4">
                       {item.title}
                     </h3>
                     {#if item.description}
-                      <p class="container mx-auto px-4">
+                      <p class="space-y-4">
                         {item.description}
                       </p>
                     {/if}
                   </div>
 
-                  <div class="container mx-auto px-4">
-                    <p class="container mx-auto px-4">
+                  <div class="space-y-4">
+                    <p class="space-y-4">
                       {formatDate(item.uploadedAt)}
                     </p>
                     {#if item.fileSize}
-                      <p class="container mx-auto px-4">
+                      <p class="space-y-4">
                         {formatFileSize(item.fileSize)}
                       </p>
                     {/if}
@@ -492,17 +483,17 @@
 
                 <!-- Tags -->
                 {#if item.tags && item.tags.length > 0}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#each item.tags.slice(0, 5) as tag}
                       <span
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         {tag}
                       </span>
                     {/each}
                     {#if item.tags.length > 5}
                       <span
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         +{item.tags.length - 5}
                       </span>
@@ -512,9 +503,9 @@
               </div>
 
               <!-- Actions -->
-              <div class="container mx-auto px-4">
-                <Button variant="ghost" size="sm" class="container mx-auto px-4">
-                  <MoreHorizontal class="container mx-auto px-4" />
+              <div class="space-y-4">
+                <Button variant="ghost" size="sm" class="space-y-4">
+                  <MoreHorizontal class="space-y-4" />
                 </Button>
               </div>
             </div>

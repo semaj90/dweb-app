@@ -1,11 +1,16 @@
 <script lang="ts">
+  interface Props {
+    onaccept?: (event?: any) => void;
+    ondismiss?: (event?: any) => void;
+    onquickResponse?: (event?: any) => void;
+  }
+
+
   import { Button } from "$lib/components/ui/button";
   import { aiPersonality } from "$lib/stores/chatStore";
   import { Clock, Lightbulb, MessageCircle, Sparkles, X } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
-
+  
+  
   // Array of proactive prompts based on context
   const proactivePrompts = [
     "Would you like me to help clarify anything we've discussed?",
@@ -23,58 +28,58 @@
     proactivePrompts[Math.floor(Math.random() * proactivePrompts.length)];
 
   function handleAccept() {
-    dispatch("accept");
+    onaccept?.();
 }
   function handleDismiss() {
-    dispatch("dismiss");
+    ondismiss?.();
 }
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
 >
   <!-- Header -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- AI Avatar with pulse animation -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Sparkles class="container mx-auto px-4" />
+          <Sparkles class="space-y-4" />
         </div>
         <!-- Pulse ring -->
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         ></div>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Header -->
-      <div class="container mx-auto px-4">
-        <Clock class="container mx-auto px-4" />
-        <span class="container mx-auto px-4">
+      <div class="space-y-4">
+        <Clock class="space-y-4" />
+        <span class="space-y-4">
           {$aiPersonality.name} here!
         </span>
       </div>
 
       <!-- Message -->
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         {randomPrompt}
       </p>
 
       <!-- Actions -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <!-- Accept Button -->
         <Button
           variant="outline"
           size="sm"
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => handleAccept()}
         >
-          <MessageCircle class="container mx-auto px-4" />
+          <MessageCircle class="space-y-4" />
           Yes, help me
         </Button>
 
@@ -82,10 +87,10 @@
         <Button
           variant="ghost"
           size="sm"
-          class="container mx-auto px-4"
-          on:click={() => dispatch("quickResponse", "summarize")}
+          class="space-y-4"
+          on:click={() => onquickResponse?.()}
         >
-          <Lightbulb class="container mx-auto px-4" />
+          <Lightbulb class="space-y-4" />
           Summarize
         </Button>
 
@@ -93,20 +98,20 @@
         <Button
           variant="ghost"
           size="sm"
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => handleDismiss()}
           title="Not now"
         >
-          <X class="container mx-auto px-4" />
+          <X class="space-y-4" />
         </Button>
       </div>
     </div>
   </div>
 
   <!-- Subtle progress indicator -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
     ></div>
   </div>
 </div>

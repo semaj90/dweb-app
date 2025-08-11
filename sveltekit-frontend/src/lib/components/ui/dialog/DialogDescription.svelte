@@ -1,7 +1,15 @@
 <script lang="ts">
-  export let description: any;
-</script>
+  interface Props {
+    description: any;;
+  }
+  let {
+    description
+  }: Props = $props();
 
-<p use:description class="container mx-auto px-4">
+
+
+  </script>
+
+<p use:description class="space-y-4">
   <slot />
 </p>

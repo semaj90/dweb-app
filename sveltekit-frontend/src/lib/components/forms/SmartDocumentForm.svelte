@@ -1,5 +1,24 @@
 <!-- Smart Document Form with OCR Auto-Population -->
 <script lang="ts">
+  interface Props {
+    title?: any;
+    description?: any;
+    formSchema: FormField[] ;
+    enableOCR?: any;
+    enableSmartSuggestions?: any;
+    documentTypes: string[] ;
+  }
+  let {
+    title = "Smart Document Form",
+    description = "Upload a document for automatic field extraction and population",
+    formSchema = [],
+    enableOCR = true,
+    enableSmartSuggestions = true,
+    documentTypes = ['legal_document', 'contract', 'form']
+  }: Props = $props();
+
+
+
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { Button } from 'bits-ui';
 	import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
@@ -13,13 +32,7 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import { writable } from 'svelte/store';
 
-	export let title = "Smart Document Form";
-	export let description = "Upload a document for automatic field extraction and population";
-	export let formSchema: FormField[] = [];
-	export let enableOCR = true;
-	export let enableSmartSuggestions = true;
-	export let documentTypes: string[] = ['legal_document', 'contract', 'form'];
-
+						
 	const dispatch = createEventDispatcher<{
 		submit: { formData: Record<string, any>; extractedFields: ExtractedField[] };
 		fieldChange: { fieldName: string; value: string; confidence?: number };

@@ -5,7 +5,7 @@
 Your SvelteKit Legal Case Management System now has **dynamic environment switching**:
 
 - ✅ **postgresql for Development** (fast, no Docker crashes)
-- ✅ **PostgreSQL for Testing** (via WSL2 Docker)
+- ✅ **PostgreSQL for Testing** (via WSL2 )
 - ✅ **Remote Qdrant for Vector Search** (no local resource drain)
 - ✅ **Environment-based switching** (.env files)
 

@@ -83,7 +83,7 @@
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   class:open={sidebarOpen}
   bind:this={sidebarElement}
   role="complementary"
@@ -93,19 +93,19 @@
 >
   <!-- Hover trigger area when closed -->
   {#if !sidebarOpen}
-    <div class="container mx-auto px-4" aria-hidden="true"></div>
+    <div class="space-y-4" aria-hidden="true"></div>
   {/if}
 
   <!-- Sidebar content -->
   {#if sidebarOpen}
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       transition:slide={{ duration: 300, easing: quintOut, axis: "x" }}
     >
       <!-- Header -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h3>Content Library</h3>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <button
             class={`pin-button ${isPinned ? "pinned" : ""}`}
             on:click={() => togglePin()}
@@ -116,7 +116,7 @@
 
           {#if !isPinned}
             <button
-              class="container mx-auto px-4"
+              class="space-y-4"
               on:click={() => (isHovered = false)}
               aria-label="Close sidebar"
             >
@@ -127,7 +127,7 @@
       </div>
 
       <!-- Search -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <SearchBar
           placeholder="Search {activeTab}..."
           value={searchQuery}
@@ -136,10 +136,10 @@
       </div>
 
       <!-- Tabs -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             class:active={activeTab === "evidence"}
             on:click={() => handleTabChange("evidence")}
           >
@@ -147,7 +147,7 @@
             Evidence
           </button>
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             class:active={activeTab === "notes"}
             on:click={() => handleTabChange("notes")}
           >
@@ -155,7 +155,7 @@
             Notes
           </button>
           <button
-            class="container mx-auto px-4"
+            class="space-y-4"
             class:active={activeTab === "canvas"}
             on:click={() => handleTabChange("canvas")}
           >
@@ -166,7 +166,7 @@
 
         <!-- Evidence Tab -->
         {#if activeTab === "evidence"}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <InfiniteScrollList
               items={searchResults}
               itemType="evidence"
@@ -178,7 +178,7 @@
 
         <!-- Notes Tab -->
         {#if activeTab === "notes"}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <InfiniteScrollList
               items={searchResults}
               itemType="notes"
@@ -190,7 +190,7 @@
 
         <!-- Canvas States Tab -->
         {#if activeTab === "canvas"}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <InfiniteScrollList
               items={canvasStates}
               itemType="canvas"
@@ -202,7 +202,7 @@
       </div>
 
       <!-- Tags -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <TagList />
       </div>
     </div>

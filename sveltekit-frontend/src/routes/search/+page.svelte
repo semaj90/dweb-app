@@ -201,49 +201,49 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <h1 class="container mx-auto px-4">
-      <Search class="container mx-auto px-4" />
+    <h1 class="space-y-4">
+      <Search class="space-y-4" />
       Advanced Search
     </h1>
-    <p class="container mx-auto px-4">
+    <p class="space-y-4">
       Search across cases, evidence, and participant data using AI-powered
       semantic search
     </p>
   </div>
 
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Main Search Panel -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Search Form -->
-      <div class="container mx-auto px-4">
-        <form on:submit={handleSearchSubmit} class="container mx-auto px-4">
+      <div class="space-y-4">
+        <form on:submit={handleSearchSubmit} class="space-y-4">
           <!-- Main Search Input -->
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <Search
-              class="container mx-auto px-4"
+              class="space-y-4"
             />
             <input
               type="text"
               bind:value={searchQuery}
               placeholder="Search cases, evidence, participants..."
-              class="container mx-auto px-4"
+              class="space-y-4"
               required
             />
           </div>
 
           <!-- Search Actions -->
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <Button type="submit" disabled={isSearching || !searchQuery.trim()}>
               {#if isSearching}
-                <Loader2 class="container mx-auto px-4" />
+                <Loader2 class="space-y-4" />
                 Searching...
               {:else}
-                <Search class="container mx-auto px-4" />
+                <Search class="space-y-4" />
                 Search
               {/if}
             </Button>
@@ -254,7 +254,7 @@
                 type="button"
                 on:click={() => (showAdvancedFilters = !showAdvancedFilters)}
               >
-                <Filter class="container mx-auto px-4" />
+                <Filter class="space-y-4" />
                 Filters
               </Button>
             </Tooltip>
@@ -274,21 +274,21 @@
 
           <!-- Advanced Filters -->
           {#if showAdvancedFilters}
-            <div class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">Advanced Filters</h3>
+            <div class="space-y-4">
+              <h3 class="space-y-4">Advanced Filters</h3>
 
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <div>
                   <label
                     for="type-filter"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Content Type
                   </label>
                   <select
                     id="type-filter"
                     bind:value={selectedType}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     <option value="">All Types</option>
                     <option value="case">Cases</option>
@@ -300,7 +300,7 @@
                 <div>
                   <label
                     for="case-filter"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Specific Case
                   </label>
@@ -309,21 +309,21 @@
                     type="text"
                     bind:value={selectedCaseId}
                     placeholder="Case ID (optional)"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   />
                 </div>
 
                 <div>
                   <label
                     for="threshold-filter"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Relevance Threshold
                   </label>
                   <select
                     id="threshold-filter"
                     bind:value={threshold}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     <option value={0.5}>50% - Very Broad</option>
                     <option value={0.6}>60% - Broad</option>
@@ -336,14 +336,14 @@
                 <div>
                   <label
                     for="limit-filter"
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     Max Results
                   </label>
                   <select
                     id="limit-filter"
                     bind:value={limit}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                   >
                     <option value={10}>10 results</option>
                     <option value={20}>20 results</option>
@@ -359,12 +359,12 @@
 
       <!-- Search Error -->
       {#if searchError}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <AlertCircle class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <AlertCircle class="space-y-4" />
             <div>
-              <h3 class="container mx-auto px-4">Search Error</h3>
-              <p class="container mx-auto px-4">{searchError}</p>
+              <h3 class="space-y-4">Search Error</h3>
+              <p class="space-y-4">{searchError}</p>
             </div>
           </div>
         </div>
@@ -372,70 +372,70 @@
 
       <!-- Search Results -->
       {#if searchResults}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- Results Header -->
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <h2 class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <h2 class="space-y-4">
                 Search Results
               </h2>
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <span>{searchResults.results.length} results</span>
                 <span>in {searchResults.executionTime}ms</span>
-                <span class="container mx-auto px-4">via {searchResults.source}</span>
+                <span class="space-y-4">via {searchResults.source}</span>
               </div>
             </div>
           </div>
 
           <!-- Results List -->
           {#if searchResults.results.length > 0}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each searchResults.results as result}
                 <div
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   on:click={() => handleResultClick(result)}
                   on:keydown={(e) =>
                     e.key === "Enter" && handleResultClick(result)}
                   role="button"
                   tabindex={0}
                 >
-                  <div class="container mx-auto px-4">
-                    <div class="container mx-auto px-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
                       <svelte:component
                         this={getResultIcon(result.type)}
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       />
                     </div>
 
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
-                        <h3 class="container mx-auto px-4">
+                    <div class="space-y-4">
+                      <div class="space-y-4">
+                        <h3 class="space-y-4">
                           {result.title || "Untitled"}
                         </h3>
-                        <div class="container mx-auto px-4">
+                        <div class="space-y-4">
                           <span
-                            class="container mx-auto px-4"
+                            class="space-y-4"
                           >
                             {result.type}
                           </span>
                           <span
-                            class="container mx-auto px-4"
+                            class="space-y-4"
                           >
                             {formatScore(result.score ?? 0)} match
                           </span>
                         </div>
                       </div>
 
-                      <p class="container mx-auto px-4">
+                      <p class="space-y-4">
                         {result.content}
                       </p>
 
                       {#if result.metadata && Object.keys(result.metadata).length > 0}
-                        <div class="container mx-auto px-4">
+                        <div class="space-y-4">
                           {#each Object.entries(result.metadata) as [key, value]}
                             {#if value && key !== "type"}
                               <span
-                                class="container mx-auto px-4"
+                                class="space-y-4"
                               >
                                 {key}: {value}
                               </span>
@@ -445,20 +445,20 @@
                       {/if}
                     </div>
 
-                    <div class="container mx-auto px-4">
-                      <ArrowRight class="container mx-auto px-4" />
+                    <div class="space-y-4">
+                      <ArrowRight class="space-y-4" />
                     </div>
                   </div>
                 </div>
               {/each}
             </div>
           {:else}
-            <div class="container mx-auto px-4">
-              <Search class="container mx-auto px-4" />
-              <h3 class="container mx-auto px-4">
+            <div class="space-y-4">
+              <Search class="space-y-4" />
+              <h3 class="space-y-4">
                 No results found
               </h3>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">
                 Try adjusting your search terms or filters
               </p>
             </div>
@@ -468,19 +468,19 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Quick Search Suggestions -->
       {#if !searchResults}
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">
-            <Star class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <h3 class="space-y-4">
+            <Star class="space-y-4" />
             Popular Searches
           </h3>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each popularSearches as search}
               <button
                 type="button"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => selectQuickSearch(search)}
               >
                 {search}
@@ -492,16 +492,16 @@
 
       <!-- Search History -->
       {#if searchHistory.length > 0}
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">
-            <Clock class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <h3 class="space-y-4">
+            <Clock class="space-y-4" />
             Recent Searches
           </h3>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each searchHistory.slice(0, 5) as search}
               <button
                 type="button"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => selectQuickSearch(search)}
               >
                 {search}
@@ -512,9 +512,9 @@
       {/if}
 
       <!-- Search Tips -->
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">Search Tips</h3>
-        <ul class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">Search Tips</h3>
+        <ul class="space-y-4">
           <li>• Use natural language queries</li>
           <li>• Be specific for better results</li>
           <li>• Try synonyms if no results</li>
@@ -524,24 +524,24 @@
       </div>
 
       <!-- Quick Actions -->
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">Quick Actions</h3>
-        <div class="container mx-auto px-4">
-          <a href="/cases" class="container mx-auto px-4">
-            <Button variant="outline" class="container mx-auto px-4">
-              <Database class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <h3 class="space-y-4">Quick Actions</h3>
+        <div class="space-y-4">
+          <a href="/cases" class="space-y-4">
+            <Button variant="outline" class="space-y-4">
+              <Database class="space-y-4" />
               Browse Cases
             </Button>
           </a>
-          <a href="/evidence" class="container mx-auto px-4">
-            <Button variant="outline" class="container mx-auto px-4">
-              <FileText class="container mx-auto px-4" />
+          <a href="/evidence" class="space-y-4">
+            <Button variant="outline" class="space-y-4">
+              <FileText class="space-y-4" />
               Browse Evidence
             </Button>
           </a>
-          <a href="/ai-assistant" class="container mx-auto px-4">
-            <Button variant="outline" class="container mx-auto px-4">
-              <Eye class="container mx-auto px-4" />
+          <a href="/ai-assistant" class="space-y-4">
+            <Button variant="outline" class="space-y-4">
+              <Eye class="space-y-4" />
               AI Assistant
             </Button>
           </a>

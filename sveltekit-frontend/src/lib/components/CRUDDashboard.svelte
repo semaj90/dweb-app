@@ -240,16 +240,16 @@
 
 <div class="crud-dashboard container mx-auto px-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h1>CRUD Dashboard</h1>
         <p>Comprehensive view of all database entities and operations</p>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <button
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:click={() => fetchAllData()}
           disabled={refreshing}
           title="Refresh all data"
@@ -261,64 +261,64 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <FileText size={24} />
         </div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">{stats.totalCases}</div>
-          <div class="container mx-auto px-4">Total Cases</div>
-          <div class="container mx-auto px-4">{stats.activeCases} active</div>
+        <div class="space-y-4">
+          <div class="space-y-4">{stats.totalCases}</div>
+          <div class="space-y-4">Total Cases</div>
+          <div class="space-y-4">{stats.activeCases} active</div>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <Camera size={24} />
         </div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">{stats.totalEvidence}</div>
-          <div class="container mx-auto px-4">Evidence Items</div>
-          <div class="container mx-auto px-4">All formats</div>
+        <div class="space-y-4">
+          <div class="space-y-4">{stats.totalEvidence}</div>
+          <div class="space-y-4">Evidence Items</div>
+          <div class="space-y-4">All formats</div>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <FileText size={24} />
         </div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">{stats.totalReports}</div>
-          <div class="container mx-auto px-4">Reports</div>
-          <div class="container mx-auto px-4">Generated</div>
+        <div class="space-y-4">
+          <div class="space-y-4">{stats.totalReports}</div>
+          <div class="space-y-4">Reports</div>
+          <div class="space-y-4">Generated</div>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <Activity size={24} />
         </div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">{stats.urgentActivities}</div>
-          <div class="container mx-auto px-4">Urgent Tasks</div>
-          <div class="container mx-auto px-4">{stats.recentActivity} recent</div>
+        <div class="space-y-4">
+          <div class="space-y-4">{stats.urgentActivities}</div>
+          <div class="space-y-4">Urgent Tasks</div>
+          <div class="space-y-4">{stats.recentActivity} recent</div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Main Content Grid -->
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Cases Section -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h2>
           <FileText size={20} />
           Cases
         </h2>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <Search size={16} />
             <input
               type="text"
@@ -327,30 +327,30 @@
               on:input={() => handleSearch("cases")}
             />
           </div>
-          <button class="container mx-auto px-4" on:click={() => createNew("cases")}>
+          <button class="space-y-4" on:click={() => createNew("cases")}>
             <Plus size={16} />
           </button>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if loading.cases}
-          <div class="container mx-auto px-4">Loading cases...</div>
+          <div class="space-y-4">Loading cases...</div>
         {:else if cases.length === 0}
-          <div class="container mx-auto px-4">No cases found</div>
+          <div class="space-y-4">No cases found</div>
         {:else}
           {#each cases as case_}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">{case_.title}</span>
-                <span class="container mx-auto px-4"
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span class="space-y-4">{case_.title}</span>
+                <span class="space-y-4"
                   >{case_.status}</span
                 >
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">#{case_.caseNumber}</span>
-                <span class="container mx-auto px-4">Priority: {case_.priority}</span>
-                <span class="container mx-auto px-4"
+              <div class="space-y-4">
+                <span class="space-y-4">#{case_.caseNumber}</span>
+                <span class="space-y-4">Priority: {case_.priority}</span>
+                <span class="space-y-4"
                   >Created: {formatDate(case_.createdAt)}</span
                 >
               </div>
@@ -359,22 +359,22 @@
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
-        <button class="container mx-auto px-4" on:click={() => viewAll("cases")}>
+      <div class="space-y-4">
+        <button class="space-y-4" on:click={() => viewAll("cases")}>
           View All Cases
         </button>
       </div>
     </div>
 
     <!-- Evidence Section -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h2>
           <Camera size={20} />
           Evidence
         </h2>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <Search size={16} />
             <input
               type="text"
@@ -383,34 +383,34 @@
               on:input={() => handleSearch("evidence")}
             />
           </div>
-          <button class="container mx-auto px-4" on:click={() => createNew("evidence")}>
+          <button class="space-y-4" on:click={() => createNew("evidence")}>
             <Plus size={16} />
           </button>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if loading.evidence}
-          <div class="container mx-auto px-4">Loading evidence...</div>
+          <div class="space-y-4">Loading evidence...</div>
         {:else if evidence.length === 0}
-          <div class="container mx-auto px-4">No evidence found</div>
+          <div class="space-y-4">No evidence found</div>
         {:else}
           {#each evidence as item}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">{item.title}</span>
-                <span class="container mx-auto px-4"
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span class="space-y-4">{item.title}</span>
+                <span class="space-y-4"
                   >{item.evidenceType}</span
                 >
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Type: {item.fileType || "N/A"}</span>
-                <span class="container mx-auto px-4"
+              <div class="space-y-4">
+                <span class="space-y-4">Type: {item.fileType || "N/A"}</span>
+                <span class="space-y-4"
                   >Size: {item.fileSize
                     ? `${Math.round(item.fileSize / 1024)}KB`
                     : "N/A"}</span
                 >
-                <span class="container mx-auto px-4"
+                <span class="space-y-4"
                   >Uploaded: {formatDate(item.uploadedAt)}</span
                 >
               </div>
@@ -419,22 +419,22 @@
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
-        <button class="container mx-auto px-4" on:click={() => viewAll("evidence")}>
+      <div class="space-y-4">
+        <button class="space-y-4" on:click={() => viewAll("evidence")}>
           View All Evidence
         </button>
       </div>
     </div>
 
     <!-- Reports Section -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h2>
           <FileText size={20} />
           Reports
         </h2>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <Search size={16} />
             <input
               type="text"
@@ -443,32 +443,32 @@
               on:input={() => handleSearch("reports")}
             />
           </div>
-          <button class="container mx-auto px-4" on:click={() => createNew("reports")}>
+          <button class="space-y-4" on:click={() => createNew("reports")}>
             <Plus size={16} />
           </button>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if loading.reports}
-          <div class="container mx-auto px-4">Loading reports...</div>
+          <div class="space-y-4">Loading reports...</div>
         {:else if reports.length === 0}
-          <div class="container mx-auto px-4">No reports found</div>
+          <div class="space-y-4">No reports found</div>
         {:else}
           {#each reports as report}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">{report.title}</span>
-                <span class="container mx-auto px-4"
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span class="space-y-4">{report.title}</span>
+                <span class="space-y-4"
                   >{report.status}</span
                 >
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Type: {report.reportType}</span>
-                <span class="container mx-auto px-4"
+              <div class="space-y-4">
+                <span class="space-y-4">Type: {report.reportType}</span>
+                <span class="space-y-4"
                   >Words: {report.metadata?.wordCount || "N/A"}</span
                 >
-                <span class="container mx-auto px-4"
+                <span class="space-y-4"
                   >Created: {formatDate(report.createdAt)}</span
                 >
               </div>
@@ -477,22 +477,22 @@
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
-        <button class="container mx-auto px-4" on:click={() => viewAll("reports")}>
+      <div class="space-y-4">
+        <button class="space-y-4" on:click={() => viewAll("reports")}>
           View All Reports
         </button>
       </div>
     </div>
 
     <!-- Activities Section -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h2>
           <Activity size={20} />
           Activities
         </h2>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <Search size={16} />
             <input
               type="text"
@@ -501,30 +501,30 @@
               on:input={() => handleSearch("activities")}
             />
           </div>
-          <button class="container mx-auto px-4" on:click={() => createNew("activities")}>
+          <button class="space-y-4" on:click={() => createNew("activities")}>
             <Plus size={16} />
           </button>
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if loading.activities}
-          <div class="container mx-auto px-4">Loading activities...</div>
+          <div class="space-y-4">Loading activities...</div>
         {:else if activities.length === 0}
-          <div class="container mx-auto px-4">No activities found</div>
+          <div class="space-y-4">No activities found</div>
         {:else}
           {#each activities as activity}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">{activity.title}</span>
-                <span class="container mx-auto px-4"
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span class="space-y-4">{activity.title}</span>
+                <span class="space-y-4"
                   >{activity.status}</span
                 >
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Type: {activity.activityType}</span>
-                <span class="container mx-auto px-4">Priority: {activity.priority}</span>
-                <span class="container mx-auto px-4"
+              <div class="space-y-4">
+                <span class="space-y-4">Type: {activity.activityType}</span>
+                <span class="space-y-4">Priority: {activity.priority}</span>
+                <span class="space-y-4"
                   >Due: {formatDate(activity.scheduledFor)}</span
                 >
               </div>
@@ -533,58 +533,58 @@
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
-        <button class="container mx-auto px-4" on:click={() => viewAll("activities")}>
+      <div class="space-y-4">
+        <button class="space-y-4" on:click={() => viewAll("activities")}>
           View All Activities
         </button>
       </div>
     </div>
 
     <!-- Quick Actions Panel -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <h2>
           <TrendingUp size={20} />
           Quick Actions
         </h2>
       </div>
 
-      <div class="container mx-auto px-4">
-        <button class="container mx-auto px-4" on:click={() => createNew("cases")}>
+      <div class="space-y-4">
+        <button class="space-y-4" on:click={() => createNew("cases")}>
           <FileText size={24} />
           <span>New Case</span>
         </button>
 
-        <button class="container mx-auto px-4" on:click={() => createNew("evidence")}>
+        <button class="space-y-4" on:click={() => createNew("evidence")}>
           <Camera size={24} />
           <span>Add Evidence</span>
         </button>
 
-        <button class="container mx-auto px-4" on:click={() => createNew("reports")}>
+        <button class="space-y-4" on:click={() => createNew("reports")}>
           <FileText size={24} />
           <span>Create Report</span>
         </button>
 
-        <button class="container mx-auto px-4" on:click={() => viewAll("activities")}>
+        <button class="space-y-4" on:click={() => viewAll("activities")}>
           <Clock size={24} />
           <span>View Tasks</span>
         </button>
       </div>
 
       <!-- System Status -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h3>System Status</h3>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <CheckCircle size={16} class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <CheckCircle size={16} class="space-y-4" />
             <span>Database: Connected</span>
           </div>
-          <div class="container mx-auto px-4">
-            <CheckCircle size={16} class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <CheckCircle size={16} class="space-y-4" />
             <span>API: Operational</span>
           </div>
-          <div class="container mx-auto px-4">
-            <CheckCircle size={16} class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <CheckCircle size={16} class="space-y-4" />
             <span>CRUD: Synchronized</span>
           </div>
         </div>

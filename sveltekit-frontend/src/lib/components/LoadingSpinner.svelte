@@ -1,4 +1,19 @@
 <script lang="ts">
+  interface Props {
+    size: 'sm' | 'md' | 'lg' ;
+    message: string ;
+    showMessage: boolean ;
+    color: 'blue' | 'green' | 'purple' | 'gray' ;
+  }
+  let {
+    size = 'md',
+    message = 'Loading...',
+    showMessage = true,
+    color = 'blue'
+  }: Props = $props();
+
+
+
   export let size: 'sm' | 'md' | 'lg' = 'md';
   export let message: string = 'Loading...';
   export let showMessage: boolean = true;

@@ -1,5 +1,22 @@
 <!-- Enhanced Legal Document Editor with UnoCSS + Melt UI -->
 <script lang="ts">
+  interface Props {
+    caseId: string | undefined ;
+    documentId: string | undefined ;
+    documentType: "brief" | "contract" | "motion" | "evidence" ;
+    title?: any;
+    readonly?: any;
+  }
+  let {
+    caseId = undefined,
+    documentId = undefined,
+    documentType = "brief",
+    title = "Legal Document",
+    readonly = false
+  }: Props = $props();
+
+
+
   import {
     createDialog,
     createDropdownMenu,
@@ -26,13 +43,7 @@
   import { fade } from "svelte/transition";
 
   // Props
-  export let caseId: string | undefined = undefined;
-  export let documentId: string | undefined = undefined;
-  export let documentType: "brief" | "contract" | "motion" | "evidence" =
-    "brief";
-  export let title = "Legal Document";
-  export let readonly = false;
-
+          
   // Component state
   let content = "";
   let query = "";
@@ -374,21 +385,21 @@
 </script>
 
 <!-- Main Document Editor Container -->
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header with semantic styling -->
   <header
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <svelte:component
             this={getDocumentTypeIcon()}
-            class="container mx-auto px-4"
+            class="space-y-4"
           />
           <div>
-            <h1 class="container mx-auto px-4">{title}</h1>
-            <p class="container mx-auto px-4">
+            <h1 class="space-y-4">{title}</h1>
+            <p class="space-y-4">
               {documentType.charAt(0).toUpperCase() + documentType.slice(1)}
               {#if caseId}
                 • Case {caseId.slice(0, 8)}
@@ -401,34 +412,34 @@
         </div>
 
         <!-- Document Actions Dropdown -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <button
             use:melt={$helpTrigger}
-            class="container mx-auto px-4"
+            class="space-y-4"
             aria-label="Help"
           >
-            <AlertCircle class="container mx-auto px-4" />
+            <AlertCircle class="space-y-4" />
           </button>
 
           <button
             use:melt={$actionsTrigger}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Settings class="container mx-auto px-4" />
+            <Settings class="space-y-4" />
             <span>Actions</span>
-            <ChevronDown class="container mx-auto px-4" />
+            <ChevronDown class="space-y-4" />
           </button>
 
           <button
             on:click={() => manualSaveDocument()}
-            class="container mx-auto px-4"
+            class="space-y-4"
             disabled={readonly || loadingDocument || isSaving}
           >
             {#if isSaving}
-              <Loader2 class="container mx-auto px-4" />
+              <Loader2 class="space-y-4" />
               <span>Saving...</span>
             {:else}
-              <Save class="container mx-auto px-4" />
+              <Save class="space-y-4" />
               <span>Save</span>
             {/if}
           </button>
@@ -438,70 +449,70 @@
   </header>
 
   <!-- Main Content Area with Grid -->
-  <main class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+  <main class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <!-- Document Editor (2/3 width) -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <button class="container mx-auto px-4" title="Bold">
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <button class="space-y-4" title="Bold">
                     <strong>B</strong>
                   </button>
-                  <button class="container mx-auto px-4" title="Italic">
+                  <button class="space-y-4" title="Italic">
                     <em>I</em>
                   </button>
-                  <button class="container mx-auto px-4" title="Underline">
+                  <button class="space-y-4" title="Underline">
                     <u>U</u>
                   </button>
-                  <span class="container mx-auto px-4">|</span>
-                  <button class="container mx-auto px-4" title="Insert Citation">
+                  <span class="space-y-4">|</span>
+                  <button class="space-y-4" title="Insert Citation">
                     📚
                   </button>
                   <button
                     use:melt={$aiTrigger}
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     title="AI Assistant"
                   >
-                    <Brain class="container mx-auto px-4" />
+                    <Brain class="space-y-4" />
                   </button>
                 </div>
 
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {content.length} characters
                 </div>
               </div>
             </div>
 
             <!-- Text Editor Area -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#if loadingDocument}
                 <div
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     <Loader2
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <p class="container mx-auto px-4">Loading document...</p>
+                    <p class="space-y-4">Loading document...</p>
                   </div>
                 </div>
               {:else if documentLoadError}
                 <div
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
-                  <div class="container mx-auto px-4">
-                    <AlertCircle class="container mx-auto px-4" />
-                    <p class="container mx-auto px-4">
+                  <div class="space-y-4">
+                    <AlertCircle class="space-y-4" />
+                    <p class="space-y-4">
                       Failed to load document
                     </p>
-                    <p class="container mx-auto px-4">{documentLoadError}</p>
+                    <p class="space-y-4">{documentLoadError}</p>
                     <button
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                       on:click={() => loadDocument()}
                     >
                       Try Again
@@ -513,7 +524,7 @@
                   bind:value={content}
                   disabled={readonly}
                   placeholder="Begin drafting your legal document..."
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   style="font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.6;"
                 ></textarea>
               {/if}
@@ -522,37 +533,37 @@
         </div>
 
         <!-- Sidebar (1/3 width) -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- Citations Panel -->
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <h3
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
-                <BookOpen class="container mx-auto px-4" />
+                <BookOpen class="space-y-4" />
                 Citations
               </h3>
             </div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#if citations.length === 0}
-                <p class="container mx-auto px-4">No citations added yet.</p>
+                <p class="space-y-4">No citations added yet.</p>
               {:else}
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {#each citations as citation}
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">
+                    <div class="space-y-4">
+                      <div class="space-y-4">
                         {citation.type.toUpperCase()}
                       </div>
-                      <div class="container mx-auto px-4">{citation.source}</div>
+                      <div class="space-y-4">{citation.source}</div>
                     </div>
                   {/each}
                 </div>
               {/if}
 
               <button
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() =>
                   insertCitation({
                     id: Math.random().toString(),
@@ -567,25 +578,25 @@
           </div>
 
           <!-- Document Info -->
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <h3 class="space-y-4">
                 Document Info
               </h3>
             </div>
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Type:</span>
-                <span class="container mx-auto px-4">{documentType}</span>
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <span class="space-y-4">Type:</span>
+                <span class="space-y-4">{documentType}</span>
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Word Count:</span>
-                <span class="container mx-auto px-4">{content.split(/\s+/).length}</span>
+              <div class="space-y-4">
+                <span class="space-y-4">Word Count:</span>
+                <span class="space-y-4">{content.split(/\s+/).length}</span>
               </div>
-              <div class="container mx-auto px-4">
-                <span class="container mx-auto px-4">Status:</span>
+              <div class="space-y-4">
+                <span class="space-y-4">Status:</span>
                 <span
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   class:text-red-600={saveError}
                   class:text-green-600={!hasUnsavedChanges && !saveError}
                 >
@@ -593,7 +604,7 @@
                 </span>
               </div>
               {#if saveError}
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {saveError}
                 </div>
               {/if}
@@ -610,48 +621,48 @@
   <div use:melt={$aiPortalled}>
     <div
       use:melt={$aiOverlay}
-      class="container mx-auto px-4"
+      class="space-y-4"
       transition:fade={{ duration: 150 }}
     ></div>
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       transition:flyAndScale={{ duration: 150, y: 8, start: 0.96 }}
       use:melt={$aiContent}
     >
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h2
           use:melt={$aiTitle}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Brain class="container mx-auto px-4" />
+          <Brain class="space-y-4" />
           AI Legal Assistant
         </h2>
-        <p use:melt={$aiDescription} class="container mx-auto px-4">
+        <p use:melt={$aiDescription} class="space-y-4">
           Ask for help with legal research, drafting, or analysis
         </p>
         <button
           use:melt={$aiClose}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <X class="container mx-auto px-4" />
+          <X class="space-y-4" />
         </button>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if error}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <AlertCircle class="container mx-auto px-4" />
-              <span class="container mx-auto px-4">{error}</span>
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <AlertCircle class="space-y-4" />
+              <span class="space-y-4">{error}</span>
             </div>
           </div>
         {/if}
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <div>
             <label
               for="ai-query"
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               What would you like help with?
             </label>
@@ -659,29 +670,29 @@
               id="ai-query"
               bind:value={query}
               placeholder="e.g., Help me draft a motion to dismiss based on lack of jurisdiction..."
-              class="container mx-auto px-4"
+              class="space-y-4"
               disabled={isProcessingAI}
             ></textarea>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <button
               use:melt={$aiClose}
-              class="container mx-auto px-4"
+              class="space-y-4"
               disabled={isProcessingAI}
             >
               Cancel
             </button>
             <button
               on:click={() => handleAIRequest()}
-              class="container mx-auto px-4"
+              class="space-y-4"
               disabled={!query.trim() || isProcessingAI}
             >
               {#if isProcessingAI}
-                <Loader2 class="container mx-auto px-4" />
+                <Loader2 class="space-y-4" />
                 <span>Processing...</span>
               {:else}
-                <Brain class="container mx-auto px-4" />
+                <Brain class="space-y-4" />
                 <span>Get Help</span>
               {/if}
             </button>
@@ -696,28 +707,28 @@
 {#if $actionsOpen}
   <div
     use:melt={$actionsMenu}
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
     <button
       use:melt={$actionsItem}
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
-      <Eye class="container mx-auto px-4" />
+      <Eye class="space-y-4" />
       Preview
     </button>
     <button
       use:melt={$actionsItem}
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
-      <Share2 class="container mx-auto px-4" />
+      <Share2 class="space-y-4" />
       Share
     </button>
-    <div class="container mx-auto px-4"></div>
+    <div class="space-y-4"></div>
     <button
       use:melt={$actionsItem}
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
-      <X class="container mx-auto px-4" />
+      <X class="space-y-4" />
       Delete
     </button>
   </div>
@@ -727,7 +738,7 @@
 {#if $helpOpen}
   <div
     use:melt={$helpContent}
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
     Use the AI assistant for legal research and drafting help. Click the
     citation button to add references.

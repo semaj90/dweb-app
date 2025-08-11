@@ -287,7 +287,7 @@
         max="32000"
         step="100"
         bind:value={tokenLimit}
-        onchange={(e) => updateTokenLimit(parseInt(e.target.value))}
+        onchange={(e) => updateTokenLimit(parseInt((e.target as HTMLSelectElement).value))}
         data-testid="token-limit-slider"
         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
       />

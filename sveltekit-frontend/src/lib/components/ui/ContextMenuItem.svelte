@@ -1,12 +1,18 @@
 <script lang="ts">
+  interface Props {
+    onselect?: (event?: any) => void;
+  }
+  let {
+    class_ = "",
+    disabled = false
+  }: Props = $props();
+
+
+
   import { melt } from "@melt-ui/svelte";
-  import { createEventDispatcher, getContext } from "svelte";
-
-  export let class_: string = "";
-  export let disabled: boolean = false;
-
-  const dispatch = createEventDispatcher();
-  const contextMenu = (getContext("contextMenu") as any) || {
+  
+    
+    const contextMenu = (getContext("contextMenu") as any) || {
     elements: { item: { subscribe: () => {}, set: () => {} } },
   };
 
@@ -14,7 +20,7 @@
   const { item } = elements;
 
   function handleSelect() {
-    dispatch("select");
+    onselect?.();
   }
 </script>
 

@@ -23,7 +23,7 @@
     Choose a case to view its details and evidence.
   </div>
 
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     {#each cases as caseItem}
       <Button on:click={() => selectCase(caseItem.id)} variant="secondary">
         {caseItem.name}

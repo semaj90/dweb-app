@@ -3,7 +3,7 @@
 </script>
 
 <button 
-  class="container mx-auto px-4"
+  class="space-y-4"
   {...$$restProps}
 >
   <slot />

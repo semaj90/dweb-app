@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    class_: string ;
+  }
+  let {
+    class_ = ""
+  }: Props = $props();
+
+
+
   import { getContext } from "svelte";
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
@@ -17,7 +26,7 @@
 </script>
 
 {#if $open}
-  <div class="container mx-auto px-4" role="listbox">
+  <div class="space-y-4" role="listbox">
     <slot />
   </div>
 {/if}

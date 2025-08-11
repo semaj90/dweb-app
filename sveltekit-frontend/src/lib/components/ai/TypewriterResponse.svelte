@@ -1,19 +1,35 @@
 <script lang="ts">
+  interface Props {
+    text: string ;
+    speed: number ;
+    showCursor: boolean ;
+    cursorChar: string ;
+    cacheKey: string ;
+    userActivity: UserActivity[] ;
+    enableThinking: boolean ;
+    autoStart: boolean ;
+  }
+  let {
+    text = '',
+    speed = 50,
+    showCursor = true,
+    cursorChar = '▋',
+    cacheKey = '',
+    userActivity = [],
+    enableThinking = true,
+    autoStart = true
+  }: Props = $props();
+
+
+
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';
 	import { advancedCache } from '$lib/services/advanced-cache-manager';
 
 	// Props
-	export let text: string = '';
-	export let speed: number = 50; // milliseconds per character
-	export let showCursor: boolean = true;
-	export let cursorChar: string = '▋';
-	export let cacheKey: string = '';
-	export let userActivity: UserActivity[] = [];
-	export let enableThinking: boolean = true;
-	export let autoStart: boolean = true;
-
+		export let speed: number = 50; // milliseconds per character
+						
 	// Types
 	interface UserActivity {
 		timestamp: number;

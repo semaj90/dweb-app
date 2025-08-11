@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize } from '$lib/types';
+  import { createEventDispatcher } from 'svelte';
 
   interface Props extends HTMLButtonAttributes {
     variant?: ButtonVariant;
@@ -15,6 +16,11 @@
     children,
     ...rest
   }: Props = $props();
+
+  const dispatch = createEventDispatcher<{ click: MouseEvent }>();
+  function handleClick(event: MouseEvent) {
+    dispatch('click', event);
+  }
 
   let classes = $derived([
     'inline-flex items-center justify-center rounded-md font-medium transition-colors',
@@ -38,9 +44,9 @@
     size === 'lg' && 'h-12 px-6 text-base',
     className
   ].filter(Boolean).join(' '));
-</script>
+ </script>
 
-<button class={classes} {...rest}>
+<button class={classes} onclick={handleClick} {...rest}>
   {#if children}
     {@render children()}
   {:else}

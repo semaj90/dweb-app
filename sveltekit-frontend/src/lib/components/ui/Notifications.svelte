@@ -48,7 +48,7 @@
 </script>
 
 <!-- Notification Container -->
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   {#each $notifications.notifications as notification (notification.id)}
     <div
       class={`
@@ -58,9 +58,9 @@
       in:fly={{ x: 300, duration: 300, easing: quintOut }}
       out:fly={{ x: 300, duration: 200, easing: quintOut  }}
     >
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <!-- Icon -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <iconify-icon
             icon={icons[notification.type]}
             class={`w-5 h-5 ${iconColorClasses[notification.type]}`}
@@ -68,19 +68,19 @@
         </div>
 
         <!-- Content -->
-        <div class="container mx-auto px-4">
-          <p class="container mx-auto px-4">
+        <div class="space-y-4">
+          <p class="space-y-4">
             {notification.title}
           </p>
           {#if notification.message}
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               {notification.message}
             </p>
           {/if}
 
           <!-- Actions -->
           {#if notification.actions && notification.actions.length > 0}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each notification.actions as action}
                 <Button
                   size="sm"
@@ -95,14 +95,14 @@
         </div>
 
         <!-- Close button -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => handleClose(notification)}
           >
-            <span class="container mx-auto px-4">Dismiss</span>
-            <iconify-icon icon="ph:x" class="container mx-auto px-4"></iconify-icon>
+            <span class="space-y-4">Dismiss</span>
+            <iconify-icon icon="ph:x" class="space-y-4"></iconify-icon>
           </button>
         </div>
       </div>
@@ -110,10 +110,10 @@
       <!-- Progress bar for timed notifications -->
       {#if notification.duration && notification.duration > 0}
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
             style="animation: shrink {notification.duration}ms linear forwards;"
           ></div>
         </div>

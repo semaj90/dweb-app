@@ -1,8 +1,16 @@
 <script lang="ts">
+  interface Props {
+    value: string;;
+  }
+  let {
+    value
+  }: Props = $props();
+
+
+
   import { getContext } from 'svelte';
 
-  export let value: string;
-  let className: string = '';
+    let className: string = '';
   export { className as class };
 
   const { activeTab } = getContext('tabs') as any;

@@ -1,11 +1,21 @@
 <script lang="ts">
+  interface Props {
+    timelineEvents: Array<{;
+    caseId: string;;
+  }
+  let {
+    timelineEvents,
+    caseId
+  }: Props = $props();
+
+
+
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { Separator } from '$lib/components/ui/separator/Separator.svelte';
   
-  export let timelineEvents: Array<{
-    date: string;
+      date: string;
     time?: string;
     event: string;
     persons?: string[];
@@ -14,8 +24,7 @@
     category?: 'crime' | 'witness' | 'discovery' | 'movement' | 'communication';
   }> = [];
 
-  export let caseId: string;
-
+  
   // Sort events chronologically
   $: sortedEvents = timelineEvents
     .sort((a, b) => new Date(a.date + ' ' + (a.time || '00:00')).getTime() - 

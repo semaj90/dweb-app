@@ -4,6 +4,15 @@ import type { Case } from '$lib/types';
 
 
 <script lang="ts">
+  interface Props {
+    data: LayoutData;;
+  }
+  let {
+    data
+  }: Props = $props();
+
+
+
   import { browser } from '$app/environment';
   import { enhance } from '$app/forms';
   import { goto } from '$app/navigation';
@@ -14,8 +23,7 @@ import type { Case } from '$lib/types';
   import { writable } from 'svelte/store';
   import type { LayoutData } from "./$types";
 
-  export let data: LayoutData;
-
+  
   // Sync server data with client store
   $: if (browser) {
     casesStore.set({
@@ -147,51 +155,51 @@ import type { Case } from '$lib/types';
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
 
 
     <!-- Left Column: CaseList & Filters -->
-    <aside class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+    <aside class="space-y-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <div>
-            <h1 class="container mx-auto px-4">Cases</h1>
-            <p class="container mx-auto px-4">{data.userCases.length} cases</p>
+            <h1 class="space-y-4">Cases</h1>
+            <p class="space-y-4">{data.userCases.length} cases</p>
           </div>
           <button
             on:click={() => goto('/cases/new')}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Plus class="container mx-auto px-4" />
+            <Plus class="space-y-4" />
             New
           </button>
         </div>
       </div>
 
       <!-- Search & Filters -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <form
           method="POST"
           action="?/filter"
           use:enhance={handleFilterSubmit}
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <div class="container mx-auto px-4">
-            <Search class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <Search class="space-y-4" />
             <input
               type="search"
               name="search"
               placeholder="Search cases..."
               value={data.searchQuery}
-              class="container mx-auto px-4"
+              class="space-y-4"
             />
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <select
               name="status"
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               <option value="all" selected={data.statusFilter === 'all'}>All Status</option>
               <option value="open" selected={data.statusFilter === 'open'}>Open</option>
@@ -202,7 +210,7 @@ import type { Case } from '$lib/types';
 
             <select
               name="priority"
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               <option value="all" selected={data.priorityFilter === 'all'}>All Priority</option>
               <option value="low" selected={data.priorityFilter === 'low'}>Low</option>
@@ -212,10 +220,10 @@ import type { Case } from '$lib/types';
             </select>
           </div>
 
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <select
               name="sort"
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               <option value="openedAt" selected={data.sortBy === 'openedAt'}>Date Opened</option>
               <option value="title" selected={data.sortBy === 'title'}>Title</option>
@@ -228,12 +236,12 @@ import type { Case } from '$lib/types';
               type="submit"
               name="order"
               value={data.sortOrder === 'asc' ? 'desc' : 'asc'}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {#if data.sortOrder === 'asc'}
-                <SortAsc class="container mx-auto px-4" />
+                <SortAsc class="space-y-4" />
               {:else}
-                <SortDesc class="container mx-auto px-4" />
+                <SortDesc class="space-y-4" />
               {/if}
             </button>
           </div>
@@ -241,13 +249,13 @@ import type { Case } from '$lib/types';
           <button
             type="submit"
             disabled={$isFiltering}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             {#if $isFiltering}
-              <RefreshCw class="container mx-auto px-4" />
+              <RefreshCw class="space-y-4" />
               Filtering...
             {:else}
-              <Filter class="container mx-auto px-4" />
+              <Filter class="space-y-4" />
               Apply Filters
             {/if}
           </button>
@@ -255,30 +263,30 @@ import type { Case } from '$lib/types';
       </div>
 
       <!-- Case Stats -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           {#each data.caseStats as stat}
-            <div class="container mx-auto px-4">
-              <span class="container mx-auto px-4">{stat.status}</span>
-              <span class="container mx-auto px-4">{stat.count}</span>
+            <div class="space-y-4">
+              <span class="space-y-4">{stat.status}</span>
+              <span class="space-y-4">{stat.count}</span>
             </div>
           {/each}
         </div>
       </div>
 
       <!-- Cases List -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if $isFiltering}
-          <div class="container mx-auto px-4">
-            <RefreshCw class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <RefreshCw class="space-y-4" />
             Filtering cases...
           </div>
         {:else if data.userCases.length === 0}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <p>No cases found.</p>
             <button
               on:click={() => goto('/cases/new')}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               Create your first case
             </button>
@@ -298,79 +306,79 @@ import type { Case } from '$lib/types';
     </aside>
 
     <!-- Main Content Area -->
-    <main class="container mx-auto px-4">
+    <main class="space-y-4">
       <slot />
     </main>
 
 
     <!-- Right Column: CaseDetails/Properties (when case is selected) -->
     {#if selectedCase}
-      <aside class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h2 class="container mx-auto px-4">Case Details</h2>
+      <aside class="space-y-4">
+        <div class="space-y-4">
+          <h2 class="space-y-4">Case Details</h2>
           <button
             on:click={() => closeCase()}
-            class="container mx-auto px-4"
+            class="space-y-4"
             aria-label="Close case details"
           >
-            <svg class="container mx-auto px-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <div>
-              <h3 class="container mx-auto px-4">Case Number</h3>
-              <p class="container mx-auto px-4">{selectedCase?.caseNumber}</p>
+              <h3 class="space-y-4">Case Number</h3>
+              <p class="space-y-4">{selectedCase?.caseNumber}</p>
             </div>
 
             <div>
-              <h3 class="container mx-auto px-4">Status</h3>
-              <span class="container mx-auto px-4">
+              <h3 class="space-y-4">Status</h3>
+              <span class="space-y-4">
                 {selectedCase?.status}
               </span>
             </div>
 
             <div>
-              <h3 class="container mx-auto px-4">Priority</h3>
-              <span class="container mx-auto px-4">
+              <h3 class="space-y-4">Priority</h3>
+              <span class="space-y-4">
                 {selectedCase?.priority}
               </span>
             </div>
 
             <div>
-              <h3 class="container mx-auto px-4">Opened</h3>
-              <p class="container mx-auto px-4">
+              <h3 class="space-y-4">Opened</h3>
+              <p class="space-y-4">
                 {selectedCase?.createdAt ? new Date(selectedCase.createdAt).toLocaleDateString() : ''}
               </p>
             </div>
 
             <div>
               <!-- Jurisdiction property not found in Case type, remove or update if needed -->
-              <!-- <h3 class="container mx-auto px-4">Jurisdiction</h3> -->
-              <!-- <p class="container mx-auto px-4">{selectedCase?.jurisdiction}</p> -->
+              <!-- <h3 class="space-y-4">Jurisdiction</h3> -->
+              <!-- <p class="space-y-4">{selectedCase?.jurisdiction}</p> -->
             </div>
 
             <div>
-              <h3 class="container mx-auto px-4">Description</h3>
-              <p class="container mx-auto px-4">{selectedCase?.description}</p>
+              <h3 class="space-y-4">Description</h3>
+              <p class="space-y-4">{selectedCase?.description}</p>
             </div>
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <a
               href={`/cases/${selectedCase?.id}/edit`}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               Edit
             </a>
             <button
               on:click={() => quickAction(selectedCase?.id, 'archive')}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               Archive
             </button>

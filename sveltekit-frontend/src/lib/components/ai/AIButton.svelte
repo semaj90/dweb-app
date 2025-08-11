@@ -1,18 +1,33 @@
 <script lang="ts">
+  interface Props {
+    position: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' ;
+    size: 'sm' | 'md' | 'lg' ;
+    variant: 'primary' | 'secondary' | 'accent' ;
+    disabled?: any;
+    loading?: any;
+    notification?: any;
+    notificationCount?: any;
+    tooltip?: any;
+  }
+  let {
+    position = 'bottom-right',
+    size = 'md',
+    variant = 'primary',
+    disabled = false,
+    loading = false,
+    notification = false,
+    notificationCount = 0,
+    tooltip = 'Legal AI Assistant'
+  }: Props = $props();
+
+
+
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	
 	// Component props
-	export let position: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' = 'bottom-right';
-	export let size: 'sm' | 'md' | 'lg' = 'md';
-	export let variant: 'primary' | 'secondary' | 'accent' = 'primary';
-	export let disabled = false;
-	export let loading = false;
-	export let notification = false;
-	export let notificationCount = 0;
-	export let tooltip = 'Legal AI Assistant';
-	
+									
 	// State management
 	let mounted = false;
 	let showTooltip = false;

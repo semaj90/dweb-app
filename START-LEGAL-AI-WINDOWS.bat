@@ -1,79 +1,94 @@
 @echo off
-REM Legal AI System - Windows 10 Optimized Startup Script
-REM Starts Docker services, MCP servers, and VS Code with proper configuration
+REM Legal AI System - Windows 10/11 Startup (Docker-free)
+REM Starts Go service (8084), MCP servers, and SvelteKit dev
+
+setlocal ENABLEDELAYEDEXPANSION
 
 echo ========================================
-echo Legal AI System - Windows 10 Startup
+echo Legal AI System - Windows Startup (No Docker)
 echo ========================================
 echo.
 
-REM Check if Docker is running
-echo [1/6] Checking Docker status...
-docker version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ERROR: Docker is not running. Please start Docker Desktop first.
-    pause
-    exit /b 1
-)
-echo Docker is running ✓
-echo.
+REM Resolve script dir
+set SCRIPT_DIR=%~dp0
+pushd "%SCRIPT_DIR%"
 
-REM Start Docker services
-echo [2/6] Starting Docker services...
-docker-compose down --remove-orphans
-docker-compose up -d
-if %errorlevel% neq 0 (
-    echo ERROR: Failed to start Docker services
-    pause
-    exit /b 1
-)
-echo Docker services started ✓
-echo.
+REM 1) Start Go microservice on 8084 in a new window
+echo [1/5] Starting Go microservice (port 8084)...
+set "GO_DIR=%SCRIPT_DIR%go-microservice"
+set "GO_SERVER_PORT=8084"
+set "OLLAMA_HOST=http://localhost:11434"
+set "MODEL_NAME=gemma3-legal:latest"
 
-REM Wait for services to be ready
-echo [3/6] Waiting for services to initialize...
-timeout /t 15 /nobreak >nul
-
-REM Check service health
-echo [4/6] Checking service health...
-curl -f http://localhost:5432 >nul 2>&1 || echo PostgreSQL starting...
-curl -f http://localhost:11434/api/version >nul 2>&1 || echo Ollama starting...
-curl -f http://localhost:6333/collections >nul 2>&1 || echo Qdrant starting...
-curl -f http://localhost:6379 >nul 2>&1 || echo Redis starting...
-echo.
-
-REM Setup local Gemma3 model
-echo [5/6] Setting up local Gemma3 Legal AI model...
-echo Creating legal-ai model from your local Gemma3 files...
-docker exec legal_ai_ollama /tmp/setup-models.sh
-echo.
-echo Testing legal-ai model...
-timeout /t 5 /nobreak >nul
-docker exec legal_ai_ollama ollama ls | findstr "legal-ai"
-if %errorlevel% equ 0 (
-    echo ✅ Legal-AI model ready!
+if exist "%GO_DIR%\main.go" (
+    start "GO-LEGAL-AI" cmd /c "cd /d \"%GO_DIR%\" && set PORT=8084 && set OLLAMA_HOST=%OLLAMA_HOST% && set MODEL_NAME=%MODEL_NAME% && go run main.go"
 ) else (
-    echo ⚠️  Legal-AI model setup pending - check logs
+    echo ⚠️  Go service not found at %GO_DIR%\main.go
 )
 echo.
 
-REM Start VS Code with MCP configuration
-echo [6/6] Starting VS Code with Legal AI configuration...
-cd /d "%~dp0"
-code . --profile "Legal AI"
+REM 2) Start MCP servers (Context7, Memory, Postgres) if tasks exist
+echo [2/5] Starting MCP servers (background tasks)...
+REM These are launched via VS Code tasks; optional if not configured.
+REM To start from VS Code: Run task "Start MCP Servers"
+echo   - Use VS Code Task: Start MCP Servers
+echo.
+
+REM 3) Start SvelteKit dev (port 5173) in a new window
+echo [3/5] Starting SvelteKit dev server (port 5173)...
+set "SK_DIR=%SCRIPT_DIR%sveltekit-frontend"
+if exist "%SK_DIR%\package.json" (
+    start "SvelteKit Dev" cmd /c "cd /d \"%SK_DIR%\" && set GO_SERVICE_URL=http://localhost:8084 && npm run dev"
+) else (
+    echo ⚠️  SvelteKit frontend not found at %SK_DIR%
+)
+echo.
+
+REM NOTE: User instruction per request
+echo please downloal local llm and put in this directory
+echo.
+
+REM 4) Quick health checks (best-effort)
+echo [4/5] Checking service health...
+REM Try Go health
+for /l %%i in (1,1,5) do (
+    curl -s -f http://localhost:8084/api/health >nul 2>&1 && (
+        echo   ✅ Go service healthy (http://localhost:8084)
+        goto :done_health
+    )
+    timeout /t 2 /nobreak >nul
+)
+echo   ⚠️  Go health not responding yet: http://localhost:8084/api/health
+:done_health
+
+REM Try SvelteKit
+for /l %%i in (1,1,5) do (
+    curl -s -f http://localhost:5173/ >nul 2>&1 && (
+        echo   ✅ SvelteKit dev reachable (http://localhost:5173)
+        goto :done_sk
+    )
+    timeout /t 2 /nobreak >nul
+)
+echo   ⚠️  SvelteKit not responding yet: http://localhost:5173
+:done_sk
+echo.
+
+REM 5) Open VS Code (optional)
+echo [5/5] Opening VS Code (Legal AI profile)...
+code . --profile "Legal AI" >nul 2>&1
 echo.
 
 echo ========================================
-echo Legal AI System Started Successfully!
+echo Legal AI System Startup Triggered (No Docker)
 echo ========================================
 echo.
-echo Services running on:
-echo - PostgreSQL: localhost:5432
-echo - Ollama: localhost:11434  
-echo - Qdrant: localhost:6333
-echo - Redis: localhost:6379
-echo - VS Code MCP: Auto-configured
+echo Endpoints:
+echo - Go Service Health:   http://localhost:8084/api/health
+echo - Go Metrics:          http://localhost:8084/api/metrics
+echo - SvelteKit App:       http://localhost:5173
+echo - GPU Status (proxy):  http://localhost:5173/api/gpu-status
 echo.
-echo Access your application at: http://localhost:5173
+echo Tip: In VS Code, run Task: "Start MCP Servers" to launch Context7/Memory/Postgres MCP.
 echo.
+popd
 pause

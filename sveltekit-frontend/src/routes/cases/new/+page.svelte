@@ -1,12 +1,20 @@
 <script lang="ts">
+  interface Props {
+    form: ActionData;;
+  }
+  let {
+    form
+  }: Props = $props();
+
+
+
   import { goto } from "$app/navigation";
   import EnhancedCaseForm from "$lib/components/forms/EnhancedCaseForm.svelte";
   import { notifications } from "$lib/stores/notification";
   import TauriAPI from "$lib/tauri";
   import type { ActionData } from "./$types";
 
-  export let form: ActionData;
-
+  
   let isSubmitting = false;
   let caseData = {};
 
@@ -53,11 +61,11 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
-  <div class="container mx-auto px-4">
-    <h1 class="container mx-auto px-4">Create New Case</h1>
-    <p class="container mx-auto px-4">
+  <div class="space-y-4">
+    <h1 class="space-y-4">Create New Case</h1>
+    <p class="space-y-4">
       Build a comprehensive case file with evidence and documentation
     </p>
   </div>

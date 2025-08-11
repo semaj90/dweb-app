@@ -27,10 +27,10 @@
   <title>File Upload Test</title>
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <h1>File Upload Test</h1>
 
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <AdvancedFileUpload
       multiple={true}
       accept="*/*"
@@ -47,7 +47,7 @@
   </div>
 
   {#if uploadedFiles.length > 0}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <h2>Upload Results</h2>
       <ul>
         {#each uploadedFiles as file}

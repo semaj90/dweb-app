@@ -61,19 +61,19 @@
 </svelte:head>
 
 {#if user}
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <h1>Profile Settings</h1>
       <p>Manage your account information and avatar</p>
     </div>
 
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Avatar Section -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h2>Profile Picture</h2>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <Avatar size="large" showUploadButton={true} />
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h3>Your Avatar</h3>
             <p>
               Upload a profile picture to personalize your account. Supported
@@ -81,7 +81,7 @@
             </p>
 
             {#if $avatarStore.error}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {$avatarStore.error}
               </div>
             {/if}
@@ -89,15 +89,15 @@
         </div>
       </div>
 
-      <div class="container mx-auto px-4"></div>
+      <div class="space-y-4"></div>
 
       <!-- Profile Information -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h2>Account Information</h2>
 
-        <form on:submit|preventDefault={updateProfile} class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+        <form on:submit|preventDefault={updateProfile} class="space-y-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               <label for="name">Full Name</label>
               <input
                 id="name"
@@ -108,7 +108,7 @@
               />
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <label for="email">Email Address</label>
               <input
                 id="email"
@@ -119,7 +119,7 @@
               />
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <label for="firstName">First Name</label>
               <input
                 id="firstName"
@@ -129,7 +129,7 @@
               />
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <label for="lastName">Last Name</label>
               <input
                 id="lastName"
@@ -142,7 +142,7 @@
 
           {#if updateMessage}
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
               class:success={updateMessage.includes("success")}
               class:error={!updateMessage.includes("success")}
             >
@@ -150,48 +150,48 @@
             </div>
           {/if}
 
-          <div class="container mx-auto px-4">
-            <button type="submit" class="container mx-auto px-4" disabled={isUpdating}>
+          <div class="space-y-4">
+            <button type="submit" class="space-y-4" disabled={isUpdating}>
               {isUpdating ? "Updating..." : "Save Changes"}
             </button>
 
-            <a href="/dashboard" class="container mx-auto px-4"> Cancel </a>
+            <a href="/dashboard" class="space-y-4"> Cancel </a>
           </div>
         </form>
       </div>
 
-      <div class="container mx-auto px-4"></div>
+      <div class="space-y-4"></div>
 
       <!-- Account Stats -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <h2>Account Statistics</h2>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">--</div>
-            <div class="container mx-auto px-4">Cases Created</div>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <div class="space-y-4">--</div>
+            <div class="space-y-4">Cases Created</div>
           </div>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">--</div>
-            <div class="container mx-auto px-4">Evidence Files</div>
+          <div class="space-y-4">
+            <div class="space-y-4">--</div>
+            <div class="space-y-4">Evidence Files</div>
           </div>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{user?.role || "User"}</div>
-            <div class="container mx-auto px-4">Role</div>
+          <div class="space-y-4">
+            <div class="space-y-4">{user?.role || "User"}</div>
+            <div class="space-y-4">Role</div>
           </div>
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
               {(user as any)?.createdAt
                 ? new Date((user as any).createdAt).toLocaleDateString()
                 : "--"}
             </div>
-            <div class="container mx-auto px-4">Member Since</div>
+            <div class="space-y-4">Member Since</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 {:else}
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <span>Please log in to view your profile.</span>
   </div>
 {/if}

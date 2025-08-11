@@ -1,16 +1,29 @@
 <script lang="ts">
+  interface Props {
+    tags: string[] ;
+    availableTags: string[] ;
+    placeholder?: any;
+    maxTags?: any;
+    allowCustomTags?: any;
+    readonly?: any;
+  }
+  let {
+    tags = [],
+    availableTags = [],
+    placeholder = "Add tags...",
+    maxTags = 10,
+    allowCustomTags = true,
+    readonly = false
+  }: Props = $props();
+
+
+
   import { debounce } from "$lib/utils/debounce";
   import { Plus, Tag, X } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
   import { scale } from "svelte/transition";
 
-  export let tags: string[] = [];
-  export let availableTags: string[] = [];
-  export let placeholder = "Add tags...";
-  export let maxTags = 10;
-  export let allowCustomTags = true;
-  export let readonly = false;
-
+            
   const dispatch = createEventDispatcher<{
     change: string[];
     add: string;
@@ -144,16 +157,16 @@
 
 <svelte:window on:click={handleClickOutside} />
 
-<div class="container mx-auto px-4" class:readonly>
-  <div class="container mx-auto px-4">
+<div class="space-y-4" class:readonly>
+  <div class="space-y-4">
     {#each tags as tag (tag)}
-      <div class="container mx-auto px-4" transition:scale={{ duration: 200 }}>
-        <Tag class="container mx-auto px-4" size={14} />
-        <span class="container mx-auto px-4">{tag}</span>
+      <div class="space-y-4" transition:scale={{ duration: 200 }}>
+        <Tag class="space-y-4" size={14} />
+        <span class="space-y-4">{tag}</span>
         {#if !readonly}
           <button
             type="button"
-            class="container mx-auto px-4"
+            class="space-y-4"
             on:click={() => removeTag(tag)}
             aria-label="Remove {tag} tag"
           >
@@ -164,31 +177,31 @@
     {/each}
 
     {#if !readonly && tags.length < maxTags}
-      <div class="container mx-auto px-4" bind:this={suggestionsContainer}>
+      <div class="space-y-4" bind:this={suggestionsContainer}>
         <input
           bind:this={inputElement}
           bind:value={inputValue}
           on:input={handleInput}
           on:keydown={handleKeyDown}
           on:focus={handleFocus}
-          class="container mx-auto px-4"
+          class="space-y-4"
           type="text"
           {placeholder}
           aria-label="Add new tag"
         />
 
         {#if showSuggestions && suggestions.length > 0}
-          <div class="container mx-auto px-4" role="listbox">
+          <div class="space-y-4" role="listbox">
             {#each suggestions as suggestion, index (suggestion)}
               <button
                 type="button"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 class:active={index === activeIndex}
                 on:click={() => handleSuggestionClick(suggestion)}
                 role="option"
                 aria-selected={index === activeIndex}
               >
-                <Tag class="container mx-auto px-4" size={14} />
+                <Tag class="space-y-4" size={14} />
                 <span>{suggestion}</span>
               </button>
             {/each}
@@ -200,7 +213,7 @@
     {#if !readonly && allowCustomTags && inputValue.trim() && !suggestions.includes(inputValue.trim())}
       <button
         type="button"
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => addTag(inputValue)}
         aria-label="Add custom tag: {inputValue}"
       >
@@ -211,7 +224,7 @@
   </div>
 
   {#if tags.length >= maxTags}
-    <div class="container mx-auto px-4" role="status" aria-live="polite">
+    <div class="space-y-4" role="status" aria-live="polite">
       Maximum {maxTags} tags allowed
     </div>
   {/if}

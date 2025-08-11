@@ -1,16 +1,23 @@
 <!-- Enhanced Case Form with proper schema mapping -->
 <script lang="ts">
+  interface Props {
+    oncancel?: (event?: any) => void;
+  }
+  let {
+    case_ = null,
+    user
+  }: Props = $props();
+
+
+
   import { notifications } from "$lib/stores/notification";
   import type { User } from "$lib/types/user";
-  import { createEventDispatcher } from "svelte";
-  import type { Case } from "$lib/types/index";
+    import type { Case } from "$lib/types/index";
 
   export let case_: Case| null = null; // Edit mode if provided
 
-  export let user: User;
-
-  const dispatch = createEventDispatcher();
-
+  
+  
   // Form data matching the database schema
   let formData = {
     title: case_?.title || "",
@@ -169,14 +176,14 @@
 }
 </script>
 
-<form on:submit|preventDefault={handleSubmit} class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+  <div class="space-y-4">
     <!-- Basic Information -->
-    <section class="container mx-auto px-4">
+    <section class="space-y-4">
       <h3>Basic Information</h3>
 
-      <div class="container mx-auto px-4">
-        <label for="title" class="container mx-auto px-4">Case Title</label>
+      <div class="space-y-4">
+        <label for="title" class="space-y-4">Case Title</label>
         <input
           id="title"
           type="text"
@@ -186,12 +193,12 @@
           required
         />
         {#if errors.title}
-          <span class="container mx-auto px-4">{errors.title}</span>
+          <span class="space-y-4">{errors.title}</span>
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
-        <label for="caseNumber" class="container mx-auto px-4">Case Number</label>
+      <div class="space-y-4">
+        <label for="caseNumber" class="space-y-4">Case Number</label>
         <input
           id="caseNumber"
           type="text"
@@ -201,11 +208,11 @@
           required
         />
         {#if errors.caseNumber}
-          <span class="container mx-auto px-4">{errors.caseNumber}</span>
+          <span class="space-y-4">{errors.caseNumber}</span>
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="name">Case Name (Optional)</label>
         <input
           id="name"
@@ -215,7 +222,7 @@
         />
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="description">Description</label>
         <textarea
           id="description"
@@ -227,11 +234,11 @@
     </section>
 
     <!-- Case Details -->
-    <section class="container mx-auto px-4">
+    <section class="space-y-4">
       <h3>Case Details</h3>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <label for="priority">Priority</label>
           <select id="priority" bind:value={formData.priority}>
             <option value="low">Low</option>
@@ -241,7 +248,7 @@
           </select>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="status">Status</label>
           <select id="status" bind:value={formData.status}>
             <option value="open">Open</option>
@@ -253,7 +260,7 @@
         </div>
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="category">Category</label>
         <input
           id="category"
@@ -263,8 +270,8 @@
         />
       </div>
 
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <label for="dangerScore">Danger Score (0-10)</label>
           <input
             id="dangerScore"
@@ -275,11 +282,11 @@
             class:error={errors.dangerScore}
           />
           {#if errors.dangerScore}
-            <span class="container mx-auto px-4">{errors.dangerScore}</span>
+            <span class="space-y-4">{errors.dangerScore}</span>
           {/if}
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <label for="estimatedValue">Estimated Value ($)</label>
           <input
             id="estimatedValue"
@@ -290,17 +297,17 @@
             class:error={errors.estimatedValue}
           />
           {#if errors.estimatedValue}
-            <span class="container mx-auto px-4">{errors.estimatedValue}</span>
+            <span class="space-y-4">{errors.estimatedValue}</span>
           {/if}
         </div>
       </div>
     </section>
 
     <!-- Location & Timeline -->
-    <section class="container mx-auto px-4">
+    <section class="space-y-4">
       <h3>Location & Timeline</h3>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="incidentDate">Incident Date</label>
         <input
           id="incidentDate"
@@ -309,7 +316,7 @@
         />
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="location">Location</label>
         <input
           id="location"
@@ -319,7 +326,7 @@
         />
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="jurisdiction">Jurisdiction</label>
         <input
           id="jurisdiction"
@@ -331,13 +338,13 @@
     </section>
 
     <!-- Team & Tags -->
-    <section class="container mx-auto px-4">
+    <section class="space-y-4">
       <h3>Team & Tags</h3>
 
       <!-- Assigned Team -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="new-member">Assigned Team</label>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <input
             id="new-member"
             type="text"
@@ -349,9 +356,9 @@
         </div>
 
         {#if formData.assignedTeam.length > 0}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each formData.assignedTeam as member}
-              <span class="container mx-auto px-4">
+              <span class="space-y-4">
                 {member}
                 <button type="button" on:click={() => removeTeamMember(member)}
                   >×</button
@@ -363,9 +370,9 @@
       </div>
 
       <!-- Tags -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <label for="new-tag">Tags</label>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <input
             id="new-tag"
             type="text"
@@ -377,9 +384,9 @@
         </div>
 
         {#if formData.tags.length > 0}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             {#each formData.tags as tag}
-              <span class="container mx-auto px-4">
+              <span class="space-y-4">
                 {tag}
                 <button type="button" on:click={() => removeTag(tag)}>×</button>
               </span>
@@ -391,9 +398,9 @@
   </div>
 
   <!-- Form Actions -->
-  <div class="container mx-auto px-4">
-    <button type="button" on:click={() => dispatch("cancel")}> Cancel </button>
-    <button type="submit" disabled={loading} class="container mx-auto px-4">
+  <div class="space-y-4">
+    <button type="button" on:click={() => oncancel?.()}> Cancel </button>
+    <button type="submit" disabled={loading} class="space-y-4">
       {#if loading}
         Saving...
       {:else}

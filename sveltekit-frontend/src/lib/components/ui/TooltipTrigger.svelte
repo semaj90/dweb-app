@@ -1,7 +1,16 @@
 <script lang="ts">
-  export let asChild = false;
-  export let builder: any = null;
+  interface Props {
+    asChild?: any;
+    builder: any ;
+  }
+  let {
+    asChild = false,
+    builder = null
+  }: Props = $props();
 
+
+
+    
   export const className = "";
 </script>
 

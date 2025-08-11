@@ -1,11 +1,19 @@
 <script lang="ts">
+  interface Props {
+    analysisData: {;
+  }
+  let {
+    analysisData
+  }: Props = $props();
+
+
+
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { Separator } from '$lib/components/ui/separator/Separator.svelte';
   
-  export let analysisData: {
-    evidenceAnalysis?: any;
+      evidenceAnalysis?: any;
     personsData?: any;
     caseSynthesis?: any;
     caseId?: string;

@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    user: User | null ;
+  }
+  let {
+    user = null
+  }: Props = $props();
+
+
+
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import SearchInput from "./SearchInput.svelte";
@@ -15,8 +24,7 @@
     User as UserIcon,
   } from "lucide-svelte";
 
-  export let user: User | null = null;
-
+  
   let searchQuery = "";
   let userMenuOpen = false;
 

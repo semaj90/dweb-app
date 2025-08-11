@@ -1,14 +1,21 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  
+  interface Props {
+    onchange?: (event?: any) => void;
+  }
+  let {
+    score = 5,
+    label = 'Attractiveness Rating',
+    readOnly = false,
+    showDescription = true,
+    size = 'md'
+  }: Props = $props();
+
+
+
+    
   export let score: number = 5; // Current attractiveness score (1-10)
-  export let label: string = 'Attractiveness Rating';
-  export let readOnly: boolean = false;
-  export let showDescription: boolean = true;
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  
-  const dispatch = createEventDispatcher();
-  
+          
+    
   let hoveredScore: number | null = null;
   
   const descriptions = {
@@ -27,7 +34,7 @@
   function handleRatingClick(rating: number) {
     if (!readOnly) {
       score = rating;
-      dispatch('change', { score });
+      onchange?.();
 }
 }
   function handleMouseEnter(rating: number) {
@@ -46,16 +53,16 @@
   };
 </script>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
-    <span class="container mx-auto px-4">{label}:</span>
-    <span class="container mx-auto px-4">{displayScore}/10</span>
+<div class="space-y-4">
+  <div class="space-y-4">
+    <span class="space-y-4">{label}:</span>
+    <span class="space-y-4">{displayScore}/10</span>
     {#if showDescription}
-      <span class="container mx-auto px-4">({descriptions[displayScore as keyof typeof descriptions]})</span>
+      <span class="space-y-4">({descriptions[displayScore as keyof typeof descriptions]})</span>
     {/if}
   </div>
   
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     {#each Array(10) as _, i}
       {@const rating = i + 1}
       {@const isActive = rating <= displayScore}
@@ -63,7 +70,7 @@
       
       <button
         type="button"
-        class="container mx-auto px-4"
+        class="space-y-4"
         class:active={isActive}
         class:hovered={isHovered}
         disabled={readOnly}
@@ -78,7 +85,7 @@
           fill={isActive ? 'currentColor' : 'none'}
           stroke="currentColor"
           stroke-width="2"
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.563.563 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
         </svg>
@@ -87,14 +94,14 @@
   </div>
   
   {#if !readOnly}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <input
         type="range"
         min="1"
         max="10"
         bind:value={score}
-        on:input={() => dispatch('change', { score })}
-        class="container mx-auto px-4"
+        on:input={() => onchange?.()}
+        class="space-y-4"
       />
     </div>
   {/if}

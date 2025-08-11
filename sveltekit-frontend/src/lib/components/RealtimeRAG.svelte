@@ -1,14 +1,24 @@
 <!-- Real-time RAG Interface Component -->
 <script>
+  interface Props {
+    selectedCaseId?: any;
+    documentTypes?: any;
+    onResultSelect?: any;
+  }
+  let {
+    selectedCaseId = null,
+    documentTypes = [],
+    onResultSelect = null
+  }: Props = $props();
+
+
+
   import { onMount, onDestroy } from 'svelte';
   import { useMachine } from '@xstate/svelte';
   import { createRealtimeRAGStore, ragQueryMachine, ragQueryServices } from '$lib/stores/realtime-rag.svelte.js';
   
   // Props for integration with existing components
-  export let selectedCaseId = null;
-  export let documentTypes = [];
-  export let onResultSelect = null;
-
+      
   // Initialize real-time RAG store
   const ragStore = createRealtimeRAGStore();
   

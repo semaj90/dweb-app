@@ -1,12 +1,16 @@
 <script lang="ts">
   import Label from '../Label.svelte';
-  // Accept legacy props and map to base Label's for_/class_
-  export let for: string | undefined;
-  export let class: string | undefined;
-  // Collect rest props after extracting known ones
-  const { for: _f, class: _c, ...rest } = $props();
+  import type { HTMLAttributes } from 'svelte/elements';
+  
+  // Svelte 5 props pattern - Accept legacy props and map to base Label
+  interface Props extends HTMLAttributes<HTMLLabelElement> {
+    for?: string;
+    class?: string;
+  }
+  
+  let { 'for': forProp = '', class: classProp = '', ...rest }: Props = $props();
 </script>
 
-<Label for_={for} class_={class} {...rest}>
+<Label for_={forProp} class_={classProp} {...rest}>
   <slot />
 </Label>

@@ -62,7 +62,7 @@
   let resizingColumn = $state<string | null>(null);
   let scrollContainer: HTMLElement | null = $state(null);
   
-  const filteredData = $derived(() => {
+  const filteredData = $derived.by(() => {
     let filtered = data;
     
     // Apply column filters
@@ -96,15 +96,16 @@
     return filtered;
   });
 
-  const visibleRows = $derived(() => {
-    if (!virtualScroll) return filteredData;
+  const visibleRows = $derived.by(() => {
+    const filtered = filteredData; // Access the derived value directly
+    if (!virtualScroll) return filtered;
     
     const containerHeight = maxHeight;
     const visibleCount = Math.ceil(containerHeight / rowHeight) + 5; // Buffer
     const startIndex = Math.floor((scrollContainer?.scrollTop || 0) / rowHeight);
-    const endIndex = Math.min(startIndex + visibleCount, filteredData.length);
+    const endIndex = Math.min(startIndex + visibleCount, filtered.length);
     
-    return filteredData.slice(startIndex, endIndex).map((row, index) => ({
+    return filtered.slice(startIndex, endIndex).map((row, index) => ({
       ...row,
       _originalIndex: startIndex + index
     }));
@@ -134,7 +135,8 @@
 
   function handleCellEdit(rowIndex: number, columnKey: string, value: any) {
     const actualIndex = virtualScroll ? visibleRows[rowIndex]._originalIndex : rowIndex;
-    filteredData[actualIndex][columnKey] = value;
+    const filtered = filteredData;
+    filtered[actualIndex][columnKey] = value;
     editingCell = null;
   }
 
@@ -229,7 +231,7 @@
               type="text"
               class="yorha-filter-input"
               placeholder="Filter..."
-              oninput={(e) => handleFilter(column.key, e.target.value)}
+              oninput={(e) => handleFilter(column.key, (e.target as HTMLInputElement).value)}
             />
           </div>
         {/if}
@@ -260,10 +262,11 @@
               class="yorha-checkbox"
               checked={selectedRows.size === filteredData.length && filteredData.length > 0}
               onchange={() => {
-                if (selectedRows.size === filteredData.length) {
+                const filtered = filteredData;
+                if (selectedRows.size === filtered.length) {
                   selectedRows.clear();
                 } else {
-                  selectedRows = new Set(filteredData.map(row => row.id));
+                  selectedRows = new Set(filtered.map(row => row.id));
                 }
               }}
             />
@@ -338,7 +341,7 @@
                     <select
                       class="yorha-edit-input"
                       value={row[column.key]}
-                      onchange={(e) => handleCellEdit(rowIndex, column.key, e.target.value)}
+                      onchange={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLSelectElement).value)}
                       onblur={() => editingCell = null}
                     >
                       {#each column.options as option}
@@ -350,7 +353,7 @@
                       type="checkbox"
                       class="yorha-checkbox"
                       checked={row[column.key]}
-                      onchange={(e) => handleCellEdit(rowIndex, column.key, e.target.checked)}
+                      onchange={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).checked)}
                       onblur={() => editingCell = null}
                     />
                   {:else}
@@ -358,9 +361,9 @@
                       type={column.type === 'number' ? 'number' : column.type === 'date' ? 'date' : 'text'}
                       class="yorha-edit-input"
                       value={row[column.key]}
-                      oninput={(e) => handleCellEdit(rowIndex, column.key, e.target.value)}
+                      oninput={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).value)}
                       onblur={() => editingCell = null}
-                      onfocusin={(e) => e.target.select()}
+                      onfocusin={(e) => (e.target as HTMLInputElement).select()}
                     />
                   {/if}
                 {:else}

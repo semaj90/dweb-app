@@ -13,14 +13,14 @@ graph TB
         B --> C[Video/Image Enhancement]
         C --> D[Frame Extraction]
     end
-    
+
     subgraph "AI Analysis (Python + FastAPI)"
         E[Python NLP Service] --> F[YOLO Object Detection]
         F --> G[OCR Text Extraction]
         G --> H[Whisper Audio Processing]
         H --> I[User LLM Scene Analysis]
     end
-    
+
     subgraph "Data Layer"
         J[SQLite + Drizzle ORM] --> K[Evidence Files]
         K --> L[Anchor Points]
@@ -28,13 +28,13 @@ graph TB
         N[Qdrant Vector DB] --> O[Embeddings]
         O --> P[RAG Search]
     end
-    
+
     subgraph "Frontend (SvelteKit SSR)"
         Q[Evidence Viewer] --> R[Interactive Anchors]
         R --> S[Markdown Rendering]
         S --> T[Timeline Visualization]
     end
-    
+
     D --> E
     I --> J
     I --> N
@@ -43,29 +43,32 @@ graph TB
 
 ## 📦 Component Stack
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Desktop UI** | Tauri + Rust + WebView | Bundles SvelteKit app, local file processing |
-| **Evidence Processing** | OpenCV, YOLOv8, CLIP, ffmpeg | MIT-licensed multimodal analysis |
-| **Scene Summarization** | User-provided GGUF models | Local LLM analysis (Gemma QAT, etc.) |
-| **Data Layer** | postgres (Drizzle ORM), Qdrant | Caching, embeddings, vector search |
-| **Frontend** | SvelteKit + SSR | Markdown rendering, interactive UI |
+| Component               | Technology                     | Purpose                                      |
+| ----------------------- | ------------------------------ | -------------------------------------------- |
+| **Desktop UI**          | Tauri + Rust + WebView         | Bundles SvelteKit app, local file processing |
+| **Evidence Processing** | OpenCV, YOLOv8, CLIP, ffmpeg   | MIT-licensed multimodal analysis             |
+| **Scene Summarization** | User-provided GGUF models      | Local LLM analysis (Gemma QAT, etc.)         |
+| **Data Layer**          | postgres (Drizzle ORM), Qdrant | Caching, embeddings, vector search           |
+| **Frontend**            | SvelteKit + SSR                | Markdown rendering, interactive UI           |
 
 ## 🚀 Quick Start
 
 ### 1. Setup
+
 ```powershell
 # Run the setup script
 .\setup-multimodal.ps1
 ```
 
 ### 2. Upload Your Models
+
 ```bash
 # Copy your GGUF models to the models directory
 cp path/to/your-model.gguf ./models/
 ```
 
 ### 3. Start Services
+
 ```bash
 # Terminal 1: Python NLP Service
 cd python-nlp-service
@@ -74,7 +77,7 @@ python main.py
 # Terminal 2: Qdrant (if not using Docker)
 docker run -p 6333:6333 qdrant/qdrant
 
-# Terminal 3: SvelteKit Frontend  
+# Terminal 3: SvelteKit Frontend
 cd web-app/sveltekit-frontend
 npm run dev
 
@@ -85,6 +88,7 @@ npm run tauri dev
 ## 📋 User Workflow
 
 ### Evidence Upload & Processing
+
 1. **Upload**: User uploads evidence via Tauri or Web interface
 2. **Rust Processing**: OpenCV pre-processes evidence (denoise, extract frames)
 3. **AI Analysis**: MIT-licensed models detect objects, extract text, transcribe audio
@@ -93,6 +97,7 @@ npm run tauri dev
 6. **Rendering**: SvelteKit displays interactive analysis
 
 ### Interactive Analysis
+
 - **Anchor Points**: Click on detected objects, text, or timeline events
 - **Timeline Navigation**: Video/audio scrubbing with synchronized anchors
 - **Markdown Summaries**: Rich scene analysis with legal relevance
@@ -103,6 +108,7 @@ npm run tauri dev
 ### Python NLP Service (`main.py`)
 
 **Key Features:**
+
 - **Security-First**: No auto-downloads, strict user model validation
 - **Multimodal Processing**: Image, video, audio, document analysis
 - **Object Detection**: YOLOv8 for scene understanding
@@ -112,9 +118,10 @@ npm run tauri dev
 - **Scene Analysis**: User LLM for legal reasoning
 
 **Endpoints:**
+
 ```python
 POST /evidence/process        # Process evidence file
-POST /evidence/analyze-scene  # Generate scene analysis  
+POST /evidence/analyze-scene  # Generate scene analysis
 POST /evidence/rag-query      # RAG search across evidence
 GET  /models/status          # Check model availability
 POST /models/load            # Load user-provided model
@@ -123,6 +130,7 @@ POST /models/load            # Load user-provided model
 ### Rust Evidence Processor (`evidence_processor.rs`)
 
 **Capabilities:**
+
 - **Video Enhancement**: FFmpeg processing, frame extraction
 - **Image Processing**: OpenCV denoising, upscaling
 - **Audio Conversion**: Format standardization for Whisper
@@ -130,6 +138,7 @@ POST /models/load            # Load user-provided model
 - **File Management**: Secure local storage with checksums
 
 **Commands:**
+
 ```rust
 process_evidence_file()      // Enhanced file processing
 list_evidence_files()       // File inventory
@@ -140,16 +149,18 @@ check_python_service_status() // Health monitoring
 ### Database Schema (Drizzle ORM)
 
 **Core Tables:**
+
 ```typescript
-evidenceFiles              // File metadata and processing status
-evidenceAnchorPoints       // Interactive markers (objects, text, timeline)
-caseEvidenceSummaries      // AI-generated scene analysis
-evidenceRelationships     // Cross-evidence connections
-multimodalSearchCache     // Qdrant integration cache
-userModelPreferences       // LLM model management
+evidenceFiles; // File metadata and processing status
+evidenceAnchorPoints; // Interactive markers (objects, text, timeline)
+caseEvidenceSummaries; // AI-generated scene analysis
+evidenceRelationships; // Cross-evidence connections
+multimodalSearchCache; // Qdrant integration cache
+userModelPreferences; // LLM model management
 ```
 
 **Key Features:**
+
 - **Normalized coordinates**: Anchor points work across resolutions
 - **Timeline support**: Video/audio timestamp alignment
 - **Confidence tracking**: AI certainty scores for legal review
@@ -159,6 +170,7 @@ userModelPreferences       // LLM model management
 ### SvelteKit Components
 
 **EvidenceViewer.svelte:**
+
 - **Media Display**: Video/image/audio/document rendering
 - **Interactive Anchors**: Clickable detection overlays
 - **Timeline Control**: Video scrubbing with event markers
@@ -166,6 +178,7 @@ userModelPreferences       // LLM model management
 - **AI Integration**: Real-time scene analysis requests
 
 **API Routes:**
+
 ```typescript
 /api/evidence/process       // Evidence processing coordination
 /api/evidence/analyze       // Scene analysis requests
@@ -176,6 +189,7 @@ userModelPreferences       // LLM model management
 ## 🔍 Evidence Analysis Pipeline
 
 ### Image Evidence
+
 1. **Load & Enhance**: OpenCV noise reduction, sharpening
 2. **Object Detection**: YOLO identifies people, vehicles, objects
 3. **OCR**: Tesseract extracts text content
@@ -183,7 +197,8 @@ userModelPreferences       // LLM model management
 5. **Scene Analysis**: LLM analyzes legal significance
 6. **Markdown Output**: Structured summary with findings
 
-### Video Evidence  
+### Video Evidence
+
 1. **Frame Extraction**: FFmpeg samples at specified intervals
 2. **Timeline Analysis**: Object tracking across frames
 3. **Audio Processing**: Whisper transcription if audio present
@@ -192,6 +207,7 @@ userModelPreferences       // LLM model management
 6. **Comprehensive Summary**: Multi-modal scene reconstruction
 
 ### Audio Evidence
+
 1. **Format Conversion**: FFmpeg to WAV for Whisper
 2. **Transcription**: Speech-to-text with timestamps
 3. **Speaker Analysis**: Voice separation if available
@@ -201,20 +217,23 @@ userModelPreferences       // LLM model management
 ## 🧠 AI Model Integration
 
 ### User Model Requirements
+
 - **Format**: GGUF files only (security requirement)
 - **Size**: Recommendations for legal text (7B+ parameters)
-- **Examples**: Gemma QAT, Llama 2/3 legal fine-tunes
+- **Examples**: Gemma QAT, gemma3-legal fine-tunes
 - **Storage**: Local `./models/` directory
 - **Loading**: Dynamic model switching via API
 
 ### Model Security
+
 - **No Auto-Downloads**: Users must provide all models
 - **Path Validation**: Only local files accepted
 - **Format Checks**: GGUF extension required
 - **URL Blocking**: Remote URLs rejected
 - **Documentation**: Clear user requirements
 
-### Embeddings & RAG 
+### Embeddings & RAG
+
 - NLP legal bert?
 - **Sentence Transformers**: all-MiniLM-L6-v2 (default)
 - **Qdrant Integration**: Vector storage and similarity search
@@ -224,6 +243,7 @@ userModelPreferences       // LLM model management
 ## 📊 Interactive Features
 
 ### Anchor Point System
+
 - **Types**: object, text, audio_segment, timeline_event, custom
 - **Coordinates**: Normalized (0-1) for resolution independence
 - **Confidence**: AI certainty scores for review
@@ -231,6 +251,7 @@ userModelPreferences       // LLM model management
 - **Legal Relevance**: High/medium/low significance ratings
 
 ### Timeline Visualization
+
 - **Video Scrubbing**: Frame-accurate navigation
 - **Event Markers**: Clickable timeline anchors
 - **Audio Sync**: Speech segments aligned with video
@@ -238,18 +259,21 @@ userModelPreferences       // LLM model management
 - **Timeline Query**: "What happened at 2:35?"
 
 ### Markdown Scene Summaries
+
 ```markdown
 ## Scene: Traffic Incident Analysis
 
 **Evidence:** dashcam_video.mp4
 **Duration:** 45 seconds
 **Key Findings:**
+
 - Vehicle ran red light at 00:23
 - Pedestrian visible from 00:15
 - No brake lights detected
 - Audio captures screech at 00:24
 
 ### Legal Significance
+
 - Traffic violation clearly documented
 - Timeline suggests negligence
 - Recommend cross-reference with witness statements
@@ -258,12 +282,14 @@ userModelPreferences       // LLM model management
 ## 🔐 Security & Privacy
 
 ### Model Security
+
 - **User-Only Models**: No bundled or downloaded models
 - **Local Processing**: All AI runs on user hardware
 - **Path Validation**: Security checks on model loading
 - **Format Enforcement**: GGUF-only requirement
 
 ### Data Privacy
+
 - **Local Storage**: Evidence never leaves user system
 - **Encrypted Cache**: SQLite with optional encryption
 - **No Cloud Dependencies**: Complete offline operation
@@ -272,11 +298,12 @@ userModelPreferences       // LLM model management
 ## 🧪 Testing & Validation
 
 ### Automated Tests
+
 ```bash
 # Run multimodal tests
 ./test-multimodal.ps1
 
-# Python service tests  
+# Python service tests
 cd python-nlp-service
 python -m pytest tests/
 
@@ -290,6 +317,7 @@ npm test
 ```
 
 ### Manual Testing Workflow
+
 1. **Upload Test Evidence**: Use provided sample files
 2. **Verify Processing**: Check anchor points and summaries
 3. **Interactive Testing**: Click anchors, scrub timeline
@@ -299,12 +327,14 @@ npm test
 ## 📈 Performance Optimization
 
 ### Processing Speed
+
 - **Rust Preprocessing**: Fast file handling and enhancement
 - **GPU Acceleration**: CUDA support for YOLO/Whisper
 - **Parallel Processing**: Multiple evidence files simultaneously
 - **Caching**: Aggressive result caching to avoid reprocessing
 
 ### Memory Management
+
 - **Model Streaming**: Large models loaded on-demand
 - **Frame Buffering**: Efficient video processing
 - **Garbage Collection**: Proper cleanup of temporary files
@@ -313,12 +343,14 @@ npm test
 ## 🚨 Error Handling
 
 ### Graceful Degradation
+
 - **Missing Models**: Fallback to rule-based analysis
 - **Service Failures**: Clear error messages with solutions
 - **Format Issues**: Automatic format conversion attempts
 - **Network Issues**: Offline-first architecture
 
 ### Logging & Debugging
+
 - **Structured Logging**: JSON logs for all components
 - **Error Tracking**: Comprehensive error information
 - **Performance Metrics**: Processing time monitoring
@@ -327,13 +359,15 @@ npm test
 ## 📚 Further Development
 
 ### Planned Features
+
 - **Advanced Scene Understanding**: Emotion detection, intent analysis
 - **Multi-Evidence Correlation**: Cross-reference multiple files
-- **Timeline Reconstruction**: Automatic event sequencing  
+- **Timeline Reconstruction**: Automatic event sequencing
 - **Legal Template System**: Case-specific analysis templates
 - **Mobile Integration**: Flutter app with evidence capture
 
 ### Extension Points
+
 - **Custom Models**: Support for specialized legal models
 - **Plugin System**: Third-party analysis modules
 - **Export Formats**: PDF reports, court-ready summaries
@@ -343,6 +377,7 @@ npm test
 ## 💡 Usage Tips
 
 ### Best Practices
+
 1. **Model Selection**: Use legal fine-tuned models for better analysis
 2. **Evidence Quality**: Higher resolution = better detection accuracy
 3. **Timeline Context**: Provide case background for better LLM analysis
@@ -350,6 +385,7 @@ npm test
 5. **Regular Updates**: Keep detection models current
 
 ### Troubleshooting
+
 - **Performance Issues**: Check GPU drivers, reduce video resolution
 - **Model Loading**: Verify GGUF format and file permissions
 - **Analysis Quality**: Try different prompts, adjust confidence thresholds
@@ -358,6 +394,7 @@ npm test
 ## 🤝 Contributing
 
 ### Development Setup
+
 1. **Fork Repository**: Create your feature branch
 2. **Local Setup**: Run setup-multimodal.ps1
 3. **Add Features**: Follow the architecture patterns
@@ -365,6 +402,7 @@ npm test
 5. **Document**: Update relevant documentation
 
 ### Code Standards
+
 - **Rust**: Follow clippy recommendations
 - **Python**: Black formatting, type hints
 - **TypeScript**: Strict mode, ESLint compliance
@@ -378,7 +416,8 @@ The SvelteKit scene viewer + prompt UI
 
 🧬 Qdrant RAG integration using Gemma QAT
 
-using this set up, explaini how to do this with sveltekit bootstrap? css, javascript, explain modules, compontents, for ui, ux modern day with ssr, drizzle-orm sqlite3 qdrant, markdown, typewriter effects and drag and drop-auto populate fields for easy CRUD, CMS, and export of persons of interests, crimes. *Key Features:**
+using this set up, explaini how to do this with sveltekit bootstrap? css, javascript, explain modules, compontents, for ui, ux modern day with ssr, drizzle-orm sqlite3 qdrant, markdown, typewriter effects and drag and drop-auto populate fields for easy CRUD, CMS, and export of persons of interests, crimes. \*Key Features:\*\*
+
 - **Normalized coordinates**: Anchor points work across resolutions
 - **Timeline support**: Video/audio timestamp alignment
 - **Confidence tracking**: AI certainty scores for legal review
@@ -390,22 +429,22 @@ You're building a modern SvelteKit + Bootstrap-based legal intelligence CMS with
 
 🧠 Goal: Modern Legal AI CMS
 🔑 Key Features
-Feature	Description
-Typewriter prompts	Ask the user what they’re working on (“What about Case #123…”)
-Drag-and-drop file upload	Drop in PDFs, videos, images – auto-detected, analyzed
-AI-enhanced metadata	OCR, timeline, emotion, scene, embedding, timestamps, confidence
-Auto-populated forms	Fill case forms from uploaded data (e.g., name, charge, location)
-Markdown scene viewer	Render AI-generated scene summaries for human validation
-CRUD + Export (JSON/Markdown)	Create, edit, export “persons of interest”, “charges”, “evidence”
-Embeddings & vector storage	Qdrant-ready fields for legal RAG pipelines
+Feature Description
+Typewriter prompts Ask the user what they’re working on (“What about Case #123…”)
+Drag-and-drop file upload Drop in PDFs, videos, images – auto-detected, analyzed
+AI-enhanced metadata OCR, timeline, emotion, scene, embedding, timestamps, confidence
+Auto-populated forms Fill case forms from uploaded data (e.g., name, charge, location)
+Markdown scene viewer Render AI-generated scene summaries for human validation
+CRUD + Export (JSON/Markdown) Create, edit, export “persons of interest”, “charges”, “evidence”
+Embeddings & vector storage Qdrant-ready fields for legal RAG pipelines
 
 ⚙️ TECH STACK STRUCTURE
 🧩 1. Frontend UI (SvelteKit + Bootstrap 5)
-Module	Description
-/routes/	Pages rendered by server (SSR) or client
-/components/	Reusable pieces like Typewriter, Upload, Table
-/lib/	API utils, store logic, helpers
-/api/	Endpoints for evidence parsing, DB ops (Drizzle)
+Module Description
+/routes/ Pages rendered by server (SSR) or client
+/components/ Reusable pieces like Typewriter, Upload, Table
+/lib/ API utils, store logic, helpers
+/api/ Endpoints for evidence parsing, DB ops (Drizzle)
 
 📦 2. Backend (Drizzle ORM + SQLite + Qdrant)
 SQLite is used for local testing and portability
@@ -419,30 +458,32 @@ bash
 Copy
 Edit
 /src
-  /routes
-    +page.svelte              <-- Home (typewriter + latest case)
-    /cases/[id]/+page.svelte  <-- View/edit case
-    /upload/+page.svelte      <-- Upload UI
-  /components
-    Typewriter.svelte
-    UploadArea.svelte
-    SceneRenderer.svelte
-    FormAutoFill.svelte
-  /lib
-    drizzle/schema.ts
-    api/cases.ts
-    api/qdrant.ts
-  /api
-    /parse/pdf.ts             <-- PDF to JSONL
-    /parse/image.ts           <-- OCR
-    /parse/video.ts           <-- Scene AI
+/routes
++page.svelte <-- Home (typewriter + latest case)
+/cases/[id]/+page.svelte <-- View/edit case
+/upload/+page.svelte <-- Upload UI
+/components
+Typewriter.svelte
+UploadArea.svelte
+SceneRenderer.svelte
+FormAutoFill.svelte
+/lib
+drizzle/schema.ts
+api/cases.ts
+api/qdrant.ts
+/api
+/parse/pdf.ts <-- PDF to JSONL
+/parse/image.ts <-- OCR
+/parse/video.ts <-- Scene AI
 💡 MODULAR COMPONENT DESIGN
+
 1. 🔤 Typewriter Prompt (UX)
-/components/Typewriter.svelte
+   /components/Typewriter.svelte
 
 svelte
 Copy
 Edit
+
 <script>
   export let text = '';
   let output = '';
@@ -462,6 +503,7 @@ Edit
 svelte
 Copy
 Edit
+
 <script>
   export let onUpload;
   function handleDrop(e) {
@@ -480,6 +522,7 @@ Edit
 svelte
 Copy
 Edit
+
 <script>
   export let evidence;
 </script>
@@ -496,23 +539,23 @@ ts
 Copy
 Edit
 export const cases = sqliteTable('cases', {
-  id: text('id').primaryKey(),
-  title: text('title'),
-  summary: text('summary'),
-  createdAt: integer('created_at'),
+id: text('id').primaryKey(),
+title: text('title'),
+summary: text('summary'),
+createdAt: integer('created_at'),
 });
 
 export const evidence = sqliteTable('evidence', {
-  id: text('id').primaryKey(),
-  caseId: text('case_id'),
-  fileName: text('file_name'),
-  type: text('type'), // video, image, audio
-  timestamp: real('timestamp'),
-  objects: text('objects'),
-  emotion: text('emotion'),
-  confidence: real('confidence'),
-  embedding: blob('embedding'),
-  markdownSummary: text('markdown_summary'),
+id: text('id').primaryKey(),
+caseId: text('case_id'),
+fileName: text('file_name'),
+type: text('type'), // video, image, audio
+timestamp: real('timestamp'),
+objects: text('objects'),
+emotion: text('emotion'),
+confidence: real('confidence'),
+embedding: blob('embedding'),
+markdownSummary: text('markdown_summary'),
 });
 🧠 AI SCENE ANALYSIS FLOW
 Upload Video → Analyze in Background
@@ -534,6 +577,7 @@ Compute embedding → save to Qdrant
 svelte
 Copy
 Edit
+
 <script>
   import { marked } from 'marked';
   export let markdown = '';
@@ -551,11 +595,11 @@ Edit
 import { QdrantClient } from '@qdrant/js-client-rest';
 
 export async function storeEmbedding(vec, metadata) {
-  const client = new QdrantClient({ url: 'http://localhost:6333' });
-  await client.upsert({
-    collection_name: 'evidence_embeddings',
-    points: [{ id: metadata.id, vector: vec, payload: metadata }],
-  });
+const client = new QdrantClient({ url: 'http://localhost:6333' });
+await client.upsert({
+collection_name: 'evidence_embeddings',
+points: [{ id: metadata.id, vector: vec, payload: metadata }],
+});
 }
 📤 EXPORT BUTTON
 Let users export person-of-interest as Markdown or JSON:
@@ -563,6 +607,7 @@ Let users export person-of-interest as Markdown or JSON:
 svelte
 Copy
 Edit
+
 <script>
   function exportCase() {
     const blob = new Blob([JSON.stringify(caseData, null, 2)], { type: 'application/json' });
@@ -576,25 +621,25 @@ Edit
 
 <button on:click={exportCase} class="btn btn-secondary">Export Case JSON</button>
 ✅ FEATURE CHECKLIST
-Feature	Status
-Typewriter + Case Prompt	✅ done
-Drag-and-Drop Upload	✅ done
-Auto-Fill Case Fields	✅ done
-PDF + Image + Video Parsing	🛠️ in API
-Markdown Scene Summaries	✅ rendered
-Drizzle ORM Schema	✅ defined
-Qdrant Storage	✅ template
-Export Cases	✅ JSON/MD
-Timeline + Confidence Tracking	✅ fields
+Feature Status
+Typewriter + Case Prompt ✅ done
+Drag-and-Drop Upload ✅ done
+Auto-Fill Case Fields ✅ done
+PDF + Image + Video Parsing 🛠️ in API
+Markdown Scene Summaries ✅ rendered
+Drizzle ORM Schema ✅ defined
+Qdrant Storage ✅ template
+Export Cases ✅ JSON/MD
+Timeline + Confidence Tracking ✅ fields
 
 🚀 WANT STARTER CODE?
 I can generate:
 
-SvelteKit + Bootstrap 5 boilerplate w/ all components
+SvelteKit + w/ all components
 
 API routes for /api/parse/pdf, /api/parse/image, /api/parse/video
 
-Drizzle ORM SQLite schema + seed
+Drizzle ORM, postgresql schema + seed
 
 Gemma QAT + Qdrant embedding pipeline
 
@@ -620,19 +665,19 @@ Answer in chat instead
 ✅ Next Feature: Highlighted Word Tooltips
 Here's the plan for interactive word highlights:
 
-Feature	Description
-🔍 Highlight on hover	Wrap AI-tagged words in a <span> with tooltip
-💬 Tooltip popup	Show “Create new / Send to case” options
-🧠 Embed clicked word	Store in JSON1/SQLite or Qdrant vector store
-🧩 Caching	Memoize last processed highlights locally
-📝 Annotation Editor	Optional markdown-like notes on token
+Feature Description
+🔍 Highlight on hover Wrap AI-tagged words in a <span> with tooltip
+💬 Tooltip popup Show “Create new / Send to case” options
+🧠 Embed clicked word Store in JSON1/SQLite or Qdrant vector store
+🧩 Caching Memoize last processed highlights locally
+📝 Annotation Editor Optional markdown-like notes on token
 
 ⚙️ Components to Build Next:
 /components/HighlightTooltip.svelte
 
 /lib/api/highlights.ts → store in DB + optionally embed + cache
 
-@qdrant/js-client-rest integration or SQLite JSON1 + ANN
+@qdrant/js-client-rest integration
 
 The SvelteKit scene viewer + prompt UI
 
@@ -641,7 +686,8 @@ The SvelteKit scene viewer + prompt UI
 Let me know which one you want to generate first.
 
 You said:
-using this set up, explaini how to do this with sveltekit bootstrap? css, javascript, explain modules, compontents, for ui, ux modern day with ssr, drizzle-orm sqlite3 qdrant, markdown, typewriter effects and drag and drop-auto populate fields for easy CRUD, CMS, and export of persons of interests, crimes. *Key Features:**
+using this set up, explaini how to do this with sveltekit bootstrap? css, javascript, explain modules, compontents, for ui, ux modern day with ssr, drizzle-orm sqlite3 qdrant, markdown, typewriter effects and drag and drop-auto populate fields for easy CRUD, CMS, and export of persons of interests, crimes. \*Key Features:\*\*
+
 - **Normalized coordinates**: Anchor points work across resolutions
 - **Timeline support**: Video/audio timestamp alignment
 - **Confidence tracking**: AI certainty scores for legal review
@@ -653,24 +699,24 @@ You're building a modern SvelteKit + Bootstrap-based legal intelligence CMS with
 
 🧠 Goal: Modern Legal AI CMS
 🔑 Key Features
-Feature	Description
-Typewriter prompts	Ask the user what they’re working on (“What about Case #123…”)
-Drag-and-drop file upload	Drop in PDFs, videos, images – auto-detected, analyzed
-AI-enhanced metadata	OCR, timeline, emotion, scene, embedding, timestamps, confidence
-Auto-populated forms	Fill case forms from uploaded data (e.g., name, charge, location)
-Markdown scene viewer	Render AI-generated scene summaries for human validation
-CRUD + Export (JSON/Markdown)	Create, edit, export “persons of interest”, “charges”, “evidence”
-Embeddings & vector storage	Qdrant-ready fields for legal RAG pipelines
+Feature Description
+Typewriter prompts Ask the user what they’re working on (“What about Case #123…”)
+Drag-and-drop file upload Drop in PDFs, videos, images – auto-detected, analyzed
+AI-enhanced metadata OCR, timeline, emotion, scene, embedding, timestamps, confidence
+Auto-populated forms Fill case forms from uploaded data (e.g., name, charge, location)
+Markdown scene viewer Render AI-generated scene summaries for human validation
+CRUD + Export (JSON/Markdown) Create, edit, export “persons of interest”, “charges”, “evidence”
+Embeddings & vector storage Qdrant-ready fields for legal RAG pipelines
 
 ⚙️ TECH STACK STRUCTURE
-🧩 1. Frontend UI (SvelteKit + Bootstrap 5)
-Module	Description
-/routes/	Pages rendered by server (SSR) or client
-/components/	Reusable pieces like Typewriter, Upload, Table
-/lib/	API utils, store logic, helpers
-/api/	Endpoints for evidence parsing, DB ops (Drizzle)
+🧩 1. Frontend UI (SvelteKit)
+Module Description
+/routes/ Pages rendered by server (SSR) or client
+/components/ Reusable pieces like Typewriter, Upload, Table
+/lib/ API utils, store logic, helpers
+/api/ Endpoints for evidence parsing, DB ops (Drizzle)
 
-📦 2. Backend (Drizzle ORM + SQLite + Qdrant)
+📦 2. Backend (Drizzle ORM + postgresql + Qdrant)
 SQLite is used for local testing and portability
 
 Qdrant stores embeddings for scene/evidence comparison
@@ -680,30 +726,32 @@ Drizzle ORM handles schema and type-safe queries
 🧱 FILE STRUCTURE OVERVIEW
 bash
 /src
-  /routes
-    +page.svelte              <-- Home (typewriter + latest case)
-    /cases/[id]/+page.svelte  <-- View/edit case
-    /upload/+page.svelte      <-- Upload UI
-  /components
-    Typewriter.svelte
-    UploadArea.svelte
-    SceneRenderer.svelte
-    FormAutoFill.svelte
-  /lib
-    drizzle/schema.ts
-    api/cases.ts
-    api/qdrant.ts
-  /api
-    /parse/pdf.ts             <-- PDF to JSONL
-    /parse/image.ts           <-- OCR
-    /parse/video.ts           <-- Scene AI
+/routes
++page.svelte <-- Home (typewriter + latest case)
+/cases/[id]/+page.svelte <-- View/edit case
+/upload/+page.svelte <-- Upload UI
+/components
+Typewriter.svelte
+UploadArea.svelte
+SceneRenderer.svelte
+FormAutoFill.svelte
+/lib
+drizzle/schema.ts
+api/cases.ts
+api/qdrant.ts
+/api
+/parse/pdf.ts <-- PDF to JSONL
+/parse/image.ts <-- OCR
+/parse/video.ts <-- Scene AI
 💡 MODULAR COMPONENT DESIGN
+
 1. 🔤 Typewriter Prompt (UX)
-/components/Typewriter.svelte
+   /components/Typewriter.svelte
 
 svelte
 Copy
 Edit
+
 <script>
   export let text = '';
   let output = '';
@@ -723,6 +771,7 @@ Edit
 svelte
 Copy
 Edit
+
 <script>
   export let onUpload;
   function handleDrop(e) {
@@ -741,6 +790,7 @@ Edit
 svelte
 Copy
 Edit
+
 <script>
   export let evidence;
 </script>
@@ -757,23 +807,23 @@ ts
 Copy
 Edit
 export const cases = sqliteTable('cases', {
-  id: text('id').primaryKey(),
-  title: text('title'),
-  summary: text('summary'),
-  createdAt: integer('created_at'),
+id: text('id').primaryKey(),
+title: text('title'),
+summary: text('summary'),
+createdAt: integer('created_at'),
 });
 
 export const evidence = sqliteTable('evidence', {
-  id: text('id').primaryKey(),
-  caseId: text('case_id'),
-  fileName: text('file_name'),
-  type: text('type'), // video, image, audio
-  timestamp: real('timestamp'),
-  objects: text('objects'),
-  emotion: text('emotion'),
-  confidence: real('confidence'),
-  embedding: blob('embedding'),
-  markdownSummary: text('markdown_summary'),
+id: text('id').primaryKey(),
+caseId: text('case_id'),
+fileName: text('file_name'),
+type: text('type'), // video, image, audio
+timestamp: real('timestamp'),
+objects: text('objects'),
+emotion: text('emotion'),
+confidence: real('confidence'),
+embedding: blob('embedding'),
+markdownSummary: text('markdown_summary'),
 });
 🧠 AI SCENE ANALYSIS FLOW
 Upload Video → Analyze in Background
@@ -795,6 +845,7 @@ Compute embedding → save to Qdrant
 svelte
 Copy
 Edit
+
 <script>
   import { marked } from 'marked';
   export let markdown = '';
@@ -812,11 +863,11 @@ Edit
 import { QdrantClient } from '@qdrant/js-client-rest';
 
 export async function storeEmbedding(vec, metadata) {
-  const client = new QdrantClient({ url: 'http://localhost:6333' });
-  await client.upsert({
-    collection_name: 'evidence_embeddings',
-    points: [{ id: metadata.id, vector: vec, payload: metadata }],
-  });
+const client = new QdrantClient({ url: 'http://localhost:6333' });
+await client.upsert({
+collection_name: 'evidence_embeddings',
+points: [{ id: metadata.id, vector: vec, payload: metadata }],
+});
 }
 📤 EXPORT BUTTON
 Let users export person-of-interest as Markdown or JSON:
@@ -824,6 +875,7 @@ Let users export person-of-interest as Markdown or JSON:
 svelte
 Copy
 Edit
+
 <script>
   function exportCase() {
     const blob = new Blob([JSON.stringify(caseData, null, 2)], { type: 'application/json' });
@@ -837,25 +889,25 @@ Edit
 
 <button on:click={exportCase} class="btn btn-secondary">Export Case JSON</button>
 ✅ FEATURE CHECKLIST
-Feature	Status
-Typewriter + Case Prompt	✅ done
-Drag-and-Drop Upload	✅ done
-Auto-Fill Case Fields	✅ done
-PDF + Image + Video Parsing	🛠️ in API
-Markdown Scene Summaries	✅ rendered
-Drizzle ORM Schema	✅ defined
-Qdrant Storage	✅ template
-Export Cases	✅ JSON/MD
-Timeline + Confidence Tracking	✅ fields
+Feature Status
+Typewriter + Case Prompt ✅ done
+Drag-and-Drop Upload ✅ done
+Auto-Fill Case Fields ✅ done
+PDF + Image + Video Parsing 🛠️ in API
+Markdown Scene Summaries ✅ rendered
+Drizzle ORM Schema ✅ defined
+Qdrant Storage ✅ template
+Export Cases ✅ JSON/MD
+Timeline + Confidence Tracking ✅ fields
 
 🚀 WANT STARTER CODE?
 I can generate:
 
-SvelteKit + Bootstrap 5 boilerplate w/ all components
+SvelteKit boilerplate w/ all components
 
 API routes for /api/parse/pdf, /api/parse/image, /api/parse/video
 
-Drizzle ORM SQLite schema + seed
+Drizzle ORM, schema + seed
 
 Gemma QAT + Qdrant embedding pipeline
 
@@ -881,19 +933,19 @@ Answer in chat instead
 ✅ Next Feature: Highlighted Word Tooltips
 Here's the plan for interactive word highlights:
 
-Feature	Description
-🔍 Highlight on hover	Wrap AI-tagged words in a <span> with tooltip
-💬 Tooltip popup	Show “Create new / Send to case” options
-🧠 Embed clicked word	Store in JSON1/SQLite or Qdrant vector store
-🧩 Caching	Memoize last processed highlights locally
-📝 Annotation Editor	Optional markdown-like notes on token
+Feature Description
+🔍 Highlight on hover Wrap AI-tagged words in a <span> with tooltip
+💬 Tooltip popup Show “Create new / Send to case” options
+🧠 Embed clicked word Store in postgresql or Qdrant vector store
+🧩 Caching Memoize last processed highlights locally
+📝 Annotation Editor Optional markdown-like notes on token
 
 ⚙️ Components to Build Next:
 /components/HighlightTooltip.svelte
 
 /lib/api/highlights.ts → store in DB + optionally embed + cache
 
-@qdrant/js-client-rest integration or SQLite JSON1 + ANN
+@qdrant/js-client-rest integration or PostgreSQL + ANN
 
 You said:
 I want them if you highlight the words, to on hover, send to "case"? with editable tooltip that states, "create new, send to this case" pull from database, cache them, embed them, creating vector store, json1 extension and ANN or qdrant? API routes for /api/parse/pdf, /api/parse/image, /api/parse/video
@@ -913,16 +965,16 @@ Answer in chat instead
 ✅ Next Feature: Highlighted Word Tooltips
 Here's the plan for interactive word highlights:
 
-Feature	Description
-🔍 Highlight on hover	Wrap AI-tagged words in a <span> with tooltip
-💬 Tooltip popup	Show “Create new / Send to case” options
-🧠 Embed clicked word	Store in JSON1/SQLite or Qdrant vector store
-🧩 Caching	Memoize last processed highlights locally
-📝 Annotation Editor	Optional markdown-like notes on token
+Feature Description
+🔍 Highlight on hover Wrap AI-tagged words in a <span> with tooltip
+💬 Tooltip popup Show “Create new / Send to case” options
+🧠 Embed clicked word Store in PostgreSQL or Qdrant vector store
+🧩 Caching Memoize last processed highlights locally
+📝 Annotation Editor Optional markdown-like notes on token
 
 ⚙️ Components to Build Next:
 /components/HighlightTooltip.svelte
 
 /lib/api/highlights.ts → store in DB + optionally embed + cache
 
-@qdrant/js-client-rest integration or SQLite JSON1 + ANN
+@qdrant/js-client-rest integration or PostgreSQL + ANN

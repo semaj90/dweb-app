@@ -574,6 +574,8 @@ func main() {
 		// Health and metrics
 		api.GET("/health", service.healthCheck)
 		api.GET("/metrics", service.getMetrics)
+		// GPU status
+		api.GET("/gpu-status", service.getGPUStatus)
 
 		// AI processing endpoints
 		ai := api.Group("/ai")
@@ -615,4 +617,37 @@ func main() {
 	if err := router.Run(port); err != nil {
 		log.Fatalf("❌ Failed to start server: %v", err)
 	}
+}
+
+// GPU status endpoint (lightweight; no CUDA/NVML deps required)
+func (s *LegalAIService) getGPUStatus(c *gin.Context) {
+	// Basic signal from config; extend with real CUDA/NVML probing in gpu_service.go later
+	available := s.config.EnableGPU
+	deviceID := s.config.CUDADeviceID
+
+	resp := gin.H{
+		"available": available,
+		"cuda": gin.H{
+			"available": available,
+			"device_id": deviceID,
+		},
+		"device": gin.H{
+			// Placeholder name; replace with actual GPU name when CUDA/NVML integrated
+			"name": func() string {
+				if available {
+					return "NVIDIA GPU"
+				}
+				return ""
+			}(),
+		},
+		// Memory/temperature placeholders; fill using CUDA APIs when wired
+		"memory": gin.H{
+			"free":  nil,
+			"total": nil,
+			"used":  nil,
+		},
+		"temperature_c": nil,
+	}
+
+	c.JSON(http.StatusOK, resp)
 }

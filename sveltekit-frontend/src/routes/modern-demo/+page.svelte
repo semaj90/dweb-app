@@ -114,8 +114,8 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <header class="container mx-auto px-4">
+<div class="space-y-4">
+  <header class="space-y-4">
     <h1>Modern SvelteKit Components Demo</h1>
     <p>
       Showcasing modern layout techniques, command menus, and interactive
@@ -129,8 +129,8 @@
     bind:collapsed={sidebarCollapsed}
     on:toggle={(e) => console.log("Sidebar toggled:", e.detail.collapsed)}
   >
-    <div class="container mx-auto px-4" slot="default">
-      <section class="container mx-auto px-4">
+    <div class="space-y-4" slot="default">
+      <section class="space-y-4">
         <h2>📝 Smart Textarea with Command Menu</h2>
         <p>
           This textarea integrates a command menu system. Try typing <code
@@ -150,7 +150,7 @@
         />
       </section>
 
-      <section class="container mx-auto px-4">
+      <section class="space-y-4">
         <h2>🎨 Hover-Expanding Grid</h2>
         <p>
           This grid starts with 1 column and expands to 3 columns on hover.
@@ -164,7 +164,7 @@
           on:expand={handleGridExpand}
         >
           {#each sampleEvidence as evidence}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <EvidenceCard
                 {evidence}
                 onView={handleEvidenceView}
@@ -179,42 +179,42 @@
         </ExpandGrid>
       </section>
 
-      <section class="container mx-auto px-4">
+      <section class="space-y-4">
         <h2>⚡ Fast SvelteKit Navigation</h2>
         <p>
           These links use standard <code>&lt;a&gt;</code> tags but SvelteKit automatically
           intercepts them for fast, SPA-style navigation without page refreshes.
         </p>
 
-        <div class="container mx-auto px-4">
-          <a href="/cases" class="container mx-auto px-4">📁 Cases</a>
-          <a href="/evidence" class="container mx-auto px-4">🔍 Evidence</a>
-          <a href="/search" class="container mx-auto px-4">🔎 Search</a>
-          <a href="/ai-assistant" class="container mx-auto px-4">🤖 AI Assistant</a>
-          <a href="/reports" class="container mx-auto px-4">📊 Reports</a>
+        <div class="space-y-4">
+          <a href="/cases" class="space-y-4">📁 Cases</a>
+          <a href="/evidence" class="space-y-4">🔍 Evidence</a>
+          <a href="/search" class="space-y-4">🔎 Search</a>
+          <a href="/ai-assistant" class="space-y-4">🤖 AI Assistant</a>
+          <a href="/reports" class="space-y-4">📊 Reports</a>
         </div>
       </section>
 
-      <section class="container mx-auto px-4">
+      <section class="space-y-4">
         <h2>🎯 Features Demonstrated</h2>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <h3>Golden Ratio Layout</h3>
             <p>
               Sidebar uses the golden ratio (1.618:1) for optimal visual balance
             </p>
           </div>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h3>Command Menu</h3>
             <p>Slash commands and keyboard shortcuts for power users</p>
           </div>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h3>Smart Components</h3>
             <p>
               Context-aware interactions with real-time search and filtering
             </p>
           </div>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <h3>Responsive Design</h3>
             <p>Adapts to different screen sizes with mobile-first approach</p>
           </div>
@@ -222,44 +222,44 @@
       </section>
     </div>
 
-    <div class="container mx-auto px-4" slot="sidebar">
+    <div class="space-y-4" slot="sidebar">
       <h3>📋 Citations</h3>
       <p>Recent citations from your library:</p>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#each citationStore.getRecentCitations($citationStore, 5) as citation}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">{citation.title}</div>
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">{citation.title}</div>
+            <div class="space-y-4">
               {citation.source || citation.author}
             </div>
-            <div class="container mx-auto px-4">{citation.date}</div>
+            <div class="space-y-4">{citation.date}</div>
           </div>
         {/each}
       </div>
 
       <h3>🔧 Keyboard Shortcuts</h3>
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           <kbd>Ctrl</kbd> + <kbd>K</kbd>
           <span>Open command menu</span>
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <kbd>#</kbd>
           <span>Trigger command menu</span>
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <kbd>Ctrl</kbd> + <kbd>\</kbd>
           <span>Toggle sidebar</span>
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <kbd>Ctrl</kbd> + <kbd>1-4</kbd>
           <span>Switch tabs</span>
         </div>
       </div>
 
       <h3>🎨 CSS Features</h3>
-      <ul class="container mx-auto px-4">
+      <ul class="space-y-4">
         <li>CSS Grid with dynamic columns</li>
         <li>Flexbox golden ratio layouts</li>
         <li>Smooth transitions and animations</li>

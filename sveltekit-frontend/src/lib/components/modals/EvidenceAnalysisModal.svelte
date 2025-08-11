@@ -1,7 +1,17 @@
 <!-- Evidence Analysis Modal with LLM integration -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { fade, fly } from 'svelte/transition';
+  interface Props {
+    onevidenceUpdated?: (event?: any) => void;
+    onsaveAnalysis?: (event?: any) => void;
+  }
+  let {
+    open = false,
+    evidence
+  }: Props = $props();
+
+
+
+    import { fade, fly } from 'svelte/transition';
   import { Dialog } from '$lib/components/ui/dialog/Dialog.svelte';
   import Grid from '$lib/components/ui/grid/Grid.svelte';
   import GridItem from '$lib/components/ui/grid/GridItem.svelte';
@@ -12,9 +22,7 @@
   // Icons
   import { FileText, Brain, Tag, Scale, Zap, Download, Upload, Sparkles } from 'lucide-svelte';
 
-  export let open: boolean = false;
-  export let evidence: {
-    id: string;
+        id: string;
     content: string;
     type: string;
     caseId?: string;
@@ -35,8 +43,7 @@
     }>;
   } | null = null;
 
-  const dispatch = createEventDispatcher();
-
+  
   let isAnalyzing = false;
   let newTags: string = '';
   let analysisMode: 'quick' | 'detailed' | 'legal' = 'detailed';
@@ -61,7 +68,7 @@
       const result = await response.json();
       if (result.success) {
         evidence = { ...evidence, ...result.evidence };
-        dispatch('evidenceUpdated', evidence);
+        onevidenceUpdated?.();
 }
     } catch (error) {
       console.error('Analysis failed:', error);
@@ -88,7 +95,7 @@
       if (result.success) {
         evidence = { ...evidence, tags: result.evidence.tags };
         newTags = '';
-        dispatch('evidenceUpdated', evidence);
+        onevidenceUpdated?.();
 }
     } catch (error) {
       console.error('Tag update failed:', error);
@@ -118,24 +125,24 @@
   </svelte:fragment>
 
   {#if evidence}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Evidence Header -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <FileText class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <FileText class="space-y-4" />
           </div>
           <div>
-            <h3 class="container mx-auto px-4">
+            <h3 class="space-y-4">
               {evidence.type} Evidence
             </h3>
-            <p class="container mx-auto px-4">ID: {evidence.id}</p>
+            <p class="space-y-4">ID: {evidence.id}</p>
           </div>
         </div>
         
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <Button variant="secondary" size="sm">
-            <Download class="container mx-auto px-4" />
+            <Download class="space-y-4" />
             Export
           </Button>
           <Button 
@@ -145,10 +152,10 @@
             disabled={isAnalyzing}
           >
             {#if isAnalyzing}
-              <div class="container mx-auto px-4"></div>
+              <div class="space-y-4"></div>
               Analyzing...
             {:else}
-              <Brain class="container mx-auto px-4" />
+              <Brain class="space-y-4" />
               Re-analyze
             {/if}
           </Button>
@@ -160,9 +167,9 @@
         
         <!-- Evidence Content -->
         <GridItem colSpan={8}>
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">Evidence Content</h4>
-            <p class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h4 class="space-y-4">Evidence Content</h4>
+            <p class="space-y-4">
               {evidence.content}
             </p>
           </div>
@@ -170,15 +177,15 @@
 
         <!-- Quick Stats -->
         <GridItem colSpan={4}>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <!-- Relevance Score -->
             {#if evidence.analysis?.relevance}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <span class="container mx-auto px-4">Relevance Score</span>
-                  <Scale class="container mx-auto px-4" />
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <span class="space-y-4">Relevance Score</span>
+                  <Scale class="space-y-4" />
                 </div>
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   {evidence.analysis.relevance}/10
                 </div>
               </div>
@@ -186,12 +193,12 @@
 
             <!-- Admissibility -->
             {#if evidence.analysis?.admissibility}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <span class="container mx-auto px-4">Admissibility</span>
-                  <Zap class="container mx-auto px-4" />
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <span class="space-y-4">Admissibility</span>
+                  <Zap class="space-y-4" />
                 </div>
-                <span class="container mx-auto px-4">
+                <span class="space-y-4">
                   {evidence.analysis.admissibility}
                 </span>
               </div>
@@ -202,9 +209,9 @@
         <!-- Analysis Section -->
         {#if evidence.analysis}
           <GridItem colSpan={12}>
-            <div class="container mx-auto px-4">
-              <h4 class="container mx-auto px-4">
-                <Sparkles class="container mx-auto px-4" />
+            <div class="space-y-4">
+              <h4 class="space-y-4">
+                <Sparkles class="space-y-4" />
                 AI Analysis
               </h4>
               
@@ -212,8 +219,8 @@
                 <!-- Summary -->
                 <GridItem colSpan={6}>
                   <div>
-                    <h5 class="container mx-auto px-4">Summary</h5>
-                    <p class="container mx-auto px-4">
+                    <h5 class="space-y-4">Summary</h5>
+                    <p class="space-y-4">
                       {evidence.analysis.summary}
                     </p>
                   </div>
@@ -222,11 +229,11 @@
                 <!-- Key Points -->
                 <GridItem colSpan={6}>
                   <div>
-                    <h5 class="container mx-auto px-4">Key Points</h5>
-                    <ul class="container mx-auto px-4">
+                    <h5 class="space-y-4">Key Points</h5>
+                    <ul class="space-y-4">
                       {#each evidence.analysis.keyPoints as point}
-                        <li class="container mx-auto px-4">
-                          <span class="container mx-auto px-4"></span>
+                        <li class="space-y-4">
+                          <span class="space-y-4"></span>
                           {point}
                         </li>
                       {/each}
@@ -237,8 +244,8 @@
                 <!-- Legal Reasoning -->
                 <GridItem colSpan={12}>
                   <div>
-                    <h5 class="container mx-auto px-4">Legal Reasoning</h5>
-                    <p class="container mx-auto px-4">
+                    <h5 class="space-y-4">Legal Reasoning</h5>
+                    <p class="space-y-4">
                       {evidence.analysis.reasoning}
                     </p>
                   </div>
@@ -250,30 +257,30 @@
 
         <!-- Tags Section -->
         <GridItem colSpan={8}>
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">
-              <Tag class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <h4 class="space-y-4">
+              <Tag class="space-y-4" />
               Tags
             </h4>
             
             <!-- Existing Tags -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each evidence.tags || [] as tag}
                 <Badge variant="secondary">{tag}</Badge>
               {/each}
               {#each evidence.analysis?.suggestedTags || [] as tag}
-                <Badge variant="secondary" class="container mx-auto px-4">
-                  {tag} <span class="container mx-auto px-4">(suggested)</span>
+                <Badge variant="secondary" class="space-y-4">
+                  {tag} <span class="space-y-4">(suggested)</span>
                 </Badge>
               {/each}
             </div>
 
             <!-- Add Tags -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <Input
                 bind:value={newTags}
                 placeholder="Add tags (comma-separated)"
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
               <Button size="sm" on:click={() => updateTags()} disabled={!newTags.trim()}>
                 Add
@@ -284,13 +291,13 @@
 
         <!-- Similar Evidence -->
         <GridItem colSpan={4}>
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">Similar Evidence</h4>
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h4 class="space-y-4">Similar Evidence</h4>
+            <div class="space-y-4">
               {#each evidence.similarEvidence || [] as similar}
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">Similarity: {(similar.similarity * 100).toFixed(0)}%</div>
-                  <p class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">Similarity: {(similar.similarity * 100).toFixed(0)}%</div>
+                  <p class="space-y-4">
                     {similar.content.substring(0, 80)}...
                   </p>
                 </div>
@@ -306,7 +313,7 @@
     <Button variant="secondary" on:click={() => close()}>
       Close
     </Button>
-    <Button variant="primary" on:click={() => dispatch('saveAnalysis', evidence)}>
+    <Button variant="primary" on:click={() => onsaveAnalysis?.()}>
       Save Analysis
     </Button>
   </svelte:fragment>

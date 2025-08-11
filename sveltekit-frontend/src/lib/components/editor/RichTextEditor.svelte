@@ -1,13 +1,23 @@
 <script lang="ts">
+  interface Props {
+    height?: any;
+    disabled?: any;
+    placeholder?: any;
+  }
+  let {
+    height = 500,
+    disabled = false,
+    placeholder = 'Begin writing your report...'
+  }: Props = $props();
+
+
+
   import { onMount, onDestroy } from 'svelte';
   import Editor from '@tinymce/tinymce-svelte';
   import { report, reportActions, editorState } from '$lib/stores/report';
   
   export const initialValue = '';
-  export let height = 500;
-  export let disabled = false;
-  export let placeholder = 'Begin writing your report...';
-  
+        
   let editorInstance: any;
   let isInitialized = false;
   
@@ -147,12 +157,12 @@
   
   export const insertEvidence = (evidence: any) => {
     const evidenceHtml = `
-      <div class="container mx-auto px-4" data-evidence-id="${evidence.id}">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4" data-evidence-id="${evidence.id}">
+        <div class="space-y-4">
           <strong>${evidence.title}</strong>
-          <span class="container mx-auto px-4">(${evidence.evidenceType || evidence.type})</span>
+          <span class="space-y-4">(${evidence.evidenceType || evidence.type})</span>
         </div>
-        ${evidence.description ? `<p class="container mx-auto px-4">${evidence.description}</p>` : ''}
+        ${evidence.description ? `<p class="space-y-4">${evidence.description}</p>` : ''}
         ${evidence.url ? `<a href="${evidence.url}" target="_blank">View Evidence</a>` : ''}
       </div>
     `;
@@ -172,7 +182,7 @@
   });
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <Editor
     {disabled}
     bind:value={$report.content}

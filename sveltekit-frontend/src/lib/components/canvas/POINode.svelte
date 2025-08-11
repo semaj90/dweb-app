@@ -1,6 +1,16 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { draggable } from '$lib/actions/draggable';
+  interface Props {
+    onupdate?: (event?: any) => void;
+    onupdatePosition?: (event?: any) => void;
+    ondelete?: (event?: any) => void;
+  }
+  let {
+    poi
+  }: Props = $props();
+
+
+
+    import { draggable } from '$lib/actions/draggable';
   import { aiService } from '$lib/services/aiService';
 // UI Components
   import Badge from "$lib/components/ui/Badge.svelte";
@@ -16,8 +26,7 @@ import Input from "$lib/components/ui/Input.svelte";
   // Icons
   import { Edit, Save, Sparkles, Tag, User as UserIcon, X } from "lucide-svelte";
 
-  const dispatch = createEventDispatcher();
-
+  
   // Simple POI interface for the component
   interface POIData {
     id: string;
@@ -39,8 +48,7 @@ import Input from "$lib/components/ui/Input.svelte";
     tags?: string[];
     createdBy?: string;
 }
-  export let poi: POIData;
-
+  
   let nodeElement: HTMLElement;
   let isEditing = false;
   let showContextMenu = false;
@@ -122,7 +130,7 @@ import Input from "$lib/components/ui/Input.svelte";
     profileData = updatedPoi.profileData;
 
     // Dispatch update event
-    dispatch("update", updatedPoi);
+    onupdate?.();
 
     isEditing = false;
 }
@@ -179,7 +187,7 @@ import Input from "$lib/components/ui/Input.svelte";
     posY = event.detail.y;
 
     // Dispatch position update event
-    dispatch("updatePosition", { id: poi.id, x: posX, y: posY });
+    onupdatePosition?.();
 }
 </script>
 
@@ -187,13 +195,13 @@ import Input from "$lib/components/ui/Input.svelte";
   <ContextMenu.Trigger asChild={false}>
     <div
       bind:this={nodeElement}
-      class="container mx-auto px-4"
+      class="space-y-4"
       style="left: {posX}px; top: {posY}px; z-index: 10;"
       use:draggable={{
         onDrag: (x, y) => {
           posX = x;
           posY = y;
-          dispatch("updatePosition", { id: poi.id, x: posX, y: posY });
+          onupdatePosition?.();
         }
       }}
       on:contextmenu={handleContextMenu}
@@ -325,14 +333,14 @@ import Input from "$lib/components/ui/Input.svelte";
       </div>
     </div>
   </ContextMenu.Trigger>
-  <ContextMenu.Content menu={showContextMenu} class="container mx-auto px-4">
+  <ContextMenu.Content menu={showContextMenu} class="space-y-4">
     <ContextMenu.Item on:select={startEditing}>
-      <Edit class="container mx-auto px-4" />
+      <Edit class="space-y-4" />
       Edit Profile
     </ContextMenu.Item>
 
     <ContextMenu.Item on:select={summarizePOI}>
-      <Sparkles class="container mx-auto px-4" />
+      <Sparkles class="space-y-4" />
       AI Summary
     </ContextMenu.Item>
 
@@ -341,10 +349,10 @@ import Input from "$lib/components/ui/Input.svelte";
     <ContextMenu.Item
       on:select={() => {
         threatLevel = "low";
-        dispatch("update", { ...poi, threatLevel: "low" });
+        onupdate?.();
       }}
     >
-      <Badge variant="secondary" class="container mx-auto px-4">
+      <Badge variant="secondary" class="space-y-4">
         Low
       </Badge>
       Low
@@ -352,10 +360,10 @@ import Input from "$lib/components/ui/Input.svelte";
     <ContextMenu.Item
       on:select={() => {
         threatLevel = "medium";
-        dispatch("update", { ...poi, threatLevel: "medium" });
+        onupdate?.();
       }}
     >
-      <Badge variant="secondary" class="container mx-auto px-4">
+      <Badge variant="secondary" class="space-y-4">
         Medium
       </Badge>
       Medium
@@ -363,10 +371,10 @@ import Input from "$lib/components/ui/Input.svelte";
     <ContextMenu.Item
       on:select={() => {
         threatLevel = "high";
-        dispatch("update", { ...poi, threatLevel: "high" });
+        onupdate?.();
       }}
     >
-      <Badge variant="secondary" class="container mx-auto px-4">
+      <Badge variant="secondary" class="space-y-4">
         High
       </Badge>
       High
@@ -374,8 +382,8 @@ import Input from "$lib/components/ui/Input.svelte";
 
     <ContextMenu.Separator />
 
-    <ContextMenu.Item on:select={() => dispatch("delete", poi.id)}>
-      <X class="container mx-auto px-4" />
+    <ContextMenu.Item on:select={() => ondelete?.()}>
+      <X class="space-y-4" />
       Delete POI
     </ContextMenu.Item>
   </ContextMenu.Content>

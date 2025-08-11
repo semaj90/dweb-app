@@ -297,7 +297,7 @@ export function createTableStats(tableId: string) {
 }
 
 // Export types and utilities
-export type { TableState, TableNotification };
+// TableState and TableNotification are already exported as interfaces above
 
 // Legal AI specific table configurations
 export const legalAITableConfigs = {

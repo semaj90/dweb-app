@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    showPanel?: any;
+  }
+  let {
+    showPanel = false
+  }: Props = $props();
+
+
+
   import { browser } from "$app/environment";
   import { Button } from "$lib/components/ui/button";
   import { notifications } from "$lib/stores/notification";
@@ -12,8 +21,7 @@
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  export let showPanel = false;
-
+  
   interface AccessibilityIssue {
     id: string;
     severity: "error" | "warning" | "info";
@@ -448,7 +456,7 @@
 
 {#if showPanel}
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
     on:click={() => (showPanel = false)}
     on:keydown={(e) => e.key === 'Escape' && (showPanel = false)}
     role="dialog"
@@ -456,13 +464,13 @@
     aria-labelledby="accessibility-panel-title"
   >
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
       on:click|stopPropagation
       role="document"
     >
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h2 id="accessibility-panel-title" class="container mx-auto px-4">Accessibility Panel</h2>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h2 id="accessibility-panel-title" class="space-y-4">Accessibility Panel</h2>
           <Button
             variant="ghost"
             size="sm"
@@ -474,54 +482,54 @@
         </div>
 
         <!-- Accessibility Settings -->
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">Accessibility Settings</h3>
+        <div class="space-y-4">
+          <h3 class="space-y-4">Accessibility Settings</h3>
 
-          <div class="container mx-auto px-4">
-            <label class="container mx-auto px-4">
+          <div class="space-y-4">
+            <label class="space-y-4">
               <input
                 type="checkbox"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 bind:checked={highContrast}
                 on:change={applyAccessibilitySettings}
               />
               <span>High Contrast</span>
             </label>
 
-            <label class="container mx-auto px-4">
+            <label class="space-y-4">
               <input
                 type="checkbox"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 bind:checked={reducedMotion}
                 on:change={applyAccessibilitySettings}
               />
               <span>Reduced Motion</span>
             </label>
 
-            <label class="container mx-auto px-4">
+            <label class="space-y-4">
               <input
                 type="checkbox"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 bind:checked={largeText}
                 on:change={applyAccessibilitySettings}
               />
               <span>Large Text</span>
             </label>
 
-            <label class="container mx-auto px-4">
+            <label class="space-y-4">
               <input
                 type="checkbox"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 bind:checked={keyboardNavigation}
                 on:change={applyAccessibilitySettings}
               />
               <span>Enhanced Keyboard Navigation</span>
             </label>
 
-            <label class="container mx-auto px-4">
+            <label class="space-y-4">
               <input
                 type="checkbox"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 bind:checked={screenReaderMode}
                 on:change={applyAccessibilitySettings}
               />
@@ -531,33 +539,33 @@
         </div>
 
         <!-- Audit Section -->
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">Accessibility Audit</h3>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">Accessibility Audit</h3>
             <Button
               size="sm"
               onclick={() => runAccessibilityAudit()}
               disabled={isAuditing}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {#if isAuditing}
-                <div class="container mx-auto px-4"></div>
+                <div class="space-y-4"></div>
                 Auditing...
               {:else}
-                <RefreshCw class="container mx-auto px-4" />
+                <RefreshCw class="space-y-4" />
                 Run Audit
               {/if}
             </Button>
           </div>
 
           {#if isAuditing}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
+            <div class="space-y-4">
+              <div class="space-y-4">
                 <span>Scanning page...</span>
                 <span>{Math.round(auditProgress)}%</span>
               </div>
               <progress
-                class="container mx-auto px-4"
+                class="space-y-4"
                 value={auditProgress}
                 max="100"
               ></progress>
@@ -566,23 +574,23 @@
 
           {#if auditResults.length > 0}
             <!-- Audit Summary -->
-            <div class="container mx-auto px-4">
-              <h4 class="container mx-auto px-4">Audit Summary</h4>
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <XCircle class="container mx-auto px-4" />
+            <div class="space-y-4">
+              <h4 class="space-y-4">Audit Summary</h4>
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <XCircle class="space-y-4" />
                   <span>{errorCount} Errors</span>
                 </div>
-                <div class="container mx-auto px-4">
-                  <AlertTriangle class="container mx-auto px-4" />
+                <div class="space-y-4">
+                  <AlertTriangle class="space-y-4" />
                   <span>{warningCount} Warnings</span>
                 </div>
-                <div class="container mx-auto px-4">
-                  <Info class="container mx-auto px-4" />
+                <div class="space-y-4">
+                  <Info class="space-y-4" />
                   <span>{infoCount} Info</span>
                 </div>
-                <div class="container mx-auto px-4">
-                  <CheckCircle class="container mx-auto px-4" />
+                <div class="space-y-4">
+                  <CheckCircle class="space-y-4" />
                   <span>{totalIssues} Total</span>
                 </div>
               </div>
@@ -590,33 +598,33 @@
               <Button
                 variant="outline"
                 size="sm"
-                class="container mx-auto px-4"
+                class="space-y-4"
                 onclick={() => exportAuditResults()}
               >
-                <Download class="container mx-auto px-4" />
+                <Download class="space-y-4" />
                 Export Report
               </Button>
             </div>
 
             <!-- Audit Results -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each auditResults as issue}
                 {@const IconComponent = getSeverityIcon(issue.severity)}
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">
                     <IconComponent
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     />
-                    <div class="container mx-auto px-4">
-                      <div class="container mx-auto px-4">{issue.description}</div>
-                      <div class="container mx-auto px-4">
+                    <div class="space-y-4">
+                      <div class="space-y-4">{issue.description}</div>
+                      <div class="space-y-4">
                         Element: {issue.element}
                       </div>
-                      <div class="container mx-auto px-4">
+                      <div class="space-y-4">
                         {issue.suggestion}
                       </div>
                       {#if issue.wcagGuideline}
-                        <div class="container mx-auto px-4">
+                        <div class="space-y-4">
                           {issue.wcagGuideline}
                         </div>
                       {/if}

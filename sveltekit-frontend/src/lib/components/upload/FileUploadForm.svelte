@@ -7,7 +7,7 @@
     CardDescription,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/card";
+  } from "$lib/components/ui/Card";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Progress } from "$lib/components/ui/progress";

@@ -267,53 +267,53 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <h1 class="container mx-auto px-4">
-      <Upload class="container mx-auto px-4" />
+    <h1 class="space-y-4">
+      <Upload class="space-y-4" />
       Data Import
     </h1>
-    <p class="container mx-auto px-4">
+    <p class="space-y-4">
       Import cases, evidence, and participant data from JSON, CSV, or XML files
     </p>
   </div>
 
-  <div class="container mx-auto px-4">
+  <div class="space-y-4">
     <!-- Main Import Panel -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- File Upload Section -->
-      <div class="container mx-auto px-4">
-        <h2 class="container mx-auto px-4">
-          <FileText class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <h2 class="space-y-4">
+          <FileText class="space-y-4" />
           Select Import File
         </h2>
 
         <!-- Drag and Drop Area -->
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
           class:border-blue-400={dragActive}
           class:bg-blue-50={dragActive}
           class:border-gray-300={!dragActive}
         >
           {#if importFile}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <FileText class="container mx-auto px-4" />
-                <div class="container mx-auto px-4">
-                  <p class="container mx-auto px-4">{importFile.name}</p>
-                  <p class="container mx-auto px-4">
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <FileText class="space-y-4" />
+                <div class="space-y-4">
+                  <p class="space-y-4">{importFile.name}</p>
+                  <p class="space-y-4">
                     {(importFile.size / 1024).toFixed(1)} KB • {importFile.type ||
                       "Unknown type"}
                   </p>
                 </div>
               </div>
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <Tooltip content="Preview file contents">
                   <Button variant="outline" size="sm" disabled={!filePreview}>
-                    <Eye class="container mx-auto px-4" />
+                    <Eye class="space-y-4" />
                     Preview
                   </Button>
                 </Tooltip>
@@ -323,20 +323,20 @@
                     size="sm"
                     on:click={() => clearImport()}
                   >
-                    <X class="container mx-auto px-4" />
+                    <X class="space-y-4" />
                     Remove
                   </Button>
                 </Tooltip>
               </div>
             </div>
           {:else}
-            <div class="container mx-auto px-4">
-              <Upload class="container mx-auto px-4" />
+            <div class="space-y-4">
+              <Upload class="space-y-4" />
               <div>
-                <p class="container mx-auto px-4">
+                <p class="space-y-4">
                   Drop your file here
                 </p>
-                <p class="container mx-auto px-4">or click to browse</p>
+                <p class="space-y-4">or click to browse</p>
               </div>
               <Button variant="outline" on:click={() => fileInput?.click()}>
                 Select File
@@ -351,24 +351,24 @@
           type="file"
           accept=".json,.csv,.xml"
           on:change={handleFileInput}
-          class="container mx-auto px-4"
+          class="space-y-4"
           aria-label="Select import file"
         />
 
         <!-- Import Options -->
         {#if importFile}
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <div>
               <label
                 for="import-type"
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 Import Type
               </label>
               <select
                 id="import-type"
                 bind:value={importType}
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 {#each supportedTypes as type}
                   <option value={type.value}>{type.label}</option>
@@ -376,20 +376,20 @@
               </select>
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <input
                 id="overwrite"
                 type="checkbox"
                 bind:checked={overwriteExisting}
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
-              <label for="overwrite" class="container mx-auto px-4">
+              <label for="overwrite" class="space-y-4">
                 Overwrite existing records with same ID
               </label>
               <Tooltip
                 content="If enabled, existing records with matching IDs will be updated. Otherwise, they will be skipped."
               >
-                <AlertCircle class="container mx-auto px-4" />
+                <AlertCircle class="space-y-4" />
               </Tooltip>
             </div>
           </div>
@@ -398,16 +398,16 @@
 
       <!-- File Preview Section -->
       {#if filePreview}
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">
-            <Eye class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <h3 class="space-y-4">
+            <Eye class="space-y-4" />
             File Preview
           </h3>
 
           {#if filePreview.type === "json"}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <pre
-                class="container mx-auto px-4">{JSON.stringify(
+                class="space-y-4">{JSON.stringify(
                   filePreview.data,
                   null,
                   2
@@ -417,13 +417,13 @@
                   : ""}</pre>
             </div>
           {:else if filePreview.type === "csv"}
-            <div class="container mx-auto px-4">
-              <table class="container mx-auto px-4">
+            <div class="space-y-4">
+              <table class="space-y-4">
                 <tbody>
                   {#each filePreview.data as row, i}
                     <tr class:bg-white={i % 2 === 0}>
                       {#each row.split(",") as cell}
-                        <td class="container mx-auto px-4"
+                        <td class="space-y-4"
                           >{cell.replace(/"/g, "")}</td
                         >
                       {/each}
@@ -433,9 +433,9 @@
               </table>
             </div>
           {:else}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <pre
-                class="container mx-auto px-4">{filePreview.raw}</pre>
+                class="space-y-4">{filePreview.raw}</pre>
             </div>
           {/if}
         </div>
@@ -443,42 +443,42 @@
 
       <!-- Import Results -->
       {#if importResults}
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">
+        <div class="space-y-4">
+          <h3 class="space-y-4">
             {#if importResults.success}
-              <CheckCircle class="container mx-auto px-4" />
+              <CheckCircle class="space-y-4" />
             {:else}
-              <AlertCircle class="container mx-auto px-4" />
+              <AlertCircle class="space-y-4" />
             {/if}
             Import Results
           </h3>
 
           {#if importResults.success}
-            <div class="container mx-auto px-4">
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
+            <div class="space-y-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
                   {importResults.results.imported}
                 </div>
-                <div class="container mx-auto px-4">Imported</div>
+                <div class="space-y-4">Imported</div>
               </div>
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
                   {importResults.results.updated}
                 </div>
-                <div class="container mx-auto px-4">Updated</div>
+                <div class="space-y-4">Updated</div>
               </div>
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">
                   {importResults.results.skipped}
                 </div>
-                <div class="container mx-auto px-4">Skipped</div>
+                <div class="space-y-4">Skipped</div>
               </div>
             </div>
 
             {#if importResults.results.errors.length > 0}
-              <div class="container mx-auto px-4">
-                <h4 class="container mx-auto px-4">Errors:</h4>
-                <ul class="container mx-auto px-4">
+              <div class="space-y-4">
+                <h4 class="space-y-4">Errors:</h4>
+                <ul class="space-y-4">
                   {#each importResults.results.errors as error}
                     <li>• {error}</li>
                   {/each}
@@ -486,8 +486,8 @@
               </div>
             {/if}
           {:else}
-            <div class="container mx-auto px-4">
-              <p class="container mx-auto px-4">{importResults.error}</p>
+            <div class="space-y-4">
+              <p class="space-y-4">{importResults.error}</p>
             </div>
           {/if}
         </div>
@@ -495,26 +495,26 @@
 
       <!-- Import Action -->
       {#if importFile}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
             <Button
               on:click={() => performImport()}
               disabled={isImporting}
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
               {#if isImporting}
                 <div
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 ></div>
                 Importing...
               {:else}
-                <Upload class="container mx-auto px-4" />
+                <Upload class="space-y-4" />
                 Import Data
               {/if}
             </Button>
             <Tooltip content="Clear current import and start over">
               <Button variant="outline" on:click={() => clearImport()}>
-                <X class="container mx-auto px-4" />
+                <X class="space-y-4" />
                 Cancel
               </Button>
             </Tooltip>
@@ -524,18 +524,18 @@
     </div>
 
     <!-- Sidebar -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Example Templates -->
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">
-          <Download class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <h3 class="space-y-4">
+          <Download class="space-y-4" />
           Example Templates
         </h3>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <div>
-            <h4 class="container mx-auto px-4">Cases</h4>
-            <div class="container mx-auto px-4">
+            <h4 class="space-y-4">Cases</h4>
+            <div class="space-y-4">
               <Tooltip content="Download JSON example for cases">
                 <Button
                   variant="outline"
@@ -558,8 +558,8 @@
           </div>
 
           <div>
-            <h4 class="container mx-auto px-4">Evidence</h4>
-            <div class="container mx-auto px-4">
+            <h4 class="space-y-4">Evidence</h4>
+            <div class="space-y-4">
               <Tooltip content="Download JSON example for evidence">
                 <Button
                   variant="outline"
@@ -584,11 +584,11 @@
       </div>
 
       <!-- Format Guidelines -->
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">
           Import Guidelines
         </h3>
-        <ul class="container mx-auto px-4">
+        <ul class="space-y-4">
           <li>• Use JSON for complex data with nested objects</li>
           <li>• Use CSV for simple tabular data</li>
           <li>• Include all required fields for each record</li>
@@ -599,24 +599,24 @@
       </div>
 
       <!-- Quick Actions -->
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">Quick Actions</h3>
-        <div class="container mx-auto px-4">
-          <a href="/export" class="container mx-auto px-4">
-            <Button variant="outline" class="container mx-auto px-4">
-              <Download class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <h3 class="space-y-4">Quick Actions</h3>
+        <div class="space-y-4">
+          <a href="/export" class="space-y-4">
+            <Button variant="outline" class="space-y-4">
+              <Download class="space-y-4" />
               Export Data
             </Button>
           </a>
-          <a href="/cases" class="container mx-auto px-4">
-            <Button variant="outline" class="container mx-auto px-4">
-              <Database class="container mx-auto px-4" />
+          <a href="/cases" class="space-y-4">
+            <Button variant="outline" class="space-y-4">
+              <Database class="space-y-4" />
               View Cases
             </Button>
           </a>
-          <a href="/evidence" class="container mx-auto px-4">
-            <Button variant="outline" class="container mx-auto px-4">
-              <FileText class="container mx-auto px-4" />
+          <a href="/evidence" class="space-y-4">
+            <Button variant="outline" class="space-y-4">
+              <FileText class="space-y-4" />
               View Evidence
             </Button>
           </a>

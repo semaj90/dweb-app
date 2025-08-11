@@ -1,12 +1,15 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-	import { aiStore } from "../stores/canvas";
+  interface Props {
+    onaiRequest?: (event?: any) => void;
+  }
+
+
+		import { aiStore } from "../stores/canvas";
 	import Dialog from './Dialog.svelte';
 
 	import { Sparkles, Bot } from 'lucide-svelte';
 
-	const dispatch = createEventDispatcher();
-
+	
 	// Reactive state
 	$: dialogOpen = $aiStore.dialogOpen;
 	$: isGenerating = $aiStore.isGenerating;
@@ -18,27 +21,27 @@
 		}));
 }
 	function handleAIRequest(event: CustomEvent) {
-		dispatch('aiRequest', event.detail);
+		onaiRequest?.();
 }
 </script>
 
 <!-- Floating Action Button -->
 <button
-	class="container mx-auto px-4"
+	class="space-y-4"
 	class:generating={isGenerating}
 	on:click={() => toggleDialog()}
 	aria-label="Open AI Assistant"
 	title="AI Assistant"
 >
-	<div class="container mx-auto px-4">
+	<div class="space-y-4">
 		{#if isGenerating}
-			<div class="container mx-auto px-4"></div>
+			<div class="space-y-4"></div>
 		{:else}
 			<Sparkles size={24} />
 		{/if}
 	</div>
 
-	<div class="container mx-auto px-4"></div>
+	<div class="space-y-4"></div>
 </button>
 
 <!-- AI Dialog -->

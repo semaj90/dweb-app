@@ -1,4 +1,27 @@
 <script lang="ts">
+  interface Props {
+    canvasState: CanvasState | null ;
+    reportId: string;;
+    evidence: Evidence[] ;
+    citationPoints: CitationPoint[] ;
+    onSave: (canvasState: CanvasState) ;
+    readOnly?: any;
+    width?: any;
+    height?: any;
+  }
+  let {
+    canvasState = null,
+    reportId,
+    evidence = [],
+    citationPoints = [],
+    onSave = > Promise<void> = async () => {},
+    readOnly = false,
+    width = 800,
+    height = 600
+  }: Props = $props();
+
+
+
   import type { Evidence } from '$lib/types/api';
 	import { onMount, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -21,15 +44,7 @@
 	// Note: Fabric.js needs to be imported dynamically in browser
 	let fabric: any;
 	
-	export let canvasState: CanvasState | null = null;
-	export let reportId: string;
-	export let evidence: Evidence[] = [];
-	export let citationPoints: CitationPoint[] = [];
-	export let onSave: (canvasState: CanvasState) => Promise<void> = async () => {};
-	export let readOnly = false;
-	export let width = 800;
-	export let height = 600;
-
+								
 	// Real-time evidence subscription
 	let realtimeEvidence: Evidence[] = [];
 	let unsubscribeEvidence: (() => void) | undefined;
@@ -781,37 +796,37 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
 	<!-- Toolbar -->
-	<div class="container mx-auto px-4">
-		<Toolbar.Root class="container mx-auto px-4">
-			<Toolbar.Group bind:value={$text} type="multiple" class="container mx-auto px-4">
-				<Toolbar.GroupItem aria-label="toggle bold" value="bold" class="container mx-auto px-4">
-					<Bold class="container mx-auto px-4" />
+	<div class="space-y-4">
+		<Toolbar.Root class="space-y-4">
+			<Toolbar.Group bind:value={$text} type="multiple" class="space-y-4">
+				<Toolbar.GroupItem aria-label="toggle bold" value="bold" class="space-y-4">
+					<Bold class="space-y-4" />
 				</Toolbar.GroupItem>
-				<Toolbar.GroupItem aria-label="toggle italic" value="italic" class="container mx-auto px-4">
-					<Italic class="container mx-auto px-4" />
+				<Toolbar.GroupItem aria-label="toggle italic" value="italic" class="space-y-4">
+					<Italic class="space-y-4" />
 				</Toolbar.GroupItem>
-				<Toolbar.GroupItem aria-label="toggle strikethrough" value="strikethrough" class="container mx-auto px-4">
-					<Strikethrough class="container mx-auto px-4" />
-				</Toolbar.GroupItem>
-			</Toolbar.Group>
-			<Separator.Root class="container mx-auto px-4" />
-			<Toolbar.Group bind:value={$align} type="single" class="container mx-auto px-4">
-				<Toolbar.GroupItem aria-label="align left" value="left" class="container mx-auto px-4">
-					<AlignLeft class="container mx-auto px-4" />
-				</Toolbar.GroupItem>
-				<Toolbar.GroupItem aria-label="align center" value="center" class="container mx-auto px-4">
-					<AlignCenter class="container mx-auto px-4" />
-				</Toolbar.GroupItem>
-				<Toolbar.GroupItem aria-label="align right" value="right" class="container mx-auto px-4">
-					<AlignRight class="container mx-auto px-4" />
+				<Toolbar.GroupItem aria-label="toggle strikethrough" value="strikethrough" class="space-y-4">
+					<Strikethrough class="space-y-4" />
 				</Toolbar.GroupItem>
 			</Toolbar.Group>
-			<Separator.Root class="container mx-auto px-4" />
-			<div class="container mx-auto px-4">
-				<Toolbar.Button class="container mx-auto px-4">
-					<Sparkles class="container mx-auto px-4" />
+			<Separator.Root class="space-y-4" />
+			<Toolbar.Group bind:value={$align} type="single" class="space-y-4">
+				<Toolbar.GroupItem aria-label="align left" value="left" class="space-y-4">
+					<AlignLeft class="space-y-4" />
+				</Toolbar.GroupItem>
+				<Toolbar.GroupItem aria-label="align center" value="center" class="space-y-4">
+					<AlignCenter class="space-y-4" />
+				</Toolbar.GroupItem>
+				<Toolbar.GroupItem aria-label="align right" value="right" class="space-y-4">
+					<AlignRight class="space-y-4" />
+				</Toolbar.GroupItem>
+			</Toolbar.Group>
+			<Separator.Root class="space-y-4" />
+			<div class="space-y-4">
+				<Toolbar.Button class="space-y-4">
+					<Sparkles class="space-y-4" />
 					<span>Ask AI</span>
 				</Toolbar.Button>
 			</div>
@@ -819,22 +834,22 @@
 	</div>
 
 	<!-- Canvas container -->
-	<div class="container mx-auto px-4">
-		<canvas bind:this={canvasElement} class="container mx-auto px-4"></canvas>
+	<div class="space-y-4">
+		<canvas bind:this={canvasElement} class="space-y-4"></canvas>
 	</div>
 
 	<!-- Evidence panel -->
-	<div class="container mx-auto px-4">
+	<div class="space-y-4">
 		<h3>Evidence</h3>
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			{#each evidence as item}
-				<div class="container mx-auto px-4">
-					<div class="container mx-auto px-4">
-						<div class="container mx-auto px-4">{item.title}</div>
-						<div class="container mx-auto px-4">{item.fileType}</div>
+				<div class="space-y-4">
+					<div class="space-y-4">
+						<div class="space-y-4">{item.title}</div>
+						<div class="space-y-4">{item.fileType}</div>
 					</div>
 					<button
-						class="container mx-auto px-4"
+						class="space-y-4"
 						onclick={() => addEvidenceMarker(item)}
 						disabled={readOnly}
 						title="Add evidence marker to canvas"
@@ -847,17 +862,17 @@
 	</div>
 
 	<!-- Citation panel -->
-	<div class="container mx-auto px-4">
+	<div class="space-y-4">
 		<h3>Citations</h3>
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			{#each citationPoints as citation}
-				<div class="container mx-auto px-4">
-					<div class="container mx-auto px-4">
-						<div class="container mx-auto px-4">{citation.source}</div>
-						<div class="container mx-auto px-4">{citation.text.substring(0, 50)}...</div>
+				<div class="space-y-4">
+					<div class="space-y-4">
+						<div class="space-y-4">{citation.source}</div>
+						<div class="space-y-4">{citation.text.substring(0, 50)}...</div>
 					</div>
 					<button
-						class="container mx-auto px-4"
+						class="space-y-4"
 						onclick={() => addCitationMarker(citation)}
 						disabled={readOnly}
 						title="Add citation marker to canvas"

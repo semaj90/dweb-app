@@ -1,8 +1,12 @@
 <script lang="ts">
+  interface Props {
+    onselect?: (event?: any) => void;
+  }
+
+
   import { Dialog } from 'bits-ui';
   import { Search, Sparkles, FileText, Users, Calendar, Zap, Brain, Target } from 'lucide-svelte';
-  import { createEventDispatcher, onMount } from 'svelte';
-  import { fade, fly, scale } from 'svelte/transition';
+    import { fade, fly, scale } from 'svelte/transition';
   import { quintInOut, elasticOut } from 'svelte/easing';
   import { 
     generateMCPPrompt, 
@@ -30,8 +34,7 @@
   let phase13Status = $state<any>(null);
   let systemHealth = $state<any>(null);
   
-  const dispatch = createEventDispatcher();
-
+  
   // Load search history from localStorage and initialize Phase 13
   onMount(async () => {
     const saved = localStorage.getItem('ai-search-history');
@@ -229,7 +232,7 @@
 
   // Handle result selection
   function selectResult(result: any) {
-    dispatch('select', result);
+    onselect?.();
     close();
   }
 

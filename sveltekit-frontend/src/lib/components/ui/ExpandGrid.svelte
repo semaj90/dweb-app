@@ -1,48 +1,54 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  interface Props {
+    onexpand?: (event?: any) => void;
+  }
+  let {
+    columns = 1,
+    expandedColumns = 3,
+    gap = "1rem",
+    expandDuration = "0.4s",
+    easing = "ease",
+    expandOnHover = true,
+    expandOnFocus = true
+  }: Props = $props();
 
-  export let columns = 1;
-  export let expandedColumns = 3;
-  export let gap = "1rem";
-  export let expandDuration = "0.4s";
-  export let easing = "ease";
-  export let expandOnHover = true;
-  export let expandOnFocus = true;
 
+
+  
+              
   let className = "";
   export { className as class };
 
-  const dispatch = createEventDispatcher();
-
+  
   let isExpanded = false;
   let containerElement: HTMLDivElement;
 
   function handleMouseEnter() {
     if (expandOnHover) {
       isExpanded = true;
-      dispatch("expand", { expanded: true });
+      onexpand?.();
 }}
   function handleMouseLeave() {
     if (expandOnHover) {
       isExpanded = false;
-      dispatch("expand", { expanded: false });
+      onexpand?.();
 }}
   function handleFocusIn() {
     if (expandOnFocus) {
       isExpanded = true;
-      dispatch("expand", { expanded: true });
+      onexpand?.();
 }}
   function handleFocusOut() {
     if (expandOnFocus) {
       isExpanded = false;
-      dispatch("expand", { expanded: false });
+      onexpand?.();
 }}
   $: currentColumns = isExpanded ? expandedColumns : columns;
 </script>
 
 <div
   bind:this={containerElement}
-  class="container mx-auto px-4"
+  class="space-y-4"
   class:expanded={isExpanded}
   style="
     --columns: {currentColumns};

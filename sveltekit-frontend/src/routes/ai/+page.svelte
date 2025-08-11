@@ -70,46 +70,46 @@
   />
 </svelte:head>
 
-<div class="container mx-auto px-4">
-  <div class="container mx-auto px-4">
+<div class="space-y-4">
+  <div class="space-y-4">
     <!-- Header -->
     <div
-      class="container mx-auto px-4"
+      class="space-y-4"
     >
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <Bot class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <Bot class="space-y-4" />
           </div>
           <div>
-            <h1 class="container mx-auto px-4">AI Legal Assistant</h1>
-            <p class="container mx-auto px-4">
+            <h1 class="space-y-4">AI Legal Assistant</h1>
+            <p class="space-y-4">
               Your intelligent partner for legal research and case analysis
             </p>
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <Sparkles class="container mx-auto px-4" />
-            <span class="container mx-auto px-4">Legal AI Assistant</span>
+            <Sparkles class="space-y-4" />
+            <span class="space-y-4">Legal AI Assistant</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Chat History Sidebar -->
       {#if showHistory}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <div class="container mx-auto px-4">
-              <h2 class="container mx-auto px-4">
-                <Clock class="container mx-auto px-4" />
+            <div class="space-y-4">
+              <h2 class="space-y-4">
+                <Clock class="space-y-4" />
                 Chat History
               </h2>
               <Button
@@ -117,41 +117,41 @@
                 size="sm"
                 on:click={() => startNewChat()}
               >
-                <Plus class="container mx-auto px-4" />
+                <Plus class="space-y-4" />
                 New
               </Button>
             </div>
 
             <!-- Search -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <Search
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
               <input
                 type="text"
                 placeholder="Search conversations..."
                 bind:value={searchQuery}
-                class="container mx-auto px-4"
+                class="space-y-4"
               />
             </div>
 
             <!-- Conversation List -->
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each filteredHistory as conversation (conversation.id)}
                 <button
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   on:click={() => loadConversation(conversation.id)}
                 >
-                  <h3 class="container mx-auto px-4">
+                  <h3 class="space-y-4">
                     {conversation.title}
                   </h3>
-                  <p class="container mx-auto px-4">
+                  <p class="space-y-4">
                     {formatDate(conversation.updated.toString())} • {conversation
                       .messages.length} messages
                   </p>
                   {#if $page.url.searchParams.get("caseId")}
                     <span
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       Case: {$page.url.searchParams.get("caseId")}
                     </span>
@@ -160,9 +160,9 @@
               {/each}
 
               {#if filteredHistory.length === 0}
-                <div class="container mx-auto px-4">
-                  <MessageSquare class="container mx-auto px-4" />
-                  <p class="container mx-auto px-4">No conversations found</p>
+                <div class="space-y-4">
+                  <MessageSquare class="space-y-4" />
+                  <p class="space-y-4">No conversations found</p>
                 </div>
               {/if}
             </div>
@@ -172,43 +172,43 @@
 
       <!-- Main Chat Interface -->
       <div class={showHistory ? "lg:col-span-3" : "lg:col-span-4"}>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- Chat Header -->
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#if !showHistory}
                 <Button
                   variant="outline"
                   size="sm"
                   on:click={() => showHistoryPanel()}
                 >
-                  <Clock class="container mx-auto px-4" />
+                  <Clock class="space-y-4" />
                   History
                 </Button>
               {/if}
 
               <div>
-                <h2 class="container mx-auto px-4">
+                <h2 class="space-y-4">
                   {$chatStore.currentConversation?.title || "New Conversation"}
                 </h2>
                 {#if $chatStore.currentConversation?.id && $page.url.searchParams.get("caseId")}
-                  <p class="container mx-auto px-4">
+                  <p class="space-y-4">
                     Case: {$page.url.searchParams.get("caseId")}
                   </p>
                 {/if}
               </div>
             </div>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#if $chatStore.currentConversation}
                 <Button
                   variant="outline"
                   size="sm"
                   on:click={() => chatActions.saveToStorage()}
                 >
-                  <Save class="container mx-auto px-4" />
+                  <Save class="space-y-4" />
                   Save
                 </Button>
               {/if}
@@ -218,14 +218,14 @@
                 size="sm"
                 on:click={() => startNewChat()}
               >
-                <Plus class="container mx-auto px-4" />
+                <Plus class="space-y-4" />
                 New Chat
               </Button>
             </div>
           </div>
 
           <!-- Chat Interface -->
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <ChatInterface
               height="500px"
               caseId={$page.url.searchParams.get("caseId")}
@@ -235,17 +235,17 @@
 
         <!-- Quick Actions -->
         {#if !$chatStore.currentConversation || $chatStore.currentConversation.messages.length === 0}
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">
-              <Sparkles class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <h3 class="space-y-4">
+              <Sparkles class="space-y-4" />
               Quick Start
             </h3>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               {#each ["Analyze this case for legal precedents", "Generate a prosecution strategy", "Summarize evidence findings", "Draft a legal brief outline", "Research similar cases", "Identify key witnesses to interview"] as prompt}
                 <Button
                   variant="outline"
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   on:click={() => {
                     if (!$chatStore.currentConversation)
                       chatActions.newConversation();
@@ -253,7 +253,7 @@
                     chatActions.addMessage(prompt, "user");
                   }}
                 >
-                  <span class="container mx-auto px-4">{prompt}</span>
+                  <span class="space-y-4">{prompt}</span>
                 </Button>
               {/each}
             </div>

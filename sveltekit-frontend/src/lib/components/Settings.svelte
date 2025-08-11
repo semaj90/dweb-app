@@ -1,7 +1,16 @@
 <script lang="ts">
-  export let isOpen: boolean;
-  export let settings: {
-    theme: string;
+  interface Props {
+    isOpen: boolean;;
+    settings: {;
+  }
+  let {
+    isOpen,
+    settings
+  }: Props = $props();
+
+
+
+        theme: string;
     language: string;
     ttsEngine: string;
     voiceLanguage: string;
@@ -16,8 +25,8 @@
 </script>
 
 {#if isOpen}
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <h2>Settings</h2>
       <form>
         <label>

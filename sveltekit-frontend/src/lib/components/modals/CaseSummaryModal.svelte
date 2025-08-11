@@ -1,8 +1,18 @@
 <!-- Case Summary Modal with AI-generated insights -->
 <script lang="ts">
+  interface Props {
+    onsummaryGenerated?: (event?: any) => void;
+  }
+  let {
+    open = false,
+    caseData,
+    useDrawer = false
+  }: Props = $props();
+
+
+
   import { Button } from "$lib/components/ui/button";
-  import { createEventDispatcher } from "svelte";
-  import Badge from '$lib/components/ui/Badge.svelte';
+    import Badge from '$lib/components/ui/Badge.svelte';
   import * as Dialog from '$lib/components/ui/dialog';
   import Drawer from '$lib/components/ui/drawer/Drawer.svelte';
   import Grid from '$lib/components/ui/grid/Grid.svelte';
@@ -21,10 +31,8 @@
     Users,
   } from "lucide-svelte";
 
-  export let open: boolean = false;
-  // SSR-compatible: all dates as strings
-  export let caseData: {
-    id: string;
+    // SSR-compatible: all dates as strings
+      id: string;
     title: string;
     description: string;
     status: "active" | "pending" | "closed";
@@ -64,10 +72,8 @@
     };
   } | null = null;
 
-  export let useDrawer: boolean = false;
-
-  const dispatch = createEventDispatcher();
-
+  
+  
   let isGeneratingSummary = false;
   let activeTab: "overview" | "timeline" | "evidence" | "recommendations" =
     "overview";
@@ -91,7 +97,7 @@
       const result = await response.json();
       if (result.success) {
         caseData = { ...caseData, summary: result.summary };
-        dispatch("summaryGenerated", caseData);
+        onsummaryGenerated?.();
 }
     } catch (error) {
       console.error("Summary generation failed:", error);

@@ -1,10 +1,18 @@
 <script lang="ts">
-  export let menu: any;
-</script>
+  interface Props {
+    menu: any;;
+  }
+  let {
+    menu
+  }: Props = $props();
+
+
+
+  </script>
 
 <div 
   use:menu 
-  class="container mx-auto px-4"
+  class="space-y-4"
   {...$$restProps}
 >
   <slot />

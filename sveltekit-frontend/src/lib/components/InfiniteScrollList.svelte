@@ -1,6 +1,20 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
-  import { quintOut } from "svelte/easing";
+  interface Props {
+    onloadMore?: (event?: any) => void;
+    onitemClick?: (event?: any) => void;
+  }
+  let {
+    items = [],
+    itemType = "evidence",
+    loadMoreThreshold = 100,
+    pageSize = 20,
+    isLoading = false,
+    selectedIndex = -1
+  }: Props = $props();
+
+
+
+    import { quintOut } from "svelte/easing";
   import { fade, slide } from "svelte/transition";
 
   import {
@@ -12,15 +26,10 @@
     Video,
   } from "lucide-svelte";
 
-  export let items: any[] = [];
-  export let itemType: "evidence" | "notes" | "canvas" = "evidence";
-  export let loadMoreThreshold = 100; // pixels from bottom
-  export let pageSize = 20;
-  export let isLoading = false;
-  export let selectedIndex: number = -1; // Index of selected item
+      export let loadMoreThreshold = 100; // pixels from bottom
+      export let selectedIndex: number = -1; // Index of selected item
 
-  const dispatch = createEventDispatcher();
-
+  
   let scrollContainer: HTMLElement;
   let displayedItems: any[] = [];
   let currentPage = 0;
@@ -56,7 +65,7 @@
 
     // Emit event for loading more data from API
     if (!hasMore && items.length >= currentPage * pageSize) {
-      dispatch("loadMore");
+      onloadMore?.();
 }}
   function handleScroll() {
     if (!scrollContainer) return;
@@ -69,7 +78,7 @@
       loadMore();
 }}
   function handleItemClick(item: any) {
-    dispatch("itemClick", { item, type: itemType });
+    onitemClick?.();
 }
   function getItemIcon(item: any) {
     if (itemType === "notes") {
@@ -101,24 +110,24 @@
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   bind:this={scrollContainer}
   on:scroll={handleScroll}
   role="listbox"
   aria-label="{itemType} list"
 >
   {#if displayedItems.length === 0 && !isLoading}
-    <div class="container mx-auto px-4" transition:fade={{ duration: 200 }}>
-      <div class="container mx-auto px-4">
+    <div class="space-y-4" transition:fade={{ duration: 200 }}>
+      <div class="space-y-4">
         <svelte:component this={getItemIcon({})} size={48} />
       </div>
-      <p class="container mx-auto px-4">No {itemType} found</p>
+      <p class="space-y-4">No {itemType} found</p>
     </div>
   {:else}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#each displayedItems as item, index (item.id || index)}
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
           transition:slide={{ duration: 300, easing: quintOut }}
           on:click={() => handleItemClick(item)}
           on:keydown={(e) => e.key === "Enter" && handleItemClick(item)}
@@ -127,13 +136,13 @@
           aria-label="{itemType} item"
           aria-selected={index === selectedIndex}
         >
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <svelte:component this={getItemIcon(item)} size={20} />
           </div>
 
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <h4 class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">
+              <h4 class="space-y-4">
                 {#if itemType === "evidence"}
                   {item.fileName || item.title || "Untitled Evidence"}
                 {:else if itemType === "notes"}
@@ -142,14 +151,14 @@
                   {item.name || `Canvas ${formatDate(item.lastModified)}`}
                 {/if}
               </h4>
-              <span class="container mx-auto px-4">
+              <span class="space-y-4">
                 {formatDate(
                   item.createdAt || item.lastModified || item.updatedAt
                 )}
               </span>
             </div>
 
-            <p class="container mx-auto px-4">
+            <p class="space-y-4">
               {#if itemType === "evidence"}
                 {truncateText(item.description)}
               {:else if itemType === "notes"}
@@ -160,12 +169,12 @@
             </p>
 
             {#if item.tags && item.tags.length > 0}
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 {#each item.tags.slice(0, 3) as tag}
-                  <span class="container mx-auto px-4">{tag}</span>
+                  <span class="space-y-4">{tag}</span>
                 {/each}
                 {#if item.tags.length > 3}
-                  <span class="container mx-auto px-4">+{item.tags.length - 3}</span>
+                  <span class="space-y-4">+{item.tags.length - 3}</span>
                 {/if}
               </div>
             {/if}
@@ -176,14 +185,14 @@
   {/if}
 
   {#if isLoading}
-    <div class="container mx-auto px-4" transition:fade={{ duration: 200 }}>
-      <div class="container mx-auto px-4"></div>
+    <div class="space-y-4" transition:fade={{ duration: 200 }}>
+      <div class="space-y-4"></div>
       <p>Loading more {itemType}...</p>
     </div>
   {/if}
 
   {#if !hasMore && displayedItems.length > 0}
-    <div class="container mx-auto px-4" transition:fade={{ duration: 200 }}>
+    <div class="space-y-4" transition:fade={{ duration: 200 }}>
       <p>No more {itemType} to load</p>
     </div>
   {/if}

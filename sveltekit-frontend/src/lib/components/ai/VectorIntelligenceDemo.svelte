@@ -3,7 +3,7 @@
   import { Button } from "$lib/components/ui/button";
   import Input from "$lib/components/ui/Input.svelte";
   import Badge from "$lib/components/ui/Badge.svelte";
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/Card";
 
   type SearchResult = {
     id: string;

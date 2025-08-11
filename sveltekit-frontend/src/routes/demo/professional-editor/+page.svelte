@@ -53,7 +53,7 @@
 <div class="demo-page">
   <!-- Hero Section -->
   <header class="demo-header">
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <div class="hero-content">
         <div class="hero-text">
           <h1 class="hero-title gradient-text-primary">
@@ -108,7 +108,7 @@
 
   <!-- Editor Section -->
   <main class="demo-main">
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <section class="editor-section">
         <div class="editor-intro">
           <h2 class="section-title gradient-text-primary">

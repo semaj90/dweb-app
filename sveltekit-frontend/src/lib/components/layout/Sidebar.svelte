@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    open?: any;
+  }
+  let {
+    open = false
+  }: Props = $props();
+
+
+
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import {
@@ -18,8 +27,7 @@
   import Button from '$lib/components/ui/Button.svelte';
   import { cn } from '$lib/utils';
 
-  export let open = false;
-
+  
   let mounted = false;
 
   onMount(() => {

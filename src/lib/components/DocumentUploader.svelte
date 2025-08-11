@@ -282,9 +282,11 @@
     on:dragleave={handleDragLeave}
     on:drop={handleDrop}
     on:click={openFileDialog}
-    role="button"
-    tabindex="0"
-    on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
+  role="button"
+  tabindex={disabled ? -1 : 0}
+  aria-disabled={disabled}
+  aria-label="Document upload area. Press Enter or Space to choose files, or drag and drop."
+  on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && openFileDialog()}
   >
     {#if isDragOver}
 

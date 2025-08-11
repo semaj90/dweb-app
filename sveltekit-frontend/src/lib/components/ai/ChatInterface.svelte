@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    height?: any;
+    caseId: string | undefined ;
+  }
+  let {
+    height = "500px",
+    caseId = undefined
+  }: Props = $props();
+
+
+
   import { Button } from "$lib/components/ui/button";
   import { Textarea } from "$lib/components/ui/textarea/index";
   import {
@@ -18,9 +29,7 @@
   import ThinkingStyleToggle from "./ThinkingStyleToggle.svelte";
   import { ThinkingProcessor } from "$lib/ai/thinking-processor";
 
-  export let height = "500px";
-  export let caseId: string | undefined = undefined;
-
+    
   let messageInput = "";
   let messagesContainer: HTMLElement;
   let inputElement: HTMLTextAreaElement;
@@ -341,11 +350,11 @@
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Enhanced Header with Thinking Toggle -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <ThinkingStyleToggle
           bind:enabled={thinkingStyleEnabled}
           loading={$isLoading}
@@ -366,14 +375,14 @@
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         {#if lastAnalysisResult}
-          <span class="container mx-auto px-4">
+          <span class="space-y-4">
             📊 Confidence: {Math.round(lastAnalysisResult.confidence * 100)}%
           </span>
         {/if}
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4"></div>
+        <div class="space-y-4">
+          <div class="space-y-4"></div>
           <span>AI Active</span>
         </div>
       </div>
@@ -383,34 +392,34 @@
   <!-- Messages Container -->
   <div
     bind:this={messagesContainer}
-    class="container mx-auto px-4"
+    class="space-y-4"
     style="height: calc({height} - 140px);"
   >
     {#if $currentConversation?.messages.length === 0}
       <!-- Enhanced Welcome Message -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Bot class="container mx-auto px-4" />
+          <Bot class="space-y-4" />
         </div>
-        <h3 class="container mx-auto px-4">
+        <h3 class="space-y-4">
           Hi! I'm {$aiPersonality.name}, your enhanced AI legal assistant
         </h3>
-        <p class="container mx-auto px-4">
+        <p class="space-y-4">
           I can provide both quick responses and detailed reasoning analysis.
           Toggle thinking style above to see my step-by-step reasoning process.
         </p>
 
         {#if thinkingStyleEnabled}
-          <div class="container mx-auto px-4">
-            <p class="container mx-auto px-4">
+          <div class="space-y-4">
+            <p class="space-y-4">
               🧠 <strong>Thinking Style Active:</strong> I'll show my reasoning process for deeper analysis.
             </p>
           </div>
         {:else}
-          <div class="container mx-auto px-4">
-            <p class="container mx-auto px-4">
+          <div class="space-y-4">
+            <p class="space-y-4">
               ⚡ <strong>Quick Mode Active:</strong> I'll provide fast, concise responses.
             </p>
           </div>
@@ -425,26 +434,26 @@
 
     <!-- Typing Indicator -->
     {#if $isTyping}
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <div
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
-          <Bot class="container mx-auto px-4" />
+          <Bot class="space-y-4" />
         </div>
-        <div class="container mx-auto px-4">
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4"></div>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <div class="space-y-4"></div>
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
               style="animation-delay: 0.1s"
             ></div>
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
               style="animation-delay: 0.2s"
             ></div>
           </div>
           {#if thinkingStyleEnabled}
-            <p class="container mx-auto px-4">Thinking step by step...</p>
+            <p class="space-y-4">Thinking step by step...</p>
           {/if}
         </div>
       </div>
@@ -453,7 +462,7 @@
 
   <!-- Proactive Prompt -->
   {#if $showProactivePrompt}
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <ProactivePrompt
         on:accept={handleProactiveResponse}
         on:dismiss={() => showProactivePrompt.set(false)}
@@ -462,16 +471,16 @@
   {/if}
 
   <!-- Input Area -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <Textarea
           bind:element={inputElement}
           bind:value={messageInput}
           placeholder={thinkingStyleEnabled
             ? "Ask for detailed analysis... (Enter to send, Shift+Enter for new line)"
             : "Type your message... (Enter to send, Shift+Enter for new line)"}
-          class="container mx-auto px-4"
+          class="space-y-4"
           on:keydown={handleKeyDown}
           on:input={autoResize}
           disabled={$isLoading}
@@ -481,21 +490,21 @@
       <Button
         variant="default"
         size="sm"
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => sendMessage()}
         disabled={$isLoading || !messageInput.trim()}
       >
         {#if $isLoading}
-          <Loader2 class="container mx-auto px-4" />
+          <Loader2 class="space-y-4" />
         {:else}
-          <Send class="container mx-auto px-4" />
+          <Send class="space-y-4" />
         {/if}
       </Button>
     </div>
 
     <!-- Enhanced Status Text -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         {#if ($currentConversation?.messages?.length || 0) > 0}
           <span>{$currentConversation?.messages?.length || 0} messages</span>
         {/if}
@@ -507,8 +516,8 @@
         {/if}
       </div>
 
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4">
+      <div class="space-y-4">
+        <span class="space-y-4">
           {thinkingStyleEnabled ? "🧠 Thinking" : "⚡ Quick"}
         </span>
       </div>

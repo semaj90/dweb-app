@@ -1,4 +1,13 @@
 <script lang="ts">
+  interface Props {
+    caseId: string | null ;
+  }
+  let {
+    caseId = null
+  }: Props = $props();
+
+
+
   import { onMount } from 'svelte';
   import { fade, slide } from 'svelte/transition';
   import { cubicOut } from 'svelte/easing';

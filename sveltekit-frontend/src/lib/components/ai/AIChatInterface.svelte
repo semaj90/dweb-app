@@ -1,4 +1,31 @@
 <script lang="ts">
+  interface Props {
+    visible?: any;
+    minimized?: any;
+    draggable?: any;
+    width?: any;
+    height?: any;
+    apiEndpoint?: any;
+    fallbackEndpoint?: any;
+    modelName?: any;
+    title?: any;
+    subtitle?: any;
+  }
+  let {
+    visible = false,
+    minimized = false,
+    draggable = true,
+    width = 400,
+    height = 600,
+    apiEndpoint = 'http://localhost:11434/api/generate',
+    fallbackEndpoint = 'http://localhost:8000/v1/chat/completions',
+    modelName = 'gemma3-legal:latest',
+    title = 'YoRHa Legal AI',
+    subtitle = 'Powered by Gemma3'
+  }: Props = $props();
+
+
+
 	import { onMount, createEventDispatcher, tick } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';

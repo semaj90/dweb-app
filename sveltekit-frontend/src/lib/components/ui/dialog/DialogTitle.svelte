@@ -1,7 +1,15 @@
 <script lang="ts">
-  export let title: any;
-</script>
+  interface Props {
+    title: any;;
+  }
+  let {
+    title
+  }: Props = $props();
 
-<h2 use:title class="container mx-auto px-4">
+
+
+  </script>
+
+<h2 use:title class="space-y-4">
   <slot />
 </h2>

@@ -1,15 +1,21 @@
 <script lang="ts">
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-  import Editor from '@toast-ui/editor';
+  interface Props {
+    onchange?: (event?: any) => void;
+  }
+  let {
+    content = [],
+    height = '400px',
+    placeholder = 'Start writing...'
+  }: Props = $props();
+
+
+
+    import Editor from '@toast-ui/editor';
   import '@toast-ui/editor/dist/toastui-editor.css';
   import type { ContentNode } from '$lib/logic/HistoryManager';
 
-  const dispatch = createEventDispatcher();
-
-  export let content: ContentNode[] = [];
-  export let height: string = '400px';
-  export let placeholder: string = 'Start writing...';
   
+        
   let editorElement: HTMLElement;
   let editor: Editor;
   let isInitialized = false;
@@ -166,7 +172,7 @@
     editor.on('change', () => {
       const markdown = editor.getMarkdown();
       const newContent = markdownToContent(markdown);
-      dispatch('change', newContent);
+      onchange?.();
     });
 
     isInitialized = true;
@@ -274,7 +280,7 @@
 }}
 </script>
 
-<div bind:this={editorElement} class="container mx-auto px-4"></div>
+<div bind:this={editorElement} class="space-y-4"></div>
 
 <style>
   /* @unocss-include */

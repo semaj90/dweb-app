@@ -1,5 +1,24 @@
 <!-- Production-level AI Dropdown using Melt UI with keyboard shortcuts -->
 <script lang="ts">
+  interface Props {
+    disabled?: any;
+    onReportGenerate: (reportType: string) ;
+    onSummarize: () ;
+    onAnalyze: () ;
+    hasContent?: any;
+    isGenerating?: any;
+  }
+  let {
+    disabled = false,
+    onReportGenerate = > void = () => {},
+    onSummarize = > void = () => {},
+    onAnalyze = > void = () => {},
+    hasContent = false,
+    isGenerating = false
+  }: Props = $props();
+
+
+
   import {
     createDropdownMenu,
     melt,

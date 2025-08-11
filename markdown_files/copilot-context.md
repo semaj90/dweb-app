@@ -3,7 +3,7 @@
 ## Stack Overview
 
 - UI: SvelteKit (SSR-first, no VDOM), Tailwind or Vanilla CSS only
-- Desktop: Tauri (Rust backend, secure command API)
+- Desktop: (Rust backend, secure command API)
 - Mobile: Flutter + Riverpod + Tauri bridge
 - Backend: Postgres + Drizzle ORM
 - Vector Search: Qdrant (Docker)
@@ -46,11 +46,11 @@ First, establish your law-themed color palette in CSS variables:
   --law-white: #f5f5f5;
   --law-blue: #001f3f;
   --law-red: #8b0000;
-  
+
   /* Typography */
-  --font-heading: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
-  
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+
   /* Spacing for legal components */
   --spacing-evidence: 1.5rem;
   --spacing-node: 1rem;
@@ -156,7 +156,11 @@ Each Bits UI component applies specific data attributes to its rendered elements
 }
 
 .legal-node {
-  background: linear-gradient(135deg, var(--law-black) 0%, var(--law-blue) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--law-black) 0%,
+    var(--law-blue) 100%
+  );
   color: var(--law-gold);
   border-radius: 0.75rem;
   padding: 1.5rem;
@@ -164,7 +168,7 @@ Each Bits UI component applies specific data attributes to its rendered elements
 }
 
 .legal-node::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -2px;
   left: -2px;
@@ -184,15 +188,15 @@ The child snippet gives you complete control while maintaining accessibility:
 <!-- EvidenceAccordion.svelte -->
 <script lang="ts">
   import { Accordion } from "bits-ui";
-  
+
   export let evidenceType = 'document';
   export let isTagged = false;
 </script>
 
 <Accordion.Trigger>
   {#snippet child({ props })}
-    <button 
-      {...props} 
+    <button
+      {...props}
       class="evidence-trigger"
       class:tagged={isTagged}
       data-evidence-type={evidenceType}
@@ -222,34 +226,34 @@ The child snippet gives you complete control while maintaining accessibility:
     transition: all 0.3s ease;
     cursor: pointer;
   }
-  
+
   .evidence-trigger:hover {
     background: var(--law-blue);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
   }
-  
+
   .evidence-trigger.tagged {
     border-color: var(--law-red);
     background: linear-gradient(135deg, var(--law-black) 0%, #2a0000 100%);
   }
-  
+
   .evidence-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
   }
-  
+
   .evidence-icon {
     font-size: 1.25rem;
   }
-  
+
   .evidence-title {
     flex: 1;
     text-align: left;
     font-weight: 600;
   }
-  
+
   .ai-badge {
     background: var(--law-red);
     color: var(--law-white);
@@ -269,29 +273,29 @@ Create dynamic styling based on evidence types:
 // lib/theme/evidence-colors.ts
 export const evidenceColorMap = {
   document: {
-    bg: 'bg-law-black',
-    text: 'text-law-gold',
-    border: 'border-law-gold',
-    hover: 'hover:bg-law-blue'
+    bg: "bg-law-black",
+    text: "text-law-gold",
+    border: "border-law-gold",
+    hover: "hover:bg-law-blue",
   },
   witness: {
-    bg: 'bg-law-blue',
-    text: 'text-law-white',
-    border: 'border-law-white',
-    hover: 'hover:bg-law-black'
+    bg: "bg-law-blue",
+    text: "text-law-white",
+    border: "border-law-white",
+    hover: "hover:bg-law-black",
   },
   physical: {
-    bg: 'bg-law-gold',
-    text: 'text-law-black',
-    border: 'border-law-black',
-    hover: 'hover:bg-law-red'
+    bg: "bg-law-gold",
+    text: "text-law-black",
+    border: "border-law-black",
+    hover: "hover:bg-law-red",
   },
   digital: {
-    bg: 'bg-law-red',
-    text: 'text-law-white',
-    border: 'border-law-gold',
-    hover: 'hover:bg-law-black'
-  }
+    bg: "bg-law-red",
+    text: "text-law-white",
+    border: "border-law-gold",
+    hover: "hover:bg-law-black",
+  },
 };
 
 export const getEvidenceClasses = (type: keyof typeof evidenceColorMap) => {
@@ -369,7 +373,8 @@ Bits UI components expose CSS variables for internal component values:
 
 /* Evidence node pulse for AI activity */
 @keyframes evidencePulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
   }
   50% {
@@ -398,7 +403,7 @@ For floating content (tooltips, popovers, dropdowns), maintain the required two-
 <!-- LegalTooltip.svelte -->
 <script lang="ts">
   import { Tooltip } from "bits-ui";
-  
+
   export let precedentInfo = '';
   export let caseReference = '';
 </script>
@@ -407,8 +412,8 @@ For floating content (tooltips, popovers, dropdowns), maintain the required two-
   {#snippet child({ wrapperProps, props, open })}
     {#if open}
       <div {...wrapperProps}>
-        <div 
-          {...props} 
+        <div
+          {...props}
           class="legal-tooltip"
           transition:fade={{ duration: 200 }}
         >
@@ -438,7 +443,7 @@ For floating content (tooltips, popovers, dropdowns), maintain the required two-
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     font-family: var(--font-body);
   }
-  
+
   .tooltip-header {
     display: flex;
     align-items: center;
@@ -447,19 +452,19 @@ For floating content (tooltips, popovers, dropdowns), maintain the required two-
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--law-gold);
   }
-  
+
   .case-ref {
     font-family: var(--font-heading);
     font-weight: 600;
     color: var(--law-white);
   }
-  
+
   .precedent-text {
     margin: 0.5rem 0;
     line-height: 1.5;
     font-size: 0.875rem;
   }
-  
+
   .ai-attribution {
     display: flex;
     align-items: center;
@@ -482,7 +487,7 @@ Melt UI provides headless, unstyled UI primitives that can be styled with any CS
 ```svelte
 <script lang="ts">
   import { createAccordion, melt } from '@melt-ui/svelte';
-  
+
   const {
     elements: { root, item, trigger, content },
     states: { value }
@@ -505,13 +510,13 @@ Melt UI provides headless, unstyled UI primitives that can be styled with any CS
     width: 100%;
     max-width: 600px;
   }
-  
+
   .accordion-item {
     border: 1px solid #e2e8f0;
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .accordion-trigger {
     width: 100%;
     padding: 1rem;
@@ -520,11 +525,11 @@ Melt UI provides headless, unstyled UI primitives that can be styled with any CS
     text-align: left;
     cursor: pointer;
   }
-  
+
   .accordion-trigger:hover {
     background-color: #f7fafc;
   }
-  
+
   .accordion-content {
     padding: 1rem;
     border-top: 1px solid #e2e8f0;
@@ -537,15 +542,15 @@ Melt UI provides headless, unstyled UI primitives that can be styled with any CS
 ```svelte
 <script lang="ts">
   import { createSelect, melt } from '@melt-ui/svelte';
-  
+
   const {
     elements: { trigger, menu, option },
     states: { open, selected }
   } = createSelect();
 </script>
 
-<button 
-  use:melt={$trigger} 
+<button
+  use:melt={$trigger}
   class="select-trigger"
   class:open={$open}
 >
@@ -568,12 +573,12 @@ Melt UI provides headless, unstyled UI primitives that can be styled with any CS
     background: white;
     cursor: pointer;
   }
-  
+
   .select-trigger.open {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
-  
+
   .select-menu {
     position: absolute;
     z-index: 50;
@@ -582,12 +587,12 @@ Melt UI provides headless, unstyled UI primitives that can be styled with any CS
     border-radius: 0.375rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   }
-  
+
   .select-option {
     padding: 0.5rem 1rem;
     cursor: pointer;
   }
-  
+
   .select-option:hover {
     background-color: #f3f4f6;
   }
@@ -602,12 +607,14 @@ Melt UI provides headless, unstyled UI primitives that can be styled with any CS
 /* app.css or global.css */
 
 /* Reset and base styles */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   line-height: 1.6;
 }
 
@@ -620,26 +627,26 @@ html {
   --color-success: #059669;
   --color-warning: #d97706;
   --color-error: #dc2626;
-  
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-  
+
   /* Typography */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.125rem;
   --text-xl: 1.25rem;
-  
+
   /* Border radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
@@ -758,7 +765,7 @@ html {
   export let draggable = false;
 </script>
 
-<div 
+<div
   class="evidence-card"
   class:selected
   class:draggable
@@ -780,40 +787,40 @@ html {
     transition: all 0.2s ease;
     cursor: pointer;
   }
-  
+
   .evidence-card:hover {
     border-color: #e5e7eb;
     box-shadow: var(--shadow-sm);
   }
-  
+
   .evidence-card.selected {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
   }
-  
+
   .evidence-card.draggable {
     cursor: grab;
   }
-  
+
   .evidence-card.draggable:active {
     cursor: grabbing;
     transform: rotate(2deg);
   }
-  
+
   .evidence-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: var(--spacing-sm);
   }
-  
+
   .evidence-header h3 {
     margin: 0;
     font-size: var(--text-lg);
     font-weight: 600;
     color: #1f2937;
   }
-  
+
   .evidence-type {
     background: #f3f4f6;
     color: var(--color-secondary);
@@ -823,7 +830,7 @@ html {
     font-weight: 500;
     text-transform: uppercase;
   }
-  
+
   .evidence-description {
     color: var(--color-secondary);
     font-size: var(--text-sm);
@@ -864,7 +871,7 @@ html {
   .grid-cols-2 {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .grid-cols-3 {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -914,17 +921,17 @@ html {
     --color-text-secondary: #94a3b8;
     --color-border: #334155;
   }
-  
+
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
   }
-  
+
   .card {
     background-color: var(--color-surface);
     border-color: var(--color-border);
   }
-  
+
   .btn-secondary {
     background-color: var(--color-surface);
     color: var(--color-text);
@@ -951,7 +958,8 @@ html {
 }
 
 .transition-colors {
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
 }
 
 /* Entrance animations */
@@ -985,7 +993,8 @@ html {
 
 /* Loading states */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -1041,8 +1050,8 @@ html {
    - pg_vector: Store AI-generated vector embeddings in PostgreSQL for evidence. Use these for semantic search and recommendations.
    - Fuse.js: Use for instant client-side fuzzy search.
    - Loki.js: Use for offline/instant UI updates.
-   ollama using local llm, legal gemma3, from our app directory. 
-   use nomic ebmed for embedding of user history store of data, pg vectors. 
+     ollama using local llm, legal gemma3, from our app directory.
+     use nomic ebmed for embedding of user history store of data, pg vectors.
 
 #### Example: Custom Button Variant
 

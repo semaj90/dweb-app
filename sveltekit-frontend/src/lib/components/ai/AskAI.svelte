@@ -1,5 +1,26 @@
 <!-- Ask AI Component with Vector Search Integration -->
 <script lang="ts">
+  interface Props {
+    caseId: string | undefined ;
+    evidenceIds: string[] ;
+    placeholder?: any;
+    maxHeight?: any;
+    showReferences?: any;
+    enableVoiceInput?: any;
+    enableVoiceOutput?: any;
+  }
+  let {
+    caseId = undefined,
+    evidenceIds = [],
+    placeholder = "Ask AI about this case...",
+    maxHeight = "400px",
+    showReferences = true,
+    enableVoiceInput = false,
+    enableVoiceOutput = false
+  }: Props = $props();
+
+
+
   import { browser } from "$app/environment";
   import {
     AlertCircle,
@@ -13,15 +34,8 @@
   import { speakWithCoqui, loadCoquiTTS } from '$lib/services/coquiTTS';
   import type { Case } from '$lib/types';
 
-  export let caseId: string | undefined = undefined;
-  export let evidenceIds: string[] = [];
-  export let placeholder = "Ask AI about this case...";
-  export let maxHeight = "400px";
-  export let showReferences = true;
-  export let enableVoiceInput = false;
-  // Add this prop for voice output
-  export let enableVoiceOutput = false;
-
+              // Add this prop for voice output
+  
   interface AIResponse {
     answer: string;
     references: Array<{
@@ -423,7 +437,7 @@ function formatTime(timestamp: number): string {
 }
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <!-- Header -->
   <div>
     <div>
@@ -665,10 +679,10 @@ function formatTime(timestamp: number): string {
         aria-label="Send question to AI"
       >
         {#if isLoading}
-          <Loader2 class="container mx-auto px-4" />
+          <Loader2 class="space-y-4" />
           <span>Thinking...</span>
         {:else}
-          <Search class="container mx-auto px-4" />
+          <Search class="space-y-4" />
           <span>Ask</span>
         {/if}
       </button>

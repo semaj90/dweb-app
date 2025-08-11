@@ -1,4 +1,15 @@
 <script lang="ts">
+  interface Props {
+    onvalidated?: (event?: any) => void;
+  }
+  let {
+    open = false,
+    evidence = null,
+    aiEvent = null
+  }: Props = $props();
+
+
+
   import Button from "$lib/components/ui/Button.svelte";
   import { Dialog as DialogPrimitive } from "bits-ui";
   import {
@@ -9,15 +20,11 @@
     Tag,
     XCircle,
   } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-  import type { Evidence } from '$lib/stores/evidence-store';
+    import type { Evidence } from '$lib/stores/evidence-store';
 
-  export let open: boolean = false;
-  export let evidence: Evidence | null = null;
-  export let aiEvent: any = null; // Specific AI analysis event to validate
+      export let aiEvent: any = null; // Specific AI analysis event to validate
 
-  const dispatch = createEventDispatcher();
-
+  
   let validationChoice: "approve" | "reject" | null = null;
   let feedback: string = "";
   let corrections = {
@@ -75,11 +82,7 @@
       const result = await response.json();
 
       if (result.success) {
-        dispatch("validated", {
-          evidence,
-          validation: result.validation,
-          updatedAnalysis: result.updatedAnalysis,
-        });
+        onvalidated?.();
 
         // Reset form
         validationChoice = null;
@@ -108,16 +111,16 @@
 
 <DialogPrimitive.Root bind:open>
   <DialogPrimitive.Content
-    class="container mx-auto px-4"
+    class="space-y-4"
   >
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <!-- Header -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <div>
-          <DialogPrimitive.Title class="container mx-auto px-4">
+          <DialogPrimitive.Title class="space-y-4">
             Validate AI Analysis
           </DialogPrimitive.Title>
-          <DialogPrimitive.Description class="container mx-auto px-4">
+          <DialogPrimitive.Description class="space-y-4">
             Review and validate the AI-generated analysis for this evidence
           </DialogPrimitive.Description>
         </div>
@@ -134,36 +137,36 @@
       </div>
 
       {#if evidence}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <!-- Evidence Info -->
-          <div class="container mx-auto px-4">
-            <h3 class="container mx-auto px-4">Evidence: {evidence.title}</h3>
-            <p class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h3 class="space-y-4">Evidence: {evidence.title}</h3>
+            <p class="space-y-4">
               {evidence.description || "No description"}
             </p>
           </div>
 
           <!-- AI Analysis to Validate -->
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">
-              <AlertTriangle class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <h4 class="space-y-4">
+              <AlertTriangle class="space-y-4" />
               AI Analysis
             </h4>
 
             {#if evidence.aiSummary}
-              <div class="container mx-auto px-4">
-                <p class="container mx-auto px-4">Summary:</p>
-                <p class="container mx-auto px-4">{evidence.aiSummary}</p>
+              <div class="space-y-4">
+                <p class="space-y-4">Summary:</p>
+                <p class="space-y-4">{evidence.aiSummary}</p>
               </div>
             {/if}
 
             {#if evidence.aiTags && evidence.aiTags.length > 0}
-              <div class="container mx-auto px-4">
-                <p class="container mx-auto px-4">Suggested Tags:</p>
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <p class="space-y-4">Suggested Tags:</p>
+                <div class="space-y-4">
                   {#each evidence.aiTags as tag}
                     <span
-                      class="container mx-auto px-4"
+                      class="space-y-4"
                     >
                       {tag}
                     </span>
@@ -173,18 +176,18 @@
             {/if}
 
             <div>
-              <p class="container mx-auto px-4">Evidence Type:</p>
-              <p class="container mx-auto px-4">{evidence.evidenceType}</p>
+              <p class="space-y-4">Evidence Type:</p>
+              <p class="space-y-4">{evidence.evidenceType}</p>
             </div>
 
             {#if aiEvent}
-              <div class="container mx-auto px-4">
-                <p class="container mx-auto px-4">Specific Event:</p>
-                <p class="container mx-auto px-4">
+              <div class="space-y-4">
+                <p class="space-y-4">Specific Event:</p>
+                <p class="space-y-4">
                   {aiEvent.analysis || aiEvent.text}
                 </p>
                 {#if aiEvent.timestamp}
-                  <p class="container mx-auto px-4">
+                  <p class="space-y-4">
                     Timestamp: {aiEvent.timestamp}
                   </p>
                 {/if}
@@ -193,25 +196,25 @@
           </div>
 
           <!-- Validation Question -->
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">Is this AI analysis accurate?</h4>
+          <div class="space-y-4">
+            <h4 class="space-y-4">Is this AI analysis accurate?</h4>
 
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <Button
                 variant={validationChoice === "approve" ? "default" : "outline"}
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => handleValidationChoice("approve")}
               >
-                <CheckCircle class="container mx-auto px-4" />
+                <CheckCircle class="space-y-4" />
                 Yes, it's accurate
               </Button>
 
               <Button
                 variant={validationChoice === "reject" ? "danger" : "outline"}
-                class="container mx-auto px-4"
+                class="space-y-4"
                 on:click={() => handleValidationChoice("reject")}
               >
-                <XCircle class="container mx-auto px-4" />
+                <XCircle class="space-y-4" />
                 No, needs correction
               </Button>
             </div>
@@ -219,16 +222,16 @@
 
           <!-- Feedback Section -->
           {#if validationChoice}
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">
               <div>
-                <label for="feedback" class="container mx-auto px-4">
+                <label for="feedback" class="space-y-4">
                   Additional Feedback (Optional)
                 </label>
                 <textarea
                   id="feedback"
                   bind:value={feedback}
                   placeholder="Add any additional comments or context..."
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   rows={4}
                 ></textarea>
               </div>
@@ -238,10 +241,10 @@
           <!-- Corrections Section -->
           {#if showCorrections}
             <div
-              class="container mx-auto px-4"
+              class="space-y-4"
             >
-              <h4 class="container mx-auto px-4">
-                <Edit3 class="container mx-auto px-4" />
+              <h4 class="space-y-4">
+                <Edit3 class="space-y-4" />
                 Provide Corrections
               </h4>
 
@@ -249,7 +252,7 @@
               <div>
                 <label
                   for="corrected-summary"
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
                   Corrected Summary
                 </label>
@@ -257,7 +260,7 @@
                   id="corrected-summary"
                   bind:value={corrections.summary}
                   placeholder="Enter the correct summary..."
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                   rows={${1"
                 ></textarea>
               </div>
@@ -266,14 +269,14 @@
               <div>
                 <label
                   for="corrected-type"
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
                   Corrected Evidence Type
                 </label>
                 <select
                   id="corrected-type"
                   bind:value={corrections.evidenceType}
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
                   <option value="document">Document</option>
                   <option value="image">Image</option>
@@ -286,22 +289,22 @@
 
               <!-- Tags Correction -->
               <div>
-                <label for="new-tag" class="container mx-auto px-4"
+                <label for="new-tag" class="space-y-4"
                   >Corrected Tags</label
                 >
 
                 <!-- Current tags -->
                 {#if corrections.tags.length > 0}
-                  <div class="container mx-auto px-4">
+                  <div class="space-y-4">
                     {#each corrections.tags as tag}
                       <span
-                        class="container mx-auto px-4"
+                        class="space-y-4"
                       >
                         {tag}
                         <button
                           type="button"
                           on:click={() => removeTag(tag)}
-                          class="container mx-auto px-4"
+                          class="space-y-4"
                         >
                           ×
                         </button>
@@ -311,12 +314,12 @@
                 {/if}
 
                 <!-- Add new tag -->
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <input
                     id="new-tag"
                     type="text"
                     placeholder="Add a tag..."
-                    class="container mx-auto px-4"
+                    class="space-y-4"
                     on:keydown={(e) =>
                       e.key === "Enter" && (e.preventDefault(), addTag())}
                   />
@@ -326,7 +329,7 @@
                     size="sm"
                     on:click={() => addTag()}
                   >
-                    <Tag class="container mx-auto px-4" />
+                    <Tag class="space-y-4" />
                   </Button>
                 </div>
               </div>
@@ -335,7 +338,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <Button
             variant="ghost"
             on:click={() => closeModal()}
@@ -347,15 +350,15 @@
           <Button
             on:click={() => submitValidation()}
             disabled={!validationChoice || isSubmitting}
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
             {#if isSubmitting}
               <div
-                class="container mx-auto px-4"
+                class="space-y-4"
               ></div>
               Submitting...
             {:else}
-              <Save class="container mx-auto px-4" />
+              <Save class="space-y-4" />
               Submit Validation
             {/if}
           </Button>

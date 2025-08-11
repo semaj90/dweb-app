@@ -1,11 +1,23 @@
 <!-- AI Status Indicator Component -->
 <script lang="ts">
-  export let isReady = false;
-  export let isLoading = false;
-  export let provider: "local" | "cloud" | "hybrid" | null = null;
-  export let model: string | null = null;
-  export let error: string | null = null;
+  interface Props {
+    isReady?: any;
+    isLoading?: any;
+    provider: "local" | "cloud" | "hybrid" | null ;
+    model: string | null ;
+    error: string | null ;
+  }
+  let {
+    isReady = false,
+    isLoading = false,
+    provider = null,
+    model = null,
+    error = null
+  }: Props = $props();
 
+
+
+          
   // Status computation
   $: currentStatus = error
     ? "error"
@@ -46,15 +58,15 @@
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   class:error={isErrorState}
   class:loading={isLoadingState}
   class:ready={isReadyState}
 >
   <!-- Status Icon -->
-  <div class="container mx-auto px-4" style="color: {statusColor}">
+  <div class="space-y-4" style="color: {statusColor}">
     {#if currentStatus === "loading"}
-      <div class="container mx-auto px-4"></div>
+      <div class="space-y-4"></div>
     {:else if currentStatus === "ready"}
       <svg
         width="16"
@@ -97,55 +109,55 @@
   </div>
 
   <!-- Status Text -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4" style="color: {statusColor}">
+  <div class="space-y-4">
+    <div class="space-y-4" style="color: {statusColor}">
       {statusText}
     </div>
 
     {#if isReady && provider && model}
-      <div class="container mx-auto px-4">
-        <span class="container mx-auto px-4" class:local={provider === "local"}>
+      <div class="space-y-4">
+        <span class="space-y-4" class:local={provider === "local"}>
           {providerText}
         </span>
-        <span class="container mx-auto px-4">•</span>
-        <span class="container mx-auto px-4" title="Current AI model: {model}">
+        <span class="space-y-4">•</span>
+        <span class="space-y-4" title="Current AI model: {model}">
           {modelText}
         </span>
       </div>
     {:else if error}
-      <div class="container mx-auto px-4" title={error}>
+      <div class="space-y-4" title={error}>
         {error.length > 50 ? error.substring(0, 50) + "..." : error}
       </div>
     {/if}
   </div>
 
   <!-- Detailed Tooltip -->
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
         <strong>Status:</strong>
         {statusText}
       </div>
 
       {#if provider && model}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <strong>Provider:</strong>
           {providerText}
         </div>
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <strong>Model:</strong>
           {model}
         </div>
       {/if}
 
       {#if error}
-        <div class="container mx-auto px-4">
+        <div class="space-y-4">
           <strong>Error:</strong>
           {error}
         </div>
       {/if}
 
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <small>
           {#if currentStatus === "ready"}
             AI system is ready to process requests

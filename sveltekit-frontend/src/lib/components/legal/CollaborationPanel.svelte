@@ -3,6 +3,25 @@ Collaboration Panel Component
 Real-time collaboration interface for multiple investigators working on evidence custody
 -->
 <script lang="ts">
+  interface Props {
+    collaborationSession: {;
+    activeCollaborators: string[];;
+    userId: string;;
+    evidenceId: string;;
+    wsConnection: WebSocket | null;;
+    onAddAnnotation: (content: string, position: any) ;
+  }
+  let {
+    collaborationSession,
+    activeCollaborators,
+    userId,
+    evidenceId,
+    wsConnection,
+    onAddAnnotation = > void
+  }: Props = $props();
+
+
+
   import { onMount } from 'svelte';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
@@ -11,18 +30,12 @@ Real-time collaboration interface for multiple investigators working on evidence
   import { Users, MessageCircle, MapPin, Send, Eye, UserCheck } from 'lucide-svelte';
 
   // Props
-  export let collaborationSession: {
-    sessionId: string;
+      sessionId: string;
     participants: Array<{ userId: string; role: string; joinedAt: string }>;
     chatHistory: Array<{ userId: string; message: string; timestamp: string }>;
     annotations: Array<{ userId: string; content: string; position: any; timestamp: string }>;
   } | undefined;
-  export let activeCollaborators: string[];
-  export let userId: string;
-  export let evidenceId: string;
-  export let wsConnection: WebSocket | null;
-  export let onAddAnnotation: (content: string, position: any) => void;
-
+          
   // Local state
   let newMessage = $state('');
   let newAnnotation = $state('');

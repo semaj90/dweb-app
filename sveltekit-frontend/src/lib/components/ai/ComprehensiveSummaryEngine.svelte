@@ -2,6 +2,25 @@
 <!-- Features: Local LLM + Enhanced RAG + Loki.js + Fuse.js + XState + Service Workers -->
 
 <script lang="ts">
+  interface Props {
+    targetId: string;;
+    targetType: 'case' | 'evidence' | 'legal_document' | 'cross_analysis' ;
+    depth: 'quick' | 'comprehensive' | 'forensic' ;
+    enableStreaming?: any;
+    enableUserActivity?: any;
+    enableRAG?: any;
+  }
+  let {
+    targetId,
+    targetType = 'case',
+    depth = 'comprehensive',
+    enableStreaming = true,
+    enableUserActivity = true,
+    enableRAG = true
+  }: Props = $props();
+
+
+
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
   import { useMachine } from '@xstate/svelte';
@@ -24,13 +43,7 @@
   } from 'lucide-svelte';
 
   // Props
-  export let targetId: string;
-  export let targetType: 'case' | 'evidence' | 'legal_document' | 'cross_analysis' = 'case';
-  export let depth: 'quick' | 'comprehensive' | 'forensic' = 'comprehensive';
-  export let enableStreaming = true;
-  export let enableUserActivity = true;
-  export let enableRAG = true;
-
+            
   // XState machine integration
   const { state, send, context } = useMachine(aiSummaryMachine);
 

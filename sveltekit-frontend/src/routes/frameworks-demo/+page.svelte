@@ -50,33 +50,33 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
 </svelte:head>
 
 <!-- Main Container with Pico CSS semantic structure -->
-<div class="container mx-auto px-4" data-theme="light">
+<div class="space-y-4" data-theme="light">
   <!-- Header -->
-  <header class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
-      <nav class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Scale class="container mx-auto px-4" />
+  <header class="space-y-4">
+    <div class="space-y-4">
+      <nav class="space-y-4">
+        <div class="space-y-4">
+          <Scale class="space-y-4" />
           <div>
-            <h1 class="container mx-auto px-4">Legal AI Demo</h1>
-            <p class="container mx-auto px-4">
+            <h1 class="space-y-4">Legal AI Demo</h1>
+            <p class="space-y-4">
               Pico CSS + UnoCSS + Melt UI Integration
             </p>
           </div>
         </div>
 
-        <div class="container mx-auto px-4">
-          <span class="container mx-auto px-4">Frameworks:</span>
+        <div class="space-y-4">
+          <span class="space-y-4">Frameworks:</span>
           <span
-            class="container mx-auto px-4"
+            class="space-y-4"
             >Pico CSS</span
           >
           <span
-            class="container mx-auto px-4"
+            class="space-y-4"
             >UnoCSS</span
           >
           <span
-            class="container mx-auto px-4"
+            class="space-y-4"
             >Melt UI</span
           >
         </div>
@@ -85,24 +85,24 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
   </header>
 
   <!-- Main Content -->
-  <main class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <main class="space-y-4">
+    <div class="space-y-4">
       <!-- Framework Integration Showcase -->
-      <section class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h2 class="container mx-auto px-4">
+      <section class="space-y-4">
+        <div class="space-y-4">
+          <h2 class="space-y-4">
             Framework Integration Showcase
           </h2>
-          <div class="container mx-auto px-4">
+          <div class="space-y-4">
             <!-- Pico CSS Demo -->
-            <article class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">Pico CSS</h3>
-              <p class="container mx-auto px-4">
+            <article class="space-y-4">
+              <h3 class="space-y-4">Pico CSS</h3>
+              <p class="space-y-4">
                 Semantic HTML styling with minimal classes
               </p>
 
               <!-- Pico CSS styled form -->
-              <form class="container mx-auto px-4">
+              <form class="space-y-4">
                 <fieldset>
                   <label for="client-name">Client Name</label>
                   <input
@@ -130,40 +130,40 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
                   ></textarea>
                 </fieldset>
 
-                <button type="submit" class="container mx-auto px-4">Save Case</button>
+                <button type="submit" class="space-y-4">Save Case</button>
               </form>
             </article>
 
             <!-- UnoCSS Demo -->
-            <article class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">UnoCSS</h3>
-              <p class="container mx-auto px-4">
+            <article class="space-y-4">
+              <h3 class="space-y-4">UnoCSS</h3>
+              <p class="space-y-4">
                 Utility-first styling with legal-specific classes
               </p>
 
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">42 U.S.C. § 1983</div>
-                  <p class="container mx-auto px-4">Civil action for deprivation of rights</p>
+              <div class="space-y-4">
+                <div class="space-y-4">
+                  <div class="space-y-4">42 U.S.C. § 1983</div>
+                  <p class="space-y-4">Civil action for deprivation of rights</p>
                 </div>
 
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <strong>Key Evidence:</strong> Security camera footage from 10:30
                   PM
                 </div>
 
-                <div class="container mx-auto px-4">
+                <div class="space-y-4">
                   <strong>AI Context:</strong> Similar cases show a 78% success rate
                   for this type of motion.
                 </div>
 
-                <div class="container mx-auto px-4">
-                  <button class="container mx-auto px-4">
-                    <FileText class="container mx-auto px-4" />
+                <div class="space-y-4">
+                  <button class="space-y-4">
+                    <FileText class="space-y-4" />
                     Draft Motion
                   </button>
-                  <button class="container mx-auto px-4">
-                    <BookOpen class="container mx-auto px-4" />
+                  <button class="space-y-4">
+                    <BookOpen class="space-y-4" />
                     Research
                   </button>
                 </div>
@@ -171,39 +171,39 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
             </article>
 
             <!-- Melt UI Demo -->
-            <article class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">Melt UI</h3>
-              <p class="container mx-auto px-4">Accessible interactive components</p>
+            <article class="space-y-4">
+              <h3 class="space-y-4">Melt UI</h3>
+              <p class="space-y-4">Accessible interactive components</p>
 
-              <div class="container mx-auto px-4">
+              <div class="space-y-4">
                 <div
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
-                  <span class="container mx-auto px-4">Case Status</span>
-                  <select class="container mx-auto px-4">
+                  <span class="space-y-4">Case Status</span>
+                  <select class="space-y-4">
                     <option>Active</option>
                     <option>Pending</option>
                     <option>Closed</option>
                   </select>
                 </div>
 
-                <div class="container mx-auto px-4">
-                  <div class="container mx-auto px-4">
-                    <span class="container mx-auto px-4"
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <span class="space-y-4"
                       >AI Analysis</span
                     >
-                    <Brain class="container mx-auto px-4" />
+                    <Brain class="space-y-4" />
                   </div>
-                  <p class="container mx-auto px-4">
+                  <p class="space-y-4">
                     Based on similar cases, this motion has a high probability
                     of success.
                   </p>
                 </div>
 
                 <button
-                  class="container mx-auto px-4"
+                  class="space-y-4"
                 >
-                  <MessageCircle class="container mx-auto px-4" />
+                  <MessageCircle class="space-y-4" />
                   <span>Open AI Assistant</span>
                 </button>
               </div>
@@ -213,41 +213,41 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
       </section>
 
       <!-- Component Demos with Melt UI Tabs -->
-      <section class="container mx-auto px-4">
-        <div use:melt={$root} class="container mx-auto px-4">
+      <section class="space-y-4">
+        <div use:melt={$root} class="space-y-4">
           <!-- Tab List -->
-          <div use:melt={$list} class="container mx-auto px-4">
+          <div use:melt={$list} class="space-y-4">
             <button
               use:melt={$trigger("document-editor")}
-              class="container mx-auto px-4"
+              class="space-y-4"
               class:active={$value === "document-editor"}
             >
-              <FileText class="container mx-auto px-4" />
+              <FileText class="space-y-4" />
               Document Editor
             </button>
             <button
               use:melt={$trigger("wysiwyg-editor")}
-              class="container mx-auto px-4"
+              class="space-y-4"
               class:active={$value === "wysiwyg-editor"}
             >
-              <Settings class="container mx-auto px-4" />
+              <Settings class="space-y-4" />
               WYSIWYG Editor
             </button>
             <button
               use:melt={$trigger("ai-assistant")}
-              class="container mx-auto px-4"
+              class="space-y-4"
               class:active={$value === "ai-assistant"}
             >
-              <Brain class="container mx-auto px-4" />
+              <Brain class="space-y-4" />
               AI Assistant
             </button>
           </div>
 
           <!-- Tab Content -->
-          <div use:melt={$content("document-editor")} class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">Legal Document Editor</h3>
-              <p class="container mx-auto px-4">
+          <div use:melt={$content("document-editor")} class="space-y-4">
+            <div class="space-y-4">
+              <h3 class="space-y-4">Legal Document Editor</h3>
+              <p class="space-y-4">
                 Full-featured document editor with AI assistance, citations, and
                 collaborative features.
               </p>
@@ -260,12 +260,12 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
             </div>
           </div>
 
-          <div use:melt={$content("wysiwyg-editor")} class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">
+          <div use:melt={$content("wysiwyg-editor")} class="space-y-4">
+            <div class="space-y-4">
+              <h3 class="space-y-4">
                 WYSIWYG Editor with Hugerte
               </h3>
-              <p class="container mx-auto px-4">
+              <p class="space-y-4">
                 Rich text editor with legal-specific formatting and AI
                 integration.
               </p>
@@ -279,10 +279,10 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
             </div>
           </div>
 
-          <div use:melt={$content("ai-assistant")} class="container mx-auto px-4">
-            <div class="container mx-auto px-4">
-              <h3 class="container mx-auto px-4">AI Assistant</h3>
-              <p class="container mx-auto px-4">
+          <div use:melt={$content("ai-assistant")} class="space-y-4">
+            <div class="space-y-4">
+              <h3 class="space-y-4">AI Assistant</h3>
+              <p class="space-y-4">
                 Intelligent legal AI with vector search and contextual
                 responses.
               </p>
@@ -300,13 +300,13 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
       </section>
 
       <!-- Technical Details -->
-      <section class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h2 class="container mx-auto px-4">Technical Implementation</h2>
-          <div class="container mx-auto px-4">
+      <section class="space-y-4">
+        <div class="space-y-4">
+          <h2 class="space-y-4">Technical Implementation</h2>
+          <div class="space-y-4">
             <div>
-              <h3 class="container mx-auto px-4">CSS Framework Stack</h3>
-              <ul class="container mx-auto px-4">
+              <h3 class="space-y-4">CSS Framework Stack</h3>
+              <ul class="space-y-4">
                 <li><strong>Pico CSS:</strong> Semantic HTML base styling</li>
                 <li>
                   <strong>UnoCSS:</strong> Utility classes with legal theme
@@ -317,10 +317,10 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
             </div>
 
             <div>
-              <h3 class="container mx-auto px-4">
+              <h3 class="space-y-4">
                 Component Architecture
               </h3>
-              <ul class="container mx-auto px-4">
+              <ul class="space-y-4">
                 <li>
                   <strong>Melt UI:</strong> Accessible interactive primitives
                 </li>
@@ -335,11 +335,11 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
             </div>
           </div>
 
-          <div class="container mx-auto px-4">
-            <h4 class="container mx-auto px-4">
+          <div class="space-y-4">
+            <h4 class="space-y-4">
               Benefits of This Stack
             </h4>
-            <ul class="container mx-auto px-4">
+            <ul class="space-y-4">
               <li>✅ Semantic HTML with minimal CSS classes</li>
               <li>✅ Utility-first styling for rapid development</li>
               <li>✅ Accessible interactive components</li>

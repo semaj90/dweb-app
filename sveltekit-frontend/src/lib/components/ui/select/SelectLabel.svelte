@@ -1,8 +1,16 @@
 <script lang="ts">
-  export let class_: string = '';
-</script>
+  interface Props {
+    class_: string ;
+  }
+  let {
+    class_ = ''
+  }: Props = $props();
 
-<span class="container mx-auto px-4">
+
+
+  </script>
+
+<span class="space-y-4">
   <slot />
 </span>
 

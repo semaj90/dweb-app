@@ -1,9 +1,17 @@
 <script lang="ts">
+  interface Props {
+    className: string ;
+  }
+  let {
+    className = ''
+  }: Props = $props();
+
+
+
   import { getContext, onDestroy, onMount } from 'svelte';
   import type { Writable } from 'svelte/store';
   
-  export let className: string = '';
-  
+    
   const { isOpen, position, close } = getContext<{
     isOpen: Writable<boolean>;
     position: Writable<{ x: number; y: number }>;
@@ -36,7 +44,7 @@
 {#if $isOpen}
   <div
     bind:this={menuElement}
-    class="container mx-auto px-4"
+    class="space-y-4"
     style="left: {$position.x}px; top: {$position.y}px;"
     role="menu"
     tabindex={-1}

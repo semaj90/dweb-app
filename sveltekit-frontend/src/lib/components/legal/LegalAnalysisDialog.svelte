@@ -1,13 +1,24 @@
 <script lang="ts">
+  interface Props {
+    isOpen?: any;
+    caseId: string | undefined ;
+    evidenceId: string | undefined ;
+    onAnalysisComplete: (analysis: any) ;
+  }
+  let {
+    isOpen = false,
+    caseId = undefined,
+    evidenceId = undefined,
+    onAnalysisComplete = > void = () => {}
+  }: Props = $props();
+
+
+
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import Dialog from '$lib/components/Dialog.svelte';
   
-  export let isOpen = false;
-  export let caseId: string | undefined = undefined;
-  export let evidenceId: string | undefined = undefined;
-  export let onAnalysisComplete: (analysis: any) => void = () => {};
-
+        
   interface LegalAnalysis {
     sessionId: string;
     analysis: string;

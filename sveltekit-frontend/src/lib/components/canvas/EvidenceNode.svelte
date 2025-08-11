@@ -1,4 +1,23 @@
 <script lang="ts">
+  interface Props {
+    title: string ;
+    fileUrl: string ;
+    position?: any;
+    size?: any;
+    isSelected?: any;
+    isDirty?: any;
+  }
+  let {
+    title = '',
+    fileUrl = '',
+    position = { x: 100, y: 100 },
+    size = { width: 400, height: 300 },
+    isSelected = false,
+    isDirty = false
+  }: Props = $props();
+
+
+
   import { Move, RotateCcw, Trash2 } from 'lucide-svelte';
   import { onDestroy, onMount } from 'svelte';
   
@@ -8,13 +27,7 @@
   type FabricObject = any;
   
   // Props - simplified for the Detective Mode interface
-  export let title: string = '';
-  export let fileUrl: string = '';
-  export let position = { x: 100, y: 100 };
-  export let size = { width: 400, height: 300 };
-  export let isSelected = false;
-  export let isDirty = false;
-  
+              
   let canvasEl: HTMLCanvasElement;
   let fabricCanvas: FabricCanvas | null = null; // fabric.Canvas when Fabric.js is loaded
   let nodeElement: HTMLElement;

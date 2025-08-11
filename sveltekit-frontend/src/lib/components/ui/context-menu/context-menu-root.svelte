@@ -1,9 +1,17 @@
 <script lang="ts">
+  interface Props {
+    onOpenChange: ((open: boolean) ;
+  }
+  let {
+    onOpenChange = > void) | undefined = undefined
+  }: Props = $props();
+
+
+
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
   
-  export let onOpenChange: ((open: boolean) => void) | undefined = undefined;
-  
+    
   const isOpen = writable(false);
   const position = writable({ x: 0, y: 0 });
   
@@ -22,7 +30,7 @@
   });
 </script>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
   <slot />
 </div>
 

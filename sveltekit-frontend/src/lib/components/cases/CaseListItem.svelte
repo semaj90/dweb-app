@@ -2,26 +2,33 @@ import type { Case } from '$lib/types';
 
 
 <script lang="ts">
+  interface Props {
+    onclick?: (event?: any) => void;
+    onstatusChange?: (event?: any) => void;
+  }
+  let {
+    caseData,
+    isActive = false,
+    disabled = false
+  }: Props = $props();
+
+
+
   import { Badge } from "$lib/components/ui/index";
   import type { Case as CaseType } from '$lib/types';
   import { formatDistanceToNow } from "date-fns";
   import { Archive, Calendar, CheckCircle, Clock, FileText, User as UserIcon } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-
-  export let caseData: CaseType;
-  export let isActive = false;
-  export let disabled = false;
-
-  const dispatch = createEventDispatcher();
-
+  
+      
+  
   function handleClick() {
     if (!disabled) {
-      dispatch("click");
+      onclick?.();
 }}
   function handleStatusChange(event: Event) {
     event.stopPropagation();
     const target = event.target as HTMLSelectElement;
-    dispatch("statusChange", target.value);
+    onstatusChange?.();
 }
   function getStatusColor(status: string) {
     switch (status) {
@@ -69,7 +76,7 @@ import type { Case } from '$lib/types';
 </script>
 
 <div
-  class="container mx-auto px-4"
+  class="space-y-4"
   class:active={isActive}
   class:disabled
   on:click={handleClick}
@@ -77,26 +84,26 @@ import type { Case } from '$lib/types';
   role="button"
   tabindex={0}
 >
-  <div class="container mx-auto px-4">
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <div class="space-y-4">
       <!-- Case Title and Number -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <svelte:component
           this={statusIcon}
-          class="container mx-auto px-4"
+          class="space-y-4"
         />
-        <h3 class="container mx-auto px-4">
+        <h3 class="space-y-4">
           {caseData.title}
         </h3>
       </div>
 
       <!-- Case Number -->
-      <p class="container mx-auto px-4">
+      <p class="space-y-4">
         Case #{caseData.caseNumber}
       </p>
 
       <!-- Status and Priority Badges -->
-      <div class="container mx-auto px-4">
+      <div class="space-y-4">
         <Badge variant="outline">
           <span class={getStatusColor(caseData.status)}>{caseData.status.replace("_", " ")}</span>
         </Badge>
@@ -106,20 +113,20 @@ import type { Case } from '$lib/types';
       </div>
 
       <!-- Metadata -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <Calendar class="container mx-auto px-4" />
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <Calendar class="space-y-4" />
           {formattedDate}
         </div>
         {#if caseData.defendantName}
-          <div class="container mx-auto px-4">
-            <UserIcon class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <UserIcon class="space-y-4" />
             {caseData.defendantName}
           </div>
         {/if}
         {#if caseData.evidenceCount > 0}
-          <div class="container mx-auto px-4">
-            <FileText class="container mx-auto px-4" />
+          <div class="space-y-4">
+            <FileText class="space-y-4" />
             {caseData.evidenceCount} evidence
           </div>
         {/if}
@@ -127,17 +134,17 @@ import type { Case } from '$lib/types';
 
       <!-- Court Date if available -->
       {#if caseData.courtDate}
-        <div class="container mx-auto px-4">
-          <Calendar class="container mx-auto px-4" />
+        <div class="space-y-4">
+          <Calendar class="space-y-4" />
           Court: {new Date(caseData.courtDate).toLocaleDateString()}
         </div>
       {/if}
     </div>
 
     <!-- Quick Actions -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <select
-        class="container mx-auto px-4"
+        class="space-y-4"
         value={caseData.status}
         on:change={handleStatusChange}
         on:click={(e) => e.stopPropagation()}

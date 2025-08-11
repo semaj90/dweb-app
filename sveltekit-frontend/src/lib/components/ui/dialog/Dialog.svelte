@@ -1,25 +1,31 @@
 <!-- Enhanced Dialog component with custom implementation -->
 <script lang="ts">
+  interface Props {
+    onclose?: (event?: any) => void;
+  }
+  let {
+    open = false,
+    title = "",
+    description = "",
+    size = "md",
+    showClose = true,
+    closeOnOutsideClick = true,
+    closeOnEscape = true
+  }: Props = $props();
+
+
+
   import { X } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
-  import { quadOut } from "svelte/easing";
+    import { quadOut } from "svelte/easing";
   import { fade, fly } from "svelte/transition";
   import { cn } from '$lib/utils';
 
-  const dispatch = createEventDispatcher();
-
-  export let open: boolean = false;
-  export let title: string = "";
-  export let description: string = "";
-  export let size: "sm" | "md" | "lg" | "xl" | "full" = "md";
-  export let showClose: boolean = true;
-  export let closeOnOutsideClick: boolean = true;
-  export let closeOnEscape: boolean = true;
-
+  
+              
   // Custom dialog implementation
   function handleClose() {
     open = false;
-    dispatch("close");
+    onclose?.();
 }
   function handleKeydown(event: KeyboardEvent) {
     if (closeOnEscape && event.key === "Escape") {
@@ -44,7 +50,7 @@
 <!-- Overlay -->
 {#if open}
   <div
-    class="container mx-auto px-4"
+    class="space-y-4"
     transition:fade={{ duration: 200, easing: quadOut }}
     on:click={handleOutsideClick}
     on:keydown={handleKeydown}
@@ -69,11 +75,11 @@
     aria-describedby={description ? "dialog-description" : undefined}
   >
     <!-- Header -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       {#if title}
         <h2
           id="dialog-title"
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           {title}
         </h2>
@@ -82,7 +88,7 @@
       {#if description}
         <p
           id="dialog-description"
-          class="container mx-auto px-4"
+          class="space-y-4"
         >
           {description}
         </p>
@@ -92,22 +98,22 @@
     <!-- Close button -->
     {#if showClose}
       <button
-        class="container mx-auto px-4"
+        class="space-y-4"
         on:click={() => handleClose()}
         aria-label="Close dialog"
       >
-        <X class="container mx-auto px-4" />
-        <span class="container mx-auto px-4">Close</span>
+        <X class="space-y-4" />
+        <span class="space-y-4">Close</span>
       </button>
     {/if}
 
     <!-- Content slot -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <slot />
     </div>
 
     <!-- Footer slot -->
-    <div class="container mx-auto px-4">
+    <div class="space-y-4">
       <slot name="footer" {close} />
     </div>
   </div>

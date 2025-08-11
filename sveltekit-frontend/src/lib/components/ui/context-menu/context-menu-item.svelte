@@ -1,24 +1,30 @@
 <script lang="ts">
-  import { createEventDispatcher, getContext } from 'svelte';
-  
+  interface Props {
+    onclick?: (event?: any) => void;
+  }
+  let {
+    disabled = false
+  }: Props = $props();
+
+
+
+    
   interface ContextMenuContext {
     close: () => void;
   }
-  export let disabled = false;
-  
-  const dispatch = createEventDispatcher();
-  const { close } = getContext<ContextMenuContext>('context-menu') || { close: () => {} };
+    
+    const { close } = getContext<ContextMenuContext>('context-menu') || { close: () => {} };
   
   function handleClick() {
     if (!disabled) {
-      dispatch('click');
+      onclick?.();
       close();
     }
   }
 </script>
 
 <button
-  class="container mx-auto px-4"
+  class="space-y-4"
   class:disabled
   role="menuitem"
   tabindex={disabled ? -1 : 0}

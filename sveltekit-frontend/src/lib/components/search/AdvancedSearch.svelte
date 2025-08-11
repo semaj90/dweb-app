@@ -1,18 +1,32 @@
 <script lang="ts">
+  interface Props {
+    items: Evidence[] ;
+    onResults: (results: Evidence[]) ;
+    onSelect: (item: Evidence) ;
+    placeholder?: any;
+    maxResults?: any;
+    showFilters?: any;
+    showTags?: any;
+  }
+  let {
+    items = [],
+    onResults = > void = () => {},
+    onSelect = > void = () => {},
+    placeholder = 'Search evidence...',
+    maxResults = 10,
+    showFilters = true,
+    showTags = true
+  }: Props = $props();
+
+
+
   import { createCombobox, melt } from '@melt-ui/svelte';
   import { fly } from 'svelte/transition';
   import Fuse from "fuse.js";
   import { Search, X, Tag, Calendar, FileType } from 'lucide-svelte';
   import type { Evidence } from '$lib/stores/report';
 
-  export let items: Evidence[] = [];
-  export let onResults: (results: Evidence[]) => void = () => {};
-  export let onSelect: (item: Evidence) => void = () => {};
-  export let placeholder = 'Search evidence...';
-  export let maxResults = 10;
-  export let showFilters = true;
-  export let showTags = true;
-
+              
   let searchValue = '';
   let fuse: Fuse<Evidence>;
   let searchResults: Evidence[] = [];

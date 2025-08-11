@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from "zod";
 
 export const loginSchema = z.object({
@@ -6,24 +5,15 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
-export const registerSchema = z
-  .object({
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-    confirmPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters long"),
-    name: z
-      .string()
-      .min(2, "Name must be at least 2 characters long")
-      .optional(),
-    firstName: z.string().min(1, "First name is required").optional(),
-    lastName: z.string().min(1, "Last name is required").optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+export const registerSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  confirmPassword: z
+    .string()
+    .min(6, "Password must be at least 6 characters long"),
+  name: z.string().min(2, "Name must be at least 2 characters long"),
+  role: z.string().default("user"),
+});
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -42,7 +32,7 @@ export const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export type LoginSchema = typeof loginSchema;
-export type RegisterSchema = typeof registerSchema;
-export type ForgotPasswordSchema = typeof forgotPasswordSchema;
-export type ResetPasswordSchema = typeof resetPasswordSchema;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

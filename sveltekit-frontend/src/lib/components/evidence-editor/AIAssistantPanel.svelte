@@ -1,14 +1,20 @@
 <script lang="ts">
+  interface Props {
+    ontagsUpdate?: (event?: any) => void;
+  }
+  let {
+    selectedNode = null
+  }: Props = $props();
+
+
+
   import Badge from "$lib/components/ui/Badge.svelte";
 import Button from "$lib/components/ui/Button.svelte";
 import Input from "$lib/components/ui/Input.svelte";
   import Fuse from "fuse.js";
-  import { createEventDispatcher, onMount } from "svelte";
-
-  const dispatch = createEventDispatcher();
-
-  export let selectedNode: any = null;
-
+  
+  
+  
   // AI processing state
   let isProcessing = false;
   let processingStatus = "";
@@ -72,7 +78,7 @@ import Input from "$lib/components/ui/Input.svelte";
       if (response.ok) {
         const newTags = await response.json();
         selectedNode.aiTags = newTags;
-        dispatch("tagsUpdate", newTags);
+        ontagsUpdate?.();
         processingStatus = "Analysis complete!";
 
         // Generate insights
@@ -198,17 +204,17 @@ import Input from "$lib/components/ui/Input.svelte";
 }
 </script>
 
-<div class="container mx-auto px-4">
-  <h2 class="container mx-auto px-4">AI Assistant</h2>
+<div class="space-y-4">
+  <h2 class="space-y-4">AI Assistant</h2>
 
   <!-- Search Section -->
-  <div class="container mx-auto px-4">
-    <h3 class="container mx-auto px-4">Evidence Search</h3>
-    <div class="container mx-auto px-4">
+  <div class="space-y-4">
+    <h3 class="space-y-4">Evidence Search</h3>
+    <div class="space-y-4">
       <Input
         bind:value={searchQuery}
         placeholder="Search evidence, tags, people..."
-        class="container mx-auto px-4"
+        class="space-y-4"
       />
       {#if searchQuery}
         <Button onclick={clearSearch} variant="outline" size="sm">Clear</Button>
@@ -217,16 +223,16 @@ import Input from "$lib/components/ui/Input.svelte";
 
     <!-- Search Results -->
     {#if searchResults.length > 0}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
+      <div class="space-y-4">
+        <div class="space-y-4">
           {searchResults.length} results found
         </div>
         {#each searchResults.slice(0, 5) as result}
           <div
-            class="container mx-auto px-4"
+            class="space-y-4"
           >
-            <div class="container mx-auto px-4">{result.name}</div>
-            <div class="container mx-auto px-4">
+            <div class="space-y-4">{result.name}</div>
+            <div class="space-y-4">
               Score: {(1 - result.score).toFixed(2)}
             </div>
           </div>
@@ -238,16 +244,16 @@ import Input from "$lib/components/ui/Input.svelte";
   {#if selectedNode}
     <!-- AI Analysis Status -->
     {#if processingStatus}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">{processingStatus}</div>
+      <div class="space-y-4">
+        <div class="space-y-4">{processingStatus}</div>
       </div>
     {/if}
 
     <!-- AI Tags Section -->
     {#if selectedNode.aiTags}
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">
-          <h3 class="container mx-auto px-4">AI Analysis</h3>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <h3 class="space-y-4">AI Analysis</h3>
           <Button
             onclick={reprocessWithAI}
             disabled={isProcessing}
@@ -260,9 +266,9 @@ import Input from "$lib/components/ui/Input.svelte";
 
         <!-- Summary -->
         {#if selectedNode.aiTags.summary}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">Summary</div>
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">Summary</div>
+            <div class="space-y-4">
               {selectedNode.aiTags.summary}
             </div>
           </div>
@@ -270,9 +276,9 @@ import Input from "$lib/components/ui/Input.svelte";
 
         <!-- Auto Tags -->
         {#if selectedNode.aiTags.tags?.length > 0}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">Auto Tags</div>
-            <div class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">Auto Tags</div>
+            <div class="space-y-4">
               {#each selectedNode.aiTags.tags as tag}
                 <Badge>{tag}</Badge>
               {/each}
@@ -282,12 +288,12 @@ import Input from "$lib/components/ui/Input.svelte";
 
         <!-- Key Facts -->
         {#if selectedNode.aiTags.keyFacts?.length > 0}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">Key Facts</div>
-            <ul class="container mx-auto px-4">
+          <div class="space-y-4">
+            <div class="space-y-4">Key Facts</div>
+            <ul class="space-y-4">
               {#each selectedNode.aiTags.keyFacts as fact}
-                <li class="container mx-auto px-4">
-                  <span class="container mx-auto px-4">•</span>
+                <li class="space-y-4">
+                  <span class="space-y-4">•</span>
                   <span>{fact}</span>
                 </li>
               {/each}
@@ -297,9 +303,9 @@ import Input from "$lib/components/ui/Input.svelte";
       </div>
     {:else}
       <!-- No AI analysis yet -->
-      <div class="container mx-auto px-4">
-        <div class="container mx-auto px-4">🤖</div>
-        <div class="container mx-auto px-4">No AI analysis available</div>
+      <div class="space-y-4">
+        <div class="space-y-4">🤖</div>
+        <div class="space-y-4">No AI analysis available</div>
         <Button onclick={reprocessWithAI} disabled={isProcessing}>
           {isProcessing ? "Processing..." : "Analyze with AI"}
         </Button>
@@ -308,17 +314,17 @@ import Input from "$lib/components/ui/Input.svelte";
 
     <!-- AI Insights -->
     {#if aiInsights.connections.length > 0 || aiInsights.similarEvidence.length > 0}
-      <div class="container mx-auto px-4">
-        <h3 class="container mx-auto px-4">AI Insights</h3>
+      <div class="space-y-4">
+        <h3 class="space-y-4">AI Insights</h3>
 
         <!-- Connections -->
         {#if aiInsights.connections.length > 0}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">Connections</div>
+          <div class="space-y-4">
+            <div class="space-y-4">Connections</div>
             {#each aiInsights.connections as connection}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">{connection.entity}</div>
-                <div class="container mx-auto px-4">
+              <div class="space-y-4">
+                <div class="space-y-4">{connection.entity}</div>
+                <div class="space-y-4">
                   {connection.description}
                 </div>
               </div>
@@ -328,12 +334,12 @@ import Input from "$lib/components/ui/Input.svelte";
 
         <!-- Similar Evidence -->
         {#if aiInsights.similarEvidence.length > 0}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">Similar Evidence</div>
+          <div class="space-y-4">
+            <div class="space-y-4">Similar Evidence</div>
             {#each aiInsights.similarEvidence as similar}
-              <div class="container mx-auto px-4">
-                <div class="container mx-auto px-4">{similar.name}</div>
-                <div class="container mx-auto px-4">{similar.reason}</div>
+              <div class="space-y-4">
+                <div class="space-y-4">{similar.name}</div>
+                <div class="space-y-4">{similar.reason}</div>
               </div>
             {/each}
           </div>
@@ -341,15 +347,15 @@ import Input from "$lib/components/ui/Input.svelte";
 
         <!-- Suggested Actions -->
         {#if aiInsights.suggestedActions.length > 0}
-          <div class="container mx-auto px-4">
-            <div class="container mx-auto px-4">Suggested Actions</div>
+          <div class="space-y-4">
+            <div class="space-y-4">Suggested Actions</div>
             {#each aiInsights.suggestedActions as action}
               <div
-                class="container mx-auto px-4"
+                class="space-y-4"
               >
                 <div>
-                  <div class="container mx-auto px-4">{action.action}</div>
-                  <div class="container mx-auto px-4">{action.reason}</div>
+                  <div class="space-y-4">{action.action}</div>
+                  <div class="space-y-4">{action.reason}</div>
                 </div>
                 <Badge>{action.priority}</Badge>
               </div>
@@ -360,10 +366,10 @@ import Input from "$lib/components/ui/Input.svelte";
     {/if}
   {:else}
     <!-- No selection state -->
-    <div class="container mx-auto px-4">
-      <div class="container mx-auto px-4">🤖</div>
-      <div class="container mx-auto px-4">AI Assistant Ready</div>
-      <div class="container mx-auto px-4">
+    <div class="space-y-4">
+      <div class="space-y-4">🤖</div>
+      <div class="space-y-4">AI Assistant Ready</div>
+      <div class="space-y-4">
         Select evidence to get AI insights and analysis
       </div>
     </div>

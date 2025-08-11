@@ -164,18 +164,18 @@
 	<meta name="description" content="AI-powered report builder for legal case analysis" />
 </svelte:head>
 
-<div class="container mx-auto px-4">
+<div class="space-y-4">
 	<!-- Header -->
-	<header class="container mx-auto px-4">
-		<div class="container mx-auto px-4">
+	<header class="space-y-4">
+		<div class="space-y-4">
 			<h1>📝 Report Builder</h1>
-			<p class="container mx-auto px-4">AI-powered case analysis and report generation</p>
+			<p class="space-y-4">AI-powered case analysis and report generation</p>
 			
-			<div class="container mx-auto px-4">
-				<button class="container mx-auto px-4" on:click={() => createNewReport()}>
+			<div class="space-y-4">
+				<button class="space-y-4" on:click={() => createNewReport()}>
 					📄 New Report
 				</button>
-				<button class="container mx-auto px-4" on:click={() => createNewCanvas()}>
+				<button class="space-y-4" on:click={() => createNewCanvas()}>
 					🎨 New Canvas
 				</button>
 			</div>
@@ -184,30 +184,30 @@
 
 	<!-- Error Message -->
 	{#if error}
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			❌ {error}
-			<button on:click={() => error = ''} class="container mx-auto px-4">×</button>
+			<button on:click={() => error = ''} class="space-y-4">×</button>
 		</div>
 	{/if}
 
 	<!-- Loading State -->
 	{#if isLoading}
-		<div class="container mx-auto px-4">
-			<div class="container mx-auto px-4">⏳</div>
+		<div class="space-y-4">
+			<div class="space-y-4">⏳</div>
 			<p>Loading demo data...</p>
 		</div>
 	{:else}
 		<!-- Tab Navigation -->
-		<div class="container mx-auto px-4">
+		<div class="space-y-4">
 			<button 
-				class="container mx-auto px-4"
+				class="space-y-4"
 				class:active={activeTab === 'editor'}
 				on:click={() => activeTab = 'editor'}
 			>
 				📝 Report Editor
 			</button>
 			<button 
-				class="container mx-auto px-4"
+				class="space-y-4"
 				class:active={activeTab === 'canvas'}
 				on:click={() => activeTab = 'canvas'}
 			>
@@ -216,11 +216,11 @@
 		</div>
 
 		<!-- Main Content -->
-		<main class="container mx-auto px-4">
+		<main class="space-y-4">
 			{#if activeTab === 'editor'}
 				<!-- Report Editor Tab -->
-				<div class="container mx-auto px-4">
-					<div class="container mx-auto px-4">
+				<div class="space-y-4">
+					<div class="space-y-4">
 						<h2>Prosecutor's Report</h2>
 						<p>Write, edit, and analyze case reports with AI assistance</p>
 					</div>
@@ -234,8 +234,8 @@
 				</div>
 			{:else if activeTab === 'canvas'}
 				<!-- Canvas Editor Tab -->
-				<div class="container mx-auto px-4">
-					<div class="container mx-auto px-4">
+				<div class="space-y-4">
+					<div class="space-y-4">
 						<h2>Interactive Evidence Canvas</h2>
 						<p>Visualize evidence, create diagrams, and annotate with AI insights</p>
 					</div>
@@ -252,10 +252,10 @@
 		</main>
 
 		<!-- Sidebar with Features Overview -->
-		<aside class="container mx-auto px-4">
-			<div class="container mx-auto px-4">
+		<aside class="space-y-4">
+			<div class="space-y-4">
 				<h3>🤖 AI Features</h3>
-				<ul class="container mx-auto px-4">
+				<ul class="space-y-4">
 					<li>✨ Auto-complete suggestions</li>
 					<li>📊 Case analysis insights</li>
 					<li>🔍 Citation recommendations</li>
@@ -263,38 +263,38 @@
 				</ul>
 			</div>
 
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<h3>📚 Citation Library</h3>
-				<p class="container mx-auto px-4">{citationPoints.length} citations available</p>
-				<div class="container mx-auto px-4">
+				<p class="space-y-4">{citationPoints.length} citations available</p>
+				<div class="space-y-4">
 					{#each citationPoints.slice(0, 3) as citation}
-						<div class="container mx-auto px-4">
-							<div class="container mx-auto px-4">{citation.source}</div>
-							<div class="container mx-auto px-4">{citation.text.substring(0, 60)}...</div>
+						<div class="space-y-4">
+							<div class="space-y-4">{citation.source}</div>
+							<div class="space-y-4">{citation.text.substring(0, 60)}...</div>
 						</div>
 					{/each}
 				</div>
 			</div>
 
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<h3>📋 Evidence Repository</h3>
-				<p class="container mx-auto px-4">{evidence.length} pieces of evidence</p>
-				<div class="container mx-auto px-4">
+				<p class="space-y-4">{evidence.length} pieces of evidence</p>
+				<div class="space-y-4">
 					{#each evidence as item}
-						<div class="container mx-auto px-4">
-							<div class="container mx-auto px-4">{item.title}</div>
-							<div class="container mx-auto px-4">{item.evidenceType || item.type || 'unknown'}</div>
+						<div class="space-y-4">
+							<div class="space-y-4">{item.title}</div>
+							<div class="space-y-4">{item.evidenceType || item.type || 'unknown'}</div>
 						</div>
 					{/each}
 				</div>
 			</div>
 
-			<div class="container mx-auto px-4">
+			<div class="space-y-4">
 				<h3>⚡ Quick Actions</h3>
-				<div class="container mx-auto px-4">
-					<button class="container mx-auto px-4">📤 Export PDF</button>
-					<button class="container mx-auto px-4">💾 Save Template</button>
-					<button class="container mx-auto px-4">🔄 Sync Offline</button>
+				<div class="space-y-4">
+					<button class="space-y-4">📤 Export PDF</button>
+					<button class="space-y-4">💾 Save Template</button>
+					<button class="space-y-4">🔄 Sync Offline</button>
 				</div>
 			</div>
 		</aside>
