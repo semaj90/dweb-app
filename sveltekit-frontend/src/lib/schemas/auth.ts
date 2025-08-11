@@ -13,6 +13,7 @@ export const registerSchema = z.object({
     .min(6, "Password must be at least 6 characters long"),
   name: z.string().min(2, "Name must be at least 2 characters long"),
   role: z.string().default("user"),
+  terms: z.boolean().default(false),
 });
 
 export const forgotPasswordSchema = z.object({

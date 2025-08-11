@@ -1,75 +1,85 @@
 <!-- YoRHa Modal Component with Terminal Styling -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { fade, scale } from 'svelte/transition';
-  import { quintOut } from 'svelte/easing';
-  
+  import { createEventDispatcher } from "svelte";
+  import { quintOut } from "svelte/easing";
+  import { fade, scale } from "svelte/transition";
+
+  import type { Snippet } from "svelte";
+
   interface ModalProps {
     open?: boolean;
     title?: string;
     subtitle?: string;
-    size?: 'sm' | 'md' | 'lg' | 'xl' | 'fullscreen';
+    size?: "sm" | "md" | "lg" | "xl" | "fullscreen";
     closable?: boolean;
     closeOnEscape?: boolean;
     closeOnBackdrop?: boolean;
     showHeader?: boolean;
     showFooter?: boolean;
     persistent?: boolean;
-    type?: 'default' | 'confirm' | 'alert' | 'system';
+    type?: "default" | "confirm" | "alert" | "system";
+    children?: Snippet;
+    footer?: Snippet;
   }
 
   let {
     open = false,
-    title = '',
-    subtitle = '',
-    size = 'md',
+    title = "",
+    subtitle = "",
+    size = "md",
     closable = true,
     closeOnEscape = true,
     closeOnBackdrop = true,
     showHeader = true,
     showFooter = false,
     persistent = false,
-    type = 'default'
+    type = "default",
+    children,
+    footer,
   }: ModalProps = $props();
 
   const dispatch = createEventDispatcher();
-  
+
   let modalElement = $state<HTMLDivElement | null>(null);
   let focusedElementBeforeModal: HTMLElement | null = null;
 
   const sizeClasses = {
-    sm: 'max-w-sm w-full mx-4',
-    md: 'max-w-md w-full mx-4',
-    lg: 'max-w-2xl w-full mx-4',
-    xl: 'max-w-4xl w-full mx-4',
-    fullscreen: 'w-screen h-screen max-w-none mx-0'
+    sm: "max-w-sm w-full mx-4",
+    md: "max-w-md w-full mx-4",
+    lg: "max-w-2xl w-full mx-4",
+    xl: "max-w-4xl w-full mx-4",
+    fullscreen: "w-screen h-screen max-w-none mx-0",
   };
 
   function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && closeOnEscape && !persistent) {
+    if (event.key === "Escape" && closeOnEscape && !persistent) {
       event.preventDefault();
       handleClose();
     }
   }
 
   function handleBackdropClick(event: MouseEvent) {
-    if (event.target === event.currentTarget && closeOnBackdrop && !persistent) {
+    if (
+      event.target === event.currentTarget &&
+      closeOnBackdrop &&
+      !persistent
+    ) {
       handleClose();
     }
   }
 
   function handleClose() {
     if (closable && !persistent) {
-      dispatch('close');
+      dispatch("close");
     }
   }
 
   function handleConfirm() {
-    dispatch('confirm');
+    dispatch("confirm");
   }
 
   function handleCancel() {
-    dispatch('cancel');
+    dispatch("cancel");
   }
 
   // Focus management
@@ -85,13 +95,13 @@
   // Body scroll lock
   $effect(() => {
     if (open) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   });
 </script>
@@ -104,8 +114,9 @@
     transition:fade={{ duration: 200 }}
     role="dialog"
     aria-modal="true"
-    aria-labelledby={title ? 'modal-title' : undefined}
-    aria-describedby={subtitle ? 'modal-subtitle' : undefined}
+    aria-labelledby={title ? "modal-title" : undefined}
+    aria-describedby={subtitle ? "modal-subtitle" : undefined}
+    tabindex="-1"
   >
     <div
       bind:this={modalElement}
@@ -124,9 +135,9 @@
               <p id="modal-subtitle" class="modal-subtitle">{subtitle}</p>
             {/if}
           </div>
-          
+
           <!-- System Status -->
-          {#if type === 'system'}
+          {#if type === "system"}
             <div class="system-status">
               <div class="status-indicator">
                 <div class="status-pulse"></div>
@@ -150,33 +161,35 @@
 
       <!-- Content -->
       <div class="modal-content">
-        <slot />
+        {#if children}
+          {@render children()}
+        {/if}
       </div>
 
       <!-- Footer -->
-      {#if showFooter || type === 'confirm' || type === 'alert'}
+      {#if showFooter || type === "confirm" || type === "alert"}
         <div class="modal-footer">
-          <slot name="footer">
-            {#if type === 'confirm'}
-              <div class="modal-actions">
-                <button class="modal-button cancel" onclick={handleCancel}>
-                  <span class="button-icon">✕</span>
-                  Cancel
-                </button>
-                <button class="modal-button confirm" onclick={handleConfirm}>
-                  <span class="button-icon">✓</span>
-                  Confirm
-                </button>
-              </div>
-            {:else if type === 'alert'}
-              <div class="modal-actions">
-                <button class="modal-button acknowledge" onclick={handleClose}>
-                  <span class="button-icon">■</span>
-                  Acknowledge
-                </button>
-              </div>
-            {/if}
-          </slot>
+          {#if footer}
+            {@render footer()}
+          {:else if type === "confirm"}
+            <div class="modal-actions">
+              <button class="modal-button cancel" onclick={handleCancel}>
+                <span class="button-icon">✕</span>
+                Cancel
+              </button>
+              <button class="modal-button confirm" onclick={handleConfirm}>
+                <span class="button-icon">✓</span>
+                Confirm
+              </button>
+            </div>
+          {:else if type === "alert"}
+            <div class="modal-actions">
+              <button class="modal-button acknowledge" onclick={handleClose}>
+                <span class="button-icon">■</span>
+                Acknowledge
+              </button>
+            </div>
+          {/if}
         </div>
       {/if}
 
@@ -210,13 +223,13 @@
     position: relative;
     background: var(--yorha-bg-secondary, #1a1a1a);
     border: 2px solid var(--yorha-text-muted, #808080);
-    font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+    font-family: var(--yorha-font-primary, "JetBrains Mono", monospace);
     color: var(--yorha-text-primary, #e0e0e0);
     max-height: calc(100vh - 2rem);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 
+    box-shadow:
       0 0 0 1px var(--yorha-bg-primary, #0a0a0a),
       0 20px 80px rgba(0, 0, 0, 0.9);
   }
@@ -224,7 +237,7 @@
   /* Modal Types */
   .yorha-modal.system {
     border-color: var(--yorha-secondary, #ffd700);
-    box-shadow: 
+    box-shadow:
       0 0 0 1px var(--yorha-secondary, #ffd700),
       0 0 30px rgba(255, 215, 0, 0.4),
       0 20px 80px rgba(0, 0, 0, 0.9),
@@ -332,7 +345,8 @@
     flex: 1;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--yorha-secondary, #ffd700) var(--yorha-bg-primary, #0a0a0a);
+    scrollbar-color: var(--yorha-secondary, #ffd700)
+      var(--yorha-bg-primary, #0a0a0a);
   }
 
   .modal-content::-webkit-scrollbar {
@@ -426,7 +440,7 @@
   }
 
   .terminal-borders::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background: linear-gradient(
@@ -440,7 +454,8 @@
 
   /* Animations */
   @keyframes systemPulse {
-    0%, 100% {
+    0%,
+    100% {
       opacity: 1;
       box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
     }

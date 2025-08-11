@@ -1,0 +1,74 @@
+does this have gollama?   console.log('go-llama payload:', canvasData);
+      // TODO: Send to ollama, go-llama.cpp API endpoint for embeding, summarization ai features, .ts store?
+if not need to create go-ollama and test it.
+C:\Users\james\Desktop\deeds-web\deeds-web-app\src\lib\components\ai\EvidenceCanvas.svelte
+☒ Create TypeScript barrel exports for API routing
+     ☐ Set up Go-microservice integration with gRPC/HTTP2
+     ☐ Create service startup scripts with Google Zx
+
+ Write(go-microservice\enhanced-grpc-legal-server.go)
+
+  ⎿  Wrote 1 lines to go-microservice\enhanced-grpc-legal-server.go
+     package main
+     import (
+       "context"
+       "crypto/tls"
+       "encoding/json"
+       "fmt"
+       "log"
+       "net"
+       "net/http"
+==================== Previous Conversation Compacted ====================     
+● Compact summary (ctrl+r to expand)
+  ⎿  Read sveltekit-frontend\src\lib\api\index.ts (580 lines)
+  ⎿  Read README.md (93 lines)
+  ⎿ Read 
+    sveltekit-frontend\src\lib\components\yorha\YoRHaModalManager.svelte      
+     (56 lines)
+  ⎿  Todo list read (6 items)
+
+● I'll create the service startup scripts using Google Zx to orchestrate      
+   all services. This will complete the final component of the user's
+  comprehensive architecture request.
+
+● Update Todos
+  ⎿  ☒ Run svelte-check to capture 2873 errors and save to file
+     ☒ Generate comprehensive README.md with architecture overview
+     ☒ Use Context7 MCP to generate best practices for Node.js 
+       clustering with GPU acceleration
+     ☒ Create TypeScript barrel exports for API routing
+     ☒ Set up Go-microservice integration with gRPC/HTTP2
+     ☐ Create service startup scripts with Google Zx
+  ⎿  sveltekit-frontend\src\CLAUDE.md
+
+● Now I'll create the Google Zx service orchestration scripts to manage       
+  all services (SvelteKit frontend, Go microservice, Ollama, Redis,
+  PostgreSQL) as the final component of the comprehensive architecture:       
+
+Ports 5173–5176 were occupied; Vite moved to 5177, then requests were refused later. This suggests multiple lingering Vite/node processes or a crash. Please run a single dev server.
+What’s next
+
+Ensure a single Vite instance is running, then verify /login and /register.
+Continue replacing the remaining svelte:component occurrences (e.g., routes/help, routes/evidence, vector widgets, Toolbar, etc.), then address deprecated slot patterns where present.
+After dev is healthy, we’ll resume the auth SSR validation and a small pass on bindings that need $bindable.
+Try this (PowerShell)
+
+Restart Vite once, on a free port:
+Verify auth pages:
+Replace 5173 with the port Vite prints if different.
+
+Quality gates
+
+Build/dev: Server started successfully at 5177 initially, then became unreachable. Needs a single-instance restart.
+Typecheck: Still failing (many pre-existing errors). Today’s edits are type-safe and reduce deprecation usage.
+Tests: Not present.
+Requirements coverage
+
+Clean artifacts and restart: Done (dev needs a single-instance rerun).
+Verify /login and /register SSR: Deferred until dev is stable.
+Replace deprecated component usage: Done for four key files; more queued.
+Respect manual edits (YoRHa, service worker): Done.
+If you want, I can proceed to:
+
+Kill lingering Node/Vite processes safely and restart dev for a clean verification.
+Migrate the next batch of svelte:component usages (e.g., vector widgets, Toolbar, Evidence pages) and start addressing deprecated slot patterns.

@@ -1,85 +1,88 @@
 <!-- YoRHa Dialog Component - Lightweight Terminal Dialog -->
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { fade, fly } from 'svelte/transition';
-  import { quintOut } from 'svelte/easing';
+  import { createEventDispatcher } from "svelte";
+  import { quintOut } from "svelte/easing";
+  import { fade, fly } from "svelte/transition";
+  import type { Snippet } from 'svelte';
 
   interface DialogProps {
     open?: boolean;
     title?: string;
     message?: string;
-    type?: 'info' | 'success' | 'warning' | 'error' | 'confirm' | 'prompt';
-    position?: 'center' | 'top' | 'bottom';
+    type?: "info" | "success" | "warning" | "error" | "confirm" | "prompt";
+    position?: "center" | "top" | "bottom";
     closable?: boolean;
     persistent?: boolean;
     value?: string; // For prompt dialogs
+    children?: Snippet;
   }
 
   let {
     open = false,
-    title = '',
-    message = '',
-    type = 'info',
-    position = 'center',
+    title = "",
+    message = "",
+    type = "info",
+    position = "center",
     closable = true,
     persistent = false,
-    value = ''
+    value = "",
+    children
   }: DialogProps = $props();
 
   const dispatch = createEventDispatcher();
-  
+
   let dialogElement = $state<HTMLDivElement | null>(null);
   let inputElement = $state<HTMLInputElement | null>(null);
   let promptValue = $state(value);
 
   const typeConfig = {
     info: {
-      icon: '■',
-      color: 'var(--yorha-accent, #00ff41)',
-      border: 'var(--yorha-accent, #00ff41)'
+      icon: "■",
+      color: "var(--yorha-accent, #00ff41)",
+      border: "var(--yorha-accent, #00ff41)",
     },
     success: {
-      icon: '✓',
-      color: 'var(--yorha-accent, #00ff41)',
-      border: 'var(--yorha-accent, #00ff41)'
+      icon: "✓",
+      color: "var(--yorha-accent, #00ff41)",
+      border: "var(--yorha-accent, #00ff41)",
     },
     warning: {
-      icon: '⚠',
-      color: 'var(--yorha-warning, #ffaa00)',
-      border: 'var(--yorha-warning, #ffaa00)'
+      icon: "⚠",
+      color: "var(--yorha-warning, #ffaa00)",
+      border: "var(--yorha-warning, #ffaa00)",
     },
     error: {
-      icon: '✕',
-      color: 'var(--yorha-danger, #ff0041)',
-      border: 'var(--yorha-danger, #ff0041)'
+      icon: "✕",
+      color: "var(--yorha-danger, #ff0041)",
+      border: "var(--yorha-danger, #ff0041)",
     },
     confirm: {
-      icon: '?',
-      color: 'var(--yorha-secondary, #ffd700)',
-      border: 'var(--yorha-secondary, #ffd700)'
+      icon: "?",
+      color: "var(--yorha-secondary, #ffd700)",
+      border: "var(--yorha-secondary, #ffd700)",
     },
     prompt: {
-      icon: '►',
-      color: 'var(--yorha-secondary, #ffd700)',
-      border: 'var(--yorha-secondary, #ffd700)'
-    }
+      icon: "►",
+      color: "var(--yorha-secondary, #ffd700)",
+      border: "var(--yorha-secondary, #ffd700)",
+    },
   };
 
   const positionClasses = {
-    center: 'dialog-center',
-    top: 'dialog-top',
-    bottom: 'dialog-bottom'
+    center: "dialog-center",
+    top: "dialog-top",
+    bottom: "dialog-bottom",
   };
 
   function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && closable && !persistent) {
+    if (event.key === "Escape" && closable && !persistent) {
       event.preventDefault();
       handleClose();
-    } else if (event.key === 'Enter') {
+    } else if (event.key === "Enter") {
       event.preventDefault();
-      if (type === 'prompt') {
+      if (type === "prompt") {
         handleConfirm();
-      } else if (type === 'confirm') {
+      } else if (type === "confirm") {
         handleConfirm();
       } else {
         handleClose();
@@ -94,24 +97,24 @@
   }
 
   function handleClose() {
-    dispatch('close');
+    dispatch("close");
   }
 
   function handleConfirm() {
-    if (type === 'prompt') {
-      dispatch('confirm', { value: promptValue });
+    if (type === "prompt") {
+      dispatch("confirm", { value: promptValue });
     } else {
-      dispatch('confirm');
+      dispatch("confirm");
     }
   }
 
   function handleCancel() {
-    dispatch('cancel');
+    dispatch("cancel");
   }
 
   // Focus management
   $effect(() => {
-    if (open && type === 'prompt' && inputElement) {
+    if (open && type === "prompt" && inputElement) {
       inputElement.focus();
       inputElement.select();
     }
@@ -128,26 +131,30 @@
     transition:fade={{ duration: 150 }}
     role="dialog"
     aria-modal="true"
-    aria-labelledby={title ? 'dialog-title' : undefined}
+    aria-labelledby={title ? "dialog-title" : undefined}
+    tabindex="0"
   >
     <div
       bind:this={dialogElement}
       class="yorha-dialog {positionClasses[position]}"
       style="border-color: {config.border}"
       transition:fly={{
-        y: position === 'top' ? -50 : position === 'bottom' ? 50 : 0,
+        y: position === "top" ? -50 : position === "bottom" ? 50 : 0,
         duration: 250,
-        easing: quintOut
+        easing: quintOut,
       }}
       tabindex="-1"
     >
       <!-- Header -->
       <div class="dialog-header" style="border-bottom-color: {config.border}">
         <div class="header-left">
-          <div class="dialog-icon" style="color: {config.color}; border-color: {config.color}">
+          <div
+            class="dialog-icon"
+            style="color: {config.color}; border-color: {config.color}"
+          >
             {config.icon}
           </div>
-          
+
           <div class="header-text">
             {#if title}
               <h3 id="dialog-title" class="dialog-title">{title}</h3>
@@ -171,7 +178,7 @@
 
       <!-- Content -->
       <div class="dialog-content">
-        {#if type === 'prompt'}
+        {#if type === "prompt"}
           <div class="prompt-input-group">
             <label class="prompt-label" for="dialog-input">
               Enter value:
@@ -187,28 +194,32 @@
             />
           </div>
         {:else}
-          <slot />
+          {#if children}
+            {@render children()}
+          {:else}
+            <p class="dialog-message">{message}</p>
+          {/if}
         {/if}
       </div>
 
       <!-- Actions -->
       <div class="dialog-actions">
-        {#if type === 'confirm' || type === 'prompt'}
+        {#if type === "confirm" || type === "prompt"}
           <button class="dialog-button cancel" onclick={handleCancel}>
             <span class="button-icon">✕</span>
             Cancel
           </button>
-          <button 
-            class="dialog-button confirm" 
+          <button
+            class="dialog-button confirm"
             style="border-color: {config.color}; color: {config.color}"
             onclick={handleConfirm}
           >
             <span class="button-icon">✓</span>
-            {type === 'prompt' ? 'Submit' : 'Confirm'}
+            {type === "prompt" ? "Submit" : "Confirm"}
           </button>
         {:else}
-          <button 
-            class="dialog-button acknowledge" 
+          <button
+            class="dialog-button acknowledge"
             style="border-color: {config.color}; color: {config.color}"
             onclick={handleClose}
           >
@@ -243,14 +254,14 @@
     position: relative;
     background: var(--yorha-bg-secondary, #1a1a1a);
     border: 2px solid;
-    font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+    font-family: var(--yorha-font-primary, "JetBrains Mono", monospace);
     color: var(--yorha-text-primary, #e0e0e0);
     min-width: 320px;
     max-width: 500px;
     width: 90vw;
     max-height: 80vh;
     overflow: hidden;
-    box-shadow: 
+    box-shadow:
       0 0 0 1px var(--yorha-bg-primary, #0a0a0a),
       0 10px 40px rgba(0, 0, 0, 0.8);
   }
@@ -377,7 +388,7 @@
 
   .prompt-input:focus {
     outline: none;
-    box-shadow: 
+    box-shadow:
       0 0 0 1px currentColor,
       inset 0 0 8px rgba(255, 215, 0, 0.1);
   }

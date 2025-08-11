@@ -286,7 +286,8 @@
       "Bash(./redis-windows/redis-server.exe:*)",
       "Bash(net start:*)",
       "Bash(redis-cli:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(copy favicon.ico favicon.png)"
     ],
     "deny": []
   }

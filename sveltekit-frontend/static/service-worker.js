@@ -18,10 +18,10 @@ const CACHE_STRATEGIES = {
 const STATIC_ASSETS = [
   '/',
   '/app.html',
-  '/static/workers/simd-json-worker.js',
-  '/static/workers/vector-search-worker.js',
-  '/static/workers/embedding-worker.js',
-  '/static/favicon.png'
+  '/workers/simd-json-worker.js',
+  '/workers/vector-search-worker.js',
+  '/workers/embedding-worker.js',
+  '/favicon.png'
 ];
 
 // Token stream management

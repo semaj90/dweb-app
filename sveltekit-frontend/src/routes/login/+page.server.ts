@@ -6,7 +6,9 @@ import { verify } from "@node-rs/argon2";
 import { fail, redirect } from "@sveltejs/kit";
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
+import type { JSONSchema7 } from "json-schema";
 import { message, superValidate } from "sveltekit-superforms";
+import { zod } from "sveltekit-superforms/adapters";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -15,10 +17,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     throw redirect(303, "/dashboard");
   }
 
-  // Provide a SuperValidated form for SSR compatibility
-  const form = await superValidate(loginSchema, {
+  // Provide a SuperValidated form without adapter to avoid client JSON-schema/adapter reconstruction
+  const form = await superValidate(zod(loginSchema), {
     id: "login",
-    jsonSchema: false,
+    jsonSchema: {
+      type: "object",
+      properties: {
+        email: { type: "string" },
+        password: { type: "string" },
+      },
+      required: ["email", "password"],
+    } as JSONSchema7,
   });
 
   // Registration success banner
@@ -34,9 +43,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 export const actions: Actions = {
   default: async ({ request, cookies }) => {
     // Validate incoming request using superforms
-    const form = await superValidate(request, loginSchema, {
+    const form = await superValidate(request, zod(loginSchema), {
       id: "login",
-      jsonSchema: false,
+      jsonSchema: {
+        type: "object",
+        properties: {
+          email: { type: "string" },
+          password: { type: "string" },
+        },
+        required: ["email", "password"],
+      } as JSONSchema7,
     });
 
     if (!form.valid) {
@@ -50,7 +66,7 @@ export const actions: Actions = {
       const existingUser = await db
         .select()
         .from(users)
-        .where(eq(users.email, email))
+        .where(eq(users.email, email as string))
         .limit(1);
 
       if (!existingUser.length || !existingUser[0].hashedPassword) {
@@ -70,7 +86,10 @@ export const actions: Actions = {
         validPassword = await bcrypt.compare(password, user.hashedPassword);
       } catch {
         try {
-          validPassword = await verify(user.hashedPassword, password);
+          validPassword = await verify(
+            user.hashedPassword as unknown as string,
+            password as string
+          );
         } catch (error) {
           console.error("Password verification failed:", error);
         }

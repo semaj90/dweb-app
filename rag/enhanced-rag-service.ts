@@ -171,9 +171,9 @@ export class EnhancedRAGService {
   async query(request: RAGQueryRequest): Promise<RAGQueryResponse> {
     const startTime = Date.now();
     const queryId = `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     this.performanceMetrics.totalQueries++;
-    
+
     const {
       useCache = this.config.enableSemanticCaching,
       cacheKey = this.generateCacheKey(request.query, request.options),
@@ -181,7 +181,7 @@ export class EnhancedRAGService {
       enableFallback = true,
       ...options
     } = request.options || {};
-    
+
     try {
       let enhancedQuery = request.query;
       let context7Enhanced = false;
@@ -196,15 +196,15 @@ export class EnhancedRAGService {
       let cacheResult: CacheResponse | null = null;
       if (useCache) {
         cacheResult = await this.checkSemanticCache(request.query, request.options);
-        
+
         if (cacheResult.found && cacheResult.confidence > this.config.cacheThreshold) {
           console.log(`📋 Cache hit for query: ${request.query.substring(0, 50)}...`);
-          
+
           cacheHit = true;
           cacheConfidence = cacheResult.confidence;
           processingMethod = 'cache';
           this.updateCacheHitRate(true);
-          
+
           return this.formatCacheResult(cacheResult, startTime, {
             context7Enhanced: false,
             autoFixApplied: false,
@@ -220,7 +220,7 @@ export class EnhancedRAGService {
       if (options.includeContext7) {
         const analysis = await context7Service.analyzeComponent('rag', 'legal-ai');
         const bestPractices = await context7Service.generateBestPractices('performance');
-        
+
         enhancedQuery = `${request.query}
 
 Context7 RAG Enhancement:
@@ -236,7 +236,7 @@ Integration: ${analysis.integration}`;
           area: 'performance',
           dryRun: false
         });
-        
+
         enhancedQuery = `${enhancedQuery}
 
 Auto-Fix Performance Optimizations:
@@ -254,10 +254,10 @@ Auto-Fix Performance Optimizations:
 
       // Step 2: Process with cluster if enabled
       let ragResult: any;
-      
+
       if (this.config.enableClustering && this.activeQueries.size < this.config.maxConcurrentQueries) {
         this.activeQueries.add(queryId);
-        
+
         try {
           const clusterTask: WorkerTask = {
             id: queryId,
@@ -279,7 +279,7 @@ Auto-Fix Performance Optimizations:
           };
 
           const clusterResult = await this.clusterManager.executeTask(clusterTask);
-          
+
           if (clusterResult.success) {
             ragResult = clusterResult.result;
             processingMethod = cacheResult?.similar.length ? 'hybrid' : 'cluster';
@@ -312,7 +312,7 @@ Auto-Fix Performance Optimizations:
 
       // Step 4: Update performance metrics
       this.updatePerformanceMetrics(startTime, false, processingMethod);
-      
+
       const processingTime = Date.now() - startTime;
 
       // Transform RAG result to our response format
@@ -353,7 +353,7 @@ Auto-Fix Performance Optimizations:
 
     } catch (error) {
       console.error('Enhanced RAG service query failed:', error);
-      
+
       return {
         output: `RAG Query Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         score: 0,
@@ -379,7 +379,7 @@ Auto-Fix Performance Optimizations:
   }
 
   async uploadDocument(
-    filePath: string, 
+    filePath: string,
     options?: {
       caseId?: string;
       documentType?: string;
@@ -394,13 +394,13 @@ Auto-Fix Performance Optimizations:
     try {
       // Enhanced document upload with Context7 integration
       let processingOptions = options || {};
-      
+
       if (options?.includeContext7) {
         const uploadGuidance = await context7Service.suggestIntegration(
           'document upload system',
           'security and virus scanning'
         );
-        
+
         // Apply Context7 recommendations to upload process
         console.log('Context7 Upload Guidance:', uploadGuidance);
       }
@@ -434,7 +434,7 @@ Auto-Fix Performance Optimizations:
     try {
       // Get RAG system statistics
       const stats = await legalRAG.getSystemStats();
-      
+
       return {
         totalDocuments: stats.documentCount || 0,
         totalQueries: 0, // Will be implemented with proper stats tracking
@@ -469,7 +469,7 @@ Auto-Fix Performance Optimizations:
 
   private calculateConfidenceScore(sources: any[]): number {
     if (sources.length === 0) return 0;
-    
+
     const avgSimilarity = sources.reduce((sum, source) => sum + source.similarity, 0) / sources.length;
     return Math.round(avgSimilarity * 100) / 100;
   }
@@ -490,13 +490,13 @@ Auto-Fix Performance Optimizations:
   private async cacheRAGResult(question: string, result: any, options: any): Promise<void> {
     const cacheContext = `rag_result_${options?.documentTypes?.join('_') || 'general'}`;
     const cacheText = `Query: ${question}\nAnswer: ${result.answer || result.output}`;
-    
+
     await this.ollamaGemmaCache.getEmbedding(cacheText, cacheContext);
   }
 
   private async startPreCaching(): Promise<void> {
     console.log('🔄 Starting RAG pre-caching...');
-    
+
     const commonQueries = [
       'What are the key liability clauses?',
       'Identify all parties mentioned in the contract',
@@ -535,13 +535,13 @@ Auto-Fix Performance Optimizations:
       documentTypes: options?.documentTypes,
       caseId: options?.caseId
     };
-    
+
     return `rag_${Buffer.from(JSON.stringify(keyData)).toString('base64').slice(0, 16)}`;
   }
 
   private formatCacheResult(cacheResult: CacheResponse, startTime: number, enhancedData: any): RAGQueryResponse {
     const processingTime = Date.now() - startTime;
-    
+
     const sources = cacheResult.similar.map(item => ({
       content: item.text,
       similarity: (item as any).similarity || 0.8,
@@ -575,19 +575,19 @@ Auto-Fix Performance Optimizations:
   private updateCacheHitRate(isHit: boolean): void {
     const totalQueries = this.performanceMetrics.totalQueries;
     const currentHitRate = this.performanceMetrics.cacheHitRate;
-    
+
     this.performanceMetrics.cacheHitRate = (currentHitRate * (totalQueries - 1) + (isHit ? 1 : 0)) / totalQueries;
   }
 
   private updatePerformanceMetrics(startTime: number, isCacheHit: boolean, method: string): void {
     const processingTime = Date.now() - startTime;
     const totalQueries = this.performanceMetrics.totalQueries;
-    
-    this.performanceMetrics.averageResponseTime = 
+
+    this.performanceMetrics.averageResponseTime =
       (this.performanceMetrics.averageResponseTime * (totalQueries - 1) + processingTime) / totalQueries;
-    
+
     if (method === 'cluster' || method === 'hybrid') {
-      this.performanceMetrics.clusterUtilization = 
+      this.performanceMetrics.clusterUtilization =
         (this.performanceMetrics.clusterUtilization * (totalQueries - 1) + 1) / totalQueries;
     }
   }
@@ -597,27 +597,27 @@ Auto-Fix Performance Optimizations:
    */
   async batchQuery(queries: RAGQueryRequest[]): Promise<RAGQueryResponse[]> {
     console.log(`📊 Processing batch of ${queries.length} queries`);
-    
+
     const results: RAGQueryResponse[] = [];
     const activePromises: Promise<RAGQueryResponse>[] = [];
-    
+
     for (const query of queries) {
       if (activePromises.length >= this.config.maxConcurrentQueries) {
         const completedResult = await Promise.race(activePromises);
         results.push(completedResult);
-        
+
         const completedIndex = activePromises.findIndex(p => p === Promise.resolve(completedResult));
         if (completedIndex > -1) {
           activePromises.splice(completedIndex, 1);
         }
       }
-      
+
       activePromises.push(this.query(query));
     }
-    
+
     const remainingResults = await Promise.all(activePromises);
     results.push(...remainingResults);
-    
+
     console.log(`✅ Batch processing complete: ${results.length} results`);
     return results;
   }
@@ -643,20 +643,22 @@ Auto-Fix Performance Optimizations:
 
 // Factory function for creating Enhanced RAG service instances
 export function createEnhancedRAGService(config?: Partial<RAGServiceConfig>): EnhancedRAGService {
+  const env = typeof process !== 'undefined' ? process.env : {};
+
   const defaultConfig: RAGServiceConfig = {
-    qdrantUrl: process.env.QDRANT_URL || 'http://localhost:6333',
-    ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
+    qdrantUrl: env.QDRANT_URL || 'http://localhost:6333',
+    ollamaUrl: env.OLLAMA_URL || 'http://localhost:11434',
     embeddingModel: 'nomic-embed-text',
     generationModel: 'gemma3-legal',
-    maxResults: 10,
-    confidenceThreshold: 0.7,
+    maxResults: Number(env.ENHANCED_RAG_MAX_RESULTS ?? 10),
+    confidenceThreshold: Number(env.ENHANCED_RAG_CONFIDENCE ?? 0.7),
     // Enhanced RAG configuration
-    enableClustering: process.env.ENHANCED_RAG_CLUSTERING !== 'false',
-    enableSemanticCaching: process.env.ENHANCED_RAG_CACHING !== 'false',
-    cacheThreshold: parseFloat(process.env.ENHANCED_RAG_CACHE_THRESHOLD || '0.8'),
-    clusterWorkers: parseInt(process.env.ENHANCED_RAG_WORKERS || '4'),
-    maxConcurrentQueries: parseInt(process.env.ENHANCED_RAG_MAX_CONCURRENT || '10'),
-    enablePreCaching: process.env.ENHANCED_RAG_PRECACHING !== 'false'
+    enableClustering: env.ENHANCED_RAG_CLUSTERING !== 'false',
+    enableSemanticCaching: env.ENHANCED_RAG_CACHING !== 'false',
+    cacheThreshold: Number(env.ENHANCED_RAG_CACHE_THRESHOLD ?? 0.8),
+    clusterWorkers: Number(env.ENHANCED_RAG_WORKERS ?? 4),
+    maxConcurrentQueries: Number(env.ENHANCED_RAG_MAX_CONCURRENT ?? 10),
+    enablePreCaching: env.ENHANCED_RAG_PRECACHING !== 'false'
   };
 
   return new EnhancedRAGService({ ...defaultConfig, ...config });

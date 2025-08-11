@@ -1,9 +1,23 @@
 <script lang="ts">
-  import type { User } from '$lib/types';
   import { Button } from "$lib/components/ui/button";
-  import { AlertTriangle, ArrowRight, Book, Clock, Download, ExternalLink, HelpCircle, Info, MessageSquare, Play, Search, Star, User as UserIcon, Video } from "lucide-svelte";
+  import {
+    AlertTriangle,
+    ArrowRight,
+    Book,
+    Clock,
+    Download,
+    ExternalLink,
+    HelpCircle,
+    Info,
+    MessageSquare,
+    Play,
+    Search,
+    Star,
+    User as UserIcon,
+    Video,
+  } from "lucide-svelte";
   import { onMount } from "svelte";
-  
+
   interface HelpArticle {
     id: string;
     title: string;
@@ -16,7 +30,7 @@
     duration: string;
     popularity: number;
     type: string;
-}
+  }
   // Help state
   let activeCategory = "getting-started";
   let searchQuery = "";
@@ -360,7 +374,7 @@ Build on previous responses:
 3. Use broader search terms
 4. Try advanced search options
 			`,
-    }
+    },
   ];
 
   // FAQ items
@@ -404,7 +418,7 @@ Build on previous responses:
       results = results.filter(
         (article) => article.category === activeCategory
       );
-}
+    }
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -414,12 +428,12 @@ Build on previous responses:
           article.description.toLowerCase().includes(query) ||
           article.content.toLowerCase().includes(query)
       );
-}
+    }
     // Sort by popularity
     results = results.sort((a, b) => b.popularity - a.popularity);
 
     filteredArticles = results;
-}
+  }
   function getTypeIcon(type: string) {
     switch (type) {
       case "video":
@@ -428,7 +442,8 @@ Build on previous responses:
         return Play;
       default:
         return Book;
-}}
+    }
+  }
   function getTypeColor(type: string) {
     switch (type) {
       case "video":
@@ -437,10 +452,11 @@ Build on previous responses:
         return "text-blue-600";
       default:
         return "text-gray-600";
-}}
+    }
+  }
   $: {
     filterArticles();
-}
+  }
 </script>
 
 <svelte:head>
@@ -512,7 +528,8 @@ Build on previous responses:
               class:hover:bg-gray-100={activeCategory !== category.id}
               on:click={() => (activeCategory = category.id)}
             >
-              <svelte:component this={category.icon} class="h-5 w-5" />
+              {@const Icon = category.icon}
+              <Icon class="h-5 w-5" />
               <div>
                 <div class="font-medium">{category.title}</div>
                 <div class="text-xs text-gray-500">{category.description}</div>
@@ -565,10 +582,8 @@ Build on previous responses:
               <div class="p-6 hover:bg-gray-50 transition-colors">
                 <div class="flex items-start gap-4">
                   <div class="flex-shrink-0 mt-1">
-                    <svelte:component
-                      this={getTypeIcon(article.type)}
-                      class="h-6 w-6 {getTypeColor(article.type)}"
-                    />
+                    {@const Icon = getTypeIcon(article.type)}
+                    <Icon class={`h-6 w-6 ${getTypeColor(article.type)}`} />
                   </div>
 
                   <div class="flex-1 min-w-0">
@@ -684,27 +699,27 @@ Build on previous responses:
   /* @unocss-include */
   .prose {
     max-width: none;
-}
+  }
   .prose :global(h1) {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
-}
+  }
   .prose :global(h2) {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
     margin-top: 1.5rem;
-}
+  }
   .prose :global(p) {
     margin-bottom: 1rem;
     line-height: 1.6;
-}
+  }
   .prose :global(ul) {
     margin-bottom: 1rem;
     padding-left: 1.5rem;
-}
+  }
   .prose :global(li) {
     margin-bottom: 0.5rem;
-}
+  }
 </style>

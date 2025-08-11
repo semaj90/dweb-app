@@ -68,8 +68,8 @@
         instructions: "Analyze canvas content and respond with structured evidence summary"
       };
 
-      console.log('Claude payload:', canvasData);
-      // TODO: Send to Claude API endpoint
+      console.log('go-llama payload:', canvasData);
+      // TODO: Send to ollama, go-llama.cpp API endpoint for embeding, summarization ai features, .ts store?
 
     } catch (e) {
       console.error('Analysis failed:', e);

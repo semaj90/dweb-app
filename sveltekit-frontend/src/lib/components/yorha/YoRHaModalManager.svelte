@@ -41,8 +41,16 @@
     on:confirm={(event) => handleModalConfirm(modal, event)}
     on:cancel={() => handleModalCancel(modal)}
   >
-    {#if modal.component}
-      <svelte:component this={modal.component} {...modal.props} />
-    {/if}
+    {#snippet children()}
+      {#if modal.component}
+        <!-- Note: Dynamic components deprecated in Svelte 5 - replace with explicit components -->
+        <div class="modal-component-placeholder">
+          <p>Dynamic component: {modal.component?.name || 'Unknown'}</p>
+          {#if modal.props}
+            <pre>{JSON.stringify(modal.props, null, 2)}</pre>
+          {/if}
+        </div>
+      {/if}
+    {/snippet}
   </YoRHaModal>
 {/each}

@@ -2,32 +2,27 @@
   interface Props {
     open?: any;
   }
-  let {
-    open = false
-  }: Props = $props();
+  let { open = false }: Props = $props();
 
-
-
-  import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from "$app/stores";
+  import Button from "$lib/components/ui/Button.svelte";
+  import { cn } from "$lib/utils";
   import {
-    Home,
-    FileText,
-    Briefcase,
-    Bot,
-    Layers,
     BarChart3,
-    FileBarChart,
-    Settings,
-    Search,
-    Plus,
+    Bot,
+    Briefcase,
     ChevronRight,
-    Scale
-  } from 'lucide-svelte';
-  import Button from '$lib/components/ui/Button.svelte';
-  import { cn } from '$lib/utils';
+    FileBarChart,
+    FileText,
+    Home,
+    Layers,
+    Plus,
+    Scale,
+    Search,
+    Settings,
+  } from "lucide-svelte";
+  import { onMount } from "svelte";
 
-  
   let mounted = false;
 
   onMount(() => {
@@ -38,66 +33,66 @@
 
   const navigation = [
     {
-      name: 'Dashboard',
-      href: '/',
+      name: "Dashboard",
+      href: "/",
       icon: Home,
-      current: currentPath === '/'
+      current: currentPath === "/",
     },
     {
-      name: 'Evidence',
-      href: '/evidence',
+      name: "Evidence",
+      href: "/evidence",
       icon: FileText,
-      current: currentPath.startsWith('/evidence'),
-      badge: '12 New'
+      current: currentPath.startsWith("/evidence"),
+      badge: "12 New",
     },
     {
-      name: 'Cases',
-      href: '/cases',
+      name: "Cases",
+      href: "/cases",
       icon: Briefcase,
-      current: currentPath.startsWith('/cases')
+      current: currentPath.startsWith("/cases"),
     },
     {
-      name: 'AI Assistant',
-      href: '/ai-assistant',
+      name: "AI Assistant",
+      href: "/ai-assistant",
       icon: Bot,
-      current: currentPath.startsWith('/ai-assistant'),
-      badge: 'Beta'
+      current: currentPath.startsWith("/ai-assistant"),
+      badge: "Beta",
     },
     {
-      name: 'Evidence Canvas',
-      href: '/interactive-canvas',
+      name: "Evidence Canvas",
+      href: "/interactive-canvas",
       icon: Layers,
-      current: currentPath.startsWith('/interactive-canvas')
-}
+      current: currentPath.startsWith("/interactive-canvas"),
+    },
   ];
 
   const analytics = [
     {
-      name: 'Analytics',
-      href: '/analytics',
+      name: "Analytics",
+      href: "/analytics",
       icon: BarChart3,
-      current: currentPath.startsWith('/analytics')
+      current: currentPath.startsWith("/analytics"),
     },
     {
-      name: 'Reports',
-      href: '/reports',
+      name: "Reports",
+      href: "/reports",
       icon: FileBarChart,
-      current: currentPath.startsWith('/reports')
-}
+      current: currentPath.startsWith("/reports"),
+    },
   ];
 
   const settings = [
     {
-      name: 'Settings',
-      href: '/settings',
+      name: "Settings",
+      href: "/settings",
       icon: Settings,
-      current: currentPath.startsWith('/settings')
-}
+      current: currentPath.startsWith("/settings"),
+    },
   ];
 
   function closeSidebar() {
     open = false;
-}
+  }
 </script>
 
 <!-- Mobile backdrop -->
@@ -107,7 +102,7 @@
     on:click={closeSidebar}
     role="button"
     tabindex="0"
-    on:keydown={(e) => e.key === 'Enter' && closeSidebar()}
+    on:keydown={(e) => e.key === "Enter" && closeSidebar()}
   ></div>
 {/if}
 
@@ -119,16 +114,21 @@
   )}
 >
   <div class="flex h-full flex-col">
-
     <!-- Logo section -->
     <div class="flex h-16 items-center border-b border-nier-gray px-6">
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 bg-crimson-gradient rounded-md flex items-center justify-center nier-glow">
+        <div
+          class="w-8 h-8 bg-crimson-gradient rounded-md flex items-center justify-center nier-glow"
+        >
           <Scale class="h-5 w-5 text-white" />
         </div>
         <div>
-          <h1 class="text-sm font-semibold text-foreground">Enhanced Legal AI</h1>
-          <p class="text-xs text-muted-foreground">Justice Through Technology</p>
+          <h1 class="text-sm font-semibold text-foreground">
+            Enhanced Legal AI
+          </h1>
+          <p class="text-xs text-muted-foreground">
+            Justice Through Technology
+          </p>
         </div>
       </div>
     </div>
@@ -150,7 +150,6 @@
     <!-- Navigation -->
     <nav class="flex-1 overflow-y-auto py-4">
       <div class="px-3 space-y-1">
-
         <!-- Main navigation -->
         <div class="space-y-1">
           {#each navigation as item}
@@ -165,23 +164,27 @@
               on:click={closeSidebar}
             >
               <div class="flex items-center">
-                <svelte:component
-                  this={item.icon}
+                {@const Icon = item.icon}
+                <Icon
                   class={cn(
                     "mr-3 h-5 w-5 flex-shrink-0",
-                    item.current ? "text-white" : "text-muted-foreground group-hover:text-foreground"
+                    item.current
+                      ? "text-white"
+                      : "text-muted-foreground group-hover:text-foreground"
                   )}
                 />
                 {item.name}
               </div>
 
               {#if item.badge}
-                <span class={cn(
-                  "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                  item.current
-                    ? "bg-white/20 text-white"
-                    : "bg-harvard-crimson text-white"
-                )}>
+                <span
+                  class={cn(
+                    "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
+                    item.current
+                      ? "bg-white/20 text-white"
+                      : "bg-harvard-crimson text-white"
+                  )}
+                >
                   {item.badge}
                 </span>
               {/if}
@@ -195,7 +198,9 @@
 
         <!-- Analytics section -->
         <div class="pt-4">
-          <h3 class="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <h3
+            class="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+          >
             Analytics
           </h3>
           <div class="mt-2 space-y-1">
@@ -210,11 +215,13 @@
                 )}
                 on:click={closeSidebar}
               >
-                <svelte:component
-                  this={item.icon}
+                {@const Icon = item.icon}
+                <Icon
                   class={cn(
                     "mr-3 h-5 w-5 flex-shrink-0",
-                    item.current ? "text-white" : "text-muted-foreground group-hover:text-foreground"
+                    item.current
+                      ? "text-white"
+                      : "text-muted-foreground group-hover:text-foreground"
                   )}
                 />
                 {item.name}
@@ -225,7 +232,9 @@
 
         <!-- Settings section -->
         <div class="pt-4">
-          <h3 class="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <h3
+            class="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+          >
             System
           </h3>
           <div class="mt-2 space-y-1">
@@ -240,11 +249,13 @@
                 )}
                 on:click={closeSidebar}
               >
-                <svelte:component
-                  this={item.icon}
+                {@const Icon = item.icon}
+                <Icon
                   class={cn(
                     "mr-3 h-5 w-5 flex-shrink-0",
-                    item.current ? "text-white" : "text-muted-foreground group-hover:text-foreground"
+                    item.current
+                      ? "text-white"
+                      : "text-muted-foreground group-hover:text-foreground"
                   )}
                 />
                 {item.name}
@@ -258,10 +269,14 @@
     <!-- Status indicator -->
     <div class="p-4 border-t border-nier-gray">
       <div class="flex items-center gap-3 p-3 bg-nier-surface-light rounded-md">
-        <div class="w-3 h-3 bg-legal-success rounded-full animate-nier-pulse"></div>
+        <div
+          class="w-3 h-3 bg-legal-success rounded-full animate-nier-pulse"
+        ></div>
         <div class="flex-1 min-w-0">
           <p class="text-sm font-medium text-foreground">System Status</p>
-          <p class="text-xs text-muted-foreground truncate">All systems operational</p>
+          <p class="text-xs text-muted-foreground truncate">
+            All systems operational
+          </p>
         </div>
       </div>
     </div>
@@ -272,20 +287,24 @@
   /* @unocss-include */
   /* Custom styles for Nier aesthetic */
   aside {
-    background: linear-gradient(180deg, var(--color-ui-surface) 0%, var(--color-primary-dark-gray) 100%);
-}
+    background: linear-gradient(
+      180deg,
+      var(--color-ui-surface) 0%,
+      var(--color-primary-dark-gray) 100%
+    );
+  }
   .nier-glow {
     box-shadow: 0 0 10px rgba(165, 28, 48, 0.3);
-}
+  }
   /* Enhance scrollbar for sidebar */
   nav::-webkit-scrollbar {
     width: 4px;
-}
+  }
   nav::-webkit-scrollbar-track {
     background: transparent;
-}
+  }
   nav::-webkit-scrollbar-thumb {
     background: var(--color-accent-crimson);
     border-radius: 2px;
-}
+  }
 </style>
