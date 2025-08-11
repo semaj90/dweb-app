@@ -120,11 +120,13 @@
 		left: 0;
 		right: 0;
 		z-index: 1000;
-		background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-		border-bottom: 2px solid #00ff88;
-		box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
-		font-family: 'Orbitron', 'Courier New', monospace;
-		backdrop-filter: blur(10px);
+		background: linear-gradient(180deg, var(--yorha-bg-secondary, #1a1a1a) 0%, var(--yorha-bg-tertiary, #2a2a2a) 100%);
+		border-bottom: 3px solid var(--yorha-secondary, #ffd700);
+		box-shadow: 
+			0 3px 0 0 var(--yorha-secondary, #ffd700),
+			0 6px 20px rgba(0, 0, 0, 0.8);
+		font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+		backdrop-filter: blur(8px);
 	}
 	
 	.hud-top-bar {
@@ -132,7 +134,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 12px 24px;
-		background: rgba(0, 0, 0, 0.4);
+		background: var(--yorha-bg-primary, #0a0a0a);
+		border-bottom: 1px solid var(--yorha-text-muted, #808080);
 	}
 	
 	/* Level Section */
@@ -145,29 +148,35 @@
 	.level-badge {
 		display: flex;
 		align-items: center;
-		background: linear-gradient(45deg, #ff6b00, #ff8c42);
+		background: var(--yorha-secondary, #ffd700);
+		color: var(--yorha-bg-primary, #0a0a0a);
 		padding: 8px 16px;
-		border-radius: 20px;
-		border: 2px solid #ffaa00;
-		transition: all 0.3s ease;
+		border-radius: 0;
+		border: 2px solid var(--yorha-secondary, #ffd700);
+		box-shadow: 0 0 0 2px var(--yorha-bg-secondary, #1a1a1a);
+		transition: all 0.2s ease;
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	.level-badge.glow {
-		box-shadow: 0 0 20px rgba(255, 170, 0, 0.8);
-		transform: scale(1.05);
+		box-shadow: 
+			0 0 0 2px var(--yorha-bg-secondary, #1a1a1a),
+			0 0 20px rgba(255, 215, 0, 0.8);
+		transform: scale(1.02);
 	}
 	
 	.level-text {
 		font-size: 12px;
-		font-weight: bold;
-		color: #fff;
+		font-weight: 600;
+		color: var(--yorha-bg-primary, #0a0a0a);
 		margin-right: 4px;
 	}
 	
 	.level-number {
 		font-size: 18px;
-		font-weight: bold;
-		color: #fff;
+		font-weight: 700;
+		color: var(--yorha-bg-primary, #0a0a0a);
 	}
 	
 	.experience-bar {
@@ -177,28 +186,32 @@
 	
 	.exp-background {
 		width: 100%;
-		height: 8px;
-		background: rgba(255, 255, 255, 0.1);
-		border-radius: 4px;
+		height: 10px;
+		background: var(--yorha-bg-primary, #0a0a0a);
+		border-radius: 0;
 		overflow: hidden;
-		border: 1px solid #333;
+		border: 2px solid var(--yorha-text-muted, #808080);
 	}
 	
 	.exp-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #00ff88, #00cc70);
-		border-radius: 4px;
+		background: linear-gradient(90deg, var(--yorha-accent, #00ff41), var(--yorha-secondary, #ffd700));
+		border-radius: 0;
 		transition: width 0.5s ease;
-		box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+		box-shadow: 
+			inset 0 0 10px rgba(0, 255, 65, 0.3),
+			0 0 5px rgba(255, 215, 0, 0.5);
 	}
 	
 	.exp-text {
 		position: absolute;
-		top: -20px;
+		top: -22px;
 		left: 0;
 		font-size: 11px;
-		color: #00ff88;
-		font-weight: bold;
+		color: var(--yorha-accent, #00ff41);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	/* Case Section */
@@ -208,16 +221,19 @@
 	
 	.case-label {
 		font-size: 10px;
-		color: #888;
+		color: var(--yorha-text-muted, #808080);
 		margin-bottom: 2px;
 		letter-spacing: 1px;
+		text-transform: uppercase;
 	}
 	
 	.case-id {
 		font-size: 16px;
-		color: #00ff88;
-		font-weight: bold;
-		text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+		color: var(--yorha-secondary, #ffd700);
+		font-weight: 700;
+		text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+		text-transform: uppercase;
+		letter-spacing: 2px;
 	}
 	
 	/* Status Section */
@@ -242,27 +258,39 @@
 	}
 	
 	.status-indicator.online {
-		color: #00ff88;
+		color: var(--yorha-accent, #00ff41);
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	.status-indicator.online .status-dot {
-		background: #00ff88;
-		box-shadow: 0 0 10px rgba(0, 255, 136, 0.7);
+		background: var(--yorha-accent, #00ff41);
+		border-radius: 0;
+		box-shadow: 
+			0 0 0 1px var(--yorha-bg-secondary, #1a1a1a),
+			0 0 10px rgba(0, 255, 65, 0.7);
 	}
 	
 	.status-indicator.offline {
-		color: #ff4444;
+		color: var(--yorha-danger, #ff0041);
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	.status-indicator.offline .status-dot {
-		background: #ff4444;
-		box-shadow: 0 0 10px rgba(255, 68, 68, 0.7);
+		background: var(--yorha-danger, #ff0041);
+		border-radius: 0;
+		box-shadow: 
+			0 0 0 1px var(--yorha-bg-secondary, #1a1a1a),
+			0 0 10px rgba(255, 0, 65, 0.7);
 	}
 	
 	.system-time {
 		font-size: 14px;
-		color: #fff;
-		font-family: 'Courier New', monospace;
+		color: var(--yorha-text-primary, #e0e0e0);
+		font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	/* Stats Panel */
@@ -271,7 +299,8 @@
 		justify-content: center;
 		gap: 32px;
 		padding: 8px 24px 12px;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--yorha-bg-primary, #0a0a0a);
+		border-top: 1px solid var(--yorha-text-muted, #808080);
 	}
 	
 	.stat-item {
@@ -279,17 +308,19 @@
 		align-items: center;
 		gap: 8px;
 		padding: 8px 16px;
-		background: rgba(0, 255, 136, 0.1);
-		border: 1px solid rgba(0, 255, 136, 0.3);
-		border-radius: 8px;
-		transition: all 0.3s ease;
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		border: 2px solid var(--yorha-text-muted, #808080);
+		border-radius: 0;
+		transition: all 0.2s ease;
 	}
 	
 	.stat-item:hover {
-		background: rgba(0, 255, 136, 0.2);
-		border-color: #00ff88;
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+		background: var(--yorha-bg-tertiary, #2a2a2a);
+		border-color: var(--yorha-secondary, #ffd700);
+		transform: translateY(-1px);
+		box-shadow: 
+			0 0 0 1px var(--yorha-secondary, #ffd700),
+			0 4px 12px rgba(255, 215, 0, 0.3);
 	}
 	
 	.stat-icon {
@@ -302,15 +333,18 @@
 	
 	.stat-label {
 		font-size: 9px;
-		color: #888;
+		color: var(--yorha-text-muted, #808080);
 		margin-bottom: 2px;
-		letter-spacing: 0.5px;
+		letter-spacing: 1px;
+		text-transform: uppercase;
 	}
 	
 	.stat-value {
 		font-size: 14px;
-		color: #00ff88;
-		font-weight: bold;
+		color: var(--yorha-accent, #00ff41);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	@keyframes pulse {

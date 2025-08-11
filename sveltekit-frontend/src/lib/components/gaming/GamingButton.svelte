@@ -95,18 +95,19 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		border: none;
-		border-radius: 4px;
-		font-family: 'Orbitron', 'Courier New', monospace;
-		font-weight: 600;
+		border: 2px solid var(--yorha-text-muted, #808080);
+		border-radius: 0;
+		font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+		font-weight: 500;
 		text-transform: uppercase;
-		letter-spacing: 1px;
+		letter-spacing: 2px;
 		cursor: pointer;
-		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: all 0.2s ease;
 		overflow: hidden;
 		user-select: none;
 		outline: none;
-		background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		color: var(--yorha-text-primary, #e0e0e0);
 	}
 	
 	/* Size Variants */
@@ -130,103 +131,109 @@
 	
 	/* Color Variants */
 	.gaming-button.primary {
-		background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
-		border: 2px solid #0088ff;
-		color: #ffffff;
+		background: var(--yorha-bg-tertiary, #2a2a2a);
+		border: 2px solid var(--yorha-secondary, #ffd700);
+		color: var(--yorha-secondary, #ffd700);
 		box-shadow: 
-			0 0 20px rgba(0, 136, 255, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
+			0 0 0 1px var(--yorha-secondary, #ffd700),
+			inset 0 0 10px rgba(255, 215, 0, 0.1);
 	}
 	
 	.gaming-button.primary:hover:not(:disabled) {
-		background: linear-gradient(135deg, #0077dd 0%, #0055aa 100%);
-		border-color: #00aaff;
+		background: var(--yorha-secondary, #ffd700);
+		color: var(--yorha-bg-primary, #0a0a0a);
+		border-color: var(--yorha-secondary, #ffd700);
 		box-shadow: 
-			0 0 30px rgba(0, 136, 255, 0.5),
-			inset 0 1px 0 rgba(255, 255, 255, 0.3);
-		transform: translateY(-2px);
+			0 0 0 2px var(--yorha-secondary, #ffd700),
+			0 0 20px rgba(255, 215, 0, 0.5);
+		transform: translateY(-1px);
 	}
 	
 	.gaming-button.secondary {
-		background: linear-gradient(135deg, #333333 0%, #1a1a1a 100%);
-		border: 2px solid #555555;
-		color: #ffffff;
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		border: 2px solid var(--yorha-text-secondary, #b0b0b0);
+		color: var(--yorha-text-secondary, #b0b0b0);
 		box-shadow: 
-			0 0 20px rgba(255, 255, 255, 0.1),
-			inset 0 1px 0 rgba(255, 255, 255, 0.1);
+			0 0 0 1px var(--yorha-text-secondary, #b0b0b0),
+			inset 0 0 5px rgba(176, 176, 176, 0.1);
 	}
 	
 	.gaming-button.secondary:hover:not(:disabled) {
-		background: linear-gradient(135deg, #444444 0%, #2a2a2a 100%);
-		border-color: #777777;
+		background: var(--yorha-text-secondary, #b0b0b0);
+		color: var(--yorha-bg-primary, #0a0a0a);
+		border-color: var(--yorha-text-secondary, #b0b0b0);
 		box-shadow: 
-			0 0 30px rgba(255, 255, 255, 0.2),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
-		transform: translateY(-2px);
+			0 0 0 2px var(--yorha-text-secondary, #b0b0b0),
+			0 0 15px rgba(176, 176, 176, 0.3);
+		transform: translateY(-1px);
 	}
 	
 	.gaming-button.success {
-		background: linear-gradient(135deg, #00cc66 0%, #009944 100%);
-		border: 2px solid #00ff88;
-		color: #ffffff;
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		border: 2px solid var(--yorha-accent, #00ff41);
+		color: var(--yorha-accent, #00ff41);
 		box-shadow: 
-			0 0 20px rgba(0, 255, 136, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
+			0 0 0 1px var(--yorha-accent, #00ff41),
+			inset 0 0 10px rgba(0, 255, 65, 0.1);
 	}
 	
 	.gaming-button.success:hover:not(:disabled) {
-		background: linear-gradient(135deg, #00dd77 0%, #00aa55 100%);
-		border-color: #00ffaa;
+		background: var(--yorha-accent, #00ff41);
+		color: var(--yorha-bg-primary, #0a0a0a);
+		border-color: var(--yorha-accent, #00ff41);
 		box-shadow: 
-			0 0 30px rgba(0, 255, 136, 0.5),
-			inset 0 1px 0 rgba(255, 255, 255, 0.3);
-		transform: translateY(-2px);
+			0 0 0 2px var(--yorha-accent, #00ff41),
+			0 0 20px rgba(0, 255, 65, 0.5);
+		transform: translateY(-1px);
 	}
 	
 	.gaming-button.danger {
-		background: linear-gradient(135deg, #cc3333 0%, #aa1111 100%);
-		border: 2px solid #ff4444;
-		color: #ffffff;
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		border: 2px solid var(--yorha-danger, #ff0041);
+		color: var(--yorha-danger, #ff0041);
 		box-shadow: 
-			0 0 20px rgba(255, 68, 68, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
+			0 0 0 1px var(--yorha-danger, #ff0041),
+			inset 0 0 10px rgba(255, 0, 65, 0.1);
 	}
 	
 	.gaming-button.danger:hover:not(:disabled) {
-		background: linear-gradient(135deg, #dd4444 0%, #bb2222 100%);
-		border-color: #ff6666;
+		background: var(--yorha-danger, #ff0041);
+		color: var(--yorha-text-primary, #e0e0e0);
+		border-color: var(--yorha-danger, #ff0041);
 		box-shadow: 
-			0 0 30px rgba(255, 68, 68, 0.5),
-			inset 0 1px 0 rgba(255, 255, 255, 0.3);
-		transform: translateY(-2px);
+			0 0 0 2px var(--yorha-danger, #ff0041),
+			0 0 20px rgba(255, 0, 65, 0.5);
+		transform: translateY(-1px);
 	}
 	
 	.gaming-button.warning {
-		background: linear-gradient(135deg, #ff8800 0%, #cc6600 100%);
-		border: 2px solid #ffaa00;
-		color: #ffffff;
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		border: 2px solid var(--yorha-warning, #ffaa00);
+		color: var(--yorha-warning, #ffaa00);
 		box-shadow: 
-			0 0 20px rgba(255, 170, 0, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.2);
+			0 0 0 1px var(--yorha-warning, #ffaa00),
+			inset 0 0 10px rgba(255, 170, 0, 0.1);
 	}
 	
 	.gaming-button.warning:hover:not(:disabled) {
-		background: linear-gradient(135deg, #ff9900 0%, #dd7700 100%);
-		border-color: #ffbb00;
+		background: var(--yorha-warning, #ffaa00);
+		color: var(--yorha-bg-primary, #0a0a0a);
+		border-color: var(--yorha-warning, #ffaa00);
 		box-shadow: 
-			0 0 30px rgba(255, 170, 0, 0.5),
-			inset 0 1px 0 rgba(255, 255, 255, 0.3);
-		transform: translateY(-2px);
+			0 0 0 2px var(--yorha-warning, #ffaa00),
+			0 0 20px rgba(255, 170, 0, 0.5);
+		transform: translateY(-1px);
 	}
 	
 	/* States */
 	.gaming-button:disabled {
-		opacity: 0.5;
+		opacity: 0.4;
 		cursor: not-allowed;
 		transform: none !important;
 		box-shadow: none !important;
-		background: #333333 !important;
-		border-color: #555555 !important;
+		background: var(--yorha-bg-secondary, #1a1a1a) !important;
+		border-color: var(--yorha-text-muted, #808080) !important;
+		color: var(--yorha-text-muted, #808080) !important;
 	}
 	
 	.gaming-button.pressed {

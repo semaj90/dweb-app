@@ -1,0 +1,26 @@
+Since: 2025-08-09
+Total files changed: 13
+Top directories:
+  sveltekit-frontend/src/lib/components/gaming  (4)
+  sveltekit-frontend  (2)
+  sveltekit-frontend/scripts  (2)
+  .  (1)
+  src/lib/wasm  (1)
+  sveltekit-frontend/src  (1)
+  sveltekit-frontend/src/routes/gaming-demo  (1)
+  src/lib/wasm/deps  (1)
+
+Files (first 200):
+  .gitignore
+  src/lib/wasm/README.md
+  sveltekit-frontend/package.json
+  sveltekit-frontend/scripts/dev-full-wrapper.mjs
+  sveltekit-frontend/scripts/review-todos.mjs
+  sveltekit-frontend/src/app.html
+  sveltekit-frontend/src/lib/components/gaming/GamingButton.svelte
+  sveltekit-frontend/src/lib/components/gaming/GamingHUD.svelte
+  sveltekit-frontend/src/lib/components/gaming/GamingLayout.svelte
+  sveltekit-frontend/src/lib/components/gaming/GamingPanel.svelte
+  sveltekit-frontend/src/routes/gaming-demo/+page.svelte
+  sveltekit-frontend/uno.config.ts
+  src/lib/wasm/deps/emsdk

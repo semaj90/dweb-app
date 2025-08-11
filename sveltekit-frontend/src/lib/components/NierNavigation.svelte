@@ -1,86 +1,267 @@
-<!-- NieR-themed navigation component -->
-<nav class="nier-nav">
-  <div class="nier-nav-container">
-    <div class="nier-brand">
-      <span class="nier-brand-text">LEGAL AI SYSTEM</span>
-      <span class="nier-brand-version">v3.0.0</span>
+<!-- YoRHa Terminal Navigation Component -->
+<script lang="ts">
+  import { page } from '$app/stores';
+
+  interface NavigationProps {
+    brand?: string;
+    version?: string;
+    links?: Array<{
+      href: string;
+      label: string;
+      icon?: string;
+    }>;
+  }
+
+  let {
+    brand = "YORHA LEGAL AI",
+    version = "v4.0.0",
+    links = [
+      { href: "/cases", label: "CASES", icon: "📁" },
+      { href: "/evidence", label: "EVIDENCE", icon: "📋" },
+      { href: "/reports", label: "REPORTS", icon: "📊" },
+      { href: "/analytics", label: "ANALYTICS", icon: "📈" }
+    ]
+  }: NavigationProps = $props();
+
+  let currentPath = $derived($page.url.pathname);
+
+  function isActive(href: string): boolean {
+    return currentPath === href || (href !== '/' && currentPath.startsWith(href));
+  }
+</script>
+
+<nav class="yorha-nav">
+  <div class="yorha-nav-container">
+    <div class="yorha-brand">
+      <div class="yorha-brand-icon">⚖</div>
+      <div class="yorha-brand-info">
+        <span class="yorha-brand-text">{brand}</span>
+        <span class="yorha-brand-version">{version}</span>
+      </div>
     </div>
     
-    <div class="nier-nav-links">
-      <a href="/cases" class="nier-nav-link">CASES</a>
-      <a href="/evidence" class="nier-nav-link">EVIDENCE</a>
-      <a href="/reports" class="nier-nav-link">REPORTS</a>
-      <a href="/analytics" class="nier-nav-link">ANALYTICS</a>
+    <div class="yorha-nav-links">
+      {#each links as link}
+        <a 
+          href={link.href} 
+          class="yorha-nav-link"
+          class:active={isActive(link.href)}
+          data-sveltekit-preload-data="hover"
+        >
+          {#if link.icon}
+            <span class="nav-icon">{link.icon}</span>
+          {/if}
+          {link.label}
+          {#if isActive(link.href)}
+            <div class="active-bar"></div>
+          {/if}
+        </a>
+      {/each}
     </div>
     
-    <div class="nier-nav-actions">
-      <button class="nier-toolbar-btn">⚙</button>
-      <button class="nier-toolbar-btn">⚡</button>
+    <div class="yorha-nav-actions">
+      <button class="yorha-toolbar-btn" title="System Settings">
+        <span class="btn-icon">⚙</span>
+        <span class="btn-label">CONFIG</span>
+      </button>
+      <button class="yorha-toolbar-btn" title="AI Status">
+        <span class="btn-icon">⚡</span>
+        <span class="btn-label">AI</span>
+      </button>
+      <button class="yorha-toolbar-btn" title="Terminal">
+        <span class="btn-icon">▣</span>
+        <span class="btn-label">TERM</span>
+      </button>
     </div>
   </div>
 </nav>
 
 <style>
   /* @unocss-include */
-.nier-nav {
-  background: var(--nier-bg-secondary);
-  border-bottom: var(--nier-border-width) solid var(--nier-border-primary);
+.yorha-nav {
+  background: var(--yorha-bg-secondary, #1a1a1a);
+  border-bottom: 3px solid var(--yorha-secondary, #ffd700);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
+  box-shadow: 
+    0 3px 0 0 var(--yorha-secondary, #ffd700),
+    0 6px 20px rgba(0, 0, 0, 0.8);
 }
 
-.nier-nav-container {
+.yorha-nav-container {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: var(--nier-space-md) var(--nier-space-lg);
+  padding: 16px 24px;
 }
 
-.nier-brand {
+.yorha-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.yorha-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--yorha-secondary, #ffd700);
+  color: var(--yorha-bg-primary, #0a0a0a);
+  font-size: 24px;
+  border: 2px solid var(--yorha-secondary, #ffd700);
+  box-shadow: 0 0 0 2px var(--yorha-bg-secondary, #1a1a1a);
+}
+
+.yorha-brand-info {
   display: flex;
   flex-direction: column;
-  gap: var(--nier-space-xs);
+  gap: 2px;
 }
 
-.nier-brand-text {
-  color: var(--nier-accent-primary);
-  font-family: var(--nier-font-family);
-  font-size: var(--nier-font-size-lg);
+.yorha-brand-text {
+  color: var(--yorha-secondary, #ffd700);
+  font-family: var(--yorha-font-secondary, 'Orbitron', monospace);
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
+  line-height: 1;
 }
 
-.nier-brand-version {
-  color: var(--nier-text-muted);
-  font-size: var(--nier-font-size-sm);
+.yorha-brand-version {
+  color: var(--yorha-text-muted, #808080);
+  font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+  font-size: 11px;
   letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.nier-nav-links {
+.yorha-nav-links {
   display: flex;
-  gap: var(--nier-space-lg);
+  gap: 8px;
 }
 
-.nier-nav-link {
-  color: var(--nier-text-secondary);
-  font-family: var(--nier-font-family);
-  font-size: var(--nier-font-size-sm);
+.yorha-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--yorha-text-secondary, #b0b0b0);
+  font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+  font-size: 14px;
+  font-weight: 500;
   letter-spacing: 1px;
   text-decoration: none;
   text-transform: uppercase;
-  transition: color 0.2s ease;
+  padding: 12px 16px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  overflow: hidden;
 }
 
-.nier-nav-link:hover {
-  color: var(--nier-accent-primary);
+.yorha-nav-link:hover {
+  color: var(--yorha-secondary, #ffd700);
+  border-color: var(--yorha-text-muted, #808080);
+  background: var(--yorha-bg-tertiary, #2a2a2a);
 }
 
-.nier-nav-actions {
+.yorha-nav-link.active {
+  color: var(--yorha-secondary, #ffd700);
+  border-color: var(--yorha-secondary, #ffd700);
+  background: var(--yorha-bg-tertiary, #2a2a2a);
+  box-shadow: 
+    inset 0 3px 0 var(--yorha-secondary, #ffd700),
+    0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.nav-icon {
+  font-size: 16px;
+}
+
+.active-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--yorha-secondary, #ffd700);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.yorha-nav-actions {
   display: flex;
-  gap: var(--nier-space-sm);
+  gap: 8px;
+}
+
+.yorha-toolbar-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px;
+  background: var(--yorha-bg-secondary, #1a1a1a);
+  border: 2px solid var(--yorha-text-muted, #808080);
+  color: var(--yorha-text-secondary, #b0b0b0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+  height: 60px;
+}
+
+.yorha-toolbar-btn:hover {
+  background: var(--yorha-secondary, #ffd700);
+  border-color: var(--yorha-secondary, #ffd700);
+  color: var(--yorha-bg-primary, #0a0a0a);
+  box-shadow: 0 0 0 1px var(--yorha-secondary, #ffd700);
+}
+
+.btn-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.btn-label {
+  font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .yorha-nav-container {
+    padding: 12px 16px;
+  }
+  
+  .yorha-brand-text {
+    font-size: 16px;
+  }
+  
+  .yorha-nav-links {
+    gap: 4px;
+  }
+  
+  .yorha-nav-link {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .btn-label {
+    display: none;
+  }
+  
+  .yorha-toolbar-btn {
+    min-width: 48px;
+    height: 48px;
+  }
 }
 </style>

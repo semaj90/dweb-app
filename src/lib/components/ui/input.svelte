@@ -13,10 +13,6 @@
   export let step = undefined;
   export let pattern = undefined;
   export let autocomplete = undefined;
-  
-  function handleInput(event) {
-    value = event.target.value;
-  }
 </script>
 
 <input
@@ -32,8 +28,8 @@
   {step}
   {pattern}
   {autocomplete}
-  {value}
-  on:input={handleInput}
+  bind:value
+  {...$$restProps}
   on:change
   on:focus
   on:blur
@@ -49,8 +45,11 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  
+
   input[type="number"] {
-    -moz-appearance: textfield;
+  /* Standard */
+  appearance: textfield;
+  /* Firefox */
+  -moz-appearance: textfield;
   }
 </style>

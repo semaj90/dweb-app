@@ -165,18 +165,19 @@
 		padding-top: 120px; /* Adjust based on HUD height */
 	}
 	
-	/* Gaming Sidebar */
+	/* YoRHa Terminal Sidebar */
 	.sidebar {
 		position: fixed;
 		left: 0;
 		top: 0;
 		bottom: 0;
 		width: 280px;
-		background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-		border-right: 2px solid #00ff88;
-		box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(10px);
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		border-right: 3px solid var(--yorha-secondary, #ffd700);
+		box-shadow: 
+			3px 0 0 0 var(--yorha-secondary, #ffd700),
+			6px 0 20px rgba(0, 0, 0, 0.8);
+		transition: all 0.2s ease;
 		z-index: 900;
 		overflow-y: auto;
 	}
@@ -190,8 +191,9 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 20px;
-		border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+		border-bottom: 2px solid var(--yorha-secondary, #ffd700);
 		margin-top: 120px; /* Offset for HUD */
+		background: var(--yorha-bg-tertiary, #2a2a2a);
 	}
 	
 	.logo-section {
@@ -207,9 +209,11 @@
 		justify-content: center;
 		width: 40px;
 		height: 40px;
-		background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
-		border-radius: 8px;
-		box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+		background: var(--yorha-secondary, #ffd700);
+		color: var(--yorha-bg-primary, #0a0a0a);
+		border: 2px solid var(--yorha-secondary, #ffd700);
+		border-radius: 0;
+		box-shadow: 0 0 0 2px var(--yorha-bg-secondary, #1a1a1a);
 	}
 	
 	.logo-text {
@@ -218,19 +222,20 @@
 	}
 	
 	.app-name {
-		font-family: var(--gaming-font-primary);
+		font-family: var(--yorha-font-secondary, 'Orbitron', monospace);
 		font-size: 14px;
-		font-weight: bold;
-		color: #fff;
+		font-weight: 700;
+		color: var(--yorha-secondary, #ffd700);
 		text-transform: uppercase;
-		letter-spacing: 1px;
+		letter-spacing: 2px;
 		white-space: nowrap;
 	}
 	
 	.app-subtitle {
 		font-size: 11px;
-		color: #888;
+		color: var(--yorha-text-muted, #808080);
 		white-space: nowrap;
+		font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
 	}
 	
 	.collapse-button {
@@ -239,19 +244,20 @@
 		justify-content: center;
 		width: 32px;
 		height: 32px;
-		background: rgba(255, 255, 255, 0.1);
-		border: 1px solid rgba(0, 255, 136, 0.3);
-		border-radius: 6px;
-		color: #00ff88;
+		background: var(--yorha-bg-secondary, #1a1a1a);
+		border: 2px solid var(--yorha-text-muted, #808080);
+		border-radius: 0;
+		color: var(--yorha-text-secondary, #b0b0b0);
 		cursor: pointer;
-		transition: all 0.3s ease;
+		transition: all 0.2s ease;
 		font-size: 12px;
 	}
 	
 	.collapse-button:hover {
-		background: rgba(0, 255, 136, 0.2);
-		border-color: #00ff88;
-		box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+		background: var(--yorha-secondary, #ffd700);
+		border-color: var(--yorha-secondary, #ffd700);
+		color: var(--yorha-bg-primary, #0a0a0a);
+		box-shadow: 0 0 0 1px var(--yorha-secondary, #ffd700);
 	}
 	
 	/* Navigation */
@@ -267,26 +273,31 @@
 		gap: 12px;
 		padding: 12px 16px;
 		margin-bottom: 8px;
-		color: #ccc;
+		color: var(--yorha-text-secondary, #b0b0b0);
 		text-decoration: none;
-		border-radius: 8px;
-		border: 1px solid transparent;
-		transition: all 0.3s ease;
+		border-radius: 0;
+		border: 2px solid transparent;
+		transition: all 0.2s ease;
 		overflow: hidden;
+		font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	.nav-item:hover {
-		background: rgba(0, 255, 136, 0.1);
-		border-color: rgba(0, 255, 136, 0.3);
-		color: #00ff88;
-		transform: translateX(4px);
+		background: var(--yorha-bg-tertiary, #2a2a2a);
+		border-color: var(--yorha-text-secondary, #b0b0b0);
+		color: var(--yorha-secondary, #ffd700);
+		transform: translateX(2px);
 	}
 	
 	.nav-item.active {
-		background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 204, 102, 0.1) 100%);
-		border-color: #00ff88;
-		color: #00ff88;
-		box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+		background: var(--yorha-bg-tertiary, #2a2a2a);
+		border-color: var(--yorha-secondary, #ffd700);
+		color: var(--yorha-secondary, #ffd700);
+		box-shadow: 
+			inset 3px 0 0 var(--yorha-secondary, #ffd700),
+			0 0 10px rgba(255, 215, 0, 0.2);
 	}
 	
 	.nav-icon {
@@ -306,17 +317,20 @@
 		right: 8px;
 		top: 50%;
 		transform: translateY(-50%);
-		width: 4px;
+		width: 6px;
 		height: 20px;
-		background: linear-gradient(180deg, #00ff88 0%, #00cc66 100%);
-		border-radius: 2px;
-		box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+		background: var(--yorha-secondary, #ffd700);
+		border-radius: 0;
+		box-shadow: 
+			0 0 0 1px var(--yorha-bg-secondary, #1a1a1a),
+			0 0 8px rgba(255, 215, 0, 0.5);
 	}
 	
 	/* Sidebar Footer */
 	.sidebar-footer {
 		padding: 20px;
-		border-top: 1px solid rgba(0, 255, 136, 0.3);
+		border-top: 2px solid var(--yorha-secondary, #ffd700);
+		background: var(--yorha-bg-tertiary, #2a2a2a);
 	}
 	
 	.system-status {
@@ -330,19 +344,26 @@
 		align-items: center;
 		gap: 8px;
 		font-size: 12px;
-		color: #888;
+		color: var(--yorha-text-muted, #808080);
+		font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
+		text-transform: uppercase;
+		letter-spacing: 1px;
 	}
 	
 	.status-dot {
 		width: 8px;
 		height: 8px;
-		border-radius: 50%;
+		border-radius: 0;
 		animation: pulse 2s infinite;
+		border: 1px solid currentColor;
 	}
 	
 	.status-dot.online {
-		background: #00ff88;
-		box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+		background: var(--yorha-accent, #00ff41);
+		border-color: var(--yorha-accent, #00ff41);
+		box-shadow: 
+			0 0 0 1px var(--yorha-bg-secondary, #1a1a1a),
+			0 0 8px rgba(0, 255, 65, 0.5);
 	}
 	
 	/* Content Area */
@@ -350,25 +371,26 @@
 		flex: 1;
 		margin-left: 280px;
 		padding: 24px;
-		transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		background: rgba(0, 0, 0, 0.1);
+		transition: margin-left 0.2s ease;
+		background: var(--yorha-bg-primary, #0a0a0a);
 		min-height: 100vh;
+		border-left: 1px solid var(--yorha-text-muted, #808080);
 	}
 	
 	.content-area.sidebar-collapsed {
 		margin-left: 80px;
 	}
 	
-	/* Gaming Effects */
+	/* YoRHa Terminal Effects */
 	.scan-overlay {
 		position: fixed;
 		top: 0;
 		left: 0;
 		right: 0;
-		height: 2px;
-		background: linear-gradient(90deg, transparent 0%, #00ff88 50%, transparent 100%);
-		opacity: 0.6;
-		animation: scan-horizontal 4s ease-in-out infinite;
+		height: 1px;
+		background: linear-gradient(90deg, transparent 0%, var(--yorha-secondary, #ffd700) 50%, transparent 100%);
+		opacity: 0.8;
+		animation: scan-horizontal 6s ease-in-out infinite;
 		pointer-events: none;
 		z-index: 1100;
 	}
