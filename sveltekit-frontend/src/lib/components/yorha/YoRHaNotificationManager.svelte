@@ -1,7 +1,7 @@
 <!-- YoRHa Notification Manager Component -->
 <script lang="ts">
   import YoRHaNotification from './YoRHaNotification.svelte';
-  import { notificationStore } from '$lib/stores/notifications';
+  import { notificationStore as notificationStoreExport } from '$lib/stores/notifications';
 
   interface Notification {
     id: string;
@@ -18,12 +18,17 @@
 
   // Subscribe to notification store
   let notifications = $state<Notification[]>([]);
-  
+  // Avoid TS union issues by creating a typed alias
+  const notificationStore = notificationStoreExport as unknown as {
+    subscribe: (run: (value: Notification[]) => void) => () => void;
+    remove: (id: string) => void;
+  };
+
   $effect(() => {
     const unsubscribe = notificationStore.subscribe((value) => {
       notifications = value;
     });
-    
+
     return unsubscribe;
   });
 
@@ -43,7 +48,7 @@
     }, {} as Record<string, Notification[]>);
   }
 
-  $: groupedNotifications = groupNotificationsByPosition(notifications);
+  const groupedNotifications = $derived(groupNotificationsByPosition(notifications));
 </script>
 
 <!-- Render notifications grouped by position -->

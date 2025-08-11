@@ -2,7 +2,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
-  
+
   interface NotificationProps {
     type?: 'info' | 'success' | 'warning' | 'error' | 'system';
     title?: string;
@@ -28,12 +28,12 @@
   }: NotificationProps = $props();
 
   const dispatch = createEventDispatcher();
-  
+
   let visible = $state(true);
   let progress = $state(100);
   let progressInterval: NodeJS.Timeout;
   let autoCloseTimeout: NodeJS.Timeout;
-  let notificationElement: HTMLDivElement;
+  let notificationElement = $state<HTMLDivElement | null>(null);
 
   // Auto-close functionality
   onMount(() => {
@@ -73,7 +73,7 @@
   function resumeAutoClose() {
     if (!persistent && duration > 0) {
       const remainingTime = (progress / 100) * duration;
-      
+
       if (showProgress) {
         const progressStep = 100 / (remainingTime / 100);
         progressInterval = setInterval(() => {
@@ -96,25 +96,24 @@
     system: '◆'
   };
 
-  $: notificationIcon = icon || iconMap[type];
-  $: positionClass = `notification-${position}`;
+  const notificationIcon = $derived(icon || iconMap[type]);
 </script>
 
 {#if visible}
   <div
     bind:this={notificationElement}
-    class="yorha-notification {type} {positionClass}"
-    transition:fly="{{ x: position.includes('right') ? 300 : -300, duration: 300 }}"
-    on:mouseenter={pauseAutoClose}
-    on:mouseleave={resumeAutoClose}
+  class="yorha-notification {type}"
+  transition:fly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
+  onmouseenter={pauseAutoClose}
+  onmouseleave={resumeAutoClose}
     role="alert"
     aria-live="polite"
   >
     <!-- Progress Bar -->
     {#if showProgress && !persistent}
       <div class="notification-progress">
-        <div 
-          class="progress-fill" 
+        <div
+          class="progress-fill"
           style="width: {progress}%"
           transition:fade="{{ duration: 200 }}"
         ></div>
@@ -138,9 +137,9 @@
 
       <!-- Close Button -->
       {#if closable}
-        <button 
+        <button
           class="notification-close"
-          on:click={closeNotification}
+          onclick={closeNotification}
           aria-label="Close notification"
         >
           ✕
@@ -159,45 +158,18 @@
 
 <style>
   .yorha-notification {
-    position: fixed;
-    z-index: 9999;
     min-width: 300px;
     max-width: 450px;
     background: var(--yorha-bg-secondary, #1a1a1a);
     border: 2px solid var(--yorha-text-muted, #808080);
     font-family: var(--yorha-font-primary, 'JetBrains Mono', monospace);
-    box-shadow: 
+    box-shadow:
       0 0 0 1px var(--yorha-bg-primary, #0a0a0a),
       0 8px 32px rgba(0, 0, 0, 0.8);
     overflow: hidden;
   }
 
-  /* Positioning */
-  .notification-top-right {
-    top: 20px;
-    right: 20px;
-  }
-
-  .notification-top-left {
-    top: 20px;
-    left: 20px;
-  }
-
-  .notification-bottom-right {
-    bottom: 20px;
-    right: 20px;
-  }
-
-  .notification-bottom-left {
-    bottom: 20px;
-    left: 20px;
-  }
-
-  .notification-center {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+  /* Positioning is handled by the manager */
 
   /* Progress Bar */
   .notification-progress {
@@ -318,7 +290,7 @@
   .yorha-notification.system {
     border: 2px solid var(--yorha-secondary, #ffd700);
     background: var(--yorha-bg-primary, #0a0a0a);
-    box-shadow: 
+    box-shadow:
       0 0 0 1px var(--yorha-secondary, #ffd700),
       0 0 20px rgba(255, 215, 0, 0.3),
       inset 0 0 20px rgba(255, 215, 0, 0.1);
@@ -347,11 +319,11 @@
 
   /* Animations */
   @keyframes pulse {
-    0%, 100% { 
-      opacity: 1; 
+    0%, 100% {
+      opacity: 1;
       transform: scale(1);
     }
-    50% { 
+    50% {
       opacity: 0.7;
       transform: scale(1.1);
     }
