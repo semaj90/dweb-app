@@ -7,6 +7,7 @@ This document outlines comprehensive best practices for the Enhanced RAG Multi-A
 ## Critical Findings
 
 ### ✅ Working Components
+
 - **SvelteKit 2 + Svelte 5 Runes**: Fully operational with proper reactive state management
 - **UnoCSS Integration**: Complete styling system working correctly
 - **TypeScript Support**: Comprehensive type checking and validation
@@ -14,11 +15,13 @@ This document outlines comprehensive best practices for the Enhanced RAG Multi-A
 - **Basic UI Components**: HTML-based interfaces render correctly
 
 ### ❌ Component Compatibility Issues Identified
+
 - **Bits UI v2.8.13**: Not compatible with Svelte 5 runes mode (causes 500 errors)
 - **Some Shadcn Components**: Import/export conflicts in runes mode
 - **Enhanced Bits UI Custom Components**: Affected by base library incompatibility
 
 ### 🔧 Successfully Fixed Issues
+
 1. Input.svelte interface type conflicts (size property)
 2. Card.svelte component export structure
 3. VectorIntelligenceDemo type mismatches
@@ -31,6 +34,7 @@ This document outlines comprehensive best practices for the Enhanced RAG Multi-A
 ### 1. Frontend Stack Recommendations
 
 #### Core Technologies
+
 ```typescript
 // Proven Working Stack
 - SvelteKit 2.x (Latest)
@@ -41,17 +45,19 @@ This document outlines comprehensive best practices for the Enhanced RAG Multi-A
 ```
 
 #### Component Strategy
+
 ```svelte
 <!-- Recommended: Use Svelte 5 runes for state management -->
 <script lang="ts">
   let systemStatus = $state('initializing');
   let processingResults = $state(null);
-  
+
   const isReady = $derived(systemStatus === 'ready');
 </script>
 ```
 
 #### Avoid These Patterns
+
 - Bits UI components in Svelte 5 runes mode
 - Complex component inheritance chains
 - Circular import dependencies
@@ -60,6 +66,7 @@ This document outlines comprehensive best practices for the Enhanced RAG Multi-A
 ### 2. Agent Orchestration Best Practices
 
 #### Multi-Agent Architecture
+
 ```typescript
 interface AgentOrchestrator {
   agents: {
@@ -67,45 +74,51 @@ interface AgentOrchestrator {
     autogen: AutoGenAgent;
     crewai: CrewAIAgent;
   };
-  
+
   // Orchestration pipeline
-  async orchestrate(prompt: string, options: OrchestrationOptions): Promise<AgentResult[]>;
+  orchestrate(
+    prompt: string,
+    options: OrchestrationOptions
+  ): Promise<AgentResult[]>;
 }
 ```
 
 #### Self-Prompting Implementation
+
 ```typescript
 // Use from mcp-helpers.ts
-import { copilotSelfPrompt } from '$lib/utils/copilot-self-prompt';
+import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt";
 
 const result = await copilotSelfPrompt(
   "Analyze evidence upload errors and suggest fixes",
-  { 
-    useSemanticSearch: true, 
-    useMemory: true, 
+  {
+    useSemanticSearch: true,
+    useMemory: true,
     useMultiAgent: true,
-    synthesizeOutputs: true 
+    synthesizeOutputs: true,
   }
 );
 ```
 
 #### Context7 MCP Integration
+
 ```typescript
 // Keywords for automation triggers
 const mcpKeywords = [
-  '#context7',
-  '#semantic_search', 
-  '#get-library-docs',
-  '#memory',
-  '#mcp_context72_resolve-library-id'
+  "#context7",
+  "#semantic_search",
+  "#get-library-docs",
+  "#memory",
+  "#mcp_context72_resolve-library-id",
 ];
 ```
 
 ### 3. Enhanced RAG System Design
 
 #### 7-Layer Caching Architecture
+
 1. **Loki.js** - In-memory document store
-2. **Redis** - Session and real-time caching  
+2. **Redis** - Session and real-time caching
 3. **Qdrant** - Vector similarity search
 4. **PostgreSQL PGVector** - Persistent vector storage
 5. **RabbitMQ** - Message queue caching
@@ -113,19 +126,21 @@ const mcpKeywords = [
 7. **Fuse.js** - Client-side search cache
 
 #### Self-Organizing Map (SOM) Integration
+
 ```typescript
 interface SOMCluster {
   id: string;
   centroid: number[];
   members: DocumentEmbedding[];
   confidence: number;
-  legalCategory: 'contract' | 'precedent' | 'statute' | 'evidence';
+  legalCategory: "contract" | "precedent" | "statute" | "evidence";
 }
 ```
 
 ### 4. Development Workflow Best Practices
 
 #### Build Process Validation
+
 ```bash
 # Critical validation steps
 npm run check          # TypeScript + Svelte validation
@@ -135,20 +150,22 @@ npm run dev           # Development server validation
 ```
 
 #### Error Debugging Strategy
+
 1. **Component Isolation**: Test components individually
 2. **Import Path Validation**: Check all import statements
 3. **Type Interface Verification**: Ensure interface compatibility
 4. **Runes Mode Compliance**: Validate $state, $derived usage
 
 #### Testing Strategy
+
 ```typescript
 // Component integration testing
-describe('Enhanced RAG Components', () => {
-  test('should handle Svelte 5 runes correctly', () => {
+describe("Enhanced RAG Components", () => {
+  test("should handle Svelte 5 runes correctly", () => {
     // Test runes-based state management
   });
-  
-  test('should integrate with MCP Context7', () => {
+
+  test("should integrate with MCP Context7", () => {
     // Test agent orchestration
   });
 });
@@ -157,6 +174,7 @@ describe('Enhanced RAG Components', () => {
 ### 5. Legal AI Specific Recommendations
 
 #### Evidence Processing Pipeline
+
 ```typescript
 interface EvidenceProcessor {
   analyze(evidence: Evidence): Promise<{
@@ -169,11 +187,12 @@ interface EvidenceProcessor {
 ```
 
 #### Audit Trail Implementation
+
 ```typescript
 interface AuditLog {
   timestamp: Date;
   userId: string;
-  action: 'analyze' | 'recommend' | 'search';
+  action: "analyze" | "recommend" | "search";
   evidence: EvidenceReference;
   aiModel: string;
   confidence: number;
@@ -182,6 +201,7 @@ interface AuditLog {
 ```
 
 #### Data Security Patterns
+
 - Encrypt all evidence data at rest
 - Implement proper access controls
 - Maintain comprehensive audit logs
@@ -190,39 +210,43 @@ interface AuditLog {
 ### 6. Context7 MCP Integration Patterns
 
 #### VS Code Extension Setup
+
 ```json
 // .vscode/settings.json
 {
-  "mcpContext7.serverPort": 40000,
+  "mcpContext7.serverPort": 4100,
   "mcpContext7.logLevel": "debug"
 }
 ```
 
 #### Automation Triggers
+
 ```typescript
 // Use in prompts and code comments
 const automationKeywords = {
-  '#context7': 'Trigger semantic search',
-  '#get-library-docs': 'Fetch current documentation', 
-  '#memory': 'Access knowledge graph',
-  '#want': 'Request new automation flows'
+  "#context7": "Trigger semantic search",
+  "#get-library-docs": "Fetch current documentation",
+  "#memory": "Access knowledge graph",
+  "#want": "Request new automation flows",
 };
 ```
 
 ### 7. Performance Optimization
 
 #### Node.js Clustering
+
 ```typescript
 // Horizontal scaling configuration
 const clusterConfig = {
   workers: os.cpus().length,
-  loadBalancing: 'round-robin',
+  loadBalancing: "round-robin",
   healthChecks: true,
-  gracefulShutdown: 30000
+  gracefulShutdown: 30000,
 };
 ```
 
 #### WebGL Shader Caching
+
 ```typescript
 // GPU-accelerated attention visualization
 interface ShaderCache {
@@ -235,30 +259,35 @@ interface ShaderCache {
 ## Implementation Roadmap
 
 ### Phase 1: Core Infrastructure (✅ Complete)
+
 - [x] SvelteKit 2 + Svelte 5 setup
 - [x] TypeScript configuration
 - [x] UnoCSS integration
 - [x] Basic component architecture
 
 ### Phase 2: Component Compatibility (🔄 In Progress)
+
 - [x] Identify compatibility issues
 - [x] Fix critical type conflicts
 - [ ] Replace Bits UI with compatible alternatives
 - [ ] Implement custom component library
 
 ### Phase 3: Agent Integration (📋 Planned)
+
 - [ ] Context7 MCP connection
 - [ ] Multi-agent orchestration
 - [ ] Self-prompting automation
 - [ ] Memory graph integration
 
 ### Phase 4: Enhanced RAG (📋 Planned)
+
 - [ ] 7-layer caching implementation
 - [ ] SOM clustering integration
 - [ ] PageRank-enhanced retrieval
 - [ ] Real-time feedback loops
 
 ### Phase 5: Legal AI Features (📋 Planned)
+
 - [ ] Evidence analysis pipeline
 - [ ] Compliance checking system
 - [ ] Audit trail implementation
@@ -269,18 +298,22 @@ interface ShaderCache {
 ### Common Issues and Solutions
 
 #### 500 Internal Server Error
+
 **Cause**: Component import incompatibility with Svelte 5 runes
 **Solution**: Use HTML-based components or create custom Svelte 5 compatible components
 
 #### TypeScript Interface Conflicts
+
 **Cause**: Property name conflicts between interfaces
 **Solution**: Use `Omit<Interface, 'conflictingProperty'>` pattern
 
 #### Build Process Hanging
+
 **Cause**: Complex component imports causing circular dependencies
 **Solution**: Simplify imports and use lazy loading patterns
 
 ### Debugging Workflow
+
 1. Test with minimal HTML components
 2. Add complexity incrementally
 3. Validate each import individually
@@ -291,6 +324,7 @@ interface ShaderCache {
 The Enhanced RAG Multi-Agent AI System represents a sophisticated integration of modern web technologies with advanced AI capabilities. While component compatibility challenges exist with Svelte 5 runes mode, the core architecture is sound and the system demonstrates significant potential for legal AI applications.
 
 Key success factors:
+
 - Systematic debugging approach
 - Component compatibility validation
 - Incremental complexity introduction

@@ -5,7 +5,7 @@
 
   📋 Key Sections:
   - Architecture Overview - Complete system design
-  - Implementation Details - All files and components       
+  - Implementation Details - All files and components
   - Algorithm Specifications - 4 GPU-accelerated clustering methods
   - Performance Metrics - Benchmarks and optimization data
   - Deployment Instructions - Native Windows setup
@@ -21,28 +21,28 @@
   - Native Windows deployment without Docker dependencies
 
   The summary provides a complete technical overview of the GPU clustering
-  integration, suitable for documentation, project handoffs, or technical reviews.     
+  integration, suitable for documentation, project handoffs, or technical reviews.
 
-> use @deeds-web-app\context7-docs\ @deeds-web-app\mcp\ use #context7 
-  generate_best_practices update drizzle-orm, drizzle-kit, postgres, pg vector,        
-  langchain, semanatic analysis, langchain, fuse.js, loki.js, indexdb, webgpu,         
-  nvidia cuda, nvidia cublas, attempt to figure out how to write out our go 
-  service from simd json concurrency to json from api requests, net, http2? using      
-  golang? node.js cluster, sveltekit 2, qdrant local, redis-windows, bits-ui v2,       
-  melt-ui builders, shadcn-svelte typescript .ts barrel stores and global 
-  sveltekit 2 stores classes? ssr, rehydration, api requests, grpc? neo4j 
-  pipeline? to creating graphs from neo4j pipeline rabbitmq, xstate for state 
-  changes go-microservice goroutines for routing to many full stack for real-time      
-  recommendation prompting using these algorithms read, apply, look up docs, 
-  index, parse, embed, rank, output, self-prompt, give "did you mean" from user        
-  typing, activity? logging user's behaaviour. "user generated report, "titled         
-  reportid:case4 for example use drizzle-orm, drizzle-kit schema" use 
+> use @deeds-web-app\context7-docs\ @deeds-web-app\mcp\ use #context7
+  generate_best_practices update drizzle-orm, drizzle-kit, postgres, pg vector,
+  langchain, semanatic analysis, langchain, fuse.js, loki.js, indexdb, webgpu,
+  nvidia cuda, nvidia cublas, attempt to figure out how to write out our go
+  service from simd json concurrency to json from api requests, net, http2? using
+  golang? node.js cluster, sveltekit 2, qdrant local, redis-windows, bits-ui v2,
+  melt-ui builders, shadcn-svelte typescript .ts barrel stores and global
+  sveltekit 2 stores classes? ssr, rehydration, api requests, grpc? neo4j
+  pipeline? to creating graphs from neo4j pipeline rabbitmq, xstate for state
+  changes go-microservice goroutines for routing to many full stack for real-time
+  recommendation prompting using these algorithms read, apply, look up docs,
+  index, parse, embed, rank, output, self-prompt, give "did you mean" from user
+  typing, activity? logging user's behaaviour. "user generated report, "titled
+  reportid:case4 for example use drizzle-orm, drizzle-kit schema" use
   postgresql,qdrant tags,  pg vector embeds
   ⎿  Listed directory deeds-web-app\context7-docs\
   ⎿  Listed directory deeds-web-app\mcp\
 
 ● I'll generate comprehensive best practices documentation for your modern
-  full-stack legal AI system, integrating all the technologies you mentioned. Let      
+  full-stack legal AI system, integrating all the technologies you mentioned. Let
   me first examine the context documentation and then create a detailed guide.
 MODERN FULL-STACK INTEGRATION COMPLETE
 
@@ -220,7 +220,7 @@ MODERN FULL-STACK INTEGRATION COMPLETE
   localport=3000
   netsh advfirewall firewall add rule name="Legal AI WebSocket" dir=in action=allow protocol=TCP
   localport=3001
-  netsh advfirewall firewall add rule name="Legal AI Microservice" dir=in action=allow protocol=TCP        
+  netsh advfirewall firewall add rule name="Legal AI Microservice" dir=in action=allow protocol=TCP
   localport=8084
 
   Service Reliability:
@@ -275,7 +275,7 @@ MODERN FULL-STACK INTEGRATION COMPLETE
 
   💡 WHY NATIVE WINDOWS vs DOCKER
 
-  Problems with Docker on Windows:
+  Problems with !!!never docker, never Docker on Windows:
   - Windows container overhead
   - Complex volume mounting
   - GPU passthrough issues
@@ -289,7 +289,7 @@ MODERN FULL-STACK INTEGRATION COMPLETE
   - Better Windows integration
   - Easier troubleshooting
 
-  The script essentially transforms your development setup into a production-ready Windows deployment      
+  The script essentially transforms your development setup into a production-ready Windows deployment
   with proper service management, security configuration, and monitoring - no containers required.
 
 MODERN FULL-STACK INTEGRATION COMPLETE
@@ -468,7 +468,7 @@ MODERN FULL-STACK INTEGRATION COMPLETE
   localport=3000
   netsh advfirewall firewall add rule name="Legal AI WebSocket" dir=in action=allow protocol=TCP
   localport=3001
-  netsh advfirewall firewall add rule name="Legal AI Microservice" dir=in action=allow protocol=TCP        
+  netsh advfirewall firewall add rule name="Legal AI Microservice" dir=in action=allow protocol=TCP
   localport=8084
 
   Service Reliability:
@@ -537,5 +537,5 @@ MODERN FULL-STACK INTEGRATION COMPLETE
   - Better Windows integration
   - Easier troubleshooting
 
-  The script essentially transforms your development setup into a production-ready Windows deployment      
+  The script essentially transforms your development setup into a production-ready Windows deployment
   with proper service management, security configuration, and monitoring - no containers required.

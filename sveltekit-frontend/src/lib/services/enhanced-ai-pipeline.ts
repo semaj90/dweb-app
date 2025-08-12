@@ -12,7 +12,6 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import Redis from "ioredis";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { Pool } from "pg";
-// @ts-ignore - Postgres module import compatibility issue
 import postgres from "postgres";
 import { legalDocuments } from "../server/db/schema-postgres";
 
@@ -969,15 +968,26 @@ Provide a brief contextual summary that connects these documents:`;
 
   async checkGoMicroserviceHealth(): Promise<boolean> {
     try {
-      const response = await fetch(
-        `${this.goMicroservice.baseUrl}/api/health`,
-        {
-          method: "GET",
-          signal: AbortSignal.timeout(5000), // 5 second timeout
-        }
-      );
+      // Try HTTP health first (existing path)
+      const httpCheck = fetch(`${this.goMicroservice.baseUrl}/api/health`, {
+        method: "GET",
+        signal: AbortSignal.timeout(2500),
+      })
+        .then((r) => r.ok)
+        .catch(() => false);
 
-      return response.ok;
+      // In parallel, attempt gRPC health on localhost:8084 if available
+      const grpcCheck = (async () => {
+        try {
+          const { checkGrpcHealth } = await import("./grpc-health-client.js");
+          return await checkGrpcHealth({ host: "localhost", port: 8084 }, 2000);
+        } catch {
+          return false;
+        }
+      })();
+
+      const [httpOk, grpcOk] = await Promise.all([httpCheck, grpcCheck]);
+      return Boolean(httpOk || grpcOk);
     } catch (error) {
       console.warn("⚠️ Go microservice health check failed:", error);
       return false;

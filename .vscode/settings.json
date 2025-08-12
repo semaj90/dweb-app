@@ -51,9 +51,18 @@
     }
   },
 
+  // VS Code Performance & Extension Host Optimization
+  "extensions.autoUpdate": false,
+  "extensions.autoCheckUpdates": false,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": false,
+  "extensions.experimental.affinity": {
+    "mcp-context7-assistant": 1
+  },
+  
   // Editor Configuration
   "editor.codeActionsOnSave": {
-    "source.organizeImports": "explicit",
+    "source.organizeImports": "never",
     "source.fixAll": "explicit"
   },
   "editor.formatOnSave": true,
@@ -69,6 +78,13 @@
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
+
+  // MCP Context7 Extension Settings
+  "mcpContext7.serverPort": 4100,
+  "mcpContext7.logLevel": "debug",
+  "mcpContext7.maxConnections": 5,
+  "mcpContext7.connectionTimeout": 30000,
+  "mcpContext7.retryAttempts": 2,
 
   // Windows Native Development Environment
   "legal-ai.nativeWindows": true,

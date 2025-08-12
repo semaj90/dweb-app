@@ -1,19 +1,19 @@
 <script lang="ts">
   interface Props {
-    label: $Props['label'] ;
-    error: $Props['error'] ;
-    hint: $Props['hint'] ;
-    variant: NonNullable<$Props['variant']> ;
-    size: NonNullable<$Props['size']> ;
-    icon: $Props['icon'] ;
-    iconPosition: NonNullable<$Props['iconPosition']> ;
-    clearable: NonNullable<$Props['clearable']> ;
-    loading: NonNullable<$Props['loading']> ;
-    success: NonNullable<$Props['success']> ;
-    value: $Props['value'] ;
-    disabled: $Props['disabled'] ;
-    required: $Props['required'] ;
-    readonly: $Props['readonly'] ;
+    label?: string;
+    error?: string | null;
+    hint?: string;
+    variant?: 'default' | 'filled' | 'underlined';
+    size?: 'sm' | 'md' | 'lg';
+    icon?: string;
+    iconPosition?: 'left' | 'right';
+    clearable?: boolean;
+    loading?: boolean;
+    success?: boolean;
+    value?: string;
+    disabled?: boolean;
+    required?: boolean;
+    readonly?: boolean;
   }
   let {
     label = undefined,
@@ -29,7 +29,8 @@
     value = '',
     disabled = false,
     required = false,
-    readonly = false
+    readonly = false,
+    ...restProps
   }: Props = $props();
 
 
@@ -177,7 +178,7 @@
 			on:change={handleChange}
 			on:focus={handleFocus}
 			on:blur={handleBlur}
-			{...$$restProps}
+			{...restProps}
 		/>
 
 		<!-- Right Icon or Status -->

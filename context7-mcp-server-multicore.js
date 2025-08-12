@@ -15,9 +15,35 @@ import { performance } from 'perf_hooks';
 
 const numCPUs = cpus().length;
 
+// Port discovery utility
+async function findAvailablePort(startPort, maxAttempts = 10) {
+    const net = await import('net');
+    
+    for (let i = 0; i < maxAttempts; i++) {
+        const port = startPort + i;
+        try {
+            await new Promise((resolve, reject) => {
+                const server = net.createServer();
+                server.listen(port, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        server.close(() => resolve());
+                    }
+                });
+                server.on('error', reject);
+            });
+            return port;
+        } catch (error) {
+            console.log(`Port ${port} is occupied, trying next...`);
+        }
+    }
+    throw new Error(`No available port found starting from ${startPort}`);
+}
+
 // Configuration
 const CONFIG = {
-    port: process.env.MCP_PORT || 40000,
+    port: process.env.MCP_PORT || 4100,
     host: process.env.MCP_HOST || 'localhost',
     debug: process.env.MCP_DEBUG === 'true',
     maxConnections: 100,
@@ -79,7 +105,7 @@ if (CONFIG.enableMultiCore && cluster.isPrimary) {
 
     if (CONFIG.enableCors) {
         app.use(cors({
-            origin: ['http://localhost:5173', 'vscode-file://vscode-app'],
+            origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'vscode-file://vscode-app'],
             credentials: true
         }));
     }
@@ -545,14 +571,48 @@ if (CONFIG.enableMultiCore && cluster.isPrimary) {
         });
     });
 
-    // Start server
-    server.listen(CONFIG.port, CONFIG.host, () => {
-        console.log(`🚀 Context7 MCP Server Worker ${workerId} running on ${CONFIG.host}:${CONFIG.port}`);
-        console.log(`📡 WebSocket server enabled: ${CONFIG.enableWebSocket}`);
-        console.log(`🔧 Debug mode: ${CONFIG.debug}`);
-        console.log(`⚡ Multi-core processing enabled with ${CONFIG.workers} workers`);
-        console.log(`🧠 Worker pool initialized with ${workerPool.size} threads`);
-    });
+    // Start server with intelligent port discovery
+    async function startServer() {
+        try {
+            const availablePort = await findAvailablePort(CONFIG.port);
+            if (availablePort !== CONFIG.port) {
+                console.log(`⚠️  Port ${CONFIG.port} was occupied, using port ${availablePort} instead`);
+                CONFIG.port = availablePort;
+            }
+            
+            server.listen(CONFIG.port, CONFIG.host, () => {
+                console.log(`🚀 Context7 MCP Server Worker ${workerId} running on ${CONFIG.host}:${CONFIG.port}`);
+                console.log(`📡 WebSocket server enabled: ${CONFIG.enableWebSocket}`);
+                console.log(`🔧 Debug mode: ${CONFIG.debug}`);
+                console.log(`⚡ Multi-core processing enabled with ${CONFIG.workers} workers`);
+                console.log(`🧠 Worker pool initialized with ${workerPool.size} threads`);
+            });
+            
+            server.on('error', async (error) => {
+                if (error.code === 'EADDRINUSE') {
+                    console.log(`❌ Port ${CONFIG.port} is still in use, attempting to find alternative...`);
+                    try {
+                        const newPort = await findAvailablePort(CONFIG.port + 1);
+                        console.log(`🔄 Retrying with port ${newPort}`);
+                        CONFIG.port = newPort;
+                        server.listen(CONFIG.port, CONFIG.host);
+                    } catch (portError) {
+                        console.error(`💥 Failed to find available port: ${portError.message}`);
+                        process.exit(1);
+                    }
+                } else {
+                    console.error(`💥 Server error: ${error.message}`);
+                    process.exit(1);
+                }
+            });
+            
+        } catch (error) {
+            console.error(`💥 Failed to start server: ${error.message}`);
+            process.exit(1);
+        }
+    }
+    
+    startServer();
 
     // Graceful shutdown
     process.on('SIGTERM', () => {

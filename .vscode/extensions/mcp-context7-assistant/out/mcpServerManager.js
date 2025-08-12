@@ -149,8 +149,19 @@ class MCPServerManager {
             vscode.window.showErrorMessage(`Failed to start MCP Server: ${error}`);
         }
     }
+    /**
+     * Clean up server listeners to prevent memory leaks
+     */
+    cleanupServerListeners() {
+        if (this.server) {
+            this.server.removeAllListeners('spawn');
+            this.server.removeAllListeners('error');
+            this.server.removeAllListeners('exit');
+        }
+    }
     stopServer() {
         if (this.server) {
+            this.cleanupServerListeners(); // Add cleanup before kill
             this.server.kill();
             this.server = null;
             this.status.running = false;

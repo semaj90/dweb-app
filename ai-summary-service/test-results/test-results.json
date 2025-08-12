@@ -1,0 +1,1164 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\playwright.config.js",
+    "rootDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 8
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/test-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 8
+        },
+        "id": "api-tests",
+        "name": "api-tests",
+        "testDir": "C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/tests/api",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.2",
+    "workers": 8,
+    "webServer": {
+      "command": "./ai-enhanced-fixed.exe",
+      "port": 8081,
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "integration-status-test.spec.js",
+      "file": "integration-status-test.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Integration Test HTML - Ollama Status Detection",
+          "file": "integration-status-test.spec.js",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should correctly detect Ollama status via Go service health endpoint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10303,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Ollama Status Detected: ✅ Running\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.780Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-6b850f1fd9babe70c50b",
+              "file": "integration-status-test.spec.js",
+              "line": 6,
+              "column": 3
+            },
+            {
+              "title": "should verify Go service integration with Ollama",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 8977,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.809Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-eeadcc47211d4eeb6fe4",
+              "file": "integration-status-test.spec.js",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "should test API endpoints through integration interface",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 12146,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.808Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-bd16a455c439dcf87c14",
+              "file": "integration-status-test.spec.js",
+              "line": 60,
+              "column": 3
+            },
+            {
+              "title": "should verify export functionality works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 5951,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Export test completed, file saved to: C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/test-export-1754981774818.json\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.784Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-cc0e7c22907763a29081",
+              "file": "integration-status-test.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "should validate navigation between all interfaces",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 3990,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "All navigation buttons validated successfully\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.789Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-01feb5d97867ccc22e88",
+              "file": "integration-status-test.spec.js",
+              "line": 116,
+              "column": 3
+            },
+            {
+              "title": "should handle document upload simulation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "failed",
+                      "duration": 3897,
+                      "error": {
+                        "message": "Error: expect: Property 'toBePresent' not found.",
+                        "stack": "Error: expect: Property 'toBePresent' not found.\n    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js:152:53",
+                        "location": {
+                          "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js",
+                          "column": 53,
+                          "line": 152
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 150 |\u001b[39m     \n \u001b[90m 151 |\u001b[39m     \u001b[90m// Check file input is present\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 152 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"file\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBePresent()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 153 |\u001b[39m     \n \u001b[90m 154 |\u001b[39m     \u001b[90m// Check Select Files button\u001b[39m\n \u001b[90m 155 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Select Files\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js",
+                            "column": 53,
+                            "line": 152
+                          },
+                          "message": "Error: expect: Property 'toBePresent' not found.\n\n  150 |     \n  151 |     // Check file input is present\n> 152 |     await expect(page.locator('input[type=\"file\"]')).toBePresent();\n      |                                                     ^\n  153 |     \n  154 |     // Check Select Files button\n  155 |     await expect(page.locator('button:has-text(\"Select Files\")')).toBeVisible();\n    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js:152:53"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.828Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\test-results\\integration-status-test-In-1edbc--document-upload-simulation-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\test-results\\integration-status-test-In-1edbc--document-upload-simulation-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\test-results\\integration-status-test-In-1edbc--document-upload-simulation-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js",
+                        "column": 53,
+                        "line": 152
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-36fca1714f6da2b1bf88",
+              "file": "integration-status-test.spec.js",
+              "line": 142,
+              "column": 3
+            },
+            {
+              "title": "should correctly detect Ollama status via Go service health endpoint",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 6,
+                      "status": "timedOut",
+                      "duration": 120038,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 120000ms exceeded."
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:10.672Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-5b884bfcd35fbde8266e",
+              "file": "integration-status-test.spec.js",
+              "line": 6,
+              "column": 3
+            },
+            {
+              "title": "should verify Go service integration with Ollama",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 7,
+                      "status": "timedOut",
+                      "duration": 120026,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 120000ms exceeded."
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:12.887Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-0167d5cbfa5e8c253195",
+              "file": "integration-status-test.spec.js",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "should test API endpoints through integration interface",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 4,
+                      "status": "timedOut",
+                      "duration": 120026,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 120000ms exceeded."
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:16.329Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-1e8df72d5e520dc7a990",
+              "file": "integration-status-test.spec.js",
+              "line": 60,
+              "column": 3
+            },
+            {
+              "title": "should verify export functionality works",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 5,
+                      "status": "timedOut",
+                      "duration": 120017,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 120000ms exceeded."
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:16.371Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-0a52e2f80d46942a1db3",
+              "file": "integration-status-test.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "should validate navigation between all interfaces",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 3,
+                      "status": "timedOut",
+                      "duration": 120028,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 120000ms exceeded."
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:19.238Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-feda6b444a85aa1f62cc",
+              "file": "integration-status-test.spec.js",
+              "line": 116,
+              "column": 3
+            },
+            {
+              "title": "should handle document upload simulation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 1,
+                      "status": "timedOut",
+                      "duration": 120031,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 120000ms exceeded while setting up \"page\".\u001b[39m"
+                        },
+                        {
+                          "message": "Error: browserContext.newPage: Test timeout of 120000ms exceeded."
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:21.060Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-63a8aedc2a9887f2b521",
+              "file": "integration-status-test.spec.js",
+              "line": 142,
+              "column": 3
+            },
+            {
+              "title": "should correctly detect Ollama status via Go service health endpoint",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9685,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Ollama Status Detected: ✅ Running\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:23.514Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-b2880c08114e52c5bd56",
+              "file": "integration-status-test.spec.js",
+              "line": 6,
+              "column": 3
+            },
+            {
+              "title": "should verify Go service integration with Ollama",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 8935,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:23.873Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-7698da3f61961499bce1",
+              "file": "integration-status-test.spec.js",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "should test API endpoints through integration interface",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 10938,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:33.670Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-14fb5943c6c0bb707064",
+              "file": "integration-status-test.spec.js",
+              "line": 60,
+              "column": 3
+            },
+            {
+              "title": "should verify export functionality works",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3658,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Export test completed, file saved to: C:/Users/james/Desktop/deeds-web/deeds-web-app/ai-summary-service/test-export-1754981797875.json\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:34.417Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-7a41b71e21ec393044e8",
+              "file": "integration-status-test.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "should validate navigation between all interfaces",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2448,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "All navigation buttons validated successfully\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:38.082Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-4c16af8de02e8ada4271",
+              "file": "integration-status-test.spec.js",
+              "line": 116,
+              "column": 3
+            },
+            {
+              "title": "should handle document upload simulation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 2364,
+                      "error": {
+                        "message": "Error: expect: Property 'toBePresent' not found.",
+                        "stack": "Error: expect: Property 'toBePresent' not found.\n    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js:152:53",
+                        "location": {
+                          "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js",
+                          "column": 53,
+                          "line": 152
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 150 |\u001b[39m     \n \u001b[90m 151 |\u001b[39m     \u001b[90m// Check file input is present\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 152 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'input[type=\"file\"]'\u001b[39m))\u001b[33m.\u001b[39mtoBePresent()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 153 |\u001b[39m     \n \u001b[90m 154 |\u001b[39m     \u001b[90m// Check Select Files button\u001b[39m\n \u001b[90m 155 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"Select Files\")'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js",
+                            "column": 53,
+                            "line": 152
+                          },
+                          "message": "Error: expect: Property 'toBePresent' not found.\n\n  150 |     \n  151 |     // Check file input is present\n> 152 |     await expect(page.locator('input[type=\"file\"]')).toBePresent();\n      |                                                     ^\n  153 |     \n  154 |     // Check Select Files button\n  155 |     await expect(page.locator('button:has-text(\"Select Files\")')).toBeVisible();\n    at C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js:152:53"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:40.535Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\test-results\\integration-status-test-In-1edbc--document-upload-simulation-webkit\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\test-results\\integration-status-test-In-1edbc--document-upload-simulation-webkit\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\test-results\\integration-status-test-In-1edbc--document-upload-simulation-webkit\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\tests\\integration-status-test.spec.js",
+                        "column": 53,
+                        "line": 152
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-c55e2cfbd1a08bfe9763",
+              "file": "integration-status-test.spec.js",
+              "line": 142,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Service Status Verification",
+          "file": "integration-status-test.spec.js",
+          "line": 161,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should verify actual Ollama service is running",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 51,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Go Service Health Response: {\n  status: \u001b[32m'healthy'\u001b[39m,\n  timestamp: \u001b[32m'2025-08-11T23:56:08.8434748-07:00'\u001b[39m,\n  services: {\n    ollama: \u001b[32m'healthy'\u001b[39m,\n    qdrant: \u001b[32m'unhealthy'\u001b[39m,\n    postgresql: \u001b[32m'healthy'\u001b[39m,\n    gpu: \u001b[32m'enabled'\u001b[39m\n  },\n  version: \u001b[32m'2.0.0-enhanced'\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.806Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-64a76b94f34948770248",
+              "file": "integration-status-test.spec.js",
+              "line": 163,
+              "column": 3
+            },
+            {
+              "title": "should test Ollama embedding endpoint directly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 7,
+                      "status": "passed",
+                      "duration": 1697,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Ollama embedding test successful, dimension: \u001b[33m768\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:08.820Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-94553a84398ec2d9eeb8",
+              "file": "integration-status-test.spec.js",
+              "line": 181,
+              "column": 3
+            },
+            {
+              "title": "should verify actual Ollama service is running",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 70,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Go Service Health Response: {\n  status: \u001b[32m'healthy'\u001b[39m,\n  timestamp: \u001b[32m'2025-08-11T23:56:21.963068-07:00'\u001b[39m,\n  services: {\n    ollama: \u001b[32m'healthy'\u001b[39m,\n    qdrant: \u001b[32m'unhealthy'\u001b[39m,\n    postgresql: \u001b[32m'healthy'\u001b[39m,\n    gpu: \u001b[32m'enabled'\u001b[39m\n  },\n  version: \u001b[32m'2.0.0-enhanced'\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:21.914Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-ee2a92698e78ed1a1a31",
+              "file": "integration-status-test.spec.js",
+              "line": 163,
+              "column": 3
+            },
+            {
+              "title": "should test Ollama embedding endpoint directly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 49,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Ollama embedding test successful, dimension: \u001b[33m768\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:21.998Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-209d836fe97d1c3d4722",
+              "file": "integration-status-test.spec.js",
+              "line": 181,
+              "column": 3
+            },
+            {
+              "title": "should verify actual Ollama service is running",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 41,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Go Service Health Response: {\n  status: \u001b[32m'healthy'\u001b[39m,\n  timestamp: \u001b[32m'2025-08-11T23:56:43.9103969-07:00'\u001b[39m,\n  services: {\n    ollama: \u001b[32m'healthy'\u001b[39m,\n    qdrant: \u001b[32m'unhealthy'\u001b[39m,\n    postgresql: \u001b[32m'healthy'\u001b[39m,\n    gpu: \u001b[32m'enabled'\u001b[39m\n  },\n  version: \u001b[32m'2.0.0-enhanced'\u001b[39m\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:43.877Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-c8898a7244db958b616c",
+              "file": "integration-status-test.spec.js",
+              "line": 163,
+              "column": 3
+            },
+            {
+              "title": "should test Ollama embedding endpoint directly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 27,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Ollama embedding test successful, dimension: \u001b[33m768\u001b[39m\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-12T06:56:43.927Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2dbd37aaf586497ea185-7ee60a8525a02aa7ca71",
+              "file": "integration-status-test.spec.js",
+              "line": 181,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-12T06:56:07.663Z",
+    "duration": 134175.86000000002,
+    "expected": 16,
+    "skipped": 0,
+    "unexpected": 8,
+    "flaky": 0
+  }
+}

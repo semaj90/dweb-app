@@ -187,8 +187,20 @@ export class MCPServerManager {
     }
   }
 
+  /**
+   * Clean up server listeners to prevent memory leaks
+   */
+  private cleanupServerListeners(): void {
+    if (this.server) {
+      this.server.removeAllListeners('spawn');
+      this.server.removeAllListeners('error');
+      this.server.removeAllListeners('exit');
+    }
+  }
+
   stopServer(): void {
     if (this.server) {
+      this.cleanupServerListeners(); // Add cleanup before kill
       this.server.kill();
       this.server = null;
       this.status.running = false;

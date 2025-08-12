@@ -1,0 +1,78 @@
+
+  I've systematically resolved the critical VS Code crashes and instability issues:       
+
+  ✅ Critical Fixes Applied:
+
+  1. Listener Leak Fixed: Added proper cleanup method to MCP extension
+  (mcpServerManager.ts:190-199)
+  2. Svelte 5 Syntax Fixed: Corrected Input.svelte component with proper runes syntax     
+  3. Extension Host Optimization: Added VS Code performance settings to prevent
+  unresponsiveness
+  4. TypeScript Resolution: Fixed module import/export issues
+
+  ✅ Test Results:
+
+  - TypeScript Check: ✅ Now completes successfully (npm run check:ultra-fast)
+  - SvelteKit Dev Server: ✅ Starts normally on http://localhost:5175
+  - Memory Usage: ✅ Optimized with Node.js heap limits
+  - Extension Stability: ✅ MCP extension cleanup prevents 971+ listener accumulation      
+
+  ✅ Key Configuration Changes:
+
+  // .vscode/settings.json - Performance optimization
+  "extensions.autoUpdate": false,
+  "typescript.suggest.autoImports": false,
+  "mcpContext7.maxConnections": 5,
+  "editor.codeActionsOnSave": { "source.organizeImports": "never" }
+
+  The VS Code environment should now be stable for development. The listener leak
+  that was causing 971+ listeners has been resolved, and the extension host should no     
+   longer become unresponsive.
+
+> okay pick up where you left off before crash index and embed 
+  C:\Users\james\Desktop\deeds-web\deeds-web-app/ asycnrounsly using ollama, go, 
+  autogen, concurrency, zx, pm2, our stack 
+  C:\Users\james\Desktop\deeds-web\deeds-web-app/
+  ⎿  ⧉ Selected 39 lines from GitHub.copilot.GitHub Copilot in Visual Studio Code
+
+● I'll implement a comprehensive asynchronous indexing and embedding system for your      
+  entire codebase using Ollama, Go, AutoGen, concurrency, zx, and pm2. Let me create      
+  this production-ready system.
+
+● Update Todos
+  ⎿  ☐ Design asynchronous indexing architecture with Go + Ollama      
+     ☐ Implement Go microservice for concurrent embedding generation   
+     ☐ Create AutoGen orchestration for intelligent document processing
+     ☐ Build zx scripts for concurrent file processing
+     ☐ Implement pm2 cluster management for scalability
+     ☐ Create monitoring and health check systems
+     ☐ Test and optimize performance
+keep going get legal-bert pipeline working, process you want gRPC enabled next:
+
+Remove the legacy build tag (or add a non-legacy gRPC server main) and build/run the Go server on 8084.
+Add a minimal gRPC client in SvelteKit using @grpc/grpc-js or nice-grpc.
+Open/allow port 8084 in Windows Firewall and add a VS Code task to start the server.
+Keep the existing HTTP endpoints as fallback during the transition.
+:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -NoProfile -Command "Write-Host 'Ollama 11434:'; (Test-NetConnecPS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -NoProfile -Command "Write-Host 'Ollama 11434:'; (Test-NetConnection -ComputerName localhost -Port 11434).TcpTestSucceeded; Write-Host 'Qdrant 6333:'; (Test-NetConnection -ComputerName localhost -Port 6333).TcpTestSucceeded; Write-Host 'Redis 6379:'; (Test-NetConnection -ComputerName localhost -Port 6379).TcpTestSucceeded; Write-Host 'Go 8084:'; (Test-NetConnection -ComputerName localhost -Port 8084).TcpTestSucceeded"   
+Ollama 11434:calhost -Port 8084).TcpTestSucceeded"
+WARNING: TCP connect to (::1 : 11434) failed
+WARNING: TCP connect to (127.0.0.1 : 11434) failed
+False
+Qdrant 6333:
+WARNING: TCP connect to (::1 : 6333) failed
+WARNING: TCP connect to (127.0.0.1 : 6333) failed
+False
+Redis 6379:
+WARNING: TCP connect to (::1 : 6379) failed
+Test-NetConnection - 127.0.0.1:6379 [Attempting TCP connect                                                          ]  :\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -NoProfile -Command "Write-Host 'Ollama 11434:'; (Test-NetConnecPS C:\Users\james\Desktop\deeds-web\deeds-web-app> pwsh -NoProfile -Command "Write-Host 'Ollama 11434:'; (Test-NetConnection -ComputerName localhost -Port 11434).TcpTestSucceeded; Write-Host 'Qdrant 6333:'; (Test-NetConnection -ComputerName localhost -Port 6333).TcpTestSucceeded; Write-Host 'Redis 6379:'; (Test-NetConnection -ComputerName localhost -Port 6379).TcpTestSucceeded; Write-Host 'Go 8084:'; (Test-NetConnection -ComputerName localhost -Port 8084).TcpTestSucceeded"   
+Ollama 11434:calhost -Port 8084).TcpTestSucceeded"
+WARNING: TCP connect to (::1 : 11434) failed
+WARNING: TCP connect to (127.0.0.1 : 11434) failed
+False
+Qdrant 6333:
+WARNING: TCP connect to (::1 : 6333) failed
+WARNING: TCP connect to (127.0.0.1 : 6333) failed
+False
+Redis 6379:
+WARNING: TCP connect to (::1 : 6379) failed
+Test-NetConnection - 127.0.0.1:6379 [Attempting TCP connect                                                          ]  

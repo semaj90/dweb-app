@@ -227,7 +227,7 @@ class Context7Server {
     // Read resource content
     this.server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       const { uri } = request.params;
-      
+
       switch (uri) {
         case 'context7://stack-overview':
           return {
@@ -239,7 +239,7 @@ class Context7Server {
               }
             ]
           };
-        
+
         case 'context7://integration-guide':
           return {
             contents: [
@@ -250,7 +250,7 @@ class Context7Server {
               }
             ]
           };
-        
+
         case 'context7://performance-tips':
           return {
             contents: [
@@ -261,7 +261,7 @@ class Context7Server {
               }
             ]
           };
-        
+
         default:
           throw new Error(`Unknown resource: ${uri}`);
       }
@@ -270,7 +270,7 @@ class Context7Server {
     // Handle tool calls
   this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
-      
+
       switch (name) {
         case 'analyze-stack':
           return {
@@ -281,7 +281,7 @@ class Context7Server {
               }
             ]
           };
-        
+
         case 'generate-best-practices':
           return {
             content: [
@@ -291,7 +291,7 @@ class Context7Server {
               }
             ]
           };
-        
+
         case 'suggest-integration':
           return {
             content: [
@@ -341,7 +341,7 @@ class Context7Server {
               }
             ]
           };
-        
+
         case 'vector-search-qdrant':
           return { content: [ { type: 'json', json: await this.qdrantSearch(args.query, args.limit ?? 5) } ] };
 
@@ -481,7 +481,7 @@ ${stackConfig.length > 0 ? stackConfig.map(tech => `- ${tech}`).join('\n') : '- 
       postgres: 'Robust database perfect for legal data requirements.'
     };
 
-    const componentAnalysis = analysis[component.toLowerCase()] || 
+    const componentAnalysis = analysis[component.toLowerCase()] ||
       `Component "${component}" not in current stack. Consider integration patterns with existing technologies.`;
 
     let contextualAdvice = '';
@@ -523,7 +523,7 @@ ${stackConfig.includes(component.toLowerCase()) ? '✅ Already integrated in you
 - Leverage SvelteKit's SSR capabilities
 - Minimize bundle size with proper tree shaking
 
-## Backend Performance  
+## Backend Performance
 - Optimize Drizzle ORM queries
 - Use database indexing effectively
 - Implement connection pooling
@@ -564,7 +564,7 @@ ${stackConfig.includes(component.toLowerCase()) ? '✅ Already integrated in you
 - Follow legal industry UX patterns`
     };
 
-    return practices[area.toLowerCase()] || 
+    return practices[area.toLowerCase()] ||
       `Best practices for "${area}" not available. Consider general development best practices.`;
   }
 
@@ -587,7 +587,7 @@ ${stackConfig.includes(component.toLowerCase()) ? '✅ Already integrated in you
 5. Add proper error handling and validation
 
 ### 3. Stack Integration
-${stackConfig.length > 0 ? 
+${stackConfig.length > 0 ?
   stackConfig.map(tech => `- **${tech}**: Consider how ${feature} integrates with ${tech}`).join('\n') :
   '- No specific stack configuration available'}
 
@@ -613,10 +613,10 @@ ${requirements ? `\n### 5. Special Requirements\n${requirements}` : ''}
     const hasContracts = content.toLowerCase().includes('contract') || content.toLowerCase().includes('agreement');
     const hasLiability = content.toLowerCase().includes('liability') || content.toLowerCase().includes('damages');
     const hasCompliance = content.toLowerCase().includes('comply') || content.toLowerCase().includes('regulation');
-    
+
     let riskLevel = 'Low';
     let riskScore = 25;
-    
+
     if (hasLiability && wordCount > 1000) {
       riskLevel = 'High';
       riskScore = 85;
@@ -654,10 +654,10 @@ ${keyFindings.length > 0 ? keyFindings.map(finding => `- ${finding}`).join('\n')
 ## Recommended Actions
 ${riskLevel === 'High' ? `1. Immediate legal review required
 2. Risk mitigation strategies needed
-3. Stakeholder notification recommended` : 
+3. Stakeholder notification recommended` :
 riskLevel === 'Medium' ? `1. Standard legal review process
 2. Monitor for compliance issues
-3. Schedule follow-up assessment` : 
+3. Schedule follow-up assessment` :
 `1. Routine processing acceptable
 2. Standard filing procedures
 3. Regular monitoring sufficient`}
@@ -674,7 +674,7 @@ This analysis integrates with:
     const evidenceCount = evidence.length;
     const regulationCount = regulations.length;
     const complianceScore = Math.min(90, evidenceCount * 10 + regulationCount * 5);
-    
+
     return `# Compliance Report - ${framework}
 
 ## Executive Summary
@@ -707,9 +707,9 @@ ${regulations.map((reg, index) => `${index + 1}. ${reg}`).join('\n')}
     const hasContract = queryWords.includes('contract') || queryWords.includes('agreement');
     const hasLiability = queryWords.includes('liability') || queryWords.includes('damages');
     const hasBreach = queryWords.includes('breach') || queryWords.includes('violation');
-    
+
     const precedents = [];
-    
+
     if (hasContract && hasBreach) {
       precedents.push({
         case: 'Smith v. Jones Contract Dispute',
@@ -719,7 +719,7 @@ ${regulations.map((reg, index) => `${index + 1}. ${reg}`).join('\n')}
         summary: 'Breach of contract with significant damages awarded'
       });
     }
-    
+
     if (hasLiability) {
       precedents.push({
         case: 'Corporate Liability Standards Case',
@@ -739,12 +739,12 @@ ${regulations.map((reg, index) => `${index + 1}. ${reg}`).join('\n')}
 - **Search Date**: ${new Date().toISOString().split('T')[0]}
 
 ## Relevant Precedents
-${precedents.length > 0 ? 
+${precedents.length > 0 ?
   precedents.map(p => `### ${p.case} (${p.year})
 - **Relevance Score**: ${p.relevance}
 - **Jurisdiction**: ${p.jurisdiction}
 - **Summary**: ${p.summary}
-`).join('\n') : 
+`).join('\n') :
   '### No Direct Precedents Found\n- Consider expanding search criteria\n- Review similar case types\n- Consult legal databases'}
 
 ## Precedent Impact Analysis
@@ -769,7 +769,7 @@ ${precedents.length > 0 ?
 
     // Simple entity extraction simulation
     const words = content.split(' ');
-    
+
     // Extract potential parties (capitalized names)
     if (entityTypes.includes('parties')) {
       const partyPatterns = content.match(/[A-Z][a-z]+ [A-Z][a-z]+/g) || [];

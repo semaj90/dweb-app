@@ -284,14 +284,19 @@
         "Check PostgreSQL",
         "Check Ollama",
         "Check Redis",
-        "Check Qdrant"
+        "Check Qdrant",
+        "📊 Vector Search Status"
       ]
     },
     {
       "label": "Check PostgreSQL",
       "type": "shell",
-      "command": "docker",
-      "args": ["exec", "legal_ai_postgres", "pg_isready", "-U", "postgres"]
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "\u0024r = Test-NetConnection -ComputerName localhost -Port 5432; if (\u0024r.TcpTestSucceeded) { Write-Output '✅ PostgreSQL: port 5432 open' } else { Write-Error '❌ PostgreSQL not reachable on 5432'; exit 1 }"
+      ]
     },
     {
       "label": "Check Ollama",
@@ -302,8 +307,12 @@
     {
       "label": "Check Redis",
       "type": "shell",
-      "command": "docker",
-      "args": ["exec", "legal_ai_redis", "redis-cli", "ping"]
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "\u0024r = Test-NetConnection -ComputerName localhost -Port 6379; if (\u0024r.TcpTestSucceeded) { Write-Output '✅ Redis: port 6379 open' } else { Write-Error '❌ Redis not reachable on 6379'; exit 1 }"
+      ]
     },
     {
       "label": "Check Qdrant",
@@ -388,6 +397,43 @@
         "focus": false,
         "panel": "shared"
       }
+    },
+    {
+      "label": "Go gRPC: Build Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; go mod tidy; go build -o ./bin/grpc-server.exe ./cmd/grpc-server"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Go gRPC: Open Firewall 8084",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "if (-not (Get-NetFirewallRule -DisplayName 'LegalAI gRPC 8084' -ErrorAction SilentlyContinue)) { New-NetFirewallRule -DisplayName 'LegalAI gRPC 8084' -Direction Inbound -LocalPort 8084 -Protocol TCP -Action Allow }"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "Go gRPC: Run Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Start-Process -NoNewWindow -FilePath 'go-microservice/bin/grpc-server.exe'"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "dependsOn": ["Go gRPC: Build Server", "Go gRPC: Open Firewall 8084"],
+      "dependsOrder": "sequence"
     },
     {
       "label": "Check and Analyze with Claude",
@@ -525,6 +571,85 @@
       },
       "problemMatcher": [],
       "detail": "Generate comprehensive error report"
+    }
+    ,
+    {
+      "label": "Cluster: Build HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go mod tidy; go build -o ./bin/cluster-http.exe ./cmd/cluster-service"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Cluster: Run HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:CLUSTER_HTTP_PORT='8090'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/cluster-http.exe'"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "dependsOn": ["Cluster: Build HTTP Service"],
+      "dependsOrder": "sequence"
+    }
+    ,
+    {
+      "label": "Summarizer: Build HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go mod tidy; go build -o ./bin/summarizer-http.exe ./cmd/summarizer-service"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Summarizer: Run HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+  "$env:SUMMARIZER_HTTP_PORT='8091'; $env:OLLAMA_BASE_URL='http://localhost:11434'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/summarizer-http.exe'"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "dependsOn": ["Summarizer: Build HTTP Service"],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Test: Cluster Health via Proxy",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/cluster"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Test: Summarize via Proxy",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "-X","POST",
+        "-H","Content-Type: application/json",
+        "-d","{\"content\":\"A short passage about contracts and liabilities.\",\"type\":\"general\"}",
+        "http://localhost:5173/api/ai/summarize"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
     }
   ]
 }

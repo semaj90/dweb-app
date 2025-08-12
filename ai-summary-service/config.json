@@ -1,0 +1,25 @@
+{
+  "service": "AI Summarization Service",
+  "version": "1.0.0",
+  "config": {
+    "port": "8081",
+    "qdrant_url": "http://localhost:6333",
+    "ollama_url": "http://localhost:11434",
+    "enable_gpu": true,
+    "model": "gemma3:latest",
+    "cache_dir": "./cache"
+  },
+  "endpoints": {
+    "health": "/api/health",
+    "summarize": "/api/summarize",
+    "search": "/api/search"
+  },
+  "features": [
+    "go-llama integration",
+    "Local Qdrant routing", 
+    "GPU acceleration support",
+    "Multiple summary types",
+    "Vector similarity search",
+    "Local file caching"
+  ]
+}

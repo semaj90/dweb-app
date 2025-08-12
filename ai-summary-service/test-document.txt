@@ -1,0 +1,13 @@
+PostgreSQL Integration Test Document
+
+This is a test document to verify that the AI document processing service successfully stores results in PostgreSQL database.
+
+Key Test Points:
+1. Document upload and processing
+2. AI summarization generation 
+3. Database storage of results
+4. Health check verification
+
+Test Case: Database Storage Validation
+Uploaded: August 11, 2025
+Expected: Document should be stored in document_processing table with all metadata.

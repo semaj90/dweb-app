@@ -5,7 +5,48 @@ import UnoCSS from "unocss/vite";
 import { resolve } from "path";
 import { vscodeErrorLogger } from "./src/lib/vite/vscode-error-logger";
 
-export default defineConfig(({ mode }) => ({
+// Smart port discovery utility
+async function findAvailablePort(startPort: number, maxAttempts: number = 10): Promise<number> {
+  const net = await import('net');
+  
+  for (let i = 0; i < maxAttempts; i++) {
+    const port = startPort + i;
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const server = net.createServer();
+        server.listen(port, (err?: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            server.close(() => resolve());
+          }
+        });
+        server.on('error', reject);
+      });
+      return port;
+    } catch (error) {
+      console.log(`Port ${port} is occupied, trying next...`);
+    }
+  }
+  throw new Error(`No available port found starting from ${startPort}`);
+}
+
+export default defineConfig(async ({ mode }) => {
+  // Smart port discovery - prefer 5173, fallback to next available
+  const preferredPort = 5173;
+  let availablePort: number;
+  
+  try {
+    availablePort = await findAvailablePort(preferredPort);
+    if (availablePort !== preferredPort) {
+      console.log(`⚠️  Port ${preferredPort} was occupied, using port ${availablePort} instead`);
+    }
+  } catch (error) {
+    console.error(`❌ Failed to find available port: ${error}`);
+    availablePort = preferredPort; // Fallback to default
+  }
+
+  return {
   plugins: [
     UnoCSS(),
     vscodeErrorLogger({
@@ -22,11 +63,12 @@ export default defineConfig(({ mode }) => ({
     sveltekit()
   ],
   
-  // Development server configuration
+  // Development server configuration with smart port discovery
   server: {
-    port: 3130,
+    port: availablePort,
     host: "0.0.0.0",
     cors: true,
+    strictPort: false, // Allow Vite to find alternative ports if needed
     hmr: {
       port: 3131,
       clientPort: 3131
@@ -82,9 +124,10 @@ export default defineConfig(({ mode }) => ({
   },
   
   preview: {
-    port: 4173,
+    port: availablePort + 1000, // Use different port for preview
     host: "0.0.0.0",
-    cors: true
+    cors: true,
+    strictPort: false // Allow alternative ports for preview too
   },
   
   // Build optimizations
@@ -219,7 +262,10 @@ export default defineConfig(({ mode }) => ({
     __DEV__: mode === 'development',
     __PROD__: mode === 'production',
     __VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
-    __BUILD_TIME__: JSON.stringify(new Date().toISOString())
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __VITE_PORT__: availablePort,
+    __MCP_SERVER_PORT__: 4100,
+    __GRPC_SERVER_PORT__: 8084
   },
   
   // Performance optimizations
@@ -232,4 +278,5 @@ export default defineConfig(({ mode }) => ({
       }
     }
   }
-}));
+  };
+});

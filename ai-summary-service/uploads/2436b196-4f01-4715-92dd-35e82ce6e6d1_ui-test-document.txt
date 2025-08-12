@@ -1,0 +1,14 @@
+UI TEST LEGAL CONTRACT
+
+This is a test legal contract for UI automation testing.
+
+PARTIES:
+- Playwright Test Company
+- Automated Test User
+
+CONTRACT TERMS:
+1. Test automation clause
+2. UI validation requirements
+3. Browser compatibility testing
+
+EFFECTIVE DATE: Mon Aug 11 2025
