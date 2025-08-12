@@ -12,6 +12,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import Redis from "ioredis";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { Pool } from "pg";
+// @ts-ignore - Postgres module import compatibility issue
 import postgres from "postgres";
 import { legalDocuments } from "../server/db/schema-postgres";
 

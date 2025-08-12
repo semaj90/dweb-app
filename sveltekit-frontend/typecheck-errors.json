@@ -1,0 +1,174 @@
+{
+  "timestamp": "2025-08-12T01:04:29.033Z",
+  "totalErrors": 18,
+  "allErrors": [
+    {
+      "file": "src/lib/services/enhanced-rag-store.ts",
+      "line": 10,
+      "column": 5,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in enhanced-rag-store.ts"
+    },
+    {
+      "file": "src/lib/services/enhanced-rag-store.ts",
+      "line": 11,
+      "column": 5,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in enhanced-rag-store.ts"
+    },
+    {
+      "file": "src/lib/services/enhanced-rag-store.ts",
+      "line": 12,
+      "column": 5,
+      "message": "Cannot find name 'fetch' in this scope",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in enhanced-rag-store.ts"
+    },
+    {
+      "file": "src/lib/services/comprehensive-caching-architecture.ts",
+      "line": 15,
+      "column": 5,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in comprehensive-caching-architecture.ts"
+    },
+    {
+      "file": "src/lib/services/comprehensive-caching-architecture.ts",
+      "line": 16,
+      "column": 5,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in comprehensive-caching-architecture.ts"
+    },
+    {
+      "file": "src/lib/services/comprehensive-caching-architecture.ts",
+      "line": 17,
+      "column": 5,
+      "message": "Cannot find name 'fetch' in this scope",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in comprehensive-caching-architecture.ts"
+    },
+    {
+      "file": "src/lib/stores/user-store.ts",
+      "line": 20,
+      "column": 5,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in user-store.ts"
+    },
+    {
+      "file": "src/lib/stores/user-store.ts",
+      "line": 21,
+      "column": 5,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in user-store.ts"
+    },
+    {
+      "file": "src/lib/stores/user-store.ts",
+      "line": 22,
+      "column": 5,
+      "message": "Cannot find name 'fetch' in this scope",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in user-store.ts"
+    },
+    {
+      "file": "src/lib/utils/document-processor.ts",
+      "line": 25,
+      "column": 5,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in document-processor.ts"
+    },
+    {
+      "file": "src/lib/utils/document-processor.ts",
+      "line": 26,
+      "column": 5,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in document-processor.ts"
+    },
+    {
+      "file": "src/lib/utils/document-processor.ts",
+      "line": 27,
+      "column": 5,
+      "message": "Cannot find name 'fetch' in this scope",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in document-processor.ts"
+    },
+    {
+      "file": "src/routes/api/chat/+server.ts",
+      "line": 30,
+      "column": 5,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in +server.ts"
+    },
+    {
+      "file": "src/routes/api/chat/+server.ts",
+      "line": 31,
+      "column": 5,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in +server.ts"
+    },
+    {
+      "file": "src/routes/api/chat/+server.ts",
+      "line": 32,
+      "column": 5,
+      "message": "Cannot find name 'fetch' in this scope",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in +server.ts"
+    },
+    {
+      "file": "src/app.d.ts",
+      "line": 35,
+      "column": 5,
+      "message": "Property 'value' does not exist on type 'Props'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in app.d.ts"
+    },
+    {
+      "file": "src/app.d.ts",
+      "line": 36,
+      "column": 5,
+      "message": "Type 'string | undefined' is not assignable to type 'string'",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in app.d.ts"
+    },
+    {
+      "file": "src/app.d.ts",
+      "line": 37,
+      "column": 5,
+      "message": "Cannot find name 'fetch' in this scope",
+      "category": "typescript",
+      "severity": "error",
+      "context": "TypeScript error in app.d.ts"
+    }
+  ],
+  "categories": {
+    "svelte": 0,
+    "typescript": 18,
+    "legacy_reactive": 0,
+    "missing_lang": 0
+  }
+}

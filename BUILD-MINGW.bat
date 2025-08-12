@@ -3,12 +3,6 @@ cd /d C:\Users\james\Desktop\deeds-web\deeds-web-app\go-microservice
 
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8080') do taskkill /F /PID %%a 2>nul
 
-REM Install MinGW if needed
-where gcc >nul 2>&1 || (
-    echo Installing MinGW...
-    winget install mingw -e --silent
-)
-
 set CC=gcc
 set CGO_ENABLED=1
 set "CGO_CFLAGS=-I%CUDA_PATH%\include"

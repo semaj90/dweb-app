@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // simd-redis-vite-server.go
 // Ultra-High Performance SIMD JSON + Redis Integration with Vite
 // Multi-concurrency and Data Parallelism Support

@@ -1,8 +1,8 @@
 // go-microservice/Dockerfile.simd
 // Build: go build -ldflags="-s -w" -tags production -o simd-server-prod.exe simd-redis-vite-server.go
 
-//go:build production
-// +build production
+//go:build legacy
+// +build legacy
 
 package main
 

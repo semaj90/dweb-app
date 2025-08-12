@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-import { Client } from "pg";
-import * as dotenv from "dotenv";
 import crypto from "crypto";
+import * as dotenv from "dotenv";
+import { Client } from "pg";
 
 dotenv.config();
 
 const client = new Client({
   host: process.env.POSTGRES_HOST || "localhost",
   port: parseInt(process.env.POSTGRES_PORT || "5433"),
-  database: process.env.POSTGRES_DB || "prosecutor_db",
+  database: process.env.POSTGRES_DB || "legal_ai_db",
   user: process.env.POSTGRES_USER || "postgres",
   password: process.env.POSTGRES_PASSWORD || "postgres",
 });
@@ -103,7 +103,7 @@ async function createSampleEvidence() {
       const result = await client.query(
         `
         INSERT INTO evidence (
-          title, description, file_name, hash, file_type, file_size, 
+          title, description, file_name, hash, file_type, file_size,
           file_url, uploaded_by, tags
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -134,7 +134,7 @@ async function createSampleEvidence() {
         await client.query(
           `
           INSERT INTO hash_verifications (
-            evidence_id, verified_hash, stored_hash, result, 
+            evidence_id, verified_hash, stored_hash, result,
             verification_method, verified_by, notes
           )
           VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -167,7 +167,7 @@ async function createSampleEvidence() {
       await client.query(
         `
         INSERT INTO hash_verifications (
-          evidence_id, verified_hash, stored_hash, result, 
+          evidence_id, verified_hash, stored_hash, result,
           verification_method, verified_by, notes
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -190,7 +190,7 @@ async function createSampleEvidence() {
         await client.query(
           `
           INSERT INTO hash_verifications (
-            evidence_id, verified_hash, stored_hash, result, 
+            evidence_id, verified_hash, stored_hash, result,
             verification_method, verified_by, notes
           )
           VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -212,7 +212,7 @@ async function createSampleEvidence() {
     // Show summary statistics
     console.log("\n📈 Sample Data Summary:");
     const stats = await client.query(`
-      SELECT 
+      SELECT
         (SELECT COUNT(*) FROM evidence WHERE hash IS NOT NULL) as evidence_with_hash,
         (SELECT COUNT(*) FROM evidence WHERE hash IS NULL) as evidence_without_hash,
         (SELECT COUNT(*) FROM hash_verifications) as total_verifications,

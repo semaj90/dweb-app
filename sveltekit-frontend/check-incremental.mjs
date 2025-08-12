@@ -55,7 +55,7 @@ const withTimeout = (promise, ms) => {
 };
 
 async function main() {
-  console.log('🚀 Starting incremental TypeScript checking...\n');
+  console.log('🚀 Starting Context7 MCP-optimized TypeScript checking...\n');
 
   try {
     // Phase 1: Sync SvelteKit

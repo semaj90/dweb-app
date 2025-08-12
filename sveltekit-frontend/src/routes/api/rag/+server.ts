@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Enhanced RAG API Endpoints - Backend Integration
  * Integrates with Enhanced RAG Backend (localhost:8000)
@@ -11,9 +10,10 @@
  * /api/rag/status - Service health check
  */
 
-import { json, error } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+import { summarizeWithQueue } from "$lib/server/pgai";
 import { librarySyncService } from "$lib/services/library-sync-service";
+import { error, json } from "@sveltejs/kit";
+import type { RequestHandler } from "@sveltejs/kit";
 
 // Enhanced RAG Backend Configuration
 const RAG_BACKEND_URL = process.env.RAG_BACKEND_URL || "http://localhost:8000";
@@ -106,22 +106,17 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
   try {
     switch (action) {
-      case "upload":
-        return await handleUpload(request);
-      case "crawl":
-        return await handleCrawl(request);
       case "search":
         return await handleSearch(request);
       case "analyze":
         return await handleAnalyze(request);
       case "summarize":
         return await handleSummarize(request);
-      case "workflow":
-        return await handleWorkflow(request);
-      case "chat":
-        return await handleChat(request);
       case "status":
         return await handleStatus();
+      case "queue-summarize":
+        return await handleQueueSummarize(request);
+
       default:
         return json({ error: "Invalid action" }, { status: 400 });
     }
@@ -141,82 +136,25 @@ export const POST: RequestHandler = async ({ request, url }) => {
 /**
  * Handle document upload via Enhanced RAG Backend
  */
-async function handleUpload(request: Request) {
+// Archived: handleUpload moved to archived-handlers.ts
+async function handleQueueSummarize(request: Request) {
   try {
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
-    const title = formData.get("title") as string;
-    const documentType = formData.get("documentType") as string;
-    const caseId = formData.get("caseId") as string;
-
-    if (!file) {
-      throw error(400, "No file provided");
+    const { content, documentId } = await request.json();
+    if (!content || !documentId) {
+      throw error(400, "content and documentId are required");
     }
-
-    // Forward to Enhanced RAG Backend
-    const ragFormData = new FormData();
-    ragFormData.append("document", file);
-    if (title) ragFormData.append("title", title);
-    if (documentType) ragFormData.append("documentType", documentType);
-    if (caseId) ragFormData.append("caseId", caseId);
-
-    const result = await forwardToRAGBackend("/api/v1/rag/upload", {
-      method: "POST",
-      body: ragFormData,
-    });
-
-    return json({
-      success: true,
-      document: result.document,
-      processing: result.processing,
-      metadata: result.metadata,
-    });
+    const result = await summarizeWithQueue(content, documentId);
+    return json({ success: true, data: result });
   } catch (err) {
-    console.error("Upload error:", err);
-    throw error(500, `Document upload failed: ${err.message}`);
+    console.error("queue-summarize error:", err);
+    throw error(500, `Queue summarize failed: ${err.message}`);
   }
 }
 
 /**
  * Handle web crawling via Enhanced RAG Backend
  */
-async function handleCrawl(request: Request) {
-  try {
-    const {
-      url: crawlUrl,
-      maxPages = 5,
-      depth = 2,
-      caseId,
-      documentType = "web_content",
-    } = await request.json();
-
-    if (!crawlUrl) {
-      throw error(400, "URL is required");
-    }
-
-    const result = await forwardToRAGBackend("/api/v1/rag/crawl", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        url: crawlUrl,
-        maxPages,
-        depth,
-        caseId,
-        documentType,
-      }),
-    });
-
-    return json({
-      success: true,
-      document: result.document,
-      crawlStats: result.crawlStats,
-      processingTime: result.processingTime,
-    });
-  } catch (err) {
-    console.error("Crawl error:", err);
-    throw error(500, `Web crawling failed: ${err.message}`);
-  }
-}
+// Archived: handleCrawl moved to archived-handlers.ts
 
 /**
  * Handle enhanced search (vector/hybrid/chunk)
@@ -336,65 +274,12 @@ async function handleSummarize(request: Request) {
 /**
  * Handle multi-agent workflows
  */
-async function handleWorkflow(request: Request) {
-  try {
-    const { workflowType, input, options = {} } = await request.json();
-
-    if (!workflowType || !input) {
-      throw error(400, "Workflow type and input are required");
-    }
-
-    const result = await forwardToRAGBackend("/api/v1/agents/workflow", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        workflowType,
-        input,
-        options,
-      }),
-    });
-
-    return json({
-      success: true,
-      workflow: result.result,
-      metadata: result.metadata,
-    });
-  } catch (err) {
-    console.error("Workflow error:", err);
-    throw error(500, `Workflow execution failed: ${err.message}`);
-  }
-}
+// Archived: handleWorkflow moved to archived-handlers.ts
 
 /**
  * Handle AI chat
  */
-async function handleChat(request: Request) {
-  try {
-    const { messages, options = {} } = await request.json();
-
-    if (!messages || !Array.isArray(messages)) {
-      throw error(400, "Messages array is required");
-    }
-
-    const result = await forwardToRAGBackend("/api/v1/agents/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages,
-        options,
-      }),
-    });
-
-    return json({
-      success: true,
-      response: result.response,
-      metadata: result.metadata,
-    });
-  } catch (err) {
-    console.error("Chat error:", err);
-    throw error(500, `AI chat failed: ${err.message}`);
-  }
-}
+// Archived: handleChat moved to archived-handlers.ts
 
 /**
  * Handle Enhanced RAG Backend health check
@@ -450,26 +335,29 @@ async function handleStatus() {
  */
 export const GET: RequestHandler = async ({ url }) => {
   const action = url.searchParams.get("action");
-  const endpoint = url.searchParams.get("endpoint");
+  // const endpoint = url.searchParams.get("endpoint"); // unused
 
   try {
     switch (action) {
       case "status":
         return await handleStatus();
 
-      case "stats":
+      case "stats": {
         const stats = await forwardToRAGBackend("/api/v1/rag/stats");
         return json({ success: true, stats: stats.stats });
+      }
 
-      case "health":
+      case "health": {
         const health = await forwardToRAGBackend("/health");
         return json({ success: true, health });
+      }
 
-      case "metrics":
+      case "metrics": {
         const metrics = await forwardToRAGBackend("/health/detailed");
         return json({ success: true, metrics });
+      }
 
-      case "search":
+      case "search": {
         const query = url.searchParams.get("query");
         const searchType = url.searchParams.get("searchType") || "hybrid";
         const limit = parseInt(url.searchParams.get("limit") || "10");
@@ -495,6 +383,7 @@ export const GET: RequestHandler = async ({ url }) => {
           results: searchResult.results,
           total: searchResult.total,
         });
+      }
 
       default:
         throw error(400, `Invalid action: ${action || "none"}`);
@@ -516,17 +405,19 @@ export const PATCH: RequestHandler = async ({ url }) => {
     const operation = url.searchParams.get("operation") || "refresh";
 
     switch (operation) {
-      case "refresh":
+      case "refresh": {
         const refreshResult = await forwardToRAGBackend("/api/v1/rag/cache", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "refresh" }),
         });
         return json({ success: true, result: refreshResult });
+      }
 
-      case "stats":
+      case "stats": {
         const cacheStats = await forwardToRAGBackend("/api/v1/rag/stats");
         return json({ success: true, stats: cacheStats.stats });
+      }
 
       default:
         throw error(400, `Invalid operation: ${operation}`);
@@ -565,3 +456,23 @@ export const DELETE: RequestHandler = async ({ url }) => {
     throw error(500, `Cache clear failed: ${err.message}`);
   }
 };
+
+/**
+ * Handle pgai document processing using local Gemma3 models
+ */
+// Archived: handlePgaiProcess moved to archived-handlers.ts
+
+/**
+ * Handle pgai custom analysis
+ */
+// Archived: handlePgaiCustomAnalysis moved to archived-handlers.ts
+
+/**
+ * Handle pgai document comparison
+ */
+// Archived: handlePgaiComparison moved to archived-handlers.ts
+
+/**
+ * Handle pgai information extraction
+ */
+// Archived: handlePgaiExtraction moved to archived-handlers.ts

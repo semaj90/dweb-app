@@ -18,6 +18,171 @@
       "problemMatcher": []
     },
     {
+      "label": "🧾 Vector: Scan and Embed",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "vector:scan"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "🔍 Vector: Search",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "vector:search"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "🛰️ Logs: WebSocket Server",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "logs:ws"],
+      "group": "build",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Frontend: CLI Detect",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "cli:detect"],
+      "options": { "cwd": "${workspaceFolder}/sveltekit-frontend" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Frontend: CLI Update",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "cli:update"],
+      "options": { "cwd": "${workspaceFolder}/sveltekit-frontend" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "CLI: Detect Installed CLIs",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/cli-detect-update.ps1"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Detect Claude/Gemini CLIs and save to logs/cli-detect.json"
+    },
+    {
+      "label": "CLI: Update CLIs (Global)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/cli-detect-update.ps1",
+        "-AutoUpdate"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Update Claude/Gemini CLIs with npm -g"
+    },
+    {
+      "label": "Ollama: Chat (quick test)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/ollama-json.ps1",
+        "-Mode",
+        "chat",
+        "-Prompt",
+        "'Hello from VS Code Task'"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Send a test chat to local Ollama and save to logs/ollama-response.json"
+    },
+    {
+      "label": "Ollama: Embedding (quick test)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/ollama-json.ps1",
+        "-Mode",
+        "embeddings",
+        "-Prompt",
+        "'contract liability terms'"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Request embeddings from local Ollama and save to logs/ollama-response.json"
+    },
+    {
+      "label": "Svelte: Generate Error Suggestions",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "check:suggest"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "detail": "Run svelte-check with AI suggestions; see logs/svelte-suggestions.json"
+    },
+    {
+      "label": "Tag Legacy Go Files",
+      "type": "shell",
+      "command": "node",
+      "args": ["scripts/tag-legacy-go-files.mjs"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      }
+    },
+    {
       "label": "Start MCP Servers",
       "type": "shell",
       "command": "echo",
@@ -26,7 +191,7 @@
       "dependsOrder": "sequence",
       "dependsOn": [
         "MCP: Context7 Server",
-        "MCP: Memory Server", 
+        "MCP: Memory Server",
         "MCP: Postgres Server"
       ]
     },
@@ -76,7 +241,7 @@
       "args": ["-y", "@modelcontextprotocol/server-postgres"],
       "options": {
         "env": {
-          "POSTGRES_CONNECTION_STRING": "postgresql://postgres:postgres@localhost:5432/prosecutor_db"
+          "POSTGRES_CONNECTION_STRING": "postgresql://postgres:postgres@localhost:5432/legal_ai_db"
         }
       },
       "group": "build",
@@ -129,14 +294,14 @@
       "args": ["exec", "legal_ai_postgres", "pg_isready", "-U", "postgres"]
     },
     {
-      "label": "Check Ollama", 
+      "label": "Check Ollama",
       "type": "shell",
       "command": "curl",
       "args": ["-f", "http://localhost:11434/api/version"]
     },
     {
       "label": "Check Redis",
-      "type": "shell", 
+      "type": "shell",
       "command": "docker",
       "args": ["exec", "legal_ai_redis", "redis-cli", "ping"]
     },
@@ -179,7 +344,7 @@
     },
     {
       "label": "📊 Vector Search Status",
-      "type": "shell", 
+      "type": "shell",
       "command": "curl",
       "args": [
         "-s",
@@ -199,7 +364,7 @@
       "command": "curl",
       "args": [
         "-X", "PUT",
-        "-H", "Content-Type: application/json", 
+        "-H", "Content-Type: application/json",
         "-d", "{\"documentIds\": [\"sample-doc-1\", \"sample-doc-2\"], \"forceReindex\": true}",
         "http://localhost:5173/api/ai/vector-search/index"
       ],
@@ -245,7 +410,7 @@
     },
     {
       "label": "Quick Fix TypeScript Errors",
-      "type": "shell", 
+      "type": "shell",
       "command": "npm",
       "args": ["run", "check"],
       "group": "build",
@@ -257,7 +422,7 @@
       },
       "problemMatcher": "$tsc"
     },
-    
+
     // Vite Error Logger Tasks
     {
       "label": "View Vite Errors",
@@ -314,15 +479,15 @@
               "line": 2,
               "column": 3,
               "message": 4,
-              "severity": "error"
+              "severity": 8
             },
             {
-              "regexp": "^🔧.*WARN\\s+(.+):(\\d+):(\\d+)\\s+(.+)$", 
+              "regexp": "^🔧.*WARN\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
               "file": 1,
               "line": 2,
               "column": 3,
               "message": 4,
-              "severity": "warning"
+              "severity": 4
             }
           ]
         }

@@ -47,20 +47,6 @@ function Show-ServiceStatus {
     Write-Host "   Ollama: http://localhost:11434" -ForegroundColor White
     Write-Host ""
 
-    # Check if Docker Desktop is running (to show we're not using it)
-    try {
-        docker --version 2>$null | Out-Null
-        $dockerRunning = Get-Process "Docker Desktop" -ErrorAction SilentlyContinue
-        if ($dockerRunning) {
-            Write-Host "[WARNING] Docker Desktop is running but we're using native services" -ForegroundColor Yellow
-        } else {
-            Write-Host "[OK] No Docker Desktop - using native Windows services" -ForegroundColor Green
-        }
-    } catch {
-        Write-Host "[OK] Docker not detected - using native Windows services" -ForegroundColor Green
-    }
-}
-
 function Setup-NativeServices {
     Write-Host ""
     Write-Host "Setting up native Windows services..." -ForegroundColor Cyan

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 import { readFileSync } from "fs";
-import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import { Pool } from "pg";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,7 +25,7 @@ try {
 
 const DATABASE_URL =
   process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@localhost:5433/prosecutor_db";
+  "postgresql://postgres:postgres@localhost:5433/legal_ai_db";
 
 async function createAdminUser() {
   console.log("👤 Creating admin user...");

@@ -15,6 +15,9 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import fs from 'fs/promises';
 import path from 'path';
+import http from 'http';
+import { WebSocketServer } from 'ws';
+import fetch from 'node-fetch';
 
 // Stack configuration from command line args
 const stackConfig = process.argv.find(arg => arg.startsWith('--stack='))?.split('=')[1]?.split(',') || [];
@@ -39,7 +42,7 @@ class Context7Server {
 
   setupHandlers() {
     // List available tools
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+  this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: [
           {
@@ -179,6 +182,18 @@ class Context7Server {
               required: ['content'],
             },
           }
+          {
+            name: 'vector-search-qdrant',
+            description: 'Search Qdrant dev_embeddings with an embedded query via Ollama',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                query: { type: 'string' },
+                limit: { type: 'number' }
+              },
+              required: ['query']
+            }
+          },
         ]
       };
     });
@@ -253,7 +268,7 @@ class Context7Server {
     });
 
     // Handle tool calls
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
       
       switch (name) {
@@ -327,6 +342,9 @@ class Context7Server {
             ]
           };
         
+        case 'vector-search-qdrant':
+          return { content: [ { type: 'json', json: await this.qdrantSearch(args.query, args.limit ?? 5) } ] };
+
         default:
           throw new Error(`Unknown tool: ${name}`);
       }
@@ -810,6 +828,39 @@ ${entities.clauses.length > 0 ? entities.clauses.map(clause => `- ${clause}`).jo
     "entityCount": ${totalEntities}
   }
 }
+
+// Auxiliary methods
+Context7Server.prototype.qdrantSearch = async function(query, limit = 5) {
+  const MODEL = process.env.EMBED_MODEL || 'nomic-embed-text';
+  const COLLECTION = process.env.QDRANT_COLLECTION || 'dev_embeddings';
+  const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
+
+  const er = await fetch('http://localhost:11434/api/embeddings', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, input: query })
+  });
+  if (!er.ok) throw new Error('Ollama embeddings failed');
+  const ed = await er.json();
+  const vector = ed?.embedding || ed?.data?.[0]?.embedding;
+  if (!Array.isArray(vector)) throw new Error('No embedding vector');
+
+  const sr = await fetch(`${QDRANT_URL}/collections/${COLLECTION}/points/search`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ vector, limit, with_payload: true })
+  });
+  if (!sr.ok) throw new Error('Qdrant search failed');
+  const sd = await sr.json();
+  return sd?.result || [];
+}
+
+// WebSocket logs server (optional)
+const LOG_WS_PORT = Number(process.env.MCP_LOG_WS_PORT || 7072);
+const httpServer = http.createServer((_, res) => { res.end('Context7 WS') });
+const wss = new WebSocketServer({ server: httpServer, path: '/logs' });
+httpServer.listen(LOG_WS_PORT, () => console.log(`[Context7 WS] ws://localhost:${LOG_WS_PORT}/logs`));
+setInterval(() => {
+  for (const c of wss.clients) if (c.readyState === 1) c.send(JSON.stringify({ ts: Date.now(), msg: 'context7 heartbeat' }))
+}, 7000);
 \`\`\`
 
 ## Stack Integration

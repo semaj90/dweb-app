@@ -152,9 +152,9 @@
       "mcp__puppeteer__puppeteer_select",
       "Bash(copy \"+server.ts\" \"+server.ts.backup.20250804\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d prosecutor_db -h localhost -c \"CREATE EXTENSION IF NOT EXISTS vector;\")",
+  "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"CREATE EXTENSION IF NOT EXISTS vector;\")",
       "Bash(npm audit:*)",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d prosecutor_db -h localhost -c \"SELECT version();\")",
+  "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"\\l\")",
       "Bash(git clone:*)",
       "Bash(set \"PGROOT=C:\\Program Files\\PostgreSQL\\17\")",
@@ -287,7 +287,11 @@
       "Bash(net start:*)",
       "Bash(redis-cli:*)",
       "Bash(npm:*)",
-      "Bash(copy favicon.ico favicon.png)"
+      "Bash(copy favicon.ico favicon.png)",
+      "Bash(time npm run check:ultra-fast)",
+      "Bash(time npm run check:fast)",
+      "Bash(time npm run check)",
+      "Bash(zx:*)"
     ],
     "deny": []
   }

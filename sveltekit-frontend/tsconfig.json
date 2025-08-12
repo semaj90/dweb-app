@@ -24,7 +24,8 @@
     "noImplicitReturns": false,
     "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": false,
-    "assumeChangesOnlyAffectDirectDependencies": true
+    "assumeChangesOnlyAffectDirectDependencies": true,
+    "downlevelIteration": true
   },
   "include": ["ambient.d.ts", "src/**/*.ts", "src/**/*.svelte"],
   "exclude": [

@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 ﻿// model-config.go
 // Add this file to your go-microservice directory
 

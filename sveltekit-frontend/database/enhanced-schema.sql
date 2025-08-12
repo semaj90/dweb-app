@@ -1,5 +1,5 @@
 -- Enhanced PostgreSQL schema with pgvector for legal AI system
--- Run with: psql -d prosecutor_db -f enhanced-schema.sql
+-- Run with: psql -d legal_ai_db -f enhanced-schema.sql
 
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
@@ -118,7 +118,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         ue.id,
         ue.content,
         1 - (ue.embedding <=> query_embedding) as similarity,
@@ -149,7 +149,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         ev.id,
         ev.evidence_id,
         ev.content,
@@ -180,7 +180,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         pe.id,
         pe.citation,
         pe.summary,

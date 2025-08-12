@@ -1,0 +1,2 @@
+# Enforce LF line endings for Node scripts used cross-platform
+scripts/tag-legacy-go-files.mjs eol=lf

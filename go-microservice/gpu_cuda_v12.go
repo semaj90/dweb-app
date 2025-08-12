@@ -1,4 +1,4 @@
-// +build cuda
+// +build legacy
 
 package main
 

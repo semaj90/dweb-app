@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // Enhanced Legal AI Microservice
 // NVIDIA CUDA + Redis + Gemma3-Legal GGUF Integration
 // Optimized for Windows Development with SvelteKit 2 API Routes

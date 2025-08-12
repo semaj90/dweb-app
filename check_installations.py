@@ -13,7 +13,7 @@ def check_package(package_name, import_name=None):
     """Check if a package is installed and importable"""
     if import_name is None:
         import_name = package_name
-    
+
     try:
         module = importlib.import_module(import_name)
         version = getattr(module, '__version__', 'unknown')
@@ -38,7 +38,7 @@ def check_ai_packages():
     print("=" * 60)
     print("AI/ML PACKAGE INSTALLATIONS")
     print("=" * 60)
-    
+
     packages = [
         ('vllm', 'vllm'),
         ('triton', 'triton'),
@@ -61,7 +61,7 @@ def check_ai_packages():
         ('celery', 'celery'),
         ('dramatiq', 'dramatiq'),
     ]
-    
+
     installed_count = 0
     for package_name, import_name in packages:
         is_installed, version, error = check_package(package_name, import_name)
@@ -70,7 +70,7 @@ def check_ai_packages():
             installed_count += 1
         else:
             print(f"❌ {package_name}: {error}")
-    
+
     print(f"\nInstalled: {installed_count}/{len(packages)} packages")
     print()
 
@@ -79,7 +79,7 @@ def check_windows_specific():
     print("=" * 60)
     print("WINDOWS-SPECIFIC CHECKS")
     print("=" * 60)
-    
+
     # Check CUDA availability
     try:
         import torch
@@ -94,14 +94,14 @@ def check_windows_specific():
             print("❌ CUDA not available")
     except ImportError:
         print("❌ PyTorch not installed - cannot check CUDA")
-    
+
     # Check for Visual Studio Build Tools
     try:
         import distutils.msvccompiler
         print("✅ Visual Studio Build Tools available")
     except ImportError:
         print("❌ Visual Studio Build Tools not found")
-    
+
     print()
 
 def check_vllm_specific():
@@ -109,32 +109,32 @@ def check_vllm_specific():
     print("=" * 60)
     print("vLLM SPECIFIC CHECKS")
     print("=" * 60)
-    
+
     try:
         import vllm
         print(f"✅ vLLM installed: {vllm.__version__}")
-        
+
         # Check vLLM components
         try:
             from vllm import LLM, SamplingParams
             print("✅ vLLM core components available")
         except ImportError as e:
             print(f"❌ vLLM core components issue: {e}")
-        
+
         # Check vLLM engine
         try:
             from vllm.engine.arg_utils import AsyncEngineArgs
             print("✅ vLLM engine available")
         except ImportError as e:
             print(f"❌ vLLM engine issue: {e}")
-            
+
     except ImportError as e:
         print(f"❌ vLLM not installed: {e}")
         print("   Installation command for Windows:")
         print("   pip install vllm")
         print("   Or with CUDA support:")
         print("   pip install vllm[cuda]")
-    
+
     print()
 
 def check_triton_specific():
@@ -142,44 +142,44 @@ def check_triton_specific():
     print("=" * 60)
     print("TRITON SPECIFIC CHECKS")
     print("=" * 60)
-    
+
     try:
         import triton
         print(f"✅ Triton installed: {triton.__version__}")
-        
+
         # Check Triton compiler
         try:
             import triton.compiler
             print("✅ Triton compiler available")
         except ImportError as e:
             print(f"❌ Triton compiler issue: {e}")
-        
+
         # Check Triton language
         try:
             import triton.language as tl
             print("✅ Triton language available")
         except ImportError as e:
             print(f"❌ Triton language issue: {e}")
-            
+
     except ImportError as e:
         print(f"❌ Triton not installed: {e}")
         print("   Installation command for Windows:")
         print("   pip install triton")
         print("   Or latest from PyPI:")
         print("   pip install triton --upgrade")
-    
+
     print()
 
-def check_docker_services():
-    """Check Docker services status"""
+def check__services():
+    """Check  services status"""
     print("=" * 60)
-    print("DOCKER SERVICES STATUS")
+    print(" SERVICES STATUS")
     print("=" * 60)
-    
+
     try:
-        result = subprocess.run(['docker', 'ps'], capture_output=True, text=True, timeout=10)
+        result = subprocess.run(['', 'ps'], capture_output=True, text=True, timeout=10)
         if result.returncode == 0:
-            print("✅ Docker is running")
+            print("✅  is running")
             lines = result.stdout.strip().split('\n')
             if len(lines) > 1:  # More than just header
                 print("Running containers:")
@@ -192,14 +192,14 @@ def check_docker_services():
             else:
                 print("   No running containers")
         else:
-            print(f"❌ Docker error: {result.stderr}")
+            print(f"❌  error: {result.stderr}")
     except subprocess.TimeoutExpired:
-        print("❌ Docker command timed out")
+        print("❌  command timed out")
     except FileNotFoundError:
-        print("❌ Docker not found in PATH")
+        print("❌  not found in PATH")
     except Exception as e:
-        print(f"❌ Docker check failed: {e}")
-    
+        print(f"❌  check failed: {e}")
+
     print()
 
 def main():
@@ -207,18 +207,18 @@ def main():
     print("Phase 13 Enhanced Features - System Installation Check")
     print("=" * 60)
     print()
-    
+
     check_system_info()
     check_ai_packages()
     check_windows_specific()
     check_vllm_specific()
     check_triton_specific()
-    check_docker_services()
-    
+    check__services()
+
     print("=" * 60)
     print("INSTALLATION RECOMMENDATIONS")
     print("=" * 60)
-    
+
     # Check if vLLM is missing
     try:
         import vllm
@@ -229,7 +229,7 @@ def main():
         print("   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121")
         print("   pip install vllm")
         print()
-    
+
     # Check if Triton is missing
     try:
         import triton
@@ -239,9 +239,9 @@ def main():
         print("   # Or latest version:")
         print("   pip install triton --upgrade")
         print()
-    
+
     print("🚀 For Phase 13 enhanced features, ensure all packages are installed!")
-    print("   Docker services should be running for full functionality.")
+    print("    services should be running for full functionality.")
     print()
 
 if __name__ == "__main__":

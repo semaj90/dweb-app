@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 import {
-  readFileSync,
-  writeFileSync,
-  existsSync,
-  readdirSync,
-  statSync,
+    existsSync,
+    readdirSync,
+    readFileSync,
+    statSync,
+    writeFileSync,
 } from "fs";
-import { join, dirname } from "path";
+import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -39,7 +39,7 @@ export const fullSchema = {
 };
 
 // Create the connection
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/prosecutor_db';
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/legal_ai_db';
 
 // For query purposes
 const queryClient = postgres(connectionString);
@@ -58,14 +58,14 @@ export async function testConnection() {
   try {
     await queryClient\`SELECT 1\`;
     console.log('✅ Database connection successful');
-    
+
     // Check for pgvector extension
     const result = await queryClient\`
       SELECT EXISTS (
         SELECT 1 FROM pg_extension WHERE extname = 'vector'
       ) as has_vector
     \`;
-    
+
     if (result[0].has_vector) {
       console.log('✅ pgvector extension is installed');
     } else {
@@ -73,7 +73,7 @@ export async function testConnection() {
       await queryClient\`CREATE EXTENSION IF NOT EXISTS vector\`;
       console.log('✅ pgvector extension installed');
     }
-    
+
     return true;
   } catch (error) {
     console.error('❌ Database connection failed:', error);

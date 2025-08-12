@@ -8,8 +8,7 @@
   import { Tabs } from 'bits-ui';
   import { createEventDispatcher } from 'svelte';
   import { fly, fade } from 'svelte/transition';
-  import { langchain } from '$lib/ai/langchain';
-  import { multiLayerCache } from '$lib/cache/multi-layer-cache';
+  import { browser } from '$app/environment';
 
   // Props
   export let documentContent: string = '';
@@ -42,125 +41,107 @@
   const dispatch = createEventDispatcher();
 
   /**
-   * Generate AI summary with comprehensive analysis
+   * Generate AI summary with comprehensive analysis using pgai extension
    */
   async function generateSummary() {
-    if (!documentContent.trim() || isProcessing) return;
+    if (!documentContent.trim() || isProcessing || !browser) return;
 
     isProcessing = true;
-    processingStage = 'Initializing AI analysis...';
+    processingStage = 'Initializing pgai analysis...';
     processingProgress = 10;
 
     const startTime = Date.now();
 
     try {
-      // Check cache first
-      const cacheKey = `summary:${documentId || hashContent(documentContent)}`;
-      const cached = await multiLayerCache.get(cacheKey);
+      // Check if document needs to be saved first
+      let docId = documentId;
+      if (!docId) {
+        processingStage = 'Creating document entry...';
+        processingProgress = 15;
+        
+        // Create document via RAG API
+        const createResponse = await fetch('/api/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: documentTitle || 'Untitled Document',
+            content: documentContent
+          })
+        });
 
-      if (cached) {
-        summaryResult = cached;
-        dispatch('summarized', { result: cached });
-        isProcessing = false;
-        return;
+        if (!createResponse.ok) {
+          throw new Error('Failed to create document entry');
+        }
+
+        const createResult = await createResponse.json();
+        docId = createResult.data.id;
       }
 
-      // Stage 1: Generate main summary
-      processingStage = 'Generating document summary...';
-      processingProgress = 25;
+      // Stage 1: Process document with pgai using local Gemma3 models
+      processingStage = 'Processing with Gemma3 models...';
+      processingProgress = 30;
 
-      const summary = await langchain.summarizeDocument(documentContent, {
-        type: 'map_reduce',
-        maxTokens: 1000
+      const processResponse = await fetch('/api/rag?action=process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          documentId: docId
+        })
       });
 
-      // Stage 2: Extract key points
-      processingStage = 'Extracting key points...';
-      processingProgress = 50;
+      if (!processResponse.ok) {
+        throw new Error('pgai processing failed');
+      }
 
-      const keyPointsExtraction = `
-        Extract the 5-10 most important key points from this legal document.
-        Focus on:
-        1. Main legal obligations and rights
-        2. Important dates and deadlines
-        3. Financial terms and amounts
-        4. Key parties involved
-        5. Critical clauses or conditions
+      const processResult = await processResponse.json();
+      
+      if (!processResult.success) {
+        throw new Error(processResult.error || 'Processing failed');
+      }
 
-        Return as a JSON array of strings.
-      `;
-
-  const keyPointsResult = await langchain.extractInfo(documentContent, keyPointsExtraction);
-      const keyPoints = Array.isArray(keyPointsResult) ? keyPointsResult : [];
-
-      // Stage 3: Entity extraction
-      processingStage = 'Identifying entities...';
-      processingProgress = 70;
-
-      const entitiesExtraction = `
-        Extract all legal entities from this document including:
-        - Person names (parties, witnesses, attorneys)
-        - Organization names (companies, courts, agencies)
-        - Legal terms and concepts
-        - Dates and deadlines
-        - Monetary amounts
-        - Locations and jurisdictions
-
-        Return as JSON array: [{"type": "person", "value": "John Doe", "confidence": 0.95}]
-      `;
-
-  const entitiesResult = await langchain.extractInfo(documentContent, entitiesExtraction);
-      const entities = Array.isArray(entitiesResult) ? entitiesResult : [];
-
-      // Stage 4: Risk analysis
-      processingStage = 'Analyzing legal risks...';
+      // Stage 2: Format results for UI
+      processingStage = 'Formatting analysis results...';
       processingProgress = 85;
 
-      const riskAnalysis = `
-        Analyze this legal document for potential risks and concerns:
-        1. Compliance risks
-        2. Financial risks
-        3. Operational risks
-        4. Legal liability risks
-        5. Contractual risks
+      const pgaiData = processResult.data;
+      
+      // Extract structured data from pgai response
+      const summary = pgaiData.summary?.summary || 'Summary generation failed';
+      const keyPoints = Array.isArray(pgaiData.summary?.key_points) 
+        ? pgaiData.summary.key_points 
+        : [];
+      const entities = formatEntitiesFromPgai(pgaiData.summary?.entities || {});
+      const risks = formatRisksFromPgai(pgaiData.summary?.legal_issues || []);
+      
+      const confidence = calculatePgaiConfidence(pgaiData);
+      const processingTime = pgaiData.processing_time_ms || (Date.now() - startTime);
 
-        Return as JSON array: [{"type": "compliance", "severity": "high", "description": "Missing required disclosure"}]
-      `;
-
-  const risksResult = await langchain.extractInfo(documentContent, riskAnalysis);
-      const risks = Array.isArray(risksResult) ? risksResult : [];
-
-      // Stage 5: Calculate confidence score
+      // Stage 3: Compile final result
       processingStage = 'Finalizing analysis...';
       processingProgress = 95;
 
-      const confidence = calculateConfidenceScore(summary, keyPoints, entities, risks);
-      const processingTime = Date.now() - startTime;
-
-      // Compile final result
       const result = {
         summary,
         keyPoints,
         entities,
         risks,
         confidence,
-        processingTime
+        processingTime,
+        pgaiMetadata: {
+          documentId: docId,
+          chunksCreated: pgaiData.chunks_created || 0,
+          model: 'gemma3-legal',
+          riskLevel: pgaiData.summary?.risk_level || 'unknown'
+        }
       };
 
       summaryResult = result;
       processingProgress = 100;
 
-      // Cache the result
-      await multiLayerCache.set(cacheKey, result, {
-        type: 'analysis',
-        ttl: 3600,
-        tags: ['summary', 'analysis', 'legal']
-      });
-
-      dispatch('summarized', { result });
+      dispatch('summarized', { result, documentId: docId });
 
     } catch (error) {
-      console.error('Summarization failed:', error);
+      console.error('pgai Summarization failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Summarization failed';
       dispatch('error', { error: errorMessage });
     } finally {
@@ -171,17 +152,36 @@
   }
 
   /**
-   * Perform custom analysis with user prompt
+   * Perform custom analysis with user prompt using pgai
    */
   async function performCustomAnalysis() {
-    if (!customPrompt.trim() || !documentContent.trim() || isProcessing) return;
+    if (!customPrompt.trim() || !documentContent.trim() || isProcessing || !browser) return;
 
     isProcessing = true;
-    processingStage = 'Processing custom analysis...';
+    processingStage = 'Processing custom analysis with Gemma3...';
 
     try {
-      const result = await langchain.extractInfo(documentContent, customPrompt);
-      customResult = typeof result === 'string' ? result : JSON.stringify(result, null, 2);
+      const response = await fetch('/api/rag?action=custom-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: documentContent,
+          prompt: customPrompt,
+          model: 'gemma3-legal'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Custom analysis request failed');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Analysis failed');
+      }
+
+      customResult = typeof result.data === 'string' ? result.data : JSON.stringify(result.data, null, 2);
 
       dispatch('analyzed', { type: 'custom', result: customResult });
 
@@ -195,21 +195,36 @@
   }
 
   /**
-   * Compare with another document
+   * Compare with another document using semantic search
    */
   async function performComparison() {
-    if (!comparisonDocument.trim() || !documentContent.trim() || isProcessing) return;
+    if (!comparisonDocument.trim() || !documentContent.trim() || isProcessing || !browser) return;
 
     isProcessing = true;
-    processingStage = 'Comparing documents...';
+    processingStage = 'Comparing documents with semantic analysis...';
 
     try {
-      const comparison = await langchain.compareDocuments(
-        documentContent,
-        comparisonDocument
-      );
+      const response = await fetch('/api/rag?action=document-comparison', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          document1: documentContent,
+          document2: comparisonDocument,
+          model: 'gemma3-legal'
+        })
+      });
 
-      dispatch('analyzed', { type: 'comparison', result: comparison });
+      if (!response.ok) {
+        throw new Error('Document comparison failed');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Comparison failed');
+      }
+
+      dispatch('analyzed', { type: 'comparison', result: result.data });
 
     } catch (error) {
       console.error('Document comparison failed:', error);
@@ -221,18 +236,36 @@
   }
 
   /**
-   * Extract specific information using template
+   * Extract specific information using pgai and Gemma3
    */
   async function performExtraction() {
-    if (!extractionTemplate.trim() || !documentContent.trim() || isProcessing) return;
+    if (!extractionTemplate.trim() || !documentContent.trim() || isProcessing || !browser) return;
 
     isProcessing = true;
-    processingStage = 'Extracting information...';
+    processingStage = 'Extracting information with Gemma3...';
 
     try {
-      const extraction = await langchain.extractInfo(documentContent, extractionTemplate);
+      const response = await fetch('/api/rag?action=extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: documentContent,
+          extractionPrompt: extractionTemplate,
+          model: 'gemma3-legal'
+        })
+      });
 
-      dispatch('analyzed', { type: 'extraction', result: extraction });
+      if (!response.ok) {
+        throw new Error('Information extraction failed');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Extraction failed');
+      }
+
+      dispatch('analyzed', { type: 'extraction', result: result.data });
 
     } catch (error) {
       console.error('Information extraction failed:', error);
@@ -278,6 +311,57 @@
     if (risks && risks.length > 0) score += 0.1;
 
     return Math.min(score, 1.0);
+  }
+
+  // New pgai-specific helper functions
+  function calculatePgaiConfidence(pgaiData: any): number {
+    let score = 0.6; // Higher base score for pgai
+
+    if (pgaiData.summary?.summary && pgaiData.summary.summary.length > 100) score += 0.1;
+    if (pgaiData.summary?.key_points && pgaiData.summary.key_points.length >= 3) score += 0.1;
+    if (pgaiData.summary?.entities && Object.keys(pgaiData.summary.entities).length > 0) score += 0.1;
+    if (pgaiData.chunks_created && pgaiData.chunks_created > 0) score += 0.05;
+    if (pgaiData.processing_time_ms && pgaiData.processing_time_ms < 30000) score += 0.05;
+
+    return Math.min(score, 1.0);
+  }
+
+  function formatEntitiesFromPgai(entities: any): any[] {
+    const formatted = [];
+    
+    if (entities.persons && Array.isArray(entities.persons)) {
+      entities.persons.forEach(person => {
+        formatted.push({ type: 'person', value: person, confidence: 0.9 });
+      });
+    }
+    
+    if (entities.organizations && Array.isArray(entities.organizations)) {
+      entities.organizations.forEach(org => {
+        formatted.push({ type: 'organization', value: org, confidence: 0.9 });
+      });
+    }
+    
+    if (entities.dates && Array.isArray(entities.dates)) {
+      entities.dates.forEach(date => {
+        formatted.push({ type: 'date', value: date, confidence: 0.95 });
+      });
+    }
+    
+    if (entities.locations && Array.isArray(entities.locations)) {
+      entities.locations.forEach(location => {
+        formatted.push({ type: 'location', value: location, confidence: 0.85 });
+      });
+    }
+
+    return formatted;
+  }
+
+  function formatRisksFromPgai(legalIssues: string[]): any[] {
+    return legalIssues.map(issue => ({
+      type: 'legal',
+      severity: 'medium', // Default severity, could be enhanced
+      description: issue
+    }));
   }
 
   function hashContent(content: string): string {
@@ -340,294 +424,288 @@
       6. Mitigation recommendations
     `
   };
+</script>
 
-
-
-
-
-
-
-
-          AI Document Analysis
+<div class="ai-summarization {className}">
+  <Card.Root class="w-full max-w-5xl mx-auto shadow-lg">
+    <Card.Content class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">🤖 AI Document Analysis (pgai + Gemma3)</h2>
           {#if documentTitle}
-            {documentTitle}
+            <p class="text-sm font-normal text-gray-600 mt-1">{documentTitle}</p>
           {/if}
+        </div>
 
-
+        <div class="flex gap-3">
           <Button.Root
             on:click={generateSummary}
             disabled={!documentContent.trim() || isProcessing}
-            class="bg-blue-600 hover:bg-blue-700"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
           >
             {isProcessing ? 'Processing...' : 'Analyze Document'}
+          </Button.Root>
 
           {#if summaryResult || customResult}
             <Button.Root
               variant="outline"
               on:click={clearResults}
-              class="border-gray-300"
+              class="border-gray-300 px-4 py-2 rounded-md"
             >
               Clear Results
-
+            </Button.Root>
           {/if}
-
-
-
+        </div>
+      </div>
 
       {#if isProcessing}
-
-
-            {processingStage}
-            {processingProgress}%
-
-
-
-
-
+        <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200" transition:fade>
+          <div class="flex items-center gap-3">
+            <div class="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            <div class="flex-1">
+              <p class="text-sm font-medium text-blue-800">{processingStage}</p>
+              <div class="w-full bg-blue-200 rounded-full h-2 mt-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                  style="width: {processingProgress}%"
+                ></div>
+              </div>
+              <p class="text-xs text-blue-600 mt-1">{processingProgress}%</p>
+            </div>
+          </div>
+        </div>
       {/if}
 
-
-
       {#if showAnalysisTools}
+        <Tabs.Root bind:value={analysisMode} class="w-full">
+          <Tabs.List class="grid w-full grid-cols-4">
+            <Tabs.Trigger value="summary" class="text-sm">Summary</Tabs.Trigger>
+            <Tabs.Trigger value="custom" class="text-sm">Custom Analysis</Tabs.Trigger>
+            <Tabs.Trigger value="comparison" class="text-sm">Comparison</Tabs.Trigger>
+            <Tabs.Trigger value="extraction" class="text-sm">Extraction</Tabs.Trigger>
+          </Tabs.List>
 
-
-
-            Summary
-            Custom Analysis
-            Comparison
-            Extraction
-
-
-
-
+          <Tabs.Content value="summary" class="mt-6">
             {#if summaryResult}
-
-
-
-
-                    Document Summary
-
-
+              <div class="space-y-6" transition:fly={{ y: 20, duration: 300 }}>
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-900">Document Summary</h3>
+                    <div class="flex gap-3">
+                      <Badge variant="secondary" class="bg-green-100 text-green-800">
                         {Math.round(summaryResult.confidence * 100)}% confidence
-
-
+                      </Badge>
+                      <Badge variant="secondary" class="bg-blue-100 text-blue-800">
                         {formatProcessingTime(summaryResult.processingTime)}
+                      </Badge>
 
+                      {#if summaryResult.pgaiMetadata}
+                        <Badge variant="secondary" class="bg-purple-100 text-purple-800">
+                          Model: {summaryResult.pgaiMetadata.model}
+                        </Badge>
+                        <Badge variant="secondary" class="bg-yellow-100 text-yellow-800">
+                          Chunks: {summaryResult.pgaiMetadata.chunksCreated}
+                        </Badge>
+                        <Badge variant="secondary" class="bg-red-100 text-red-800">
+                          Risk: {summaryResult.pgaiMetadata.riskLevel}
+                        </Badge>
+                      {/if}
+                    </div>
+                  </div>
 
-
-                  {summaryResult.summary}
-
-
+                  <p class="text-gray-700 leading-relaxed">{summaryResult.summary}</p>
+                </div>
 
                 {#if summaryResult.keyPoints.length > 0}
-
-                    Key Points
-
+                  <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Key Points</h4>
+                    <ul class="space-y-2">
                       {#each summaryResult.keyPoints as point}
-
-
-                          {point}
-
+                        <li class="flex items-start gap-3">
+                          <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                          <span class="text-gray-700">{point}</span>
+                        </li>
                       {/each}
-
-
+                    </ul>
+                  </div>
                 {/if}
-
 
                 {#if summaryResult.entities.length > 0}
-
-                    Identified Entities
-
+                  <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Identified Entities</h4>
+                    <div class="flex flex-wrap gap-2">
                       {#each summaryResult.entities as entity}
-
+                        <Badge class={getEntityTypeColor(entity.type)}>
                           {entity.value}
-
-                            ({Math.round(entity.confidence * 100)}%)
-
-
+                          {#if entity.confidence}
+                            <span class="ml-1 text-xs opacity-75">
+                              ({Math.round(entity.confidence * 100)}%)
+                            </span>
+                          {/if}
+                        </Badge>
                       {/each}
-
-
+                    </div>
+                  </div>
                 {/if}
-
 
                 {#if summaryResult.risks.length > 0}
-
-                    Risk Analysis
-
+                  <div class="bg-white rounded-lg p-6 border border-gray-200">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Risk Analysis</h4>
+                    <div class="space-y-3">
                       {#each summaryResult.risks as risk}
-
-
-
-
-
-                                  {risk.severity} risk
-
-
-                                  {risk.type}
-
-
-                              {risk.description}
-
-
-
+                        <div class="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
+                          <div class="flex-shrink-0">
+                            <Badge class={getRiskSeverityColor(risk.severity)}>
+                              {risk.severity} risk
+                            </Badge>
+                            <Badge variant="outline" class="ml-2">
+                              {risk.type}
+                            </Badge>
+                          </div>
+                          <p class="text-gray-700 text-sm">{risk.description}</p>
+                        </div>
                       {/each}
-
-
+                    </div>
+                  </div>
                 {/if}
-
+              </div>
             {:else if !isProcessing}
-
-
-
-
-                Click "Analyze Document" to generate an AI summary
-
+              <div class="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <p class="text-gray-600">Click "Analyze Document" to generate an AI summary</p>
+              </div>
             {/if}
+          </Tabs.Content>
 
-
-
-
-
-
-
-
-                  Analysis Templates
-
-
+          <Tabs.Content value="custom" class="mt-6">
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Analysis Templates</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button.Root
                     variant="outline"
-                    class="text-left p-3 h-auto"
+                    class="text-left p-3 h-auto flex flex-col items-start space-y-2"
                     on:click={() => customPrompt = analysisTemplates.contractAnalysis}
                   >
-
-                      Contract Analysis
-                      Analyze contract terms and obligations
-
-
+                    <span class="font-medium">Contract Analysis</span>
+                    <span class="text-sm text-gray-600">Analyze contract terms and obligations</span>
+                  </Button.Root>
 
                   <Button.Root
                     variant="outline"
-                    class="text-left p-3 h-auto"
+                    class="text-left p-3 h-auto flex flex-col items-start space-y-2"
                     on:click={() => customPrompt = analysisTemplates.complianceCheck}
                   >
-
-                      Compliance Check
-                      Review regulatory compliance
-
-
+                    <span class="font-medium">Compliance Check</span>
+                    <span class="text-sm text-gray-600">Review regulatory compliance</span>
+                  </Button.Root>
 
                   <Button.Root
                     variant="outline"
-                    class="text-left p-3 h-auto"
+                    class="text-left p-3 h-auto flex flex-col items-start space-y-2"
                     on:click={() => customPrompt = analysisTemplates.riskAssessment}
                   >
+                    <span class="font-medium">Risk Assessment</span>
+                    <span class="text-sm text-gray-600">Comprehensive risk analysis</span>
+                  </Button.Root>
+                </div>
+              </div>
 
-                      Risk Assessment
-                      Comprehensive risk analysis
-
-
-
-
-
-
-
-
-                  Custom Analysis Prompt
-
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Custom Analysis Prompt</h4>
                 <Textarea.Root
                   bind:value={customPrompt}
                   placeholder="Enter your custom analysis prompt here..."
-                  class="min-h-[120px]"
+                  class="min-h-[120px] w-full"
                 />
-
+              </div>
 
               <Button.Root
                 on:click={performCustomAnalysis}
                 disabled={!customPrompt.trim() || isProcessing}
-                class="w-full"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
               >
                 Run Analysis
-
+              </Button.Root>
 
               {#if customResult}
-
-                  Analysis Result
-                  {customResult}
-
+                <div class="bg-white rounded-lg p-6 border border-gray-200">
+                  <h4 class="text-lg font-semibold text-gray-900 mb-4">Analysis Result</h4>
+                  <pre class="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-4 rounded-lg">{customResult}</pre>
+                </div>
               {/if}
+            </div>
+          </Tabs.Content>
 
-
-
-
-
-
-
-
-                  Document to Compare
-
+          <Tabs.Content value="comparison" class="mt-6">
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Document to Compare</h4>
                 <Textarea.Root
                   bind:value={comparisonDocument}
                   placeholder="Paste the second document content here for comparison..."
-                  class="min-h-[200px]"
+                  class="min-h-[200px] w-full"
                 />
-
+              </div>
 
               <Button.Root
                 on:click={performComparison}
                 disabled={!comparisonDocument.trim() || isProcessing}
-                class="w-full"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
               >
                 Compare Documents
+              </Button.Root>
+            </div>
+          </Tabs.Content>
 
-
-
-
-
-
-
-
-
-                  Information to Extract
-
+          <Tabs.Content value="extraction" class="mt-6">
+            <div class="space-y-6">
+              <div class="bg-white rounded-lg p-6 border border-gray-200">
+                <h4 class="text-lg font-semibold text-gray-900 mb-4">Information to Extract</h4>
                 <Textarea.Root
                   bind:value={extractionTemplate}
                   placeholder="Specify what information you want to extract (e.g., 'Extract all dates, monetary amounts, and party names')"
-                  class="min-h-[120px]"
+                  class="min-h-[120px] w-full"
                 />
-
+              </div>
 
               <Button.Root
                 on:click={performExtraction}
                 disabled={!extractionTemplate.trim() || isProcessing}
-                class="w-full"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
               >
                 Extract Information
-
-
-
+              </Button.Root>
+            </div>
+          </Tabs.Content>
+        </Tabs.Root>
 
       {:else if summaryResult}
-
-
-
-            Summary
-            {summaryResult.summary}
-
+        <div class="space-y-4">
+          <div class="bg-white rounded-lg p-6 border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Summary</h3>
+            <p class="text-gray-700 leading-relaxed">{summaryResult.summary}</p>
+          </div>
 
           {#if summaryResult.keyPoints.length > 0}
-
-              Key Points
-
+            <div class="bg-white rounded-lg p-6 border border-gray-200">
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">Key Points</h4>
+              <ul class="space-y-1">
                 {#each summaryResult.keyPoints as point}
-                  • {point}
+                  <li class="text-gray-700">• {point}</li>
                 {/each}
-
-
+              </ul>
+            </div>
           {/if}
-
+        </div>
       {/if}
-</script>
+    </Card.Content>
+  </Card.Root>
+</div>
 
 <style lang="postcss">
   .ai-summarization {

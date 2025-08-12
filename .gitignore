@@ -125,3 +125,4 @@ src/lib/wasm/dist/
 # Dev wrappers/generated content
 ########################################
 sveltekit-frontend/todos/
+81125_nvme.txt

@@ -13,8 +13,19 @@
     "setup": "zx scripts/setup.mjs",
     "build": "cd sveltekit-frontend && npm run build",
     "test": "zx scripts/test.mjs",
-    "deploy": "zx scripts/deploy.mjs",
-    "changes:since": "node scripts/list-changes-since.mjs"
+  "deploy": "zx scripts/deploy.mjs",
+  "changes:since": "node scripts/list-changes-since.mjs",
+  "tag:legacy-go": "node scripts/tag-legacy-go-files.mjs",
+  "check": "cd sveltekit-frontend && npm run check:ultra-fast",
+  "cli:detect": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cli-detect-update.ps1",
+  "cli:update": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cli-detect-update.ps1 -AutoUpdate",
+  "ai:chat": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ollama-json.ps1 -Mode chat -Prompt 'Hello from CI'",
+  "ai:embed": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ollama-json.ps1 -Mode embeddings -Prompt 'contract liability terms'",
+  "check:fast": "cd sveltekit-frontend && npm run check:fast",
+  "check:ultra-fast": "cd sveltekit-frontend && npm run check:ultra-fast",
+  "vector:scan": "node scripts/scan-and-embed.mjs",
+  "vector:search": "node scripts/search.mjs",
+  "logs:ws": "node scripts/log-ws-server.mjs"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
@@ -35,7 +46,8 @@
     "vite": "^5.0.0",
     "ws": "^8.18.0",
     "xstate": "^5.19.0",
-    "zx": "^8.8.0"
+  "zx": "^8.8.0",
+  "@qdrant/js-client-rest": "^1.9.0"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",

@@ -14,7 +14,7 @@ echo [2/6] Checking model references...
 cd ..\..\..\..
 findstr /r /s "gemma3-legal" sveltekit-frontend\src\*.* 2>nul
 if !errorlevel! equ 0 (
-    echo ⚠️ Found gemma3-legal references - should use gemma-legal-2b
+    echo ⚠️ Found gemma3-legal references -
 )
 
 echo [3/6] Checking TypeScript config...

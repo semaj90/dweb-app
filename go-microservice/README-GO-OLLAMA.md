@@ -4,6 +4,8 @@ Go Ollama SIMD Service
 - Prod: build `go-ollama-simd.exe` in go-microservice and `npm run start` will include it
 - Health: http://localhost:8081/health
 - Analyze Evidence Canvas: POST http://localhost:8081/api/evidence-canvas/analyze
+- Capabilities: GET http://localhost:8081/api/simd/capabilities
+- Metrics: GET http://localhost:8081/metrics (basic counters)
 
 Env:
 

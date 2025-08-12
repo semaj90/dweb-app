@@ -5,6 +5,12 @@ export interface RequestOptions {
   headers?: Record<string, string>;
   query?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
+  retry?: {
+    attempts?: number; // total attempts including the first try
+    backoffMs?: number; // base backoff in ms
+    maxBackoffMs?: number; // cap backoff
+    timeoutMs?: number; // per-attempt timeout
+  };
 }
 
 export async function apiFetch<T = unknown>(
@@ -12,22 +18,63 @@ export async function apiFetch<T = unknown>(
   method: HttpMethod = "GET",
   opts: RequestOptions = {}
 ): Promise<T> {
-  const { headers, query, body } = opts;
-  const qs = query
-    ? `?${new URLSearchParams(Object.entries(query).filter(([, v]) => v !== undefined) as any)}`
-    : "";
-  const res = await fetch(`${url}${qs}`, {
-    method,
-    headers: { "Content-Type": "application/json", ...(headers || {}) },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  } as RequestInit);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const ct = res.headers.get("content-type") || "";
-  return (
-    ct.includes("application/json")
-      ? await res.json()
-      : ((await res.text()) as any)
-  ) as T;
+  const { headers, query, body, retry } = opts;
+  let qs = "";
+  if (query) {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(query)) {
+      if (v !== undefined) params.set(k, String(v));
+    }
+    const s = params.toString();
+    qs = s ? `?${s}` : "";
+  }
+
+  const attempts = Math.max(1, retry?.attempts ?? 1);
+  const baseBackoff = Math.max(0, retry?.backoffMs ?? 0);
+  const maxBackoff = Math.max(
+    baseBackoff,
+    retry?.maxBackoffMs ?? baseBackoff * 8
+  );
+  const timeoutMs = retry?.timeoutMs ?? 0;
+
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    const controller = timeoutMs > 0 ? new AbortController() : undefined;
+    const t =
+      timeoutMs > 0
+        ? setTimeout(() => controller!.abort(), timeoutMs)
+        : undefined;
+    try {
+      const res = await fetch(`${url}${qs}`, {
+        method,
+        headers: { "Content-Type": "application/json", ...(headers || {}) },
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+        signal: controller?.signal,
+      } as RequestInit);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const ct = res.headers.get("content-type") || "";
+      const out = (
+        ct.includes("application/json")
+          ? await res.json()
+          : ((await res.text()) as unknown)
+      ) as T;
+      if (t) clearTimeout(t);
+      return out;
+    } catch (err) {
+      lastErr = err;
+      if (t) clearTimeout(t);
+      if (i < attempts - 1 && baseBackoff > 0) {
+        // Exponential backoff with jitter
+        const backoff = Math.min(maxBackoff, baseBackoff * Math.pow(2, i));
+        const jitter = Math.random() * backoff * 0.2; // +/-20%
+        const delay = Math.max(0, backoff - jitter);
+        await new Promise((r) => setTimeout(r, delay));
+        continue;
+      }
+      break;
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
 export const ApiClient = { fetch: apiFetch };

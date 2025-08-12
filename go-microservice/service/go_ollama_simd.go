@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 	"unicode"
 
@@ -52,6 +53,12 @@ type GoLlamaService struct {
 	modelCache   map[string]*ModelInfo
 	embeddings   map[string][]float32
 	mutex        sync.RWMutex
+
+	// metrics
+	totalRequests        atomic.Uint64
+	analyzeRequests      atomic.Uint64
+	analyzeErrors        atomic.Uint64
+	totalRequestDuration atomic.Uint64 // milliseconds aggregate
 }
 
 type ModelInfo struct {
@@ -110,6 +117,21 @@ type EvidenceAnalysisResponse struct {
 	ProcessingTime int64   `json:"processing_time_ms"`
 	Status         string  `json:"status"`
 	Error          string  `json:"error,omitempty"`
+}
+
+// Text summarization types
+type TextSummarizeRequest struct {
+	Content string `json:"content"`
+	Prompt  string `json:"prompt,omitempty"`
+}
+
+type TextSummarizeResponse struct {
+	Summary        string   `json:"summary"`
+	Tokens         []string `json:"tokens"`
+	TokenCount     int      `json:"token_count"`
+	ProcessingTime int64    `json:"processing_time_ms"`
+	Status         string   `json:"status"`
+	Error          string   `json:"error,omitempty"`
 }
 
 func NewGoLlamaService(ollamaURL string) *GoLlamaService {
@@ -179,17 +201,26 @@ func (gls *GoLlamaService) callOllama(ctx context.Context, endpoint string, req 
 func (gls *GoLlamaService) SetupRoutes() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
+	// Basic CORS + metrics middleware
 	r.Use(func(c *gin.Context) {
+		start := time.Now()
 		c.Header("Access-Control-Allow-Origin", "*")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
+		c.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
+		gls.totalRequests.Add(1)
 		c.Next()
+		dur := time.Since(start).Milliseconds()
+		gls.totalRequestDuration.Add(uint64(dur))
 	})
 	r.POST("/api/evidence-canvas/analyze", func(c *gin.Context) {
+		gls.analyzeRequests.Add(1)
 		var req EvidenceCanvasRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
+			gls.analyzeErrors.Add(1)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -197,12 +228,84 @@ func (gls *GoLlamaService) SetupRoutes() *gin.Engine {
 		defer cancel()
 		resp, err := gls.AnalyzeEvidenceCanvas(ctx, &req)
 		if err != nil {
+			gls.analyzeErrors.Add(1)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, resp)
 	})
+	// Text summarization with SIMD tokenization aid
+	r.POST("/api/simd/summarize", func(c *gin.Context) {
+		var req TextSummarizeRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if strings.TrimSpace(req.Content) == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "content is required"})
+			return
+		}
+		start := time.Now()
+		tokens := gls.simdParser.FastTokenize(req.Content)
+		// Build a simple prompt if none
+		prompt := req.Prompt
+		if strings.TrimSpace(prompt) == "" {
+			prompt = "Summarize the following legal text focusing on key points, entities, and risks: \n\n" + req.Content
+		} else {
+			prompt = prompt + "\n\nText:" + req.Content
+		}
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 120*time.Second)
+		defer cancel()
+		llReq := &LlamaRequest{Model: "gemma3-legal:latest", Prompt: prompt, Stream: false}
+		llResp, err := gls.callOllama(ctx, "generate", llReq)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, TextSummarizeResponse{
+				Summary:        "",
+				Tokens:         tokens,
+				TokenCount:     len(tokens),
+				ProcessingTime: time.Since(start).Milliseconds(),
+				Status:         "error",
+				Error:          err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusOK, TextSummarizeResponse{
+			Summary:        llResp.Response,
+			Tokens:         tokens,
+			TokenCount:     len(tokens),
+			ProcessingTime: time.Since(start).Milliseconds(),
+			Status:         "success",
+		})
+	})
+	// Capabilities endpoint for status checks
+	r.GET("/api/simd/capabilities", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"cpu": gin.H{
+				"avx2":   cpu.X86.HasAVX2,
+				"sse4_2": cpu.X86.HasSSE42,
+				"avx512": cpu.X86.HasAVX512F,
+			},
+			"ollama_url": gls.ollamaURL,
+			"status":     "ok",
+		})
+	})
 	r.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "healthy", "ollama_url": gls.ollamaURL}) })
+	// Minimal metrics endpoint (Prometheus-like exposition)
+	r.GET("/metrics", func(c *gin.Context) {
+		total := gls.totalRequests.Load()
+		analyze := gls.analyzeRequests.Load()
+		errors := gls.analyzeErrors.Load()
+		dur := gls.totalRequestDuration.Load()
+		avg := float64(0)
+		if total > 0 {
+			avg = float64(dur) / float64(total)
+		}
+		c.Header("Content-Type", "text/plain; version=0.0.4")
+		fmt.Fprintf(c.Writer, "go_ollama_simd_requests_total %d\n", total)
+		fmt.Fprintf(c.Writer, "go_ollama_simd_analyze_requests_total %d\n", analyze)
+		fmt.Fprintf(c.Writer, "go_ollama_simd_analyze_errors_total %d\n", errors)
+		fmt.Fprintf(c.Writer, "go_ollama_simd_request_duration_ms_avg %.3f\n", avg)
+	})
 	return r
 }
 
