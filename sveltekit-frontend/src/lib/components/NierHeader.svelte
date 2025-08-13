@@ -27,7 +27,7 @@ import type { User } from '$lib/types/user';
 
 import type { User } from '$lib/types/user';
 
-  
+
   let searchQuery = "";
   let userMenuOpen = false;
 

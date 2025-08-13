@@ -4,10 +4,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -454,6 +456,99 @@ func processSearchRequest(payload interface{}) (interface{}, error) {
 		"agent":   "go-rag",
 		"backend": "enhanced-rag",
 	}, nil
+}
+
+// Ollama integration functions
+func callOllamaGenerate(model, prompt string) (string, error) {
+	ollamaURL := "http://localhost:11434" // Default Ollama URL
+	if url := os.Getenv("OLLAMA_URL"); url != "" {
+		ollamaURL = url
+	}
+
+	requestBody := map[string]interface{}{
+		"model":  model,
+		"prompt": prompt,
+		"stream": false,
+		"options": map[string]interface{}{
+			"temperature": 0.7,
+			"top_p":       0.9,
+		},
+	}
+
+	jsonData, err := json.Marshal(requestBody)
+	if err != nil {
+		return "", fmt.Errorf("error marshaling request: %v", err)
+	}
+
+	client := &http.Client{Timeout: 120 * time.Second}
+	resp, err := client.Post(ollamaURL+"/api/generate", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", fmt.Errorf("error calling Ollama: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("Ollama returned status %d", resp.StatusCode)
+	}
+
+	var ollamaResponse struct {
+		Response string `json:"response"`
+		Done     bool   `json:"done"`
+		Error    string `json:"error,omitempty"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&ollamaResponse); err != nil {
+		return "", fmt.Errorf("error decoding response: %v", err)
+	}
+
+	if ollamaResponse.Error != "" {
+		return "", fmt.Errorf("Ollama error: %s", ollamaResponse.Error)
+	}
+
+	return ollamaResponse.Response, nil
+}
+
+func callOllamaEmbed(text string) ([]float64, error) {
+	ollamaURL := "http://localhost:11434" // Default Ollama URL
+	if url := os.Getenv("OLLAMA_URL"); url != "" {
+		ollamaURL = url
+	}
+
+	requestBody := map[string]interface{}{
+		"model":  "nomic-embed-text", // Default embedding model
+		"prompt": text,
+	}
+
+	jsonData, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling request: %v", err)
+	}
+
+	client := &http.Client{Timeout: 60 * time.Second}
+	resp, err := client.Post(ollamaURL+"/api/embeddings", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("error calling Ollama embeddings: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Ollama embeddings returned status %d", resp.StatusCode)
+	}
+
+	var embedResponse struct {
+		Embedding []float64 `json:"embedding"`
+		Error     string    `json:"error,omitempty"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&embedResponse); err != nil {
+		return nil, fmt.Errorf("error decoding embedding response: %v", err)
+	}
+
+	if embedResponse.Error != "" {
+		return nil, fmt.Errorf("Ollama embedding error: %s", embedResponse.Error)
+	}
+
+	return embedResponse.Embedding, nil
 }
 
 // Add WebSocket and SSE routes to main router

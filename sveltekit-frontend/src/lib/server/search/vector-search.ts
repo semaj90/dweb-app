@@ -3,6 +3,7 @@
 // Combines PostgreSQL pgvector + Qdrant + Local caching + Loki.js + Fuse.js
 import { browser } from "$app/environment";
 import { db, isPostgreSQL } from "$lib/server/db/index";
+import { ollamaService } from "$lib/server/services/OllamaService";
 import { and, eq, or, sql } from "drizzle-orm";
 
 // Import dependencies with fallbacks
@@ -103,6 +104,218 @@ async function initializeLocalDb() {
     autosaveInterval: 4000,
   });
 }
+// --- Legal documents pgvector search (uses Ollama 768-dim embeddings) ---
+function arrayToPgVector(embedding: number[]): string {
+  return `[${embedding.join(",")}]`;
+}
+
+export async function getQueryEmbeddingLegal(
+  query: string
+): Promise<number[] | null> {
+  const model = process.env.EMBED_MODEL || "nomic-embed-text"; // 768-dim by default
+  try {
+    const vec = await ollamaService.embeddings(model, query);
+    if (Array.isArray(vec) && vec.length > 0) return vec;
+    // Fallback to rag-kratos /embed if Ollama returned empty
+    const ragUrl =
+      process.env.RAG_URL ||
+      `http://localhost:${process.env.RAG_HTTP_PORT || "8093"}`;
+    try {
+      const resp = await fetch(`${ragUrl}/embed`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texts: [query], model }),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const v = data?.vectors?.[0];
+        if (Array.isArray(v) && v.length > 0) return v;
+      }
+    } catch (e) {
+      console.warn(
+        "rag-kratos embed fallback failed:",
+        (e as Error)?.message || e
+      );
+    }
+    // Final fallback: CPU embedding via @xenova/transformers (384-dim); pad/trim to 768
+    try {
+      const xenova = await import("@xenova/transformers");
+      const pipeline = xenova.pipeline as any;
+      const extractor = await pipeline(
+        "feature-extraction",
+        "Xenova/all-MiniLM-L6-v2"
+      );
+      const result = await extractor(query, {
+        pooling: "mean",
+        normalize: true,
+      });
+      const arr = Array.from(result.data || []);
+      if (Array.isArray(arr) && arr.length > 0) {
+        const target = 768;
+        const adj =
+          arr.length === target
+            ? arr
+            : arr.length > target
+              ? arr.slice(0, target)
+              : arr.concat(Array(target - arr.length).fill(0));
+        return adj;
+      }
+    } catch (ex) {
+      console.warn(
+        "Xenova embedding fallback failed:",
+        (ex as Error)?.message || ex
+      );
+    }
+    return null;
+  } catch (err) {
+    console.warn(
+      "Ollama embeddings failed for legal search:",
+      (err as Error)?.message || err
+    );
+    // Try rag-kratos if Ollama call threw
+    const model = process.env.EMBED_MODEL || "nomic-embed-text";
+    const ragUrl =
+      process.env.RAG_URL ||
+      `http://localhost:${process.env.RAG_HTTP_PORT || "8093"}`;
+    try {
+      const resp = await fetch(`${ragUrl}/embed`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texts: [query], model }),
+        signal: AbortSignal.timeout(4000),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const v = data?.vectors?.[0];
+        if (Array.isArray(v) && v.length > 0) return v;
+      }
+    } catch (e2) {
+      console.warn(
+        "rag-kratos embed after error failed:",
+        (e2 as Error)?.message || e2
+      );
+    }
+    // Xenova as last resort
+    try {
+      const xenova = await import("@xenova/transformers");
+      const pipeline = xenova.pipeline as any;
+      const extractor = await pipeline(
+        "feature-extraction",
+        "Xenova/all-MiniLM-L6-v2"
+      );
+      const result = await extractor(query, {
+        pooling: "mean",
+        normalize: true,
+      });
+      const arr = Array.from(result.data || []);
+      if (Array.isArray(arr) && arr.length > 0) {
+        const target = 768;
+        const adj =
+          arr.length === target
+            ? arr
+            : arr.length > target
+              ? arr.slice(0, target)
+              : arr.concat(Array(target - arr.length).fill(0));
+        return adj;
+      }
+    } catch (ex2) {
+      console.warn(
+        "Xenova embedding after error failed:",
+        (ex2 as Error)?.message || ex2
+      );
+    }
+    return null;
+  }
+}
+
+async function searchLegalDocumentsPgvector(
+  query: string,
+  options: VectorSearchOptions
+): Promise<VectorSearchResult[]> {
+  const { limit = 20 } = options;
+  const threshold =
+    (options as any).threshold ?? (options as any).minSimilarity ?? 0.7;
+  const embedding = await getQueryEmbeddingLegal(query);
+  if (!embedding) return [];
+
+  const vectorString = arrayToPgVector(embedding);
+  try {
+    const execResult: any = await db.execute(sql`
+      SELECT
+        id,
+        title,
+        COALESCE(content, full_text) as content,
+        1 - (embedding <=> ${vectorString}::vector) as similarity,
+        keywords,
+        topics,
+        document_type,
+        case_id
+      FROM legal_documents
+      WHERE embedding IS NOT NULL
+        AND 1 - (embedding <=> ${vectorString}::vector) > ${threshold}
+      ORDER BY embedding <=> ${vectorString}::vector
+      LIMIT ${limit}
+    `);
+    const rows: any[] = Array.isArray(execResult)
+      ? execResult
+      : (execResult?.rows ?? []);
+
+    return rows.map((row: any) => ({
+      id: row.id,
+      title: row.title || "",
+      content: row.content || "",
+      score:
+        typeof row.similarity === "number"
+          ? row.similarity
+          : parseFloat(String(row.similarity ?? 0)),
+      metadata: {
+        keywords: row.keywords,
+        topics: row.topics,
+        documentType: row.document_type,
+        caseId: row.case_id,
+      },
+      source: "pgvector",
+      type: "document",
+    }));
+  } catch (error) {
+    console.error("legal_documents pgvector search error:", error);
+    return [];
+  }
+}
+
+// Text search fallback for legal_documents when embeddings are unavailable
+export async function searchLegalDocumentsText(
+  query: string,
+  limit: number = 10
+): Promise<VectorSearchResult[]> {
+  try {
+    const like = `%${query}%`;
+    const execResult = await db.execute(sql`
+      SELECT id, title, COALESCE(content, full_text) AS content
+      FROM legal_documents
+      WHERE title ILIKE ${like}
+         OR content ILIKE ${like}
+         OR full_text ILIKE ${like}
+      LIMIT ${limit}
+    `);
+    const rows: any[] = Array.isArray(execResult)
+      ? execResult
+      : (execResult?.rows ?? []);
+    return (rows as any[]).map((row) => ({
+      id: row.id,
+      title: row.title || "",
+      content: row.content || "",
+      score: 0.5,
+      metadata: {},
+      source: "pgvector",
+      type: "document",
+    }));
+  } catch (e) {
+    console.error("legal_documents text search error:", e);
+    return [];
+  }
+}
 // Initialize Fuse.js for fuzzy search
 async function initializeFuzzySearch(cases: any[], evidence: any[]) {
   if (!Fuse) return;
@@ -120,7 +333,7 @@ async function initializeFuzzySearch(cases: any[], evidence: any[]) {
 // Enhanced fuzzy search function
 async function searchWithFuzzy(
   query: string,
-  options: VectorSearchOptions,
+  options: VectorSearchOptions
 ): Promise<VectorSearchResult[]> {
   if (!Fuse || (!fuseCases && !fuseEvidence)) {
     return [];
@@ -174,7 +387,7 @@ async function searchWithFuzzy(
 // Enhanced local database search with Loki.js
 async function searchWithLoki(
   query: string,
-  options: VectorSearchOptions,
+  options: VectorSearchOptions
 ): Promise<VectorSearchResult[]> {
   if (!lokiDb) {
     await initializeLocalDb();
@@ -247,7 +460,7 @@ async function searchWithLoki(
 // Main vector search function with fallback logic
 export async function vectorSearch(
   query: string,
-  options: VectorSearchOptions = {},
+  options: VectorSearchOptions = {}
 ): Promise<{
   results: VectorSearchResult[];
   executionTime: number;
@@ -282,16 +495,48 @@ export async function vectorSearch(
   let source = "pgvector";
 
   try {
-    // Primary search: PostgreSQL pgvector (fast)
+    // 0) Legal documents search via pgvector first (uses 768-dim Ollama embeddings)
     if (isPostgreSQL) {
-      results = await searchWithPgVector(query, options);
+      const legalResults = await searchLegalDocumentsPgvector(query, {
+        ...options,
+        limit,
+      });
+      results = legalResults;
+      if (!results || results.length === 0) {
+        const textFallback = await searchLegalDocumentsText(query, limit);
+        if (textFallback.length > 0) {
+          results = mergeSearchResults(results, textFallback);
+        }
+      }
+    }
+
+    // 1) Cases/Evidence search (existing path)
+    if (isPostgreSQL) {
+      try {
+        const ceResults = await searchWithPgVector(query, options);
+        if (ceResults.length > 0) {
+          results = mergeSearchResults(results, ceResults);
+        }
+      } catch (err) {
+        console.warn(
+          "Cases/Evidence pgvector search failed, continuing:",
+          (err as Error)?.message || err
+        );
+      }
     } else {
-      // Development fallback: text search in SQLite
-      results = await searchWithTextFallback(query, options);
+      // Development fallback: text search
+      const textResults = await searchWithTextFallback(query, options);
+      results = mergeSearchResults(results, textResults);
       source = "text_fallback";
     }
     // Fallback to Qdrant if no results or poor quality results
-    if (fallbackToQdrant && results.length < 5 && (await qdrant.isHealthy())) {
+    if (
+      fallbackToQdrant &&
+      results.length < 5 &&
+      qdrant &&
+      typeof qdrant.isHealthy === "function" &&
+      (await qdrant.isHealthy())
+    ) {
       const qdrantResults = await searchWithQdrant(query, options);
       if (qdrantResults.length > 0) {
         // Merge and deduplicate results
@@ -341,7 +586,7 @@ export async function vectorSearch(
 // PostgreSQL pgvector search implementation
 async function searchWithPgVector(
   query: string,
-  options: VectorSearchOptions,
+  options: VectorSearchOptions
 ): Promise<VectorSearchResult[]> {
   const { limit = 20, threshold = 0.7, filters = {} } = options;
 
@@ -350,6 +595,7 @@ async function searchWithPgVector(
   if (!queryEmbedding) {
     throw new Error("Failed to generate embedding for query");
   }
+  const vectorString = `[${queryEmbedding.join(",")}]`;
   // Import schema dynamically to avoid issues
   const { cases, evidence } = await import(
     "../../../lib/server/db/unified-schema.js"
@@ -365,19 +611,19 @@ async function searchWithPgVector(
         title: cases.title,
         content: cases.description,
         metadata: cases.metadata,
-        score: sql<number>`1 - (${cases.titleEmbedding} <=> ${JSON.stringify(queryEmbedding)}::vector)`,
+        score: sql<number>`1 - (${cases.titleEmbedding} <=> ${vectorString}::vector)`,
       })
       .from(cases)
       .where(
         and(
           sql`${cases.titleEmbedding} IS NOT NULL`,
-          sql`1 - (${cases.titleEmbedding} <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`,
+          sql`1 - (${cases.titleEmbedding} <=> ${vectorString}::vector) > ${threshold}`,
           filters.caseId ? eq(cases.id, filters.caseId) : undefined,
-          filters.status ? eq(cases.status, filters.status) : undefined,
-        ),
+          filters.status ? eq(cases.status, filters.status) : undefined
+        )
       )
       .orderBy(
-        sql`1 - (${cases.titleEmbedding} <=> ${JSON.stringify(queryEmbedding)}::vector) DESC`,
+        sql`1 - (${cases.titleEmbedding} <=> ${vectorString}::vector) DESC`
       )
       .limit(Math.floor(limit / 2));
 
@@ -390,21 +636,21 @@ async function searchWithPgVector(
         metadata: sql<
           Record<string, any>
         >`json_build_object('caseId', ${evidence.caseId}, 'type', ${evidence.evidenceType})`,
-        score: sql<number>`1 - (${evidence.contentEmbedding} <=> ${JSON.stringify(queryEmbedding)}::vector)`,
+        score: sql<number>`1 - (${evidence.contentEmbedding} <=> ${vectorString}::vector)`,
       })
       .from(evidence)
       .where(
         and(
           sql`${evidence.contentEmbedding} IS NOT NULL`,
-          sql`1 - (${evidence.contentEmbedding} <=> ${JSON.stringify(queryEmbedding)}::vector) > ${threshold}`,
+          sql`1 - (${evidence.contentEmbedding} <=> ${vectorString}::vector) > ${threshold}`,
           filters.caseId ? eq(evidence.caseId, filters.caseId) : undefined,
           filters.evidenceType
             ? eq(evidence.evidenceType, filters.evidenceType)
-            : undefined,
-        ),
+            : undefined
+        )
       )
       .orderBy(
-        sql`1 - (${evidence.contentEmbedding} <=> ${JSON.stringify(queryEmbedding)}::vector) DESC`,
+        sql`1 - (${evidence.contentEmbedding} <=> ${vectorString}::vector) DESC`
       )
       .limit(Math.floor(limit / 2));
 
@@ -444,7 +690,7 @@ async function searchWithPgVector(
 // Qdrant search implementation
 async function searchWithQdrant(
   query: string,
-  options: VectorSearchOptions,
+  options: VectorSearchOptions
 ): Promise<VectorSearchResult[]> {
   const { limit = 20, threshold = 0.7, filters = {} } = options;
 
@@ -500,7 +746,7 @@ async function searchWithQdrant(
 // Text fallback for development/SQLite
 async function searchWithTextFallback(
   query: string,
-  options: VectorSearchOptions,
+  options: VectorSearchOptions
 ): Promise<VectorSearchResult[]> {
   const { limit = 20 } = options;
 
@@ -519,8 +765,8 @@ async function searchWithTextFallback(
       .where(
         or(
           sql`${cases.title} LIKE ${searchTerm}`,
-          sql`${cases.description} LIKE ${searchTerm}`,
-        ),
+          sql`${cases.description} LIKE ${searchTerm}`
+        )
       )
       .limit(Math.floor(limit / 2));
 
@@ -531,8 +777,8 @@ async function searchWithTextFallback(
       .where(
         or(
           sql`${evidence.title} LIKE ${searchTerm}`,
-          sql`${evidence.description} LIKE ${searchTerm}`,
-        ),
+          sql`${evidence.description} LIKE ${searchTerm}`
+        )
       )
       .limit(Math.floor(limit / 2));
 
@@ -572,7 +818,7 @@ async function searchWithTextFallback(
 // Merge and deduplicate search results
 function mergeSearchResults(
   pgResults: VectorSearchResult[],
-  qdrantResults: VectorSearchResult[],
+  qdrantResults: VectorSearchResult[]
 ): VectorSearchResult[] {
   const merged = new Map<string, VectorSearchResult>();
 

@@ -1,36 +1,32 @@
 <script lang="ts">
+  import { setContext } from 'svelte';
+  import { writable } from 'svelte/store';
+
   interface Props {
-    onvalueChange?: (event?: any) => void;
+    value: string;
+    onValueChange?: (value: string) => void;
+    children: any;
   }
-  let {
-    value = '',
-    onValueChange = > void) | undefined = undefined
-  }: Props = $props();
 
+  let { value, onValueChange, children }: Props = $props();
 
-
-    import { writable } from 'svelte/store';
-
-  
-    
   const activeTab = writable(value);
-  
-  // Set context for child components
+
   setContext('tabs', {
     activeTab,
     setActiveTab: (newValue: string) => {
       activeTab.set(newValue);
-      onvalueChange?.();
       if (onValueChange) {
         onValueChange(newValue);
       }
     }
   });
 
-  // Update store when prop changes
-  $: activeTab.set(value);
+  $effect(() => {
+    activeTab.set(value);
+  });
 </script>
 
 <div class="w-full">
-  <slot />
+  {@render children()}
 </div>

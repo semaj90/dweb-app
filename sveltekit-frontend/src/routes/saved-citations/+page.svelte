@@ -29,7 +29,7 @@
   import { onMount } from "svelte";
 
   import type { Citation } from "$lib/types/api";
-  
+
   let editingCitation: Citation | null = null;
   let searchQuery = "";
   let selectedCategory = "all";
@@ -155,8 +155,8 @@
     try {
       const updated = {
         ...editingCitation,
-        tags: Array.isArray(editingCitation.tags) 
-          ? editingCitation.tags 
+        tags: Array.isArray(editingCitation.tags)
+          ? editingCitation.tags
           : (editingCitation.tags as any as string)?.split(",")
           .map((tag: string) => tag.trim())
           .filter((tag: string) => tag.length > 0),

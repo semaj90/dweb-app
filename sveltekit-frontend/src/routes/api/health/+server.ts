@@ -81,7 +81,11 @@ export const GET: RequestHandler = async () => {
       l1: { type: "memory", ok: true },
       l2: { type: "redis", host: "127.0.0.1", port: 6379, open: redisOpen },
       l3: { type: "postgres", host: "127.0.0.1", port: 5432, open: pgOpen },
-      l4: { type: "qdrant", url: "http://localhost:6333/collections", ok: qdrantHealth.ok || false }
+      l4: {
+        type: "qdrant",
+        url: "http://localhost:6333/collections",
+        ok: qdrantHealth.ok || false,
+      },
     },
     ok:
       (clusterHealth.ok || false) &&

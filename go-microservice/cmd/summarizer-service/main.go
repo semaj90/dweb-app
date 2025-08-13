@@ -3,6 +3,9 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"io"
 	"log"
@@ -11,9 +14,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-	"context"
-	"crypto/sha256"
-	"encoding/hex"
 
 	"github.com/gin-gonic/gin"
 	redis "github.com/redis/go-redis/v9"
@@ -127,6 +127,18 @@ func (lc *localCache) set(key string, val []byte) {
 	lc.items[key] = cacheEntry{data: val, expire: time.Now().Add(lc.ttl)}
 }
 
+func makeCacheKey(model, format string, maxTok int, text string) string {
+	h := sha256.New()
+	h.Write([]byte(model))
+	h.Write([]byte{'|'})
+	h.Write([]byte(format))
+	h.Write([]byte{'|'})
+	h.Write([]byte(strconv.Itoa(maxTok)))
+	h.Write([]byte{'|'})
+	h.Write([]byte(text))
+	return "summarize:" + hex.EncodeToString(h.Sum(nil))
+}
+
 func tryAcquire(sem chan struct{}, timeout time.Duration) bool {
 	select {
 	case sem <- struct{}{}:
@@ -185,16 +197,78 @@ func main() {
 		}
 	}
 	sem := make(chan struct{}, maxConc)
+	acquireTimeoutMs := 1500
+	if v := os.Getenv("SUMMARIZER_ACQUIRE_TIMEOUT_MS"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			acquireTimeoutMs = n
+		}
+	}
 
 	r := gin.Default()
 
 	// metrics state
 	m := &metrics{StartTime: time.Now().Unix()}
 
+	// WebSocket/SSE live agent routes are available in dev servers; not mounted here
+
+	// caches
+	// L1 in-process (defaults)
+	l1TTL := 60
+	if v := os.Getenv("SUMMARIZER_L1_TTL_SEC"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			l1TTL = n
+		}
+	}
+	l1Max := 512
+	if v := os.Getenv("SUMMARIZER_L1_MAX"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			l1Max = n
+		}
+	}
+	l1 := newLocalCache(time.Duration(l1TTL)*time.Second, l1Max)
+
+	// L2 Redis (optional)
+	var rdb *redis.Client
+	var cacheTTL time.Duration
+	if addr := os.Getenv("REDIS_ADDR"); addr != "" {
+		rdb = redis.NewClient(&redis.Options{Addr: addr})
+		ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
+		if err := rdb.Ping(ctx).Err(); err != nil {
+			log.Printf("[summarizer] redis disabled (ping failed): %v", err)
+			rdb = nil
+		}
+		cancel()
+		ttlSec := 600
+		if v := os.Getenv("SUMMARIZER_CACHE_TTL_SEC"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil && n > 0 {
+				ttlSec = n
+			}
+		}
+		cacheTTL = time.Duration(ttlSec) * time.Second
+		if rdb != nil {
+			log.Printf("[summarizer] redis cache enabled at %s (ttl %ds)", addr, ttlSec)
+		}
+	}
+
 	r.GET("/metrics", func(c *gin.Context) {
 		m.mu.Lock()
 		m.UptimeSec = time.Now().Unix() - m.StartTime
-		snap := *m
+		snap := struct {
+			Total         int64   `json:"total"`
+			Success       int64   `json:"success"`
+			Errors        int64   `json:"errors"`
+			CacheHits     int64   `json:"cacheHits"`
+			CacheMisses   int64   `json:"cacheMisses"`
+			AvgLatencyMs  float64 `json:"avgLatencyMs"`
+			LastLatencyMs int64   `json:"lastLatencyMs"`
+			UptimeSec     int64   `json:"uptimeSec"`
+			StartTime     int64   `json:"startTime"`
+		}{
+			Total: m.Total, Success: m.Success, Errors: m.Errors,
+			CacheHits: m.CacheHits, CacheMisses: m.CacheMisses,
+			AvgLatencyMs: m.AvgLatencyMs, LastLatencyMs: m.LastLatencyMs,
+			UptimeSec: m.UptimeSec, StartTime: m.StartTime,
+		}
 		m.mu.Unlock()
 		c.JSON(200, snap)
 	})
@@ -212,9 +286,12 @@ func main() {
 	})
 
 	r.POST("/summarize", func(c *gin.Context) {
-		// acquire concurrency slot
-		startTotal := time.Now()
-		sem <- struct{}{}
+		// backpressure-aware acquire
+		if !tryAcquire(sem, time.Duration(acquireTimeoutMs)*time.Millisecond) {
+			c.Header("Retry-After", "1")
+			c.JSON(429, gin.H{"error": "busy, try again"})
+			return
+		}
 		defer func() { <-sem }()
 		var req summarizeReq
 		if err := c.BindJSON(&req); err != nil {
@@ -222,8 +299,7 @@ func main() {
 			c.JSON(400, gin.H{"error": "invalid json"})
 			return
 		}
-		text := req.Text
-		if len(text) == 0 {
+		if len(req.Text) == 0 {
 			m.observe(0, false)
 			c.JSON(400, gin.H{"error": "text is required"})
 			return
@@ -237,29 +313,6 @@ func main() {
 		if !reach {
 			m.observe(0, false)
 			c.JSON(502, gin.H{"error": "ollama not reachable", "ollamaBaseUrl": ollamaBase})
-				// optional Redis cache
-				var rdb *redis.Client
-				var cacheTTL time.Duration
-				if addr := os.Getenv("REDIS_ADDR"); addr != "" {
-					rdb = redis.NewClient(&redis.Options{Addr: addr})
-					// quick ping with short timeout
-					ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
-					if err := rdb.Ping(ctx).Err(); err != nil {
-						log.Printf("[summarizer] redis disabled (ping failed): %v", err)
-						rdb = nil
-					}
-					cancel()
-					ttlSec := 600
-					if v := os.Getenv("SUMMARIZER_CACHE_TTL_SEC"); v != "" {
-						if n, err := strconv.Atoi(v); err == nil && n > 0 {
-							ttlSec = n
-						}
-					}
-					cacheTTL = time.Duration(ttlSec) * time.Second
-					if rdb != nil {
-						log.Printf("[summarizer] redis cache enabled at %s (ttl %ds)", addr, ttlSec)
-					}
-				}
 			return
 		}
 		if !avail {
@@ -276,7 +329,41 @@ func main() {
 		if format == "" {
 			format = "bullets"
 		}
-		prompt := "Summarize the following text concisely. If format is 'bullets', return 3-7 bullet points. If 'summary', return 1 concise paragraph.\nFormat: " + format + "\n---\n" + text
+		cacheKey := makeCacheKey(model, format, maxTok, req.Text)
+
+		// L1
+		if data, ok := l1.get(cacheKey); ok {
+			m.mu.Lock()
+			m.CacheHits++
+			m.mu.Unlock()
+			c.Header("ETag", cacheKey)
+			c.Header("X-Cache", "L1-HIT")
+			c.Header("Cache-Control", "public, max-age=60")
+			c.Data(200, "application/json", data)
+			return
+		}
+		// L2
+		if rdb != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+			if val, err := rdb.Get(ctx, cacheKey).Result(); err == nil && val != "" {
+				cancel()
+				m.mu.Lock()
+				m.CacheHits++
+				m.mu.Unlock()
+				l1.set(cacheKey, []byte(val))
+				c.Header("ETag", cacheKey)
+				c.Header("X-Cache", "L2-REDIS-HIT")
+				c.Header("Cache-Control", "public, max-age=60")
+				c.Data(200, "application/json", []byte(val))
+				return
+			}
+			cancel()
+			m.mu.Lock()
+			m.CacheMisses++
+			m.mu.Unlock()
+		}
+
+		prompt := "Summarize the following text concisely. If format is 'bullets', return 3-7 bullet points. If 'summary', return 1 concise paragraph.\nFormat: " + format + "\n---\n" + req.Text
 
 		og := ollamaGenReq{
 			Model:  model,
@@ -308,47 +395,34 @@ func main() {
 			c.JSON(502, gin.H{"error": "invalid ollama response"})
 			return
 		}
-		_ = startTotal // reserved for potential end-to-end metric
 		m.observe(time.Since(start), true)
-		c.JSON(200, gin.H{
+		respJSON, _ := json.Marshal(gin.H{
 			"model":    model,
 			"format":   format,
 			"response": ogResp.Response,
 			"done":     ogResp.Done,
 		})
+		// write-through caches
+		l1.set(cacheKey, respJSON)
+		if rdb != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+			_ = rdb.Set(ctx, cacheKey, string(respJSON), cacheTTL).Err()
+			cancel()
+		}
+		c.Header("ETag", cacheKey)
+		c.Header("X-Cache", "MISS-GEN")
+		c.Header("Cache-Control", "public, max-age=60")
+		c.Data(200, "application/json", respJSON)
 	})
 
 	// Streaming summarization via SSE (proxies Ollama's JSONL stream)
 	r.POST("/summarize/stream", func(c *gin.Context) {
-		// acquire concurrency slot
-		sem <- struct{}{}
+		if !tryAcquire(sem, time.Duration(acquireTimeoutMs)*time.Millisecond) {
+			c.Header("Retry-After", "1")
+			c.JSON(429, gin.H{"error": "busy, try again"})
+			return
+		}
 		defer func() { <-sem }()
-
-					// Cache key on model+format+maxTok+text
-					var cacheKey string
-					if rdb != nil {
-						h := sha256.New()
-						h.Write([]byte(model))
-						h.Write([]byte{"|"[0]})
-						h.Write([]byte(format))
-						h.Write([]byte{"|"[0]})
-						h.Write([]byte(strconv.Itoa(maxTok)))
-						h.Write([]byte{"|"[0]})
-						h.Write([]byte(text))
-						cacheKey = "summarize:" + hex.EncodeToString(h.Sum(nil))
-						// Try cache read
-						ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
-						if val, err := rdb.Get(ctx, cacheKey).Result(); err == nil && val != "" {
-							cancel()
-							m.mu.Lock(); m.CacheHits++; m.mu.Unlock()
-							// Return cached JSON directly
-							c.Data(200, "application/json", []byte(val))
-							return
-						} else {
-							cancel()
-							m.mu.Lock(); m.CacheMisses++; m.mu.Unlock()
-						}
-					}
 
 		var req summarizeReq
 		if err := c.BindJSON(&req); err != nil {
@@ -384,33 +458,12 @@ func main() {
 		format := req.Format
 		if format == "" {
 			format = "bullets"
-					// Assemble final JSON once to support caching
-					respJSON, _ := json.Marshal(gin.H{
-						"model":    model,
-						"format":   format,
-						"response": ogResp.Response,
-						"done":     ogResp.Done,
-					})
-					// Write-through cache
-					if rdb != nil {
-						ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
-						_ = rdb.Set(ctx, cacheKey, string(respJSON), cacheTTL).Err()
-						cancel()
-					}
-					c.Data(200, "application/json", respJSON)
 		}
 		prompt := "Summarize the following text concisely. If format is 'bullets', return 3-7 bullet points. If 'summary', return 1 concise paragraph.\nFormat: " + format + "\n---\n" + req.Text
 
-		og := ollamaGenReq{
-			Model:  model,
-			Prompt: prompt,
-			Stream: true,
-			Options: map[string]interface{}{
-				"num_predict": maxTok,
-			},
-		}
+		og := ollamaGenReq{Model: model, Prompt: prompt, Stream: true, Options: map[string]interface{}{"num_predict": maxTok}}
 		b, _ := json.Marshal(og)
-		client := &http.Client{Timeout: 0} // no timeout for streams
+		client := &http.Client{Timeout: 0}
 		start := time.Now()
 		resp, err := client.Post(ollamaBase+"/api/generate", "application/json", bytes.NewReader(b))
 		if err != nil {
@@ -418,7 +471,6 @@ func main() {
 			c.JSON(502, gin.H{"error": err.Error()})
 			return
 		}
-
 		if resp.StatusCode >= 400 {
 			body, _ := io.ReadAll(resp.Body)
 			resp.Body.Close()
@@ -432,24 +484,19 @@ func main() {
 		c.Header("Cache-Control", "no-cache")
 		c.Header("Connection", "keep-alive")
 		c.Header("X-Accel-Buffering", "no")
-
 		writer := c.Writer
 		flusher, ok := writer.(http.Flusher)
 		if !ok {
-			// unlikely with Gin/Go HTTP
 			resp.Body.Close()
 			m.observe(time.Since(start), false)
 			c.JSON(500, gin.H{"error": "streaming unsupported"})
 			return
 		}
-
 		scanner := bufio.NewScanner(resp.Body)
-		// increase buffer for long lines
 		buf := make([]byte, 0, 64*1024)
 		scanner.Buffer(buf, 1024*1024)
 		for scanner.Scan() {
 			line := scanner.Bytes()
-			// write SSE frame
 			writer.Write([]byte("data: "))
 			writer.Write(line)
 			writer.Write([]byte("\n\n"))

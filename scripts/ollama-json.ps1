@@ -16,7 +16,7 @@ $body = switch ($Mode) {
     @{ model = $Model; stream = [bool]$Stream; messages = @(@{ role='user'; content=$Prompt }) }
   }
   'embeddings' {
-    @{ model = 'nomic-embed-text'; input = $Prompt }
+  @{ model = $Model; input = $Prompt }
   }
 }
 

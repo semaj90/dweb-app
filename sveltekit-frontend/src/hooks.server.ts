@@ -1,13 +1,11 @@
-// @ts-nocheck
 import type { Handle, HandleServerError } from "@sveltejs/kit";
 import { validateSession } from "$lib/server/lucia";
 // import { enhancedRAGService } from "$lib/services/enhanced-rag-service.js"; // Disabled during debugging
-import type { SessionUser } from "$lib/types/auth";
 
 // Enhanced server hooks with proper Lucia v3 authentication
 export const handle: Handle = async ({ event, resolve }) => {
   // Skip database-dependent initializations in development
-  const isDevelopment = process.env.NODE_ENV === 'development' || process.env.SKIP_RAG_INITIALIZATION === 'true';
+  // const isDevelopment = process.env.NODE_ENV === 'development' || process.env.SKIP_RAG_INITIALIZATION === 'true';
   
   // Auto-initialize enhanced RAG on API requests (skip in development)
   // Temporarily disabled during debugging
@@ -21,26 +19,20 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
   */
 
-  // Custom session validation (no Lucia dependency) - skip database calls in development
-  if (!isDevelopment) {
-    try {
-      const sessionId = event.cookies.get('session_id');
-      
-      if (sessionId) {
-        const user = await validateSession(sessionId);
-        event.locals.user = user;
-        event.locals.session = sessionId;
-      } else {
-        event.locals.user = null;
-        event.locals.session = null;
-      }
-    } catch (error) {
-      console.error('Session validation error in hooks:', error);
+  // Always validate sessions - needed for login to work
+  try {
+    const sessionId = event.cookies.get('session_id');
+    
+    if (sessionId) {
+      const user = await validateSession(sessionId);
+      event.locals.user = user;
+      event.locals.session = sessionId;
+    } else {
       event.locals.user = null;
       event.locals.session = null;
     }
-  } else {
-    // Development mode: skip database validation
+  } catch (error) {
+    console.error('Session validation error in hooks:', error);
     event.locals.user = null;
     event.locals.session = null;
   }
@@ -67,7 +59,6 @@ export const handleError: HandleServerError = async ({
   error,
   event,
   status,
-  message,
 }) => {
   const errorId = crypto.randomUUID();
 

@@ -43,7 +43,7 @@
   import { fade } from "svelte/transition";
 
   // Props
-          
+
   // Component state
   let content = "";
   let query = "";

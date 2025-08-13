@@ -128,7 +128,7 @@
     {
       "label": "Ollama: Embedding (quick test)",
       "type": "shell",
-      "command": "powershell",
+  "command": "powershell",
       "args": [
         "-NoProfile",
         "-ExecutionPolicy",
@@ -352,6 +352,24 @@
       }
     },
     {
+      "label": "🧠 Test Vector Search (5177)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "-H", "Content-Type: application/json",
+        "-d", "{\"query\": \"contract liability terms\", \"model\": \"claude\", \"limit\": 5}",
+        "http://localhost:5177/api/ai/vector-search"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      }
+    },
+    {
       "label": "📊 Vector Search Status",
       "type": "shell",
       "command": "curl",
@@ -399,6 +417,27 @@
       }
     },
     {
+      "label": "Go: Run rag-kratos",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Push-Location go-microservice; go build -o .\\rag-kratos.exe .\\cmd\\rag-kratos; Start-Process -NoNewWindow -FilePath '.\\rag-kratos.exe'; Pop-Location"
+      ],
+      "options": {
+        "env": {
+          "RAG_HTTP_PORT": "8093",
+          "EMBED_MODEL": "nomic-embed-text",
+          "EMBED_CACHE_TTL": "10m"
+        }
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
       "label": "Go gRPC: Build Server",
       "type": "shell",
       "command": "powershell",
@@ -421,6 +460,21 @@
       ],
       "group": "build"
     },
+    {
+      "label": "Go: Run rag-quic-proxy",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:RAG_BACKEND_URL='http://localhost:8093'; $env:RAG_QUIC_FRONT_PORT='8443'; cd go-microservice; go build -o .\\rag-quic-proxy.exe .\\cmd\\rag-quic-proxy; Start-Process -NoNewWindow -FilePath '.\\rag-quic-proxy.exe'"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    }
+    ,
     {
       "label": "Go gRPC: Run Server",
       "type": "shell",
@@ -454,6 +508,7 @@
       },
       "problemMatcher": []
     },
+
     {
       "label": "Quick Fix TypeScript Errors",
       "type": "shell",
@@ -618,8 +673,36 @@
       "command": "powershell",
       "args": [
         "-NoProfile",
-        "-Command",
-  "$env:SUMMARIZER_HTTP_PORT='8091'; $env:OLLAMA_BASE_URL='http://localhost:11434'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/summarizer-http.exe'"
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/start-summarizer.ps1",
+        "-Port",
+        "8091",
+        "-OllamaBaseUrl",
+        "http://localhost:11434"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "dependsOn": ["Summarizer: Build HTTP Service"],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Summarizer: Run HTTP Service (Redis)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/start-summarizer.ps1",
+        "-Port",
+        "8091",
+        "-OllamaBaseUrl",
+        "http://localhost:11434",
+        "-RedisAddr",
+        "localhost:6379"
       ],
       "group": "build",
       "presentation": { "reveal": "always", "panel": "shared" },
@@ -650,6 +733,85 @@
       ],
       "group": "test",
       "presentation": { "reveal": "always", "panel": "shared" }
+    }
+    ,
+    {
+      "label": "Test: Summarizer Health",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:8091/health"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+    ,
+    {
+      "label": "Test: Summarizer (direct)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "-X","POST",
+        "-H","Content-Type: application/json",
+        "-d","{\"text\":\"A short passage about contracts and liabilities.\",\"format\":\"summary\"}",
+        "http://localhost:8091/summarize"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+    ,
+    {
+      "label": "pgvector: Create IVFFLAT Index",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/create-ivfflat-index.ps1"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Ensures an IVFFLAT index exists for the configured pgvector column"
+    }
+    ,
+    {
+      "label": "pgvector: Create IVFFLAT (legal_documents)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/create-ivfflat-index.ps1",
+        "-ConnectionString",
+        "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+        "-Table",
+        "legal_documents",
+        "-Column",
+        "embedding",
+        "-Metric",
+        "cosine",
+        "-Lists",
+        "100"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Ensure IVFFLAT on legal_documents.embedding (cosine, lists=100)"
+    }
+    ,
+    {
+      "label": "Seed: Law PDFs",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "seed:lawpdfs"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" },
+      "detail": "Parse PDFs from known folders and insert into legal_documents with embeddings"
     }
   ]
 }

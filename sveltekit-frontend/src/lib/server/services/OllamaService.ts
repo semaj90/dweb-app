@@ -129,7 +129,7 @@ export class OllamaService {
         },
         body: JSON.stringify({
           model,
-          prompt,
+          input: prompt, // Ollama embeddings expects 'input'
         }),
         signal: AbortSignal.timeout(this.timeout),
       });
@@ -141,7 +141,12 @@ export class OllamaService {
       }
 
       const data = await response.json();
-      return data.embedding || [];
+      // Support both { embedding } and OpenAI-like { data: [{ embedding }] }
+      if (Array.isArray(data?.embedding)) return data.embedding;
+      if (Array.isArray(data?.data) && Array.isArray(data.data[0]?.embedding)) {
+        return data.data[0].embedding;
+      }
+      return [];
     } catch (error) {
       logger.error("Failed to get embeddings from Ollama", { model, error });
       throw error;

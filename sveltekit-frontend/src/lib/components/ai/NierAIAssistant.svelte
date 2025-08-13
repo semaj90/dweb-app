@@ -2,12 +2,12 @@
   import { createDialog, melt } from '@melt-ui/svelte'
   import { fade, fly, scale } from 'svelte/transition'
   import { onMount } from 'svelte'
-  import { 
-    Bot, 
-    Send, 
-    Sparkles, 
-    Brain, 
-    FileText, 
+  import {
+    Bot,
+    Send,
+    Sparkles,
+    Brain,
+    FileText,
     Search,
     Zap,
     X,
@@ -15,7 +15,7 @@
     Minimize2,
     Settings
   } from 'lucide-svelte'
-  
+
   interface Message {
     id: string
     role: 'user' | 'assistant' | 'system'
@@ -28,7 +28,7 @@
       processingTime?: number
     }
   }
-  
+
   interface Props {
     isOpen?: boolean
     onClose?: () => void
@@ -37,13 +37,13 @@
       title: string
     }
   }
-  
-  let { 
-    isOpen = $bindable(true), 
+
+  let {
+    isOpen = $bindable(true),
     onClose = () => {},
     caseContext
   }: Props = $props()
-  
+
   let messages = $state<Message[]>([
     {
       id: '1',
@@ -52,13 +52,13 @@
       timestamp: new Date()
     }
   ])
-  
+
   let inputValue = $state('');
   let isTyping = $state(false);
   let isExpanded = $state(false);
   let showSettings = $state(false);
   let messageContainer: HTMLDivElement
-  
+
   // AI Modes
   const aiModes = [
     { id: 'analyze', label: 'Analyze', icon: Brain, description: 'Deep case analysis' },
@@ -66,13 +66,13 @@
     { id: 'draft', label: 'Draft', icon: FileText, description: 'Generate documents' },
     { id: 'quick', label: 'Quick', icon: Zap, description: 'Fast responses' }
   ]
-  
+
   let selectedMode = $state('analyze');
-  
+
   // Simulated AI response
   const simulateAIResponse = async (userMessage: string) => {
     isTyping = true
-    
+
     // Add typing indicator
     const typingMessage: Message = {
       id: Date.now().toString(),
@@ -81,10 +81,10 @@
       timestamp: new Date()
     }
     messages = [...messages, typingMessage]
-    
+
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
+
     // Generate response based on mode
     let response = ''
     switch (selectedMode) {
@@ -100,20 +100,20 @@
       default:
         response = `Understood. Processing your request: "${userMessage}". How can I assist you further with this case?`
     }
-    
+
     // Update the typing message with actual content
-    messages = messages.map(msg => 
-      msg.id === typingMessage.id 
+    messages = messages.map(msg =>
+      msg.id === typingMessage.id
         ? { ...msg, content: response, metadata: { tokens: 150, processingTime: 1.5 } }
         : msg
     )
-    
+
     isTyping = false
   }
-  
+
   const sendMessage = async () => {
     if (!inputValue.trim()) return
-    
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -121,20 +121,20 @@
       timestamp: new Date(),
       status: 'sent'
     }
-    
+
     messages = [...messages, userMessage]
     inputValue = ''
-    
+
     // Scroll to bottom
     setTimeout(() => {
       if (messageContainer) {
         messageContainer.scrollTop = messageContainer.scrollHeight
       }
     }, 100)
-    
+
     await simulateAIResponse(userMessage.content)
   }
-  
+
   onMount(() => {
     // Auto-scroll to bottom on new messages
     const observer = new MutationObserver(() => {
@@ -142,11 +142,11 @@
         messageContainer.scrollTop = messageContainer.scrollHeight
       }
     })
-    
+
     if (messageContainer) {
       observer.observe(messageContainer, { childList: true })
     }
-    
+
     return () => observer.disconnect()
   })
 </script>
@@ -163,7 +163,7 @@
       <div class="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-digital-green/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
       </div>
-      
+
       <!-- Header -->
       <div class="flex items-center justify-between p-4 border-b border-nier-light-gray dark:border-nier-gray/30">
         <div class="flex items-center gap-3">
@@ -173,7 +173,7 @@
             </div>
             <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-digital-green rounded-full animate-ping"></div>
           </div>
-          
+
           <div>
             <h3 class="font-display font-semibold nier-heading">AI Legal Assistant</h3>
             {#if caseContext}
@@ -183,7 +183,7 @@
             {/if}
           </div>
         </div>
-        
+
         <div class="flex items-center gap-2">
           <button
             onclick={() => showSettings = !showSettings}
@@ -191,7 +191,7 @@
           >
             <Settings class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
           </button>
-          
+
           <button
             onclick={() => isExpanded = !isExpanded}
             class="p-2 rounded-lg hover:bg-nier-white/50 dark:hover:bg-nier-black/50 nier-transition"
@@ -202,7 +202,7 @@
               <Maximize2 class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
             {/if}
           </button>
-          
+
           <button
             onclick={onClose}
             class="p-2 rounded-lg hover:bg-harvard-crimson/10 nier-transition"
@@ -211,7 +211,7 @@
           </button>
         </div>
       </div>
-      
+
       <!-- AI Mode Selector -->
       {#if showSettings}
         <div class="p-4 border-b border-nier-light-gray dark:border-nier-gray/30" transition:fly={{ y: -10 }}>
@@ -227,8 +227,8 @@
                 class:dark:border-nier-gray/30={selectedMode !== mode.id}
               >
                 <div class="flex items-center gap-2 mb-1">
-                  <svelte:component 
-                    this={mode.icon} 
+                  <svelte:component
+                    this={mode.icon}
                     class="w-4 h-4 {selectedMode === mode.id ? 'text-digital-green' : 'text-nier-gray dark:text-nier-silver'}"
                   />
                   <span class="text-sm font-medium {selectedMode === mode.id ? 'text-digital-green' : ''}">{mode.label}</span>
@@ -239,7 +239,7 @@
           </div>
         </div>
       {/if}
-      
+
       <!-- Messages Container -->
       <div
         bind:this={messageContainer}
@@ -259,10 +259,10 @@
                   <span class="text-xs text-nier-gray dark:text-nier-silver">AI Assistant</span>
                 </div>
               {/if}
-              
+
               <div
-                class="px-4 py-3 rounded-2xl {message.role === 'user' 
-                  ? 'bg-harvard-crimson text-nier-white ml-auto' 
+                class="px-4 py-3 rounded-2xl {message.role === 'user'
+                  ? 'bg-harvard-crimson text-nier-white ml-auto'
                   : message.role === 'system'
                   ? 'bg-nier-white/50 dark:bg-nier-black/50 text-nier-gray dark:text-nier-silver italic'
                   : 'bg-nier-white dark:bg-nier-dark-gray border border-nier-light-gray dark:border-digital-green/20'}"
@@ -277,7 +277,7 @@
                     <div class="w-2 h-2 bg-digital-green rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                   </div>
                 {/if}
-                
+
                 {#if message.metadata}
                   <div class="flex gap-3 mt-2 pt-2 border-t border-nier-light-gray/50 dark:border-nier-gray/30">
                     {#if message.metadata.tokens}
@@ -293,12 +293,12 @@
                   </div>
                 {/if}
               </div>
-              
+
               <div class="flex items-center gap-2 mt-1">
                 <span class="text-xs text-nier-gray dark:text-nier-silver">
-                  {new Intl.DateTimeFormat('en-US', { 
-                    hour: 'numeric', 
-                    minute: 'numeric' 
+                  {new Intl.DateTimeFormat('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric'
                   }).format(message.timestamp)}
                 </span>
               </div>
@@ -306,7 +306,7 @@
           </div>
         {/each}
       </div>
-      
+
       <!-- Input Area -->
       <div class="p-4 border-t border-nier-light-gray dark:border-nier-gray/30">
         <form onsubmit|preventDefault={sendMessage} class="flex gap-2">
@@ -319,7 +319,7 @@
             />
             <Sparkles class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-nier-gray dark:text-nier-silver animate-pulse" />
           </div>
-          
+
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
@@ -329,7 +329,7 @@
             <Send class="w-4 h-4" />
           </button>
         </form>
-        
+
         <!-- Quick Actions -->
         <div class="flex gap-2 mt-3">
           <button class="text-xs px-3 py-1 rounded-full bg-nier-white/50 dark:bg-nier-black/50 hover:bg-digital-green/10 nier-transition">

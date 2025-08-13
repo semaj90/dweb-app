@@ -1,7 +1,5 @@
-// @ts-nocheck
 // Vector search initialization script
 // Sets up Qdrant collections and PostgreSQL vector indexes
-import { env } from "$env/dynamic/private";
 import { qdrant } from "../src/lib/server/vector/qdrant";
 import { db, isPostgreSQL } from "../src/lib/server/db";
 import { sql } from "drizzle-orm";

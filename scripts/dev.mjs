@@ -18,7 +18,11 @@
 import chalk from 'chalk';
 import fetch from 'node-fetch';
 import ora from 'ora';
+import { spawn } from 'node:child_process';
+import net from 'node:net';
 import 'zx/globals';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
 // Configuration
 const CONFIG = {
@@ -27,15 +31,17 @@ const CONFIG = {
       name: 'PostgreSQL + pgvector',
       port: 5432,
       healthUrl: null, // Custom health check
-      command: '"C:\\Program Files\\PostgreSQL\\17\\bin\\pg_isready.exe" -h localhost -p 5432',
+  command: '', // External service (managed by OS); do not attempt to start here
+  managed: false,
       priority: 1
     },
     redis: {
       name: 'Redis Cache',
       port: 6379,
       healthUrl: null, // Custom health check
-      command: '.\\redis-windows\\redis-server.exe',
-      cwd: process.cwd(),
+  command: '', // External or optional; skip start by default
+  managed: false,
+  cwd: process.cwd(),
       priority: 2
     },
     ollama: {
@@ -103,22 +109,11 @@ const log = {
 // Health check functions
 const healthCheckers = {
   async postgresql() {
-    try {
-      const result = await $`"C:\\Program Files\\PostgreSQL\\17\\bin\\pg_isready.exe" -h localhost -p 5432`;
-      return result.exitCode === 0;
-    } catch {
-      return false;
-    }
+  return await tcpOpen('localhost', 5432, 1000);
   },
 
   async redis() {
-    try {
-      // Try to connect to Redis using redis-cli
-      const result = await $`echo "ping" | .\\redis-windows\\redis-cli.exe -h localhost -p 6379`;
-      return result.stdout.includes('PONG');
-    } catch {
-      return false;
-    }
+  return await tcpOpen('localhost', 6379, 1000);
   },
 
   async http(url) {
@@ -134,6 +129,21 @@ const healthCheckers = {
   }
 };
 
+function tcpOpen(host, port, timeoutMs = 1000) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    const onDone = (ok) => {
+      try { socket.destroy(); } catch {}
+      resolve(ok);
+    };
+    socket.setTimeout(timeoutMs);
+    socket.once('connect', () => onDone(true));
+    socket.once('timeout', () => onDone(false));
+    socket.once('error', () => onDone(false));
+    socket.connect(port, host);
+  });
+}
+
 // Service management
 async function startService(serviceName, config) {
   const spinner = ora(`Starting ${config.name}...`).start();
@@ -145,24 +155,24 @@ async function startService(serviceName, config) {
       return;
     }
 
+    // Skip starting for externally managed services
+    if (config.managed === false || !config.command) {
+      spinner.info(`${config.name} is external or unmanaged; not starting from orchestrator`);
+      return;
+    }
+
     // Start the service
     const options = {
       detached: true,
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: true
     };
 
     if (config.cwd) {
       options.cwd = config.cwd;
     }
 
-    let proc;
-    if (config.command.includes('.exe') || config.command.includes('ollama')) {
-      // For Windows executables and Ollama, use spawn
-      proc = spawn(config.command.split(' ')[0], config.command.split(' ').slice(1), options);
-    } else {
-      // For npm commands, use shell
-      proc = spawn('cmd', ['/c', config.command], { ...options, shell: true });
-    }
+  const proc = spawn(config.command, options);
 
     if (proc.pid) {
       state.services.set(serviceName, { process: proc, config });
@@ -236,9 +246,13 @@ async function main() {
   await checkPrerequisites();
 
   // Start services in priority order
-  const sortedServices = Object.entries(CONFIG.services)
+  let sortedServices = Object.entries(CONFIG.services)
     .filter(([_, config]) => !config.optional || process.argv.includes('--include-optional'))
     .sort(([, a], [, b]) => a.priority - b.priority);
+
+  if (process.argv.includes('--frontend-only')) {
+    sortedServices = sortedServices.filter(([name]) => name === 'sveltekit');
+  }
 
   log.info(`Starting ${sortedServices.length} services in sequence...`);
 
@@ -285,36 +299,57 @@ async function main() {
 async function checkPrerequisites() {
   const spinner = ora('Checking prerequisites...').start();
 
-  const checks = [
-    { name: 'Node.js', check: () => $.which('node') },
-    { name: 'PostgreSQL', check: () => fs.existsSync('C:\\Program Files\\PostgreSQL\\17\\bin\\pg_isready.exe') },
-    { name: 'Go toolchain', check: () => $.which('go') },
-    { name: 'Go Service Source', check: () => fs.existsSync(path.join(process.cwd(), 'go-microservice', 'enhanced-grpc-legal-server.go')) },
-    { name: 'Redis', check: () => fs.existsSync('./redis-windows/redis-server.exe') },
-    { name: 'Ollama', check: () => $.which('ollama') }
-  ];
+  const force = process.argv.includes('--force') || process.env.DEV_FORCE === '1';
+  const missing = [];
+  const warns = [];
 
-  const failed = [];
+  // Node is guaranteed since we're running under Node
+  const nodeOk = !!process.version;
 
-  for (const check of checks) {
-    try {
-      await check.check();
-    } catch {
-      failed.push(check.name);
-    }
+  // Ports via TCP checks
+  const [pgOk, redisOk] = await Promise.all([
+    tcpOpen('localhost', 5432, 500),
+    tcpOpen('localhost', 6379, 500)
+  ]);
+
+  // Go toolchain (optional)
+  let goOk = true;
+  try {
+    await $`go version`;
+  } catch {
+    goOk = false;
+    warns.push('Go toolchain');
   }
 
-  if (failed.length > 0) {
-    spinner.fail(`Missing prerequisites: ${failed.join(', ')}`);
+  // Ollama: HTTP check
+  let ollamaOk = false;
+  try {
+    const res = await fetch('http://localhost:11434/api/version', { timeout: 2000, signal: AbortSignal.timeout(2000) });
+    ollamaOk = res.ok;
+  } catch {
+    warns.push('Ollama');
+  }
+
+  if (!nodeOk) missing.push('Node.js');
+  if (!pgOk) warns.push('PostgreSQL (5432 not reachable)');
+  if (!redisOk) warns.push('Redis (6379 not reachable)');
+
+  if (missing.length > 0 && !force) {
+    spinner.fail(`Missing prerequisites: ${missing.join(', ')}`);
     console.log(chalk.yellow('📋 Setup Guide:'));
     console.log('  1. Install PostgreSQL 17 with pgvector extension');
     console.log('  2. Download Redis for Windows');
     console.log('  3. Install Ollama from https://ollama.com');
     console.log('  4. Build Go microservice: go build -o legal-ai-server.exe');
+    console.log(chalk.gray('    Tip: use --force to bypass checks.'));
     process.exit(1);
   }
 
-  spinner.succeed('Prerequisites check passed');
+  if (warns.length) {
+    spinner.warn(`Proceeding with warnings: ${warns.join(', ')}`);
+  } else {
+    spinner.succeed('Prerequisites check passed');
+  }
 }
 
 async function monitorServices() {

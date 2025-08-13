@@ -32,7 +32,7 @@
 	import TagList from './TagList.svelte';
 
 			export let maxFileSize = 10 * 1024 * 1024; // 10MB
-		
+
 	const dispatch = createEventDispatcher<{
 		upload: { files: globalThis.File[]; tags: string[] };
 		filesChanged: FileUpload[];
@@ -70,7 +70,7 @@
 	function getFileIcon(file: globalThis.File) {
 		const type = file.type.toLowerCase();
 		const name = file.name.toLowerCase();
-		
+
 		if (type.startsWith('image/')) {
 			return Image;
 		} else if (type === 'application/pdf' || name.endsWith('.pdf')) {
@@ -117,7 +117,7 @@
 }
 	async function processFiles(files: FileList | globalThis.File[]) {
 		const fileArray = Array.from(files);
-		
+
 		// Check total file limit
 		if (uploads.length + fileArray.length > maxFiles) {
 			dispatch('error', `Maximum ${maxFiles} files allowed`);
@@ -125,14 +125,14 @@
 }
 		for (const file of fileArray) {
 			const validation = isFileValid(file);
-			
+
 			if (!validation.valid) {
 				dispatch('error', validation.error!);
 				continue;
 }
 			const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 			const preview = await createFilePreview(file);
-			
+
 			const upload: FileUpload = {
 				id,
 				file,
@@ -176,14 +176,14 @@
 		dispatch('filesChanged', uploads);
 }
 	function updateFileTags(id: string, tags: string[]) {
-		uploads = uploads.map(upload => 
+		uploads = uploads.map(upload =>
 			upload.id === id ? { ...upload, tags } : upload
 		);
 		dispatch('filesChanged', uploads);
 }
 	async function uploadFiles() {
 		const pendingUploads = uploads.filter(u => u.status === 'pending');
-		
+
 		if (pendingUploads.length === 0) {
 			dispatch('error', 'No files to upload');
 			return;
@@ -207,8 +207,8 @@
 					criminalId: null,
 					title: upload.file.name,
 					description: `Uploaded file: ${upload.file.name}`,
-					evidenceType: upload.file.type.includes('image') ? 'photo' : 
-						upload.file.type.includes('video') ? 'video' : 
+					evidenceType: upload.file.type.includes('image') ? 'photo' :
+						upload.file.type.includes('video') ? 'video' :
 						upload.file.type.includes('audio') ? 'audio' : 'document',
 					fileType: upload.file.type,
 					subType: null,
@@ -245,17 +245,17 @@
 }
 }
 		uploads = [...uploads];
-		
+
 		// Notify parent component
 		const successfulFiles = uploads
 			.filter(u => u.status === 'success')
 			.map(u => u.file);
-		
+
 		if (successfulFiles.length > 0) {
 			const allTags = uploads
 				.filter(u => u.status === 'success')
 				.flatMap(u => u.tags);
-			
+
 			dispatch('upload', { files: successfulFiles, tags: [...new Set(allTags)] });
 }
 }
@@ -327,7 +327,7 @@
 								<svelte:component this={getFileIcon(upload.file)} size={24} />
 							{/if}
 						</div>
-						
+
 						<div class="space-y-4">
 							<div class="space-y-4">{upload.file.name}</div>
 							<div class="space-y-4">

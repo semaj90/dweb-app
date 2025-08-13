@@ -19,7 +19,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { PageData } from "./$types";
 
-	
+
 	// Case ID - extract from data or generate
 	let caseId = (data as any)?.reportData?.id || (data as any)?.reportId || 'demo-case-' + Date.now();
 
@@ -37,10 +37,10 @@
 		// Initialize canvas dimensions
 		updateCanvasDimensions();
 		window.addEventListener('resize', updateCanvasDimensions);
-		
+
 		// Load cached data
 		loki.init();
-		
+
 		// Subscribe to sidebar state
 		const unsubscribeSidebar = sidebarStore.subscribe(state => {
 			sidebarOpen = state.open;
@@ -84,9 +84,9 @@
 	async function processFileUploads(files: File[]) {
 		for (const file of files) {
 			const fileId = crypto.randomUUID();
-			uploadingFiles[fileId] = { 
-				name: file.name, 
-				size: file.size 
+			uploadingFiles[fileId] = {
+				name: file.name,
+				size: file.size
 			};
 			uploadProgress[fileId] = 0;
 
@@ -129,7 +129,7 @@
 		const chunkSize = 1024 * 1024; // 1MB chunks
 		const chunks = Math.ceil(file.size / chunkSize);
 		const hash = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
-		
+
 		// Simulate progress for demo (real implementation would process chunks)
 		if (onProgress) {
 			for (let i = 0; i <= 100; i += 10) {
@@ -180,7 +180,7 @@
 		<Sidebar />
 
 		<!-- Canvas Container -->
-		<div 
+		<div
 			class="space-y-4"
 			class:sidebar-open={sidebarOpen}
 			on:drop={handleFileDrop}
@@ -195,7 +195,7 @@
 
 			<!-- Canvas Editor -->
 			<div class="space-y-4">
-				<CanvasEditor 
+				<CanvasEditor
 					width={canvasWidth}
 					height={canvasHeight - 80}
 					reportId={data?.reportId || 'new'}
@@ -207,7 +207,7 @@
 			<!-- File Upload Zone with Progress -->
 			<div class="space-y-4">
 				<FileUploadSection />
-				
+
 				<!-- Upload Progress Indicators -->
 				{#if Object.keys(uploadingFiles).length > 0}
 					<div class="space-y-4">
@@ -219,8 +219,8 @@
 									<span class="space-y-4">({(file.size / 1024 / 1024).toFixed(1)} MB)</span>
 								</div>
 								<div class="space-y-4">
-									<div 
-										class="space-y-4" 
+									<div
+										class="space-y-4"
 										style="width: {uploadProgress[fileId] || 0}%"
 									></div>
 								</div>
@@ -253,7 +253,7 @@
 								<div class="space-y-4">
 									<span class="space-y-4">Hash:</span>
 									<span class="space-y-4">{upload.hash.substring(0, 12)}...{upload.hash.substring(-4)}</span>
-									<button 
+									<button
 										class="space-y-4"
 										on:click={() => window.open(`/evidence/hash?hash=${upload.hash}`, '_blank')}
 									>

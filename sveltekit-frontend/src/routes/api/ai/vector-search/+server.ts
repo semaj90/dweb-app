@@ -2,13 +2,19 @@ import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 // Prefer the unified server-side vector search which uses pgvector and/or Qdrant, with caching and fallbacks
 import type { VectorSearchResult as ServerVectorSearchResult } from "$lib/server/search/vector-search";
-import { vectorSearch } from "$lib/server/search/vector-search";
+import {
+  vectorSearch,
+  getQueryEmbeddingLegal,
+  searchLegalDocumentsText,
+} from "$lib/server/search/vector-search";
 // Health checks
 import { ollamaService } from "$lib/server/services/OllamaService";
 import { isQdrantHealthy } from "$lib/server/vector/qdrant";
 // Keep enhanced pipeline as a secondary fallback when available
 import type { EnhancedSemanticSearchOptions } from "$lib/services/enhanced-ai-pipeline";
 import { enhancedAIPipeline } from "$lib/services/enhanced-ai-pipeline";
+// Direct DB/vector access for legal_documents
+import { db, sql } from "$lib/server/db/index";
 
 // Enhanced POST endpoint using Go microservice or local fallback
 export const POST: RequestHandler = async ({ request }) => {
@@ -17,7 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
     let requestBody;
     try {
       const text = await request.text();
-      if (!text || text.trim() === '') {
+      if (!text || text.trim() === "") {
         return json(
           {
             success: false,
@@ -34,7 +40,10 @@ export const POST: RequestHandler = async ({ request }) => {
         {
           success: false,
           error: "Invalid JSON in request body",
-          details: parseError instanceof Error ? parseError.message : "Unknown parse error",
+          details:
+            parseError instanceof Error
+              ? parseError.message
+              : "Unknown parse error",
           timestamp: new Date().toISOString(),
         },
         { status: 400 }
@@ -54,53 +63,75 @@ export const POST: RequestHandler = async ({ request }) => {
       );
     }
 
-    // Check if Go microservice is available (port 8084)
+    const GPU_GO_BASE = process.env.GO_GPU_API_URL || "http://localhost:8084";
+    const SUMM_BASE =
+      process.env.SUMMARIZER_BASE_URL || "http://localhost:8091";
+
+    // Check if Go GPU API is available (8084), else try summarizer (8091)
     let goServiceAvailable = false;
+    let summarizerAvailable = false;
     try {
-      const goHealthCheck = await fetch('http://localhost:8084/api/health', {
-        method: 'GET',
-        signal: AbortSignal.timeout(1000) // 1 second timeout
+      const goHealthCheck = await fetch(`${GPU_GO_BASE}/api/health`, {
+        method: "GET",
+        signal: AbortSignal.timeout(1000), // 1 second timeout
       });
       goServiceAvailable = goHealthCheck.ok;
     } catch {
       console.log("Go microservice not available, using fallback");
     }
+    if (!goServiceAvailable) {
+      try {
+        const summHealth = await fetch(`${SUMM_BASE}/health`, {
+          method: "GET",
+          signal: AbortSignal.timeout(1000),
+        });
+        summarizerAvailable = summHealth.ok;
+      } catch {
+        summarizerAvailable = false;
+      }
+    }
 
     // If Go service is available and we're doing legal document search
-    if (goServiceAvailable && (options.searchType === 'legal' || query.toLowerCase().includes('legal') || query.toLowerCase().includes('contract'))) {
+    const looksLegal =
+      options.searchType === "legal" ||
+      query.toLowerCase().includes("legal") ||
+      query.toLowerCase().includes("contract");
+    if (goServiceAvailable && looksLegal) {
       try {
-        const goResponse = await fetch('http://localhost:8084/api/ai/summarize', {
-          method: 'POST',
+        const goResponse = await fetch(`${GPU_GO_BASE}/api/ai/summarize`, {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             content: query,
-            document_type: options.documentType || 'general',
+            document_type: options.documentType || "general",
             options: {
-              style: 'search',
+              style: "search",
               max_length: 200,
-              temperature: 0.1
-            }
+              temperature: 0.1,
+            },
           }),
-          signal: AbortSignal.timeout(5000) // 5 second timeout
+          signal: AbortSignal.timeout(5000), // 5 second timeout
         });
 
         if (goResponse.ok) {
           const goResult = await goResponse.json();
           return json({
             success: true,
-            results: [{
-              content: goResult.summary?.executive_summary || '',
-              metadata: {
-                source: 'go-microservice',
-                confidence: goResult.summary?.confidence || 0,
-                key_findings: goResult.summary?.key_findings || []
+            results: [
+              {
+                content: goResult.summary?.executive_summary || "",
+                metadata: {
+                  source: "go-microservice",
+                  confidence: goResult.summary?.confidence || 0,
+                  key_findings: goResult.summary?.key_findings || [],
+                },
+                score: goResult.summary?.confidence || 0.8,
               },
-              score: goResult.summary?.confidence || 0.8
-            }],
+            ],
             count: 1,
-            source: 'go-microservice-gpu',
+            source: "go-microservice-gpu",
             executionTimeMs: goResult.processing_time || 0,
             timestamp: new Date().toISOString(),
           });
@@ -109,6 +140,132 @@ export const POST: RequestHandler = async ({ request }) => {
         console.warn("Go microservice request failed, falling back:", goError);
       }
     }
+
+    // Fall back to direct summarizer if available and query looks legal
+    if (!goServiceAvailable && summarizerAvailable && looksLegal) {
+      try {
+        const summResp = await fetch(`${SUMM_BASE}/summarize`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: query,
+            format: "summary",
+            maxTokens: 200,
+          }),
+          signal: AbortSignal.timeout(5000),
+        });
+        if (summResp.ok) {
+          const data = await summResp.json();
+          const content =
+            data && typeof data.response === "string" ? data.response : "";
+          return json({
+            success: true,
+            results: [
+              {
+                content,
+                metadata: {
+                  source: "summarizer-http",
+                  model: data.model,
+                  format: data.format,
+                },
+                score: 0.8,
+              },
+            ],
+            count: 1,
+            source: "summarizer-http",
+            executionTimeMs: 0,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      } catch (summErr) {
+        console.warn("Summarizer fallback failed:", summErr);
+      }
+    }
+
+    // Try direct pgvector search on legal_documents using Ollama embeddings (matches seeded data)
+    // This runs before the generic unified search so we get true legal doc retrieval first.
+    const legalResults = await (async () => {
+      try {
+        const embedding = await getQueryEmbeddingLegal(query);
+        if (!Array.isArray(embedding) || embedding.length === 0) return [];
+
+        // Convert to pgvector literal and query legal_documents
+        const vectorString = `[${embedding.join(",")}]`;
+        const limit = Math.min(Math.max(options.limit ?? 10, 1), 50);
+        const threshold = options.minSimilarity ?? 0.6;
+
+        const result = await db.execute(sql`
+          SELECT
+            id,
+            title,
+            COALESCE(full_text, content) AS content,
+            document_type as "documentType",
+            jurisdiction,
+            keywords,
+            topics,
+            1 - (embedding <=> ${vectorString}::vector) AS score
+          FROM legal_documents
+          WHERE embedding IS NOT NULL
+            AND 1 - (embedding <=> ${vectorString}::vector) > ${threshold}
+          ORDER BY embedding <=> ${vectorString}::vector
+          LIMIT ${limit}
+        `);
+
+        const mapped: ServerVectorSearchResult[] = (result.rows as any[]).map(
+          (r: any) => ({
+            id: r.id,
+            title: r.title || "",
+            content: r.content || "",
+            score:
+              typeof r.score === "number"
+                ? r.score
+                : parseFloat(String(r.score ?? 0)),
+            metadata: {
+              documentType: r.documentType,
+              jurisdiction: r.jurisdiction,
+              keywords: r.keywords,
+              topics: r.topics,
+            },
+            source: "pgvector",
+            type: "document",
+          })
+        );
+
+        return mapped;
+      } catch (e) {
+        // Silent fallthrough to generic pipeline
+        return [] as ServerVectorSearchResult[];
+      }
+    })();
+
+    if (legalResults.length > 0) {
+      return json({
+        success: true,
+        results: legalResults,
+        count: legalResults.length,
+        source: "pgvector-legal",
+        executionTimeMs: 0,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // If legal vector search failed, try text fallback directly on legal_documents
+    try {
+      const tf = await searchLegalDocumentsText(
+        query,
+        Math.min(options.limit ?? 10, 50)
+      );
+      if (tf.length > 0) {
+        return json({
+          success: true,
+          results: tf,
+          count: tf.length,
+          source: "legal-text",
+          executionTimeMs: 0,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    } catch {}
 
     // 1) Try unified vectorSearch (pgvector primary, Qdrant/Loki/Fuse fallbacks)
     let vs;
@@ -128,8 +285,8 @@ export const POST: RequestHandler = async ({ request }) => {
       // Create a fallback response
       vs = {
         results: [],
-        source: 'error',
-        executionTime: 0
+        source: "error",
+        executionTime: 0,
       };
     }
 
@@ -156,13 +313,15 @@ export const POST: RequestHandler = async ({ request }) => {
       } catch (e) {
         // keep empty results on failure
         console.warn("Enhanced pipeline fallback failed:", e);
-        
+
         // Final fallback: return a basic response
-        results = [{
-          content: `No results found for query: "${query}"`,
-          metadata: { source: 'fallback' },
-          score: 0
-        }] as unknown as CombinedResult[];
+        results = [
+          {
+            content: `No results found for query: "${query}"`,
+            metadata: { source: "fallback" },
+            score: 0,
+          },
+        ] as unknown as CombinedResult[];
         used = "fallback";
       }
     }
@@ -196,11 +355,11 @@ export const POST: RequestHandler = async ({ request }) => {
 export const GET: RequestHandler = async () => {
   try {
     // Check all services in parallel with timeouts
-    const checkService = async (url: string, name: string): Promise<boolean> => {
+    const checkService = async (url: string): Promise<boolean> => {
       try {
         const response = await fetch(url, {
-          method: 'GET',
-          signal: AbortSignal.timeout(2000) // 2 second timeout
+          method: "GET",
+          signal: AbortSignal.timeout(2000), // 2 second timeout
         });
         return response.ok;
       } catch {
@@ -208,8 +367,10 @@ export const GET: RequestHandler = async () => {
       }
     };
 
+    const GPU_GO_BASE = "http://localhost:8084"; // Default Go microservice endpoint
+
     const [goHealthy, qdrantHealthy, ollamaHealthy] = await Promise.all([
-      checkService('http://localhost:8084/api/health', 'go-microservice'),
+      checkService(`${GPU_GO_BASE}/api/health`),
       isQdrantHealthy().catch(() => false),
       ollamaService.isHealthy().catch(() => false),
     ]);

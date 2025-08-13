@@ -1,12 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
 
-echo =====================================================
-echo   Legal AI Assistant - Quick Start (Optimized)
-echo =====================================================
+echo ================================================================
+echo       Quick MinIO + SvelteKit + RAG Integration Start
+echo ================================================================
 echo.
-echo This script uses the OPTIMIZED Docker Compose configuration
-echo with proper volume mounting for faster model loading.
+echo This script bypasses cache manager and starts services directly.
 echo.
 
 :: Color codes
@@ -16,37 +15,56 @@ set "YELLOW=[93m"
 set "BLUE=[94m"
 set "NC=[0m"
 
+:: Set environment variables first
+echo %BLUE%🔧 Setting environment variables...%NC%
+set MINIO_ROOT_USER=minioadmin
+set MINIO_ROOT_PASSWORD=minioadmin
+set DATABASE_URL=postgresql://legal_admin:123456@localhost:5432/legal_ai_db
+set PG_CONN_STRING=postgresql://legal_admin:123456@localhost:5432/legal_ai_db
+set MINIO_ENDPOINT=localhost:9000
+set MINIO_ACCESS_KEY=minioadmin
+set MINIO_SECRET_KEY=minioadmin
+set MINIO_BUCKET=legal-documents
+set UPLOAD_SERVICE_PORT=8094
+set RAG_HTTP_PORT=8093
+set OLLAMA_BASE_URL=http://localhost:11434
+set EMBED_MODEL=nomic-embed-text
+
 :: Check prerequisites
 echo %BLUE%🔍 Checking prerequisites...%NC%
-docker --version >nul 2>&1
+where go >nul 2>&1
 if %errorlevel% neq 0 (
-    echo %RED%❌ Docker not found. Please install Docker Desktop.%NC%
+    echo %RED%❌ Go not found. Please install Go.%NC%
     pause
     exit /b 1
 )
 
-:: Ensure we're using the optimized configuration
-if not exist "docker-compose-optimized.yml" (
-    echo %RED%❌ docker-compose-optimized.yml not found!%NC%
-    echo Please ensure the optimized configuration is in place.
+:: Test PostgreSQL connection
+echo %BLUE%🗄️ Testing PostgreSQL connection...%NC%
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -h localhost -c "SELECT version();" >nul 2>&1
+if %errorlevel% neq 0 (
+    echo %RED%❌ PostgreSQL not accessible. Please start PostgreSQL service.%NC%
     pause
     exit /b 1
 )
 
 :: Create required directories
 echo %BLUE%📁 Setting up directories...%NC%
-if not exist "models" mkdir models
-if not exist "data" mkdir data
+if not exist "C:\minio-data" mkdir "C:\minio-data"
+if not exist "uploads" mkdir uploads
 if not exist "logs" mkdir logs
 echo %GREEN%✅ Directories ready%NC%
 
-:: Check if services are already running
-echo %BLUE%📦 Checking existing services...%NC%
-docker ps --format "table {{.Names}}\t{{.Status}}" | findstr "deeds-" >nul 2>&1
-if %errorlevel% equ 0 (
-    echo %YELLOW%⚠️  Some services are already running. Stopping them first...%NC%
-    docker-compose -f docker-compose-optimized.yml down
+:: Start Ollama if not running
+echo %BLUE%🤖 Starting Ollama service...%NC%
+tasklist /FI "IMAGENAME eq ollama.exe" 2>NUL | find /I /N "ollama.exe" >NUL
+if "%ERRORLEVEL%"=="1" (
+    echo %YELLOW%Starting Ollama...%NC%
+    start /B "Ollama" cmd /c "ollama serve > logs\ollama.log 2>&1"
     timeout /t 3 >nul
+    echo %GREEN%✅ Ollama started%NC%
+) else (
+    echo %GREEN%✅ Ollama already running%NC%
 )
 
 :: Start infrastructure services first

@@ -45,14 +45,14 @@
     Upload,
     Video,
   } from "lucide-svelte";
-  
-  
+
+
   // Props
       export let maxFileSize = 100 * 1024 * 1024; // 100MB
   export let maxTotalSize = 500 * 1024 * 1024; // 500MB
         export let chunkSize = 1024 * 1024; // 1MB chunks for large files
       export const enableDragDrop = true;
-                
+
   // State
   let fileInput: HTMLInputElement;
   let dropZone: HTMLElement;

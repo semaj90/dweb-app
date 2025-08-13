@@ -35,7 +35,7 @@
   import type { Case } from '$lib/types';
 
               // Add this prop for voice output
-  
+
   interface AIResponse {
     answer: string;
     references: Array<{

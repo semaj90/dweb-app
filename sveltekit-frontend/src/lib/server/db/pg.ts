@@ -17,7 +17,7 @@ export function getPostgreSQLDatabase() {
 
   const databaseUrl =
     process.env.DATABASE_URL ||
-    "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
+    "postgresql://legal_admin:123456@localhost:5432/legal_ai_db";
   const nodeEnv = process.env.NODE_ENV || "development";
 
   console.log("🐘 Connecting to PostgreSQL database:", databaseUrl);

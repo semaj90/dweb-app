@@ -306,7 +306,21 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT COUNT(*) as document_count FROM legal_ai_db.document_processing;\" legal_ai_db)",
       "Bash(./ai-enhanced-final.exe)",
       "Bash(start \"\" \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\ai-summary-service\\test-integration.html\")",
-      "Bash(del \"src\\routes\\api\\ai\\summarize\\+server.backup.js\")"
+      "Bash(del \"src\\routes\\api\\ai\\summarize\\+server.backup.js\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(C:UsersjamesDesktopdeeds-webdeeds-web-appQUICK-START-NATIVE.bat)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"CREATE EXTENSION IF NOT EXISTS vector;\" legal_ai_db)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -d legal_ai_db -f database-schema.sql)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT id, email, role, is_active FROM users LIMIT 5;\" -q)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT id, email, role, is_active FROM users LIMIT 5;\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\seed-demo-users.sql\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\database-schema.sql\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\" -W)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\fix-login-direct.sql\")",
+      "Bash(move:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name = ''users'' AND table_schema = ''public'' ORDER BY ordinal_position;\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\d users\")",
+      "Bash(eslint:*)"
     ],
     "deny": []
   }

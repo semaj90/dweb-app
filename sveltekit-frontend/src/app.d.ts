@@ -1,9 +1,8 @@
-// @ts-nocheck
 /// <reference types="@sveltejs/kit" />
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
 
-import type { SessionUser, UserSession } from '$lib/types/auth';
+import type { SessionUser } from '$lib/types/auth';
 
 declare global {
   namespace App {
@@ -41,9 +40,9 @@ declare global {
         options?: { encoding?: string },
       ) => Promise<Uint8Array | string>;
     };
-    __MATRIX_UI__: any;
-    __TAURI__?: any;
-    electronAPI?: any;
+    __MATRIX_UI__: Record<string, unknown>;
+    __TAURI__?: Record<string, unknown>;
+    electronAPI?: Record<string, unknown>;
   }
 
   interface HTMLElement {

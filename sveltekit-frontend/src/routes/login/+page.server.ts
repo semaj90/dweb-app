@@ -1,10 +1,12 @@
-import { lucia } from "$lib/auth/session";
+import { 
+  verifyPassword, 
+  createUserSession, 
+  setSessionCookie 
+} from "$lib/server/lucia";
 import { loginSchema } from "$lib/schemas/auth";
 import { db } from "$lib/server/db/index";
 import { users } from "$lib/server/db/schema-postgres";
-import { verify } from "@node-rs/argon2";
 import { fail, redirect } from "@sveltejs/kit";
-import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import type { JSONSchema7 } from "json-schema";
 import { message, superValidate } from "sveltekit-superforms";
@@ -80,33 +82,17 @@ export const actions: Actions = {
         return message(form, "Account is deactivated", { status: 403 });
       }
 
-      // Verify password - try both bcrypt and argon2 for compatibility
-      let validPassword = false;
-      try {
-        validPassword = await bcrypt.compare(password, user.hashedPassword);
-      } catch {
-        try {
-          validPassword = await verify(
-            user.hashedPassword as unknown as string,
-            password as string
-          );
-        } catch (error) {
-          console.error("Password verification failed:", error);
-        }
-      }
+      // Verify password using custom lucia
+      const validPassword = await verifyPassword(user.hashedPassword!, password as string);
 
       if (!validPassword) {
+        console.log(`[Login] Password verification failed for ${user.email}`);
         return message(form, "Incorrect email or password", { status: 400 });
       }
 
-      // Create Lucia session
-      const session = await lucia.createSession(user.id, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-
-      cookies.set(sessionCookie.name, sessionCookie.value, {
-        path: ".",
-        ...sessionCookie.attributes,
-      });
+      // Create session using custom lucia
+      const { sessionId, expiresAt } = await createUserSession(user.id);
+      setSessionCookie(cookies, sessionId, expiresAt);
 
       console.log(`[Login] User ${user.email} logged in successfully`);
       throw redirect(303, "/dashboard");

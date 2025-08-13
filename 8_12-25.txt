@@ -1,0 +1,232 @@
+add to who wht why page.
+
+poersons of internst,
+ai should fill int he rest
+then can add more.
+
+
+stgreSQL with pgvector extension remains a core part of the     
+   architecture for:
+  - Document metadata storage
+  - Vector embeddings storage
+  - RAG retrieval system
+  - Legal document indexing
+
+  The cache manager also specifically checks for and installs       
+  the pgvector extension if it's missing. PostgreSQL is fully       
+  integrated and wasn't removed at all!
+
+> okay run everything for me make sure installed and do a 
+  playwright, user logins in, registers and it saves to db 
+  postgres everything updates crud, user has cases, cases has       
+  fileupload button and we have our go-ollama based ai 
+  summarizer that uploads to minio, references back to postgres     
+   and pg vector and displays onto a div-modal-container 
+  uploaded evidence
+
+● I'll run the complete integration and test everything with        
+  Playwright. Let me start by ensuring all services are
+  properly set up and then create a comprehensive test.
+
+● Update Todos
+  ⎿  ☐ Run cache manager to install all dependencies
+     ☐ Start all services (MinIO, PostgreSQL, Ollama, Go
+       services, SvelteKit)
+     ☐ Verify database schema and pgvector extension
+     ☐ Create user registration and login system
+     ☐ Implement cases management with CRUD operations
+     ☐ Add file upload functionality to cases
+     ☐ Integrate Go-Ollama AI summarizer with MinIO upload
+     ☐ Connect PostgreSQL metadata with pgvector storage
+     ☐ Create modal container for displaying uploaded evidence      
+     ☐ Write Playwright test for complete user flow
+
+● Update Todos
+  ⎿  ☐ Run cache manager to install all dependencies
+     ☐ Start all services (MinIO, PostgreSQL, Ollama, Go
+       services, SvelteKit)
+     ☐ Verify database schema and pgvector extension
+     ☐ Create user registration and login system
+     ☐ Implement cases management with CRUD operations
+     ☐ Add file upload functionality to cases
+     ☐ Integrate Go-Ollama AI summarizer with MinIO upload
+     ☐ Connect PostgreSQL metadata with pgvector storage
+     ☐ Create modal container for displaying uploaded evidence      
+     ☐ Write Playwright test for complete user flow
+
+yes Browser (SvelteKit 2)	LocalStorage, IndexedDB, Loki.js, Service Worker	Cache chat, embeddings, partial AI results
+QUIC Proxy	Edge cache, HTTP cache	Cache common queries/responses
+Backend API	Redis, In-memory cache	Cache embeddings, summarization, query results
+Queue	RabbitMQ, BullMQ	Async processing, cache warming, background updates
+DB Layer	Materialized views, index cache	Fast query, vector search cache
+Local LLM + WebGPU	WebAssembly cache	Cache models, inference outputs locally.
+ Local LLM + WebGPU inference with caching, combined with your full AI assistant use case, plus how the other caching and async pieces fit in.
+
+1. Local LLM + WebGPU Inference with Caching: Why It’s Powerful for Low Latency
+Local LLM means running a language model directly inside the user’s browser or a local machine, using frameworks like llama.cpp, Ollama, or a distilled fine-tuned legal model like gemma3-legal.
+
+WebGPU enables using the device’s GPU (or an accelerated path on the CPU) from within the browser via WebAssembly. This lets you run inference much faster than CPU-bound JS code.
+
+Caching inference outputs locally (in IndexedDB, memory, or via WebAssembly caches) means:
+
+You don’t recompute the same outputs repeatedly.
+
+If the user inputs similar prompts or queries, the cached results can be reused instantly.
+
+Intermediate states or embeddings are stored for quick retrieval.
+
+Result: When you press a button to chat or ask for inline edits, the AI can respond immediately without network latency, because:
+
+The model is local (no server round-trip).
+
+Cached partial results reduce GPU work.
+
+You avoid bottlenecks in bandwidth or backend load.
+
+2. User Interaction Flow in Your AI Assistant
+User presses a button to start chatting.
+
+User drags & drops files (txt, JSON, PDF, images, even videos).
+
+These files get:
+
+Uploaded directly to MinIO (local S3-compatible object storage).
+
+Metadata and embeddings generated and stored in Postgres + pgvector via drizzle-orm + TypeScript.
+
+The frontend UI is built with SvelteKit 2 + XState + stores:
+
+XState manages UI state like "Uploading", "Processing", "Chatting", "Idle".
+
+Async updates from backend queues (RabbitMQ or BullMQ) inform the frontend of progress.
+
+User hits a keyboard shortcut, triggering:
+
+AI to generate inline ghost text or suggestions in the rich text editor.
+
+This is done via local inference or backend AI calls depending on availability and GPU load.
+
+AI continuously:
+
+Summarizes uploaded evidence.
+
+Generates edits, inline suggestions.
+
+Builds reports.
+
+Adds new data and context to chat history (stored in Postgres JSONB with timestamps).
+
+3. How Caching and Async Queueing Fit
+Layer	Role in Your System
+Browser (SvelteKit 2)	Cache chat history, embeddings, partial AI results locally (IndexedDB, localStorage, Loki.js). Keep UI responsive, minimize repeat server calls.
+QUIC Proxy (optional)	Cache frequent queries/responses close to client for faster delivery (HTTP/3/QUIC).
+Backend API (Redis cache)	Cache embeddings, summarizations, RAG query results for fast reuse.
+Queue (RabbitMQ/BullMQ)	Run CPU/GPU-heavy tasks async: OCR, embedding, indexing, summarization without blocking UI.
+DB (Postgres + Neo4j)	Store embeddings, metadata, relationships. Materialize popular queries for fast access.
+Local LLM + WebGPU + WASM	Fast, GPU-accelerated local inference, caching intermediate states and outputs for instant AI responses.
+
+4. Semantic Analysis + Distilled Models to Reduce GPU Overhead
+Use a distilled, smaller legal-bert or other compact model for semantic analysis in-browser or backend:
+
+Efficiently generate embeddings and classifications.
+
+This reduces GPU load vs. huge full LLM runs.
+
+Use distilled models to pre-filter or summarize, and trigger the heavier LLM only when necessary.
+
+This approach leverages caching hits and avoids unnecessary GPU runs.
+
+5. Streaming + Chunking + History for RAG & AI Chat
+AI assistant:
+
+Streams chunked output in real-time (e.g., partial sentences or inline edits appear as they’re generated).
+
+Stores chat history with timestamps in DB, adding to context dynamically.
+
+RAG enhancements:
+
+Legal-bert does semantic search & intent clustering.
+
+Gemma3 (fine-tuned legal LLM) synthesizes enhanced responses.
+
+Fetch and incorporate relevant documents, cases, or even internet info if connected.
+
+This leads to incrementally enriched, context-aware responses that improve over time.
+
+Summary
+Your architecture combines:
+
+Local GPU-accelerated LLM inference with caching to enable instant, low-latency AI responses on the client.
+
+Backend asynchronous pipelines to process and index uploads without blocking users.
+
+Robust caching layers from browser to backend to optimize performance and scalability.
+
+Semantic distilled models to reduce GPU cost by preprocessing and filtering.
+
+Real-time UI orchestration (SvelteKit + XState) to reflect ongoing work and partial AI outputs seamlessly.
+
+This is a modern, scalable, efficient way to build a sophisticated AI legal assistant that is responsive, context-rich, and cost-effective.
+ire a QUIC/HTTP3 edge proxy with a simple in-memory cache and clarify how it fits vs a load balancer, plus how it complements your multi-layer caching and local WebGPU inference.
+
+checklist
+ QUIC proxy command that fronts rag-kratos over HTTP/3 with self-signed TLS
+ Add in-memory edge cache (TTL, size, JSON-only, GET/POST-aware)
+ Env wiring in .env.example
+ VS Code task to build/run the proxy
+ Explain QUIC proxy vs load balancer and when to use each
+actions taken
+Implemented QUIC proxy with edge cache
+File: main.go
+Reverse-proxy to RAG backend (default http://localhost:8093) over HTTP/3 with self-signed TLS.
+Added in-memory edge cache:
+Key: method + path + query + hash(body for POST)
+TTL (QUIC_EDGE_CACHE_TTL), max items (QUIC_EDGE_CACHE_MAX), max bytes (QUIC_EDGE_CACHE_MAX_BYTES)
+Caches only 200 OK JSON responses; skips SSE/Upgrade; replays headers; sets X-Cache=H3-Edge-HIT on hit.
+Updated env examples
+File: .env.example
+Added RAG_QUIC_FRONT_PORT, RAG_BACKEND_URL, QUIC_EDGE_CACHE_*.
+Added VS Code tasks
+File: tasks.json
+“Go: Run rag-kratos” (already added earlier).
+New “Go: Run rag-quic-proxy” builds and starts the proxy.
+how to run
+Start rag-kratos (backend):
+VS Code Task: Go: Run rag-kratos
+Health: http://localhost:8093/health
+Start QUIC proxy (front):
+VS Code Task: Go: Run rag-quic-proxy
+QUIC/HTTP3: https://localhost:8443/health
+Proxies any path to the backend; caches small JSON responses for quick hits.
+Optional PowerShell (if you want to run manually):
+
+QUIC proxy vs load balancer (and where each fits)
+QUIC/HTTP3 proxy (this component)
+
+Purpose: HTTP/3 termination close to clients, multiplexing many streams over a single connection to reduce head-of-line blocking and improve mobile/lossy networks.
+Adds edge caching for small JSON responses; great for repeated chat snippets, metadata calls, and vector query summaries.
+Lives near the client (same machine, same LAN, or an edge node). It’s not a global traffic director by itself.
+Traditional load balancer (NGINX/Envoy/Cloud LB)
+
+Purpose: Distribute traffic across multiple backend instances, TLS termination, health checks, blue/green, rate limiting, WAF, global routing.
+Can also terminate HTTP/3/QUIC and do caching, but typically sits as the primary gateway on the edge or cloud.
+When to use which:
+
+Local dev/desktop or on-prem edge: use this QUIC proxy as a lightweight H3 front and edge cache. It’s fast to start, self-contained, and optimized for your app’s paths.
+Production and scaling: keep or add a real LB (Envoy, Cloud LB). You can still run this QUIC proxy on nodes as a micro-edge to further reduce latency and do path-specific caching, but the LB remains the main ingress.
+where this fits your caching story
+Browser: chat history, embeddings, partial results in IndexedDB/localStorage/Loki; service worker for offline reads.
+QUIC edge proxy: caches small, frequent JSON responses right at the edge (client machine or close node). Cuts RTT and reduces backend load.
+Backend: you already have L1 in-memory + optional L2 Redis for embeddings; can extend to summaries and RAG results.
+Queue (RabbitMQ/BullMQ): async OCR, indexing, summarization; optionally warm the QUIC edge by prefetching popular keys.
+DB: pgvector search with IVFFLAT indexes; materialized views for common queries; Neo4j graph enrichment for relationships.
+Local LLM + WebGPU: instant client-side inference; cache WASM and model weights; combine with browser caches to return UI hints immediately, then upgrade with backend results.
+next steps (optional)
+Add ETag/If-None-Match between proxy and backend to avoid transferring unchanged JSON.
+Add small Prometheus metrics in the proxy (edge_cache_hits/misses, bytes served).
+Neo4j enrichment path:
+Add NEO4J_URI/USER/PASS to env.
+Add a toggle (?graph=1) in /rag that enriches results via Neo4j client and returns graph nodes/edges.
+QUIC streaming routes:
+If you later expose SSE-like streams over HTTP/3, adapt the proxy to bypass caching for stream content and keep flush behavior.
+If you want, I can wire the Neo4j enrichment in rag-kratos with a clean response format and add a simple pgvector IVFFLAT index helper next.

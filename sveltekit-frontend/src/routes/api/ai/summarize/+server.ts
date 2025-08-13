@@ -55,6 +55,9 @@ export const POST: RequestHandler = async ({ request }) => {
         (data && typeof data === "object"
           ? (data as Record<string, unknown>)
           : {}) ?? {};
+      const retryAfter = res.headers.get("retry-after");
+      const headers: Record<string, string> = {};
+      if (retryAfter) headers["Retry-After"] = retryAfter;
       return json(
         {
           ok: false,
@@ -64,7 +67,7 @@ export const POST: RequestHandler = async ({ request }) => {
             (typeof err.message === "string" && err.message) ||
             "Summarizer error",
         },
-        { status: res.status }
+        { status: res.status, headers }
       );
     }
 

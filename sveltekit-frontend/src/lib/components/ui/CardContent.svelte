@@ -8,7 +8,7 @@
 
 
 
-    $: classes = className;
+    const classes = $derived(className);
 </script>
 
 <div class="space-y-4">
