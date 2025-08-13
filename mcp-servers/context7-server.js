@@ -18,6 +18,7 @@ import path from 'path';
 import http from 'http';
 import { WebSocketServer } from 'ws';
 import fetch from 'node-fetch';
+import { pathToFileURL } from 'url';
 
 // Stack configuration from command line args
 const stackConfig = process.argv.find(arg => arg.startsWith('--stack='))?.split('=')[1]?.split(',') || [];
@@ -837,46 +838,100 @@ ${entities.clauses.length > 0 ? entities.clauses.map(clause => `- ${clause}`).jo
 - **AI Enhancement**: Use Ollama for advanced entity relationship analysis`;
   }
 
-async qdrantSearch(query, limit = 5) {
-  const MODEL = process.env.EMBED_MODEL || 'nomic-embed-text';
-  const COLLECTION = process.env.QDRANT_COLLECTION || 'dev_embeddings';
-  const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
+  async qdrantSearch(query, limit = 5) {
+    const MODEL = process.env.EMBED_MODEL || 'nomic-embed-text';
+    const COLLECTION = process.env.QDRANT_COLLECTION || 'dev_embeddings';
+    const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
 
-  const er = await fetch('http://localhost:11434/api/embeddings', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, input: query })
-  });
-  if (!er.ok) throw new Error('Embedding request failed');
-  const ed = await er.json();
-  const vector = ed?.embedding || ed?.data?.[0]?.embedding;
-  if (!Array.isArray(vector)) throw new Error('No embedding vector');
+    const er = await fetch('http://localhost:11434/api/embeddings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL, input: query })
+    });
+    if (!er.ok) throw new Error('Embedding request failed');
+    const ed = await er.json();
+    const vector = ed?.embedding || ed?.data?.[0]?.embedding;
+    if (!Array.isArray(vector)) throw new Error('No embedding vector');
 
-  const sr = await fetch(`${QDRANT_URL}/collections/${COLLECTION}/points/search`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ vector, limit, with_payload: true })
-  });
-  if (!sr.ok) throw new Error('Qdrant search failed');
-  const sd = await sr.json();
-  return sd?.result ?? sd;
+    const sr = await fetch(`${QDRANT_URL}/collections/${COLLECTION}/points/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vector, limit, with_payload: true })
+    });
+    if (!sr.ok) throw new Error('Qdrant search failed');
+    const sd = await sr.json();
+    return sd?.result ?? sd;
+  }
+
+  async run() {
+    // HTTP health/metrics + optional WS logs
+    const HTTP_PORT = Number(process.env.SERVER_PORT || process.env.MCP_PORT || 4000);
+    const LOG_WS_PATH = '/logs';
+
+    const httpServer = http.createServer((req, res) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
+
+      if (req.url === '/health') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({
+          status: 'healthy',
+          server: 'context7-single',
+          port: HTTP_PORT,
+          ts: Date.now(),
+          process: {
+            pid: process.pid,
+            uptime: process.uptime(),
+            memory: process.memoryUsage()
+          }
+        }));
+      }
+      if (req.url === '/metrics') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({
+          uptime: process.uptime(),
+          rss: process.memoryUsage().rss,
+          heapUsed: process.memoryUsage().heapUsed
+        }));
+      }
+      res.statusCode = 404;
+      res.end('Not Found');
+    });
+
+    const wss = new WebSocketServer({ server: httpServer, path: LOG_WS_PATH });
+    httpServer.listen(HTTP_PORT, () => {
+      console.error(`[Context7] HTTP listening on http://localhost:${HTTP_PORT}`);
+      console.error(`[Context7 WS] ws://localhost:${HTTP_PORT}${LOG_WS_PATH}`);
+    });
+    setInterval(() => {
+      for (const c of wss.clients) if (c.readyState === 1) c.send(JSON.stringify({ ts: Date.now(), kind: 'heartbeat', server: 'context7-single' }));
+    }, 7000);
+
+    // Start MCP stdio server
+    const transport = new StdioServerTransport();
+    await this.server.connect(transport);
+    console.error('Context7 server ready.');
+  }
 }
 
-async run() {
-  // WebSocket logs server (optional)
-  const LOG_WS_PORT = Number(process.env.MCP_LOG_WS_PORT || 7072);
-  const httpServer = http.createServer((_, res) => { res.end('Context7 WS') });
-  const wss = new WebSocketServer({ server: httpServer, path: '/logs' });
-  httpServer.listen(LOG_WS_PORT, () => console.error(`[Context7 WS] ws://localhost:${LOG_WS_PORT}/logs`));
-  setInterval(() => {
-    for (const c of wss.clients) if (c.readyState === 1) c.send(JSON.stringify({ ts: Date.now(), msg: 'context7 heartbeat' }))
-  }, 7000);
-
-  // Start the MCP server over stdio
-  const transport = new StdioServerTransport();
-  await this.server.connect(transport);
-// Start the server
-const server = new Context7Server();
-server.run().catch(console.error);
-const server = new Context7Server();
-server.run().catch(console.error);
+// Entrypoint: run only when executed directly
+try {
+  const invokedAsScript = import.meta.url === pathToFileURL(process.argv[1]).href;
+  if (invokedAsScript) {
+  console.error('Context7 server starting...');
+  const server = new Context7Server();
+  server.run().catch((err) => {
+    console.error('Context7 server error:', err);
+    process.exit(1);
+  });
+  }
+} catch {
+  // Fallback: always try to run if detection fails
+  const server = new Context7Server();
+  server.run().catch((err) => {
+    console.error('Context7 server error:', err);
+    process.exit(1);
+  });
+}

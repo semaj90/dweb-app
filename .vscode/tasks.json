@@ -272,6 +272,29 @@
       "isBackground": true
     },
     {
+      "label": "MCP: Context7 Multi-Core",
+      "type": "shell",
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-servers/context7-multicore.js"],
+      "options": {
+        "env": {
+          "MCP_PORT": "4100",
+          "MCP_MULTICORE": "true"
+        }
+      },
+      "group": "build",
+      "isBackground": true
+    },
+    {
+      "label": "MCP: Install Deps",
+      "type": "shell",
+      "command": "npm",
+      "args": ["i"],
+      "options": { "cwd": "${workspaceFolder}/mcp-servers" },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
       "label": "Start SvelteKit Dev",
       "type": "shell",
       "command": "npm",
@@ -799,7 +822,7 @@
       ],
       "group": "build",
       "presentation": { "reveal": "always", "panel": "shared" },
-      "detail": "Ensures an IVFFLAT index exists for the configured pgvector column"
+      "detail": "Ensures an IVFFLAT index for the configured pgvector column"
     }
     ,
     {
@@ -836,6 +859,333 @@
       "group": "build",
       "presentation": { "reveal": "always", "panel": "new" },
       "detail": "Parse PDFs from known folders and insert into legal_documents with embeddings"
+    }
+    ,
+    {
+      "label": "Docs: Open ELK placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["elk-stack/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open MQ placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["message-queue/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open QUIC placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["quic-services/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Node Cluster placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["node-cluster/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Windows Service placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["windows-service/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open WebGPU placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["webgpu/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open XState placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["xstate/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Go: Show Kratos placeholder output",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Output '[go-services/kratos-server] Placeholder server. TODO: integrate go-kratos.'"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+    ,
+    {
+      "label": "Docs: Open MCP Context7 Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": ["MCP_CONTEXT7_BEST_PRACTICES.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Context7 Integration Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": ["best-practices/context7-integration-best-practices.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Enhanced RAG Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": ["best-practices/enhanced-rag-best-practices.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open MCP Extension README",
+      "type": "shell",
+      "command": "code",
+      "args": [".vscode/extensions/mcp-context7-assistant/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Health: MCP Context7 (4000)",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-sS", "http://localhost:4000/health"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Health: MCP Multi-Core (4100)",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-sS", "http://localhost:4100/health"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Backup: tasks.json & kratos main.go",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/backup-tasks.ps1"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "🏗️ Go-Kratos: Build & Run",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-services; go mod tidy; go build -o ./bin/kratos-server.exe ./cmd/kratos-server; Start-Process -NoNewWindow -FilePath './bin/kratos-server.exe'"
+      },
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" },
+      "detail": "Build and run Go-Kratos legal AI server"
+    },
+    {
+      "label": "📊 ELK: Start Elasticsearch",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/elasticsearch; ./start-elasticsearch.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Elasticsearch for legal AI logging"
+    },
+    {
+      "label": "📊 ELK: Start Logstash",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/logstash; ./start-logstash.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Logstash for legal AI log processing"
+    },
+    {
+      "label": "📊 ELK: Start Kibana",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/kibana; ./start-kibana.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Kibana for legal AI log visualization"
+    },
+    {
+      "label": "🚀 NATS: Start Message Queue",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd message-queue/nats; ./start-nats.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start NATS server for inter-service messaging"
+    },
+    {
+      "label": "🌐 Node: Start Cluster Manager",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd node-cluster; ./start-cluster.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Node.js cluster manager for scalable services"
+    },
+    {
+      "label": "⚡ QUIC: Start Protocol Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd quic-services; ./start-quic.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start QUIC protocol services for ultra-low latency"
+    },
+    {
+      "label": "🔧 Windows: Start Service Manager",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd windows-service; ./start-service.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Windows Service integration for system management"
+    },
+    {
+      "label": "🚀 Full Stack: Start All Services",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Starting all Legal AI orchestration services..."],
+      "group": "build",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "🏗️ Go-Kratos: Build & Run",
+        "🚀 NATS: Start Message Queue",
+        "🌐 Node: Start Cluster Manager",
+        "⚡ QUIC: Start Protocol Services"
+      ],
+      "detail": "Orchestrated startup of all microservice components"
+    },
+    {
+      "label": "📋 Orchestration: Health Check All",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Output '🔍 Checking orchestration service health...'; $services = @('Kratos:8080', 'NATS:4222', 'Node-Cluster:3000', 'QUIC:8443'); foreach ($svc in $services) { $parts = $svc -split ':'; $name = $parts[0]; $port = $parts[1]; try { $result = Test-NetConnection -ComputerName localhost -Port $port -WarningAction SilentlyContinue; if ($result.TcpTestSucceeded) { Write-Output \"✅ $name (port $port): Running\" } else { Write-Output \"❌ $name (port $port): Not accessible\" } } catch { Write-Output \"❌ $name (port $port): Error checking\" } }"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Check health status of all orchestration services"
+    },
+    {
+      "label": "Orchestration: Validate Configs",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/validate-configs.ps1"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Validate service discovery, dependencies, routing, and logging configs"
+    },
+    {
+      "label": "Orchestration: Aggregate Health",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/health-aggregate.ps1"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Ping all services from service-discovery.json and write .vscode/orchestration-health.json"
+    },
+    {
+      "label": "Orchestration: Start-All (Dry-Run)",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/start-all.ps1", "-DryRun"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Plan startup order using dependencies.json without launching anything"
+    },
+    {
+      "label": "Orchestration: Start-All (Execute)",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/start-all.ps1", "-DryRun:$false"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Execute orchestrated start (currently logs what it would start; safe placeholders)"
+    },
+    {
+      "label": "Orchestration: Open Health Report",
+      "type": "shell",
+      "command": "code",
+      "args": [".vscode/orchestration-health.json"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Open the aggregated orchestration health report"
+  },
+    {
+      "label": "Todos: Generate Timestamped",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/generate-todo.ps1", "."],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Generate todolist-<timestamp>.txt in repo root"
+    },
+    {
+      "label": "Orchestration: Open Discovery JSON",
+      "type": "shell",
+      "command": "code",
+      "args": ["scripts/orchestration/service-discovery.json"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Open the service discovery configuration"
     }
   ]
 }

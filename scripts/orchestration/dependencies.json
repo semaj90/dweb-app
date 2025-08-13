@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "dependencies": {
+    "sveltekit-frontend": ["mcp-multi-w1", "summarizer-http", "postgres"],
+    "summarizer-http": ["ollama", "redis"],
+    "cluster-http": [],
+    "rag-http": ["postgres"],
+    "grpc-server": ["postgres"],
+    "mcp-single": [],
+    "mcp-multi-w1": [],
+    "qdrant": ["postgres"],
+    "kibana": ["elasticsearch"],
+    "logstash": ["elasticsearch"],
+    "quic-front": ["rag-http"],
+    "nats": []
+  }
+}

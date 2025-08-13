@@ -320,7 +320,9 @@
       "Bash(move:*)",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name = ''users'' AND table_schema = ''public'' ORDER BY ordinal_position;\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\d users\")",
-      "Bash(eslint:*)"
+      "Bash(eslint:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")"
     ],
     "deny": []
   }

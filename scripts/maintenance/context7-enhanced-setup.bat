@@ -13,13 +13,13 @@ echo %CYAN%[CHECK]%RESET% Running npm check to identify issues...
 npm run check >check_errors.txt 2>&1
 if errorlevel 1 (
     echo %YELLOW%[FOUND]%RESET% npm check errors detected, applying fixes...
-    
+
     :: Common SvelteKit 5 fixes
     call :FIX_SVELTE5_ISSUES
-    call :FIX_TYPESCRIPT_ISSUES  
+    call :FIX_TYPESCRIPT_ISSUES
     call :FIX_IMPORT_ISSUES
     call :FIX_COMPONENT_ISSUES
-    
+
     :: Re-run check
     echo %CYAN%[VERIFY]%RESET% Re-running npm check...
     npm run check >check_errors_after.txt 2>&1
@@ -226,13 +226,13 @@ call :LOG_SUCCESS "Project root directory found"
 :: Check for existing frontend and analyze current setup
 if exist "%FRONTEND_DIR%" (
     call :LOG_SUCCESS "Existing sveltekit-frontend found - analyzing current setup"
-    
+
     :: Detect existing package.json to understand current configuration
     cd /d "%FRONTEND_DIR%"
     if exist "package.json" (
         echo %CYAN%[MERGE MODE]%RESET% Existing SvelteKit project detected
         echo %CYAN%[ANALYSIS]%RESET% Checking current dependencies and scripts...
-        
+
         :: Check for existing legal AI features
         findstr /C:"ollama" package.json >nul 2>&1
         if !errorlevel! equ 0 (
@@ -241,7 +241,7 @@ if exist "%FRONTEND_DIR%" (
         ) else (
             set OLLAMA_EXISTS=false
         )
-        
+
         findstr /C:"drizzle" package.json >nul 2>&1
         if !errorlevel! equ 0 (
             echo %GREEN%[FOUND]%RESET% Drizzle ORM already configured
@@ -249,26 +249,26 @@ if exist "%FRONTEND_DIR%" (
         ) else (
             set DRIZZLE_EXISTS=false
         )
-        
+
         :: Check script count (fixed)
         findstr /C:"scripts" package.json >nul 2>&1 && (
             echo %CYAN%[INFO]%RESET% Found comprehensive project with existing scripts
         ) || (
             echo %CYAN%[INFO]%RESET% Basic project structure detected
         )
-        
+
         cd /d "%PROJECT_ROOT%"
     ) else (
         call :LOG_WARN "Frontend directory exists but no package.json found"
         set NEW_PROJECT=true
     )
-    
+
     :: Create timestamped backup
     set "BACKUP_TIMESTAMP=%DATE:~10,4%%DATE:~4,2%%DATE:~7,2%_%TIME:~0,2%%TIME:~3,2%%TIME:~6,2%"
     set "BACKUP_TIMESTAMP=!BACKUP_TIMESTAMP: =0!"
     set "BACKUP_TIMESTAMP=!BACKUP_TIMESTAMP::=!"
     set "BACKUP_DIR=%PROJECT_ROOT%backups\sveltekit-frontend_backup_!BACKUP_TIMESTAMP!"
-    
+
     echo %CYAN%[BACKUP]%RESET% Creating safety backup...
     if not exist "%PROJECT_ROOT%backups" mkdir "%PROJECT_ROOT%backups"
     xcopy /E /I /Q "%FRONTEND_DIR%" "!BACKUP_DIR!" >nul 2>&1
@@ -279,7 +279,7 @@ if exist "%FRONTEND_DIR%" (
         call :LOG_SUCCESS "Backup created: !BACKUP_DIR!"
         echo [ ] BACKUP: Frontend backed up to !BACKUP_DIR! >> "%TODO_FILE%"
     )
-    
+
     echo.
     echo %YELLOW%[MERGE MODE]%RESET% CONTEXT7 will enhance your existing project without breaking functionality
     echo %YELLOW%[SAFETY]%RESET% All existing files backed up to: !BACKUP_DIR!
@@ -287,7 +287,7 @@ if exist "%FRONTEND_DIR%" (
     echo.
     echo What CONTEXT7 will add:
     echo   + Legal AI chat endpoints
-    echo   + Document search capabilities  
+    echo   + Document search capabilities
     echo   + Gemma 3 Legal model integration
     echo   + Enhanced vector search for legal documents
     echo   + Legal-specific database schema extensions
@@ -299,7 +299,7 @@ if exist "%FRONTEND_DIR%" (
         pause
         exit /b 0
     )
-    
+
     set MERGE_MODE=true
 ) else (
     echo %CYAN%[NEW PROJECT]%RESET% Creating new sveltekit-frontend directory...
@@ -328,18 +328,6 @@ if errorlevel 1 (
     call :LOG_SUCCESS "Node.js found: !NODE_VER!"
 )
 
-:: Check Docker
-docker --version >nul 2>&1
-if errorlevel 1 (
-    call :LOG_ERROR "Docker not found"
-    echo Docker Desktop required. Download from: https://www.docker.com/products/docker-desktop
-    echo [ ] CRITICAL: Install Docker Desktop >> "%TODO_FILE%"
-    choice /C YN /M "Continue without Docker (not recommended)"
-    if !errorlevel! equ 2 exit /b 1
-) else (
-    for /f "tokens=3" %%i in ('docker --version') do set DOCKER_VER=%%i
-    call :LOG_SUCCESS "Docker found: !DOCKER_VER!"
-)
 
 :: Check Git and recommend version control
 git --version >nul 2>&1
@@ -350,7 +338,7 @@ if errorlevel 1 (
 ) else (
     for /f "tokens=3" %%i in ('git --version') do set GIT_VER=%%i
     call :LOG_SUCCESS "Git found: !GIT_VER!"
-    
+
     :: Check if this is a Git repository
     cd /d "%PROJECT_ROOT%"
     git status >nul 2>&1
@@ -359,7 +347,7 @@ if errorlevel 1 (
         echo [ ] RECOMMENDED: Initialize Git repository >> "%TODO_FILE%"
     ) else (
         call :LOG_SUCCESS "Git repository detected"
-        
+
         :: Check for uncommitted changes
         git diff-index --quiet HEAD >nul 2>&1
         if errorlevel 1 (
@@ -409,81 +397,7 @@ for %%d in (%DIRECTORIES%) do (
 call :LOG_SUCCESS "Directory structure created for deeds-web-app"
 echo.
 
-:: ============================================================================
-:: STEP 2: DOCKER INFRASTRUCTURE SETUP
-:: ============================================================================
-echo %BLUE%[STEP 2]%RESET% Setting up Docker Infrastructure...
-call :LOG "Setting up Docker infrastructure"
 
-:: Create docker-compose.yml
-(
-echo version: '3.8'
-echo.
-echo services:
-echo   postgres:
-echo     image: pgvector/pgvector:pg%POSTGRES_VERSION%
-echo     container_name: %PROJECT_NAME%-postgres
-echo     environment:
-echo       - POSTGRES_DB=%DB_NAME%
-echo       - POSTGRES_USER=%DB_USER%
-echo       - POSTGRES_PASSWORD=%DB_PASSWORD%
-echo     ports:
-echo       - "5432:5432"
-echo     volumes:
-echo       - postgres_data:/var/lib/postgresql/data
-echo       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
-echo     networks:
-echo       - context7-network
-echo     restart: unless-stopped
-echo     healthcheck:
-echo       test: ["CMD-SHELL", "pg_isready -U %DB_USER% -d %DB_NAME%"]
-echo       interval: 30s
-echo       timeout: 10s
-echo       retries: 5
-echo.
-echo   redis:
-echo     image: redis:7-alpine
-echo     container_name: %PROJECT_NAME%-redis
-echo     ports:
-echo       - "6379:6379"
-echo     volumes:
-echo       - redis_data:/data
-echo     networks:
-echo       - context7-network
-echo     restart: unless-stopped
-echo     healthcheck:
-echo       test: ["CMD", "redis-cli", "ping"]
-echo       interval: 30s
-echo       timeout: 10s
-echo       retries: 3
-echo.
-echo   ollama:
-echo     image: ollama/ollama:latest
-echo     container_name: %PROJECT_NAME%-ollama
-echo     ports:
-echo       - "11434:11434"
-echo     volumes:
-echo       - ollama_data:/root/.ollama
-echo     environment:
-echo       - OLLAMA_HOST=0.0.0.0
-echo     networks:
-echo       - context7-network
-echo     restart: unless-stopped
-echo     healthcheck:
-echo       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
-echo       interval: 60s
-echo       timeout: 30s
-echo       retries: 3
-echo.
-echo volumes:
-echo   postgres_data:
-echo   redis_data:
-echo   ollama_data:
-echo.
-echo networks:
-echo   context7-network:
-echo     driver: bridge
-) > "%PROJECT_ROOT%\docker\docker-compose.yml"
 
 :: Create PostgreSQL init script
 (
@@ -511,26 +425,6 @@ echo GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA app TO %DB_USER%;
 call :LOG_SUCCESS "Docker infrastructure configured"
 echo.
 
-:: ============================================================================
-:: STEP 3: START DOCKER SERVICES
-:: ============================================================================
-echo %BLUE%[STEP 3]%RESET% Starting Docker Services...
-call :LOG "Starting Docker services"
-
-cd /d "%PROJECT_ROOT%\docker"
-echo %CYAN%[INFO]%RESET% Starting Docker services...
-docker compose up -d
-
-if errorlevel 1 (
-    call :LOG_WARN "Docker services may have issues starting"
-    echo [ ] CHECK: Verify Docker Desktop is running >> "%TODO_FILE%"
-) else (
-    call :LOG_SUCCESS "Docker services started"
-)
-
-echo %CYAN%[INFO]%RESET% Waiting 20 seconds for service initialization...
-timeout /t 20 /nobreak >nul
-echo.
 
 :: ============================================================================
 :: STEP 4: SVELTEKIT PROJECT SETUP
@@ -548,10 +442,10 @@ if errorlevel 1 (
 :: Smart package.json handling for merge mode
 if "%MERGE_MODE%"=="true" (
     echo %CYAN%[MERGE]%RESET% Enhancing existing package.json with CONTEXT7 features...
-    
+
     :: Create backup
     copy "package.json" "package.json.pre-context7" >nul 2>&1
-    
+
     :: Create merge script for package.json
     (
     echo const fs = require('fs');
@@ -588,7 +482,7 @@ if "%MERGE_MODE%"=="true" (
     echo fs.writeFileSync('package.json', JSON.stringify(existing, null, 2));
     echo console.log('✅ package.json enhanced with CONTEXT7 features');
     ) > merge-package.js
-    
+
     :: Run merge
     node merge-package.js
     if errorlevel 1 (
@@ -599,10 +493,10 @@ if "%MERGE_MODE%"=="true" (
         call :LOG_SUCCESS "Package.json enhanced with CONTEXT7 features"
         echo [ ] ENHANCED: package.json merged successfully >> "%TODO_FILE%"
     )
-    
+
     :: Cleanup
     del merge-package.js >nul 2>&1
-    
+
 ) else (
     :: New project - create fresh package.json
     echo %CYAN%[NEW]%RESET% Creating fresh package.json...
@@ -687,7 +581,7 @@ if errorlevel 1 (
     )
 ) else (
     call :LOG_SUCCESS "Dependencies installed successfully"
-    
+
     :: Fix npm check errors after successful install
     echo %CYAN%[FIX]%RESET% Attempting to fix npm check errors...
     call :FIX_NPM_CHECK_ERRORS
@@ -858,27 +752,9 @@ call :LOG "Setting up AI models"
 echo %CYAN%[INFO]%RESET% Setting up Ollama models...
 timeout /t 10 /nobreak >nul
 
-:: Pull standard models
-docker exec %PROJECT_NAME%-ollama ollama pull llama3.2:latest 2>nul
-if errorlevel 1 (
-    call :LOG_WARN "Failed to pull llama3.2:latest"
-    echo [ ] ISSUE: Could not download llama3.2 model >> "%TODO_FILE%"
-) else (
-    call :LOG_SUCCESS "llama3.2:latest ready"
-)
+use gemma3
 
-docker exec %PROJECT_NAME%-ollama ollama pull nomic-embed-text:latest 2>nul
-if errorlevel 1 (
-    call :LOG_WARN "Failed to pull embedding model"
-    echo [ ] ISSUE: Could not download embedding model >> "%TODO_FILE%"
-) else (
-    call :LOG_SUCCESS "Embedding model ready"
-)
 
-echo.
-
-:: ============================================================================
-:: STEP 8: SMART DATABASE SCHEMA ENHANCEMENT
 :: ============================================================================
 echo %BLUE%[STEP 8]%RESET% Smart Database Schema Enhancement...
 call :LOG "Enhancing database schema for legal AI"
@@ -887,12 +763,12 @@ cd /d "%FRONTEND_DIR%"
 
 if "%MERGE_MODE%"=="true" (
     echo %CYAN%[MERGE]%RESET% Extending existing database schema...
-    
+
     :: Check existing schema
     if exist "src\lib\db\schema.ts" (
         echo %GREEN%[FOUND]%RESET% Existing schema detected
         copy "src\lib\db\schema.ts" "src\lib\db\schema.ts.pre-context7" >nul 2>&1
-        
+
         :: Create legal schema extension
         (
         echo.
@@ -934,7 +810,7 @@ if "%MERGE_MODE%"=="true" (
         echo   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()
         echo });
         ) >> "src\lib\db\schema.ts"
-        
+
         call :LOG_SUCCESS "Legal schema extensions added"
         echo [ ] ENHANCED: Database schema extended with legal tables >> "%TODO_FILE%"
     ) else (
@@ -982,14 +858,14 @@ call :LOG "Adding legal AI API routes"
 
 if "%MERGE_MODE%"=="true" (
     echo %CYAN%[MERGE]%RESET% Adding legal AI routes alongside existing APIs...
-    
+
     :: Create legal API directory structure
     mkdir "src\routes\api\legal" 2>nul
     mkdir "src\routes\api\legal\chat" 2>nul
     mkdir "src\routes\api\legal\search" 2>nul
     mkdir "src\routes\api\legal\documents" 2>nul
     mkdir "src\routes\api\legal\health" 2>nul
-    
+
     :: Enhanced legal health check (extends existing)
     (
     echo import { json } from '@sveltejs/kit';
@@ -1027,7 +903,7 @@ if "%MERGE_MODE%"=="true" (
     echo   }
     echo };
     ) > "src\routes\api\legal\health\+server.ts"
-    
+
     call :LOG_SUCCESS "Legal API routes added to existing structure"
     echo [ ] ENHANCED: Added /api/legal/* routes >> "%TODO_FILE%"
 ) else (
@@ -1076,7 +952,7 @@ echo ```
 echo.
 echo ## Quick Start
 echo.
-echo 1. **Start the platform**: 
+echo 1. **Start the platform**:
 echo    ```cmd
 echo    scripts\start.bat
 echo    ```
@@ -1091,7 +967,7 @@ echo.
 echo ## Services
 echo - **Frontend**: SvelteKit 5 on port 5173
 echo - **Database**: PostgreSQL with pgvector on port 5432
-echo - **Cache**: Redis on port 6379  
+echo - **Cache**: Redis on port 6379
 echo - **AI**: Ollama on port 11434
 echo.
 echo ## Management
@@ -1138,7 +1014,7 @@ if "%MERGE_MODE%"=="true" (
     echo.
     echo %CYAN%🔗 New Legal AI Features:%RESET%
     echo   • 🏛️ Legal AI Chat: http://localhost:5173/api/legal/chat
-    echo   • 🔍 Document Search: http://localhost:5173/api/legal/search  
+    echo   • 🔍 Document Search: http://localhost:5173/api/legal/search
     echo   • 📊 Legal Health: http://localhost:5173/api/legal/health
     echo   • ⚖️ Case Analysis: Enhanced with Gemma 3 Legal
     echo.

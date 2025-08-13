@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "environment": "local",
+  "services": [
+    { "name": "mcp-single", "host": "localhost", "port": 4000, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w1", "host": "localhost", "port": 4100, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w2", "host": "localhost", "port": 4101, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w3", "host": "localhost", "port": 4102, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w4", "host": "localhost", "port": 4103, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w5", "host": "localhost", "port": 4104, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w6", "host": "localhost", "port": 4105, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w7", "host": "localhost", "port": 4106, "protocol": "http", "health": "/health", "category": "mcp" },
+    { "name": "mcp-multi-w8", "host": "localhost", "port": 4107, "protocol": "http", "health": "/health", "category": "mcp" },
+
+    { "name": "sveltekit-frontend", "host": "localhost", "port": 5173, "protocol": "http", "health": "/api/ai/vector-search" , "category": "frontend"},
+
+    { "name": "postgres", "host": "localhost", "port": 5432, "protocol": "tcp", "category": "db" },
+    { "name": "redis", "host": "localhost", "port": 6379, "protocol": "tcp", "category": "cache" },
+    { "name": "qdrant", "host": "localhost", "port": 6333, "protocol": "http", "health": "/collections", "category": "vector-db" },
+
+    { "name": "summarizer-http", "host": "localhost", "port": 8091, "protocol": "http", "health": "/health", "category": "go" },
+    { "name": "cluster-http", "host": "localhost", "port": 8090, "protocol": "http", "health": "/health", "category": "go" },
+    { "name": "rag-http", "host": "localhost", "port": 8093, "protocol": "http", "health": "/health", "category": "go" },
+    { "name": "grpc-server", "host": "localhost", "port": 8084, "protocol": "tcp", "category": "go" },
+    { "name": "quic-front", "host": "localhost", "port": 8443, "protocol": "udp", "category": "network" },
+
+    { "name": "nats", "host": "localhost", "port": 4222, "protocol": "tcp", "category": "mq" },
+
+    { "name": "elasticsearch", "host": "localhost", "port": 9200, "protocol": "http", "health": "/", "category": "elk" },
+    { "name": "kibana", "host": "localhost", "port": 5601, "protocol": "http", "health": "/api/status", "category": "elk" },
+    { "name": "logstash", "host": "localhost", "port": 5044, "protocol": "tcp", "category": "elk" },
+
+    { "name": "ollama", "host": "localhost", "port": 11434, "protocol": "http", "health": "/api/version", "category": "ai" }
+  ]
+}
