@@ -134,7 +134,7 @@
           <h3>📋 Recent Uploads</h3>
           <button
             type="button"
-            onclick={loadRecentUploads}
+            on:click={loadRecentUploads}
             class="text-button"
           >
             {showRecentUploads ? 'Refresh' : 'Show'}

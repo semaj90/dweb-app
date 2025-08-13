@@ -38,10 +38,10 @@
   let animationFrame: number;
 
   // Access stores directly from the service objects
-  $: modelStatus = ggufRuntime.stores.modelStatus;
-  $: runtimeStats = ggufRuntime.stores.runtimeStats;
-  $: metrics = orchestrator.stores.metrics;
-  $: systemHealth = orchestrator.derived.systemHealth;
+  let modelStatus = $derived(ggufRuntime.stores.modelStatus;);
+  let runtimeStats = $derived(ggufRuntime.stores.runtimeStats;);
+  let metrics = $derived(orchestrator.stores.metrics;);
+  let systemHealth = $derived(orchestrator.derived.systemHealth;);
 
   onMount(async () => {
     // Initialize WebGPU for visualization

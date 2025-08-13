@@ -474,7 +474,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (showPanel = false)}
+            on:click={() => (showPanel = false)}
             aria-label="Close accessibility panel"
           >
             ✕
@@ -544,7 +544,7 @@
             <h3 class="space-y-4">Accessibility Audit</h3>
             <Button
               size="sm"
-              onclick={() => runAccessibilityAudit()}
+              on:click={() => runAccessibilityAudit()}
               disabled={isAuditing}
               class="space-y-4"
             >
@@ -599,7 +599,7 @@
                 variant="outline"
                 size="sm"
                 class="space-y-4"
-                onclick={() => exportAuditResults()}
+                on:click={() => exportAuditResults()}
               >
                 <Download class="space-y-4" />
                 Export Report

@@ -265,7 +265,7 @@
   <div class="flex gap-2 mb-6">
     <Button
       variant={activeTab === 'search' ? 'default' : 'outline'}
-      onclick={() => activeTab = 'search'}
+      on:click={() => activeTab = 'search'}
       class="flex items-center gap-2"
     >
       <Search class="w-4 h-4" />
@@ -273,7 +273,7 @@
     </Button>
     <Button
       variant={activeTab === 'upload' ? 'default' : 'outline'}
-      onclick={() => activeTab = 'upload'}
+      on:click={() => activeTab = 'upload'}
       class="flex items-center gap-2"
     >
       <Upload class="w-4 h-4" />
@@ -281,7 +281,7 @@
     </Button>
     <Button
       variant={activeTab === 'crawl' ? 'default' : 'outline'}
-      onclick={() => activeTab = 'crawl'}
+      on:click={() => activeTab = 'crawl'}
       class="flex items-center gap-2"
     >
       <Globe class="w-4 h-4" />
@@ -289,7 +289,7 @@
     </Button>
     <Button
       variant={activeTab === 'logs' ? 'default' : 'outline'}
-      onclick={() => activeTab = 'logs'}
+      on:click={() => activeTab = 'logs'}
       class="flex items-center gap-2"
     >
       <FileText class="w-4 h-4" />
@@ -297,7 +297,7 @@
     </Button>
     <Button
       variant={activeTab === 'settings' ? 'default' : 'outline'}
-      onclick={() => activeTab = 'settings'}
+      on:click={() => activeTab = 'settings'}
       class="flex items-center gap-2"
     >
       <Settings class="w-4 h-4" />
@@ -324,7 +324,7 @@
                 class="flex-1"
                 onkeydown={(e) => e.key === 'Enter' && handleSearch()}
               />
-              <Button onclick={handleSearch} disabled={isLoading || !searchQuery.trim()}>
+              <Button on:click={handleSearch} disabled={isLoading || !searchQuery.trim()}>
                 {#if isLoading}
                   <RefreshCw class="w-4 h-4 animate-spin" />
                 {:else}
@@ -353,14 +353,14 @@
                         <Button
                           size="sm"
                           variant="outline"
-                          onclick={() => submitFeedback(result.id, 1)}
+                          on:click={() => submitFeedback(result.id, 1)}
                         >
                           👍
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          onclick={() => submitFeedback(result.id, -1)}
+                          on:click={() => submitFeedback(result.id, -1)}
                         >
                           👎
                         </Button>
@@ -391,7 +391,7 @@
                 class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
               />
             </div>
-            <Button onclick={handleUpload} disabled={isLoading || !uploadFile}>
+            <Button on:click={handleUpload} disabled={isLoading || !uploadFile}>
               {#if isLoading}
                 <RefreshCw class="w-4 h-4 animate-spin mr-2" />
               {:else}
@@ -419,7 +419,7 @@
                 type="url"
               />
             </div>
-            <Button onclick={handleCrawl} disabled={isLoading || !crawlUrl.trim()}>
+            <Button on:click={handleCrawl} disabled={isLoading || !crawlUrl.trim()}>
               {#if isLoading}
                 <RefreshCw class="w-4 h-4 animate-spin mr-2" />
               {:else}

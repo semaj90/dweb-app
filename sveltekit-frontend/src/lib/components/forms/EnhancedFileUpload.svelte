@@ -73,13 +73,13 @@
   }>();
 
   // Props
-  export let caseId: string | undefined = undefined;
-  export let multiple = false;
-  export let compact = false;
-  export let initialData: Partial<FileUpload> | undefined = undefined;
-  export let disabled = false;
-  export let maxFiles = multiple ? 10 : 1;
-  export let maxSizeMB = 100;
+  let { caseId = $bindable() } = $props(); // string | undefined = undefined;
+  let { multiple = $bindable() } = $props(); // false;
+  let { compact = $bindable() } = $props(); // false;
+  let { initialData = $bindable() } = $props(); // Partial<FileUpload> | undefined = undefined;
+  let { disabled = $bindable() } = $props(); // false;
+  let { maxFiles = $bindable() } = $props(); // multiple ? 10 : 1;
+  let { maxSizeMB = $bindable() } = $props(); // 100;
       "image/*",
     "video/*",
     "audio/*",

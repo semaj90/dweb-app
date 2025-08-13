@@ -322,7 +322,8 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\d users\")",
       "Bash(eslint:*)",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")"
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(.RUN-ENHANCED-SETUP-COMPLETE.bat)"
     ],
     "deny": []
   }

@@ -314,7 +314,7 @@ Type /help for commands`,
   }
 
   // Reactive state from XState
-  $: xstateResponse = $state.context.response;
+  let xstateResponse = $derived($state.context.response;);
   $: if (
     xstateResponse &&
     messages.length > 0 &&
@@ -388,7 +388,7 @@ Type /help for commands`,
             </div>
 
             <button
-              onclick={() => copyMessage(message.content, i)}
+              on:click={() => copyMessage(message.content, i)}
               class="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
             >
               {#if copiedIndex === i}
@@ -412,7 +412,7 @@ Type /help for commands`,
             disabled={isLoading}
           />
           <button
-            onclick={handleSubmit}
+            on:click={handleSubmit}
             disabled={isLoading || !input.trim()}
             class={cn(
               "p-3 rounded-lg transition-colors",

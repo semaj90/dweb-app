@@ -22,15 +22,17 @@
     minSidebarWidth = "200px",
     maxSidebarWidth = "400px",
     gap = "1rem",
-    ontoggle
-  }: Props = $props();
+    ontoggle,
+    children,
+    sidebar
+  }: Props & { children?: any, sidebar?: any } = $props();
 
 
 
   
                   
   let className = "";
-  export { className as class };
+  ;
 
   
   // Calculate flex values based on ratio
@@ -86,13 +88,15 @@
       "
     >
       <div class="space-y-4" class:hidden={collapsed}>
-        <slot name="sidebar" />
+        {#if sidebar}
+          {@render sidebar()}
+        {/if}
       </div>
 
       {#if collapsible}
         <button
           class="space-y-4"
-          onclick={() => toggleSidebar()}
+          on:click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -104,7 +108,9 @@
   {/if}
 
   <main class="space-y-4" style="flex: {calculatedMainFlex};">
-    <slot />
+    {#if children}
+      {@render children()}
+    {/if}
   </main>
 
   {#if sidebarPosition === "right"}
@@ -119,13 +125,15 @@
       "
     >
       <div class="space-y-4" class:hidden={collapsed}>
-        <slot name="sidebar" />
+        {#if sidebar}
+          {@render sidebar()}
+        {/if}
       </div>
 
       {#if collapsible}
         <button
           class="space-y-4"
-          onclick={() => toggleSidebar()}
+          on:click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}

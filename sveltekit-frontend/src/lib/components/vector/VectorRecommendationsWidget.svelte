@@ -172,7 +172,7 @@ Compact AI recommendations component for sidebar/dashboard use
       <Button
         variant="ghost"
         size="sm"
-        onclick={loadRecommendations}
+        on:click={loadRecommendations}
         disabled={isLoading}
         class="h-7 w-7 p-0"
       >
@@ -210,7 +210,7 @@ Compact AI recommendations component for sidebar/dashboard use
           <button
             type="button"
             class="w-full text-left p-3 rounded-lg border-l-4 {getRecommendationColor(rec.type)} hover:shadow-md transition-all duration-200"
-            onclick={() => onRecommendationClick(rec)}
+            on:click={() => onRecommendationClick(rec)}
           >
             <div class="flex items-start justify-between mb-2">
               <div class="flex items-center gap-2">

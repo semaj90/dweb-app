@@ -6,7 +6,7 @@
   let recommendations: any[] = [];
   let fuse: Fuse<any>;
 
-  $: history = $aiHistory;
+  let history = $derived($aiHistory;);
 
   onMount(() => {
     fuse = new Fuse(history, {

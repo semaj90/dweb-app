@@ -11,8 +11,8 @@
 
 	
 	// Reactive state
-	$: dialogOpen = $aiStore.dialogOpen;
-	$: isGenerating = $aiStore.isGenerating;
+	let dialogOpen = $derived($aiStore.dialogOpen;);
+	let isGenerating = $derived($aiStore.isGenerating;);
 
 	function toggleDialog() {
 		aiStore.update(state => ({

@@ -28,7 +28,7 @@
 	import { advancedCache } from '$lib/services/advanced-cache-manager';
 
 	// Props
-		export let speed: number = 50; // milliseconds per character
+		let { speed = $bindable() } = $props(); // number = 50; // milliseconds per character
 						
 	// Types
 	interface UserActivity {

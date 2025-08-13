@@ -11,9 +11,9 @@
 	import { fade, fly } from 'svelte/transition';
 
 	// Reactive stores from the service worker manager
-	$: taskQueue = aiServiceWorkerManager.taskQueue$;
-	$: workerStatus = aiServiceWorkerManager.workerStatus$;
-	$: systemMetrics = aiServiceWorkerManager.systemMetrics$;
+	let taskQueue = $derived(aiServiceWorkerManager.taskQueue$;);
+	let workerStatus = $derived(aiServiceWorkerManager.workerStatus$;);
+	let systemMetrics = $derived(aiServiceWorkerManager.systemMetrics$;);
 
 	// Component state
 	let selectedProvider: LLMProvider | null = null;

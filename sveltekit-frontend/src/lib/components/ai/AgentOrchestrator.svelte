@@ -430,7 +430,7 @@ Manages AutoGen and CrewAI multi-agent workflows
       <Button
         variant="outline"
         size="sm"
-        onclick={checkServiceStatus}
+        on:click={checkServiceStatus}
       >
         <RefreshCw class="h-4 w-4" />
       </Button>
@@ -519,7 +519,7 @@ Manages AutoGen and CrewAI multi-agent workflows
       
       <div class="flex gap-2">
         <Button
-          onclick={executeWorkflow}
+          on:click={executeWorkflow}
           disabled={isProcessing || !inputText.trim() || (!serviceStatus.autogen && selectedProvider === 'autogen') || (!serviceStatus.crewai && selectedProvider === 'crewai')}
           class="flex-1"
         >
@@ -533,16 +533,16 @@ Manages AutoGen and CrewAI multi-agent workflows
         </Button>
         
         {#if isProcessing}
-          <Button variant="outline" onclick={cancelExecution}>
+          <Button variant="outline" on:click={cancelExecution}>
             <Square class="h-4 w-4" />
           </Button>
         {/if}
         
         {#if conversationMessages.length > 0 || executionResults.length > 0}
-          <Button variant="outline" onclick={clearResults}>
+          <Button variant="outline" on:click={clearResults}>
             Clear
           </Button>
-          <Button variant="outline" onclick={downloadResults}>
+          <Button variant="outline" on:click={downloadResults}>
             <Download class="h-4 w-4" />
           </Button>
         {/if}
@@ -682,7 +682,7 @@ Manages AutoGen and CrewAI multi-agent workflows
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'case_analysis';
               selectedProvider = 'autogen';
               inputText = 'John Smith was accused of embezzling $50,000 from his employer over a 6-month period. Evidence includes suspicious bank transfers, altered financial records, and witness testimony from colleagues who noticed unusual behavior.';
@@ -697,7 +697,7 @@ Manages AutoGen and CrewAI multi-agent workflows
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'contract_analysis';
               selectedProvider = 'crewai';
               inputText = 'Software licensing agreement between TechCorp and ClientCorp for enterprise SaaS platform. Contract includes liability limitations, data processing clauses, and termination provisions. Review for compliance and negotiation opportunities.';
@@ -712,7 +712,7 @@ Manages AutoGen and CrewAI multi-agent workflows
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'evidence_review';
               selectedProvider = 'autogen';
               inputText = 'Digital evidence package includes: smartphone data extraction, email communications, cloud storage files, and network logs. Chain of custody maintained by certified technician. Need admissibility assessment for federal court.';
@@ -727,7 +727,7 @@ Manages AutoGen and CrewAI multi-agent workflows
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'legal_research';
               selectedProvider = 'autogen';
               inputText = 'Research precedents for cryptocurrency fraud cases involving privacy coins. Focus on 4th Amendment protections, blockchain analysis admissibility, and international cooperation in digital asset recovery.';

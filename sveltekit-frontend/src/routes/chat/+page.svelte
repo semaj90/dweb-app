@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import AIChat from '$lib/components/AIChat.svelte';
 </script>
 

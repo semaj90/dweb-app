@@ -26,9 +26,9 @@ let orchestrationResult = writable(data.orchestrationResult);
 let enhancedContext = writable(null);
 
 // Display SSR-loaded Copilot context
-$: copilotArchitecture = data.copilotContext?.architecture;
-$: legalContext = data.copilotContext?.legalContext;
-$: libraryData = data.libraryData;
+let copilotArchitecture = $derived(data.copilotContext?.architecture;);
+let legalContext = $derived(data.copilotContext?.legalContext;);
+let libraryData = $derived(data.libraryData;);
 
 // Demo: Full Context7 MCP workflow with Copilot architecture integration
 async function runFullWorkflow() {

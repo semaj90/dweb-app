@@ -14,7 +14,7 @@
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
 
-    export let class_: string = "";
+    let { class_ = $bindable() } = $props(); // string = "";
 
   const context =
     getContext<SelectContext>("select") ||
@@ -26,7 +26,7 @@
     } as SelectContext);
   const { selected, open, onSelect, onToggle } = context;
 
-  $: isSelected = $selected === value;
+  let isSelected = $derived($selected === value;);
 
   function handleClick() {
     onSelect(value);

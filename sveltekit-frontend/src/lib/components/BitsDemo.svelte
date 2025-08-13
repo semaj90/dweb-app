@@ -86,16 +86,16 @@
   <div class="space-y-4">
     <h3 class="space-y-4">Melt-UI Notifications Demo</h3>
     <div class="space-y-4">
-      <button class="space-y-4" onclick={() => showSuccessNotification()}>
+      <button class="space-y-4" on:click={() => showSuccessNotification()}>
         Success Notification
       </button>
-      <button class="space-y-4" onclick={() => showWarningNotification()}>
+      <button class="space-y-4" on:click={() => showWarningNotification()}>
         Warning Notification
       </button>
-      <button class="space-y-4" onclick={() => showErrorNotification()}>
+      <button class="space-y-4" on:click={() => showErrorNotification()}>
         Error Notification
       </button>
-      <button class="space-y-4" onclick={() => showInfoNotification()}>
+      <button class="space-y-4" on:click={() => showInfoNotification()}>
         Info Notification
       </button>
     </div>
@@ -104,7 +104,7 @@
   <!-- Bits UI Button -->
   <BitsButton.Root
     class="space-y-4"
-    onclick={showSuccessNotification}
+    on:click={showSuccessNotification}
   >
     Create New Case
   </BitsButton.Root>
@@ -191,7 +191,7 @@
           <AlertDialog.Cancel class="space-y-4">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="space-y-4" onclick={showErrorNotification}>
+          <AlertDialog.Action class="space-y-4" on:click={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>

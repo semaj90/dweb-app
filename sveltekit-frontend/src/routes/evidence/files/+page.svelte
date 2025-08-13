@@ -502,9 +502,9 @@
     <div
       class="space-y-4"
       class:border-primary={dragActive}
-      on:dragover={handleDragOver}
-      on:dragleave={handleDragLeave}
-      on:drop={handleDrop}
+      ondragover={handleDragOver}
+      ondragleave={handleDragLeave}
+      ondrop={handleDrop}
       role="button"
       tabindex={0}
       aria-label="Drop files here to upload"
@@ -527,7 +527,7 @@
           multiple
           class="space-y-4"
           id="file-upload"
-          on:change={handleFileSelect}
+          onchange={handleFileSelect}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
         />
         <label for="file-upload">
@@ -574,7 +574,7 @@
                   type="checkbox"
                   class="space-y-4"
                   checked={selectedFiles.has(file.id)}
-                  on:change={() => toggleFileSelection(file.id)}
+                  onchange={() => toggleFileSelection(file.id)}
                   aria-label="Select file {file.title || file.fileName}"
                 />
 
@@ -811,6 +811,6 @@
   multiple
   class="space-y-4"
   id="bulk-upload"
-  on:change={handleFileSelect}
+  onchange={handleFileSelect}
   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
 />

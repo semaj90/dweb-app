@@ -12,7 +12,7 @@
 
 
 
-      export let stepLabels: string[] = [];
+      let { stepLabels = $bindable() } = $props(); // string[] = [];
 
   function getStepStatus(stepIndex: number): 'completed' | 'current' | 'upcoming' {
     if (stepIndex < currentStep) return 'completed';
@@ -41,7 +41,7 @@
     'Review'
   ];
 
-  $: labels = stepLabels.length > 0 ? stepLabels : defaultLabels;
+  let labels = $derived(stepLabels.length > 0 ? stepLabels : defaultLabels;);
 </script>
 
 <div class="py-6">

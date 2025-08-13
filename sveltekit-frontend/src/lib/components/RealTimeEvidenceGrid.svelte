@@ -70,10 +70,10 @@
   let totalPages = 0;
 
   // Subscribe to store values
-  $: evidence = $evidenceStore.evidence || [];
-  $: isLoading = $evidenceStore.isLoading || false;
-  $: isConnected = $evidenceStore.isConnected || false;
-  $: error = $evidenceStore.error || null;
+  let evidence = $derived($evidenceStore.evidence || [];);
+  let isLoading = $derived($evidenceStore.isLoading || false;);
+  let isConnected = $derived($evidenceStore.isConnected || false;);
+  let error = $derived($evidenceStore.error || null;);
 
   // Reactive filtering and sorting
   $: {

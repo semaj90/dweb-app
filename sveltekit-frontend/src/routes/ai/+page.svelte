@@ -53,7 +53,7 @@
 
     return date.toLocaleDateString();
 }
-  $: filteredHistory = $conversationsList.filter(
+  let filteredHistory = $derived($conversationsList.filter();
     (conv) =>
       conv.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.messages?.some((msg) =>

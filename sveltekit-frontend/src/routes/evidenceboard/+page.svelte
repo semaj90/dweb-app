@@ -7,7 +7,7 @@ import { createDialog } from '@melt-ui/svelte';
 // If Bits UI and Superforms are unavailable, use SvelteKit's built-in file input and Zod validation
 import { z } from 'zod';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card/index.js';
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
@@ -546,7 +546,7 @@ let searchTimeout: ReturnType<typeof setTimeout>;
 											<Button size="sm" variant="outline">
 												<Download class="h-3 w-3" />
 											</Button>
-											<Button size="sm" variant="outline" onclick={() => deleteEvidence(item.id)}>
+											<Button size="sm" variant="outline" on:click={() => deleteEvidence(item.id)}>
 												<Trash2 class="h-3 w-3" />
 											</Button>
 										</div>

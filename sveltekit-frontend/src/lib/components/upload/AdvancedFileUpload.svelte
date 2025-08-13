@@ -68,9 +68,9 @@
 
 
   // Props
-      export let maxFileSize = 100 * 1024 * 1024; // 100MB
-  export let maxTotalSize = 500 * 1024 * 1024; // 500MB
-        export let chunkSize = 1024 * 1024; // 1MB chunks for large files
+      let { maxFileSize = $bindable() } = $props(); // 100 * 1024 * 1024; // 100MB
+  let { maxTotalSize = $bindable() } = $props(); // 500 * 1024 * 1024; // 500MB
+        let { chunkSize = $bindable() } = $props(); // 1024 * 1024; // 1MB chunks for large files
       export const enableDragDrop = true;
 
   // State
@@ -560,7 +560,7 @@
     role="button"
     tabindex={0}
     aria-label="File upload area. Click to select files or drag and drop files here."
-    onclick={() => !disabled && fileInput.click()}
+    on:click={() => !disabled && fileInput.click()}
     on:keydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
@@ -600,7 +600,7 @@
         {#if enableCameraCapture}
           <Button
             variant="secondary"
-            onclick={handleCameraCaptureClick}
+            on:click={handleCameraCaptureClick}
             {disabled}
           >
             <Camera class="space-y-4" />
@@ -611,7 +611,7 @@
         {#if enableAudioRecording}
           <Button
             variant="secondary"
-            onclick={handleAudioRecordingClick}
+            on:click={handleAudioRecordingClick}
             {disabled}
             class={isRecording ? "bg-red-100 text-red-700" : ""}
           >
@@ -647,7 +647,7 @@
           {#if !autoUpload && files.some((f) => f.status === "pending")}
             <Button
               size="sm"
-              onclick={() => uploadFiles()}
+              on:click={() => uploadFiles()}
               disabled={isUploading}
             >
               {#if isUploading}
@@ -662,7 +662,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (files = [])}
+            on:click={() => (files = [])}
             disabled={isUploading}
           >
             Clear All
@@ -736,7 +736,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => window.open(file.url, "_blank")}
+                  on:click={() => window.open(file.url, "_blank")}
                   aria-label="View {file.name}"
                 >
                   <Eye class="space-y-4" />
@@ -747,7 +747,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => retryUpload(file.id)}
+                  on:click={() => retryUpload(file.id)}
                   aria-label="Retry upload of {file.name}"
                 >
                   <Upload class="space-y-4" />
@@ -757,7 +757,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => removeFile(file.id)}
+                on:click={() => removeFile(file.id)}
                 disabled={file.status === "uploading"}
                 aria-label="Remove {file.name}"
               >

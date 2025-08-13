@@ -189,7 +189,7 @@
       </p>
       <div class="flex gap-4 mt-4">
         <button
-          onclick={isMonitoring ? stopMonitoring : startMonitoring}
+          on:click={isMonitoring ? stopMonitoring : startMonitoring}
           class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
         >
           {isMonitoring ? '⏸️ Stop Monitoring' : '▶️ Start Monitoring'}
@@ -296,7 +296,7 @@
           Test the SOM clustering, neural memory optimization, and recommendation engine
         </p>
         <button
-          onclick={runRAGSearch}
+          on:click={runRAGSearch}
           class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
         >
           Run RAG Search
@@ -320,7 +320,7 @@
           Trigger ML-based cache optimization and memory rebalancing
         </p>
         <button
-          onclick={optimizeCache}
+          on:click={optimizeCache}
           class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
         >
           Optimize Cache
@@ -334,7 +334,7 @@
           Submit a test job to the specialized worker system
         </p>
         <button
-          onclick={testWorkerSystem}
+          on:click={testWorkerSystem}
           disabled={isSubmittingJob}
           class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 rounded-lg transition-colors"
         >

@@ -18,7 +18,7 @@
     const { snapshot, send } = useMachine(autoTaggingMachine);
 
   // Access state from snapshot
-  $: state = $snapshot;
+  let state = $derived($snapshot;);
 
     
   let canvas: HTMLCanvasElement;

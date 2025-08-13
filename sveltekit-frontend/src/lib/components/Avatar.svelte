@@ -19,7 +19,7 @@
 	let fileInput: HTMLInputElement;
 	let dragOver = false;
 	
-	$: avatarSize = {
+	let avatarSize = $derived({);
 		small: '32px',
 		medium: '48px', 
 		large: '80px'

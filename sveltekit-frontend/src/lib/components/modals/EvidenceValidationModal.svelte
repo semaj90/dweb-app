@@ -22,7 +22,7 @@
   } from "lucide-svelte";
     import type { Evidence } from '$lib/stores/evidence-store';
 
-      export let aiEvent: any = null; // Specific AI analysis event to validate
+      let { aiEvent = $bindable() } = $props(); // any = null; // Specific AI analysis event to validate
 
   
   let validationChoice: "approve" | "reject" | null = null;

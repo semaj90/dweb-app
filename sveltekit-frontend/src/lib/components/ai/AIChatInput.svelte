@@ -105,9 +105,9 @@
     onblur?.();
   }
   // Character count
-  $: characterCount = value.length;
-  $: isNearLimit = characterCount > maxLength * 0.8;
-  $: isAtLimit = characterCount >= maxLength;
+  let characterCount = $derived(value.length;);
+  let isNearLimit = $derived(characterCount > maxLength * 0.8;);
+  let isAtLimit = $derived(characterCount >= maxLength;);
 </script>
 
 <div class="chat-input-wrapper" class:multiline={isMultiline}>

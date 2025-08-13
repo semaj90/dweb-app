@@ -59,12 +59,12 @@
 	];
 
 	// Reactive toolbar state
-	$: selectedTool = $toolbarStore.selectedTool;
-	$: formatting = $toolbarStore.formatting;
-	$: drawing = $toolbarStore.drawing;
-	$: canUndo = $toolbarStore.canUndo;
-	$: canRedo = $toolbarStore.canRedo;
-	$: zoom = $toolbarStore.zoom;
+	let selectedTool = $derived($toolbarStore.selectedTool;);
+	let formatting = $derived($toolbarStore.formatting;);
+	let drawing = $derived($toolbarStore.drawing;);
+	let canUndo = $derived($toolbarStore.canUndo;);
+	let canRedo = $derived($toolbarStore.canRedo;);
+	let zoom = $derived($toolbarStore.zoom;);
 
 	function selectTool(toolId: string) {
 		toolbarStore.update(state => ({

@@ -69,8 +69,8 @@
         return "bg-gray-100 text-gray-800";
     }
   }
-  $: evidenceIcon = getEvidenceIcon(evidence.evidenceType || evidence.type);
-  $: formattedDate = formatDistanceToNow(new Date(evidence.createdAt || evidence.dateCollected || Date.now()), {
+  let evidenceIcon = $derived(getEvidenceIcon(evidence.evidenceType || evidence.type););
+  let formattedDate = $derived(formatDistanceToNow(new Date(evidence.createdAt || evidence.dateCollected || Date.now()), {);
     addSuffix: true,
   });
 
@@ -137,7 +137,7 @@
     <!-- Actions -->
     <div class="flex-shrink-0 flex items-center gap-1">
       <button
-        onclick={() => handleView()}
+        on:click={() => handleView()}
         class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="View evidence"
         {disabled}
@@ -146,7 +146,7 @@
       </button>
 
       <button
-        onclick={() => handleEdit()}
+        on:click={() => handleEdit()}
         class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="Edit evidence"
         {disabled}
@@ -155,7 +155,7 @@
       </button>
 
       <button
-        onclick={() => handleDownload()}
+        on:click={() => handleDownload()}
         class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="Download evidence"
         {disabled}
@@ -164,7 +164,7 @@
       </button>
 
       <button
-        onclick={() => handleDelete()}
+        on:click={() => handleDelete()}
         class="p-1 text-red-400 hover:text-red-600 rounded"
         title="Delete evidence"
         {disabled}

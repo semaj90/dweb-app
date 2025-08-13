@@ -22,8 +22,8 @@
     };
   };
 
-  export let autoFetch: boolean = true;
-  export let data: ValidateResponse | null = null;
+  let { autoFetch = $bindable() } = $props(); // boolean = true;
+  let { data = $bindable() } = $props(); // ValidateResponse | null = null;
 
   async function load() {
     try {

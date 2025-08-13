@@ -647,7 +647,7 @@
   }
 
   // Reactive statements
-  $: state = $editorState;
+  let state = $derived($editorState;);
 
   // Exported functions for parent component access
   export function setContent(content: string) {

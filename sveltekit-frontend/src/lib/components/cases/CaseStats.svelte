@@ -40,7 +40,7 @@
   //   overdueCount: number;
   // }
 
-  $: stats = {
+  let stats = $derived({);
     // TODO: IMPLEMENT ADVANCED CALCULATIONS
     // ===================================
     // 1. Resolution time analytics

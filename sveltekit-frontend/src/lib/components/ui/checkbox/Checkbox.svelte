@@ -1,26 +1,22 @@
 <script lang="ts">
   interface Props {
-    checked: boolean ;
-    disabled: boolean ;
-    id: string | undefined ;
-    name: string | undefined ;
-    value: string | undefined ;
-    ariaLabel: string | undefined ;
+    checked?: boolean;
+    disabled?: boolean;
+    id?: string;
+    name?: string;
+    value?: string;
+    ariaLabel?: string;
+    class?: string;
   }
   let {
-    checked = false,
+    checked = $bindable(false),
     disabled = false,
     id = undefined,
     name = undefined,
     value = undefined,
-    ariaLabel = undefined
+    ariaLabel = undefined,
+    class: className = ''
   }: Props = $props();
-
-
-
-  // Minimal, accessible checkbox component compatible with bind:checked
-  let className: string = '';
-  export { className as class };
 </script>
 
 <input
@@ -32,5 +28,4 @@
   {disabled}
   aria-label={ariaLabel}
   class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed {className}"
-  {...$$restProps}
 />

@@ -422,9 +422,9 @@
   }
 
   // Reactive statements
-  $: progressPercentage = $summaryProgress;
-  $: canExport = $synthesisResult !== null;
-  $: showMetrics = metrics.llmProcessingTime > 0;
+  let progressPercentage = $derived($summaryProgress;);
+  let canExport = $derived($synthesisResult !== null;);
+  let showMetrics = $derived(metrics.llmProcessingTime > 0;);
 </script>
 
 <!-- Main Component Template -->

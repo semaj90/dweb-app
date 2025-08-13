@@ -77,7 +77,7 @@
   }
 
   // Apply filters
-  $: filteredResults = searchResults.filter(item => {
+  let filteredResults = $derived(searchResults.filter(item => {);
     // Type filter
     if (selectedTypes.length > 0 && !selectedTypes.includes(item.type)) {
       return false;
@@ -102,7 +102,7 @@
   $: onResults(filteredResults);
 
   // Sync input value
-  $: searchValue = $inputValue;
+  let searchValue = $derived($inputValue;);
 
   // Handle item selection
   const handleSelect = (item: Evidence) => {

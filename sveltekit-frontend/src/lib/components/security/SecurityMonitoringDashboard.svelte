@@ -39,15 +39,15 @@
   let loading = false;
 
   // Security metrics
-  $: criticalEvents = securityEvents.filter(
+  let criticalEvents = $derived(securityEvents.filter();
     (e) => e.severity === "critical"
   ).length;
-  $: highEvents = securityEvents.filter((e) => e.severity === "high").length;
-  $: recentEvents = securityEvents.filter(
+  let highEvents = $derived(securityEvents.filter((e) => e.severity === "high").length;);
+  let recentEvents = $derived(securityEvents.filter();
     (e) => Date.now() - e.timestamp < 24 * 60 * 60 * 1000
   ).length;
-  $: loginAttempts = securityEvents.filter((e) => e.type === "login").length;
-  $: accessDeniedEvents = securityEvents.filter(
+  let loginAttempts = $derived(securityEvents.filter((e) => e.type === "login").length;);
+  let accessDeniedEvents = $derived(securityEvents.filter();
     (e) => e.type === "access_denied"
   ).length;
 

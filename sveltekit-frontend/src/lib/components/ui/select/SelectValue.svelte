@@ -1,18 +1,14 @@
 <script lang="ts">
-  interface Props {
-    class_: string ;
-  }
-  let {
-    class_ = ""
-  }: Props = $props();
-
-
-
   import { getContext } from "svelte";
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
 
-  export let class_: string = "";
+  interface Props {
+    class?: string;
+  }
+  let {
+    class: class_ = ""
+  }: Props = $props();
 
   const context =
     getContext<SelectContext>("select") ||

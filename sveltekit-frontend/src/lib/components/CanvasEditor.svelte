@@ -850,7 +850,7 @@
 					</div>
 					<button
 						class="space-y-4"
-						onclick={() => addEvidenceMarker(item)}
+						on:click={() => addEvidenceMarker(item)}
 						disabled={readOnly}
 						title="Add evidence marker to canvas"
 					>
@@ -873,7 +873,7 @@
 					</div>
 					<button
 						class="space-y-4"
-						onclick={() => addCitationMarker(citation)}
+						on:click={() => addCitationMarker(citation)}
 						disabled={readOnly}
 						title="Add citation marker to canvas"
 					>

@@ -26,7 +26,7 @@
   
               
   let className = "";
-  export { className as class };
+  ;
 
   
   let isExpanded = false;
@@ -52,7 +52,7 @@
       isExpanded = false;
       onexpand?.();
 }}
-  $: currentColumns = isExpanded ? expandedColumns : columns;
+  let currentColumns = $derived(isExpanded ? expandedColumns : columns;);
 </script>
 
 <div

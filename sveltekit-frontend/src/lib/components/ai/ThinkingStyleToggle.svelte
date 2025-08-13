@@ -38,8 +38,8 @@
     alternatives: false
   };
   
-  $: iconSize = size === 'sm' ? 16 : size === 'md' ? 20 : 24;
-  $: buttonClass = cn(
+  let iconSize = $derived(size === 'sm' ? 16 : size === 'md' ? 20 : 24;);
+  let buttonClass = $derived(cn();
     "thinking-toggle",
     size,
     enabled ? 'enabled' : 'disabled',

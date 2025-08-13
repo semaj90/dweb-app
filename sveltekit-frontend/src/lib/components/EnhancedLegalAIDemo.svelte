@@ -74,15 +74,15 @@
   // REACTIVE STATEMENTS
   // ======================================================================
 
-  $: currentProcessing = $currentlyProcessingStore;
-  $: processingResults = $processingResultsStore;
-  $: aiRecommendations = $aiRecommendationsStore;
-  $: vectorMatches = $vectorSimilarityStore;
-  $: graphRelationships = $graphRelationshipsStore;
-  $: systemHealth = $systemHealthStore;
-  $: cacheStats = $cacheStatsStore;
-  $: cacheHealth = $cacheHealthStore;
-  $: streamingConnected = $streamingStore.isStreaming;
+  let currentProcessing = $derived($currentlyProcessingStore;);
+  let processingResults = $derived($processingResultsStore;);
+  let aiRecommendations = $derived($aiRecommendationsStore;);
+  let vectorMatches = $derived($vectorSimilarityStore;);
+  let graphRelationships = $derived($graphRelationshipsStore;);
+  let systemHealth = $derived($systemHealthStore;);
+  let cacheStats = $derived($cacheStatsStore;);
+  let cacheHealth = $derived($cacheHealthStore;);
+  let streamingConnected = $derived($streamingStore.isStreaming;);
 
   // ======================================================================
   // INITIALIZATION
@@ -283,7 +283,7 @@
               class="w-full"
             />
             <Button
-              onclick={() => addCustomEvidence()}
+              on:click={() => addCustomEvidence()}
               disabled={!evidenceText.trim() || processingActive}
               class="w-full"
             >
@@ -310,7 +310,7 @@
                 <Button
                   size="sm"
                   variant="outline"
-                  onclick={() => addDemoEvidence(demo)}
+                  on:click={() => addDemoEvidence(demo)}
                   disabled={processingActive}
                   class="w-full"
                 >
@@ -327,16 +327,16 @@
             <CardTitle>System Controls</CardTitle>
           </CardHeader>
           <CardContent class="space-y-3">
-            <Button variant="outline" onclick={() => checkSystemHealth()} class="w-full">
+            <Button variant="outline" on:click={() => checkSystemHealth()} class="w-full">
               Health Check
             </Button>
-            <Button variant="outline" onclick={() => syncCache()} class="w-full">
+            <Button variant="outline" on:click={() => syncCache()} class="w-full">
               Sync Cache
             </Button>
-            <Button variant="outline" onclick={() => clearErrors()} class="w-full">
+            <Button variant="outline" on:click={() => clearErrors()} class="w-full">
               Clear Errors
             </Button>
-            <Button variant="destructive" onclick={() => clearCache()} class="w-full">
+            <Button variant="destructive" on:click={() => clearCache()} class="w-full">
               Clear Cache
             </Button>
           </CardContent>

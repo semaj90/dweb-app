@@ -13,7 +13,7 @@
 
 
     
-  export let score: number = 5; // Current attractiveness score (1-10)
+  let { score = $bindable() } = $props(); // number = 5; // Current attractiveness score (1-10)
           
     
   let hoveredScore: number | null = null;
@@ -45,8 +45,8 @@
   function handleMouseLeave() {
     hoveredScore = null;
 }
-  $: displayScore = hoveredScore !== null ? hoveredScore : score;
-  $: sizeClasses = {
+  let displayScore = $derived(hoveredScore !== null ? hoveredScore : score;);
+  let sizeClasses = $derived({);
     sm: 'w-4 h-4',
     md: 'w-6 h-6', 
     lg: 'w-8 h-8'

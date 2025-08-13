@@ -34,11 +34,11 @@
 	];
 
 	// Reactive state
-	$: selectedVibe = $aiStore.selectedVibe;
-	$: prompt = $aiStore.prompt;
-	$: response = $aiStore.response;
-	$: isGenerating = $aiStore.isGenerating;
-	$: history = $aiStore.history;
+	let selectedVibe = $derived($aiStore.selectedVibe;);
+	let prompt = $derived($aiStore.prompt;);
+	let response = $derived($aiStore.response;);
+	let isGenerating = $derived($aiStore.isGenerating;);
+	let history = $derived($aiStore.history;);
 
 	let currentPrompt = '';
 

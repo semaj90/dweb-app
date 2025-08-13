@@ -92,7 +92,7 @@
             {#each cases as caseItem}
               <button
                 class="w-full text-left p-3 rounded border transition-all duration-200 {selectedCase === caseItem.id ? 'border-yellow-400 bg-yellow-400/10' : 'border-gray-600 hover:border-gray-500'}"
-                onclick={() => selectCase(caseItem.id)}
+                on:click={() => selectCase(caseItem.id)}
               >
                 <div class="font-mono text-sm text-yellow-400">{caseItem.id}</div>
                 <div class="font-semibold text-white text-sm">{caseItem.title}</div>
@@ -124,7 +124,7 @@
               onkeydown={(e) => e.key === 'Enter' && sendAIMessage()}
             />
             <button
-              onclick={sendAIMessage}
+              on:click={sendAIMessage}
               class="yorha-btn yorha-btn-primary px-6 py-2 rounded"
               disabled={!chatMessage.trim()}
             >

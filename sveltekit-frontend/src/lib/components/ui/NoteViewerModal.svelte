@@ -69,7 +69,7 @@
     open.set(isOpen);
 }
   // Parse markdown to HTML for display
-  $: displayHtml = html || (markdown ? marked.parse(markdown) : "");
+  let displayHtml = $derived(html || (markdown ? marked.parse(markdown) : ""););
 
   async function handleSaveForLater() {
     try {

@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
-	"path/filepath"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -79,20 +78,19 @@ func (c *Client) ensureBucket() error {
 func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *multipart.FileHeader, opts UploadOptions) (*UploadResult, error) {
 	// Generate unique object name with case organization
 	timestamp := time.Now().Format("2006/01/02/15-04-05")
-	objectName := fmt.Sprintf("cases/%s/%s/%s-%s", 
-		opts.CaseID, 
-		opts.DocumentType, 
-		timestamp, 
+	objectName := fmt.Sprintf("cases/%s/%s/%s-%s",
+		opts.CaseID,
+		opts.DocumentType,
+		timestamp,
 		header.Filename)
 
-	// Prepare metadata
+	// Prepare metadata (prefix with x-amz-meta- to avoid conflicts)
 	metadata := map[string]string{
-		"case-id":       opts.CaseID,
-		"document-type": opts.DocumentType,
-		"filename":      header.Filename,
-		"upload-time":   time.Now().Format(time.RFC3339),
-		"file-size":     fmt.Sprintf("%d", header.Size),
-		"content-type":  header.Header.Get("Content-Type"),
+		"x-case-id":       opts.CaseID,
+		"x-document-type": opts.DocumentType,
+		"x-filename":      header.Filename,
+		"x-upload-time":   time.Now().Format(time.RFC3339),
+		"x-file-size":     fmt.Sprintf("%d", header.Size),
 	}
 
 	// Add custom metadata
@@ -170,7 +168,7 @@ func (c *Client) DeleteFile(ctx context.Context, objectName string) error {
 // ListFiles lists files for a specific case
 func (c *Client) ListFiles(ctx context.Context, caseID string) ([]minio.ObjectInfo, error) {
 	prefix := fmt.Sprintf("cases/%s/", caseID)
-	
+
 	var objects []minio.ObjectInfo
 	for object := range c.client.ListObjects(ctx, c.bucketName, minio.ListObjectsOptions{
 		Prefix:    prefix,

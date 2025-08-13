@@ -19,10 +19,10 @@
   let fuse: Fuse<any>;
 
   // Reactive data
-  $: sidebarOpen = $sidebarStore.open || isHovered || isPinned;
-  $: evidenceItems = $lokiStore.evidence || [];
-  $: notesItems = $lokiStore.notes || [];
-  $: canvasStates = $lokiStore.canvasStates || [];
+  let sidebarOpen = $derived($sidebarStore.open || isHovered || isPinned;);
+  let evidenceItems = $derived($lokiStore.evidence || [];);
+  let notesItems = $derived($lokiStore.notes || [];);
+  let canvasStates = $derived($lokiStore.canvasStates || [];);
 
   // Initialize Fuse search
   $: if (activeTab === "evidence" && evidenceItems.length > 0) {
@@ -37,8 +37,7 @@
     });
 }
   // Search results
-  $: searchResults =
-    searchQuery && fuse
+  let searchResults = $derived(searchQuery && fuse);
       ? fuse.search(searchQuery).map((result) => result.item)
       : activeTab === "evidence"
         ? evidenceItems

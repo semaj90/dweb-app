@@ -31,7 +31,7 @@
 	import { loki } from "../stores/lokiStore";
 	import TagList from './TagList.svelte';
 
-			export let maxFileSize = 10 * 1024 * 1024; // 10MB
+			let { maxFileSize = $bindable() } = $props(); // 10 * 1024 * 1024; // 10MB
 
 	const dispatch = createEventDispatcher<{
 		upload: { files: globalThis.File[]; tags: string[] };
@@ -289,7 +289,7 @@
 		ondrop={handleDrop}
 		role="button"
 		tabindex={0}
-		onclick={() => triggerFileSelect()}
+		on:click={() => triggerFileSelect()}
 		onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}
 	>
 		{#if uploads.length === 0}
@@ -307,7 +307,7 @@
 			<div class="space-y-4">
 				<CloudUpload size={24} />
 				<span>{uploads.length} file{uploads.length !== 1 ? 's' : ''} ready</span>
-				<button type="button" class="space-y-4" onclick={(e) => { e.stopPropagation(); triggerFileSelect(); }}>
+				<button type="button" class="space-y-4" on:click={(e) => { e.stopPropagation(); triggerFileSelect(); }}>
 					Add more
 				</button>
 			</div>
@@ -358,7 +358,7 @@
 							<button
 								type="button"
 								class="space-y-4"
-								onclick={() => removeFile(upload.id)}
+								on:click={() => removeFile(upload.id)}
 								aria-label="Remove {upload.file.name}"
 							>
 								<X size={16} />
@@ -392,7 +392,7 @@
 			<button
 				type="button"
 				class="space-y-4"
-				onclick={() => uploadFiles()}
+				on:click={() => uploadFiles()}
 				disabled={uploads.every(u => u.status !== 'pending')}
 			>
 				Upload Files
@@ -405,7 +405,7 @@
 				<button
 					type="button"
 					class="space-y-4"
-					onclick={() => clearCompleted()}
+					on:click={() => clearCompleted()}
 				>
 					Clear Completed
 				</button>

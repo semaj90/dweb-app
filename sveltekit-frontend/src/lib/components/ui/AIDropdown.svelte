@@ -36,12 +36,12 @@
   import { fly } from "svelte/transition";
 
   // Props
-  export let disabled = false;
-  export let onReportGenerate: (reportType: string) => void = () => {};
-  export let onSummarize: () => void = () => {};
-  export let onAnalyze: () => void = () => {};
-  export let hasContent = false;
-  export let isGenerating = false;
+  let { disabled = $bindable() } = $props(); // false;
+  let { onReportGenerate = $bindable() } = $props(); // (reportType: string) => void = () => {};
+  let { onSummarize = $bindable() } = $props(); // () => void = () => {};
+  let { onAnalyze = $bindable() } = $props(); // () => void = () => {};
+  let { hasContent = $bindable() } = $props(); // false;
+  let { isGenerating = $bindable() } = $props(); // false;
 
   // Melt UI dropdown configuration
   const dropdownConfig: CreateDropdownMenuProps = {

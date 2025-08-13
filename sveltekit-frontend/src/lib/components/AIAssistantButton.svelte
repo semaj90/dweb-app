@@ -1,7 +1,7 @@
 // Production AI Assistant Component - bits-ui Implementation
 // File: AIAssistantButton.svelte
 
-<script>
+<script lang="ts">
   interface Props {
     onresponse?: (event?: any) => void;
     onerror?: (event?: any) => void;

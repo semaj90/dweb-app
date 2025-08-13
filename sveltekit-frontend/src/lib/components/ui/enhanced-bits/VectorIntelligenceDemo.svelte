@@ -280,7 +280,7 @@
         variant="primary"
         legal
         loading={isSearching}
-        onclick={performVectorSearch}
+        on:click={performVectorSearch}
         disabled={!searchQuery.trim()}
       >
         {#if isSearching}
@@ -295,7 +295,7 @@
       {#if searchResults.length > 0}
         <Button
           variant="outline"
-          onclick={clearResults}
+          on:click={clearResults}
         >
           Clear
         </Button>
@@ -446,7 +446,7 @@
       <div class="flex justify-center gap-2">
         <Button
           variant="outline"
-          onclick={() => searchQuery = 'contract breach non-disclosure agreement'}
+          on:click={() => searchQuery = 'contract breach non-disclosure agreement'}
         >
           Try Sample Query
         </Button>

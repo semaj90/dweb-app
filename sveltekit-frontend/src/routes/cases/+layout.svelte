@@ -39,9 +39,9 @@ import type { Case } from '$lib/types';
     });
 }
   // Reactive derived stores for UI state
-  $: activeCaseId = $page.url.searchParams.get('view');
-  $: isModalOpen = $page.url.searchParams.has('view');
-  $: selectedCase = data.userCases.find(c => c.id === activeCaseId);
+  let activeCaseId = $derived($page.url.searchParams.get('view'););
+  let isModalOpen = $derived($page.url.searchParams.has('view'););
+  let selectedCase = $derived(data.userCases.find(c => c.id === activeCaseId););
 
   // Loading state for AJAX operations
   const isLoading = writable(false);

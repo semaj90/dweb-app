@@ -35,7 +35,7 @@
   let searchQuery = '';
   let selectedIndex = 0;
   
-  $: filteredItems = searchQuery 
+  let filteredItems = $derived(searchQuery );
     ? allItems.filter(item => 
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase())

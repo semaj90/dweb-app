@@ -1,20 +1,19 @@
 <script lang="ts">
   interface Props {
-    open: boolean ;
-    onOpenChange: ((open: boolean) ;
+    open?: boolean;
+    onOpenChange?: ((open: boolean) => void) | undefined;
   }
   let {
     open = false,
-    onOpenChange = > void) | undefined = undefined
-  }: Props = $props();
+    onOpenChange = undefined,
+    children
+  }: Props & { children?: any } = $props();
 
 
 
   import { createDialog } from '@melt-ui/svelte';
   import { writable } from 'svelte/store';
 
-  export let open: boolean = false;
-  export let onOpenChange: ((open: boolean) => void) | undefined = undefined;
 
   const openWritable = writable(open);
 
@@ -33,7 +32,8 @@
 }
   });
 
-  export { trigger, overlay, content, title, description, close, openState };
 </script>
 
-<slot {trigger} {overlay} {content} {title} {description} {close} {openState} />
+{#if children}
+  {@render children({ trigger, overlay, content, title, description, close, openState })}
+{/if}

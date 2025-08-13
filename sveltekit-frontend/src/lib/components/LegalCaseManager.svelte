@@ -23,7 +23,7 @@
   import LoadingSpinner from './LoadingSpinner.svelte';
 
   // Form state management
-  export let caseId: string | null = null;
+  let { caseId = $bindable() } = $props(); // string | null = null;
 
   interface FormData {
     caseInfo: {

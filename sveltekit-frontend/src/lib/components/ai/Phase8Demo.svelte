@@ -294,31 +294,31 @@
     <div class="demo-controls flex gap-2 mb-4">
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'reranker' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        onclick={() => switchDemo('reranker')}
+        on:click={() => switchDemo('reranker')}
       >
         AI Reranker
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'matrix' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        onclick={() => switchDemo('matrix')}
+        on:click={() => switchDemo('matrix')}
       >
         Matrix Compiler
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'lod' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        onclick={() => switchDemo('lod')}
+        on:click={() => switchDemo('lod')}
       >
         LOD System
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm {currentDemo === 'prefetch' ? 'bg-yellow-400 text-black' : 'bg-gray-700'}"
-        onclick={() => switchDemo('prefetch')}
+        on:click={() => switchDemo('prefetch')}
       >
         Prefetcher
       </button>
       <button 
         class="yorha-button px-3 py-1 text-sm bg-blue-600 text-white ml-4"
-        onclick={runPerformanceTest}
+        on:click={runPerformanceTest}
       >
         Performance Test
       </button>

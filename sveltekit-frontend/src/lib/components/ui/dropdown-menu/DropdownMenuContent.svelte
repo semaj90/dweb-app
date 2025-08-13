@@ -13,7 +13,7 @@
 <div 
   use:menu 
   class="space-y-4"
-  {...$$restProps}
+  
 >
   <slot />
 </div>

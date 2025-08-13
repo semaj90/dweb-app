@@ -226,7 +226,7 @@
             />
           </div>
           <Button 
-            onclick={performAISearch} 
+            on:click={performAISearch} 
             disabled={disabled || isAISearching || !aiSearchQuery.trim()}
             size="sm"
           >
@@ -275,7 +275,7 @@
             class="resize-none"
           />
           <Button 
-            onclick={performAIChat} 
+            on:click={performAIChat} 
             disabled={disabled || isAIChatting || !aiChatMessage.trim()}
             size="sm"
             class="w-full"
@@ -318,7 +318,7 @@
             class="resize-none"
           />
           <Button 
-            onclick={performAISummarization} 
+            on:click={performAISummarization} 
             disabled={disabled || isSummarizing || !summarizeText.trim()}
             size="sm"
             class="w-full"
@@ -347,7 +347,7 @@
   <!-- Clear Results Button -->
   {#if aiSearchResults.length > 0 || aiChatResponse || summaryResult}
     <div class="text-center">
-      <Button variant="outline" onclick={clearResults} size="sm">
+      <Button variant="outline" on:click={clearResults} size="sm">
         Clear All Results
       </Button>
     </div>
@@ -358,7 +358,7 @@
     <Button 
       variant="outline" 
       size="sm" 
-      onclick={() => { aiSearchQuery = 'California murder laws'; performAISearch(); }}
+      on:click={() => { aiSearchQuery = 'California murder laws'; performAISearch(); }}
       disabled={disabled || isAISearching}
     >
       <Bot class="h-3 w-3 mr-1" />
@@ -367,7 +367,7 @@
     <Button 
       variant="outline" 
       size="sm" 
-      onclick={() => { aiChatMessage = 'What are the elements of a valid contract?'; performAIChat(); }}
+      on:click={() => { aiChatMessage = 'What are the elements of a valid contract?'; performAIChat(); }}
       disabled={disabled || isAIChatting}
     >
       <MessageSquare class="h-3 w-3 mr-1" />
@@ -376,7 +376,7 @@
     <Button 
       variant="outline" 
       size="sm" 
-      onclick={() => { aiSearchQuery = 'evidence admissibility rules'; performAISearch(); }}
+      on:click={() => { aiSearchQuery = 'evidence admissibility rules'; performAISearch(); }}
       disabled={disabled || isAISearching}
     >
       <Search class="h-3 w-3 mr-1" />

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card/index.js';
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Progress } from '$lib/components/ui/progress/index.js';
 	import { AlertCircle, Upload, Search, Brain, CheckCircle, AlertTriangle } from 'lucide-svelte';
@@ -337,7 +337,7 @@
 					<!-- Processing Controls -->
 					<div class="flex space-x-2">
 						<Button 
-							onclick={processLegalDocuments} 
+							on:click={processLegalDocuments} 
 							disabled={!canProcess}
 							class="flex-1"
 						>
@@ -403,7 +403,7 @@
 					<!-- Query Controls -->
 					<div class="flex space-x-2">
 						<Button 
-							onclick={executeRAGQuery} 
+							on:click={executeRAGQuery} 
 							disabled={!ragQuery.trim()}
 							class="flex-1"
 						>
@@ -510,7 +510,7 @@
 					<AlertCircle class="h-5 w-5" />
 					<span>Real-time System Logs</span>
 				</CardTitle>
-				<Button variant="outline" size="sm" onclick={clearLogs}>
+				<Button variant="outline" size="sm" on:click={clearLogs}>
 					Clear Logs
 				</Button>
 			</CardHeader>

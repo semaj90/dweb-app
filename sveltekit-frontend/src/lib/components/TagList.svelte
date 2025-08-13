@@ -38,7 +38,7 @@
   let suggestionsContainer: HTMLElement;
   let activeIndex = -1;
 
-  $: filteredSuggestions = availableTags
+  let filteredSuggestions = $derived(availableTags);
     .filter(
       (tag) =>
         !tags.includes(tag) &&
@@ -46,7 +46,7 @@
     )
     .slice(0, 5);
 
-  $: suggestions = filteredSuggestions;
+  let suggestions = $derived(filteredSuggestions;);
 
   const debouncedSearch = debounce(async (query: string) => {
     dispatch("search", query);

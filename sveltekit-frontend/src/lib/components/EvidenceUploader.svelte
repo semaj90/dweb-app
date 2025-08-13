@@ -11,7 +11,7 @@
 
     import { writable } from 'svelte/store';
 
-    export let maxFileSize = 50 * 1024 * 1024; // 50MB default
+    let { maxFileSize = $bindable() } = $props(); // 50 * 1024 * 1024; // 50MB default
 
   
   let files: FileList | null = null;

@@ -222,7 +222,7 @@
           </div>
 
           <Button
-            onclick={handleSearch}
+            on:click={handleSearch}
             disabled={!searchQuery.trim() || ragState.isLoading}
             class="px-6"
           >
@@ -231,7 +231,7 @@
 
           <Button
             variant="outline"
-            onclick={() => showAdvancedOptions = !showAdvancedOptions}
+            on:click={() => showAdvancedOptions = !showAdvancedOptions}
           >
             <Settings class="h-4 w-4" />
           </Button>
@@ -259,7 +259,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => selectSuggestion(suggestion)}
+                on:click={() => selectSuggestion(suggestion)}
                 class="h-8 px-3 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border border-yellow-200"
               >
                 <Sparkles class="h-3 w-3 mr-1" />
@@ -277,7 +277,7 @@
             Did you mean:
             {#each ragState.didYouMean as suggestion, i}
               <button
-                onclick={() => selectSuggestion(suggestion)}
+                on:click={() => selectSuggestion(suggestion)}
                 class="text-blue-600 hover:text-blue-800 underline ml-1"
               >
                 {suggestion}
@@ -322,7 +322,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                onclick={handleOptimization}
+                on:click={handleOptimization}
                 class="mt-2 w-full"
               >
                 <Zap class="h-4 w-4 mr-1" />
@@ -358,14 +358,14 @@
               <Button
                 variant={visualizationMode === 'list' ? 'default' : 'outline'}
                 size="sm"
-                onclick={() => visualizationMode = 'list'}
+                on:click={() => visualizationMode = 'list'}
               >
                 List
               </Button>
               <Button
                 variant={visualizationMode === 'clusters' ? 'default' : 'outline'}
                 size="sm"
-                onclick={() => visualizationMode = 'clusters'}
+                on:click={() => visualizationMode = 'clusters'}
               >
                 <Target class="h-4 w-4 mr-1" />
                 Clusters
@@ -373,7 +373,7 @@
               <Button
                 variant={visualizationMode === 'performance' ? 'default' : 'outline'}
                 size="sm"
-                onclick={() => visualizationMode = 'performance'}
+                on:click={() => visualizationMode = 'performance'}
               >
                 <BarChart3 class="h-4 w-4 mr-1" />
                 Analytics
@@ -452,7 +452,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {#each clusterVisualization as cluster}
             <Card class="cursor-pointer transition-all {cluster.isSelected ? 'ring-2 ring-blue-500' : ''}"
-                  onclick={() => handleClusterSelect(cluster.id)}>
+                  on:click={() => handleClusterSelect(cluster.id)}>
               <CardHeader>
                 <CardTitle class="flex items-center justify-between">
                   <span>Cluster {cluster.id}</span>

@@ -72,8 +72,8 @@
 	class:pressed={isPressed}
 	class:glow={glowEffect}
 	{disabled}
-	onclick={handleClick}
-	{...$$restProps}
+	on:click={handleClick}
+	
 >
 	{#if loading}
 		<div class="loading-spinner"></div>

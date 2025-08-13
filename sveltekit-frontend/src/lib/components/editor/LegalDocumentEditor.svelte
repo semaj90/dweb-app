@@ -298,7 +298,7 @@
     scheduleAutoSave();
 }
   // Reactive statement to update save status
-  $: saveStatus = getSaveStatus();
+  let saveStatus = $derived(getSaveStatus(););
 
   // Function to load document from API
   async function loadDocument() {

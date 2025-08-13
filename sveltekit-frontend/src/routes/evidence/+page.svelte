@@ -75,13 +75,13 @@
   let bulkOperationLoading = false;
 
   // Get case ID from URL if available
-  $: caseId = $page.url.searchParams.get("caseId") || undefined;
+  let caseId = $derived($page.url.searchParams.get("caseId") || undefined;);
 
   // Reactive values from SSR data and store
   $: ({ isLoading: loading, error } = $evidenceGrid);
-  $: allEvidence = data.evidence || [];
-  $: filteredEvidence = filterAndSortEvidence(allEvidence);
-  $: visibleEvidence = getPaginatedEvidence();
+  let allEvidence = $derived(data.evidence || [];);
+  let filteredEvidence = $derived(filterAndSortEvidence(allEvidence););
+  let visibleEvidence = $derived(getPaginatedEvidence(););
 
   onMount(() => {
     // Initialize store with SSR data

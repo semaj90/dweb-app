@@ -1,10 +1,17 @@
 <script lang="ts">
-  // Menu item component
+  interface Props {
+    class?: string;
+  }
+  let {
+    children
+  }: { children?: any } = $props();
 </script>
 
 <button 
   class="space-y-4"
-  {...$$restProps}
+  
 >
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </button>

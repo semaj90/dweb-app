@@ -421,7 +421,7 @@
                       id="avatar"
                       type="file"
                       accept="image/*"
-                      on:change={handleAvatarChange}
+                      onchange={handleAvatarChange}
                       class="space-y-4"
                     />
                     <Button

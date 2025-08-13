@@ -154,7 +154,7 @@
         <div class="space-y-4">
           <h2 class="space-y-4">System Status</h2>
           <button
-            onclick={() => checkSystemStatus()}
+            on:click={() => checkSystemStatus()}
             class="space-y-4"
             disabled={isLoadingStatus}
           >
@@ -246,7 +246,7 @@
             {#each demoQueries as query}
               <button
                 class="space-y-4"
-                onclick={() => (testQuery = query)}
+                on:click={() => (testQuery = query)}
               >
                 "{query}"
               </button>
@@ -275,7 +275,7 @@
                 class="space-y-4"
               />
               <button
-                onclick={() => testVectorSearch()}
+                on:click={() => testVectorSearch()}
                 disabled={!testQuery.trim() || isTestingSearch}
                 class="space-y-4"
               >
@@ -376,13 +376,13 @@
             </a>
             <button
               class="space-y-4"
-              onclick={() => window.open("/cases", "_blank")}
+              on:click={() => window.open("/cases", "_blank")}
             >
               → Browse Case Database
             </button>
             <button
               class="space-y-4"
-              onclick={() => window.open("/evidence", "_blank")}
+              on:click={() => window.open("/evidence", "_blank")}
             >
               → Browse Evidence Collection
             </button>

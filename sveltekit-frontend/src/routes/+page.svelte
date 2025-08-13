@@ -34,10 +34,10 @@
   let autoReconnectInterval: number | null = null;
 
   // Reactive values
-  $: canSend = $chatState.message.trim().length > 0 && $isAIConnected && !$chatState.isLoading;
-  $: connectionStatus = $isAIConnected ? 'Connected' : 
+  let canSend = $derived($chatState.message.trim().length > 0 && $isAIConnected && !$chatState.isLoading;);
+  let connectionStatus = $derived($isAIConnected ? 'Connected' : );
                       $chatState.connectionAttempts > 0 ? 'Reconnecting...' : 'Disconnected';
-  $: statusColor = $isAIConnected ? 'text-green-600' : 
+  let statusColor = $derived($isAIConnected ? 'text-green-600' : );
                    $chatState.connectionAttempts > 0 ? 'text-yellow-600' : 'text-red-600';
 
   // Sample queries for user guidance
@@ -209,11 +209,11 @@
         
         <!-- Actions -->
         <div class="flex space-x-2">
-          <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick={clearChat}>
+          <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" on:click={clearChat}>
             Clear Chat
           </button>
           {#if !$isAIConnected}
-            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onclick={retryConnection}>
+            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" on:click={retryConnection}>
               Reconnect
             </button>
           {/if}
@@ -252,7 +252,7 @@
                 <div class="grid gap-2">
                   {#each sampleQueries as query}
                     <button
-                      onclick={() => useSampleQuery(query)}
+                      on:click={() => useSampleQuery(query)}
                       class="text-left p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-colors"
                     >
                       <span class="text-gray-700">{query}</span>
@@ -348,7 +348,7 @@
               <span class="text-red-800 text-sm">{$chatState.error}</span>
             </div>
             <button 
-              onclick={() => chatState.update(s => ({ ...s, error: null }))}
+              on:click={() => chatState.update(s => ({ ...s, error: null }))}
               class="text-red-600 hover:text-red-800"
             >
               ✕
@@ -374,7 +374,7 @@
           
           <div class="flex flex-col space-y-2">
             <button
-              onclick={sendMessage}
+              on:click={sendMessage}
               disabled={!canSend}
               class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
@@ -461,12 +461,12 @@
       <div>
         <h4 class="font-medium text-gray-900 mb-3">Quick Actions</h4>
         <div class="space-y-2">
-          <button class="w-full px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick={clearChat}>
+          <button class="w-full px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" on:click={clearChat}>
             🗑️ Clear Conversation
           </button>
           
           {#if !$isAIConnected}
-            <button class="w-full px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onclick={retryConnection}>
+            <button class="w-full px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" on:click={retryConnection}>
               🔄 Retry Connection
             </button>
           {/if}

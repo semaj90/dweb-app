@@ -15,7 +15,7 @@
   import { Save, Maximize, Minimize, Eye, EyeOff, FileText, Keyboard } from 'lucide-svelte';
 
   // Props
-        export let autoSaveInterval: number = 5000; // 5 seconds
+        let { autoSaveInterval = $bindable() } = $props(); // number = 5000; // 5 seconds
 
   // State management
   let editorElement: HTMLDivElement;

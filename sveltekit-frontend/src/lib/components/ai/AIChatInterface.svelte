@@ -50,16 +50,16 @@
 	}
 
 	// Props
-	export let visible = false;
-	export let minimized = false;
-	export let draggable = true;
-	export let width = 400;
-	export let height = 600;
-	export let apiEndpoint = 'http://localhost:11434/api/generate';
-	export let fallbackEndpoint = 'http://localhost:8000/v1/chat/completions';
-	export let modelName = 'gemma3-legal:latest';
-	export let title = 'YoRHa Legal AI';
-	export let subtitle = 'Powered by Gemma3';
+	let { visible = $bindable() } = $props(); // false;
+	let { minimized = $bindable() } = $props(); // false;
+	let { draggable = $bindable() } = $props(); // true;
+	let { width = $bindable() } = $props(); // 400;
+	let { height = $bindable() } = $props(); // 600;
+	let { apiEndpoint = $bindable() } = $props(); // 'http://localhost:11434/api/generate';
+	let { fallbackEndpoint = $bindable() } = $props(); // 'http://localhost:8000/v1/chat/completions';
+	let { modelName = $bindable() } = $props(); // 'gemma3-legal:latest';
+	let { title = $bindable() } = $props(); // 'YoRHa Legal AI';
+	let { subtitle = $bindable() } = $props(); // 'Powered by Gemma3';
 
 	// State
 	let messages: Message[] = [];

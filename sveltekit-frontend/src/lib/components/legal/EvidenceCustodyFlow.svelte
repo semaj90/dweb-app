@@ -323,7 +323,7 @@ and AI-powered verification features.
               Begin the Evidence Chain of Custody workflow to ensure proper handling,
               verification, and documentation of evidence integrity.
             </p>
-            <Button onclick={startWorkflow} class="w-full">
+            <Button on:click={startWorkflow} class="w-full">
               Start Custody Workflow
             </Button>
           </CardContent>
@@ -342,7 +342,7 @@ and AI-powered verification features.
               <Button 
                 variant="outline" 
                 size="sm"
-                onclick={() => showIntegrityDetails = !showIntegrityDetails}
+                on:click={() => showIntegrityDetails = !showIntegrityDetails}
               >
                 {showIntegrityDetails ? 'Hide' : 'Show'} Details
               </Button>
@@ -388,10 +388,10 @@ and AI-powered verification features.
           <CardContent class="space-y-4">
             {#if currentState.value === 'awaitingApproval'}
               <div class="flex space-x-3">
-                <Button onclick={approveWorkflow} variant="success">
+                <Button on:click={approveWorkflow} variant="success">
                   Approve Custody
                 </Button>
-                <Button onclick={rejectWorkflow} variant="destructive">
+                <Button on:click={rejectWorkflow} variant="destructive">
                   Reject Custody
                 </Button>
               </div>
@@ -399,15 +399,15 @@ and AI-powered verification features.
 
             {#if currentState.value === 'collaboration'}
               <div class="flex space-x-3">
-                <Button onclick={() => showTransferDialog = true} variant="outline">
+                <Button on:click={() => showTransferDialog = true} variant="outline">
                   Transfer Custody
                 </Button>
                 {#if !activeCollaborators.includes(userId)}
-                  <Button onclick={joinCollaboration} variant="outline">
+                  <Button on:click={joinCollaboration} variant="outline">
                     Join Collaboration
                   </Button>
                 {:else}
-                  <Button onclick={leaveCollaboration} variant="outline">
+                  <Button on:click={leaveCollaboration} variant="outline">
                     Leave Collaboration
                   </Button>
                 {/if}
@@ -416,10 +416,10 @@ and AI-powered verification features.
 
             {#if currentState.value === 'error'}
               <div class="flex space-x-3">
-                <Button onclick={retryWorkflow}>
+                <Button on:click={retryWorkflow}>
                   Retry Workflow
                 </Button>
-                <Button onclick={cancelWorkflow} variant="destructive">
+                <Button on:click={cancelWorkflow} variant="destructive">
                   Cancel Workflow
                 </Button>
               </div>
@@ -466,14 +466,14 @@ and AI-powered verification features.
         ></textarea>
         <div class="flex space-x-3">
           <Button 
-            onclick={startCustodyTransfer}
+            on:click={startCustodyTransfer}
             disabled={!transferReason.trim()}
             class="flex-1"
           >
             Transfer
           </Button>
           <Button 
-            onclick={() => showTransferDialog = false}
+            on:click={() => showTransferDialog = false}
             variant="outline"
             class="flex-1"
           >

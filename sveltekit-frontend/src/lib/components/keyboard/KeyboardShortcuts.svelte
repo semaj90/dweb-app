@@ -535,7 +535,7 @@
     tabindex={0}
     aria-modal="true"
     aria-labelledby="command-palette-title"
-    onclick={(e) => { if ((e.target as HTMLButtonElement) === e.currentTarget) open = false; }}
+    on:click={(e) => { if ((e.target as HTMLButtonElement) === e.currentTarget) open = false; }}
     onkeydown={(e) => (e.key === "Escape" ? (open = false) : null)}
   >
     <div class="command-palette">
@@ -556,7 +556,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (open = false)}
+            on:click={() => (open = false)}
             class="close-button"
             aria-label="Close command palette"
           >
@@ -579,7 +579,7 @@
                 role="option"
                 aria-selected={index === selectedIndex}
                 tabindex={0}
-                onclick={() => shortcut.action && shortcut.action()}
+                on:click={() => shortcut.action && shortcut.action()}
                 onkeydown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();

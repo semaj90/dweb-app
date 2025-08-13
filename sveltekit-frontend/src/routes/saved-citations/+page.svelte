@@ -172,9 +172,9 @@
       console.error("Error updating citation:", error);
 }}
   // Stats
-  $: totalCitations = savedCitations.length;
-  $: favoriteCitations = savedCitations.filter((c) => c.isFavorite).length;
-  $: categoryCounts = savedCitations.reduce((acc, citation) => {
+  let totalCitations = $derived(savedCitations.length;);
+  let favoriteCitations = $derived(savedCitations.filter((c) => c.isFavorite).length;);
+  let categoryCounts = $derived(savedCitations.reduce((acc, citation) => {);
     acc[citation.category] = (acc[citation.category] || 0) + 1;
     return acc;
   }, {});
@@ -241,7 +241,7 @@
     </div>
 
     <div class="space-y-4">
-      <Button onclick={() => (showAddDialog = true)}>
+      <Button on:click={() => (showAddDialog = true)}>
         <Plus class="space-y-4" />
         Add Citation
       </Button>
@@ -263,23 +263,23 @@
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent {menu}>
-                <DropdownMenuItem onclick={() => toggleFavorite(citation)}>
+                <DropdownMenuItem on:click={() => toggleFavorite(citation)}>
                   <Star class="w-4 h-4 mr-2" />
                   {citation.isFavorite
                     ? "Remove from favorites"
                     : "Add to favorites"}
                 </DropdownMenuItem>
-                <DropdownMenuItem onclick={() => copyCitation(citation)}>
+                <DropdownMenuItem on:click={() => copyCitation(citation)}>
                   <Copy class="w-4 h-4 mr-2" />
                   Copy citation
                 </DropdownMenuItem>
-                <DropdownMenuItem onclick={() => editCitation(citation)}>
+                <DropdownMenuItem on:click={() => editCitation(citation)}>
                   <Edit class="w-4 h-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onclick={() => deleteCitation(citation.id)}
+                  on:click={() => deleteCitation(citation.id)}
                   class="text-destructive"
                 >
                   <Trash2 class="w-4 h-4 mr-2" />
@@ -361,7 +361,7 @@
               You haven't saved any citations yet. Start by adding citations
               from reports or create new ones.
             </p>
-            <Button onclick={() => (showAddDialog = true)}>
+            <Button on:click={() => (showAddDialog = true)}>
               <Plus class="space-y-4" />
               Add your first citation
             </Button>
@@ -448,11 +448,11 @@
     </div>
 
     <DialogFooter>
-      <Button variant="secondary" onclick={() => (showAddDialog = false)}
+      <Button variant="secondary" on:click={() => (showAddDialog = false)}
         >Cancel</Button
       >
       <Button
-        onclick={() => saveCitation()}
+        on:click={() => saveCitation()}
         disabled={!newCitation.title || !newCitation.content}
       >
         Save Citation
@@ -522,10 +522,10 @@
       </div>
 
       <DialogFooter>
-        <Button variant="secondary" onclick={() => (editingCitation = null)}
+        <Button variant="secondary" on:click={() => (editingCitation = null)}
           >Cancel</Button
         >
-        <Button onclick={() => updateCitation()}>Update Citation</Button>
+        <Button on:click={() => updateCitation()}>Update Citation</Button>
       </DialogFooter>
     </DialogContent>
   </DialogRoot>

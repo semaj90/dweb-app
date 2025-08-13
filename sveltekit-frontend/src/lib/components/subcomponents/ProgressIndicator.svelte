@@ -68,7 +68,7 @@
         }
     }
 
-    $: progressPercentage = Math.round((currentStep / (steps.length - 1)) * 100);
+    let progressPercentage = $derived(Math.round((currentStep / (steps.length - 1)) * 100););
 </script>
 
 <div class="progress-indicator bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">

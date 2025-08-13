@@ -69,8 +69,8 @@ import type { Case } from '$lib/types';
       default:
         return FileText;
 }}
-  $: statusIcon = getStatusIcon(caseData.status);
-  $: formattedDate = formatDistanceToNow(new Date(caseData.openedAt), {
+  let statusIcon = $derived(getStatusIcon(caseData.status););
+  let formattedDate = $derived(formatDistanceToNow(new Date(caseData.openedAt), {);
     addSuffix: true,
   });
 </script>

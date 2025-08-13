@@ -59,7 +59,7 @@
     error: caseServiceError,
   } = caseService;
 
-  $: caseId = $page.params.id;
+  let caseId = $derived($page.params.id;);
   let canvasElement: HTMLElement;
   let contextMenuState: ContextMenuState = { show: false, x: 0, y: 0 };
 
@@ -193,11 +193,11 @@
         class="space-y-4"
         role="application"
         aria-label="Case evidence canvas"
-        on:contextmenu={handleCanvasContextMenu}
-        on:drop={handleCanvasDrop}
-        on:dragover={handleCanvasDragOver}
+        oncontextmenu={handleCanvasContextMenu}
+        ondrop={handleCanvasDrop}
+        ondragover={handleCanvasDragOver}
         on:dragenter={handleCanvasDragEnter}
-        on:dragleave={handleCanvasDragLeave}
+        ondragleave={handleCanvasDragLeave}
       >
         <!-- Grid Background -->
         <div class="space-y-4" aria-hidden="true"></div>

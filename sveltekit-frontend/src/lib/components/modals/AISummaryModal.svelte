@@ -13,12 +13,12 @@
     let copied = false;
 
   // Use the Svelte store reactively
-  $: summary = $aiService.summary;
-  $: isLoading = $aiService.isLoading;
-  $: error = $aiService.error;
-  $: model = $aiService.model;
-  $: lastSummarizedContent = $aiService.lastSummarizedContent;
-  $: isOpen = isLoading || summary !== null || error !== null;
+  let summary = $derived($aiService.summary;);
+  let isLoading = $derived($aiService.isLoading;);
+  let error = $derived($aiService.error;);
+  let model = $derived($aiService.model;);
+  let lastSummarizedContent = $derived($aiService.lastSummarizedContent;);
+  let isOpen = $derived(isLoading || summary !== null || error !== null;);
 
   async function copyToClipboard() {
     if (summary) {

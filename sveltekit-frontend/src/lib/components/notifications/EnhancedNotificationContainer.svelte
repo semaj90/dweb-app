@@ -28,8 +28,8 @@ mcp<script lang="ts">
   let enableSounds = true;
 
   // Reactive notifications list
-  $: visibleNotifications = $notifications.notifications.slice(0, maxVisible);
-  $: hiddenCount = Math.max(
+  let visibleNotifications = $derived($notifications.notifications.slice(0, maxVisible););
+  let hiddenCount = $derived(Math.max();
     0,
     $notifications.notifications.length - maxVisible
   );

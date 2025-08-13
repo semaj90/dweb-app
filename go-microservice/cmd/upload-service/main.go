@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -8,15 +9,14 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
-	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
+	pgvector "github.com/pgvector/pgvector-go"
 	"github.com/rs/cors"
 
-	minioClient "github.com/deeds-web/deeds-web-app/go-microservice/pkg/minio"
+	minioClient "microservice/pkg/minio"
 )
 
 type UploadService struct {
@@ -25,28 +25,28 @@ type UploadService struct {
 }
 
 type DocumentMetadata struct {
-	ID           string                 `json:"id"`
-	CaseID       string                 `json:"caseId"`
-	Filename     string                 `json:"filename"`
-	ObjectName   string                 `json:"objectName"`
-	ContentType  string                 `json:"contentType"`
-	Size         int64                  `json:"size"`
-	UploadTime   time.Time              `json:"uploadTime"`
-	DocumentType string                 `json:"documentType"`
-	Tags         map[string]string      `json:"tags"`
-	Metadata     map[string]interface{} `json:"metadata"`
-	ProcessingStatus string             `json:"processingStatus"`
-	Embedding    []float32              `json:"embedding,omitempty"`
-	ExtractedText string                `json:"extractedText,omitempty"`
+	ID               string                 `json:"id"`
+	CaseID           string                 `json:"caseId"`
+	Filename         string                 `json:"filename"`
+	ObjectName       string                 `json:"objectName"`
+	ContentType      string                 `json:"contentType"`
+	Size             int64                  `json:"size"`
+	UploadTime       time.Time              `json:"uploadTime"`
+	DocumentType     string                 `json:"documentType"`
+	Tags             map[string]string      `json:"tags"`
+	Metadata         map[string]interface{} `json:"metadata"`
+	ProcessingStatus string                 `json:"processingStatus"`
+	Embedding        []float32              `json:"embedding,omitempty"`
+	ExtractedText    string                 `json:"extractedText,omitempty"`
 }
 
 type UploadResponse struct {
-	Success      bool              `json:"success"`
-	DocumentID   string            `json:"documentId"`
-	URL          string            `json:"url"`
-	ObjectName   string            `json:"objectName"`
-	Message      string            `json:"message"`
-	Metadata     *DocumentMetadata `json:"metadata,omitempty"`
+	Success    bool              `json:"success"`
+	DocumentID string            `json:"documentId"`
+	URL        string            `json:"url"`
+	ObjectName string            `json:"objectName"`
+	Message    string            `json:"message"`
+	Metadata   *DocumentMetadata `json:"metadata,omitempty"`
 }
 
 func NewUploadService() (*UploadService, error) {
@@ -55,27 +55,28 @@ func NewUploadService() (*UploadService, error) {
 	if endpoint == "" {
 		endpoint = "localhost:9000"
 	}
-	
+
 	accessKey := os.Getenv("MINIO_ACCESS_KEY")
 	if accessKey == "" {
 		accessKey = "minioadmin"
 	}
-	
+
 	secretKey := os.Getenv("MINIO_SECRET_KEY")
 	if secretKey == "" {
 		secretKey = "minioadmin"
 	}
-	
+
 	bucketName := os.Getenv("MINIO_BUCKET")
 	if bucketName == "" {
 		bucketName = "legal-documents"
 	}
-	
+
 	useSSL := os.Getenv("MINIO_USE_SSL") == "true"
 
 	minioClient, err := minioClient.NewClient(endpoint, accessKey, secretKey, bucketName, useSSL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize MinIO client: %w", err)
+		log.Printf("Warning: MinIO not available at %s, continuing without object storage: %v", endpoint, err)
+		minioClient = nil
 	}
 
 	// Initialize PostgreSQL connection
@@ -92,6 +93,9 @@ func NewUploadService() (*UploadService, error) {
 				log.Println("✅ PostgreSQL connected successfully")
 				if err := initDatabase(db); err != nil {
 					log.Printf("Warning: Database initialization failed: %v", err)
+					// Continue without failing - graceful degradation
+				} else {
+					log.Println("✅ Database schema initialized successfully")
 				}
 			}
 		}
@@ -104,10 +108,20 @@ func NewUploadService() (*UploadService, error) {
 }
 
 func initDatabase(db *sql.DB) error {
-	schema := `
-	CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-	CREATE EXTENSION IF NOT EXISTS vector;
+	log.Println("🔧 Initializing database schema...")
 
+	// Try to create extensions first
+	_, err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
+	if err != nil {
+		log.Printf("Warning: Failed to create uuid-ossp extension: %v", err)
+	}
+
+	_, err = db.Exec(`CREATE EXTENSION IF NOT EXISTS vector;`)
+	if err != nil {
+		log.Printf("Warning: Failed to create vector extension: %v", err)
+	}
+
+	schema := `
 	CREATE TABLE IF NOT EXISTS document_metadata (
 		id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 		case_id VARCHAR(255) NOT NULL,
@@ -129,13 +143,23 @@ func initDatabase(db *sql.DB) error {
 	CREATE INDEX IF NOT EXISTS idx_document_case_id ON document_metadata(case_id);
 	CREATE INDEX IF NOT EXISTS idx_document_type ON document_metadata(document_type);
 	CREATE INDEX IF NOT EXISTS idx_document_status ON document_metadata(processing_status);
-	CREATE INDEX IF NOT EXISTS idx_document_embedding ON document_metadata USING ivfflat (embedding vector_cosine_ops);
 	CREATE INDEX IF NOT EXISTS idx_document_tags ON document_metadata USING gin(tags);
 	CREATE INDEX IF NOT EXISTS idx_document_metadata ON document_metadata USING gin(metadata);
 	`
 
-	_, err := db.Exec(schema)
-	return err
+	_, err = db.Exec(schema)
+	if err != nil {
+		log.Printf("Warning: Failed to create table and basic indexes: %v", err)
+		return err
+	}
+
+	// Try to create vector index separately since it might fail
+	_, err = db.Exec(`CREATE INDEX IF NOT EXISTS idx_document_embedding ON document_metadata USING ivfflat (embedding vector_cosine_ops);`)
+	if err != nil {
+		log.Printf("Warning: Failed to create vector index (this is optional): %v", err)
+	}
+
+	return nil
 }
 
 func (s *UploadService) handleUpload(w http.ResponseWriter, r *http.Request) {
@@ -175,6 +199,12 @@ func (s *UploadService) handleUpload(w http.ResponseWriter, r *http.Request) {
 	metadata := make(map[string]string)
 	if metadataStr := r.FormValue("metadata"); metadataStr != "" {
 		json.Unmarshal([]byte(metadataStr), &metadata)
+	}
+
+	// Ensure MinIO is available
+	if s.minio == nil {
+		http.Error(w, "Object storage not available", http.StatusServiceUnavailable)
+		return
 	}
 
 	// Upload to MinIO
@@ -217,12 +247,12 @@ func (s *UploadService) handleUpload(w http.ResponseWriter, r *http.Request) {
 
 func (s *UploadService) saveMetadata(ctx context.Context, result *minioClient.UploadResult, caseID, documentType string, tags map[string]string, metadata map[string]string) (string, error) {
 	var documentID string
-	
+
 	tagsJSON, _ := json.Marshal(tags)
 	metadataJSON, _ := json.Marshal(metadata)
 
 	query := `
-		INSERT INTO document_metadata 
+		INSERT INTO document_metadata
 		(case_id, filename, object_name, content_type, size_bytes, document_type, tags, metadata)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING id
@@ -254,10 +284,10 @@ func (s *UploadService) processDocument(ctx context.Context, documentID, objectN
 
 	// 1. Extract text (placeholder - integrate with your text extraction service)
 	extractedText := s.extractText(ctx, objectName)
-	
+
 	// 2. Generate embeddings via RAG service
 	embedding := s.generateEmbedding(ctx, extractedText)
-	
+
 	// 3. Update database with results
 	if err := s.updateDocumentProcessing(ctx, documentID, extractedText, embedding); err != nil {
 		log.Printf("❌ Failed to update document processing: %v", err)
@@ -288,19 +318,21 @@ func (s *UploadService) generateEmbedding(ctx context.Context, text string) []fl
 	}
 
 	payloadBytes, _ := json.Marshal(payload)
-	
-	resp, err := http.Post(ragURL+"/embed", "application/json", 
-		http.NewRequest("POST", ragURL+"/embed", nil).Body)
+	resp, err := http.Post(ragURL+"/embed", "application/json", bytes.NewReader(payloadBytes))
 	if err != nil {
 		log.Printf("Embedding generation failed: %v", err)
 		return make([]float32, 384) // Return zero vector
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		log.Printf("Embedding service returned status %d", resp.StatusCode)
+		return make([]float32, 384)
+	}
 
 	var embedResp struct {
 		Vectors [][]float32 `json:"vectors"`
 	}
-	
+
 	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
 		log.Printf("Embedding response parsing failed: %v", err)
 		return make([]float32, 384)
@@ -318,7 +350,7 @@ func (s *UploadService) updateProcessingStatus(ctx context.Context, documentID, 
 		return
 	}
 
-	_, err := s.db.ExecContext(ctx, 
+	_, err := s.db.ExecContext(ctx,
 		"UPDATE document_metadata SET processing_status = $1, updated_at = NOW() WHERE id = $2",
 		status, documentID)
 	if err != nil {
@@ -328,12 +360,13 @@ func (s *UploadService) updateProcessingStatus(ctx context.Context, documentID, 
 
 func (s *UploadService) updateDocumentProcessing(ctx context.Context, documentID, extractedText string, embedding []float32) error {
 	query := `
-		UPDATE document_metadata 
+		UPDATE document_metadata
 		SET extracted_text = $1, embedding = $2, updated_at = NOW()
 		WHERE id = $3
 	`
 
-	_, err := s.db.ExecContext(ctx, query, extractedText, pq.Array(embedding), documentID)
+	// Use pgvector-go to pass the embedding value properly
+	_, err := s.db.ExecContext(ctx, query, extractedText, pgvector.NewVector(embedding), documentID)
 	return err
 }
 
@@ -345,7 +378,7 @@ func (s *UploadService) handleSearch(w http.ResponseWriter, r *http.Request) {
 
 	query := r.URL.Query().Get("q")
 	caseID := r.URL.Query().Get("caseId")
-	
+
 	if query == "" {
 		http.Error(w, "Query parameter 'q' is required", http.StatusBadRequest)
 		return
@@ -355,16 +388,17 @@ func (s *UploadService) handleSearch(w http.ResponseWriter, r *http.Request) {
 	embedding := s.generateEmbedding(r.Context(), query)
 
 	// Perform vector search
+	v := pgvector.NewVector(embedding)
 	sqlQuery := `
-		SELECT id, case_id, filename, object_name, document_type, 
-			   extracted_text, (embedding <=> $1) as distance
-		FROM document_metadata 
+		SELECT id, case_id, filename, object_name, document_type,
+		   extracted_text, (embedding <=> $1) as distance
+		FROM document_metadata
 		WHERE ($2 = '' OR case_id = $2) AND embedding IS NOT NULL
 		ORDER BY embedding <=> $1
 		LIMIT 10
 	`
 
-	rows, err := s.db.QueryContext(r.Context(), sqlQuery, pq.Array(embedding), caseID)
+	rows, err := s.db.QueryContext(r.Context(), sqlQuery, v, caseID)
 	if err != nil {
 		log.Printf("Search query failed: %v", err)
 		http.Error(w, "Search failed", http.StatusInternalServerError)
@@ -383,13 +417,13 @@ func (s *UploadService) handleSearch(w http.ResponseWriter, r *http.Request) {
 		}
 
 		results = append(results, map[string]interface{}{
-			"id":           id,
-			"caseId":       caseId,
-			"filename":     filename,
-			"objectName":   objectName,
-			"documentType": docType,
+			"id":            id,
+			"caseId":        caseId,
+			"filename":      filename,
+			"objectName":    objectName,
+			"documentType":  docType,
 			"extractedText": text,
-			"similarity":   1.0 - distance, // Convert distance to similarity
+			"similarity":    1.0 - distance, // Convert distance to similarity
 		})
 	}
 
@@ -403,17 +437,17 @@ func (s *UploadService) handleSearch(w http.ResponseWriter, r *http.Request) {
 func main() {
 	service, err := NewUploadService()
 	if err != nil {
-		log.Fatalf("Failed to create upload service: %v", err)
+		log.Printf("Warning: service created with partial functionality: %v", err)
 	}
 
 	r := mux.NewRouter()
 
 	// Upload endpoint
 	r.HandleFunc("/upload", service.handleUpload).Methods("POST", "OPTIONS")
-	
+
 	// Search endpoint
 	r.HandleFunc("/search", service.handleSearch).Methods("GET", "OPTIONS")
-	
+
 	// Health check
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -443,6 +477,9 @@ func main() {
 	fmt.Printf("🚀 Upload service starting on port %s\n", port)
 	fmt.Printf("📁 MinIO endpoint: %s\n", os.Getenv("MINIO_ENDPOINT"))
 	fmt.Printf("🗄️  Database: %v\n", service.db != nil)
-	
-	log.Fatal(http.ListenAndServe(":"+port, handler))
+
+	log.Printf("About to start server on :%s", port)
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }

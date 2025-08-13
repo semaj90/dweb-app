@@ -221,7 +221,7 @@
     <div class="space-y-4">
       <!-- Search Form -->
       <div class="space-y-4">
-        <form on:submit={handleSearchSubmit} class="space-y-4">
+        <form onsubmit={handleSearchSubmit} class="space-y-4">
           <!-- Main Search Input -->
           <div class="space-y-4">
             <Search
@@ -394,7 +394,7 @@
                 <div
                   class="space-y-4"
                   on:click={() => handleResultClick(result)}
-                  on:keydown={(e) =>
+                  onkeydown={(e) =>
                     e.key === "Enter" && handleResultClick(result)}
                   role="button"
                   tabindex={0}

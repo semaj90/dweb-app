@@ -18,8 +18,8 @@
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 
-	export let selectedProvider: LLMProvider | null = null;
-	export let disabled = false;
+	let { selectedProvider = $bindable() } = $props(); // LLMProvider | null = null;
+	let { disabled = $bindable() } = $props(); // false;
 
 	const dispatch = createEventDispatcher<{
 		providerSelected: { provider: LLMProvider };

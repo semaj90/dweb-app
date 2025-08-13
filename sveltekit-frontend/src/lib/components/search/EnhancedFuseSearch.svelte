@@ -153,7 +153,7 @@
           />
         </div>
         <Button 
-          onclick={performSearch} 
+          on:click={performSearch} 
           disabled={isSearching || !searchQuery.trim()}
           size="sm"
         >
@@ -291,7 +291,7 @@
             <Button 
               variant="outline" 
               size="sm" 
-              onclick={() => { searchQuery = suggestion; performSearch(); }}
+              on:click={() => { searchQuery = suggestion; performSearch(); }}
             >
               {suggestion}
             </Button>

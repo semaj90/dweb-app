@@ -957,7 +957,7 @@
 }
 }
   // Reactive statements
-  $: state = get(canvasState);
+  let state = $derived(get(canvasState););
 
   // Exported functions for parent component access
   export function addEvidenceToCanvas(evidence: any) {

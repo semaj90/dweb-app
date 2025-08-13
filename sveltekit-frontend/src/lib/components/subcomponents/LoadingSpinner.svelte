@@ -15,19 +15,19 @@
 
 
 
-    export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
-    export let color: 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white' = 'blue';
-    export let label: string = 'Loading...';
-    export let inline: boolean = false;
+    let { size = $bindable() } = $props(); // 'sm' | 'md' | 'lg' | 'xl' = 'md';
+    let { color = $bindable() } = $props(); // 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white' = 'blue';
+    let { label = $bindable() } = $props(); // string = 'Loading...';
+    let { inline = $bindable() } = $props(); // boolean = false;
 
-    $: sizeClasses = {
+    let sizeClasses = $derived({);
         sm: 'w-4 h-4',
         md: 'w-6 h-6',
         lg: 'w-8 h-8',
         xl: 'w-12 h-12'
     };
 
-    $: colorClasses = {
+    let colorClasses = $derived({);
         blue: 'text-blue-600',
         green: 'text-green-600',
         red: 'text-red-600',

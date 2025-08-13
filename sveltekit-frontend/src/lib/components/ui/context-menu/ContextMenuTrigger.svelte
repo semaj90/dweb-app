@@ -10,6 +10,6 @@
 
   </script>
 
-<div use:trigger {...$$restProps}>
+<div use:trigger >
   <slot />
 </div>

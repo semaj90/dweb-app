@@ -40,8 +40,8 @@
     };
   };
 
-  export let showSources = false;
-  export let showMetadata = false;
+  let { showSources = $bindable() } = $props(); // false;
+  let { showMetadata = $bindable() } = $props(); // false;
 
   let formattedTime = "";
   let isSourcesExpanded = false;

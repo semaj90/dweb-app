@@ -14,7 +14,7 @@
   import type { User } from "$lib/types/user";
     import type { Case } from "$lib/types/index";
 
-  export let case_: Case| null = null; // Edit mode if provided
+  let { case_ = $bindable() } = $props(); // Case| null = null; // Edit mode if provided
 
   
   

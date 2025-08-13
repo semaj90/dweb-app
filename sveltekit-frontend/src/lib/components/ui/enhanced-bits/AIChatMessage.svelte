@@ -11,7 +11,7 @@
   }
 
 
-    export let showReferences = false;
+    let { showReferences = $bindable() } = $props(); // false;
 
   let isUser = message.role === 'user';
 </script>

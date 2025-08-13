@@ -26,8 +26,8 @@
     Video,
   } from "lucide-svelte";
 
-      export let loadMoreThreshold = 100; // pixels from bottom
-      export let selectedIndex: number = -1; // Index of selected item
+      let { loadMoreThreshold = $bindable() } = $props(); // 100; // pixels from bottom
+      let { selectedIndex = $bindable() } = $props(); // number = -1; // Index of selected item
 
   
   let scrollContainer: HTMLElement;

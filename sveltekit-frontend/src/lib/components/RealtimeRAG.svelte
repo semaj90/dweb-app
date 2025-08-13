@@ -1,5 +1,5 @@
 <!-- Real-time RAG Interface Component -->
-<script>
+<script lang="ts">
   interface Props {
     selectedCaseId?: any;
     documentTypes?: any;
@@ -35,12 +35,12 @@
   let selectedDocumentTypes = [];
   
   // Reactive state from stores
-  $: documents = ragStore.documents;
-  $: ragHistory = ragStore.ragHistory;
-  $: processingJobs = ragStore.processingJobs;
-  $: stats = ragStore.stats;
-  $: machineState = ragMachine.state;
-  $: machineContext = ragMachine.context;
+  let documents = $derived(ragStore.documents;);
+  let ragHistory = $derived(ragStore.ragHistory;);
+  let processingJobs = $derived(ragStore.processingJobs;);
+  let stats = $derived(ragStore.stats;);
+  let machineState = $derived(ragMachine.state;);
+  let machineContext = $derived(ragMachine.context;);
 
   onMount(() => {
     ragStore.connect();

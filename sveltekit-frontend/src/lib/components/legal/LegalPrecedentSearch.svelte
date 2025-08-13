@@ -114,9 +114,9 @@
     searchPrecedents();
   }
 
-  $: totalPages = Math.ceil(totalCount / itemsPerPage);
-  $: startItem = (currentPage - 1) * itemsPerPage + 1;
-  $: endItem = Math.min(currentPage * itemsPerPage, totalCount);
+  let totalPages = $derived(Math.ceil(totalCount / itemsPerPage););
+  let startItem = $derived((currentPage - 1) * itemsPerPage + 1;);
+  let endItem = $derived(Math.min(currentPage * itemsPerPage, totalCount););
 </script>
 
 <div class="space-y-6">

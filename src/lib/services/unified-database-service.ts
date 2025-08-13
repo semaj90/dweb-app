@@ -22,7 +22,7 @@ export class UnifiedDatabaseService {
       port: config.pg?.port || parseInt(process.env.DB_PORT || '5432'),
       database: config.pg?.database || process.env.DB_NAME || 'legal_ai_db',
       user: config.pg?.user || process.env.DB_USER || 'legal_admin',
-      password: config.pg?.password || process.env.DB_PASSWORD || 'LegalAI2024!',
+      password: config.pg?.password || process.env.POSTGRES_PASSWORD || '123456',
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 2000,

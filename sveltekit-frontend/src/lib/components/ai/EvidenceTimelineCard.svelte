@@ -26,12 +26,12 @@
 
   
   // Sort events chronologically
-  $: sortedEvents = timelineEvents
+  let sortedEvents = $derived(timelineEvents);
     .sort((a, b) => new Date(a.date + ' ' + (a.time || '00:00')).getTime() - 
                    new Date(b.date + ' ' + (b.time || '00:00')).getTime());
 
   // Group events by date
-  $: groupedEvents = sortedEvents.reduce((groups, event) => {
+  let groupedEvents = $derived(sortedEvents.reduce((groups, event) => {);
     const dateKey = event.date;
     if (!groups[dateKey]) {
       groups[dateKey] = [];

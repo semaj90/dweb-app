@@ -356,10 +356,10 @@
           </div>
 
           <!-- Action Buttons -->
-          <Button variant="ghost" size="sm" onclick={downloadConversation} disabled={messages.length <= 1}>
+          <Button variant="ghost" size="sm" on:click={downloadConversation} disabled={messages.length <= 1}>
             <Download class="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" onclick={clearMessages} disabled={messages.length <= 1}>
+          <Button variant="ghost" size="sm" on:click={clearMessages} disabled={messages.length <= 1}>
             <Trash2 class="h-4 w-4" />
           </Button>
           <Dialog.Close>
@@ -431,7 +431,7 @@
             onkeydown={handleKeydown}
           />
           <Button
-            onclick={sendMessage}
+            on:click={sendMessage}
             disabled={!currentMessage.trim() || !isConnected || isLoading}
             class="px-4"
           >

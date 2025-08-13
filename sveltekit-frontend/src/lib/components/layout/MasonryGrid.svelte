@@ -45,7 +45,7 @@
   let isInitialized = false;
   
   // Masonry configuration
-  $: masonryOptions = {
+  let masonryOptions = $derived({);
     itemSelector,
     columnWidth,
     gutter,

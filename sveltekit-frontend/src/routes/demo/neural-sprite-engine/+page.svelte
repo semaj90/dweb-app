@@ -421,8 +421,8 @@
   }
   
   // Reactive statements
-  $: selectedScenario = demoScenarios.find(s => s.id === selectedDemo);
-  $: predictionList = $predictedNextStates;
+  let selectedScenario = $derived(demoScenarios.find(s => s.id === selectedDemo););
+  let predictionList = $derived($predictedNextStates;);
 </script>
 
 <svelte:head>

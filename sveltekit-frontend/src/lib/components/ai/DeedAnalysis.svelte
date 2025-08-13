@@ -29,8 +29,8 @@
     caseId?: string;
   }
 
-  export let selectedDocument: Document | null = null;
-  export let searchQuery: string = '';
+  let { selectedDocument = $bindable() } = $props(); // Document | null = null;
+  let { searchQuery = $bindable() } = $props(); // string = '';
 
   let similarDocuments: SimilarityResult[] = [];
   let isLoading: boolean = false;

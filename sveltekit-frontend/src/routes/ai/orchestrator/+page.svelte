@@ -275,7 +275,7 @@ Showcases the service worker-based AI orchestration system
                 variant="outline"
                 size="sm"
                 class="w-full"
-                onclick={() => runDemoScenario(scenario)}
+                on:click={() => runDemoScenario(scenario)}
                 disabled={isProcessing}
               >
                 {#if isProcessing}
@@ -323,7 +323,7 @@ Showcases the service worker-based AI orchestration system
           
           <div class="flex gap-2">
             <Button
-              onclick={submitCustomTask}
+              on:click={submitCustomTask}
               disabled={isProcessing || !selectedModel}
               class="flex-1"
             >
@@ -336,7 +336,7 @@ Showcases the service worker-based AI orchestration system
               {/if}
             </Button>
             
-            <Button variant="outline" onclick={clearResults}>
+            <Button variant="outline" on:click={clearResults}>
               <RotateCcw class="h-4 w-4" />
             </Button>
           </div>
@@ -352,7 +352,7 @@ Showcases the service worker-based AI orchestration system
               Task Results ({demoResults.length})
             </span>
             {#if demoResults.length > 0}
-              <Button variant="ghost" size="sm" onclick={clearResults}>
+              <Button variant="ghost" size="sm" on:click={clearResults}>
                 Clear
               </Button>
             {/if}

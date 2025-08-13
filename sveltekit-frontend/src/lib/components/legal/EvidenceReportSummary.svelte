@@ -81,7 +81,7 @@
   const { state, send } = useMachine(aiSummaryMachine);
 
   // Generate comprehensive content for AI analysis
-  $: analysisContent = generateAnalysisContent(reportData);
+  let analysisContent = $derived(generateAnalysisContent(reportData););
 
   function generateAnalysisContent(report: EvidenceReport): string {
     return `

@@ -368,12 +368,12 @@
   let selectedDocuments = new Set<string>();
   let selectedReports = new Set<string>();
 
-  $: allItems = [
+  let allItems = $derived([);
     ...documents.map(d => ({ id: d.id, type: 'document', title: d.title, data: d })),
     ...evidenceReports.map(r => ({ id: r.id, type: 'report', title: r.title, data: r }))
   ];
 
-  $: selectedCount = selectedDocuments.size + selectedReports.size;
+  let selectedCount = $derived(selectedDocuments.size + selectedReports.size;);
 
   function toggleSelection(id: string, type: 'document' | 'report') {
     if (type === 'document') {

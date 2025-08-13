@@ -21,8 +21,8 @@
   import type { Evidence } from "$lib/types/api";
   import { createSelect, melt } from "@melt-ui/svelte";
   
-  export let evidence: Evidence | null = null;
-  export let data: any = null;
+  let { evidence = $bindable() } = $props(); // Evidence | null = null;
+  let { data = $bindable() } = $props(); // any = null;
 
   const dispatch = createEventDispatcher();
 

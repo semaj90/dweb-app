@@ -207,7 +207,7 @@
               <div class="flex gap-2 flex-wrap">
                 <Button 
                   size="sm" 
-                  onclick={() => handleAIAction(law, 'summary')}
+                  on:click={() => handleAIAction(law, 'summary')}
                 >
                   <Bot class="h-3 w-3 mr-1" />
                   AI Summary
@@ -215,7 +215,7 @@
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onclick={() => handleAIAction(law, 'chat')}
+                  on:click={() => handleAIAction(law, 'chat')}
                 >
                   <Bot class="h-3 w-3 mr-1" />
                   Ask AI

@@ -48,10 +48,10 @@
 	let selectedDocumentType = 'auto';
 
 	// OCR stores
-	$: processing = ocrService.processing$;
-	$: progress = ocrService.progress$;
-	$: ocrResult = ocrService.currentResult$;
-	$: extractedFields = ocrService.extractedFields$;
+	let processing = $derived(ocrService.processing$;);
+	let progress = $derived(ocrService.progress$;);
+	let ocrResult = $derived(ocrService.currentResult$;);
+	let extractedFields = $derived(ocrService.extractedFields$;);
 
 	// Form validation
 	const formErrors = writable<Record<string, string>>({});

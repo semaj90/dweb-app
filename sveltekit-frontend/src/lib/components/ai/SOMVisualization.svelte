@@ -502,7 +502,7 @@
       
       <div class="space-y-3">
         <button 
-          onclick={trainWithSampleData}
+          on:click={trainWithSampleData}
           disabled={!isInitialized || isTraining}
           class="w-full yorha-button px-4 py-2 bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -510,7 +510,7 @@
         </button>
         
         <button 
-          onclick={processTestDocument}
+          on:click={processTestDocument}
           disabled={!isInitialized || isTraining}
           class="w-full yorha-button px-4 py-2 bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -518,7 +518,7 @@
         </button>
         
         <button 
-          onclick={exportSOMData}
+          on:click={exportSOMData}
           disabled={!isInitialized}
           class="w-full yorha-button px-4 py-2 bg-purple-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >

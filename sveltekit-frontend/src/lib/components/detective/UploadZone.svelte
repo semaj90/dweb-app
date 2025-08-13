@@ -10,7 +10,7 @@
 
     
     
-  export let minimal = false; // New prop for minimal canvas mode
+  let { minimal = $bindable() } = $props(); // false; // New prop for minimal canvas mode
   
   let isDragOver = false;
   let isUploading = false;
