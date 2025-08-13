@@ -1,17 +1,16 @@
 <script lang="ts">
-  interface Props {
-    value: string;
-  }
-  let {
-    value
-  }: Props = $props();
-
-
-
   import { getContext } from 'svelte';
 
-    let className: string = '';
-  export { className as class };
+  interface Props {
+    value: string;
+    class?: string;
+  }
+  
+  let {
+    value,
+    class: className = '',
+    children
+  }: Props & { children?: any } = $props();
 
   const { activeTab, setActiveTab } = getContext('tabs') as any;
 
@@ -23,7 +22,9 @@
 <button 
   type="button"
   class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 {$activeTab === value ? 'bg-background text-foreground shadow-sm' : 'hover:bg-muted/50'} {className}"
-  on:click={handleClick}
+  onclick={handleClick}
 >
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </button>

@@ -17,15 +17,22 @@
   });
 
   // Demo users for quick testing
-  const demoUsers = [
+  interface DemoUser {
+    email: string;
+    password: string;
+    name: string;
+    role: string;
+  }
+
+  const demoUsers: DemoUser[] = [
     { email: 'prosecutor@legal.ai', password: 'password123', name: 'John Prosecutor', role: 'prosecutor' },
     { email: 'detective@legal.ai', password: 'password123', name: 'Jane Detective', role: 'investigator' },
     { email: 'admin@legal.ai', password: 'password123', name: 'Admin User', role: 'admin' },
     { email: 'analyst@legal.ai', password: 'password123', name: 'Legal Analyst', role: 'analyst' }
-  ] as const;
+  ];
 
   // Quick demo login function
-  function quickLogin(demoUser: typeof demoUsers[0]) {
+  function quickLogin(demoUser: DemoUser) {
     $form.email = demoUser.email;
     $form.password = demoUser.password;
   }

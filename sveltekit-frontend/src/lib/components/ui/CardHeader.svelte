@@ -1,16 +1,18 @@
 <script lang="ts">
   interface Props {
-    className: string ;
+    className?: string;
   }
+  
   let {
-    className = ''
-  }: Props = $props();
+    className = '',
+    children
+  }: Props & { children?: any } = $props();
 
-
-
-    const classes = $derived(className);
+  const classes = $derived(className);
 </script>
 
 <div class="space-y-4">
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </div>

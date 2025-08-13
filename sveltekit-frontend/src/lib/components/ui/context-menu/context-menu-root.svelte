@@ -1,9 +1,9 @@
 <script lang="ts">
   interface Props {
-    onOpenChange: ((open: boolean) ;
+    onOpenChange?: (open: boolean) => void;
   }
   let {
-    onOpenChange = > void) | undefined = undefined
+    onOpenChange = undefined
   }: Props = $props();
 
 

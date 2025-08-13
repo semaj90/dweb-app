@@ -274,7 +274,7 @@
 		type="file"
 		{multiple}
 		accept={acceptedTypes.join(',')}
-		on:change={handleFileSelect}
+		onchange={handleFileSelect}
 		class="space-y-4"
 		aria-label="Select files for upload"
 	/>
@@ -284,13 +284,13 @@
 		class="space-y-4"
 		class:drag-active={dragActive}
 		class:has-files={uploads.length > 0}
-		on:dragover={handleDragOver}
-		on:dragleave={handleDragLeave}
-		on:drop={handleDrop}
+		ondragover={handleDragOver}
+		ondragleave={handleDragLeave}
+		ondrop={handleDrop}
 		role="button"
 		tabindex={0}
-		on:click={() => triggerFileSelect()}
-		on:keydown={(e) => e.key === 'Enter' && triggerFileSelect()}
+		onclick={() => triggerFileSelect()}
+		onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}
 	>
 		{#if uploads.length === 0}
 			<div class="space-y-4">
@@ -307,7 +307,7 @@
 			<div class="space-y-4">
 				<CloudUpload size={24} />
 				<span>{uploads.length} file{uploads.length !== 1 ? 's' : ''} ready</span>
-				<button type="button" class="space-y-4" on:click|stopPropagation={triggerFileSelect}>
+				<button type="button" class="space-y-4" onclick={(e) => { e.stopPropagation(); triggerFileSelect(); }}>
 					Add more
 				</button>
 			</div>
@@ -358,7 +358,7 @@
 							<button
 								type="button"
 								class="space-y-4"
-								on:click={() => removeFile(upload.id)}
+								onclick={() => removeFile(upload.id)}
 								aria-label="Remove {upload.file.name}"
 							>
 								<X size={16} />
@@ -373,7 +373,7 @@
 								{availableTags}
 								placeholder="Add tags for this file..."
 								maxTags={5}
-								on:change={(e) => updateFileTags(upload.id, e.detail)}
+								onchange={(e) => updateFileTags(upload.id, e.detail)}
 							/>
 						</div>
 					{/if}
@@ -392,7 +392,7 @@
 			<button
 				type="button"
 				class="space-y-4"
-				on:click={() => uploadFiles()}
+				onclick={() => uploadFiles()}
 				disabled={uploads.every(u => u.status !== 'pending')}
 			>
 				Upload Files
@@ -405,7 +405,7 @@
 				<button
 					type="button"
 					class="space-y-4"
-					on:click={() => clearCompleted()}
+					onclick={() => clearCompleted()}
 				>
 					Clear Completed
 				</button>

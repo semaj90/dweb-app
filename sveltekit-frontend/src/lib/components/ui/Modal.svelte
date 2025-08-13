@@ -17,10 +17,12 @@
     size = 'md',
     closeOnOutsideClick = true,
     closeOnEscape = true,
-    onclose
-  }: Props = $props();
+    onclose,
+    children,
+    footer
+  }: Props & { children?: any, footer?: any } = $props();
   
-  let modalElement: HTMLDivElement;
+  let modalElement: HTMLDivElement = $state();
   
   function handleClose() {
     open = false;
@@ -60,8 +62,8 @@
   <div
     bind:this={modalElement}
     class="modal-backdrop"
-    on:click={handleOutsideClick}
-    on:keydown={(e) => { if (e.key === 'Escape') handleClose(); }}
+    onclick={handleOutsideClick}
+    onkeydown={(e) => { if (e.key === 'Escape') handleClose(); }}
     role="presentation"
     aria-hidden="true"
     transition:fade={{ duration: 200 }}
@@ -79,7 +81,7 @@
           <button
             type="button"
             class="modal-close"
-            on:click={handleClose}
+            onclick={handleClose}
             aria-label="Close"
           >
             <svg
@@ -101,12 +103,14 @@
       {/if}
       
       <div class="modal-body">
-        <slot />
+        {#if children}
+          {@render children()}
+        {/if}
       </div>
       
-      {#if $$slots.footer}
+      {#if footer}
         <div class="modal-footer">
-          <slot name="footer" />
+          {@render footer()}
         </div>
       {/if}
     </div>

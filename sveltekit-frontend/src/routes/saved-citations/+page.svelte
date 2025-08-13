@@ -178,6 +178,18 @@
     acc[citation.category] = (acc[citation.category] || 0) + 1;
     return acc;
   }, {});
+  
+  // Helper variable for editing tags as string
+  let editingTagsString = '';
+  $: if (editingCitation) {
+    editingTagsString = editingCitation.tags?.join(', ') || '';
+  }
+  
+  function updateEditingTags(tagsString: string) {
+    if (editingCitation) {
+      editingCitation.tags = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -229,7 +241,7 @@
     </div>
 
     <div class="space-y-4">
-      <Button on:click={() => (showAddDialog = true)}>
+      <Button onclick={() => (showAddDialog = true)}>
         <Plus class="space-y-4" />
         Add Citation
       </Button>
@@ -251,23 +263,23 @@
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent {menu}>
-                <DropdownMenuItem on:click={() => toggleFavorite(citation)}>
+                <DropdownMenuItem onclick={() => toggleFavorite(citation)}>
                   <Star class="w-4 h-4 mr-2" />
                   {citation.isFavorite
                     ? "Remove from favorites"
                     : "Add to favorites"}
                 </DropdownMenuItem>
-                <DropdownMenuItem on:click={() => copyCitation(citation)}>
+                <DropdownMenuItem onclick={() => copyCitation(citation)}>
                   <Copy class="w-4 h-4 mr-2" />
                   Copy citation
                 </DropdownMenuItem>
-                <DropdownMenuItem on:click={() => editCitation(citation)}>
+                <DropdownMenuItem onclick={() => editCitation(citation)}>
                   <Edit class="w-4 h-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  on:click={() => deleteCitation(citation.id)}
+                  onclick={() => deleteCitation(citation.id)}
                   class="text-destructive"
                 >
                   <Trash2 class="w-4 h-4 mr-2" />
@@ -349,7 +361,7 @@
               You haven't saved any citations yet. Start by adding citations
               from reports or create new ones.
             </p>
-            <Button on:click={() => (showAddDialog = true)}>
+            <Button onclick={() => (showAddDialog = true)}>
               <Plus class="space-y-4" />
               Add your first citation
             </Button>
@@ -363,7 +375,7 @@
 <!-- Add Citation Dialog -->
 <DialogRoot bind:open={showAddDialog}>
   <DialogContent
-    className="sm:max-w-[425px]"
+    size="sm"
     overlay={{}}
     content={{}}
     openState={showAddDialog}
@@ -436,11 +448,11 @@
     </div>
 
     <DialogFooter>
-      <Button variant="secondary" on:click={() => (showAddDialog = false)}
+      <Button variant="secondary" onclick={() => (showAddDialog = false)}
         >Cancel</Button
       >
       <Button
-        on:click={() => saveCitation()}
+        onclick={() => saveCitation()}
         disabled={!newCitation.title || !newCitation.content}
       >
         Save Citation
@@ -453,7 +465,7 @@
 {#if editingCitation}
   <DialogRoot open={true} onOpenChange={() => (editingCitation = null)}>
     <DialogContent
-      className="sm:max-w-[425px]"
+      size="sm"
       overlay={{}}
       content={{}}
       openState={true}
@@ -494,7 +506,11 @@
 
           <div class="space-y-4">
             <label for="edit-tags">Tags</label>
-            <Input id="edit-tags" bind:value={editingCitation.tags} />
+            <Input 
+              id="edit-tags" 
+              bind:value={editingTagsString}
+              oninput={(e) => updateEditingTags((e.target as HTMLInputElement).value)}
+            />
           </div>
         </div>
 
@@ -506,10 +522,10 @@
       </div>
 
       <DialogFooter>
-        <Button variant="secondary" on:click={() => (editingCitation = null)}
+        <Button variant="secondary" onclick={() => (editingCitation = null)}
           >Cancel</Button
         >
-        <Button on:click={() => updateCitation()}>Update Citation</Button>
+        <Button onclick={() => updateCitation()}>Update Citation</Button>
       </DialogFooter>
     </DialogContent>
   </DialogRoot>

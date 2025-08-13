@@ -2,13 +2,13 @@
   interface Props {
     triggerText?: any;
     placeholder?: any;
-    onInsert: (text: string) ;
-    textareaElement: HTMLTextAreaElement | undefined ;
+    onInsert: (text: string) => void;
+    textareaElement: HTMLTextAreaElement | undefined;
   }
   let {
     triggerText = "#",
     placeholder = "Type a command...",
-    onInsert = > void = () => {},
+    onInsert = () => {},
     textareaElement = undefined
   }: Props = $props();
 
@@ -28,10 +28,6 @@
   import { tick } from "svelte";
   import { fly } from "svelte/transition";
 
-  export let triggerText = "#";
-  export let placeholder = "Type a command...";
-  export let onInsert: (text: string) => void = () => {};
-  export let textareaElement: HTMLTextAreaElement | undefined = undefined;
 
   // Command menu state
   let searchQuery = "";
@@ -224,7 +220,7 @@
 }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <!-- Hidden trigger (we'll open programmatically) -->
 <button use:melt={$trigger} style="display: none;">Trigger</button>
@@ -258,8 +254,8 @@
             <button
               class="space-y-4"
               class:selected={globalIndex === selectedIndex}
-              on:click={() => executeCommand(command)}
-              on:mouseenter={() => (selectedIndex = globalIndex)}
+              onclick={() => executeCommand(command)}
+              onmouseenter={() => (selectedIndex = globalIndex)}
             >
               <svelte:component this={command.icon} size={16} />
               <span class="space-y-4">{command.label}</span>

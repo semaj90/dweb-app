@@ -5,19 +5,24 @@
   }
   let {
     asChild = false,
-    builder = null
-  }: Props = $props();
+    builder = null,
+    children
+  }: Props & { children?: any } = $props();
 
 
 
 
-  export const className = "";
+  let className = "";
 </script>
 
 {#if asChild}
-  <slot {builder} />
+  {#if children}
+    {@render children({ builder })}
+  {/if}
 {:else}
   <button type="button" {...$$restProps} use:builder>
-    <slot />
+    {#if children}
+      {@render children()}
+    {/if}
   </button>
 {/if}

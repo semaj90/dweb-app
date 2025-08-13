@@ -5,10 +5,18 @@
   import { writable } from 'svelte/store';
   
   // Props
-  export let caseId: string = '';
-  export let uploadId: string = '';
-  export let showTensorMetrics: boolean = false;
-  export let enableAttentionTracking: boolean = true;
+  interface Props {
+    caseId?: string;
+    uploadId?: string;
+    showTensorMetrics?: boolean;
+    enableAttentionTracking?: boolean;
+  }
+  let {
+    caseId = '',
+    uploadId = '',
+    showTensorMetrics = false,
+    enableAttentionTracking = true
+  }: Props = $props();
 
   // WebSocket connection
   let socket: Socket | null = null;

@@ -108,7 +108,7 @@
 </BitsDialog.Root>
 
 <!-- Export sub-components for easy use -->
-<script lang="ts" context="module">
+<script lang="ts" module>
   export { BitsDialog as Dialog };
 
   // Re-export commonly used sub-components

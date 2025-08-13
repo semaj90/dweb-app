@@ -8,9 +8,11 @@
     class?: string;
   }
   
-  let { 'for': forProp = '', class: classProp = '', ...rest }: Props = $props();
+  let { 'for': forProp = '', class: classProp = '', children, ...rest }: Props & { children?: any } = $props();
 </script>
 
 <Label for_={forProp} class_={classProp} {...rest}>
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </Label>

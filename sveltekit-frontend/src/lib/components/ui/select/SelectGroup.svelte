@@ -3,15 +3,18 @@
     class_: string ;
   }
   let {
-    class_ = ''
-  }: Props = $props();
+    class_ = '',
+    children
+  }: Props & { children?: any } = $props();
 
 
 
   </script>
 
 <div class="space-y-4">
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </div>
 
 <style>

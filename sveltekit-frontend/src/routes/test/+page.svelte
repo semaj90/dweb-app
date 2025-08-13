@@ -44,9 +44,9 @@
         avatarUrl: '',
         role: 'user',
         isActive: true,
-        emailVerified: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date()
+        emailVerified: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       addTestResult('✅ TypeScript types working correctly');
     } catch (error) {

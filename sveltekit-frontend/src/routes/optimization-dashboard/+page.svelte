@@ -273,7 +273,7 @@
         <div class="space-y-3">
           <div class="flex justify-between">
             <span class="text-slate-300">Avg Response:</span>
-            <span class="font-mono">{systemStatus.mlCaching?.avgResponseTime ?? 'N/A'}ms</span>
+            <span class="font-mono">{(systemStatus.mlCaching as any)?.avgResponseTime ?? 'N/A'}ms</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-300">Throughput:</span>

@@ -165,8 +165,13 @@
 
       if (systemStatus.tauriLLM) {
         // Use local legal analysis
-        analysisResults =
-          await aiService.analyzeLegalDocument(legalAnalysisText);
+        const result = await aiService.analyzeLegalDocument(legalAnalysisText);
+        analysisResults = {
+          ...result,
+          keyEntities: Array.isArray(result.keyEntities) && typeof result.keyEntities[0] === 'string' 
+            ? result.keyEntities.map((entity: string) => ({ text: entity, type: 'entity', confidence: 1.0 }))
+            : result.keyEntities || []
+        };
       } else {
         // Fallback to cloud analysis
         const response = await fetch("/api/ai/ask", {
@@ -194,6 +199,11 @@
     } catch (error) {
       analysisResults = {
         error: error instanceof Error ? error.message : "Unknown error",
+        keyEntities: [], // Required property
+        classification: { category: "error", confidence: 0 },
+        summary: "Analysis failed",
+        riskAssessment: "Unable to assess",
+        similarity: 0
       };
     } finally {
       isAnalyzing = false;
@@ -275,7 +285,7 @@
             Enhanced System Status
           </h2>
           <button
-            on:click={() => checkSystemStatus()}
+            onclick={() => checkSystemStatus()}
             class="space-y-4"
             disabled={isLoadingStatus}
           >
@@ -375,7 +385,7 @@
                   </div>
                   {#if !model.isLoaded}
                     <button
-                      on:click={() => loadLocalModel(model.id)}
+                      onclick={() => loadLocalModel(model.id)}
                       class="space-y-4"
                     >
                       Load Model
@@ -415,14 +425,14 @@
               <div class="space-y-4">
                 <button
                   class="space-y-4"
-                  on:click={() => (selectedProvider = "auto")}
+                  onclick={() => (selectedProvider = "auto")}
                 >
                   <Brain class="space-y-4" />
                   Auto
                 </button>
                 <button
                   class="space-y-4"
-                  on:click={() => (selectedProvider = "local")}
+                  onclick={() => (selectedProvider = "local")}
                   disabled={!systemStatus.tauriLLM}
                 >
                   <Cpu class="space-y-4" />
@@ -430,7 +440,7 @@
                 </button>
                 <button
                   class="space-y-4"
-                  on:click={() => (selectedProvider = "cloud")}
+                  onclick={() => (selectedProvider = "cloud")}
                 >
                   <Cloud class="space-y-4" />
                   Cloud Only
@@ -439,6 +449,8 @@
             </div>
 
             <AskAI
+              caseId=""
+              evidenceIds={[]}
               placeholder="Ask about legal procedures, cases, or evidence..."
               showReferences={true}
               enableVoiceInput={true}
@@ -458,7 +470,7 @@
             {#each legalDemoQueries as query}
               <button
                 class="space-y-4"
-                on:click={() => (testQuery = query)}
+                onclick={() => (testQuery = query)}
               >
                 "{query}"
               </button>
@@ -489,7 +501,7 @@
             ></textarea>
 
             <button
-              on:click={() => analyzeLegalDocument()}
+              onclick={() => analyzeLegalDocument()}
               disabled={!legalAnalysisText.trim() || isAnalyzing}
               class="space-y-4"
             >
@@ -580,7 +592,7 @@
                 class="space-y-4"
               />
               <button
-                on:click={() => testVectorSearch()}
+                onclick={() => testVectorSearch()}
                 disabled={!testQuery.trim() || isTestingSearch}
                 class="space-y-4"
               >

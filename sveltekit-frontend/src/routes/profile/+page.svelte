@@ -20,8 +20,8 @@
       profileForm = {
         name: user?.name || "",
         email: user?.email || "",
-        firstName: user?.firstName || "",
-        lastName: user?.lastName || "",
+        firstName: "", // Not available in SessionUser
+        lastName: "", // Not available in SessionUser
       };
 }
     // Load avatar
@@ -95,7 +95,7 @@
       <div class="space-y-4">
         <h2>Account Information</h2>
 
-        <form on:submit|preventDefault={updateProfile} class="space-y-4">
+        <form onsubmit={(e) => { e.preventDefault(); updateProfile(); }} class="space-y-4">
           <div class="space-y-4">
             <div class="space-y-4">
               <label for="name">Full Name</label>

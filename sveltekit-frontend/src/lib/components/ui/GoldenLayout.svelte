@@ -1,17 +1,28 @@
 <script lang="ts">
   interface Props {
+    ratio?: string;
+    mainFlex?: number;
+    sidebarFlex?: number;
+    sidebarPosition?: string;
+    collapsible?: boolean;
+    collapsed?: boolean;
+    minSidebarWidth?: string;
+    maxSidebarWidth?: string;
+    gap?: string;
     ontoggle?: (event?: any) => void;
   }
+  
   let {
     ratio = "golden",
     mainFlex = 1.618,
     sidebarFlex = 1,
     sidebarPosition = "right",
     collapsible = true,
-    collapsed = false,
+    collapsed = $bindable(false),
     minSidebarWidth = "200px",
     maxSidebarWidth = "400px",
-    gap = "1rem"
+    gap = "1rem",
+    ontoggle
   }: Props = $props();
 
 
@@ -81,7 +92,7 @@
       {#if collapsible}
         <button
           class="space-y-4"
-          on:click={() => toggleSidebar()}
+          onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -114,7 +125,7 @@
       {#if collapsible}
         <button
           class="space-y-4"
-          on:click={() => toggleSidebar()}
+          onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}

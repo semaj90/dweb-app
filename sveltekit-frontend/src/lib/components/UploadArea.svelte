@@ -459,15 +459,15 @@
     class:bg-light={isDragOver && !disabled}
     class:border-success={files && !isUploading}
     class:disabled={disabled}
-  on:dragenter={handleDragEnter}
-  on:dragover={handleDragOver}
-  on:dragleave={handleDragLeave}
-  on:drop={handleDrop}
+  ondragenter={handleDragEnter}
+  ondragover={handleDragOver}
+  ondragleave={handleDragLeave}
+  ondrop={handleDrop}
   role="button"
   tabindex={disabled ? -1 : 0}
   aria-disabled={disabled}
   aria-label="Upload area. Press Enter or Space to choose files, or drag and drop."
-    on:keydown={handleKeyDown}
+    onkeydown={handleKeyDown}
     role="button"
     tabindex={disabled ? -1 : 0}
     aria-disabled={disabled}
@@ -549,7 +549,7 @@
           <button
             type="button"
             class="space-y-4"
-            on:click={() => retryUpload()}
+            onclick={() => retryUpload()}
             disabled={!files}
           >
             <i class="space-y-4"></i>
@@ -558,7 +558,7 @@
           <button
             type="button"
             class="space-y-4"
-            on:click={() => clearFiles()}
+            onclick={() => clearFiles()}
           >
             <i class="space-y-4"></i>
             Clear Files
@@ -577,7 +577,7 @@
           <button
             type="button"
             class="space-y-4"
-            on:click={() => clearFiles()}
+            onclick={() => clearFiles()}
             aria-label="Clear all files"
           >
             <i class="space-y-4"></i>
@@ -603,7 +603,7 @@
                     <button
                       type="button"
                       class="space-y-4"
-                      on:click={() => removeFile(index)}
+                      onclick={() => removeFile(index)}
                       aria-label="Remove {file.name}"
                     >
                       <i class="space-y-4"></i>
@@ -620,7 +620,7 @@
             <button
               type="button"
               class="space-y-4"
-              on:click={() => startUpload()}
+              onclick={() => startUpload()}
               disabled={isUploading}
             >
               <i class="space-y-4"></i>
@@ -651,7 +651,7 @@
           accept={acceptedTypes}
           class="space-y-4"
           id="file-input-{Math.random().toString(36).substr(2, 9)}"
-          on:change={handleFileInput}
+          onchange={handleFileInput}
           {disabled}
           aria-describedby="file-constraints"
         >
@@ -659,7 +659,7 @@
         <button
           type="button"
           class="space-y-4"
-          on:click={() => browseFiles()}
+          onclick={() => browseFiles()}
           {disabled}
         >
           <i class="space-y-4"></i>

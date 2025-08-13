@@ -1,20 +1,18 @@
 <script lang="ts">
   interface Props {
-    for_: string ;
-    class_: string ;
+    for_?: string;
+    class_?: string;
   }
+  
   let {
     for_ = '',
-    class_ = ''
-  }: Props = $props();
-
-
-
-  // Basic Label component
-  export let for_: string = '';
-  export let class_: string = '';
+    class_ = '',
+    children
+  }: Props & { children?: any } = $props();
 </script>
 
 <label for={for_} class="text-sm font-medium text-gray-700 dark:text-gray-300 {class_}">
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </label>

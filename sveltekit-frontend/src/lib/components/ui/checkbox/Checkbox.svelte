@@ -19,12 +19,6 @@
 
 
   // Minimal, accessible checkbox component compatible with bind:checked
-  export let checked: boolean = false;
-  export let disabled: boolean = false;
-  export let id: string | undefined = undefined;
-  export let name: string | undefined = undefined;
-  export let value: string | undefined = undefined;
-  export let ariaLabel: string | undefined = undefined;
   let className: string = '';
   export { className as class };
 </script>

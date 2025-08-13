@@ -12,8 +12,7 @@
 
 	import { cn } from '$lib/utils';
 
-	let className = '';
-	export { className as class };
+	let className = $state('');
 
 	const percentage = $derived(Math.min((value / max) * 100, 100));
 </script>

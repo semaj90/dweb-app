@@ -60,9 +60,9 @@
   };
 
   // Enhanced submit function with error handling
-  const enhancedSubmit: SubmitFunction = ({ formElement, formData, action, cancel, submitter }) => {
+  const enhancedSubmit: SubmitFunction = ({ formElement, formData, action, cancel, submitter, controller }) => {
     if (onSubmit) {
-      return onSubmit({ formElement, formData, action, cancel, submitter });
+      return onSubmit({ formElement, formData, action, cancel, submitter, controller });
     }
     
     return async ({ result, update }) => {

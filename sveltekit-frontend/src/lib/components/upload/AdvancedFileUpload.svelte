@@ -1,5 +1,24 @@
 <script lang="ts">
   interface Props {
+    multiple?: boolean;
+    accept?: string;
+    maxFileSize?: number;
+    maxTotalSize?: number;
+    maxFiles?: number;
+    allowedTypes?: string[];
+    uploadUrl?: string;
+    chunkSize?: number;
+    enableChunking?: boolean;
+    enablePreview?: boolean;
+    enablePasteUpload?: boolean;
+    enableCameraCapture?: boolean;
+    enableAudioRecording?: boolean;
+    autoUpload?: boolean;
+    compressionQuality?: number;
+    enableCompression?: boolean;
+    showProgress?: boolean;
+    disabled?: boolean;
+    enableDragDrop?: boolean;
     onfilesAdded?: (event?: any) => void;
     onuploadComplete?: (event?: any) => void;
     onfileRemoved?: (event?: any) => void;
@@ -22,7 +41,8 @@
     compressionQuality = 0.8,
     enableCompression = true,
     showProgress = true,
-    disabled = false
+    disabled = false,
+    enableDragDrop = true
   }: Props = $props();
 
 
@@ -540,7 +560,7 @@
     role="button"
     tabindex={0}
     aria-label="File upload area. Click to select files or drag and drop files here."
-    on:click={() => !disabled && fileInput.click()}
+    onclick={() => !disabled && fileInput.click()}
     on:keydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
@@ -580,7 +600,7 @@
         {#if enableCameraCapture}
           <Button
             variant="secondary"
-            on:click={handleCameraCaptureClick}
+            onclick={handleCameraCaptureClick}
             {disabled}
           >
             <Camera class="space-y-4" />
@@ -591,7 +611,7 @@
         {#if enableAudioRecording}
           <Button
             variant="secondary"
-            on:click={handleAudioRecordingClick}
+            onclick={handleAudioRecordingClick}
             {disabled}
             class={isRecording ? "bg-red-100 text-red-700" : ""}
           >
@@ -610,7 +630,7 @@
     {multiple}
     {accept}
     {disabled}
-    on:change={handleFileSelect}
+    onchange={handleFileSelect}
     class="space-y-4"
     aria-hidden="true"
   />
@@ -627,7 +647,7 @@
           {#if !autoUpload && files.some((f) => f.status === "pending")}
             <Button
               size="sm"
-              on:click={() => uploadFiles()}
+              onclick={() => uploadFiles()}
               disabled={isUploading}
             >
               {#if isUploading}
@@ -642,7 +662,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (files = [])}
+            onclick={() => (files = [])}
             disabled={isUploading}
           >
             Clear All
@@ -716,7 +736,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => window.open(file.url, "_blank")}
+                  onclick={() => window.open(file.url, "_blank")}
                   aria-label="View {file.name}"
                 >
                   <Eye class="space-y-4" />
@@ -727,7 +747,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => retryUpload(file.id)}
+                  onclick={() => retryUpload(file.id)}
                   aria-label="Retry upload of {file.name}"
                 >
                   <Upload class="space-y-4" />
@@ -737,7 +757,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => removeFile(file.id)}
+                onclick={() => removeFile(file.id)}
                 disabled={file.status === "uploading"}
                 aria-label="Remove {file.name}"
               >

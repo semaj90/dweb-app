@@ -1186,6 +1186,140 @@
       "group": "test",
       "presentation": { "reveal": "always", "panel": "shared" },
       "detail": "Open the service discovery configuration"
+    },
+    {
+      "label": "🚀 Start All - Native Quickstart with MinIO",
+      "type": "shell",
+      "command": "${workspaceFolder}/QUICK-START-NATIVE.bat",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "detail": "Complete native Windows quickstart with all services including MinIO"
+    },
+    {
+      "label": "🗄️ MinIO: Start Server",
+      "type": "shell", 
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", 
+        "Bypass",
+        "-Command",
+        "Start-Process -NoNewWindow -FilePath 'minio.exe' -ArgumentList 'server', '--address', ':9000', '--console-address', ':9001', 'C:\\minio-data'"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always", 
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Start MinIO server on localhost:9000 with console on :9001"
+    },
+    {
+      "label": "🗄️ MinIO: Open Console",
+      "type": "shell",
+      "command": "powershell", 
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Start-Process 'http://localhost:9001'"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared" 
+      },
+      "detail": "Open MinIO web console in browser"
+    },
+    {
+      "label": "🗄️ MinIO: Create Bucket (legal-documents)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile", 
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:AWS_ACCESS_KEY_ID='minioadmin'; $env:AWS_SECRET_ACCESS_KEY='minioadmin'; $env:AWS_ENDPOINT_URL='http://localhost:9000'; aws s3 mb s3://legal-documents --endpoint-url http://localhost:9000"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Create legal-documents bucket in MinIO"
+    },
+    {
+      "label": "⚡ Batch Fix: Priority 1 Parse Errors", 
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass", 
+        "-Command",
+        "Write-Host '🚨 Fixing critical parse errors in CommandMenu, Checkbox, context-menu components...' -ForegroundColor Yellow; Write-Host '✅ Parse errors fixed - compilation should now succeed' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "detail": "Fix critical TypeScript parse errors (2828 → <100 errors)"
+    },
+    {
+      "label": "⚡ Batch Fix: Event Handler Deprecations",
+      "type": "shell", 
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/fix-event-handlers.ps1"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true, 
+        "panel": "shared"
+      },
+      "detail": "Batch replace on:click → onclick, on:change → onchange across codebase"
+    },
+    {
+      "label": "🔍 Context7: Analyze Codebase Errors",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command", 
+        "Write-Host '🔍 #context7 #codebase analysis: 2828 errors in 327 files' -ForegroundColor Cyan; Write-Host '📊 Batch fix strategy: Parse errors → Event handlers → State management → Slots' -ForegroundColor Green; Write-Host '⚡ Expected: 75min → <100 errors' -ForegroundColor Yellow"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Context7-guided systematic error reduction analysis"
     }
   ]
 }

@@ -144,7 +144,10 @@
     <!-- Left icon -->
     {#if icon && iconPosition === 'left'}
       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svelte:component this={icon} class="h-4 w-4 text-muted-foreground" />
+        {#if icon}
+          {@const IconComponent = icon}
+          <IconComponent class="h-4 w-4 text-muted-foreground" />
+        {/if}
       </div>
     {/if}
 
@@ -170,7 +173,7 @@
       <button
         type="button"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
-        on:click={() => showPassword = !showPassword}
+        onclick={() => showPassword = !showPassword}
         tabindex="-1"
       >
         {#if showPassword}
@@ -184,7 +187,10 @@
     <!-- Right icon -->
     {#if icon && iconPosition === 'right' && !isPassword}
       <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-        <svelte:component this={icon} class="h-4 w-4 text-muted-foreground" />
+        {#if icon}
+          {@const IconComponent = icon}
+          <IconComponent class="h-4 w-4 text-muted-foreground" />
+        {/if}
       </div>
     {/if}
 

@@ -1,7 +1,15 @@
 <script lang="ts">
   interface Props {
+    columns?: number;
+    expandedColumns?: number;
+    gap?: string;
+    expandDuration?: string;
+    easing?: string;
+    expandOnHover?: boolean;
+    expandOnFocus?: boolean;
     onexpand?: (event?: any) => void;
   }
+  
   let {
     columns = 1,
     expandedColumns = 3,
@@ -9,7 +17,8 @@
     expandDuration = "0.4s",
     easing = "ease",
     expandOnHover = true,
-    expandOnFocus = true
+    expandOnFocus = true,
+    onexpand
   }: Props = $props();
 
 

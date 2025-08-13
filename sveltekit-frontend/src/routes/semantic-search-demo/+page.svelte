@@ -21,7 +21,6 @@ function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
   };
 }
 
-export let data;
 const query = writable(data?.initialQuery || '');
 const results = writable(data?.initialResults || []);
 const loading = writable(false);
