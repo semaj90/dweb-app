@@ -1,14 +1,20 @@
 // @ts-nocheck
 // import { env } from '$env/dynamic/private'; // Missing module
-const env = { OLLAMA_API_URL: 'http://localhost:11434' }; // Placeholder
-import type { EmbeddingResponse, GenerateResponse, OllamaModel } from '$lib/types/ollama';
+const env = { OLLAMA_API_URL: "http://localhost:11434" }; // Placeholder
+import type {
+  EmbeddingResponse,
+  GenerateResponse,
+  OllamaModel,
+} from "$lib/types/ollama";
 
 export class OllamaService {
   private baseUrl: string;
-  private embedModel = 'nomic-embed-text';
-  private llmModel = 'gemma3-legal';
+  private embedModel = "nomic-embed-text";
+  private llmModel = "gemma3-legal";
 
-  constructor(baseUrl: string = env.OLLAMA_API_URL || 'http://localhost:11434') {
+  constructor(
+    baseUrl: string = env.OLLAMA_API_URL || "http://localhost:11434"
+  ) {
     this.baseUrl = baseUrl;
   }
 
@@ -18,22 +24,31 @@ export class OllamaService {
   async generateEmbedding(text: string): Promise<number[]> {
     try {
       const response = await fetch(`${this.baseUrl}/api/embeddings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: this.embedModel,
-          prompt: text.slice(0, 8192) // Limit context window
-        })
+          input: text.slice(0, 8192), // Ollama embeddings expect 'input'
+        }),
       });
 
       if (!response.ok) {
         throw new Error(`Embedding generation failed: ${response.statusText}`);
       }
 
-      const data: EmbeddingResponse = await response.json();
-      return data.embedding;
+      const data: any = await response.json();
+      if (Array.isArray(data?.embedding)) return data.embedding;
+      if (Array.isArray(data?.embeddings)) {
+        if (Array.isArray(data.embeddings[0]))
+          return data.embeddings[0] as number[];
+        return data.embeddings as number[];
+      }
+      if (Array.isArray(data?.data) && Array.isArray(data.data[0]?.embedding)) {
+        return data.data[0].embedding;
+      }
+      return [];
     } catch (error) {
-      console.error('Ollama embedding error:', error);
+      console.error("Ollama embedding error:", error);
       throw error;
     }
   }
@@ -60,23 +75,28 @@ export class OllamaService {
       stream?: boolean;
     } = {}
   ): Promise<string> {
-    const { temperature = 0.7, maxTokens = 2000, systemPrompt, stream = false } = options;
+    const {
+      temperature = 0.7,
+      maxTokens = 2000,
+      systemPrompt,
+      stream = false,
+    } = options;
 
     try {
-      const fullPrompt = systemPrompt 
+      const fullPrompt = systemPrompt
         ? `System: ${systemPrompt}\n\nUser: ${prompt}\n\nAssistant:`
         : prompt;
 
       const response = await fetch(`${this.baseUrl}/api/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: this.llmModel,
           prompt: fullPrompt,
           temperature,
           max_tokens: maxTokens,
-          stream
-        })
+          stream,
+        }),
       });
 
       if (!response.ok) {
@@ -91,7 +111,7 @@ export class OllamaService {
         return data.response;
       }
     } catch (error) {
-      console.error('Ollama generation error:', error);
+      console.error("Ollama generation error:", error);
       throw error;
     }
   }
@@ -101,17 +121,17 @@ export class OllamaService {
    */
   private async handleStreamingResponse(response: Response): Promise<string> {
     const reader = response.body?.getReader();
-    if (!reader) throw new Error('No response body');
+    if (!reader) throw new Error("No response body");
 
     const decoder = new TextDecoder();
-    let fullText = '';
+    let fullText = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split('\n').filter((line: any) => line.trim());
+      const lines = chunk.split("\n").filter((line: any) => line.trim());
 
       for (const line of lines) {
         try {
@@ -143,9 +163,9 @@ export class OllamaService {
   }> {
     // Chunk the document (simple chunking for now, can be improved)
     const chunks = this.chunkText(content, 1000, 200); // 1000 chars with 200 overlap
-    
+
     const embeddings = await this.generateBatchEmbeddings(chunks);
-    
+
     return {
       chunks: chunks.map((chunk, index) => ({
         content: chunk,
@@ -153,16 +173,20 @@ export class OllamaService {
         metadata: {
           ...metadata,
           chunkIndex: index,
-          totalChunks: chunks.length
-        }
-      }))
+          totalChunks: chunks.length,
+        },
+      })),
     };
   }
 
   /**
    * Simple text chunking with overlap
    */
-  private chunkText(text: string, chunkSize: number, overlap: number): string[] {
+  private chunkText(
+    text: string,
+    chunkSize: number,
+    overlap: number
+  ): string[] {
     const chunks: string[] = [];
     let start = 0;
 
@@ -180,16 +204,19 @@ export class OllamaService {
    */
   async analyzeDocument(
     content: string,
-    analysisType: 'summary' | 'entities' | 'sentiment' | 'classification'
+    analysisType: "summary" | "entities" | "sentiment" | "classification"
   ): Promise<string> {
     const prompts = {
-      summary: 'Provide a concise summary of the following document:',
-      entities: 'Extract all named entities (people, organizations, locations, dates) from:',
-      sentiment: 'Analyze the sentiment and tone of the following text:',
-      classification: 'Classify the following document by type and main topics:'
+      summary: "Provide a concise summary of the following document:",
+      entities:
+        "Extract all named entities (people, organizations, locations, dates) from:",
+      sentiment: "Analyze the sentiment and tone of the following text:",
+      classification:
+        "Classify the following document by type and main topics:",
     };
 
-    const systemPrompt = 'You are a legal AI assistant specialized in document analysis.';
+    const systemPrompt =
+      "You are a legal AI assistant specialized in document analysis.";
     const prompt = `${prompts[analysisType]}\n\n${content}`;
 
     return this.generateCompletion(prompt, { systemPrompt });
@@ -199,7 +226,7 @@ export class OllamaService {
    * Check if Ollama is running and models are available
    */
   async checkHealth(): Promise<{
-    status: 'healthy' | 'unhealthy';
+    status: "healthy" | "unhealthy";
     embedModel: boolean;
     llmModel: boolean;
     models: string[];
@@ -207,20 +234,30 @@ export class OllamaService {
     try {
       const response = await fetch(`${this.baseUrl}/api/tags`);
       if (!response.ok) {
-        return { status: 'unhealthy', embedModel: false, llmModel: false, models: [] };
+        return {
+          status: "unhealthy",
+          embedModel: false,
+          llmModel: false,
+          models: [],
+        };
       }
 
       const data = await response.json();
       const models = data.models?.map((m: OllamaModel) => m.name) || [];
-      
+
       return {
-        status: 'healthy',
+        status: "healthy",
         embedModel: models.includes(this.embedModel),
         llmModel: models.includes(this.llmModel),
-        models
+        models,
       };
     } catch (error) {
-      return { status: 'unhealthy', embedModel: false, llmModel: false, models: [] };
+      return {
+        status: "unhealthy",
+        embedModel: false,
+        llmModel: false,
+        models: [],
+      };
     }
   }
 
@@ -240,12 +277,12 @@ export class OllamaService {
     metadata: Record<string, any>;
   }> {
     // Enhance text with context for better embeddings
-    const contextualText = context.documentType 
+    const contextualText = context.documentType
       ? `[${context.documentType}] ${text}`
       : text;
 
     const embedding = await this.generateEmbedding(contextualText);
-    
+
     return {
       embedding,
       metadata: {
@@ -253,8 +290,8 @@ export class OllamaService {
         textLength: text.length,
         embeddingDimension: embedding.length,
         model: this.embedModel,
-        timestamp: context.timestamp || new Date()
-      }
+        timestamp: context.timestamp || new Date(),
+      },
     };
   }
 }

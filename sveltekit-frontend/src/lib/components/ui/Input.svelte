@@ -1,44 +1,7 @@
 <script lang="ts">
-  interface Props {
-    label?: string;
-    error?: string | null;
-    hint?: string;
-    variant?: 'default' | 'filled' | 'underlined';
-    size?: 'sm' | 'md' | 'lg';
-    icon?: string;
-    iconPosition?: 'left' | 'right';
-    clearable?: boolean;
-    loading?: boolean;
-    success?: boolean;
-    value?: string;
-    disabled?: boolean;
-    required?: boolean;
-    readonly?: boolean;
-  }
-  let {
-    label = undefined,
-    error = undefined,
-    hint = undefined,
-    variant = 'default',
-    size = 'md',
-    icon = undefined,
-    iconPosition = 'left',
-    clearable = false,
-    loading = false,
-    success = false,
-    value = '',
-    disabled = false,
-    required = false,
-    readonly = false,
-    ...restProps
-  }: Props = $props();
-
-
-
-	import { createEventDispatcher } from 'svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
-	interface $Props extends Omit<HTMLInputAttributes, 'size' | 'disabled' | 'required' | 'readonly'> {
+	interface Props extends Omit<HTMLInputAttributes, 'size' | 'disabled' | 'required' | 'readonly'> {
 		label?: string;
 		error?: string | null;
 		hint?: string;
@@ -49,18 +12,41 @@
 		clearable?: boolean;
 		loading?: boolean;
 		success?: boolean;
+		value?: string;
 		disabled?: boolean | null | undefined;
 		required?: boolean | null | undefined;
 		readonly?: boolean | null | undefined;
-}
+		oninput?: (event: Event) => void;
+		onchange?: (event: Event) => void;
+		onfocus?: (event: FocusEvent) => void;
+		onblur?: (event: FocusEvent) => void;
+		onclear?: () => void;
+	}
 
-	const dispatch = createEventDispatcher<{
-		input: Event;
-		change: Event;
-		focus: FocusEvent;
-		blur: FocusEvent;
-		clear: void;
-	}>();
+	let {
+		label = undefined,
+		error = undefined,
+		hint = undefined,
+		variant = 'default',
+		size = 'md',
+		icon = undefined,
+		iconPosition = 'left',
+		clearable = false,
+		loading = false,
+		success = false,
+		value = $bindable(''),
+		disabled = false,
+		required = false,
+		readonly = false,
+		oninput,
+		onchange,
+		onfocus,
+		onblur,
+		onclear,
+		placeholder,
+		type = 'text',
+		...restProps
+	}: Props = $props();
 
 	let inputElement: HTMLInputElement;
 	let isFocused = false;
@@ -77,24 +63,28 @@
 	function handleInput(event: Event) {
 		const target = event.target as HTMLInputElement;
 		value = target.value;
-		dispatch('input', event);
-}
+		oninput?.(event);
+	}
+	
 	function handleChange(event: Event) {
-		dispatch('change', event);
-}
+		onchange?.(event);
+	}
+	
 	function handleFocus(event: FocusEvent) {
 		isFocused = true;
-		dispatch('focus', event);
-}
+		onfocus?.(event);
+	}
+	
 	function handleBlur(event: FocusEvent) {
 		isFocused = false;
-		dispatch('blur', event);
-}
+		onblur?.(event);
+	}
+	
 	function handleClear() {
 		value = '';
-		dispatch('clear');
+		onclear?.();
 		inputElement?.focus();
-}
+	}
 	// Dynamic classes
 	const containerClasses = 'relative flex flex-col gap-1';
 
@@ -168,16 +158,18 @@
 			bind:this={inputElement}
 			id={inputId}
 			class={inputClasses}
-			{value}
+			bind:value
 			{disabled}
 			{readonly}
 			{required}
+			{placeholder}
+			{type}
 			aria-invalid={hasError}
 			aria-describedby={(hasError ? errorId : '') + (hint ? ' ' + hintId : '')}
-			on:input={handleInput}
-			on:change={handleChange}
-			on:focus={handleFocus}
-			on:blur={handleBlur}
+			oninput={handleInput}
+			onchange={handleChange}
+			onfocus={handleFocus}
+			onblur={handleBlur}
 			{...restProps}
 		/>
 

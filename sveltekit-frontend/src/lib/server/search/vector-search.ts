@@ -109,127 +109,96 @@ function arrayToPgVector(embedding: number[]): string {
   return `[${embedding.join(",")}]`;
 }
 
+// getQueryEmbeddingLegal is defined below with a robust implementation
+
+// Ensure embedding has expected dimension; default to DB schema (384) with env override
+const TARGET_DIM = (() => {
+  const v = parseInt(process.env.EMBEDDING_DIMENSIONS || "384", 10);
+  return Number.isFinite(v) && v > 0 ? v : 384;
+})();
+
+function adjustToDim(vec: number[], target = TARGET_DIM): number[] {
+  if (!Array.isArray(vec)) return [];
+  if (vec.length === 0) return [];
+  if (vec.length === target) return vec;
+  if (vec.length > target) return vec.slice(0, target);
+  return vec.concat(Array(target - vec.length).fill(0));
+}
+
+// Clean implementation: try multiple Ollama models, then rag-kratos, then Xenova generateEmbedding
 export async function getQueryEmbeddingLegal(
   query: string
 ): Promise<number[] | null> {
-  const model = process.env.EMBED_MODEL || "nomic-embed-text"; // 768-dim by default
-  try {
-    const vec = await ollamaService.embeddings(model, query);
-    if (Array.isArray(vec) && vec.length > 0) return vec;
-    // Fallback to rag-kratos /embed if Ollama returned empty
-    const ragUrl =
-      process.env.RAG_URL ||
-      `http://localhost:${process.env.RAG_HTTP_PORT || "8093"}`;
+  const modelListEnv =
+    process.env.EMBED_MODEL_LIST ||
+    process.env.EMBED_MODEL ||
+    "nomic-embed-text,all-minilm";
+  const candidates = modelListEnv
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const ragUrl =
+    process.env.RAG_URL ||
+    `http://localhost:${process.env.RAG_HTTP_PORT || "8093"}`;
+
+  // 1) Try Ollama for each candidate model
+  for (const model of candidates) {
     try {
-      const resp = await fetch(`${ragUrl}/embed`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texts: [query], model }),
-        signal: AbortSignal.timeout(4000),
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        const v = data?.vectors?.[0];
-        if (Array.isArray(v) && v.length > 0) return v;
-      }
-    } catch (e) {
-      console.warn(
-        "rag-kratos embed fallback failed:",
-        (e as Error)?.message || e
-      );
-    }
-    // Final fallback: CPU embedding via @xenova/transformers (384-dim); pad/trim to 768
-    try {
-      const xenova = await import("@xenova/transformers");
-      const pipeline = xenova.pipeline as any;
-      const extractor = await pipeline(
-        "feature-extraction",
-        "Xenova/all-MiniLM-L6-v2"
-      );
-      const result = await extractor(query, {
-        pooling: "mean",
-        normalize: true,
-      });
-      const arr = Array.from(result.data || []);
-      if (Array.isArray(arr) && arr.length > 0) {
-        const target = 768;
-        const adj =
-          arr.length === target
-            ? arr
-            : arr.length > target
-              ? arr.slice(0, target)
-              : arr.concat(Array(target - arr.length).fill(0));
-        return adj;
-      }
-    } catch (ex) {
-      console.warn(
-        "Xenova embedding fallback failed:",
-        (ex as Error)?.message || ex
-      );
-    }
-    return null;
-  } catch (err) {
-    console.warn(
-      "Ollama embeddings failed for legal search:",
-      (err as Error)?.message || err
-    );
-    // Try rag-kratos if Ollama call threw
-    const model = process.env.EMBED_MODEL || "nomic-embed-text";
-    const ragUrl =
-      process.env.RAG_URL ||
-      `http://localhost:${process.env.RAG_HTTP_PORT || "8093"}`;
-    try {
-      const resp = await fetch(`${ragUrl}/embed`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texts: [query], model }),
-        signal: AbortSignal.timeout(4000),
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        const v = data?.vectors?.[0];
-        if (Array.isArray(v) && v.length > 0) return v;
-      }
-    } catch (e2) {
-      console.warn(
-        "rag-kratos embed after error failed:",
-        (e2 as Error)?.message || e2
-      );
-    }
-    // Xenova as last resort
-    try {
-      const xenova = await import("@xenova/transformers");
-      const pipeline = xenova.pipeline as any;
-      const extractor = await pipeline(
-        "feature-extraction",
-        "Xenova/all-MiniLM-L6-v2"
-      );
-      const result = await extractor(query, {
-        pooling: "mean",
-        normalize: true,
-      });
-      const arr = Array.from(result.data || []);
-      if (Array.isArray(arr) && arr.length > 0) {
-        const target = 768;
-        const adj =
-          arr.length === target
-            ? arr
-            : arr.length > target
-              ? arr.slice(0, target)
-              : arr.concat(Array(target - arr.length).fill(0));
-        return adj;
-      }
-    } catch (ex2) {
-      console.warn(
-        "Xenova embedding after error failed:",
-        (ex2 as Error)?.message || ex2
-      );
-    }
-    return null;
+      const vec = await ollamaService.embeddings(model, query);
+      if (Array.isArray(vec) && vec.length > 0)
+        return adjustToDim(vec, TARGET_DIM);
+    } catch {}
   }
+
+  // 2) Try rag-kratos /embed for each candidate model
+  for (const model of candidates) {
+    try {
+      const resp = await fetch(`${ragUrl}/embed`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texts: [query], model }),
+        signal: (AbortSignal as any)?.timeout
+          ? (AbortSignal as any).timeout(4000)
+          : undefined,
+      });
+      if (resp?.ok) {
+        const data = await resp.json();
+        const v = data?.vectors?.[0];
+        if (Array.isArray(v) && v.length > 0) return adjustToDim(v, TARGET_DIM);
+      }
+    } catch {}
+  }
+
+  // 3) CPU fallback via generateEmbedding (Xenova or similar)
+  try {
+    if (typeof generateEmbedding === "function") {
+      const arr = await generateEmbedding(query, { model: "local" });
+      if (Array.isArray(arr) && arr.length > 0)
+        return adjustToDim(arr, TARGET_DIM);
+    }
+  } catch (e) {
+    console.warn("CPU embedding fallback failed:", (e as Error)?.message || e);
+  }
+
+  // 4) OpenAI fallback if configured
+  try {
+    if (typeof generateEmbedding === "function" && process.env.OPENAI_API_KEY) {
+      const arr = await generateEmbedding(query, { model: "openai" });
+      if (Array.isArray(arr) && arr.length > 0)
+        return adjustToDim(arr, TARGET_DIM);
+    }
+  } catch (e) {
+    console.warn(
+      "OpenAI embedding fallback failed:",
+      (e as Error)?.message || e
+    );
+  }
+
+  return null;
 }
 
-async function searchLegalDocumentsPgvector(
+// Legal documents pgvector search against real columns (id, title, content, embedding)
+export async function searchLegalDocumentsPgvector(
   query: string,
   options: VectorSearchOptions
 ): Promise<VectorSearchResult[]> {
@@ -245,11 +214,8 @@ async function searchLegalDocumentsPgvector(
       SELECT
         id,
         title,
-        COALESCE(content, full_text) as content,
+        content,
         1 - (embedding <=> ${vectorString}::vector) as similarity,
-        keywords,
-        topics,
-        document_type,
         case_id
       FROM legal_documents
       WHERE embedding IS NOT NULL
@@ -260,7 +226,6 @@ async function searchLegalDocumentsPgvector(
     const rows: any[] = Array.isArray(execResult)
       ? execResult
       : (execResult?.rows ?? []);
-
     return rows.map((row: any) => ({
       id: row.id,
       title: row.title || "",
@@ -269,12 +234,7 @@ async function searchLegalDocumentsPgvector(
         typeof row.similarity === "number"
           ? row.similarity
           : parseFloat(String(row.similarity ?? 0)),
-      metadata: {
-        keywords: row.keywords,
-        topics: row.topics,
-        documentType: row.document_type,
-        caseId: row.case_id,
-      },
+      metadata: row.case_id ? { caseId: row.case_id } : {},
       source: "pgvector",
       type: "document",
     }));
@@ -291,24 +251,23 @@ export async function searchLegalDocumentsText(
 ): Promise<VectorSearchResult[]> {
   try {
     const like = `%${query}%`;
-    const execResult = await db.execute(sql`
-      SELECT id, title, COALESCE(content, full_text) AS content
+    const execResult: any = await db.execute(sql`
+      SELECT id, title, content
       FROM legal_documents
       WHERE title ILIKE ${like}
          OR content ILIKE ${like}
-         OR full_text ILIKE ${like}
       LIMIT ${limit}
     `);
     const rows: any[] = Array.isArray(execResult)
       ? execResult
       : (execResult?.rows ?? []);
-    return (rows as any[]).map((row) => ({
+    return rows.map((row: any) => ({
       id: row.id,
       title: row.title || "",
       content: row.content || "",
       score: 0.5,
       metadata: {},
-      source: "pgvector",
+      source: "text",
       type: "document",
     }));
   } catch (e) {
@@ -591,93 +550,48 @@ async function searchWithPgVector(
   const { limit = 20, threshold = 0.7, filters = {} } = options;
 
   // Generate query embedding
-  const queryEmbedding = await generateEmbedding(query);
-  if (!queryEmbedding) {
-    throw new Error("Failed to generate embedding for query");
+  const queryEmbedding = await generateEmbedding(query, { model: "local" });
+  if (
+    !queryEmbedding ||
+    !Array.isArray(queryEmbedding) ||
+    queryEmbedding.length === 0
+  ) {
+    // No valid embedding; skip pgvector search to avoid SQL errors with [] params
+    return [];
   }
   const vectorString = `[${queryEmbedding.join(",")}]`;
   // Import schema dynamically to avoid issues
-  const { cases, evidence } = await import(
-    "../../../lib/server/db/unified-schema.js"
-  );
+  const { cases, evidence } = await import("../../../lib/database/schema.js");
 
   const results: VectorSearchResult[] = [];
 
   try {
-    // Search cases with pgvector
-    const caseResults = await db
-      .select({
-        id: cases.id,
-        title: cases.title,
-        content: cases.description,
-        metadata: cases.metadata,
-        score: sql<number>`1 - (${cases.titleEmbedding} <=> ${vectorString}::vector)`,
-      })
-      .from(cases)
-      .where(
-        and(
-          sql`${cases.titleEmbedding} IS NOT NULL`,
-          sql`1 - (${cases.titleEmbedding} <=> ${vectorString}::vector) > ${threshold}`,
-          filters.caseId ? eq(cases.id, filters.caseId) : undefined,
-          filters.status ? eq(cases.status, filters.status) : undefined
-        )
-      )
-      .orderBy(
-        sql`1 - (${cases.titleEmbedding} <=> ${vectorString}::vector) DESC`
-      )
-      .limit(Math.floor(limit / 2));
+    // Search in search_index table which has embeddings
+    const { searchIndex } = await import("../../../lib/database/schema.js");
 
-    // Search evidence with pgvector
-    const evidenceResults = await db
+    const searchResults = await db
       .select({
-        id: evidence.id,
-        title: evidence.title,
-        content: evidence.description,
-        metadata: sql<
-          Record<string, any>
-        >`json_build_object('caseId', ${evidence.caseId}, 'type', ${evidence.evidenceType})`,
-        score: sql<number>`1 - (${evidence.contentEmbedding} <=> ${vectorString}::vector)`,
+        id: searchIndex.entityId,
+        entityType: searchIndex.entityType,
+        content: searchIndex.content,
+        title: sql<string>`COALESCE(${searchIndex.metadata}->>'title', 'Untitled')`,
+        score: sql<number>`1 - (${searchIndex.embedding} <=> ${vectorString}::vector)`,
+        metadata: searchIndex.metadata,
       })
-      .from(evidence)
+      .from(searchIndex)
       .where(
         and(
-          sql`${evidence.contentEmbedding} IS NOT NULL`,
-          sql`1 - (${evidence.contentEmbedding} <=> ${vectorString}::vector) > ${threshold}`,
-          filters.caseId ? eq(evidence.caseId, filters.caseId) : undefined,
-          filters.evidenceType
-            ? eq(evidence.evidenceType, filters.evidenceType)
+          sql`${searchIndex.embedding} IS NOT NULL`,
+          sql`1 - (${searchIndex.embedding} <=> ${vectorString}::vector) > ${threshold}`,
+          filters.entityType
+            ? eq(searchIndex.entityType, filters.entityType)
             : undefined
         )
       )
       .orderBy(
-        sql`1 - (${evidence.contentEmbedding} <=> ${vectorString}::vector) DESC`
+        sql`1 - (${searchIndex.embedding} <=> ${vectorString}::vector) DESC`
       )
-      .limit(Math.floor(limit / 2));
-
-    // Combine and format results
-    caseResults.forEach((result) => {
-      results.push({
-        id: result.id,
-        title: result.title || "",
-        content: result.content || "",
-        score: result.score || 0,
-        metadata: result.metadata || {},
-        source: "pgvector",
-        type: "case",
-      });
-    });
-
-    evidenceResults.forEach((result) => {
-      results.push({
-        id: result.id,
-        title: result.title || "",
-        content: result.content || "",
-        score: result.score || 0,
-        metadata: result.metadata || {},
-        source: "pgvector",
-        type: "evidence",
-      });
-    });
+      .limit(limit);
 
     // Sort by score descending
     results.sort((a, b) => b.score - a.score);
@@ -751,10 +665,8 @@ async function searchWithTextFallback(
   const { limit = 20 } = options;
 
   try {
-    // Import SQLite schema
-    const { cases, evidence } = await import(
-      "../../../lib/server/db/schema-postgres.js"
-    );
+    // Import correct schema
+    const { cases, evidence } = await import("../../../lib/database/schema.js");
 
     const searchTerm = `%${query}%`;
 

@@ -120,7 +120,7 @@ module.exports = {
       name: 'vite-prod',
       script: 'npm',
       args: 'run preview',
-      env: { 
+      env: {
         NODE_ENV: 'production',
         PORT: 4173,
       },

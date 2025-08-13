@@ -1,14 +1,18 @@
 {
-  "name": "custom-context7-mcp",
-  "version": "0.1.0",
-  "description": "Custom Context7-like MCP server for Legal AI applications",
+  "name": "enhanced-context7-mcp-server",
+  "version": "2.0.0",
+  "description": "Enhanced Context7 MCP Server with nomic-embed, auto-encoder neural network, and intelligent file monitoring",
   "type": "module",
   "main": "custom-context7-server.js",
   "bin": {
-    "custom-context7": "./custom-context7-server.js"
+    "enhanced-context7": "./custom-context7-server.js"
   },
   "scripts": {
-    "start": "node custom-context7-server.js"
+    "start": "node custom-context7-server.js",
+    "dev": "nodemon custom-context7-server.js",
+    "test": "node test-server.js",
+    "install-deps": "npm install",
+    "setup-ollama": "ollama pull nomic-embed-text && ollama pull gemma3-legal"
   },
   "dependencies": {
     "@langchain/community": "^0.3.49",
@@ -16,13 +20,35 @@
     "@langchain/openai": "^0.6.3",
     "@modelcontextprotocol/sdk": "^1.17.0",
     "body-parser": "^2.2.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "dotenv": "^16.0.0",
+    "chokidar": "^4.0.0",
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
   },
   "keywords": [
     "mcp",
     "context7",
+    "embeddings",
+    "nomic-embed",
+    "auto-encoder",
+    "neural-network",
+    "file-monitoring",
+    "semantic-search",
     "legal-ai",
+    "metadata-extraction",
     "sveltekit",
     "drizzle"
-  ]
+  ],
+  "author": "Legal AI Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "deeds-web-app/mcp/"
+  }
 }

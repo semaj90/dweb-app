@@ -198,11 +198,7 @@ export const POST: RequestHandler = async ({ request }) => {
           SELECT
             id,
             title,
-            COALESCE(full_text, content) AS content,
-            document_type as "documentType",
-            jurisdiction,
-            keywords,
-            topics,
+            content,
             1 - (embedding <=> ${vectorString}::vector) AS score
           FROM legal_documents
           WHERE embedding IS NOT NULL
@@ -220,12 +216,7 @@ export const POST: RequestHandler = async ({ request }) => {
               typeof r.score === "number"
                 ? r.score
                 : parseFloat(String(r.score ?? 0)),
-            metadata: {
-              documentType: r.documentType,
-              jurisdiction: r.jurisdiction,
-              keywords: r.keywords,
-              topics: r.topics,
-            },
+            metadata: {},
             source: "pgvector",
             type: "document",
           })

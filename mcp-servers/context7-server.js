@@ -181,7 +181,7 @@ class Context7Server {
               },
               required: ['content'],
             },
-          }
+          },
           {
             name: 'vector-search-qdrant',
             description: 'Search Qdrant dev_embeddings with an embedded query via Ollama',
@@ -732,31 +732,31 @@ ${regulations.map((reg, index) => `${index + 1}. ${reg}`).join('\n')}
 
     return `# Legal Precedent Analysis
 
-## Query Analysis
-- **Search Query**: "${query}"
-- **Jurisdiction**: ${jurisdiction}
-- **Case Type**: ${caseType}
-- **Search Date**: ${new Date().toISOString().split('T')[0]}
+  ## Query Analysis
+  - **Search Query**: "${query}"
+  - **Jurisdiction**: ${jurisdiction}
+  - **Case Type**: ${caseType}
+  - **Search Date**: ${new Date().toISOString().split('T')[0]}
 
-## Relevant Precedents
-${precedents.length > 0 ?
-  precedents.map(p => `### ${p.case} (${p.year})
-- **Relevance Score**: ${p.relevance}
-- **Jurisdiction**: ${p.jurisdiction}
-- **Summary**: ${p.summary}
-`).join('\n') :
-  '### No Direct Precedents Found\n- Consider expanding search criteria\n- Review similar case types\n- Consult legal databases'}
+  ## Relevant Precedents
+  ${precedents.length > 0 ?
+    precedents.map(p => `### ${p.case} (${p.year})
+  - **Relevance Score**: ${p.relevance}
+  - **Jurisdiction**: ${p.jurisdiction}
+  - **Summary**: ${p.summary}
+  `).join('\n') :
+    '### No Direct Precedents Found\n- Consider expanding search criteria\n- Review similar case types\n- Consult legal databases'}
 
-## Precedent Impact Analysis
-- **Binding Authority**: ${jurisdiction === 'federal' ? 'High' : 'Medium'}
-- **Persuasive Value**: ${precedents.length > 0 ? 'Strong' : 'Limited'}
-- **Case Strength**: ${precedents.length > 1 ? 'Well-Supported' : 'Requires Additional Research'}
+  ## Precedent Impact Analysis
+  - **Binding Authority**: ${jurisdiction === 'federal' ? 'High' : 'Medium'}
+  - **Persuasive Value**: ${precedents.length > 0 ? 'Strong' : 'Limited'}
+  - **Case Strength**: ${precedents.length > 1 ? 'Well-Supported' : 'Requires Additional Research'}
 
-## Integration Recommendations
-- **Vector Storage**: Index precedents with pgvector for similarity search
-- **Case Database**: Store in PostgreSQL with Drizzle ORM relationships
-- **AI Enhancement**: Use Ollama for deeper precedent analysis
-- **Workflow Integration**: Trigger XState precedent research workflows`;
+  ## Integration Recommendations
+  - **Vector Storage**: Index precedents with pgvector for similarity search
+  - **Case Database**: Store in PostgreSQL with Drizzle ORM relationships
+  - **AI Enhancement**: Use Ollama for deeper precedent analysis
+  - **Workflow Integration**: Trigger XState precedent research workflows`;
   }
 
   extractLegalEntities(content, entityTypes = ['parties', 'dates', 'monetary', 'clauses']) {
@@ -828,39 +828,6 @@ ${entities.clauses.length > 0 ? entities.clauses.map(clause => `- ${clause}`).jo
     "entityCount": ${totalEntities}
   }
 }
-
-// Auxiliary methods
-Context7Server.prototype.qdrantSearch = async function(query, limit = 5) {
-  const MODEL = process.env.EMBED_MODEL || 'nomic-embed-text';
-  const COLLECTION = process.env.QDRANT_COLLECTION || 'dev_embeddings';
-  const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
-
-  const er = await fetch('http://localhost:11434/api/embeddings', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, input: query })
-  });
-  if (!er.ok) throw new Error('Ollama embeddings failed');
-  const ed = await er.json();
-  const vector = ed?.embedding || ed?.data?.[0]?.embedding;
-  if (!Array.isArray(vector)) throw new Error('No embedding vector');
-
-  const sr = await fetch(`${QDRANT_URL}/collections/${COLLECTION}/points/search`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ vector, limit, with_payload: true })
-  });
-  if (!sr.ok) throw new Error('Qdrant search failed');
-  const sd = await sr.json();
-  return sd?.result || [];
-}
-
-// WebSocket logs server (optional)
-const LOG_WS_PORT = Number(process.env.MCP_LOG_WS_PORT || 7072);
-const httpServer = http.createServer((_, res) => { res.end('Context7 WS') });
-const wss = new WebSocketServer({ server: httpServer, path: '/logs' });
-httpServer.listen(LOG_WS_PORT, () => console.log(`[Context7 WS] ws://localhost:${LOG_WS_PORT}/logs`));
-setInterval(() => {
-  for (const c of wss.clients) if (c.readyState === 1) c.send(JSON.stringify({ ts: Date.now(), msg: 'context7 heartbeat' }))
-}, 7000);
 \`\`\`
 
 ## Stack Integration
@@ -870,13 +837,46 @@ setInterval(() => {
 - **AI Enhancement**: Use Ollama for advanced entity relationship analysis`;
   }
 
-  async run() {
-    const transport = new StdioServerTransport();
-    await this.server.connect(transport);
-    console.error('Context7 MCP Server running...');
-  }
+async qdrantSearch(query, limit = 5) {
+  const MODEL = process.env.EMBED_MODEL || 'nomic-embed-text';
+  const COLLECTION = process.env.QDRANT_COLLECTION || 'dev_embeddings';
+  const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
+
+  const er = await fetch('http://localhost:11434/api/embeddings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, input: query })
+  });
+  if (!er.ok) throw new Error('Embedding request failed');
+  const ed = await er.json();
+  const vector = ed?.embedding || ed?.data?.[0]?.embedding;
+  if (!Array.isArray(vector)) throw new Error('No embedding vector');
+
+  const sr = await fetch(`${QDRANT_URL}/collections/${COLLECTION}/points/search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ vector, limit, with_payload: true })
+  });
+  if (!sr.ok) throw new Error('Qdrant search failed');
+  const sd = await sr.json();
+  return sd?.result ?? sd;
 }
 
+async run() {
+  // WebSocket logs server (optional)
+  const LOG_WS_PORT = Number(process.env.MCP_LOG_WS_PORT || 7072);
+  const httpServer = http.createServer((_, res) => { res.end('Context7 WS') });
+  const wss = new WebSocketServer({ server: httpServer, path: '/logs' });
+  httpServer.listen(LOG_WS_PORT, () => console.error(`[Context7 WS] ws://localhost:${LOG_WS_PORT}/logs`));
+  setInterval(() => {
+    for (const c of wss.clients) if (c.readyState === 1) c.send(JSON.stringify({ ts: Date.now(), msg: 'context7 heartbeat' }))
+  }, 7000);
+
+  // Start the MCP server over stdio
+  const transport = new StdioServerTransport();
+  await this.server.connect(transport);
 // Start the server
+const server = new Context7Server();
+server.run().catch(console.error);
 const server = new Context7Server();
 server.run().catch(console.error);

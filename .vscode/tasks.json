@@ -18,7 +18,31 @@
       "problemMatcher": []
     },
     {
-      "label": "🧾 Vector: Scan and Embed",
+      "label": "� Test Vector Search (PowerShell)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/test-vector-search.ps1",
+        "-Query",
+        "agreement",
+        "-Limit",
+        "5"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "detail": "Windows-friendly POST using Invoke-RestMethod"
+    },
+    {
+      "label": "�🧾 Vector: Scan and Embed",
       "type": "shell",
       "command": "npm",
       "args": ["run", "vector:scan"],

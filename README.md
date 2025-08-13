@@ -1,12 +1,12 @@
-# YoRHa Legal AI - Enterprise GPU-Accelerated Legal Document Processing System
+# Legal AI Native Windows Stack
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?style=flat-square&logo=typescript)](https://typescriptlang.org)
 [![SvelteKit](https://img.shields.io/badge/SvelteKit-2.x-orange?style=flat-square&logo=svelte)](https://kit.svelte.dev)
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)](https://golang.org)
-[![Ollama](https://img.shields.io/badge/Ollama-LLM-green?style=flat-square)](https://ollama.com)
-[![GPU](https://img.shields.io/badge/NVIDIA-GPU-76B900?style=flat-square&logo=nvidia)](https://developer.nvidia.com/cuda-zone)
+[![Rust](https://img.shields.io/badge/Rust-1.70+-orange?style=flat-square&logo=rust)](https://rust-lang.org)
+[![WebGPU](https://img.shields.io/badge/WebGPU-Enabled-purple?style=flat-square)](https://gpuweb.github.io/gpuweb/)
 
-> **Production-ready legal AI system with real-time document processing, semantic search, and GPU-accelerated inference**
+> **High-performance, native Windows legal AI system with embedded models, vector processing, and multi-protocol coordination**
 
 ## 🎯 **System Overview**
 

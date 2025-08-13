@@ -11,12 +11,14 @@ function Ensure-Dir($path) {
   if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
 }
 
+$effectiveModel = if ($Mode -eq 'embeddings' -and $Model -eq 'gemma3-legal') { 'nomic-embed-text' } else { $Model }
+
 $body = switch ($Mode) {
   'chat' {
-    @{ model = $Model; stream = [bool]$Stream; messages = @(@{ role='user'; content=$Prompt }) }
+    @{ model = $effectiveModel; stream = [bool]$Stream; messages = @(@{ role='user'; content=$Prompt }) }
   }
   'embeddings' {
-  @{ model = $Model; input = $Prompt }
+  @{ model = $effectiveModel; input = $Prompt }
   }
 }
 

@@ -129,7 +129,7 @@ export class OllamaService {
         },
         body: JSON.stringify({
           model,
-          input: prompt, // Ollama embeddings expects 'input'
+          prompt: prompt, // Ollama embeddings expects 'prompt'
         }),
         signal: AbortSignal.timeout(this.timeout),
       });
