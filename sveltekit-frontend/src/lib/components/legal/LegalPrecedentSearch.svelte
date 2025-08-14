@@ -114,9 +114,9 @@
     searchPrecedents();
   }
 
-  $: totalPages = Math.ceil(totalCount / itemsPerPage);
-  $: startItem = (currentPage - 1) * itemsPerPage + 1;
-  $: endItem = Math.min(currentPage * itemsPerPage, totalCount);
+  let totalPages = $derived(Math.ceil(totalCount / itemsPerPage););
+  let startItem = $derived((currentPage - 1) * itemsPerPage + 1;);
+  let endItem = $derived(Math.min(currentPage * itemsPerPage, totalCount););
 </script>
 
 <div class="space-y-6">
@@ -135,7 +135,7 @@
           bind:value={searchFilters.query}
           placeholder="Enter legal concepts, case names, or keywords..."
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          on:keydown={(e) => e.key === 'Enter' && searchPrecedents()}
+          onkeydown={(e) => e.key === 'Enter' && searchPrecedents()}
         />
       </div>
 
@@ -208,7 +208,7 @@
       <div class="flex gap-3">
         <button
           type="button"
-          on:click={searchPrecedents}
+          onclick={searchPrecedents}
           disabled={loading || !searchFilters.query.trim()}
           class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -223,7 +223,7 @@
         </button>
         <button
           type="button"
-          on:click={clearFilters}
+          onclick={clearFilters}
           class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
         >
           Clear Filters
@@ -324,7 +324,7 @@
             <div class="flex gap-2">
               <button
                 type="button"
-                on:click={() => changePage(currentPage - 1)}
+                onclick={() => changePage(currentPage - 1)}
                 disabled={currentPage <= 1}
                 class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -332,7 +332,7 @@
               </button>
               <button
                 type="button"
-                on:click={() => changePage(currentPage + 1)}
+                onclick={() => changePage(currentPage + 1)}
                 disabled={currentPage >= totalPages}
                 class="px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >

@@ -148,7 +148,7 @@
           <Button 
             variant="primary" 
             size="sm" 
-            on:click={() => analyzeEvidence()}
+            onclick={() => analyzeEvidence()}
             disabled={isAnalyzing}
           >
             {#if isAnalyzing}
@@ -282,7 +282,7 @@
                 placeholder="Add tags (comma-separated)"
                 class="space-y-4"
               />
-              <Button size="sm" on:click={() => updateTags()} disabled={!newTags.trim()}>
+              <Button size="sm" onclick={() => updateTags()} disabled={!newTags.trim()}>
                 Add
               </Button>
             </div>
@@ -310,10 +310,10 @@
   {/if}
 
   <svelte:fragment slot="footer" let:close>
-    <Button variant="secondary" on:click={() => close()}>
+    <Button variant="secondary" onclick={() => close()}>
       Close
     </Button>
-    <Button variant="primary" on:click={() => onsaveAnalysis?.()}>
+    <Button variant="primary" onclick={() => onsaveAnalysis?.()}>
       Save Analysis
     </Button>
   </svelte:fragment>

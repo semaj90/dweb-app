@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    trigger: any;;
+    trigger: any;
   }
   let {
     trigger
@@ -10,6 +10,6 @@
 
   </script>
 
-<button use:trigger {...$$restProps}>
-  <slot />
+<button use:trigger >
+  <slot></slot>
 </button>

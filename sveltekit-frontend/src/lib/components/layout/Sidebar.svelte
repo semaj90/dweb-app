@@ -29,7 +29,7 @@
     mounted = true;
   });
 
-  $: currentPath = $page.url.pathname;
+  let currentPath = $derived($page.url.pathname;);
 
   const navigation = [
     {

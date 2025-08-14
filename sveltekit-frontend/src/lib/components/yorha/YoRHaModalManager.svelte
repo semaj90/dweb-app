@@ -37,9 +37,9 @@
     persistent={modal.persistent}
     showHeader={true}
     showFooter={modal.type === 'confirm' || modal.type === 'alert'}
-    on:close={() => handleModalClose(modal)}
-    on:confirm={(event) => handleModalConfirm(modal, event)}
-    on:cancel={() => handleModalCancel(modal)}
+    onclose={() => handleModalClose(modal)}
+    onconfirm={(event) => handleModalConfirm(modal, event)}
+    oncancel={() => handleModalCancel(modal)}
   >
     {#snippet children()}
       {#if modal.component}

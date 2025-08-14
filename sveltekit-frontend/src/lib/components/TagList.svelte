@@ -38,7 +38,7 @@
   let suggestionsContainer: HTMLElement;
   let activeIndex = -1;
 
-  $: filteredSuggestions = availableTags
+  let filteredSuggestions = $derived(availableTags);
     .filter(
       (tag) =>
         !tags.includes(tag) &&
@@ -46,7 +46,7 @@
     )
     .slice(0, 5);
 
-  $: suggestions = filteredSuggestions;
+  let suggestions = $derived(filteredSuggestions;);
 
   const debouncedSearch = debounce(async (query: string) => {
     dispatch("search", query);
@@ -155,19 +155,19 @@
 }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <div class="space-y-4" class:readonly>
   <div class="space-y-4">
     {#each tags as tag (tag)}
-      <div class="space-y-4" transition:scale={{ duration: 200 }}>
+      <div class="space-y-4" transitionscale={{ duration: 200 }}>
         <Tag class="space-y-4" size={14} />
         <span class="space-y-4">{tag}</span>
         {#if !readonly}
           <button
             type="button"
             class="space-y-4"
-            on:click={() => removeTag(tag)}
+            onclick={() => removeTag(tag)}
             aria-label="Remove {tag} tag"
           >
             <X size={12} />
@@ -181,9 +181,9 @@
         <input
           bind:this={inputElement}
           bind:value={inputValue}
-          on:input={handleInput}
-          on:keydown={handleKeyDown}
-          on:focus={handleFocus}
+          oninput={handleInput}
+          onkeydown={handleKeyDown}
+          onfocus={handleFocus}
           class="space-y-4"
           type="text"
           {placeholder}
@@ -197,7 +197,7 @@
                 type="button"
                 class="space-y-4"
                 class:active={index === activeIndex}
-                on:click={() => handleSuggestionClick(suggestion)}
+                onclick={() => handleSuggestionClick(suggestion)}
                 role="option"
                 aria-selected={index === activeIndex}
               >
@@ -214,7 +214,7 @@
       <button
         type="button"
         class="space-y-4"
-        on:click={() => addTag(inputValue)}
+        onclick={() => addTag(inputValue)}
         aria-label="Add custom tag: {inputValue}"
       >
         <Plus size={14} />

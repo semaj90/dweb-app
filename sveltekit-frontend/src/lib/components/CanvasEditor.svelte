@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
     canvasState: CanvasState | null ;
-    reportId: string;;
+    reportId: string;
     evidence: Evidence[] ;
     citationPoints: CitationPoint[] ;
     onSave: (canvasState: CanvasState) ;
@@ -790,7 +790,7 @@
 				console.error('Invalid evidence drop:', e);
 }}}
 	// Attach drop event to canvas element
-	$: if (canvasElement) {
+	$effect(() => { if (canvasElement) {
 		canvasElement.ondragover = (e) => { e.preventDefault(); };
 		canvasElement.ondrop = handleDrop;
 }

@@ -294,11 +294,11 @@
   });
 
   // Reactive statement to trigger auto-save when content changes
-  $: if (content && documentId && !loadingDocument) {
+  $effect(() => { if (content && documentId && !loadingDocument) {
     scheduleAutoSave();
 }
   // Reactive statement to update save status
-  $: saveStatus = getSaveStatus();
+  let saveStatus = $derived(getSaveStatus(););
 
   // Function to load document from API
   async function loadDocument() {
@@ -431,7 +431,7 @@
           </button>
 
           <button
-            on:click={() => manualSaveDocument()}
+            onclick={() => manualSaveDocument()}
             class="space-y-4"
             disabled={readonly || loadingDocument || isSaving}
           >
@@ -513,7 +513,7 @@
                     <p class="space-y-4">{documentLoadError}</p>
                     <button
                       class="space-y-4"
-                      on:click={() => loadDocument()}
+                      onclick={() => loadDocument()}
                     >
                       Try Again
                     </button>
@@ -564,7 +564,7 @@
 
               <button
                 class="space-y-4"
-                on:click={() =>
+                onclick={() =>
                   insertCitation({
                     id: Math.random().toString(),
                     text: "Sample Citation",
@@ -622,7 +622,7 @@
     <div
       use:melt={$aiOverlay}
       class="space-y-4"
-      transition:fade={{ duration: 150 }}
+      transitionfade={{ duration: 150 }}
     ></div>
     <div
       class="space-y-4"
@@ -684,7 +684,7 @@
               Cancel
             </button>
             <button
-              on:click={() => handleAIRequest()}
+              onclick={() => handleAIRequest()}
               class="space-y-4"
               disabled={!query.trim() || isProcessingAI}
             >

@@ -34,6 +34,15 @@ export class UnifiedAIService {
   }
 
   // ============ Core AI Methods ============
+  async generateText(prompt: string, options: any = {}): Promise<string> {
+    const result = await this.generateCompletion(prompt, options);
+    return result.response;
+  }
+
+  async generateEmbedding(text: string, options: any = {}): Promise<number[]> {
+    return await this.embedSingle(text);
+  }
+
   async generateCompletion(prompt: string, options: any = {}): Promise<any> {
     const requestBody = {
       model: options.model || this.chatModel,

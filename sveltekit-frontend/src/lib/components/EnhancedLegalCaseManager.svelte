@@ -551,7 +551,7 @@
     });
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="legal-case-manager min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header with progress -->

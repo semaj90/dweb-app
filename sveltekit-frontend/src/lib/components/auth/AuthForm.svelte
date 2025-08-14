@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
-    data: any;;
-    formType: "login" | "register";;
+    data: any;
+    formType: "login" | "register";
   }
   let {
     data,

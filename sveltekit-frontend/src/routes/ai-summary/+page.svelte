@@ -1,7 +1,7 @@
 <!-- AI Summary Demo Page -->
 <!-- File: sveltekit-frontend/src/routes/ai-summary/+page.svelte -->
 
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   
   let caseData = null;
@@ -77,8 +77,8 @@
           </div>
           
           <div class="mt-4">
-            <label class="block text-sm font-medium mb-2">Summary Type</label>
-            <select bind:value={summaryType} class="w-full p-2 border rounded">
+            <label for="summary-type" class="block text-sm font-medium mb-2">Summary Type</label>
+            <select id="summary-type" bind:value={summaryType} class="w-full p-2 border rounded">
               <option value="prosecution">Prosecution Strategy</option>
               <option value="evidence">Evidence Analysis</option>
               <option value="timeline">Timeline Summary</option>
@@ -87,7 +87,7 @@
           </div>
           
           <button 
-            on:click={generateSummary}
+            onclick={generateSummary}
             disabled={isGenerating}
             class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
           >

@@ -77,7 +77,7 @@
           variant="outline"
           size="sm"
           class="space-y-4"
-          on:click={() => handleAccept()}
+          onclick={() => handleAccept()}
         >
           <MessageCircle class="space-y-4" />
           Yes, help me
@@ -88,7 +88,7 @@
           variant="ghost"
           size="sm"
           class="space-y-4"
-          on:click={() => onquickResponse?.()}
+          onclick={() => onquickResponse?.()}
         >
           <Lightbulb class="space-y-4" />
           Summarize
@@ -99,7 +99,7 @@
           variant="ghost"
           size="sm"
           class="space-y-4"
-          on:click={() => handleDismiss()}
+          onclick={() => handleDismiss()}
           title="Not now"
         >
           <X class="space-y-4" />

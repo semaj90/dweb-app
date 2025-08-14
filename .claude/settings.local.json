@@ -322,8 +322,33 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\d users\")",
       "Bash(eslint:*)",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")"
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(./start-qdrant-permanent.bat)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -d legal_ai_db -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -d legal_ai_db -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\database-schema.sql\")",
+      "Bash(start /min:*)",
+      "Bash(.redis-windowsredis-server.exe)",
+      "Bash(.\\redis-windows\\redis-cli.exe:*)",
+      "Bash(.start-qdrant-permanent.bat)",
+      "Bash(./redis-cli.exe:*)",
+      "Bash(unzip:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ''public'';\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT extname FROM pg_extension WHERE extname = ''vector'';\")",
+      "mcp__filesystem__list_allowed_directories",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\" -q)",
+      "Bash(git rm:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(pip install:*)",
+      "Bash(git-filter-repo:*)",
+      "Bash(java:*)"
     ],
-    "deny": []
+    "deny": [],
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+    ]
   }
 }

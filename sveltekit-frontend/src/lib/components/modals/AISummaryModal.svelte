@@ -13,12 +13,12 @@
     let copied = false;
 
   // Use the Svelte store reactively
-  $: summary = $aiService.summary;
-  $: isLoading = $aiService.isLoading;
-  $: error = $aiService.error;
-  $: model = $aiService.model;
-  $: lastSummarizedContent = $aiService.lastSummarizedContent;
-  $: isOpen = isLoading || summary !== null || error !== null;
+  let summary = $derived($aiService.summary;);
+  let isLoading = $derived($aiService.isLoading;);
+  let error = $derived($aiService.error;);
+  let model = $derived($aiService.model;);
+  let lastSummarizedContent = $derived($aiService.lastSummarizedContent;);
+  let isOpen = $derived(isLoading || summary !== null || error !== null;);
 
   async function copyToClipboard() {
     if (summary) {
@@ -35,7 +35,7 @@
 }
 </script>
 
-<Dialog.Root open={isOpen} on:close={closeModal}>
+<Dialog.Root open={isOpen} onclose={closeModal}>
   <Dialog.Content size="lg">
   <Dialog.Header>
     <Dialog.Title>AI Summary</Dialog.Title>
@@ -64,7 +64,7 @@
       <!-- Summary Content -->
       <div class="space-y-4">
         <div class="space-y-4">
-          <Button on:click={() => copyToClipboard()} variant="ghost" size="sm" aria-label="Copy summary to clipboard">
+          <Button onclick={() => copyToClipboard()} variant="ghost" size="sm" aria-label="Copy summary to clipboard">
             <Copy class="space-y-4" />
             <span class="space-y-4">Copy</span>
           </Button>
@@ -88,7 +88,7 @@
 
   <Dialog.Footer>
     <Dialog.Close asChild>
-      <Button on:click={() => closeModal()} variant="secondary" aria-label="Close summary modal">
+      <Button onclick={() => closeModal()} variant="secondary" aria-label="Close summary modal">
         <X class="space-y-4" />
         <span class="space-y-4">Close</span>
       </Button>

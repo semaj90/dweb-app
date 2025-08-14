@@ -10,8 +10,8 @@ Comprehensive showcase of Phase 4 Vector Intelligence capabilities
   import { Textarea } from '$lib/components/ui/textarea';
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '$lib/components/ui/select';
   import { Separator } from '$lib/components/ui/separator';
-  import { 
-    Brain, 
+  import {
+    Brain,
     Search,
     Lightbulb,
     AlertTriangle,
@@ -36,11 +36,11 @@ Comprehensive showcase of Phase 4 Vector Intelligence capabilities
     Tag,
     Link
   } from 'lucide-svelte';
-  
+
   import { vectorIntelligenceService } from '$lib/services/vector-intelligence-service.js';
-  import type { 
-    VectorSearchResult, 
-    IntelligenceRecommendation, 
+  import type {
+    VectorSearchResult,
+    IntelligenceRecommendation,
     SemanticAnalysisResult,
     VectorIntelligenceState
   } from '$lib/services/vector-intelligence-service.js';
@@ -52,19 +52,19 @@ Comprehensive showcase of Phase 4 Vector Intelligence capabilities
   let selectedMode = $state<'search' | 'recommendations' | 'analysis'>('search');
   let selectedUserRole = $state<'prosecutor' | 'detective' | 'admin' | 'user'>('prosecutor');
   let selectedCaseType = $state<'criminal' | 'civil' | 'corporate' | 'general'>('criminal');
-  
+
   // Results state
   let searchResults = $state<VectorSearchResult[]>([]);
   let recommendations = $state<IntelligenceRecommendation[]>([]);
   let semanticAnalysis = $state<SemanticAnalysisResult | null>(null);
   let systemHealth = $state<VectorIntelligenceState | null>(null);
-  
+
   // UI state
   let isProcessing = $state(false);
   let processingStage = $state('');
   let activeTab = $state<'search' | 'recommendations' | 'analysis' | 'health'>('search');
   let showAdvancedOptions = $state(false);
-  
+
   // Demo data
   const demoSearchQueries = [
     {
@@ -331,10 +331,10 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
       Vector Intelligence Demo
     </h1>
     <p class="text-lg text-muted-foreground max-w-3xl mx-auto">
-      Experience the power of Phase 4 Vector Intelligence with semantic search, AI recommendations, 
+      Experience the power of Phase 4 Vector Intelligence with semantic search, AI recommendations,
       and advanced document analysis for legal professionals.
     </p>
-    
+
     <div class="flex items-center justify-center gap-4 flex-wrap">
       <Badge class="bits-badge-default flex items-center gap-1">
         <Brain class="h-3 w-3" />
@@ -372,7 +372,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             Semantic Search
           </h3>
           {#each demoSearchQueries as example}
-            <div class="demo-example-card" onclick={() => loadDemoQuery(example.query)}>
+            <div class="demo-example-card" on:click={() => loadDemoQuery(example.query)}>
               <h4 class="font-medium text-sm mb-1">{example.category}</h4>
               <p class="text-xs text-muted-foreground mb-2">{example.description}</p>
               <p class="text-xs bg-muted p-2 rounded font-mono">{example.query}</p>
@@ -387,7 +387,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             AI Recommendations
           </h3>
           {#each demoRecommendationContexts as example}
-            <div class="demo-example-card" onclick={() => loadDemoContext(example.context, example.role)}>
+            <div class="demo-example-card" on:click={() => loadDemoContext(example.context, example.role)}>
               <h4 class="font-medium text-sm mb-1">{example.description}</h4>
               <Badge class="bits-badge-outline text-xs mb-2">{example.role}</Badge>
               <p class="text-xs text-muted-foreground">{example.context.substring(0, 80)}...</p>
@@ -402,7 +402,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             Document Analysis
           </h3>
           {#each demoAnalysisContent as example}
-            <div class="demo-example-card" onclick={() => loadDemoContent(example.content)}>
+            <div class="demo-example-card" on:click={() => loadDemoContent(example.content)}>
               <h4 class="font-medium text-sm mb-1">{example.type}</h4>
               <p class="text-xs text-muted-foreground mb-2">{example.description}</p>
               <p class="text-xs bg-muted p-2 rounded">{example.content.substring(0, 60)}...</p>
@@ -418,7 +418,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'search' ? 'default' : 'ghost'}
       size="sm"
-      onclick={() => activeTab = 'search'}
+      on:click={() => activeTab = 'search'}
       class="flex items-center gap-2"
     >
       <Search class="h-4 w-4" />
@@ -427,7 +427,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'recommendations' ? 'default' : 'ghost'}
       size="sm"
-      onclick={() => activeTab = 'recommendations'}
+      on:click={() => activeTab = 'recommendations'}
       class="flex items-center gap-2"
     >
       <Lightbulb class="h-4 w-4" />
@@ -436,7 +436,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'analysis' ? 'default' : 'ghost'}
       size="sm"
-      onclick={() => activeTab = 'analysis'}
+      on:click={() => activeTab = 'analysis'}
       class="flex items-center gap-2"
     >
       <BarChart3 class="h-4 w-4" />
@@ -445,7 +445,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'health' ? 'default' : 'ghost'}
       size="sm"
-      onclick={() => activeTab = 'health'}
+      on:click={() => activeTab = 'health'}
       class="flex items-center gap-2"
     >
       <Activity class="h-4 w-4" />
@@ -507,7 +507,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
 
           <div class="flex items-center gap-2">
             <Button
-              onclick={performSearch}
+              on:click={performSearch}
               disabled={isProcessing || !searchQuery.trim()}
               class="bits-btn-default"
             >
@@ -522,7 +522,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             <Button
               variant="outline"
               size="sm"
-              onclick={() => showAdvancedOptions = !showAdvancedOptions}
+              on:click={() => showAdvancedOptions = !showAdvancedOptions}
             >
               <Settings class="h-4 w-4" />
             </Button>
@@ -557,11 +557,11 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                       <Badge class="bits-badge-outline text-xs">{result.source}</Badge>
                     </div>
                   </div>
-                  
+
                   <p class="text-sm text-muted-foreground mb-3">
                     {result.content.substring(0, 200)}...
                   </p>
-                  
+
                   {#if result.highlights?.length > 0}
                     <div class="space-y-1">
                       <p class="text-xs font-medium">Highlights:</p>
@@ -572,7 +572,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                       {/each}
                     </div>
                   {/if}
-                  
+
                   <div class="vector-metadata-grid mt-3">
                     <span>Relevance: {result.relevanceScore.toFixed(2)}</span>
                     <span>Similarity: {result.similarity.toFixed(3)}</span>
@@ -640,7 +640,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
           </div>
 
           <Button
-            onclick={generateRecommendations}
+            on:click={generateRecommendations}
             disabled={isProcessing || !recommendationContext.trim()}
             class="bits-btn-default"
           >
@@ -691,9 +691,9 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                       <Badge class="bits-badge-outline text-xs">{rec.priority}</Badge>
                     </div>
                   </div>
-                  
+
                   <p class="recommendation-description">{rec.description}</p>
-                  
+
                   {#if rec.actionItems}
                     <div class="space-y-2 mb-3">
                       {#if rec.actionItems.immediate?.length > 0}
@@ -709,7 +709,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                       {/if}
                     </div>
                   {/if}
-                  
+
                   <div class="recommendation-actions">
                     <span>Impact: {rec.estimatedImpact?.successProbability || 'N/A'}%</span>
                     <span>Time: {rec.estimatedImpact?.timeToComplete || 'N/A'}min</span>
@@ -744,7 +744,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
           </div>
 
           <Button
-            onclick={performSemanticAnalysis}
+            on:click={performSemanticAnalysis}
             disabled={isProcessing || !analysisContent.trim()}
             class="bits-btn-default"
           >
@@ -805,8 +805,8 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                         <p class="theme-weight">Weight: {theme.weight.toFixed(2)}</p>
                       </div>
                       <div class="theme-weight-bar w-20">
-                        <div 
-                          class="theme-weight-fill" 
+                        <div
+                          class="theme-weight-fill"
                           style="width: {theme.weight * 100}%"
                         ></div>
                       </div>
@@ -861,8 +861,8 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                     <span>{Math.round((semanticAnalysis.complexity?.readability || 0) * 100)}%</span>
                   </div>
                   <div class="theme-weight-bar">
-                    <div 
-                      class="theme-weight-fill bg-green-500" 
+                    <div
+                      class="theme-weight-fill bg-green-500"
                       style="width: {(semanticAnalysis.complexity?.readability || 0) * 100}%"
                     ></div>
                   </div>
@@ -874,8 +874,8 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                     <span>{Math.round((semanticAnalysis.complexity?.technicalLevel || 0) * 100)}%</span>
                   </div>
                   <div class="theme-weight-bar">
-                    <div 
-                      class="theme-weight-fill bg-blue-500" 
+                    <div
+                      class="theme-weight-fill bg-blue-500"
                       style="width: {(semanticAnalysis.complexity?.technicalLevel || 0) * 100}%"
                     ></div>
                   </div>
@@ -887,8 +887,8 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
                     <span>{Math.round((semanticAnalysis.complexity?.legalComplexity || 0) * 100)}%</span>
                   </div>
                   <div class="theme-weight-bar">
-                    <div 
-                      class="theme-weight-fill bg-purple-500" 
+                    <div
+                      class="theme-weight-fill bg-purple-500"
                       style="width: {(semanticAnalysis.complexity?.legalComplexity || 0) * 100}%"
                     ></div>
                   </div>
@@ -921,7 +921,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
               <Activity class="h-5 w-5" />
               Vector Intelligence System Health
             </span>
-            <Button variant="outline" size="sm" onclick={loadSystemHealth}>
+            <Button variant="outline" size="sm" on:click={loadSystemHealth}>
               <RefreshCw class="h-4 w-4" />
             </Button>
           </CardTitle>
@@ -990,7 +990,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
 
             <div class="space-y-4">
               <h3 class="text-lg font-semibold">System Information</h3>
-              
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div class="space-y-2">
                   <div class="flex justify-between">

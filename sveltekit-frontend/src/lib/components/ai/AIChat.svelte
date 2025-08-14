@@ -25,7 +25,7 @@
   }
 
   // Update scroll when messages change
-  $: if ($state.context.messages && chatContainer) {
+  $effect(() => { if ($state.context.messages && chatContainer) {
     // Wait for DOM update
     setTimeout(() => {
       chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -52,7 +52,7 @@
         {/if}
       </p>
     </div>
-    <Button variant="outline" size="sm" on:click={handleClear}>
+    <Button variant="outline" size="sm" onclick={handleClear}>
       Clear Chat
     </Button>
   </div>

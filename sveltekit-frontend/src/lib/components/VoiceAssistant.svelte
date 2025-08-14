@@ -11,7 +11,6 @@
 
   onMount(() => {
     // Initialize speech recognition
-    // @ts-ignore
     const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (SpeechRecognition) {
       isSupported = true;
@@ -33,7 +32,8 @@
             final += transcript;
           } else {
             interim += transcript;
-}}
+          }
+        }
         finalTranscript = final;
         interimTranscript = interim;
         currentTranscript = final + interim;
@@ -42,7 +42,7 @@
         isListening = false;
         if (finalTranscript === '') {
           speak('No speech detected. Please try again.');
-}
+        }
       };
       recognition.onerror = (event: any) => {
         isListening = false;
@@ -54,11 +54,11 @@
           speak('Permission to use microphone denied. Please enable microphone access.');
         } else {
           speak('Error occurred in recognition: ' + event.error);
-}
+        }
       };
     } else {
       isSupported = false;
-}
+    }
   });
 </script>
 
@@ -69,13 +69,13 @@
     {:else}
       <p>Click the button and start speaking.</p>
     {/if}
-    <button on:click={() => {
+    <button onclick={() => {
       if (isListening) {
         recognition.stop();
         isListening = false;
       } else {
         recognition.start();
-}
+      }
     }}>
       {#if isListening}
         Stop Listening

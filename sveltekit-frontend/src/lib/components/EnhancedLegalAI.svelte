@@ -405,7 +405,7 @@
 
         <!-- Process Button -->
         <Button.Root
-          onclick={processDocument}
+          on:click={processDocument}
           disabled={processing || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >
@@ -461,7 +461,7 @@
 
         <!-- Search Button -->
         <Button.Root
-          onclick={performVectorSearch}
+          on:click={performVectorSearch}
           disabled={searching || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >

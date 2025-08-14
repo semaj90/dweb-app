@@ -185,7 +185,7 @@
   });
 
   // Reactive update when content prop changes
-  $: if (editor && isInitialized && content) {
+  $effect(() => { if (editor && isInitialized && content) {
     const currentMarkdown = editor.getMarkdown();
     const newMarkdown = contentToMarkdown(content);
     

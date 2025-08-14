@@ -73,7 +73,7 @@
 	class:glow={glowEffect}
 	{disabled}
 	onclick={handleClick}
-	{...$$restProps}
+	
 >
 	{#if loading}
 		<div class="loading-spinner"></div>

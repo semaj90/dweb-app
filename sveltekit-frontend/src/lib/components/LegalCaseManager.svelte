@@ -23,7 +23,7 @@
   import LoadingSpinner from './LoadingSpinner.svelte';
 
   // Form state management
-  export let caseId: string | null = null;
+  let { caseId = $bindable() } = $props(); // string | null = null;
 
   interface FormData {
     caseInfo: {
@@ -119,7 +119,7 @@
   // Auto-save functionality
   let autoSaveTimeout: NodeJS.Timeout;
 
-  $: if ($formData) {
+  $effect(() => { if ($formData) {
     clearTimeout(autoSaveTimeout);
     autoSaveTimeout = setTimeout(() => {
       saveFormData();
@@ -379,7 +379,7 @@
 
   <!-- Loading Overlay -->
   {#if $isLoading}
-    <div class="loading-overlay" transition:fade={{ duration: 300 }}>
+    <div class="loading-overlay" transitionfade={{ duration: 300 }}>
       <LoadingSpinner />
       <p class="loading-message">{$processingMessage}</p>
     </div>
@@ -388,52 +388,52 @@
   <!-- Form Steps -->
   <div class="form-container" class:loading={$isLoading}>
     {#if $currentStep === 1}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitionslide={{ duration: 300, easing: cubicOut }}>
         <CaseInfoForm
           bind:data={$formData.caseInfo}
-          on:next={nextStep}
+          onnext={nextStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 2}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitionslide={{ duration: 300, easing: cubicOut }}>
         <DocumentUploadForm
           bind:data={$formData.documents}
-          on:process={(e) => processDocuments(e.detail)}
-          on:next={nextStep}
-          on:prev={prevStep}
+          onprocess={(e) => processDocuments(e.detail)}
+          onnext={nextStep}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 3}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitionslide={{ duration: 300, easing: cubicOut }}>
         <EvidenceAnalysisForm
           bind:data={$formData.evidence}
           ocrResults={$formData.documents.ocr_results}
-          on:extract={extractEvidence}
-          on:next={nextStep}
-          on:prev={prevStep}
+          onextract={extractEvidence}
+          onnext={nextStep}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 4}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitionslide={{ duration: 300, easing: cubicOut }}>
         <AIAnalysisForm
           bind:data={$formData.ai_analysis}
           caseData={$formData}
-          on:analyze={performAIAnalysis}
-          on:next={nextStep}
-          on:prev={prevStep}
+          onanalyze={performAIAnalysis}
+          onnext={nextStep}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>
     {:else if $currentStep === 5}
-      <div transition:slide={{ duration: 300, easing: cubicOut }}>
+      <div transitionslide={{ duration: 300, easing: cubicOut }}>
         <ReviewSubmitForm
           bind:data={$formData.review}
           fullCaseData={$formData}
-          on:submit={submitForm}
-          on:prev={prevStep}
+          onsubmit={submitForm}
+          onprev={prevStep}
           isValid={$stepValidation}
         />
       </div>

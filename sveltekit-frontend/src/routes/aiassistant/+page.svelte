@@ -47,7 +47,7 @@
 	import { createMachine, interpret } from 'xstate';
 	import { createDialog, createTabs, createResizable } from '@melt-ui/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/Card/index.js';
+	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';

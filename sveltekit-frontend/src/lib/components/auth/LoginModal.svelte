@@ -45,7 +45,7 @@ const {
 
   // This reactive statement ensures that if the parent changes
   // the 'open' prop, our internal store is updated.
-  $: if ($openStore !== open) {
+  $effect(() => { if ($openStore !== open) {
     $openStore = open;
 }
 </script>
@@ -96,7 +96,7 @@ const {
         <Button
           type="button"
           variant="ghost"
-          on:click={() => ($isMeltOpen = false)}
+          onclick={() => ($isMeltOpen = false)}
         >
           Cancel
         </Button>

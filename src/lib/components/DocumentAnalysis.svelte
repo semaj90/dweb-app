@@ -97,7 +97,7 @@
 
     {#if !analysisResult}
       <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
-        <input type="file" accept={allowedTypes.join(',')} on:change={handleFileSelect} class="hidden" id="file-input" />
+        <input type="file" accept={allowedTypes.join(',')} onchange={handleFileSelect} class="hidden" id="file-input" />
         <label for="file-input" class="cursor-pointer block text-center">
           <div class="font-medium">{file ? file.name : 'Click to upload legal document'}</div>
           <div class="text-sm text-gray-500 mt-1">Supported formats: {allowedTypes.join(', ')} (max {maxSizeMB}MB)</div>
@@ -109,7 +109,7 @@
               <div class="font-medium">{file.name}</div>
               <div class="text-sm text-gray-500">{fileSizeMB.toFixed(2)} MB</div>
             </div>
-            <button on:click={() => (file = null)} class="text-red-600 hover:text-red-700 dark:text-red-400">Remove</button>
+            <button onclick={() => (file = null)} class="text-red-600 hover:text-red-700 dark:text-red-400">Remove</button>
           </div>
         {/if}
 
@@ -117,7 +117,7 @@
           <div class="mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-400">{error}</div>
         {/if}
 
-        <Button on:click={analyzeDocument} disabled={!canAnalyze} class="w-full mt-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+        <Button onclick={analyzeDocument} disabled={!canAnalyze} class="w-full mt-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
           {#if isAnalyzing}
             Analyzing... {progress}%
           {:else}
@@ -152,8 +152,8 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <Button on:click={resetAnalysis} class="py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Analyze Another Document</Button>
-          <Button on:click={() => navigator.clipboard.writeText(JSON.stringify(analysisResult, null, 2))} class="py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700">Copy JSON</Button>
+          <Button onclick={resetAnalysis} class="py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Analyze Another Document</Button>
+          <Button onclick={() => navigator.clipboard.writeText(JSON.stringify(analysisResult, null, 2))} class="py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700">Copy JSON</Button>
         </div>
       </div>
     {/if}

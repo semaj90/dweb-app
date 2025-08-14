@@ -328,7 +328,7 @@
             class:bg-blue-100={activeTab === "profile"}
             class:text-blue-700={activeTab === "profile"}
             class:hover:bg-gray-100={activeTab !== "profile"}
-            on:click={() => (activeTab = "profile")}
+            onclick={() => (activeTab = "profile")}
           >
             <UserIcon class="space-y-4" />
             Profile
@@ -340,7 +340,7 @@
             class:bg-blue-100={activeTab === "preferences"}
             class:text-blue-700={activeTab === "preferences"}
             class:hover:bg-gray-100={activeTab !== "preferences"}
-            on:click={() => (activeTab = "preferences")}
+            onclick={() => (activeTab = "preferences")}
           >
             <Palette class="space-y-4" />
             Preferences
@@ -352,7 +352,7 @@
             class:bg-blue-100={activeTab === "security"}
             class:text-blue-700={activeTab === "security"}
             class:hover:bg-gray-100={activeTab !== "security"}
-            on:click={() => (activeTab = "security")}
+            onclick={() => (activeTab = "security")}
           >
             <Shield class="space-y-4" />
             Security
@@ -364,7 +364,7 @@
             class:bg-blue-100={activeTab === "data"}
             class:text-blue-700={activeTab === "data"}
             class:hover:bg-gray-100={activeTab !== "data"}
-            on:click={() => (activeTab = "data")}
+            onclick={() => (activeTab = "data")}
           >
             <Download class="space-y-4" />
             Data & Privacy
@@ -421,13 +421,13 @@
                       id="avatar"
                       type="file"
                       accept="image/*"
-                      on:change={handleAvatarChange}
+                      onchange={handleAvatarChange}
                       class="space-y-4"
                     />
                     <Button
                       variant="outline"
                       size="sm"
-                      on:click={() =>
+                      onclick={() =>
                         document.getElementById("avatar")?.click()}
                     >
                       <Upload class="space-y-4" />
@@ -437,7 +437,7 @@
                       <Button
                         variant="outline"
                         size="sm"
-                        on:click={() => clearAvatar()}
+                        onclick={() => clearAvatar()}
                       >
                         <Trash2 class="space-y-4" />
                         Remove
@@ -739,7 +739,7 @@
                       <button
                         type="button"
                         class="space-y-4"
-                        on:click={() => (showPasswords = !showPasswords)}
+                        onclick={() => (showPasswords = !showPasswords)}
                       >
                         {#if showPasswords}
                           <EyeOff class="space-y-4" />
@@ -905,7 +905,7 @@
                     </select>
                   </div>
 
-                  <Button on:click={() => exportUserData()}>
+                  <Button onclick={() => exportUserData()}>
                     <Download class="space-y-4" />
                     Export My Data
                   </Button>
@@ -966,7 +966,7 @@
                     </p>
                     <Button
                       variant="outline"
-                      on:click={() => resetToDefaults()}
+                      onclick={() => resetToDefaults()}
                     >
                       <RefreshCw class="space-y-4" />
                       Reset to Defaults
@@ -985,11 +985,11 @@
               Changes are saved automatically when you update settings
             </div>
             <div class="space-y-4">
-              <Button variant="outline" on:click={() => loadSettings()}>
+              <Button variant="outline" onclick={() => loadSettings()}>
                 <RefreshCw class="space-y-4" />
                 Reset Changes
               </Button>
-              <Button on:click={() => saveSettings()} disabled={isSaving}>
+              <Button onclick={() => saveSettings()} disabled={isSaving}>
                 {#if isSaving}
                   <RefreshCw class="space-y-4" />
                   Saving...

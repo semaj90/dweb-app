@@ -22,7 +22,7 @@
   } from "lucide-svelte";
     import type { Evidence } from '$lib/stores/evidence-store';
 
-      export let aiEvent: any = null; // Specific AI analysis event to validate
+      let { aiEvent = $bindable() } = $props(); // any = null; // Specific AI analysis event to validate
 
   
   let validationChoice: "approve" | "reject" | null = null;
@@ -37,7 +37,7 @@
   let showCorrections = false;
 
   // Initialize corrections with current AI analysis
-  $: if (evidence && open) {
+  $effect(() => { if (evidence && open) {
     corrections = {
       summary: evidence.aiSummary || "",
       tags: evidence.aiTags || [],
@@ -129,7 +129,7 @@
             {...builder}
             variant="ghost"
             size="sm"
-            on:click={() => closeModal()}
+            onclick={() => closeModal()}
           >
             ×
           </Button>
@@ -203,7 +203,7 @@
               <Button
                 variant={validationChoice === "approve" ? "default" : "outline"}
                 class="space-y-4"
-                on:click={() => handleValidationChoice("approve")}
+                onclick={() => handleValidationChoice("approve")}
               >
                 <CheckCircle class="space-y-4" />
                 Yes, it's accurate
@@ -212,7 +212,7 @@
               <Button
                 variant={validationChoice === "reject" ? "danger" : "outline"}
                 class="space-y-4"
-                on:click={() => handleValidationChoice("reject")}
+                onclick={() => handleValidationChoice("reject")}
               >
                 <XCircle class="space-y-4" />
                 No, needs correction
@@ -303,7 +303,7 @@
                         {tag}
                         <button
                           type="button"
-                          on:click={() => removeTag(tag)}
+                          onclick={() => removeTag(tag)}
                           class="space-y-4"
                         >
                           ×
@@ -320,14 +320,14 @@
                     type="text"
                     placeholder="Add a tag..."
                     class="space-y-4"
-                    on:keydown={(e) =>
+                    onkeydown={(e) =>
                       e.key === "Enter" && (e.preventDefault(), addTag())}
                   />
                   <Button
                     type="button"
                     variant="secondary"
                     size="sm"
-                    on:click={() => addTag()}
+                    onclick={() => addTag()}
                   >
                     <Tag class="space-y-4" />
                   </Button>
@@ -341,14 +341,14 @@
         <div class="space-y-4">
           <Button
             variant="ghost"
-            on:click={() => closeModal()}
+            onclick={() => closeModal()}
             disabled={isSubmitting}
           >
             Cancel
           </Button>
 
           <Button
-            on:click={() => submitValidation()}
+            onclick={() => submitValidation()}
             disabled={!validationChoice || isSubmitting}
             class="space-y-4"
           >

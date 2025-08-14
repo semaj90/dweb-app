@@ -269,7 +269,7 @@
     </h2>
     <div class="chat__status">{$systemStatus.message}</div>
     {#if $messages.length > 0}
-      <button class="chat__clear" on:click={clearChat}>Clear Chat</button>
+      <button class="chat__clear" onclick={clearChat}>Clear Chat</button>
     {/if}
   </header>
 
@@ -346,13 +346,13 @@
       class="composer__input"
     />
     {#if $isStreaming}
-      <button class="composer__btn composer__btn--stop" on:click={stopStreaming}
+      <button class="composer__btn composer__btn--stop" onclick={stopStreaming}
         >Stop</button
       >
     {:else}
       <button
         class="composer__btn"
-        on:click={sendMessage}
+        onclick={sendMessage}
         disabled={!$currentInput.trim() ||
           $isLoading ||
           $systemStatus.status === "error"}>Send</button

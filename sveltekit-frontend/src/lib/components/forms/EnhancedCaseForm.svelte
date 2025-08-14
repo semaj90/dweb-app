@@ -14,7 +14,7 @@
   import type { User } from "$lib/types/user";
     import type { Case } from "$lib/types/index";
 
-  export let case_: Case| null = null; // Edit mode if provided
+  let { case_ = $bindable() } = $props(); // Case| null = null; // Edit mode if provided
 
   
   
@@ -349,10 +349,10 @@
             id="new-member"
             type="text"
             placeholder="Add team member ID"
-            on:keydown={(e) =>
+            onkeydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTeamMember())}
           />
-          <button type="button" on:click={() => addTeamMember()}>Add</button>
+          <button type="button" onclick={() => addTeamMember()}>Add</button>
         </div>
 
         {#if formData.assignedTeam.length > 0}
@@ -360,7 +360,7 @@
             {#each formData.assignedTeam as member}
               <span class="space-y-4">
                 {member}
-                <button type="button" on:click={() => removeTeamMember(member)}
+                <button type="button" onclick={() => removeTeamMember(member)}
                   >×</button
                 >
               </span>
@@ -377,10 +377,10 @@
             id="new-tag"
             type="text"
             placeholder="Add tag"
-            on:keydown={(e) =>
+            onkeydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTag())}
           />
-          <button type="button" on:click={() => addTag()}>Add</button>
+          <button type="button" onclick={() => addTag()}>Add</button>
         </div>
 
         {#if formData.tags.length > 0}
@@ -388,7 +388,7 @@
             {#each formData.tags as tag}
               <span class="space-y-4">
                 {tag}
-                <button type="button" on:click={() => removeTag(tag)}>×</button>
+                <button type="button" onclick={() => removeTag(tag)}>×</button>
               </span>
             {/each}
           </div>
@@ -399,7 +399,7 @@
 
   <!-- Form Actions -->
   <div class="space-y-4">
-    <button type="button" on:click={() => oncancel?.()}> Cancel </button>
+    <button type="button" onclick={() => oncancel?.()}> Cancel </button>
     <button type="submit" disabled={loading} class="space-y-4">
       {#if loading}
         Saving...

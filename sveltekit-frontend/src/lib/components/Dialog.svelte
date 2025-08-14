@@ -34,11 +34,11 @@
 	];
 
 	// Reactive state
-	$: selectedVibe = $aiStore.selectedVibe;
-	$: prompt = $aiStore.prompt;
-	$: response = $aiStore.response;
-	$: isGenerating = $aiStore.isGenerating;
-	$: history = $aiStore.history;
+	let selectedVibe = $derived($aiStore.selectedVibe;);
+	let prompt = $derived($aiStore.prompt;);
+	let response = $derived($aiStore.response;);
+	let isGenerating = $derived($aiStore.isGenerating;);
+	let history = $derived($aiStore.history;);
 
 	let currentPrompt = '';
 
@@ -176,9 +176,9 @@
 {#if open}
 	<div
 		class="space-y-4"
-		transition:fade={{ duration: 200 }}
-		on:click={handleBackdropClick}
-		on:keydown={handleKeydown}
+		transitionfade={{ duration: 200 }}
+		onclick={handleBackdropClick}
+		onkeydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="dialog-title"
@@ -187,14 +187,14 @@
 		<div
 			class="space-y-4"
 			bind:this={dialogElement}
-			transition:fly={{ y: 50, duration: 300, easing: quintOut }}
+			transitionfly={{ y: 50, duration: 300, easing: quintOut }}
 		>
 			<!-- Header -->
 			<div class="space-y-4">
 				<h2 id="dialog-title" class="space-y-4">{title}</h2>
 				<button
 					class="space-y-4"
-					on:click={() => handleClose()}
+					onclick={() => handleClose()}
 					aria-label="Close dialog"
 				>
 					<X size={20} />
@@ -209,7 +209,7 @@
 						<button
 							class="space-y-4"
 							class:active={selectedVibe === vibe.id}
-							on:click={() => handleVibeChange(vibe.id)}
+							onclick={() => handleVibeChange(vibe.id)}
 							title={vibe.description}
 						>
 							{vibe.label}
@@ -288,7 +288,7 @@
 					placeholder="Ask the AI assistant anything about your case..."
 					rows="4"
 					disabled={isGenerating}
-					on:keydown={(e) => {
+					onkeydown={(e) => {
 						if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
 							e.preventDefault();
 							handleSubmit();
@@ -297,7 +297,7 @@
 				></textarea>
 					<button
 						class="space-y-4"
-						on:click={() => handleSubmit()}
+						onclick={() => handleSubmit()}
 						disabled={!currentPrompt.trim() || isGenerating}
 						aria-label="Send message"
 					>
@@ -307,7 +307,7 @@
 				<div class="space-y-4">
 					<span>Press Ctrl+Enter to send</span>
 					{#if history.length > 0}
-						<button class="space-y-4" on:click={() => clearHistory()}>
+						<button class="space-y-4" onclick={() => clearHistory()}>
 							Clear History
 						</button>
 					{/if}

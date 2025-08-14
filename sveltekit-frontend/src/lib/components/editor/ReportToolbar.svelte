@@ -100,12 +100,12 @@
         <div
           use:melt={$fileMenu}
           class="space-y-4"
-          transition:fly={{ y: -5, duration: 150 }}
+          transitionfly={{ y: -5, duration: 150 }}
         >
           <button
             use:melt={$fileItem}
             class="space-y-4"
-            on:click={() => handleSave()}
+            onclick={() => handleSave()}
           >
             <Save size={16} />
             Save Report
@@ -124,7 +124,7 @@
           <button
             use:melt={$fileItem}
             class="space-y-4"
-            on:click={() => handleExport()}
+            onclick={() => handleExport()}
           >
             <Download size={16} />
             Export
@@ -133,7 +133,7 @@
           <button
             use:melt={$fileItem}
             class="space-y-4"
-            on:click={() => handlePreview()}
+            onclick={() => handlePreview()}
           >
             <Eye size={16} />
             Preview
@@ -156,7 +156,7 @@
         <div
           use:melt={$editMenu}
           class="space-y-4"
-          transition:fly={{ y: -5, duration: 150 "
+          transitionfly={{ y: -5, duration: 150 "
         >
           <button use:melt={$editItem} class="space-y-4">
             <Undo size={16} />
@@ -197,12 +197,12 @@
         <div
           use:melt={$viewMenu}
           class="space-y-4"
-          transition:fly={{ y: -5, duration: 150 "
+          transitionfly={{ y: -5, duration: 150 "
         >
           <button
             use:melt={$viewItem}
             class="space-y-4"
-            on:click={() => toggleSidebar()}
+            onclick={() => toggleSidebar()}
           >
             <Sidebar size={16} />
             Toggle Sidebar
@@ -211,7 +211,7 @@
           <button
             use:melt={$viewItem}
             class="space-y-4"
-            on:click={() => toggleLayout()}
+            onclick={() => toggleLayout()}
           >
             <Layout size={16} />
             Switch Layout ({$report.settings.layout})
@@ -219,7 +219,7 @@
           <button
             use:melt={$viewItem}
             class="space-y-4"
-            on:click={() => toggleFullscreen()}
+            onclick={() => toggleFullscreen()}
           >
             {#if $reportUI.fullscreen}
               <Minimize size={16} />
@@ -241,7 +241,7 @@
       use:melt={$toolbarButton}
       class="space-y-4"
       class:unsaved={$editorState.hasUnsavedChanges}
-      on:click={() => handleSave()}
+      onclick={() => handleSave()}
       title="Save Report"
     >
       <Save size={16} />
@@ -252,7 +252,7 @@
     <button
       use:melt={$toolbarButton}
       class="space-y-4"
-      on:click={() => toggleSidebar()}
+      onclick={() => toggleSidebar()}
       title="Toggle Sidebar"
     >
       <Sidebar size={16} />
@@ -261,7 +261,7 @@
     <button
       use:melt={$toolbarButton}
       class="space-y-4"
-      on:click={() => toggleLayout()}
+      onclick={() => toggleLayout()}
       title="Switch Layout"
     >
       <Layout size={16} />
@@ -272,7 +272,7 @@
     <button
       use:melt={$toolbarButton}
       class="space-y-4"
-      on:click={() => handlePreview()}
+      onclick={() => handlePreview()}
       title="Preview Report"
     >
       <Eye size={16} />
@@ -286,11 +286,11 @@
     </span>
 
     {#if $editorState.hasUnsavedChanges}
-      <span class="space-y-4" transition:slide={{ duration: 200 ">
+      <span class="space-y-4" transitionslide={{ duration: 200 ">
         Unsaved changes
       </span>
     {:else}
-      <span class="space-y-4" transition:slide={{ duration: 200 ">
+      <span class="space-y-4" transitionslide={{ duration: 200 ">
         Saved {$editorState.lastSaved.toLocaleTimeString()}
       </span>
     {/if}

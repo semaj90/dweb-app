@@ -1,12 +1,12 @@
 <script lang="ts">
   interface Props {
-    icon: Snippet;;
+    icon: Snippet;
     tooltip: string ;
     triggerClass: string ;
     contentClass: string ;
     delayDuration: number ;
     sideOffset: number ;
-    children: any;;
+    children: any;
   }
   let {
     icon,

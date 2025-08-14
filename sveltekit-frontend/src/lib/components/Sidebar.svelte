@@ -19,13 +19,13 @@
   let fuse: Fuse<any>;
 
   // Reactive data
-  $: sidebarOpen = $sidebarStore.open || isHovered || isPinned;
-  $: evidenceItems = $lokiStore.evidence || [];
-  $: notesItems = $lokiStore.notes || [];
-  $: canvasStates = $lokiStore.canvasStates || [];
+  let sidebarOpen = $derived($sidebarStore.open || isHovered || isPinned;);
+  let evidenceItems = $derived($lokiStore.evidence || [];);
+  let notesItems = $derived($lokiStore.notes || [];);
+  let canvasStates = $derived($lokiStore.canvasStates || [];);
 
   // Initialize Fuse search
-  $: if (activeTab === "evidence" && evidenceItems.length > 0) {
+  $effect(() => { if (activeTab === "evidence" && evidenceItems.length > 0) {
     fuse = new Fuse(evidenceItems, {
       keys: ["fileName", "description", "tags"],
       threshold: 0.3,
@@ -37,8 +37,7 @@
     });
 }
   // Search results
-  $: searchResults =
-    searchQuery && fuse
+  let searchResults = $derived(searchQuery && fuse);
       ? fuse.search(searchQuery).map((result) => result.item)
       : activeTab === "evidence"
         ? evidenceItems
@@ -88,8 +87,8 @@
   bind:this={sidebarElement}
   role="complementary"
   aria-label="Content sidebar"
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
+  onmouseenter={handleMouseEnter}
+  onmouseleave={handleMouseLeave}
 >
   <!-- Hover trigger area when closed -->
   {#if !sidebarOpen}
@@ -100,7 +99,7 @@
   {#if sidebarOpen}
     <div
       class="space-y-4"
-      transition:slide={{ duration: 300, easing: quintOut, axis: "x" }}
+      transitionslide={{ duration: 300, easing: quintOut, axis: "x" }}
     >
       <!-- Header -->
       <div class="space-y-4">
@@ -108,7 +107,7 @@
         <div class="space-y-4">
           <button
             class={`pin-button ${isPinned ? "pinned" : ""}`}
-            on:click={() => togglePin()}
+            onclick={() => togglePin()}
             aria-label={isPinned ? "Unpin sidebar" : "Pin sidebar"}
           >
             <Tag size={16} />
@@ -117,7 +116,7 @@
           {#if !isPinned}
             <button
               class="space-y-4"
-              on:click={() => (isHovered = false)}
+              onclick={() => (isHovered = false)}
               aria-label="Close sidebar"
             >
               <X size={16} />
@@ -131,7 +130,7 @@
         <SearchBar
           placeholder="Search {activeTab}..."
           value={searchQuery}
-          on:search={handleSearch}
+          onsearch={handleSearch}
         />
       </div>
 
@@ -141,7 +140,7 @@
           <button
             class="space-y-4"
             class:active={activeTab === "evidence"}
-            on:click={() => handleTabChange("evidence")}
+            onclick={() => handleTabChange("evidence")}
           >
             <Folder size={16} />
             Evidence
@@ -149,7 +148,7 @@
           <button
             class="space-y-4"
             class:active={activeTab === "notes"}
-            on:click={() => handleTabChange("notes")}
+            onclick={() => handleTabChange("notes")}
           >
             <FileText size={16} />
             Notes
@@ -157,7 +156,7 @@
           <button
             class="space-y-4"
             class:active={activeTab === "canvas"}
-            on:click={() => handleTabChange("canvas")}
+            onclick={() => handleTabChange("canvas")}
           >
             <Tag size={16} />
             Canvas

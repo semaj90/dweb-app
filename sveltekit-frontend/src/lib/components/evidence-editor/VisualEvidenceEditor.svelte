@@ -62,7 +62,7 @@
       <InspectorPanel 
         selectedNode={currentSelectedNode}
         {readOnly}
-        on:save={handleNodeSave}
+        onsave={handleNodeSave}
       />
     </div>
     

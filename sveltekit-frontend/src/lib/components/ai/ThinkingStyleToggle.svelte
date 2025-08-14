@@ -38,8 +38,8 @@
     alternatives: false
   };
   
-  $: iconSize = size === 'sm' ? 16 : size === 'md' ? 20 : 24;
-  $: buttonClass = cn(
+  let iconSize = $derived(size === 'sm' ? 16 : size === 'md' ? 20 : 24;);
+  let buttonClass = $derived(cn();
     "thinking-toggle",
     size,
     enabled ? 'enabled' : 'disabled',
@@ -69,8 +69,8 @@
   <!-- Main Toggle Button -->
   <div 
     class="toggle-container" 
-    on:mouseenter={() => showTooltip = true} 
-    on:mouseleave={() => showTooltip = false}
+    onmouseenter={() => showTooltip = true} 
+    onmouseleave={() => showTooltip = false}
     role="button"
     tabindex="0"
   >
@@ -78,7 +78,7 @@
       variant={enabled ? "crimson" : "nier"}
       size={size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'default'}
       disabled={loading || (!premium && !enabled)}
-      on:click={handleToggle}
+      onclick={handleToggle}
       class={cn(
         "thinking-toggle-btn transition-all duration-300",
         enabled && "animate-crimson-glow",
@@ -115,7 +115,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={handleConfigure}
+        onclick={handleConfigure}
         class="config-btn ml-2"
         disabled={loading}
       >
@@ -128,7 +128,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={handleUpgrade}
+        onclick={handleUpgrade}
         class="upgrade-btn ml-2"
       >
         <Info size={14} class="text-harvard-gold" />
@@ -139,7 +139,7 @@
     {#if showTooltip}
       <div 
         class="tooltip"
-        transition:fade={{ duration: 200 }}
+        transitionfade={{ duration: 200 }}
       >
         {#if !premium}
           <div class="tooltip-content premium-required">
@@ -186,7 +186,7 @@
   {#if showConfig && premium}
     <div 
       class="config-panel nier-border-glow"
-      transition:slide={{ duration: 300 }}
+      transitionslide={{ duration: 300 }}
     >
       <div class="config-header">
         <h4 class="text-foreground font-semibold">Thinking Style Configuration</h4>
@@ -251,7 +251,7 @@
       </div>
       
       <div class="config-actions">
-        <Button variant="ghost" size="sm" on:click={() => showConfig = false}>
+        <Button variant="ghost" size="sm" onclick={() => showConfig = false}>
           Cancel
         </Button>
         <Button variant="crimson" size="sm">
@@ -265,7 +265,7 @@
   {#if !premium}
     <div 
       class="premium-banner"
-      transition:slide={{ duration: 300 }}
+      transitionslide={{ duration: 300 }}
     >
       <div class="premium-content">
         <Crown class="h-5 w-5 text-harvard-gold" />
@@ -273,7 +273,7 @@
           <strong>Unlock Advanced AI Reasoning</strong>
           <p>Get step-by-step legal analysis with transparent thinking process</p>
         </div>
-        <Button variant="gold" size="sm" on:click={handleUpgrade}>
+        <Button variant="gold" size="sm" onclick={handleUpgrade}>
           Upgrade Now
         </Button>
       </div>

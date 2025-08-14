@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { useMachine } from '@xstate/svelte';
 	import { onMount } from 'svelte';
 	import { chatMachine } from '$lib/machines/chatMachine';
@@ -70,7 +70,7 @@
 	}
 
 	// Reactive statement to scroll down when messages change
-	$: if ($state.context.messages && typeof window !== 'undefined') {
+	$effect(() => { if ($state.context.messages && typeof window !== 'undefined') {
 		// Use a microtask to wait for the DOM to update
 		Promise.resolve().then(() => {
 			if (chatContainer) {

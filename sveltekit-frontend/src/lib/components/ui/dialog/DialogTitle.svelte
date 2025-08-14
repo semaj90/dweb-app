@@ -11,5 +11,5 @@
   </script>
 
 <h2 use:title class="space-y-4">
-  <slot />
+  <slot></slot>
 </h2>

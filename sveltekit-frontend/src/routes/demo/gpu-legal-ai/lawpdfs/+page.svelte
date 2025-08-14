@@ -394,7 +394,7 @@
       <p class="text-gray-300 mb-4">Generate comprehensive Playwright tests for this processing pipeline</p>
 
       <button
-        onclick={generatePlaywrightTests}
+        on:click={generatePlaywrightTests}
         disabled={!ocrResults.length || isProcessing}
         class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
       >
@@ -411,7 +411,7 @@
       {/if}
 
       <button
-        onclick={async () => {
+        on:click={async () => {
           if (!jsonOutput) return;
           if (aiReady === false) return;
 

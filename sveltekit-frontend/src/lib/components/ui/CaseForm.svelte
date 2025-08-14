@@ -67,7 +67,7 @@
     console.log("Form values changed:", values);
 }
   // Update form state when formApi is available
-  $: if (formApi) {
+  $effect(() => { if (formApi) {
     // You can access formApi methods here if needed
 }
   async function handleSubmit(event: CustomEvent) {
@@ -130,7 +130,7 @@
 }}}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="space-y-4">
   <div class="space-y-4">
@@ -157,8 +157,8 @@
     <Form
       bind:formApi
       options={formOptions}
-      on:submit={handleSubmit}
-      on:change={handleFormChange}
+      onsubmit={handleSubmit}
+      onchange={handleFormChange}
       submitText="Create Case"
       submitVariant="primary"
       showResetButton={true}
@@ -192,12 +192,12 @@
                 error={formErrors.title}
                 data-icon="${1}"
                 clearable
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi?.setField(
                     "title",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi?.touchField("title")}
+                onblur={() => formApi?.touchField("title")}
               />
             </div>
 
@@ -217,12 +217,12 @@
                 class:border-red-300={errors.description}
                 class:border-green-300={values.description &&
                   !errors.description}
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "description",
                     (e.target as HTMLTextAreaElement)?.value
                   )}
-                on:blur={() => formApi.touchField("description")}
+                onblur={() => formApi.touchField("description")}
               ></textarea>
               {#if errors.description}
                 <p class="space-y-4">
@@ -242,12 +242,12 @@
                 id="case-priority"
                 class="space-y-4"
                 value={values.priority || "medium"}
-                on:change={(e) =>
+                onchange={(e) =>
                   formApi.setField(
                     "priority",
                     (e.target as HTMLSelectElement)?.value
                   )}
-                on:blur={() => formApi.touchField("priority")}
+                onblur={() => formApi.touchField("priority")}
               >
                 <option value="low">🟢 Low</option>
                 <option value="medium">🟡 Medium</option>
@@ -263,12 +263,12 @@
                 value={values.dueDate || ""}
                 error={errors.dueDate}
                 data-icon="${1}"
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "dueDate",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("dueDate")}
+                onblur={() => formApi.touchField("dueDate")}
               />
             </div>
           </div>
@@ -290,12 +290,12 @@
                 value={values.assignedTo || ""}
                 error={errors.assignedTo}
                 data-icon="${1}"
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "assignedTo",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("assignedTo")}
+                onblur={() => formApi.touchField("assignedTo")}
               />
             </div>
 
@@ -309,12 +309,12 @@
                     error={errors.tags}
                     data-icon="${1}"
                     clearable
-                    on:input={(e) =>
+                    oninput={(e) =>
                       formApi.setField(
                         "tags",
                         (e.target as HTMLInputElement)?.value
                       )}
-                    on:blur={() => formApi.touchField("tags")}
+                    onblur={() => formApi.touchField("tags")}
                   />
                 </div>
                 <Button
@@ -322,7 +322,7 @@
                   variant="secondary"
                   size="md"
                   data-icon="${1}"
-                  on:click={() => addTag()}
+                  onclick={() => addTag()}
                 >
                   Add
                 </Button>

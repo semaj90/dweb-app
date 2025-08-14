@@ -11,9 +11,9 @@
 	import { fade, fly } from 'svelte/transition';
 
 	// Reactive stores from the service worker manager
-	$: taskQueue = aiServiceWorkerManager.taskQueue$;
-	$: workerStatus = aiServiceWorkerManager.workerStatus$;
-	$: systemMetrics = aiServiceWorkerManager.systemMetrics$;
+	let taskQueue = $derived(aiServiceWorkerManager.taskQueue$;);
+	let workerStatus = $derived(aiServiceWorkerManager.workerStatus$;);
+	let systemMetrics = $derived(aiServiceWorkerManager.systemMetrics$;);
 
 	// Component state
 	let selectedProvider: LLMProvider | null = null;
@@ -305,7 +305,7 @@
 					<Button
 						variant="outline"
 						disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-						on:click={() => processTask(task)}
+						onclick={() => processTask(task)}
 						class="h-auto p-3 flex flex-col items-start space-y-1"
 					>
 						<div class="flex items-center space-x-2">
@@ -321,7 +321,7 @@
 			<div class="flex items-center justify-center pt-4 border-t border-yorha-border">
 				<Button
 					disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-					on:click={processParallelTasks}
+					onclick={processParallelTasks}
 					class="bg-yorha-primary hover:bg-yorha-primary/80"
 				>
 					{#if isProcessing}
@@ -346,7 +346,7 @@
 					{#each processingResults as result (result.taskId)}
 						<div 
 							class="p-3 bg-yorha-bg-secondary rounded-md border border-yorha-border"
-							transition:fly={{ y: -20, duration: 300 }}
+							transitionfly={{ y: -20, duration: 300 }}
 						>
 							<div class="flex items-center justify-between mb-2">
 								<div class="flex items-center space-x-2">

@@ -59,7 +59,7 @@
     error: caseServiceError,
   } = caseService;
 
-  $: caseId = $page.params.id;
+  let caseId = $derived($page.params.id;);
   let canvasElement: HTMLElement;
   let contextMenuState: ContextMenuState = { show: false, x: 0, y: 0 };
 
@@ -193,11 +193,11 @@
         class="space-y-4"
         role="application"
         aria-label="Case evidence canvas"
-        on:contextmenu={handleCanvasContextMenu}
-        on:drop={handleCanvasDrop}
-        on:dragover={handleCanvasDragOver}
-        on:dragenter={handleCanvasDragEnter}
-        on:dragleave={handleCanvasDragLeave}
+        oncontextmenu={handleCanvasContextMenu}
+        ondrop={handleCanvasDrop}
+        ondragover={handleCanvasDragOver}
+        ondragenter={handleCanvasDragEnter}
+        ondragleave={handleCanvasDragLeave}
       >
         <!-- Grid Background -->
         <div class="space-y-4" aria-hidden="true"></div>
@@ -278,13 +278,13 @@
 
     <ContextMenu.Content class="space-y-4">
       <ContextMenu.Item
-        on:click={() => createNewReport(contextMenuState.x, contextMenuState.y)}
+        onclick={() => createNewReport(contextMenuState.x, contextMenuState.y)}
       >
         <FileText class="space-y-4" />
         New Report
       </ContextMenu.Item>
       <ContextMenu.Item
-        on:click={() =>
+        onclick={() =>
           createNewEvidence(contextMenuState.x, contextMenuState.y)}
       >
         <Image class="space-y-4" />
@@ -292,28 +292,28 @@
       </ContextMenu.Item>
       <ContextMenu.Separator />
       <ContextMenu.Item
-        on:click={() =>
+        onclick={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "suspect")}
       >
         <UserIcon class="space-y-4" />
         Add Suspect
       </ContextMenu.Item>
       <ContextMenu.Item
-        on:click={() =>
+        onclick={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "witness")}
       >
         <UserIcon class="space-y-4" />
         Add Witness
       </ContextMenu.Item>
       <ContextMenu.Item
-        on:click={() =>
+        onclick={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "victim")}
       >
         <UserIcon class="space-y-4" />
         Add Victim
       </ContextMenu.Item>
       <ContextMenu.Item
-        on:click={() =>
+        onclick={() =>
           createNewPOI(
             contextMenuState.x,
             contextMenuState.y,
@@ -324,14 +324,14 @@
         Add Co-conspirator
       </ContextMenu.Item>
       <ContextMenu.Item
-        on:click={() =>
+        onclick={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "informant")}
       >
         <UserIcon class="space-y-4" />
         Add Informant
       </ContextMenu.Item>
       <ContextMenu.Item
-        on:click={() => createNewPOI(contextMenuState.x, contextMenuState.y)}
+        onclick={() => createNewPOI(contextMenuState.x, contextMenuState.y)}
       >
         <UserIcon class="space-y-4" />
         Add Other POI
@@ -342,24 +342,24 @@
   <!-- Toolbar -->
   <div class="space-y-4">
     <div class="space-y-4">
-      <Button variant="secondary" on:click={() => createNewReport(100, 100)}>
+      <Button variant="secondary" onclick={() => createNewReport(100, 100)}>
         <FileText class="space-y-4" />
         New Report
       </Button>
 
-      <Button variant="secondary" on:click={() => createNewEvidence(200, 100)}>
+      <Button variant="secondary" onclick={() => createNewEvidence(200, 100)}>
         <Image class="space-y-4" />
         New Evidence
       </Button>
 
-      <Button variant="secondary" on:click={() => createNewPOI(300, 100)}>
+      <Button variant="secondary" onclick={() => createNewPOI(300, 100)}>
         <UserIcon class="space-y-4" />
         New POI
       </Button>
     </div>
 
     <div class="space-y-4">
-      <Button variant="secondary" on:click={() => caseService.saveAll()}>
+      <Button variant="secondary" onclick={() => caseService.saveAll()}>
         Save All
       </Button>
     </div>

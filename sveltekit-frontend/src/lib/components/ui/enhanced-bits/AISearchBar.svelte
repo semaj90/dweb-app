@@ -58,7 +58,7 @@
     icon={Search}
     iconPosition="left"
     class="flex-1 vector-search-input"
-    on:keydown={handleKeyDown}
+    onkeydown={handleKeyDown}
     legal
     aiAssisted
   />

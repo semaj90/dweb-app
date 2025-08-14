@@ -22,22 +22,24 @@
     minSidebarWidth = "200px",
     maxSidebarWidth = "400px",
     gap = "1rem",
-    ontoggle
-  }: Props = $props();
+    ontoggle,
+    children,
+    sidebar
+  }: Props & { children?: any, sidebar?: any } = $props();
 
 
 
   
                   
   let className = "";
-  export { className as class };
+  ;
 
   
   // Calculate flex values based on ratio
   let calculatedMainFlex: number;
   let calculatedSidebarFlex: number;
 
-  $: {
+  $effect(() => { {
     switch (ratio) {
       case "golden":
         calculatedMainFlex = 1.618;
@@ -67,7 +69,7 @@
 }}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div
   class="space-y-4"
@@ -86,7 +88,9 @@
       "
     >
       <div class="space-y-4" class:hidden={collapsed}>
-        <slot name="sidebar" />
+        {#if sidebar}
+          {@render sidebar()}
+        {/if}
       </div>
 
       {#if collapsible}
@@ -104,7 +108,9 @@
   {/if}
 
   <main class="space-y-4" style="flex: {calculatedMainFlex};">
-    <slot />
+    {#if children}
+      {@render children()}
+    {/if}
   </main>
 
   {#if sidebarPosition === "right"}
@@ -119,7 +125,9 @@
       "
     >
       <div class="space-y-4" class:hidden={collapsed}>
-        <slot name="sidebar" />
+        {#if sidebar}
+          {@render sidebar()}
+        {/if}
       </div>
 
       {#if collapsible}

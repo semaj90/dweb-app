@@ -1,100 +1,143 @@
-<!-- Replace the Button component file -->
 <script lang="ts">
-  import { Button } from 'bits-ui';
-  import type { HTMLButtonAttributes } from 'svelte/elements';
-
-  interface Props extends HTMLButtonAttributes {
-    variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-    loading?: boolean;
-    icon?: string;
-    iconPosition?: 'left' | 'right';
-    fullWidth?: boolean;
-    children?: import('svelte').Snippet;
-  }
-
-  let {
-    variant = 'primary',
-    size = 'md',
-    loading = false,
-    icon = undefined,
-    iconPosition = 'left',
-    fullWidth = false,
-    class: className = '',
-    disabled,
-    children,
-    ...restProps
-  }: Props = $props();
-
-  const classes = $derived([
-    'nier-btn',
-    `nier-btn-${variant}`,
-    `nier-btn-${size}`,
-    fullWidth && 'w-full',
-    loading && 'nier-btn-loading',
-    className
-  ].filter(Boolean).join(' '));
+	import { Button as MeltButton } from '@melt-ui/svelte';
+	import { cva, type VariantProps } from 'class-variance-authority';
+	import { cn } from '$lib/utils/cn';
+	
+	const buttonVariants = cva(
+		'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
+		{
+			variants: {
+				variant: {
+					default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+					destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+					outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+					secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+					ghost: 'hover:bg-accent hover:text-accent-foreground',
+					link: 'text-primary underline-offset-4 hover:underline',
+					legal: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+					evidence: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
+					case: 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500'
+				},
+				size: {
+					default: 'h-10 px-4 py-2',
+					sm: 'h-9 rounded-md px-3',
+					lg: 'h-11 rounded-md px-8',
+					icon: 'h-10 w-10',
+					xs: 'h-8 rounded px-2 text-xs'
+				}
+			},
+			defaultVariants: {
+				variant: 'default',
+				size: 'default'
+			}
+		}
+	);
+	
+	type $$Props = VariantProps<typeof buttonVariants> & {
+		class?: string;
+		disabled?: boolean;
+		type?: 'button' | 'submit' | 'reset';
+		href?: string;
+		target?: string;
+		loading?: boolean;
+		loadingText?: string;
+		onclick?: (e: MouseEvent) => void;
+		'data-testid'?: string;
+	};
+	
+	export let variant: $$Props['variant'] = 'default';
+	export let size: $$Props['size'] = 'default';
+	export let disabled = false;
+	export let type: $$Props['type'] = 'button';
+	export let href: $$Props['href'] = undefined;
+	export let target: $$Props['target'] = undefined;
+	export let loading = false;
+	export let loadingText = 'Loading...';
+	
+	let className: $$Props['class'] = '';
+	export { className as class };
+	
+	$: isDisabled = disabled || loading;
+	$: buttonClass = cn(buttonVariants({ variant, size }), className);
 </script>
 
-<Button.Root
-  class={classes}
-  disabled={loading || disabled}
-  {...restProps}
-  data-button-root
->
-  {#if icon && iconPosition === 'left'}
-    <i class={icon} aria-hidden="true"></i>
-  {/if}
-  {#if loading}
-    <span class="loader mr-2"></span>
-  {/if}
-  {@render children?.()}
-  {#if icon && iconPosition === 'right'}
-    <i class={icon} aria-hidden="true"></i>
-  {/if}
-</Button.Root>
-
-<style>
-  :global([data-button-root]) {
-    height: 2.5rem;
-    min-width: 2.5rem;
-    background: linear-gradient(90deg, #23272e 0%, #393e46 100%);
-    color: #e5e5e5;
-    border-radius: 0.5em;
-    border: 1.5px solid #bcbcbc;
-    font-weight: 600;
-    padding: 0.5rem 1.2rem;
-    transition: background 0.2s, color 0.2s, border 0.2s;
-    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
-    cursor: pointer;
-    outline: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-  }
-
-  :global([data-button-root]:hover) {
-    background: linear-gradient(90deg, #393e46 0%, #23272e 100%);
-    color: #a3e7fc;
-    border-color: #a3e7fc;
-  }
-
-  :global([data-button-root][disabled]) {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .loader {
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid currentColor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    animation: spin 0.75s linear infinite;
-    display: inline-block;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-</style>
+{#if href}
+	<a 
+		{href} 
+		{target}
+		class={buttonClass}
+		role="button"
+		tabindex="0"
+		aria-disabled={isDisabled}
+		data-testid={$$props['data-testid']}
+		on:click
+		on:keydown={(e) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				e.currentTarget.click();
+			}
+		}}
+	>
+		{#if loading}
+			<svg 
+				class="mr-2 h-4 w-4 animate-spin" 
+				xmlns="http://www.w3.org/2000/svg" 
+				fill="none" 
+				viewBox="0 0 24 24"
+				aria-hidden="true"
+			>
+				<circle 
+					class="opacity-25" 
+					cx="12" 
+					cy="12" 
+					r="10" 
+					stroke="currentColor" 
+					stroke-width="4"
+				/>
+				<path 
+					class="opacity-75" 
+					fill="currentColor" 
+					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+				/>
+			</svg>
+			{loadingText}
+		{:else}
+			<slot />
+		{/if}
+	</a>
+{:else}
+	<MeltButton
+		{type}
+		disabled={isDisabled}
+		class={buttonClass}
+		data-testid={$$props['data-testid']}
+		on:click
+	>
+		{#if loading}
+			<svg 
+				class="mr-2 h-4 w-4 animate-spin" 
+				xmlns="http://www.w3.org/2000/svg" 
+				fill="none" 
+				viewBox="0 0 24 24"
+				aria-hidden="true"
+			>
+				<circle 
+					class="opacity-25" 
+					cx="12" 
+					cy="12" 
+					r="10" 
+					stroke="currentColor" 
+					stroke-width="4"
+				/>
+				<path 
+					class="opacity-75" 
+					fill="currentColor" 
+					d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+				/>
+			</svg>
+			{loadingText}
+		{:else}
+			<slot />
+		{/if}
+	</MeltButton>
+{/if}

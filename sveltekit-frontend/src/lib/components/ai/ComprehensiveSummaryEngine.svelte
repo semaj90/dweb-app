@@ -3,7 +3,7 @@
 
 <script lang="ts">
   interface Props {
-    targetId: string;;
+    targetId: string;
     targetType: 'case' | 'evidence' | 'legal_document' | 'cross_analysis' ;
     depth: 'quick' | 'comprehensive' | 'forensic' ;
     enableStreaming?: any;
@@ -422,9 +422,9 @@
   }
 
   // Reactive statements
-  $: progressPercentage = $summaryProgress;
-  $: canExport = $synthesisResult !== null;
-  $: showMetrics = metrics.llmProcessingTime > 0;
+  let progressPercentage = $derived($summaryProgress;);
+  let canExport = $derived($synthesisResult !== null;);
+  let showMetrics = $derived(metrics.llmProcessingTime > 0;);
 </script>
 
 <!-- Main Component Template -->
@@ -448,7 +448,7 @@
       <button
         class="btn-advanced"
         class:active={showAdvancedOptions}
-        on:click={() => showAdvancedOptions = !showAdvancedOptions}
+        onclick={() => showAdvancedOptions = !showAdvancedOptions}
       >
         <Settings size="16" />
         Advanced
@@ -458,7 +458,7 @@
 
   <!-- Advanced Configuration Panel -->
   {#if showAdvancedOptions}
-    <div class="advanced-panel" transition:slide={{ duration: 300 }}>
+    <div class="advanced-panel" transitionslide={{ duration: 300 }}>
       <div class="config-grid">
         <div class="config-group">
           <label>Chunk Size</label>
@@ -511,16 +511,16 @@
 
       <div class="processing-controls">
         {#if !isProcessing}
-          <button class="btn-primary" on:click={startComprehensiveSummary}>
+          <button class="btn-primary" onclick={startComprehensiveSummary}>
             <Play size="16" />
             Start Analysis
           </button>
         {:else}
-          <button class="btn-secondary" on:click={pauseProcessing}>
+          <button class="btn-secondary" onclick={pauseProcessing}>
             <Pause size="16" />
             Pause
           </button>
-          <button class="btn-danger" on:click={stopProcessing}>
+          <button class="btn-danger" onclick={stopProcessing}>
             <Square size="16" />
             Stop
           </button>
@@ -589,7 +589,7 @@
             <option value="json">JSON</option>
             <option value="txt">Text</option>
           </select>
-          <button class="btn-export" on:click={exportSummary} disabled={!canExport}>
+          <button class="btn-export" onclick={exportSummary} disabled={!canExport}>
             <Download size="16" />
             Export
           </button>

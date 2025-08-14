@@ -4,7 +4,7 @@
 
 <button 
   class="space-y-4"
-  {...$$restProps}
+  
 >
-  <slot />
+  <slot></slot>
 </button>

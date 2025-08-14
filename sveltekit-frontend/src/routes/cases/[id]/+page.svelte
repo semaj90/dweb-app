@@ -35,9 +35,9 @@
       class="space-y-4"
       role="button"
       tabindex={0}
-      on:mouseenter={handleSidebarMouseEnter}
-      on:mouseleave={handleSidebarMouseLeave}
-      on:keydown={(e) => {
+      onmouseenter={handleSidebarMouseEnter}
+      onmouseleave={handleSidebarMouseLeave}
+      onkeydown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           handleSidebarMouseEnter();
@@ -54,9 +54,9 @@
       <div
         class="space-y-4"
         role="complementary"
-        on:mouseenter={handleSidebarMouseEnter}
-        on:mouseleave={handleSidebarMouseLeave}
-        on:keydown={(e) => {
+        onmouseenter={handleSidebarMouseEnter}
+        onmouseleave={handleSidebarMouseLeave}
+        onkeydown={(e) => {
           if (e.key === "Escape") {
             handleSidebarMouseLeave();
           }

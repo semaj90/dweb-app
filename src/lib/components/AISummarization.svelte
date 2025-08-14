@@ -439,7 +439,7 @@
 
         <div class="flex gap-3">
           <Button.Root
-            on:click={generateSummary}
+            onclick={generateSummary}
             disabled={!documentContent.trim() || isProcessing}
             class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
           >
@@ -449,7 +449,7 @@
           {#if summaryResult || customResult}
             <Button.Root
               variant="outline"
-              on:click={clearResults}
+              onclick={clearResults}
               class="border-gray-300 px-4 py-2 rounded-md"
             >
               Clear Results
@@ -589,7 +589,7 @@
                   <Button.Root
                     variant="outline"
                     class="text-left p-3 h-auto flex flex-col items-start space-y-2"
-                    on:click={() => customPrompt = analysisTemplates.contractAnalysis}
+                    onclick={() => customPrompt = analysisTemplates.contractAnalysis}
                   >
                     <span class="font-medium">Contract Analysis</span>
                     <span class="text-sm text-gray-600">Analyze contract terms and obligations</span>
@@ -598,7 +598,7 @@
                   <Button.Root
                     variant="outline"
                     class="text-left p-3 h-auto flex flex-col items-start space-y-2"
-                    on:click={() => customPrompt = analysisTemplates.complianceCheck}
+                    onclick={() => customPrompt = analysisTemplates.complianceCheck}
                   >
                     <span class="font-medium">Compliance Check</span>
                     <span class="text-sm text-gray-600">Review regulatory compliance</span>
@@ -607,7 +607,7 @@
                   <Button.Root
                     variant="outline"
                     class="text-left p-3 h-auto flex flex-col items-start space-y-2"
-                    on:click={() => customPrompt = analysisTemplates.riskAssessment}
+                    onclick={() => customPrompt = analysisTemplates.riskAssessment}
                   >
                     <span class="font-medium">Risk Assessment</span>
                     <span class="text-sm text-gray-600">Comprehensive risk analysis</span>
@@ -625,7 +625,7 @@
               </div>
 
               <Button.Root
-                on:click={performCustomAnalysis}
+                onclick={performCustomAnalysis}
                 disabled={!customPrompt.trim() || isProcessing}
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
               >
@@ -653,7 +653,7 @@
               </div>
 
               <Button.Root
-                on:click={performComparison}
+                onclick={performComparison}
                 disabled={!comparisonDocument.trim() || isProcessing}
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
               >
@@ -674,7 +674,7 @@
               </div>
 
               <Button.Root
-                on:click={performExtraction}
+                onclick={performExtraction}
                 disabled={!extractionTemplate.trim() || isProcessing}
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
               >

@@ -14,7 +14,7 @@
 		{ href: '/dev/mcp-tools', label: 'MCP Tools', icon: '🔧' }
 	];
 	
-	$: currentPath = $page.url.pathname;
+	let currentPath = $derived($page.url.pathname);
 	
 	// Optimized navigation with instant transitions
 	function handleNavigation(href: string, event?: Event) {

@@ -327,7 +327,7 @@
       <div class="mb-6 p-4 bg-red-900/30 border border-red-500/50 rounded-lg text-red-100">
         <strong>Error:</strong> {errorMessage}
         <button
-          on:click={() => errorMessage = ''}
+          onclick={() => errorMessage = ''}
           class="ml-2 text-red-300 hover:text-red-100"
         >
           ✕
@@ -346,7 +346,7 @@
           { id: 'config', label: 'Configuration' }
         ] as tab}
           <button
-            on:click={() => selectedTab = tab.id}
+            onclick={() => selectedTab = tab.id}
             class="px-4 py-2 rounded-md text-sm font-medium transition-all
               {selectedTab === tab.id
                 ? 'bg-purple-600 text-white'
@@ -367,7 +367,7 @@
           <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold text-purple-100">Copilot Content</h2>
             <button
-              on:click={loadCopilotContent}
+              onclick={loadCopilotContent}
               disabled={isLoading}
               class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50
                      text-white rounded-lg transition-colors"
@@ -385,7 +385,7 @@
 
           <div class="flex gap-2">
             <button
-              on:click={optimizeIndex}
+              onclick={optimizeIndex}
               disabled={!copilotContent || isLoading}
               class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600
                      hover:from-purple-700 hover:to-blue-700 disabled:opacity-50
@@ -396,14 +396,14 @@
 
             {#if optimizationResults}
               <button
-                on:click={exportResults}
+                onclick={exportResults}
                 class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
               >
                 Export
               </button>
 
               <button
-                on:click={resetOptimization}
+                onclick={resetOptimization}
                 class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
               >
                 Reset
@@ -513,10 +513,10 @@
                   placeholder="Enter search query (e.g., 'Svelte 5 props patterns')"
                   class="flex-1 px-4 py-2 bg-black/30 border border-purple-500/30 rounded-lg
                          text-purple-100 placeholder:text-purple-400"
-                  on:keydown={(e) => e.key === 'Enter' && performSearch()}
+                  onkeydown={(e) => e.key === 'Enter' && performSearch()}
                 />
                 <button
-                  on:click={performSearch}
+                  onclick={performSearch}
                   disabled={!searchQuery.trim() || isLoading}
                   class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50
                          text-white rounded-lg transition-colors"
@@ -535,7 +535,7 @@
                 'Vector embeddings'
               ] as example}
                 <button
-                  on:click={() => { searchQuery = example; performSearch(); }}
+                  onclick={() => { searchQuery = example; performSearch(); }}
                   class="p-2 text-left text-sm bg-black/20 hover:bg-purple-700/20
                          text-purple-300 hover:text-purple-100 rounded border border-purple-500/20
                          transition-colors"
@@ -596,7 +596,7 @@
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold text-purple-100">Code Suggestions</h2>
           <button
-            on:click={generateSuggestions}
+            onclick={generateSuggestions}
             disabled={isLoading}
             class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50
                    text-white rounded-lg transition-colors"
@@ -833,7 +833,7 @@
         <!-- Save configuration -->
         <div class="flex gap-2">
           <button
-            on:click={() => {
+            onclick={() => {
               localStorage.setItem('copilot-optimization-config', JSON.stringify(optimizationConfig));
               alert('Configuration saved!');
             }}
@@ -843,7 +843,7 @@
           </button>
 
           <button
-            on:click={() => {
+            onclick={() => {
               const saved = localStorage.getItem('copilot-optimization-config');
               if (saved) {
                 optimizationConfig = JSON.parse(saved);
@@ -856,7 +856,7 @@
           </button>
 
           <button
-            on:click={() => {
+            onclick={() => {
               optimizationConfig = {
                 enableContext7Boost: true,
                 enableSemanticClustering: true,

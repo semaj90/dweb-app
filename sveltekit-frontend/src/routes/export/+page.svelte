@@ -158,7 +158,7 @@
                   <TooltipTrigger asChild>
                     <button
                       class="space-y-4"
-                      on:click={() =>
+                      onclick={() =>
                         (format = formatOption.value as "json" | "csv" | "xml")}
                     >
                       <div class="space-y-4">{formatOption.label}</div>
@@ -255,14 +255,14 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => selectAllCases()}
+                  onclick={() => selectAllCases()}
                 >
                   Select All
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => clearCaseSelection()}
+                  onclick={() => clearCaseSelection()}
                 >
                   Clear
                 </Button>
@@ -280,7 +280,7 @@
                     <input
                       type="checkbox"
                       checked={selectedCaseIds.includes(caseItem.id)}
-                      on:change={() => toggleCaseSelection(caseItem.id)}
+                      onchange={() => toggleCaseSelection(caseItem.id)}
                       class="space-y-4"
                     />
                     <span class="space-y-4">
@@ -335,7 +335,7 @@
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                on:click={() => exportData()}
+                onclick={() => exportData()}
                 disabled={exportLoading || (!includeCases && !includeEvidence)}
                 class="space-y-4"
               >

@@ -120,7 +120,7 @@
         <h3 class="space-y-4">Quick Evidence Upload</h3>
         <p class="space-y-4">Drag and drop files for instant AI analysis</p>
         
-        <UploadArea on:upload={handleQuickUpload} />
+        <UploadArea onupload={handleQuickUpload} />
       </div>
       
       <!-- Case Analytics -->

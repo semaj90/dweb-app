@@ -14,10 +14,10 @@
 
 
 
-  export let size: 'sm' | 'md' | 'lg' = 'md';
-  export let message: string = 'Loading...';
-  export let showMessage: boolean = true;
-  export let color: 'blue' | 'green' | 'purple' | 'gray' = 'blue';
+  let { size = $bindable() } = $props(); // 'sm' | 'md' | 'lg' = 'md';
+  let { message = $bindable() } = $props(); // string = 'Loading...';
+  let { showMessage = $bindable() } = $props(); // boolean = true;
+  let { color = $bindable() } = $props(); // 'blue' | 'green' | 'purple' | 'gray' = 'blue';
 
   function getSpinnerSize(size: string): string {
     switch (size) {

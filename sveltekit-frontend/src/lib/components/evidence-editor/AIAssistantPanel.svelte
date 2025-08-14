@@ -193,13 +193,13 @@ import Input from "$lib/components/ui/Input.svelte";
     searchResults = [];
 }
   // Reactive search
-  $: if (searchQuery) {
+  $effect(() => { if (searchQuery) {
     performSearch();
   } else {
     searchResults = [];
 }
   // Auto-generate insights when node changes
-  $: if (selectedNode?.aiTags) {
+  $effect(() => { if (selectedNode?.aiTags) {
     generateInsights();
 }
 </script>

@@ -647,7 +647,7 @@
   }
 
   // Reactive statements
-  $: state = $editorState;
+  let state = $derived($editorState;);
 
   // Exported functions for parent component access
   export function setContent(content: string) {
@@ -669,16 +669,16 @@
 <div 
   class="lightweight-editor border border-gray-200 rounded-lg bg-white"
   class:is-dragging={isDragging}
-  on:dragenter={handleDragEnter}
-  on:dragleave={handleDragLeave}
-  on:dragover={handleDragOver}
+  ondragenter={handleDragEnter}
+  ondragleave={handleDragLeave}
+  ondragover={handleDragOver}
 >
   <!-- Simplified Toolbar -->
   <div class="toolbar bg-gray-50 border-b border-gray-200 p-2 flex items-center gap-2 flex-wrap">
     <!-- Save -->
     <button
       class="toolbar-btn"
-      on:click={() => saveContent()}
+      onclick={() => saveContent()}
       title="Save (Ctrl+S)"
     >
       <Save size="16" />
@@ -690,7 +690,7 @@
     <button
       class="toolbar-btn"
       class:disabled={!state.canUndo}
-      on:click={() => editor?.commands.undo()}
+      onclick={() => editor?.commands.undo()}
       title="Undo (Ctrl+Z)"
     >
       <Undo size="16" />
@@ -698,7 +698,7 @@
     <button
       class="toolbar-btn"
       class:disabled={!state.canRedo}
-      on:click={() => editor?.commands.redo()}
+      onclick={() => editor?.commands.redo()}
       title="Redo (Ctrl+Shift+Z)"
     >
       <Redo size="16" />
@@ -710,7 +710,7 @@
     <button
       class="toolbar-btn"
       class:active={state.isBold}
-      on:click={() => toggleBold()}
+      onclick={() => toggleBold()}
       title="Bold (Ctrl+B)"
     >
       <Bold size="16" />
@@ -718,7 +718,7 @@
     <button
       class="toolbar-btn"
       class:active={state.isItalic}
-      on:click={() => toggleItalic()}
+      onclick={() => toggleItalic()}
       title="Italic (Ctrl+I)"
     >
       <Italic size="16" />
@@ -730,7 +730,7 @@
     <button
       class="toolbar-btn"
       class:active={state.currentAlignment === "left"}
-      on:click={() => setAlignment("left")}
+      onclick={() => setAlignment("left")}
       title="Align Left"
     >
       <AlignLeft size="16" />
@@ -738,7 +738,7 @@
     <button
       class="toolbar-btn"
       class:active={state.currentAlignment === "center"}
-      on:click={() => setAlignment("center")}
+      onclick={() => setAlignment("center")}
       title="Align Center"
     >
       <AlignCenter size="16" />
@@ -746,7 +746,7 @@
     <button
       class="toolbar-btn"
       class:active={state.currentAlignment === "right"}
-      on:click={() => setAlignment("right")}
+      onclick={() => setAlignment("right")}
       title="Align Right"
     >
       <AlignRight size="16" />
@@ -758,7 +758,7 @@
     <button
       class="toolbar-btn"
       class:active={state.isList}
-      on:click={() => editor?.chain().focus().toggleBulletList().run()}
+      onclick={() => editor?.chain().focus().toggleBulletList().run()}
       title="Bullet List"
     >
       <List size="16" />
@@ -766,7 +766,7 @@
     <button
       class="toolbar-btn"
       class:active={state.isOrderedList}
-      on:click={() => editor?.chain().focus().toggleOrderedList().run()}
+      onclick={() => editor?.chain().focus().toggleOrderedList().run()}
       title="Numbered List"
     >
       <ListOrdered size="16" />
@@ -774,7 +774,7 @@
     <button
       class="toolbar-btn"
       class:active={state.isQuote}
-      on:click={() => editor?.chain().focus().toggleBlockquote().run()}
+      onclick={() => editor?.chain().focus().toggleBlockquote().run()}
       title="Quote"
     >
       <Quote size="16" />
@@ -785,7 +785,7 @@
     <!-- Image Upload -->
     <button
       class="toolbar-btn"
-      on:click={() => insertImage()}
+      onclick={() => insertImage()}
       title="Insert Image (supports drag & drop)"
     >
       <ImageIcon size="16" />

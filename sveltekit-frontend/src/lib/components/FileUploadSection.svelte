@@ -31,7 +31,7 @@
 	import { loki } from "../stores/lokiStore";
 	import TagList from './TagList.svelte';
 
-			export let maxFileSize = 10 * 1024 * 1024; // 10MB
+			let { maxFileSize = $bindable() } = $props(); // 10 * 1024 * 1024; // 10MB
 
 	const dispatch = createEventDispatcher<{
 		upload: { files: globalThis.File[]; tags: string[] };
@@ -55,7 +55,7 @@
 	let availableTags: string[] = [];
 
 	// Load available tags
-	$: if (browser) {
+	$effect(() => { if (browser) {
 		loadAvailableTags();
 }
 	async function loadAvailableTags() {

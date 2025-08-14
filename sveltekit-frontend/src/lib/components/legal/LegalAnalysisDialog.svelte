@@ -102,7 +102,7 @@
     resetDialog();
   }
 
-  $: if (!isOpen) {
+  $effect(() => { if (!isOpen) {
     resetDialog();
   }
 </script>
@@ -149,7 +149,7 @@
         <div class="flex gap-3 pt-4">
           <button
             type="button"
-            on:click={performAnalysis}
+            onclick={performAnalysis}
             disabled={loading || !prompt.trim()}
             class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -164,7 +164,7 @@
           </button>
           <button
             type="button"
-            on:click={closeDialog}
+            onclick={closeDialog}
             class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             Cancel
@@ -228,14 +228,14 @@
         <div class="flex gap-3 pt-4">
           <button
             type="button"
-            on:click={resetDialog}
+            onclick={resetDialog}
             class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
           >
             New Analysis
           </button>
           <button
             type="button"
-            on:click={closeDialog}
+            onclick={closeDialog}
             class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             Close

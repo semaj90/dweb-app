@@ -313,7 +313,7 @@ import {
   <div
     use:melt={$menu}
     class="nier-panel p-2 min-w-[200px] z-50"
-    transition:scale={{ duration: 200, start: 0.95 }}
+    transitionscale={{ duration: 200, start: 0.95 }}
   >
     <button
       use:melt={$item}

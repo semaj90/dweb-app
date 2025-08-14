@@ -77,7 +77,7 @@
   ];
 
   // Reactive filtering with Fuse.js-like search
-  $: {
+  $effect(() => { {
     filteredCitations = savedCitations.filter((citation) => {
       const matchesSearch =
         searchQuery === "" ||
@@ -172,18 +172,20 @@
       console.error("Error updating citation:", error);
 }}
   // Stats
-  $: totalCitations = savedCitations.length;
-  $: favoriteCitations = savedCitations.filter((c) => c.isFavorite).length;
-  $: categoryCounts = savedCitations.reduce((acc, citation) => {
+  let totalCitations = $derived(savedCitations.length);
+  let favoriteCitations = $derived(savedCitations.filter((c) => c.isFavorite).length);
+  let categoryCounts = $derived(savedCitations.reduce((acc, citation) => {
     acc[citation.category] = (acc[citation.category] || 0) + 1;
     return acc;
-  }, {});
+  }, {}));
   
   // Helper variable for editing tags as string
   let editingTagsString = '';
-  $: if (editingCitation) {
-    editingTagsString = editingCitation.tags?.join(', ') || '';
-  }
+  $effect(() => { 
+    if (editingCitation) {
+      editingTagsString = editingCitation.tags?.join(', ') || '';
+    }
+  });
   
   function updateEditingTags(tagsString: string) {
     if (editingCitation) {
@@ -348,7 +350,7 @@
             </p>
             <Button
               variant="secondary"
-              on:click={() => {
+              onclick={() => {
                 searchQuery = "";
                 selectedCategory = "all";
               }}

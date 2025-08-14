@@ -387,7 +387,7 @@
         ></canvas>
         <div class="flex flex-col gap-2">
           <Button 
-            on:click={startWebGLDemo} 
+            onclick={startWebGLDemo} 
             disabled={!systemInitialized}
             variant="outline"
             class="text-white border-slate-600 hover:bg-slate-700"
@@ -415,14 +415,14 @@
           />
           <div class="flex gap-2">
             <Button 
-              on:click={performEnhancedRAGSearch}
+              onclick={performEnhancedRAGSearch}
               disabled={!systemInitialized || ragActive}
               class="bg-blue-600 hover:bg-blue-700"
             >
               {ragActive ? 'Searching...' : 'Search'}
             </Button>
             <Button 
-              on:click={getContext7Recommendations}
+              onclick={getContext7Recommendations}
               disabled={!systemInitialized}
               variant="outline"
               class="text-white border-slate-600 hover:bg-slate-700"
@@ -441,14 +441,14 @@
         <h3 class="text-lg font-semibold text-white mb-4">System Controls</h3>
         <div class="space-y-4">
           <Button 
-            on:click={startAPICoordination}
+            onclick={startAPICoordination}
             disabled={!systemInitialized || apiActive}
             class="w-full bg-green-600 hover:bg-green-700"
           >
             {apiActive ? 'API Active' : 'Start API Coordination'}
           </Button>
           <Button 
-            on:click={runFullDemo}
+            onclick={runFullDemo}
             disabled={!systemInitialized}
             class="w-full bg-purple-600 hover:bg-purple-700"
           >
@@ -485,7 +485,7 @@
                 </span>
                 <Button 
                   size="sm" 
-                  on:click={() => submitPositiveFeedback(index)}
+                  onclick={() => submitPositiveFeedback(index)}
                   class="text-xs bg-green-600 hover:bg-green-700"
                 >
                   👍 Relevant

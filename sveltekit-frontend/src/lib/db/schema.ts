@@ -10,6 +10,7 @@ import {
   integer,
   jsonb,
   boolean,
+  decimal,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -226,6 +227,32 @@ export const collaborationSessionsRelations = relations(
   }),
 );
 
+// Chat sessions for Enhanced AI Chat
+export const chatSessions = pgTable('chat_sessions', {
+  id: uuid('id').primaryKey(),
+  model: text('model').notNull().default('gemma3-legal'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  messageCount: integer('message_count').default(0).notNull(),
+  isActive: boolean('is_active').default(true).notNull()
+});
+
+// Chat messages for Enhanced AI Chat
+export const chatMessages = pgTable('chat_messages', {
+  id: uuid('id').primaryKey(),
+  sessionId: uuid('session_id').references(() => chatSessions.id).notNull(),
+  content: text('content').notNull(),
+  role: text('role').notNull(), // 'user' | 'assistant' | 'system'
+  timestamp: timestamp('timestamp').defaultNow().notNull(),
+  embedding: text('embedding'), // JSON string of embedding vector for pgvector
+  metadata: jsonb('metadata').default({}),
+  model: text('model'),
+  confidence: decimal('confidence', { precision: 5, scale: 4 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
 // Export all vector tables and types
 export * from "./schema/vectors";
 
@@ -244,3 +271,7 @@ export type AIHistory = typeof aiHistory.$inferSelect;
 export type NewAIHistory = typeof aiHistory.$inferInsert;
 export type CollaborationSession = typeof collaborationSessions.$inferSelect;
 export type NewCollaborationSession = typeof collaborationSessions.$inferInsert;
+export type ChatSession = typeof chatSessions.$inferSelect;
+export type NewChatSession = typeof chatSessions.$inferInsert;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type NewChatMessage = typeof chatMessages.$inferInsert;

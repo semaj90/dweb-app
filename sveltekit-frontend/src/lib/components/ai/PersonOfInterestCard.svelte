@@ -36,7 +36,7 @@
   }> = [];
 
   // Filter relationships for this person
-  $: personRelationships = relationships.filter(rel => 
+  let personRelationships = $derived(relationships.filter(rel => );
     rel.person1 === person.name || rel.person2 === person.name
   );
 
@@ -69,10 +69,10 @@
     }
   };
 
-  $: roleInfo = roleConfig[person.role] ?? roleConfig.unknown;
+  let roleInfo = $derived(roleConfig[person.role] ?? roleConfig.unknown;);
   
   // Confidence level styling
-  $: confidenceColor = person.confidence > 0.8 ? 'text-green-600' : 
+  let confidenceColor = $derived(person.confidence > 0.8 ? 'text-green-600' : );
                       person.confidence > 0.6 ? 'text-yellow-600' : 'text-red-600';
 
   let showFullDetails = false;
@@ -210,7 +210,7 @@
         variant="outline" 
         size="sm" 
         class="flex-1 text-xs"
-        on:click={() => showFullDetails = !showFullDetails}
+        onclick={() => showFullDetails = !showFullDetails}
       >
         {showFullDetails ? 'Less' : 'More'} Info
       </Button>

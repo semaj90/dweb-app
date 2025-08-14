@@ -10,7 +10,7 @@
 
     
     
-  export let minimal = false; // New prop for minimal canvas mode
+  let { minimal = $bindable() } = $props(); // false; // New prop for minimal canvas mode
   
   let isDragOver = false;
   let isUploading = false;
@@ -93,7 +93,7 @@
 <input 
   type="file" 
   bind:this={fileInput}
-  on:change={handleFileSelect}
+  onchange={handleFileSelect}
   multiple
   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
   class="space-y-4"
@@ -103,7 +103,7 @@
   <!-- Minimal Upload Button for Canvas -->
   <button
     class="space-y-4"
-    on:click={() => openFileDialog()}
+    onclick={() => openFileDialog()}
     title="Upload Evidence"
     aria-label="Upload Evidence"
     tabindex={0}
@@ -114,14 +114,14 @@
   <!-- Full Upload Zone for Columns -->
   <div 
     class="space-y-4"
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex={0}
     aria-label="Upload Evidence Dropzone"
-    on:click={() => openFileDialog()}
-    on:keydown={(e) => e.key === 'Enter' && openFileDialog()}
+    onclick={() => openFileDialog()}
+    onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
   >
     {#if isUploading}
       <!-- Upload Progress -->

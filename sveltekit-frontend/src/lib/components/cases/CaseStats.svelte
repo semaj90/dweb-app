@@ -40,7 +40,7 @@
   //   overdueCount: number;
   // }
 
-  $: stats = {
+  let stats = $derived({
     // TODO: IMPLEMENT ADVANCED CALCULATIONS
     // ===================================
     // 1. Resolution time analytics
@@ -59,7 +59,7 @@
       weekAgo.setDate(weekAgo.getDate() - 7);
       return c.updatedAt && new Date(c.updatedAt) > weekAgo;
     }).length,
-  };
+  });
 </script>
 
 <div class="case-stats container mx-auto px-4">

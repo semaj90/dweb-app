@@ -11,8 +11,8 @@
 
 	
 	// Reactive state
-	$: dialogOpen = $aiStore.dialogOpen;
-	$: isGenerating = $aiStore.isGenerating;
+	let dialogOpen = $derived($aiStore.dialogOpen;);
+	let isGenerating = $derived($aiStore.isGenerating;);
 
 	function toggleDialog() {
 		aiStore.update(state => ({
@@ -29,7 +29,7 @@
 <button
 	class="space-y-4"
 	class:generating={isGenerating}
-	on:click={() => toggleDialog()}
+	onclick={() => toggleDialog()}
 	aria-label="Open AI Assistant"
 	title="AI Assistant"
 >
@@ -49,7 +49,7 @@
 	<Dialog
 		title="AI Assistant"
 		open={dialogOpen}
-		on:close={toggleDialog}
+		onclose={toggleDialog}
 		on:aiRequest={handleAIRequest}
 	/>
 {/if}

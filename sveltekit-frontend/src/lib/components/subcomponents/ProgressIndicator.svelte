@@ -68,7 +68,7 @@
         }
     }
 
-    $: progressPercentage = Math.round((currentStep / (steps.length - 1)) * 100);
+    let progressPercentage = $derived(Math.round((currentStep / (steps.length - 1)) * 100););
 </script>
 
 <div class="progress-indicator bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -91,7 +91,7 @@
 
                     <li class="flex-1 min-w-0">
                         <button
-                            on:click={() => handleStepClick(index)}
+                            onclick={() => handleStepClick(index)}
                             disabled={!isClickable}
                             class="group flex items-center w-full text-left
                                    {isClickable ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : 'cursor-not-allowed'}

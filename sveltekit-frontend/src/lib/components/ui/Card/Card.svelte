@@ -2,7 +2,7 @@
   import { cn } from "$lib/utils";
 
   let className: string = "";
-  export { className as class };
+  ;
 </script>
 
 <div
@@ -10,7 +10,7 @@
     "rounded-lg border bg-card text-card-foreground shadow-sm",
     className
   )}
-  {...$$restProps}
+  
 >
-  <slot />
+  <slot></slot>
 </div>

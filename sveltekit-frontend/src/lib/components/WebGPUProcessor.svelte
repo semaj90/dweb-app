@@ -743,7 +743,7 @@
 	});
 
 	// Reactive updates
-	$: if (documentData && $isWebGPUReady) {
+	$effect(() => { if (documentData && $isWebGPUReady) {
 		processDocumentData(documentData);
 	}
 

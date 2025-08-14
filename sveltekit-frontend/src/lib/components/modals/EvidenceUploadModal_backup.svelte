@@ -1,7 +1,7 @@
 <script lang="ts">
   import { uploadActions, uploadModal } from "$lib/stores/evidence-store";
 
-  $: isOpen = $uploadModal.isOpen;
+  let isOpen = $derived($uploadModal.isOpen;);
 
   function closeModal() {
     uploadActions.closeModal();
@@ -17,7 +17,7 @@
       <p class="space-y-4">Modal is working!</p>
       <button
         class="space-y-4"
-        on:click={() => closeModal()}
+        onclick={() => closeModal()}
       >
         Close
       </button>

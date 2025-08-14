@@ -416,7 +416,7 @@ const config = {
       {#each quickQueries as query}
         <button
           type="button"
-          on:click={() => executeQuickQuery(query.query)}
+          onclick={() => executeQuickQuery(query.query)}
           disabled={loading}
           class="px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
         >
@@ -689,7 +689,7 @@ const config = {
     <div class="flex gap-3 mt-6">
       <button
         type="button"
-        on:click={executeTool}
+        onclick={executeTool}
         disabled={loading}
         class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
@@ -704,7 +704,7 @@ const config = {
       </button>
       <button
         type="button"
-        on:click={clearForm}
+        onclick={clearForm}
         class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
       >
         Clear

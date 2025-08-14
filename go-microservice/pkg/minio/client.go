@@ -6,7 +6,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
-	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -79,25 +79,34 @@ func (c *Client) ensureBucket() error {
 func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *multipart.FileHeader, opts UploadOptions) (*UploadResult, error) {
 	// Generate unique object name with case organization
 	timestamp := time.Now().Format("2006/01/02/15-04-05")
-	objectName := fmt.Sprintf("cases/%s/%s/%s-%s", 
-		opts.CaseID, 
-		opts.DocumentType, 
-		timestamp, 
+	objectName := fmt.Sprintf("cases/%s/%s/%s-%s",
+		opts.CaseID,
+		opts.DocumentType,
+		timestamp,
 		header.Filename)
 
-	// Prepare metadata
+	// Prepare metadata (sanitize to avoid reserved header names)
 	metadata := map[string]string{
 		"case-id":       opts.CaseID,
 		"document-type": opts.DocumentType,
 		"filename":      header.Filename,
 		"upload-time":   time.Now().Format(time.RFC3339),
 		"file-size":     fmt.Sprintf("%d", header.Size),
-		"content-type":  header.Header.Get("Content-Type"),
 	}
 
 	// Add custom metadata
-	for k, v := range opts.Metadata {
-		metadata[k] = v
+	// Filter out reserved or disallowed keys like "content-type", "content-length", etc.
+	if opts.Metadata != nil {
+		for k, v := range opts.Metadata {
+			lk := strings.ToLower(k)
+			// Disallow common reserved headers and any x-amz-* which S3 uses internally
+			if lk == "content-type" || lk == "content-length" || lk == "etag" || lk == "last-modified" ||
+				lk == "cache-control" || lk == "content-encoding" || lk == "content-language" ||
+				lk == "content-disposition" || lk == "expires" || strings.HasPrefix(lk, "x-amz-") {
+				continue
+			}
+			metadata[k] = v
+		}
 	}
 
 	// Add tags
@@ -129,6 +138,12 @@ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *mu
 	if err != nil {
 		log.Printf("Warning: failed to generate presigned URL: %v", err)
 		url = nil
+	}
+
+	// Include content-type in returned metadata for DB persistence (not sent as user metadata)
+	ct := header.Header.Get("Content-Type")
+	if ct != "" {
+		metadata["content-type"] = ct
 	}
 
 	result := &UploadResult{
@@ -170,7 +185,7 @@ func (c *Client) DeleteFile(ctx context.Context, objectName string) error {
 // ListFiles lists files for a specific case
 func (c *Client) ListFiles(ctx context.Context, caseID string) ([]minio.ObjectInfo, error) {
 	prefix := fmt.Sprintf("cases/%s/", caseID)
-	
+
 	var objects []minio.ObjectInfo
 	for object := range c.client.ListObjects(ctx, c.bucketName, minio.ListObjectsOptions{
 		Prefix:    prefix,

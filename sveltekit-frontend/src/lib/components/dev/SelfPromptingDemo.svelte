@@ -569,7 +569,7 @@
 
       <div class="flex gap-3 mt-6">
         <button
-          on:click={executeWorkflow}
+          onclick={executeWorkflow}
           disabled={$isRunning}
           class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -585,7 +585,7 @@
         
         {#if $isRunning}
           <button
-            on:click={stopWorkflow}
+            onclick={stopWorkflow}
             class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
           >
             Stop
@@ -593,7 +593,7 @@
         {/if}
         
         <button
-          on:click={clearLogs}
+          onclick={clearLogs}
           disabled={$isRunning}
           class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
         >
@@ -631,7 +631,7 @@
 
       <div class="mt-4 pt-4 border-t border-gray-200">
         <button
-          on:click={demonstrateContext7Integration}
+          onclick={demonstrateContext7Integration}
           disabled={$isRunning}
           class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50"
         >

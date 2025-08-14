@@ -19,8 +19,8 @@
   import { onMount } from "svelte";
 
   let selectedConversationId: string | null = null;
-  let searchQuery = "";
-  let showHistory = true;
+  let searchQuery = $state("");
+  let showHistory = $state(true);
 
   onMount(() => {
     chatActions.loadFromStorage();
@@ -53,13 +53,13 @@
 
     return date.toLocaleDateString();
 }
-  $: filteredHistory = $conversationsList.filter(
+  let filteredHistory = $derived($conversationsList.filter(
     (conv) =>
       conv.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.messages?.some((msg) =>
         msg.content?.toLowerCase().includes(searchQuery.toLowerCase())
       )
-  );
+  ));
 </script>
 
 <svelte:head>
@@ -115,7 +115,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => startNewChat()}
+                onclick={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New
@@ -140,7 +140,7 @@
               {#each filteredHistory as conversation (conversation.id)}
                 <button
                   class="space-y-4"
-                  on:click={() => loadConversation(conversation.id)}
+                  onclick={() => loadConversation(conversation.id)}
                 >
                   <h3 class="space-y-4">
                     {conversation.title}
@@ -182,7 +182,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => showHistoryPanel()}
+                  onclick={() => showHistoryPanel()}
                 >
                   <Clock class="space-y-4" />
                   History
@@ -206,7 +206,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => chatActions.saveToStorage()}
+                  onclick={() => chatActions.saveToStorage()}
                 >
                   <Save class="space-y-4" />
                   Save
@@ -216,7 +216,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => startNewChat()}
+                onclick={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New Chat
@@ -246,7 +246,7 @@
                 <Button
                   variant="outline"
                   class="space-y-4"
-                  on:click={() => {
+                  onclick={() => {
                     if (!$chatStore.currentConversation)
                       chatActions.newConversation();
                     // Add the prompt to the conversation

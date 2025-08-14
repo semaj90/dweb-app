@@ -1,2 +1,40 @@
 # Enforce LF line endings for Node scripts used cross-platform
 scripts/tag-legacy-go-files.mjs eol=lf
+########################################
+# Git LFS Configuration for Legal AI System
+########################################
+# Large AI models and weights (if stored in repo)
+*.gguf filter=lfs diff=lfs merge=lfs -text
+*.ggml filter=lfs diff=lfs merge=lfs -text
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
+*.model filter=lfs diff=lfs merge=lfs -text
+# Large datasets or embeddings (if needed for testing)
+embeddings/*.json filter=lfs diff=lfs merge=lfs -text
+datasets/*.json filter=lfs diff=lfs merge=lfs -text
+# Large legal document samples (for testing/demo - over 50MB)
+lawpdfs/*.pdf filter=lfs diff=lfs merge=lfs -text
+sample-data/*.pdf filter=lfs diff=lfs merge=lfs -text
+# Large database dumps or backups
+*.sql.gz filter=lfs diff=lfs merge=lfs -text
+*.dump filter=lfs diff=lfs merge=lfs -text
+backups/*.sql filter=lfs diff=lfs merge=lfs -text
+# Large archives (if legitimate project assets)
+assets/*.zip filter=lfs diff=lfs merge=lfs -text
+resources/*.tar.gz filter=lfs diff=lfs merge=lfs -text
+# Exclude common file types that should NOT be in LFS
+*.js -filter
+*.ts -filter
+*.svelte -filter
+*.json -filter
+*.md -filter
+*.txt -filter
+*.yml -filter
+*.yaml -filter
+*.toml -filter
+*.lock -filter
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text

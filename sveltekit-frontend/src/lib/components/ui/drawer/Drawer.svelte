@@ -32,7 +32,7 @@
     role="dialog"
     aria-modal="true"
     aria-label={title ? title : "Drawer"}
-    on:click={handleBackdropClick}
+    onclick={handleBackdropClick}
   >
     <div class="space-y-4">
       <div class="space-y-4">
@@ -45,13 +45,13 @@
         <button
           class="space-y-4"
           aria-label="Close drawer"
-          on:click={handleClose}
+          onclick={handleClose}
         >
           <X size="24" />
         </button>
       </div>
       <div class="space-y-4">
-        <slot />
+        <slot></slot>
       </div>
     </div>
   </div>

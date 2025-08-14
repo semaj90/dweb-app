@@ -371,7 +371,7 @@ function zoomOut() {
 }
 
 // React to prop changes
-$: if (embeddings.length > 0 && device) {
+$effect(() => { if (embeddings.length > 0 && device) {
   updateEmbeddings(embeddings);
   render();
 }

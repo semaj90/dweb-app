@@ -202,7 +202,7 @@
   }
 
   // Calculate quality score on component mount and when data changes
-  $: if (allFormData) calculateQualityScore();
+  $effect(() => { if (allFormData) calculateQualityScore();
 </script>
 
 <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg" transition:fade>
@@ -249,7 +249,7 @@
               <input
                 type="checkbox"
                 checked={formData.reviewed_sections.includes(criterion.id)}
-                on:change={() => toggleSectionReview(criterion.id)}
+                onchange={() => toggleSectionReview(criterion.id)}
                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
               />
             </div>

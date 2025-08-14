@@ -50,7 +50,7 @@
         variant="ghost" 
         size="sm" 
         class="nier-toolbar-btn"
-        on:click={() => editor?.commands.undo()}
+        onclick={() => editor?.commands.undo()}
       >
         ↶
       </Button>
@@ -58,7 +58,7 @@
         variant="ghost" 
         size="sm" 
         class="nier-toolbar-btn"
-        on:click={() => editor?.commands.redo()}
+        onclick={() => editor?.commands.redo()}
       >
         ↷
       </Button>
@@ -92,7 +92,7 @@
         size="sm" 
         class="nier-toolbar-btn"
         class:active={editor?.isActive('bold')}
-        on:click={() => editor?.chain().focus().toggleBold().run()}
+        onclick={() => editor?.chain().focus().toggleBold().run()}
       >
         <strong>B</strong>
       </Button>
@@ -101,7 +101,7 @@
         size="sm" 
         class="nier-toolbar-btn"
         class:active={editor?.isActive('italic')}
-        on:click={() => editor?.chain().focus().toggleItalic().run()}
+        onclick={() => editor?.chain().focus().toggleItalic().run()}
       >
         <em>I</em>
       </Button>

@@ -20,7 +20,7 @@
     {@render children({ builder })}
   {/if}
 {:else}
-  <button type="button" {...$$restProps} use:builder>
+  <button type="button"  use:builder>
     {#if children}
       {@render children()}
     {/if}

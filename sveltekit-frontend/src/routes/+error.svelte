@@ -3,8 +3,8 @@
   import { page } from '$app/stores';
   import { dev } from '$app/environment';
   
-  $: error = $page.error;
-  $: status = $page.status;
+  let error = $derived($page.error);
+  let status = $derived($page.status);
 </script>
 
 <svelte:head>

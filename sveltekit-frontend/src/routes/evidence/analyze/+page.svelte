@@ -360,11 +360,11 @@
       </div>
 
       <div class="flex gap-2">
-        <Button variant="outline" onclick={resetForm} disabled={analyzing}>
+        <Button variant="outline" on:click={resetForm} disabled={analyzing}>
           Reset
         </Button>
         <Button
-          onclick={startAnalysis}
+          on:click={startAnalysis}
           disabled={analyzing || !caseId || !evidenceContent}
         >
           {analyzing ? "Analyzing..." : "Start Analysis"}
@@ -521,7 +521,7 @@
                   variant="outline"
                   size="sm"
                   class="mt-2"
-                  onclick={() => viewDetailedResults(data)}
+                  on:click={() => viewDetailedResults(data)}
                 >
                   View Details →
                 </Button>
@@ -531,10 +531,10 @@
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onclick={() => (showResults = false)}>
+          <Button variant="outline" on:click={() => (showResults = false)}>
             Close
           </Button>
-          <Button onclick={() => goto(`/cases/${caseId}`)}>
+          <Button on:click={() => goto(`/cases/${caseId}`)}>
             View Case Details
           </Button>
         </DialogFooter>

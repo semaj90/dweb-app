@@ -2,33 +2,29 @@
 // Demonstrates production Context7 MCP workflow with Copilot orchestration
 
 <script lang="ts">
+  import { writable } from 'svelte/store';
+  import { copilotOrchestrator } from '$lib/utils/mcp-helpers';
+  import { resolveLibraryId, getLibraryDocs, semanticSearch } from '$lib/ai/mcp-helpers';
+  import { getEnhancedContext, copilotSelfPrompt } from '$lib/utils/copilot-self-prompt';
+  import type { PageData } from './$types';
+
   interface Props {
-    data?: any;
+    data: PageData;
   }
   let {
     data
   }: Props = $props();
 
-
-
-import { writable } from 'svelte/store';
-import { copilotOrchestrator } from '$lib/utils/mcp-helpers';
-import { resolveLibraryId, getLibraryDocs, semanticSearch } from '$lib/ai/mcp-helpers';
-import { getEnhancedContext, copilotSelfPrompt } from '$lib/utils/copilot-self-prompt';
-
-// SSR data from +page.server.ts
-export let data;
-
-let query = '';
+let query = $state('');
 let results = writable([]);
 let loading = writable(false);
 let orchestrationResult = writable(data.orchestrationResult);
 let enhancedContext = writable(null);
 
 // Display SSR-loaded Copilot context
-$: copilotArchitecture = data.copilotContext?.architecture;
-$: legalContext = data.copilotContext?.legalContext;
-$: libraryData = data.libraryData;
+let copilotArchitecture = $derived(data.copilotContext?.architecture);
+let legalContext = $derived(data.copilotContext?.legalContext);
+let libraryData = $derived(data.libraryData);
 
 // Demo: Full Context7 MCP workflow with Copilot architecture integration
 async function runFullWorkflow() {
@@ -194,7 +190,7 @@ async function quickSearch() {
 
     <div class="flex gap-3 mb-4">
       <button
-        on:click={runFullWorkflow}
+        onclick={runFullWorkflow}
         disabled={$loading}
         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
       >
@@ -202,7 +198,7 @@ async function quickSearch() {
       </button>
 
       <button
-        on:click={runCopilotSelfPrompt}
+        onclick={runCopilotSelfPrompt}
         disabled={$loading}
         class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
       >

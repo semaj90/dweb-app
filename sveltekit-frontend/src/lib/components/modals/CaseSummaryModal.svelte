@@ -167,7 +167,7 @@
     </svelte:fragment>
   </Drawer>
 {:else}
-  <Dialog.Root open={isOpen} on:close={closeModal}>
+  <Dialog.Root open={isOpen} onclose={closeModal}>
     <Dialog.Content size="lg">
       <Dialog.Header>
         <Dialog.Title>Case Summary</Dialog.Title>
@@ -186,7 +186,7 @@
           <div class="space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-semibold">Overview</h3>
-              <Button on:click={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
+              <Button onclick={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
                 <Sparkles class="w-4 h-4 mr-2" /> Regenerate
               </Button>
             </div>
@@ -246,7 +246,7 @@
           <div class="flex flex-col items-center justify-center h-48 text-muted-foreground">
             <Brain class="w-16 h-16 mb-4 opacity-50" />
             <p>No AI summary available for this case.</p>
-            <Button on:click={generateSummary} disabled={isGeneratingSummary} class="mt-4">
+            <Button onclick={generateSummary} disabled={isGeneratingSummary} class="mt-4">
               <Sparkles class="w-4 h-4 mr-2" /> Generate Summary
             </Button>
           </div>

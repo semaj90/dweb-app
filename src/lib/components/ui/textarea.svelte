@@ -1,24 +1,43 @@
 <script>
-  export let value = '';
-  export let placeholder = '';
-  export let disabled = false;
-  export let readonly = false;
-  export let className = '';
-  export let id = '';
-  export let name = '';
-  export let required = false;
-  export let rows = 4;
-  export let cols = undefined;
-  export let maxlength = undefined;
-  export let minlength = undefined;
-  export let wrap = undefined;
-  export let resize = true;
+  interface Props {
+    value?: any;
+    placeholder?: string;
+    disabled?: boolean;
+    readonly?: boolean;
+    className?: string;
+    id?: string;
+    name?: string;
+    required?: boolean;
+    rows?: number;
+    cols?: any;
+    maxlength?: any;
+    minlength?: any;
+    wrap?: any;
+    resize?: boolean;
+  }
   
-  function handleInput(event) {
+  let {
+    value = $bindable(''),
+    placeholder = '',
+    disabled = false,
+    readonly = false,
+    className = '',
+    id = '',
+    name = '',
+    required = false,
+    rows = 4,
+    cols = undefined,
+    maxlength = undefined,
+    minlength = undefined,
+    wrap = undefined,
+    resize = true
+  }: Props = $props();
+  
+  function handleInput(event: any) {
     value = event.target.value;
   }
   
-  $: resizeClass = resize ? '' : 'resize-none';
+  let resizeClass = $derived(resize ? '' : 'resize-none');
 </script>
 
 <textarea
@@ -34,13 +53,13 @@
   {minlength}
   {wrap}
   {value}
-  on:input={handleInput}
-  on:change
-  on:focus
-  on:blur
-  on:keydown
-  on:keyup
-  on:keypress
+  oninput={handleInput}
+  onchange
+  onfocus
+  onblur
+  onkeydown
+  onkeyup
+  onkeypress
   class="yorha-textarea {resizeClass} {className}"
 ></textarea>
 

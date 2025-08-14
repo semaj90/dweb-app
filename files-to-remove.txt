@@ -1,0 +1,4 @@
+minio.exe
+qdrant-extracted/qdrant.exe
+neo4j-community-5.21.2-windows.zip
+neo4j-community-5.23.0-windows.zip

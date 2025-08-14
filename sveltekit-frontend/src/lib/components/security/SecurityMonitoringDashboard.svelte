@@ -39,15 +39,15 @@
   let loading = false;
 
   // Security metrics
-  $: criticalEvents = securityEvents.filter(
+  let criticalEvents = $derived(securityEvents.filter();
     (e) => e.severity === "critical"
   ).length;
-  $: highEvents = securityEvents.filter((e) => e.severity === "high").length;
-  $: recentEvents = securityEvents.filter(
+  let highEvents = $derived(securityEvents.filter((e) => e.severity === "high").length;);
+  let recentEvents = $derived(securityEvents.filter();
     (e) => Date.now() - e.timestamp < 24 * 60 * 60 * 1000
   ).length;
-  $: loginAttempts = securityEvents.filter((e) => e.type === "login").length;
-  $: accessDeniedEvents = securityEvents.filter(
+  let loginAttempts = $derived(securityEvents.filter((e) => e.type === "login").length;);
+  let accessDeniedEvents = $derived(securityEvents.filter();
     (e) => e.type === "access_denied"
   ).length;
 
@@ -206,7 +206,7 @@
         return "text-base-content";
 }}
   // Reactive statements
-  $: if (selectedSeverity || selectedType) {
+  $effect(() => { if (selectedSeverity || selectedType) {
     filterEvents();
 }
 </script>
@@ -230,20 +230,20 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => loadSecurityEvents()}
+        onclick={() => loadSecurityEvents()}
         disabled={loading}
       >
         <RefreshCw class={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         Refresh
       </Button>
-      <Button variant="outline" size="sm" on:click={() => exportEvents()}>
+      <Button variant="outline" size="sm" onclick={() => exportEvents()}>
         <Download class="space-y-4" />
         Export
       </Button>
       <Button
         variant="outline"
         size="sm"
-        on:click={() => clearAllEvents()}
+        onclick={() => clearAllEvents()}
         class="space-y-4"
       >
         <Trash2 class="space-y-4" />
@@ -471,7 +471,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => toggleEventDetails(index)}
+                  onclick={() => toggleEventDetails(index)}
                   class="space-y-4"
                 >
                   <Eye class="space-y-4" />

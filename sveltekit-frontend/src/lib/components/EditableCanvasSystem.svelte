@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    userId: string;;
+    userId: string;
     canvasId: string | null ;
     readonly?: any;
     maxNodes?: any;
@@ -300,7 +300,7 @@
       <button 
         type="button"
         disabled={readonly}
-        on:click={resetCanvas}
+        onclick={resetCanvas}
         aria-label="Create new canvas"
       >
         New Canvas
@@ -330,9 +330,9 @@
       role="img"
       aria-label="Interactive canvas for creating and editing nodes"
       tabindex={readonly ? -1 : 0}
-      on:click={handleCanvasClick}
-      on:drop={handleFileDrop}
-      on:dragover={handleDragOver}
+      onclick={handleCanvasClick}
+      ondrop={handleFileDrop}
+      ondragover={handleDragOver}
     ></canvas>
 
     <aside class="evidence-panel" aria-label="Evidence files">

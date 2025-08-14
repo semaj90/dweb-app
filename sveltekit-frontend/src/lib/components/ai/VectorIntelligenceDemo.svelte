@@ -205,7 +205,7 @@
           <Button
             variant="outline"
             size="sm"
-            onclick={() => { query = example; }}
+            on:click={() => { query = example; }}
             disabled={isSearching}
           >
             {example}
@@ -344,7 +344,7 @@
         <div class="flex justify-center">
           <Button
             variant="outline"
-            onclick={() => { results = demoResults; metrics = { totalDocuments: 1250, searchTime: 45, vectorDimensions: 384, similarityThreshold: 0.7 }; }}
+            on:click={() => { results = demoResults; metrics = { totalDocuments: 1250, searchTime: 45, vectorDimensions: 384, similarityThreshold: 0.7 }; }}
           >
             Load Demo Results
           </Button>
@@ -361,7 +361,7 @@
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           {selectedResult.title}
-          <Button variant="ghost" size="sm" onclick={() => selectedResult = null}>
+          <Button variant="ghost" size="sm" on:click={() => selectedResult = null}>
             ×
           </Button>
         </CardTitle>

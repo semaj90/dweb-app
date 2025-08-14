@@ -40,7 +40,7 @@
   let evidenceFormData: any = null; // For the evidence form
 
   // Reactive layout classes
-  $: layoutClass = $report && $report.settings
+  let layoutClass = $derived($report && $report.settings);
     ? {
         single: "layout-single",
         dual: "layout-dual",
@@ -50,7 +50,7 @@
 
   // Reactive editor height
   let editorHeight = 500;
-  $: editorHeight = $reportUI && $reportUI.fullscreen ? window.innerHeight - 200 : 500;
+  let editorHeight = $derived($reportUI && $reportUI.fullscreen ? window.innerHeight - 200 : 500;);
 
   function updateEditorHeight() {
     editorHeight = $reportUI.fullscreen ? window.innerHeight - 200 : 500;

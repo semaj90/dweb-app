@@ -73,7 +73,7 @@
   ];
 
   // Get caseId from URL if not provided as prop
-  $: if (!caseId) {
+  $effect(() => { if (!caseId) {
     caseId = $page.url.searchParams.get("caseId") || $page.params.id || "";
 }
   onMount(() => {
@@ -333,7 +333,7 @@
     return file.fileUrl || `/uploads/${caseId}/${file.fileName}`;
 }
   // Reactive statements
-  $: if (searchQuery || selectedCategory || sortBy || sortOrder) {
+  $effect(() => { if (searchQuery || selectedCategory || sortBy || sortOrder) {
     filterAndSortFiles();
 }
 </script>
@@ -359,7 +359,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => loadEvidenceFiles()}
+          onclick={() => loadEvidenceFiles()}
           disabled={loading}
           aria-label="Refresh evidence files"
         >
@@ -369,7 +369,7 @@
 
       <Tooltip content="Upload files">
         <Button
-          on:click={() => (showUploadModal = true)}
+          onclick={() => (showUploadModal = true)}
           class="space-y-4"
           disabled={!caseId}
         >
@@ -413,7 +413,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+          onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
           aria-label="Toggle view mode"
         >
           {#if viewMode === "grid"}
@@ -466,7 +466,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => {
+            onclick={() => {
               selectedFiles.clear();
               selectedFiles = selectedFiles;
               showBulkActions = false;
@@ -492,7 +492,7 @@
         <h3 class="space-y-4">Error Loading Files</h3>
         <div class="space-y-4">{error}</div>
       </div>
-      <Button variant="outline" size="sm" on:click={() => loadEvidenceFiles()}>
+      <Button variant="outline" size="sm" onclick={() => loadEvidenceFiles()}>
         <RefreshCw class="space-y-4" />
         Retry
       </Button>
@@ -502,9 +502,9 @@
     <div
       class="space-y-4"
       class:border-primary={dragActive}
-      on:dragover={handleDragOver}
-      on:dragleave={handleDragLeave}
-      on:drop={handleDrop}
+      ondragover={handleDragOver}
+      ondragleave={handleDragLeave}
+      ondrop={handleDrop}
       role="button"
       tabindex={0}
       aria-label="Drop files here to upload"
@@ -527,7 +527,7 @@
           multiple
           class="space-y-4"
           id="file-upload"
-          on:change={handleFileSelect}
+          onchange={handleFileSelect}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
         />
         <label for="file-upload">
@@ -548,7 +548,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => selectAllFiles()}
+        onclick={() => selectAllFiles()}
         class="space-y-4"
       >
         {#if selectedFiles.size === filteredFiles.length}
@@ -574,7 +574,7 @@
                   type="checkbox"
                   class="space-y-4"
                   checked={selectedFiles.has(file.id)}
-                  on:change={() => toggleFileSelection(file.id)}
+                  onchange={() => toggleFileSelection(file.id)}
                   aria-label="Select file {file.title || file.fileName}"
                 />
 
@@ -662,7 +662,7 @@
                 type="checkbox"
                 class="space-y-4"
                 checked={selectedFiles.has(file.id)}
-                on:change={() => toggleFileSelection(file.id)}
+                onchange={() => toggleFileSelection(file.id)}
                 aria-label="Select file {file.title || file.fileName}"
               />
 
@@ -777,7 +777,7 @@
       <div class="space-y-4">
         <Button
           variant="outline"
-          on:click={() => {
+          onclick={() => {
             showUploadModal = false;
             uploadFiles = null;
             uploadDescription = "";
@@ -788,7 +788,7 @@
           Cancel
         </Button>
         <Button
-          on:click={() => uploadSingleFile()}
+          onclick={() => uploadSingleFile()}
           disabled={uploading || !uploadFiles}
           class="space-y-4"
         >
@@ -811,6 +811,6 @@
   multiple
   class="space-y-4"
   id="bulk-upload"
-  on:change={handleFileSelect}
+  onchange={handleFileSelect}
   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
 />

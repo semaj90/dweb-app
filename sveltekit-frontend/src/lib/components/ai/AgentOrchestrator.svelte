@@ -10,9 +10,9 @@ Manages AutoGen and CrewAI multi-agent workflows
   import { Badge } from '$lib/components/ui/badge';
   import { Textarea } from '$lib/components/ui/textarea';
   import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '$lib/components/ui/select';
-  import { 
-    Users, 
-    Brain, 
+  import {
+    Users,
+    Brain,
     Database,
     Play,
     Pause,
@@ -30,11 +30,11 @@ Manages AutoGen and CrewAI multi-agent workflows
     Settings,
     Download
   } from 'lucide-svelte';
-  
+
   import { autoGenService, analyzeCaseWithAgents, reviewEvidenceWithAgents, researchLegalPrecedents } from '$lib/services/autogen-service.js';
   import { crewAIService, analyzeLegalCaseWithCrew, analyzeContractWithCrew } from '$lib/services/crewai-service.js';
-  import type { 
-    AutoGenConversation, 
+  import type {
+    AutoGenConversation,
     AutoGenMessage
   } from '$lib/services/autogen-service.js';
   import type {
@@ -48,7 +48,7 @@ Manages AutoGen and CrewAI multi-agent workflows
     autoStartServices?: boolean;
   }
 
-  let { 
+  let {
     defaultWorkflow = 'case_analysis',
     showAdvancedControls = true,
     autoStartServices = true
@@ -60,13 +60,13 @@ Manages AutoGen and CrewAI multi-agent workflows
   let inputText = $state('');
   let isProcessing = $state(false);
   let serviceStatus = $state({ autogen: false, crewai: false });
-  
+
   // Execution state
   let activeConversation = $state<AutoGenConversation | null>(null);
   let activeExecution = $state<CrewExecution | null>(null);
   let conversationMessages = $state<AutoGenMessage[]>([]);
   let executionResults = $state<CrewTaskResult[]>([]);
-  
+
   // Monitoring
   let statusCheckInterval: number | null = null;
   let executionProgress = $state(0);
@@ -127,7 +127,7 @@ Manages AutoGen and CrewAI multi-agent workflows
         autoGenService.healthCheck(),
         crewAIService.healthCheck()
       ]);
-      
+
       serviceStatus = { autogen: autogenHealthy, crewai: crewaiHealthy };
     } catch (error) {
       console.error('Failed to check service status:', error);
@@ -175,9 +175,9 @@ Manages AutoGen and CrewAI multi-agent workflows
         activeConversation = null;
         conversationMessages = [];
         lastUpdate = 'Analyzing case with legal experts...';
-        
+
         const caseResult = await analyzeCaseWithAgents(inputText, [], 'federal');
-        
+
         // Simulate conversation for demo purposes
         conversationMessages = [
           {
@@ -205,7 +205,7 @@ Manages AutoGen and CrewAI multi-agent workflows
             messageType: 'text'
           }
         ];
-        
+
         lastUpdate = 'Case analysis completed';
         executionProgress = 100;
         break;
@@ -213,9 +213,9 @@ Manages AutoGen and CrewAI multi-agent workflows
       case 'evidence_review':
         lastUpdate = 'Reviewing evidence with forensic experts...';
         executionProgress = 30;
-        
+
         const evidenceResult = await reviewEvidenceWithAgents(inputText, 'digital', []);
-        
+
         conversationMessages = [
           {
             id: '1',
@@ -226,16 +226,16 @@ Manages AutoGen and CrewAI multi-agent workflows
             messageType: 'text'
           }
         ];
-        
+
         lastUpdate = 'Evidence review completed';
         break;
 
       case 'legal_research':
         lastUpdate = 'Researching legal precedents...';
         executionProgress = 40;
-        
+
         const researchResult = await researchLegalPrecedents(inputText, 'federal', 'criminal');
-        
+
         conversationMessages = [
           {
             id: '1',
@@ -246,7 +246,7 @@ Manages AutoGen and CrewAI multi-agent workflows
             messageType: 'text'
           }
         ];
-        
+
         lastUpdate = 'Legal research completed';
         break;
     }
@@ -261,9 +261,9 @@ Manages AutoGen and CrewAI multi-agent workflows
         activeExecution = null;
         executionResults = [];
         lastUpdate = 'Legal investigation crew analyzing case...';
-        
+
         const caseResult = await analyzeLegalCaseWithCrew(inputText, [], 'federal');
-        
+
         // Simulate crew execution results
         executionResults = [
           {
@@ -295,7 +295,7 @@ Manages AutoGen and CrewAI multi-agent workflows
             status: 'completed'
           }
         ];
-        
+
         lastUpdate = 'Legal investigation completed';
         executionProgress = 100;
         break;
@@ -303,9 +303,9 @@ Manages AutoGen and CrewAI multi-agent workflows
       case 'contract_analysis':
         lastUpdate = 'Contract analysis crew reviewing document...';
         executionProgress = 30;
-        
+
         const contractResult = await analyzeContractWithCrew(inputText, 'commercial', 'general');
-        
+
         executionResults = [
           {
             taskId: 'contract-review',
@@ -329,7 +329,7 @@ Manages AutoGen and CrewAI multi-agent workflows
             status: 'completed'
           }
         ];
-        
+
         lastUpdate = 'Contract analysis completed';
         break;
     }
@@ -344,7 +344,7 @@ Manages AutoGen and CrewAI multi-agent workflows
         console.error('Failed to cancel AutoGen conversation:', error);
       }
     }
-    
+
     if (activeExecution) {
       try {
         await crewAIService.cancelExecution(activeExecution.id);
@@ -353,7 +353,7 @@ Manages AutoGen and CrewAI multi-agent workflows
         console.error('Failed to cancel CrewAI execution:', error);
       }
     }
-    
+
     isProcessing = false;
     lastUpdate = 'Execution cancelled';
   }
@@ -370,7 +370,7 @@ Manages AutoGen and CrewAI multi-agent workflows
   function formatDuration(ms: number): string {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
-    
+
     if (minutes > 0) {
       return `${minutes}m ${seconds % 60}s`;
     }
@@ -378,14 +378,14 @@ Manages AutoGen and CrewAI multi-agent workflows
   }
 
   function downloadResults() {
-    const results = selectedProvider === 'autogen' 
-      ? conversationMessages 
+    const results = selectedProvider === 'autogen'
+      ? conversationMessages
       : executionResults;
-    
+
     const blob = new Blob([JSON.stringify(results, null, 2)], {
       type: 'application/json'
     });
-    
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -416,7 +416,7 @@ Manages AutoGen and CrewAI multi-agent workflows
         Multi-agent AI workflows with AutoGen and CrewAI
       </p>
     </div>
-    
+
     <div class="flex items-center gap-2">
       <Badge class="flex items-center gap-1 {getServiceStatusColor(serviceStatus.autogen)}">
         <Brain class="h-3 w-3" />
@@ -426,11 +426,11 @@ Manages AutoGen and CrewAI multi-agent workflows
         <Database class="h-3 w-3" />
         CrewAI {serviceStatus.crewai ? 'Online' : 'Offline'}
       </Badge>
-      
+
       <Button
         variant="outline"
         size="sm"
-        onclick={checkServiceStatus}
+        on:click={checkServiceStatus}
       >
         <RefreshCw class="h-4 w-4" />
       </Button>
@@ -465,7 +465,7 @@ Manages AutoGen and CrewAI multi-agent workflows
             </SelectContent>
           </Select>
         </div>
-        
+
         <div>
           <label class="block text-sm font-medium mb-2">AI Provider</label>
           <Select bind:value={selectedProvider}>
@@ -516,10 +516,10 @@ Manages AutoGen and CrewAI multi-agent workflows
           class="w-full"
         />
       </div>
-      
+
       <div class="flex gap-2">
         <Button
-          onclick={executeWorkflow}
+          on:click={executeWorkflow}
           disabled={isProcessing || !inputText.trim() || (!serviceStatus.autogen && selectedProvider === 'autogen') || (!serviceStatus.crewai && selectedProvider === 'crewai')}
           class="flex-1"
         >
@@ -531,18 +531,18 @@ Manages AutoGen and CrewAI multi-agent workflows
             Execute Workflow
           {/if}
         </Button>
-        
+
         {#if isProcessing}
-          <Button variant="outline" onclick={cancelExecution}>
+          <Button variant="outline" on:click={cancelExecution}>
             <Square class="h-4 w-4" />
           </Button>
         {/if}
-        
+
         {#if conversationMessages.length > 0 || executionResults.length > 0}
-          <Button variant="outline" onclick={clearResults}>
+          <Button variant="outline" on:click={clearResults}>
             Clear
           </Button>
-          <Button variant="outline" onclick={downloadResults}>
+          <Button variant="outline" on:click={downloadResults}>
             <Download class="h-4 w-4" />
           </Button>
         {/if}
@@ -565,14 +565,14 @@ Manages AutoGen and CrewAI multi-agent workflows
             <span class="text-sm font-medium">Progress</span>
             <span class="text-sm text-gray-500">{executionProgress}%</span>
           </div>
-          
+
           <div class="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
               style="width: {executionProgress}%"
             ></div>
           </div>
-          
+
           <div class="flex items-center gap-2 text-sm">
             {#if isProcessing}
               <div class="animate-spin h-4 w-4 border border-gray-300 border-t-blue-500 rounded-full"></div>
@@ -606,7 +606,7 @@ Manages AutoGen and CrewAI multi-agent workflows
                   </span>
                 </div>
               </div>
-              
+
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
                   <span class="font-medium text-sm">{message.sender}</span>
@@ -645,7 +645,7 @@ Manages AutoGen and CrewAI multi-agent workflows
                     {result.agentId}
                   </Badge>
                 </div>
-                
+
                 <div class="flex items-center gap-2">
                   {#if result.status === 'completed'}
                     <CheckCircle class="h-4 w-4 text-green-500" />
@@ -659,7 +659,7 @@ Manages AutoGen and CrewAI multi-agent workflows
                   </span>
                 </div>
               </div>
-              
+
               <p class="text-sm text-gray-700 dark:text-gray-300">{result.output}</p>
             </div>
           {/each}
@@ -682,7 +682,7 @@ Manages AutoGen and CrewAI multi-agent workflows
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'case_analysis';
               selectedProvider = 'autogen';
               inputText = 'John Smith was accused of embezzling $50,000 from his employer over a 6-month period. Evidence includes suspicious bank transfers, altered financial records, and witness testimony from colleagues who noticed unusual behavior.';
@@ -693,11 +693,11 @@ Manages AutoGen and CrewAI multi-agent workflows
               <p class="text-xs text-gray-500">AutoGen multi-agent analysis</p>
             </div>
           </Button>
-          
+
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'contract_analysis';
               selectedProvider = 'crewai';
               inputText = 'Software licensing agreement between TechCorp and ClientCorp for enterprise SaaS platform. Contract includes liability limitations, data processing clauses, and termination provisions. Review for compliance and negotiation opportunities.';
@@ -708,11 +708,11 @@ Manages AutoGen and CrewAI multi-agent workflows
               <p class="text-xs text-gray-500">CrewAI specialized team</p>
             </div>
           </Button>
-          
+
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'evidence_review';
               selectedProvider = 'autogen';
               inputText = 'Digital evidence package includes: smartphone data extraction, email communications, cloud storage files, and network logs. Chain of custody maintained by certified technician. Need admissibility assessment for federal court.';
@@ -723,11 +723,11 @@ Manages AutoGen and CrewAI multi-agent workflows
               <p class="text-xs text-gray-500">Forensic analysis workflow</p>
             </div>
           </Button>
-          
+
           <Button
             variant="outline"
             class="h-auto p-4 justify-start"
-            onclick={() => {
+            on:click={() => {
               selectedWorkflow = 'legal_research';
               selectedProvider = 'autogen';
               inputText = 'Research precedents for cryptocurrency fraud cases involving privacy coins. Focus on 4th Amendment protections, blockchain analysis admissibility, and international cooperation in digital asset recovery.';

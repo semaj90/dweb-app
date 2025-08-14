@@ -45,7 +45,7 @@
   let isInitialized = false;
   
   // Masonry configuration
-  $: masonryOptions = {
+  let masonryOptions = $derived({);
     itemSelector,
     columnWidth,
     gutter,
@@ -68,7 +68,7 @@
   });
   
   // Update layout when items change
-  $: if (masonry && isInitialized) {
+  $effect(() => { if (masonry && isInitialized) {
     setTimeout(() => {
       if (masonry) {
         masonry.reloadItems();
@@ -141,14 +141,14 @@
     dropTargetStyle,
     dropFromOthersDisabled
   }}
-  on:consider={handleDndConsider}
-  on:finalize={handleDndFinalize}
+  onconsider={handleDndConsider}
+  onfinalize={handleDndFinalize}
   style="--column-width: {columnWidth}px; --gutter: {gutter}px;"
 >
   {#each items as item, index (item.id)}
     <div 
       class="space-y-4"
-      transition:fly={{ y: 20, duration: 300, delay: index * 50 }}
+      transitionfly={{ y: 20, duration: 300, delay: index * 50 }}
     >
       <slot {item} {index} />
     </div>

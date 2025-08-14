@@ -40,8 +40,8 @@
     };
   };
 
-  export let showSources = false;
-  export let showMetadata = false;
+  let { showSources = $bindable() } = $props(); // false;
+  let { showMetadata = $bindable() } = $props(); // false;
 
   let formattedTime = "";
   let isSourcesExpanded = false;
@@ -136,7 +136,7 @@
       <button
         type="button"
         class="space-y-4"
-        on:click={() => copyToClipboard()}
+        onclick={() => copyToClipboard()}
         title="Copy message"
         aria-label="Copy message to clipboard"
       >
@@ -165,7 +165,7 @@
         <button
           type="button"
           class="space-y-4"
-          on:click={() => (isSourcesExpanded = !isSourcesExpanded)}
+          onclick={() => (isSourcesExpanded = !isSourcesExpanded)}
           aria-expanded={isSourcesExpanded}
         >
           <svg
@@ -183,7 +183,7 @@
         </button>
 
         {#if isSourcesExpanded}
-          <div class="space-y-4" transition:slide={{ duration: 200 }}>
+          <div class="space-y-4" transitionslide={{ duration: 200 }}>
             {#each message.sources as source (source.id)}
               <div class="space-y-4">
                 <div class="space-y-4">
@@ -208,7 +208,7 @@
         <button
           type="button"
           class="space-y-4"
-          on:click={() => (isMetadataExpanded = !isMetadataExpanded)}
+          onclick={() => (isMetadataExpanded = !isMetadataExpanded)}
           aria-expanded={isMetadataExpanded}
         >
           <svg
@@ -226,7 +226,7 @@
         </button>
 
         {#if isMetadataExpanded}
-          <div class="space-y-4" transition:slide={{ duration: 200 }}>
+          <div class="space-y-4" transitionslide={{ duration: 200 }}>
             <div class="space-y-4">
               <span class="space-y-4">Model:</span>
               <span class="space-y-4">{message.metadata.model}</span>

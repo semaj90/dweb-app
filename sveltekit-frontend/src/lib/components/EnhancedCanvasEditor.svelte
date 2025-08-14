@@ -1,7 +1,7 @@
 <!-- Enhanced Interactive Canvas with Fabric.js, No VDOM, Auto-save with Loki.js -->
 <script lang="ts">
   interface Props {
-    caseId: string;;
+    caseId: string;
     canvasId: string ;
     width?: any;
     height?: any;
@@ -957,7 +957,7 @@
 }
 }
   // Reactive statements
-  $: state = get(canvasState);
+  let state = $derived(get(canvasState););
 
   // Exported functions for parent component access
   export function addEvidenceToCanvas(evidence: any) {
@@ -1007,14 +1007,14 @@
     <div class="space-y-4">
       <button
         class="space-y-4"
-        on:click={() => saveCanvas()}
+        onclick={() => saveCanvas()}
         title="Save Canvas"
       >
         <Save size="18" />
       </button>
       <button
         class="space-y-4"
-        on:click={() => undo()}
+        onclick={() => undo()}
         disabled={!state.canUndo}
         title="Undo"
       >
@@ -1022,7 +1022,7 @@
       </button>
       <button
         class="space-y-4"
-        on:click={() => redo()}
+        onclick={() => redo()}
         disabled={!state.canRedo}
         title="Redo"
       >
@@ -1038,7 +1038,7 @@
         <button
           class="space-y-4"
           class:active={state.tool === tool.id}
-          on:click={() => setTool(tool.id)}
+          onclick={() => setTool(tool.id)}
           title={tool.label}
         >
           <svelte:component this={tool.icon} size="18" />
@@ -1050,18 +1050,18 @@
 
     <!-- Canvas Controls -->
     <div class="space-y-4">
-      <button class="space-y-4" on:click={() => zoomOut()} title="Zoom Out">
+      <button class="space-y-4" onclick={() => zoomOut()} title="Zoom Out">
         <ZoomOut size="18" />
       </button>
       <span class="space-y-4">{state.zoom}%</span>
-      <button class="space-y-4" on:click={() => zoomIn()} title="Zoom In">
+      <button class="space-y-4" onclick={() => zoomIn()} title="Zoom In">
         <ZoomIn size="18" />
       </button>
 
       <button
         class="space-y-4"
         class:active={state.showGrid}
-        on:click={() => toggleGrid()}
+        onclick={() => toggleGrid()}
         title="Toggle Grid"
       >
         <Grid size="18" />
@@ -1072,13 +1072,13 @@
 
     <!-- Object Actions -->
     <div class="space-y-4">
-      <button class="space-y-4" on:click={() => copySelected()} title="Copy">
+      <button class="space-y-4" onclick={() => copySelected()} title="Copy">
         <Copy size="18" />
       </button>
-      <button class="space-y-4" on:click={() => pasteClipboard()} title="Paste">
+      <button class="space-y-4" onclick={() => pasteClipboard()} title="Paste">
         <Copy size="18" />
       </button>
-      <button class="space-y-4" on:click={() => deleteSelected()} title="Delete">
+      <button class="space-y-4" onclick={() => deleteSelected()} title="Delete">
         <Trash2 size="18" />
       </button>
     </div>
@@ -1089,7 +1089,7 @@
     <div class="space-y-4">
       <button
         class="space-y-4"
-        on:click={() => generateAISummary()}
+        onclick={() => generateAISummary()}
         title="Generate AI Summary"
       >
         <FileText size="18" />
@@ -1104,9 +1104,9 @@
         <Download size="18" />
       </button>
       <div class="space-y-4">
-        <button on:click={() => exportCanvas("png")}>Export as PNG</button>
-        <button on:click={() => exportCanvas("svg")}>Export as SVG</button>
-        <button on:click={() => exportCanvas("json")}>Export as JSON</button>
+        <button onclick={() => exportCanvas("png")}>Export as PNG</button>
+        <button onclick={() => exportCanvas("svg")}>Export as SVG</button>
+        <button onclick={() => exportCanvas("json")}>Export as JSON</button>
       </div>
     </div>
 
@@ -1129,7 +1129,7 @@
             type="text"
             placeholder="Search evidence..."
             bind:value={state.searchQuery}
-            on:input={(e) =>
+            oninput={(e) =>
               searchEvidence((e.target as HTMLInputElement).value)}
             class="space-y-4"
           />
@@ -1140,8 +1140,8 @@
           {#each state.searchQuery ? searchResults : evidenceItems as evidence}
             <div
               class="space-y-4"
-              on:click={() => addEvidenceToCanvas(evidence)}
-              on:keydown={(e) =>
+              onclick={() => addEvidenceToCanvas(evidence)}
+              onkeydown={(e) =>
                 e.key === "Enter" && addEvidenceToCanvas(evidence)}
               role="button"
               tabindex={0}
@@ -1158,28 +1158,28 @@
         <div class="space-y-4">
           <button
             class="space-y-4"
-            on:click={() => addTimelineToCanvas()}
+            onclick={() => addTimelineToCanvas()}
           >
             <Clock size="16" class="space-y-4" />
             Timeline
           </button>
           <button
             class="space-y-4"
-            on:click={() => addPersonToCanvas()}
+            onclick={() => addPersonToCanvas()}
           >
             <Users size="16" class="space-y-4" />
             Person
           </button>
           <button
             class="space-y-4"
-            on:click={() => addLocationToCanvas()}
+            onclick={() => addLocationToCanvas()}
           >
             <MapPin size="16" class="space-y-4" />
             Location
           </button>
           <button
             class="space-y-4"
-            on:click={() => setTool("note")}
+            onclick={() => setTool("note")}
           >
             <FileText size="16" class="space-y-4" />
             Note

@@ -1,0 +1,93 @@
+# Wait 60 seconds before connecting using these details, or login to https://console.neo4j.io to validate the Aura Instance is available
+NEO4J_URI=neo4j+s://04d6547a.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=VGLunwtms0Hn9K8bQO8RWan01_ePnzJBUsGWRSRRaeg
+NEO4J_DATABASE=neo4j
+AURA_INSTANCEID=04d6547a
+AURA_INSTANCENAME=Free instance
+neo4j desktop 
+
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> taskkill /F /IM upload-service.exe 2>$null; Start-Sleep 1; $env:DATABASE_URL='postgresql://postgres:postgres@localhost:5432/legal_ai_db?sslmode=disable'; $env:MINIO_ENDPOINT='localhost:9000'; $env:MINIO_ACCESS_KEY='minioadmin'; $env:MINIO_SECRET_KEY='minioadmin123'; $env:MINIO_BUCKET='legal-documents'; .\bin\upload-service.exe
+MINIO_SECRET_KEY='minioadmin123'\x3b $env:MINIO_BUCKET='legal-documents'\x3b .\x5cbin\x5cupload-service.exeSUCCESS: The process "upload-service.exe" with PID 27700 has been terminated.
+.\bin\upload-service.exe: The term '.\bin\upload-service.exe' is not recognized as a name of a cmdlet, function, script file, 
+or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> 
+
+
+
+
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> taskkill /F /IM upload-service.exe 2>$null; Start-Sleep 1; $env:DATABASE_URL='postgresql://postgres:postgres@localhost:5432/legal_ai_db?sslmode=disable'; $env:MINIO_ENDPOINT='localhost:9000'; $env:MINIO_ACCESS_KEY='minioadmin'; $env:MINIO_SECRET_KEY='minioadmin123'; $env:MINIO_BUCKET='legal-documents'; .\bin\upload-service.exe
+MINIO_SECRET_KEY='minioadmin123'\x3b $env:MINIO_BUCKET='legal-documents'\x3b .\x5cbin\x5cupload-service.exeSUCCESS: The process "upload-service.exe" with PID 27700 has been terminated.
+.\bin\upload-service.exe: The term '.\bin\upload-service.exe' is not recognized as a name of a cmdlet, function, script file, 
+or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app> 
+🗄️ Setting up MinIO for Legal AI System...
+✅ Using local MinIO: C:\Users\james\Desktop\deeds-web\deeds-web-app\minio.exe
+New-NetFirewallRule: C:\Users\james\Desktop\deeds-web\deeds-web-app\quick-minio-setup.ps1:35
+Line |
+  35 |              New-NetFirewallRule -DisplayName "MinIO API ($Port)" -Dir …
+     |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Access is denied.
+New-NetFirewallRule: C:\Users\james\Desktop\deeds-web\deeds-web-app\quick-minio-setup.ps1:38
+Line |
+  38 |              New-NetFirewallRule -DisplayName "MinIO Console ($Console …
+     |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | Access is denied.
+🚀 Starting MinIO server on ports 9000 (API) and 9001 (Console)...
+MinIO Object Storage Server
+Copyright: 2015-2025 MinIO, Inc.
+License: GNU AGPLv3 - https://www.gnu.org/licenses/agpl-3.0.html
+Version: RELEASE.2025-07-23T15-54-02Z (go1.24.5 windows/amd64)
+
+API: http://10.0.0.243:9000  http://172.27.32.1:9000  http://127.0.0.1:9000
+   RootUser: minioadmin
+   RootPass: minioadmin123
+
+WebUI: http://10.0.0.243:9001 http://172.27.32.1:9001 http://127.0.0.1:9001
+   RootUser: minioadmin
+   RootPass: minioadmin123
+
+CLI: https://min.io/docs/minio/linux/reference/minio-mc.html#quickstart
+   $ mc alias set 'myminio' 'http://10.0.0.243:9000' 'minioadmin' 'minioadmin123'
+
+Docs: https://docs.min.io
+✅ MinIO server started successfully!
+🌐 API Endpoint: http://localhost:9000
+🎮 Console: http://localhost:9001
+🔑 Username: minioadmin
+🔑 Password: minioadmin123
+🎯 MinIO setup complete! You can now restart your upload service.
+change this to windows10 local native?
+
+ LEGAL AI UPLOAD SYSTEM STATUS CHECK
+= * 50
+🗄️ MinIO Status:
+   ✅ MinIO is running and healthy                                                                                             
+   🌐 Console: http://localhost:9001
+   🔑 Credentials: minioadmin / minioadmin123
+🐘 PostgreSQL Status:
+   ✅ PostgreSQL is running on port 5432                                                                                      
+🚀 Upload Service Status:                                                                                                     
+   ❌ Upload service is not responding                                                                                        
+                                                                                                                              
+🎯 NEXT STEPS:                                                                                                                
+= * 50                                                                                                                        
+1. 🔧 Fix Database Connection:                                                                                                
+   Try different PostgreSQL credentials:                                                                                      
+   - postgresql://postgres:password@localhost:5432/legal_ai_db                                                                
+   - postgresql://postgres:123456@localhost:5432/legal_ai_db                                                                  
+   - postgresql://legal_admin:123456@localhost:5432/legal_ai_db
+2. 🧪 Test File Upload:                                                                                                        
+   Once both services are green, test upload:                                                                                 
+   curl -X POST -F 'file=@test.txt' -F 'caseId=TEST-001' -F 'documentType=memo' http://localhost:8093/upload                  
+3. 🎨 Connect Frontend:                                                                                                       
+   Wire SvelteKit components to upload service endpoint                                                                       
+   Update upload forms to point to: http://localhost:8093/upload                                                              
+4. 🔍 Batch Fix Svelte Errors:                                                                                                
+   Run error reduction pipeline on the 2788 TypeScript errors                                                                 
+                                                                                                                              
+🎉 PROGRESS: MinIO integration complete! Database connection is the final step.                                               
+PS C:\Users\james\Desktop\deeds-web\deeds-web-app>                                                                            
+.\system-status-check.ps1

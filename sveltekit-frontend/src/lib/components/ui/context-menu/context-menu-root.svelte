@@ -1,9 +1,11 @@
 <script lang="ts">
   interface Props {
     onOpenChange?: (open: boolean) => void;
+    children: any;
   }
   let {
-    onOpenChange = undefined
+    onOpenChange = undefined,
+    children
   }: Props = $props();
 
 
@@ -31,7 +33,7 @@
 </script>
 
 <div class="space-y-4">
-  <slot />
+  {@render children()}
 </div>
 
 <style>

@@ -47,10 +47,10 @@
   });
 
   // Get recent citations
-  $: recentCitations = citationStore.getRecentCitations($citationStore, 5);
+  let recentCitations = $derived(citationStore.getRecentCitations($citationStore, 5));
 
   // Available commands
-  $: commands = [
+  let commands = $derived([
     {
       id: "search",
       label: "Search Cases",
@@ -115,17 +115,17 @@
       action: () => insertCitation(citation),
       category: "Citations",
     })),
-  ];
+  ]);
 
   // Filter commands based on search query
-  $: filteredCommands = commands.filter(
+  let filteredCommands = $derived(commands.filter(
     (cmd) =>
       cmd.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
       cmd.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ));
 
   // Group commands by category
-  $: groupedCommands = filteredCommands.reduce(
+  let groupedCommands = $derived(filteredCommands.reduce(
     (acc, cmd) => {
       if (!acc[cmd.category]) {
         acc[cmd.category] = [];
@@ -134,7 +134,7 @@
       return acc;
     },
     {} as Record<string, typeof commands>
-  );
+  ));
 
   // Handle keyboard navigation
   function handleKeydown(e: KeyboardEvent) {
@@ -214,7 +214,7 @@
     });
 }
   // Reset when closing
-  $: if (!$open) {
+  $effect(() => { if (!$open) {
     searchQuery = "";
     selectedIndex = 0;
 }
@@ -229,7 +229,7 @@
   <div
     use:melt={$content}
     class="space-y-4"
-    transition:fly={{ y: -10, duration: 150 }}
+    transitionfly={{ y: -10, duration: 150 }}
   >
     <div class="space-y-4">
       <Search size={16} />

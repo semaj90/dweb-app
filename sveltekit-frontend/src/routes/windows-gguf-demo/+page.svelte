@@ -38,10 +38,10 @@
   let animationFrame: number;
 
   // Access stores directly from the service objects
-  $: modelStatus = ggufRuntime.stores.modelStatus;
-  $: runtimeStats = ggufRuntime.stores.runtimeStats;
-  $: metrics = orchestrator.stores.metrics;
-  $: systemHealth = orchestrator.derived.systemHealth;
+  let modelStatus = $derived(ggufRuntime.stores.modelStatus);
+  let runtimeStats = $derived(ggufRuntime.stores.runtimeStats);
+  let metrics = $derived(orchestrator.stores.metrics);
+  let systemHealth = $derived(orchestrator.derived.systemHealth);
 
   onMount(async () => {
     // Initialize WebGPU for visualization
@@ -454,7 +454,7 @@
 
           <div class="flex flex-wrap gap-3">
             <Button
-              on:click={runGGUFInference}
+              onclick={runGGUFInference}
               disabled={isProcessing || !$modelStatus.loaded}
               class="bg-blue-600 hover:bg-blue-700 text-white"
             >
@@ -462,7 +462,7 @@
             </Button>
 
             <Button
-              on:click={runWebGPUProcessing}
+              onclick={runWebGPUProcessing}
               disabled={isProcessing || !webgpuStatus.available}
               class="bg-green-600 hover:bg-green-700 text-white"
             >
@@ -470,7 +470,7 @@
             </Button>
 
             <Button
-              on:click={runNodeJSOrchestration}
+              onclick={runNodeJSOrchestration}
               disabled={isProcessing}
               class="bg-purple-600 hover:bg-purple-700 text-white"
             >
@@ -480,7 +480,7 @@
 
           <div class="mt-4 flex gap-2">
             <Button
-              on:click={clearResults}
+              onclick={clearResults}
               variant="outline"
               class="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
@@ -488,7 +488,7 @@
             </Button>
 
             <Button
-              on:click={exportResults}
+              onclick={exportResults}
               variant="outline"
               class="border-slate-600 text-slate-300 hover:bg-slate-700"
             >

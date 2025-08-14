@@ -35,7 +35,7 @@
   let searchQuery = '';
   let selectedIndex = 0;
   
-  $: filteredItems = searchQuery 
+  let filteredItems = $derived(searchQuery );
     ? allItems.filter(item => 
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -117,7 +117,7 @@
 }
   });
   
-  $: if (open && searchInput) {
+  $effect(() => { if (open && searchInput) {
     searchInput.focus();
 }
   function handleKeydown(e: KeyboardEvent) {
@@ -158,21 +158,21 @@
     open = false;
     dispatch('close');
 }
-  $: if (filteredItems.length > 0 && selectedIndex >= filteredItems.length) {
+  $effect(() => { if (filteredItems.length > 0 && selectedIndex >= filteredItems.length) {
     selectedIndex = 0;
 }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if open}
   <!-- Backdrop -->
   <div 
     class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-    on:click={close}
+    onclick={close}
     role="button"
     tabindex="0"
-    on:keydown={(e) => e.key === 'Enter' && close()}
+    onkeydown={(e) => e.key === 'Enter' && close()}
   >
     <!-- Command palette -->
     <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
@@ -192,7 +192,7 @@
             type="text"
             placeholder="Search commands, cases, evidence..."
             class="flex-1 bg-transparent border-none outline-none py-4 text-foreground placeholder:text-muted-foreground"
-            on:input={() => selectedIndex = 0}
+            oninput={() => selectedIndex = 0}
           />
           <div class="flex items-center gap-1 text-xs text-muted-foreground">
             <kbd class="px-1.5 py-0.5 bg-nier-surface-light rounded border border-nier-gray">
@@ -228,8 +228,8 @@
                         ? "bg-harvard-crimson text-white shadow-nier-glow"
                         : "hover:bg-nier-surface-light text-foreground"
                     )}
-                    on:click={() => selectItem(item)}
-                    on:mouseenter={() => selectedIndex = globalIndex}
+                    onclick={() => selectItem(item)}
+                    onmouseenter={() => selectedIndex = globalIndex}
                   >
                     <div class="flex items-center">
                       <svelte:component 

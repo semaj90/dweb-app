@@ -148,12 +148,12 @@
 				{loading ? 'animate-pulse' : ''}
 			"
 			{disabled}
-			on:click={handleClick}
-			on:keydown={handleKeydown}
-			on:mouseenter={showTooltipHandler}
-			on:mouseleave={hideTooltipHandler}
-			on:focus={showTooltipHandler}
-			on:blur={hideTooltipHandler}
+			onclick={handleClick}
+			onkeydown={handleKeydown}
+			onmouseenter={showTooltipHandler}
+			onmouseleave={hideTooltipHandler}
+			onfocus={showTooltipHandler}
+			onblur={hideTooltipHandler}
 			aria-label={tooltip}
 			in:fly={{ y: 100, duration: 500, easing: quintOut }}
 		>

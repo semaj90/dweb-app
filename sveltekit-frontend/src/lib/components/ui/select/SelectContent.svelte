@@ -12,7 +12,7 @@
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
 
-  export let class_: string = "";
+  let { class_ = $bindable() } = $props(); // string = "";
 
   const context =
     getContext<SelectContext>("select") ||
@@ -27,7 +27,7 @@
 
 {#if $open}
   <div class="space-y-4" role="listbox">
-    <slot />
+    <slot></slot>
   </div>
 {/if}
 

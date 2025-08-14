@@ -145,7 +145,7 @@
   };
   
   // Reactive updates
-  $: if (editorInstance && $report.content !== editorInstance.getContent()) {
+  $effect(() => { if (editorInstance && $report.content !== editorInstance.getContent()) {
     editorInstance.setContent($report.content);
 }
   // Custom methods
@@ -187,7 +187,7 @@
     {disabled}
     bind:value={$report.content}
     conf={editorConfig}
-    on:change={(e: any) => reportActions.updateContent(e.detail.level.content)}
+    onchange={(e: any) => reportActions.updateContent(e.detail.level.content)}
   />
 </div>
 

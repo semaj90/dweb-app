@@ -103,7 +103,7 @@
   <div
     bind:this={notificationElement}
   class="yorha-notification {type}"
-  transition:fly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
+  transitionfly="{{ x: position.includes('right') ? 150 : -150, duration: 250 }}"
   onmouseenter={pauseAutoClose}
   onmouseleave={resumeAutoClose}
     role="alert"
@@ -115,7 +115,7 @@
         <div
           class="progress-fill"
           style="width: {progress}%"
-          transition:fade="{{ duration: 200 }}"
+          transitionfade="{{ duration: 200 }}"
         ></div>
       </div>
     {/if}

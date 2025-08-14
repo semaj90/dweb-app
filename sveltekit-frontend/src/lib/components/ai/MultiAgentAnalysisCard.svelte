@@ -21,13 +21,13 @@
   };
 
   // Extract data with fallbacks
-  $: evidence = analysisData?.evidenceAnalysis ?? {};
-  $: persons = analysisData?.personsData?.persons ?? [];
-  $: relationships = analysisData?.personsData?.relationships ?? [];
-  $: synthesis = analysisData?.caseSynthesis ?? {};
+  let evidence = $derived(analysisData?.evidenceAnalysis ?? {};);
+  let persons = $derived(analysisData?.personsData?.persons ?? [];);
+  let relationships = $derived(analysisData?.personsData?.relationships ?? [];);
+  let synthesis = $derived(analysisData?.caseSynthesis ?? {};);
   
   // Case strength styling
-  $: strengthColor = {
+  let strengthColor = $derived({);
     strong: 'text-green-600 bg-green-50',
     moderate: 'text-yellow-600 bg-yellow-50', 
     weak: 'text-red-600 bg-red-50'
@@ -231,7 +231,7 @@
       <Button 
         variant="outline" 
         size="sm"
-        on:click={() => showDetails = !showDetails}
+        onclick={() => showDetails = !showDetails}
       >
         {showDetails ? 'Hide' : 'Show'} Full Analysis
       </Button>

@@ -214,13 +214,13 @@
             <div
               use:melt={$overlay}
               class="nier-modal-overlay"
-              transition:fade={{ duration: 200 }}
+              transitionfade={{ duration: 200 }}
             />
             
             <div
               use:melt={$content}
               class="nier-modal"
-              transition:fly={{ y: 20, duration: 300 }}
+              transitionfly={{ y: 20, duration: 300 }}
             >
               <h2 use:melt={$title} class="text-2xl font-display nier-heading mb-4">
                 System Alert

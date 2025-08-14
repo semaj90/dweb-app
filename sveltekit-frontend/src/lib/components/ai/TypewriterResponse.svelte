@@ -28,7 +28,7 @@
 	import { advancedCache } from '$lib/services/advanced-cache-manager';
 
 	// Props
-		export let speed: number = 50; // milliseconds per character
+		let { speed = $bindable() } = $props(); // number = 50; // milliseconds per character
 						
 	// Types
 	interface UserActivity {
@@ -354,7 +354,7 @@
 	}
 
 	// Reactive statements
-	$: if (text && autoStart) {
+	$effect(() => { if (text && autoStart) {
 		restart();
 	}
 
@@ -426,10 +426,10 @@
 <!-- Advanced Controls (for development/debugging) -->
 {#if $$props.showControls}
 	<div class="typewriter-controls" in:fade={{ delay: 500 }}>
-		<button on:click={pause} disabled={!isTyping || isPaused}>Pause</button>
-		<button on:click={resume} disabled={!isPaused}>Resume</button>
-		<button on:click={restart}>Restart</button>
-		<button on:click={stop}>Stop</button>
+		<button onclick={pause} disabled={!isTyping || isPaused}>Pause</button>
+		<button onclick={resume} disabled={!isPaused}>Resume</button>
+		<button onclick={restart}>Restart</button>
+		<button onclick={stop}>Stop</button>
 		
 		<div class="speed-controls">
 			<label>
@@ -439,7 +439,7 @@
 					min="10" 
 					max="200" 
 					bind:value={speed}
-					on:change={() => setSpeed(speed)}
+					onchange={() => setSpeed(speed)}
 				/>
 				<span>{speed}ms</span>
 			</label>
@@ -452,7 +452,7 @@
 					max="5" 
 					step="0.1"
 					bind:value={replaySpeed}
-					on:change={() => setReplaySpeed(replaySpeed)}
+					onchange={() => setReplaySpeed(replaySpeed)}
 				/>
 				<span>{replaySpeed}x</span>
 			</label>

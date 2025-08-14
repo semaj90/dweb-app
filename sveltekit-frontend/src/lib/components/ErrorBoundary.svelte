@@ -32,9 +32,9 @@
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  export let showInline = false; // Show as inline alert vs modal
-  export let autoHide = true; // Auto-hide non-critical errors
-  export let maxWidth = "max-w-lg"; // Maximum width class
+  let { showInline = $bindable() } = $props(); // false; // Show as inline alert vs modal
+  let { autoHide = $bindable() } = $props(); // true; // Auto-hide non-critical errors
+  let { maxWidth = $bindable() } = $props(); // "max-w-lg"; // Maximum width class
 
   let currentError: UserFriendlyError | null = null;
   let showDetails = false;
@@ -199,7 +199,7 @@ Timestamp: ${new Date().toISOString()}`;
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => copyErrorDetails()}
+                onclick={() => copyErrorDetails()}
                 class="h-8 w-8 p-0"
                 aria-label="Copy error details"
               >
@@ -220,7 +220,7 @@ Timestamp: ${new Date().toISOString()}`;
             size="sm"
             variant="outline"
             class={getButtonClass(currentError.severity)}
-            on:click={() => retryAction()}
+            onclick={() => retryAction()}
             disabled={retryInProgress}
             aria-label="Retry action"
           >
@@ -237,7 +237,7 @@ Timestamp: ${new Date().toISOString()}`;
           <Button
             size="sm"
             variant="outline"
-            on:click={() => (showDetails = !showDetails)}
+            onclick={() => (showDetails = !showDetails)}
             aria-label="Toggle error details"
           >
             {#if showDetails}
@@ -251,7 +251,7 @@ Timestamp: ${new Date().toISOString()}`;
         <Button
           size="sm"
           variant="outline"
-          on:click={() => clearError()}
+          onclick={() => clearError()}
           aria-label="Dismiss error"
         >
           <X class="h-4 w-4" />
@@ -293,7 +293,7 @@ Timestamp: ${new Date().toISOString()}`;
                   <Button
                     variant="outline"
                     size="sm"
-                    on:click={() => copyErrorDetails()}
+                    onclick={() => copyErrorDetails()}
                     class="gap-2"
                     aria-label="Copy error details"
                   >
@@ -316,7 +316,7 @@ Timestamp: ${new Date().toISOString()}`;
             <Button
               variant="outline"
               size="sm"
-              on:click={() => reportError()}
+              onclick={() => reportError()}
               class="gap-2"
             >
               <Bug class="h-4 w-4" />
@@ -328,7 +328,7 @@ Timestamp: ${new Date().toISOString()}`;
             <Button
               variant="outline"
               size="sm"
-              on:click={() => (showDetails = !showDetails)}
+              onclick={() => (showDetails = !showDetails)}
               class="gap-2"
             >
               {#if showDetails}
@@ -344,7 +344,7 @@ Timestamp: ${new Date().toISOString()}`;
           {#if currentError.canRetry}
             <Button
               class={`gap-2 ${getButtonClass(currentError.severity)}`}
-              on:click={() => retryAction()}
+              onclick={() => retryAction()}
               disabled={retryInProgress}
             >
               {#if retryInProgress}
@@ -359,7 +359,7 @@ Timestamp: ${new Date().toISOString()}`;
 
           <Button
             variant={currentError.canRetry ? "outline" : "primary"}
-            on:click={() => clearError()}
+            onclick={() => clearError()}
           >
             {currentError.canRetry ? "Cancel" : "Close"}
           </Button>

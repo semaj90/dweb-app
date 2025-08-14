@@ -2,7 +2,7 @@
 -- Create database and extensions
 
 CREATE EXTENSION IF NOT EXISTS vector;
-CREATE EXTENSION IF NOT EXISTS uuid-ossp;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
@@ -100,6 +100,6 @@ CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON chat_messages(session
 CREATE INDEX IF NOT EXISTS idx_document_embeddings_vector ON document_embeddings USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);
 
 -- Insert a test user
-INSERT INTO users (email, password_hash, first_name, last_name, role) 
+INSERT INTO users (email, password_hash, first_name, last_name, role)
 VALUES ('test@example.com', '$2a$10$dummy.hash.for.testing', 'Test', 'User', 'user')
 ON CONFLICT (email) DO NOTHING;

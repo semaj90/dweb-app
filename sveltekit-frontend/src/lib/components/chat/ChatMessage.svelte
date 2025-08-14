@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    message: ChatMessage;;
+    message: ChatMessage;
   }
   let {
     message

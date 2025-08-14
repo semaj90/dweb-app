@@ -135,10 +135,10 @@
     {disabled}
     {readonly}
     class="space-y-4"
-    on:input={handleInput}
-    on:keydown={handleKeydown}
-    on:blur={handleBlur}
-    on:focus={handleFocus}
+    oninput={handleInput}
+    onkeydown={handleKeydown}
+    onblur={handleBlur}
+    onfocus={handleFocus}
     on:change
     on:select
     on:paste
@@ -153,7 +153,7 @@
         bind:this={commandMenu}
         textareaElement={textarea}
         onInsert={handleCommandInsert}
-        on:close={() => (showCommandMenu = false)}
+        onclose={() => (showCommandMenu = false)}
       />
     </div>
   {/if}

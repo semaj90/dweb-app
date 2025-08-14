@@ -457,8 +457,8 @@
 {#if showPanel}
   <div
     class="space-y-4"
-    on:click={() => (showPanel = false)}
-    on:keydown={(e) => e.key === 'Escape' && (showPanel = false)}
+    onclick={() => (showPanel = false)}
+    onkeydown={(e) => e.key === 'Escape' && (showPanel = false)}
     role="dialog"
     aria-modal="true"
     aria-labelledby="accessibility-panel-title"
@@ -491,7 +491,7 @@
                 type="checkbox"
                 class="space-y-4"
                 bind:checked={highContrast}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>High Contrast</span>
             </label>
@@ -501,7 +501,7 @@
                 type="checkbox"
                 class="space-y-4"
                 bind:checked={reducedMotion}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Reduced Motion</span>
             </label>
@@ -511,7 +511,7 @@
                 type="checkbox"
                 class="space-y-4"
                 bind:checked={largeText}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Large Text</span>
             </label>
@@ -521,7 +521,7 @@
                 type="checkbox"
                 class="space-y-4"
                 bind:checked={keyboardNavigation}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Enhanced Keyboard Navigation</span>
             </label>
@@ -531,7 +531,7 @@
                 type="checkbox"
                 class="space-y-4"
                 bind:checked={screenReaderMode}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Screen Reader Optimizations</span>
             </label>

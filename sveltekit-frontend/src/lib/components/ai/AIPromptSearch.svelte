@@ -7,7 +7,7 @@
   let results: any[] = [];
   let fuse: Fuse<any>;
 
-  $: history = $aiHistory;
+  let history = $derived($aiHistory;);
 
   onMount(() => {
     fuse = new Fuse(history, {
@@ -16,7 +16,7 @@
     });
   });
 
-  $: results = query && fuse ? fuse.search(query).map((r) => r.item) : history;
+  let results = $derived(query && fuse ? fuse.search(query).map((r) => r.item) : history;);
 </script>
 
 <div class="space-y-4">

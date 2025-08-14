@@ -269,7 +269,7 @@
           <Button
             variant="secondary"
             class="space-y-4"
-            on:click={() => showSuccessNotification()}
+            onclick={() => showSuccessNotification()}
           >
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Success
@@ -277,7 +277,7 @@
           <Button
             variant="danger"
             class="space-y-4"
-            on:click={() => showErrorNotification()}
+            onclick={() => showErrorNotification()}
           >
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Error
@@ -285,7 +285,7 @@
           <Button
             variant="danger"
             class="space-y-4"
-            on:click={() => showWarningNotification()}
+            onclick={() => showWarningNotification()}
           >
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Warning
@@ -293,7 +293,7 @@
           <Button
             variant="secondary"
             class="space-y-4"
-            on:click={() => showInfoNotification()}
+            onclick={() => showInfoNotification()}
           >
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Info
@@ -316,7 +316,7 @@
           <button
             class="space-y-4"
             type="button"
-            on:click={() => showConfirmModal()}
+            onclick={() => showConfirmModal()}
             aria-label="Confirm Dialog"
           >
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
@@ -325,7 +325,7 @@
           <button
             class="space-y-4"
             type="button"
-            on:click={() => showAlertModal()}
+            onclick={() => showAlertModal()}
             aria-label="Alert Dialog"
           >
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
@@ -334,7 +334,7 @@
           <button
             class="space-y-4"
             type="button"
-            on:click={() => showPromptModal()}
+            onclick={() => showPromptModal()}
             aria-label="Prompt Dialog"
           >
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
@@ -359,7 +359,7 @@
             variant="outlined"
             interactive
             selected={interactiveCardSelected}
-            on:click={() =>
+            onclick={() =>
               (interactiveCardSelected = !interactiveCardSelected)}
             padding="md"
           >
@@ -421,7 +421,7 @@
 
           <Form
             options={demoFormOptions}
-            on:submit={handleDemoFormSubmit}
+            onsubmit={handleDemoFormSubmit}
             submitText="Create Account"
             showResetButton={true}
             resetText="Clear Form"
@@ -451,12 +451,12 @@
                 data-icon="${1}"
                 value={values.name || ""}
                 error={errors.name}
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "name",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("name")}
+                onblur={() => formApi.touchField("name")}
               />
 
               <Input
@@ -468,12 +468,12 @@
                 value={values.email || ""}
                 error={errors.email}
                 success={values.email && !errors.email}
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "email",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("email")}
+                onblur={() => formApi.touchField("email")}
               />
 
               <Input
@@ -485,12 +485,12 @@
                 value={values.password || ""}
                 error={errors.password}
                 hint="Must be at least 8 characters long"
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "password",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("password")}
+                onblur={() => formApi.touchField("password")}
               />
 
               <Input
@@ -501,12 +501,12 @@
                 data-icon="${1}"
                 value={values.confirmPassword || ""}
                 error={errors.confirmPassword}
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "confirmPassword",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("confirmPassword")}
+                onblur={() => formApi.touchField("confirmPassword")}
               />
 
               <div class="space-y-4">
@@ -517,12 +517,12 @@
                     type="checkbox"
                     class="space-y-4"
                     checked={values.terms || false}
-                    on:change={(e) =>
+                    onchange={(e) =>
                       formApi.setField(
                         "terms",
                         (e.target as HTMLInputElement)?.checked
                       )}
-                    on:blur={() => formApi.touchField("terms")}
+                    onblur={() => formApi.touchField("terms")}
                   />
                   I agree to the terms and conditions *
                 </label>

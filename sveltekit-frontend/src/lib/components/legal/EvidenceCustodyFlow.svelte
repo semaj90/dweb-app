@@ -5,10 +5,10 @@ and AI-powered verification features.
 -->
 <script lang="ts">
   interface Props {
-    evidenceId: string;;
-    caseId: string;;
-    userId: string;;
-    originalHash: string;;
+    evidenceId: string;
+    caseId: string;
+    userId: string;
+    originalHash: string;
     onWorkflowComplete: ((result: any) ;
     onWorkflowError: ((error: string) ;
   }

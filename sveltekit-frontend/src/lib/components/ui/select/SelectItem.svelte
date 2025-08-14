@@ -14,7 +14,7 @@
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
 
-    export let class_: string = "";
+    let { class_ = $bindable() } = $props(); // string = "";
 
   const context =
     getContext<SelectContext>("select") ||
@@ -26,7 +26,7 @@
     } as SelectContext);
   const { selected, open, onSelect, onToggle } = context;
 
-  $: isSelected = $selected === value;
+  let isSelected = $derived($selected === value;);
 
   function handleClick() {
     onSelect(value);
@@ -38,11 +38,11 @@
   class="space-y-4"
   role="option"
   aria-selected={isSelected ? "true" : "false"}
-  on:click={() => handleClick()}
-  on:keydown={(e) => e.key === "Enter" && handleClick()}
+  onclick={() => handleClick()}
+  onkeydown={(e) => e.key === "Enter" && handleClick()}
   tabindex={0}
 >
-  <slot />
+  <slot></slot>
 </div>
 
 <style>

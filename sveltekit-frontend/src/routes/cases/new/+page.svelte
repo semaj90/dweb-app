@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    form: ActionData;;
+    form: ActionData;
   }
   let {
     form
@@ -48,9 +48,11 @@
     goto("/cases");
 }
   // Show server-side form errors as notifications
-  $: if (form?.error) {
-    notifications.error("Form Error", form.error);
-}
+  $effect(() => {
+    if (form?.error) {
+      notifications.error("Form Error", form.error);
+    }
+  });
 </script>
 
 <svelte:head>
@@ -82,7 +84,7 @@
       createdAt: new Date(),
       updatedAt: new Date(),
     }}
-    on:submit={handleSubmit}
-    on:cancel={handleCancel}
+    onsubmit={handleSubmit}
+    oncancel={handleCancel}
   />
 </div>

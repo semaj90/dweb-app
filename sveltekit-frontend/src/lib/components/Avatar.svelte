@@ -19,7 +19,7 @@
 	let fileInput: HTMLInputElement;
 	let dragOver = false;
 	
-	$: avatarSize = {
+	let avatarSize = $derived({);
 		small: '32px',
 		medium: '48px', 
 		large: '80px'
@@ -94,16 +94,16 @@
 	<div 
 		class="avatar" 
 		style="width: {avatarSize}; height: {avatarSize};"
-		on:click={() => handleAvatarClick()}
-		on:keydown={(e) => {
+		onclick={() => handleAvatarClick()}
+		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
 				handleAvatarClick();
 			}
 		}}
-		on:drop={handleDrop}
-		on:dragover={handleDragOver}
-		on:dragleave={handleDragLeave}
+		ondrop={handleDrop}
+		ondragover={handleDragOver}
+		ondragleave={handleDragLeave}
 		role="button"
 		tabindex={clickable ? 0 : -1}
 		aria-label="Upload or change avatar"
@@ -137,7 +137,7 @@
 			<button 
 				type="button" 
 				class="upload-btn"
-				on:click={() => fileInput?.click()}
+				onclick={() => fileInput?.click()}
 				disabled={$avatarStore.isUploading}
 			>
 				{$avatarStore.isUploading ? 'Uploading...' : 'Change Avatar'}
@@ -147,7 +147,7 @@
 				<button 
 					type="button" 
 					class="remove-btn"
-					on:click={() => handleRemoveAvatar()}
+					onclick={() => handleRemoveAvatar()}
 				>
 					Remove
 				</button>
@@ -158,7 +158,7 @@
 	{#if $avatarStore.error}
 		<div class="error-message">
 			{$avatarStore.error}
-			<button type="button" on:click={() => avatarStore.clearError()} class="close-error">×</button>
+			<button type="button" onclick={() => avatarStore.clearError()} class="close-error">×</button>
 		</div>
 	{/if}
 </div>
@@ -167,7 +167,7 @@
 	bind:this={fileInput}
 	type="file" 
 	accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
-	on:change={handleFileSelect}
+	onchange={handleFileSelect}
 	style="display: none;"
 />
 

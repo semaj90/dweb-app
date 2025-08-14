@@ -69,8 +69,8 @@ import type { Case } from '$lib/types';
       default:
         return FileText;
 }}
-  $: statusIcon = getStatusIcon(caseData.status);
-  $: formattedDate = formatDistanceToNow(new Date(caseData.openedAt), {
+  let statusIcon = $derived(getStatusIcon(caseData.status););
+  let formattedDate = $derived(formatDistanceToNow(new Date(caseData.openedAt), {);
     addSuffix: true,
   });
 </script>
@@ -79,8 +79,8 @@ import type { Case } from '$lib/types';
   class="space-y-4"
   class:active={isActive}
   class:disabled
-  on:click={handleClick}
-  on:keydown={(e) => e.key === "Enter" && handleClick()}
+  onclick={handleClick}
+  onkeydown={(e) => e.key === "Enter" && handleClick()}
   role="button"
   tabindex={0}
 >
@@ -146,8 +146,8 @@ import type { Case } from '$lib/types';
       <select
         class="space-y-4"
         value={caseData.status}
-        on:change={handleStatusChange}
-        on:click={(e) => e.stopPropagation()}
+        onchange={handleStatusChange}
+        onclick={(e) => e.stopPropagation()}
       >
         <option value="open">Open</option>
         <option value="in_progress">In Progress</option>

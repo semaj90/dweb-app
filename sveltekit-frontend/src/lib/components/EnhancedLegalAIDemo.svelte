@@ -74,15 +74,15 @@
   // REACTIVE STATEMENTS
   // ======================================================================
 
-  $: currentProcessing = $currentlyProcessingStore;
-  $: processingResults = $processingResultsStore;
-  $: aiRecommendations = $aiRecommendationsStore;
-  $: vectorMatches = $vectorSimilarityStore;
-  $: graphRelationships = $graphRelationshipsStore;
-  $: systemHealth = $systemHealthStore;
-  $: cacheStats = $cacheStatsStore;
-  $: cacheHealth = $cacheHealthStore;
-  $: streamingConnected = $streamingStore.isStreaming;
+  let currentProcessing = $derived($currentlyProcessingStore;);
+  let processingResults = $derived($processingResultsStore;);
+  let aiRecommendations = $derived($aiRecommendationsStore;);
+  let vectorMatches = $derived($vectorSimilarityStore;);
+  let graphRelationships = $derived($graphRelationshipsStore;);
+  let systemHealth = $derived($systemHealthStore;);
+  let cacheStats = $derived($cacheStatsStore;);
+  let cacheHealth = $derived($cacheHealthStore;);
+  let streamingConnected = $derived($streamingStore.isStreaming;);
 
   // ======================================================================
   // INITIALIZATION

@@ -5,7 +5,7 @@ import type { Case } from '$lib/types';
 
 <script lang="ts">
   interface Props {
-    data: LayoutData;;
+    data: LayoutData;
   }
   let {
     data
@@ -25,23 +25,25 @@ import type { Case } from '$lib/types';
 
   
   // Sync server data with client store
-  $: if (browser) {
-    casesStore.set({
-      cases: data.userCases,
-      stats: data.caseStats,
-      filters: {
-        search: data.searchQuery,
-        status: data.statusFilter,
-        priority: data.priorityFilter,
-        sort: data.sortBy,
-        order: data.sortOrder
-}
-    });
-}
+  $effect(() => {
+    if (browser) {
+      casesStore.set({
+        cases: data.userCases,
+        stats: data.caseStats,
+        filters: {
+          search: data.searchQuery,
+          status: data.statusFilter,
+          priority: data.priorityFilter,
+          sort: data.sortBy,
+          order: data.sortOrder
+        }
+      });
+    }
+  });
   // Reactive derived stores for UI state
-  $: activeCaseId = $page.url.searchParams.get('view');
-  $: isModalOpen = $page.url.searchParams.has('view');
-  $: selectedCase = data.userCases.find(c => c.id === activeCaseId);
+  let activeCaseId = $derived($page.url.searchParams.get('view'));
+  let isModalOpen = $derived($page.url.searchParams.has('view'));
+  let selectedCase = $derived(data.userCases.find(c => c.id === activeCaseId));
 
   // Loading state for AJAX operations
   const isLoading = writable(false);
@@ -153,7 +155,7 @@ import type { Case } from '$lib/types';
 }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="space-y-4">
   <div class="space-y-4">
@@ -168,7 +170,7 @@ import type { Case } from '$lib/types';
             <p class="space-y-4">{data.userCases.length} cases</p>
           </div>
           <button
-            on:click={() => goto('/cases/new')}
+            onclick={() => goto('/cases/new')}
             class="space-y-4"
           >
             <Plus class="space-y-4" />
@@ -285,7 +287,7 @@ import type { Case } from '$lib/types';
           <div class="space-y-4">
             <p>No cases found.</p>
             <button
-              on:click={() => goto('/cases/new')}
+              onclick={() => goto('/cases/new')}
               class="space-y-4"
             >
               Create your first case
@@ -296,7 +298,7 @@ import type { Case } from '$lib/types';
             <CaseListItem
               caseData={caseItem}
               isActive={caseItem.id === activeCaseId}
-              on:click={() => openCase(caseItem.id)}
+              onclick={() => openCase(caseItem.id)}
               on:statusChange={(event) => updateCaseStatus(caseItem.id, event.detail)}
               disabled={$isLoading}
             />
@@ -307,7 +309,7 @@ import type { Case } from '$lib/types';
 
     <!-- Main Content Area -->
     <main class="space-y-4">
-      <slot />
+      <slot></slot>
     </main>
 
 
@@ -317,7 +319,7 @@ import type { Case } from '$lib/types';
         <div class="space-y-4">
           <h2 class="space-y-4">Case Details</h2>
           <button
-            on:click={() => closeCase()}
+            onclick={() => closeCase()}
             class="space-y-4"
             aria-label="Close case details"
           >
@@ -377,7 +379,7 @@ import type { Case } from '$lib/types';
               Edit
             </a>
             <button
-              on:click={() => quickAction(selectedCase?.id, 'archive')}
+              onclick={() => quickAction(selectedCase?.id, 'archive')}
               class="space-y-4"
             >
               Archive

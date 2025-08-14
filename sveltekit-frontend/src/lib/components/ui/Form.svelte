@@ -123,7 +123,7 @@
           type="submit"
           variant={submitVariant}
           disabled={!$form.isValid}
-          loading={$form.isSubmitting || loading}
+          loading={$form.isSubmitting}
           class={submitFullWidth ? "w-full" : ""}
         >
           {submitText}

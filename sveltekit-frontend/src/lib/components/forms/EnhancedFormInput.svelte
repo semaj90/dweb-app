@@ -4,8 +4,8 @@
 -->
 <script lang="ts">
   interface Props {
-    name: string;;
-    label: string;;
+    name: string;
+    label: string;
     type: | "text";
     value: string ;
     placeholder: string ;
@@ -84,12 +84,11 @@
   let inputElement: HTMLInputElement | HTMLTextAreaElement;
 
   // Computed properties
-  $: inputType = type === "password" && showPassword ? "text" : type;
-  $: hasErrors = errors.length > 0;
-  $: hasWarnings = warnings.length > 0;
-  $: showErrorState = showValidation && isDirty && hasErrors;
-  $: showSuccessState =
-    showValidation && isDirty && isValid && !hasErrors && value.trim() !== "";
+  let inputType = $derived(type === "password" && showPassword ? "text" : type;);
+  let hasErrors = $derived(errors.length > 0;);
+  let hasWarnings = $derived(warnings.length > 0;);
+  let showErrorState = $derived(showValidation && isDirty && hasErrors;);
+  let showSuccessState = $derived(showValidation && isDirty && isValid && !hasErrors && value.trim() !== "";);
 
   function handleInput(event: Event) {
     const target = event.target as HTMLInputElement | HTMLTextAreaElement;
@@ -163,7 +162,7 @@
   export { focusInput as focus };
 
   // Reactive validation
-  $: if (value !== undefined) {
+  $effect(() => { if (value !== undefined) {
     validateField();
 }
 </script>
@@ -204,10 +203,10 @@
         class:textarea-error={showErrorState}
         class:textarea-success={showSuccessState}
         class:textarea-disabled={disabled}
-        on:input={handleInput}
-        on:change={handleChange}
-        on:focus={handleFocus}
-        on:blur={handleBlur}
+        oninput={handleInput}
+        onchange={handleChange}
+        onfocus={handleFocus}
+        onblur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       ></textarea>
@@ -234,10 +233,10 @@
         class:input-success={showSuccessState}
         class:input-disabled={disabled}
         class:pr-12={type === "password" && showPasswordToggle}
-        on:input={handleInput}
-        on:change={handleChange}
-        on:focus={handleFocus}
-        on:blur={handleBlur}
+        oninput={handleInput}
+        onchange={handleChange}
+        onfocus={handleFocus}
+        onblur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       />
@@ -247,7 +246,7 @@
         <button
           type="button"
           class="space-y-4"
-          on:click={() => togglePasswordVisibility()}
+          onclick={() => togglePasswordVisibility()}
           aria-label={showPassword ? "Hide password" : "Show password"}
           tabindex={-1}
         >

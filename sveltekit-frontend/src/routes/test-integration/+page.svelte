@@ -271,7 +271,7 @@
 
       <div class="flex flex-wrap gap-4 mb-6">
         <button
-          on:click={runHealthChecks}
+          onclick={runHealthChecks}
           disabled={isRunning}
           class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
         >
@@ -279,7 +279,7 @@
         </button>
 
         <button
-          on:click={testDirectOllama}
+          onclick={testDirectOllama}
           disabled={isRunning || ollamaStatus !== 'connected'}
           class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors"
         >
@@ -313,7 +313,7 @@
             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button
-            on:click={testChatAPI}
+            onclick={testChatAPI}
             disabled={chatLoading || !chatMessage.trim()}
             class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 transition-colors"
           >
@@ -323,7 +323,7 @@
       </div>
 
       {#if chatResponse}
-        <div class="mt-4 p-4 bg-gray-50 rounded-lg" transition:fly={{ y: 20 }}>
+        <div class="mt-4 p-4 bg-gray-50 rounded-lg" transitionfly={{ y: 20 }}>
           <h4 class="font-semibold text-gray-900 mb-2">AI Response:</h4>
           <div class="text-gray-700 whitespace-pre-wrap">{chatResponse}</div>
         </div>

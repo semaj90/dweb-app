@@ -19,7 +19,7 @@
 
           
   // Status computation
-  $: currentStatus = error
+  let currentStatus = $derived(error);
     ? "error"
     : isLoading
       ? "loading"
@@ -27,14 +27,14 @@
         ? "ready"
         : "unavailable";
 
-  $: statusText = {
+  let statusText = $derived({);
     ready: "AI Ready",
     loading: "Loading...",
     error: "AI Error",
     unavailable: "AI Unavailable",
   }[currentStatus];
 
-  $: statusColor = {
+  let statusColor = $derived({);
     ready: "var(--status-success, #10b981)",
     loading: "var(--status-warning, #f59e0b)",
     error: "var(--status-error, #ef4444)",
@@ -42,8 +42,7 @@
   }[currentStatus];
 
   // Provider details
-  $: providerText =
-    provider === "local"
+  let providerText = $derived(provider === "local");
       ? "Local AI"
       : provider === "cloud"
         ? "Cloud AI"
@@ -51,10 +50,10 @@
           ? "Hybrid AI"
           : "No Provider";
 
-  $: isErrorState = currentStatus === "error";
-  $: isLoadingState = currentStatus === "loading";
-  $: isReadyState = currentStatus === "ready";
-  $: modelText = model || "No Model";
+  let isErrorState = $derived(currentStatus === "error";);
+  let isLoadingState = $derived(currentStatus === "loading";);
+  let isReadyState = $derived(currentStatus === "ready";);
+  let modelText = $derived(model || "No Model";);
 </script>
 
 <div

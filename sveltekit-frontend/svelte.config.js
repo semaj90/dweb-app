@@ -11,7 +11,7 @@ const config = {
     style: true,
     markup: true
   }),
-  
+
   // Optimize compiler options for performance
   compilerOptions: {
     // Enable dev mode for proper SvelteKit development behavior
@@ -21,7 +21,7 @@ const config = {
     // Reduce bundle size
     css: 'injected'
   },
-  
+
   kit: {
     adapter: adapter(),
     alias: {

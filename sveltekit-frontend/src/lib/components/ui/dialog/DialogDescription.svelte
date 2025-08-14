@@ -11,5 +11,5 @@
   </script>
 
 <p use:description class="space-y-4">
-  <slot />
+  <slot></slot>
 </p>

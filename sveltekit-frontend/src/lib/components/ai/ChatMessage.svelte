@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    message: any;;
+    message: any;
   }
   let {
     message
@@ -16,10 +16,10 @@
 
   
   // Type-safe fallback for message.role
-  $: isUser = message.role === "user" || message.type === "user";
-  $: isAssistant = message.role === "assistant" || message.type === "assistant";
-  $: emotionalTone = message.metadata?.emotionalTone;
-  $: isProactive = message.metadata?.proactive;
+  let isUser = $derived(message.role === "user" || message.type === "user";);
+  let isAssistant = $derived(message.role === "assistant" || message.type === "assistant";);
+  let emotionalTone = $derived(message.metadata?.emotionalTone;);
+  let isProactive = $derived(message.metadata?.proactive;);
 
   function copyToClipboard() {
     navigator.clipboard.writeText(message.content);
@@ -134,7 +134,7 @@
             variant="ghost"
             size="sm"
             class="space-y-4"
-            on:click={() => copyToClipboard()}
+            onclick={() => copyToClipboard()}
             title="Copy message"
           >
             <Copy class="space-y-4" />
@@ -145,7 +145,7 @@
             variant="ghost"
             size="sm"
             class="space-y-4"
-            on:click={() => toggleSaved()}
+            onclick={() => toggleSaved()}
             title={message.saved ? "Remove from saved" : "Save message"}
           >
             {#if message.saved}

@@ -26,8 +26,8 @@
     Video,
   } from "lucide-svelte";
 
-      export let loadMoreThreshold = 100; // pixels from bottom
-      export let selectedIndex: number = -1; // Index of selected item
+      let { loadMoreThreshold = $bindable() } = $props(); // 100; // pixels from bottom
+      let { selectedIndex = $bindable() } = $props(); // number = -1; // Index of selected item
 
   
   let scrollContainer: HTMLElement;
@@ -35,7 +35,7 @@
   let currentPage = 0;
   let hasMore = true;
 
-  $: {
+  $effect(() => { {
     // Reset when items change
     if (items !== displayedItems.slice(0, items.length)) {
       currentPage = 0;
@@ -112,12 +112,12 @@
 <div
   class="space-y-4"
   bind:this={scrollContainer}
-  on:scroll={handleScroll}
+  onscroll={handleScroll}
   role="listbox"
   aria-label="{itemType} list"
 >
   {#if displayedItems.length === 0 && !isLoading}
-    <div class="space-y-4" transition:fade={{ duration: 200 }}>
+    <div class="space-y-4" transitionfade={{ duration: 200 }}>
       <div class="space-y-4">
         <svelte:component this={getItemIcon({})} size={48} />
       </div>
@@ -128,9 +128,9 @@
       {#each displayedItems as item, index (item.id || index)}
         <div
           class="space-y-4"
-          transition:slide={{ duration: 300, easing: quintOut }}
-          on:click={() => handleItemClick(item)}
-          on:keydown={(e) => e.key === "Enter" && handleItemClick(item)}
+          transitionslide={{ duration: 300, easing: quintOut }}
+          onclick={() => handleItemClick(item)}
+          onkeydown={(e) => e.key === "Enter" && handleItemClick(item)}
           role="option"
           tabindex={0}
           aria-label="{itemType} item"
@@ -185,14 +185,14 @@
   {/if}
 
   {#if isLoading}
-    <div class="space-y-4" transition:fade={{ duration: 200 }}>
+    <div class="space-y-4" transitionfade={{ duration: 200 }}>
       <div class="space-y-4"></div>
       <p>Loading more {itemType}...</p>
     </div>
   {/if}
 
   {#if !hasMore && displayedItems.length > 0}
-    <div class="space-y-4" transition:fade={{ duration: 200 }}>
+    <div class="space-y-4" transitionfade={{ duration: 200 }}>
       <p>No more {itemType} to load</p>
     </div>
   {/if}

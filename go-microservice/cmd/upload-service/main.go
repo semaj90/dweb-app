@@ -1,448 +1,402 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
+	"path/filepath"
+	"strings"
 	"time"
 
-	"github.com/lib/pq"
-	_ "github.com/lib/pq"
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
-
-	minioClient "github.com/deeds-web/deeds-web-app/go-microservice/pkg/minio"
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/pgvector/pgvector-go"
 )
 
+type Config struct {
+	Port         string
+	DatabaseURL  string
+	RedisURL     string
+	OllamaURL    string
+	MinIOURL     string
+	EmbedModel   string
+}
+
 type UploadService struct {
-	minio *minioClient.Client
-	db    *sql.DB
+	db     *pgxpool.Pool
+	redis  *redis.Client
+	config Config
 }
 
-type DocumentMetadata struct {
-	ID           string                 `json:"id"`
-	CaseID       string                 `json:"caseId"`
-	Filename     string                 `json:"filename"`
-	ObjectName   string                 `json:"objectName"`
-	ContentType  string                 `json:"contentType"`
-	Size         int64                  `json:"size"`
-	UploadTime   time.Time              `json:"uploadTime"`
-	DocumentType string                 `json:"documentType"`
-	Tags         map[string]string      `json:"tags"`
-	Metadata     map[string]interface{} `json:"metadata"`
-	ProcessingStatus string             `json:"processingStatus"`
-	Embedding    []float32              `json:"embedding,omitempty"`
-	ExtractedText string                `json:"extractedText,omitempty"`
+type DocumentUpload struct {
+	ID           string    `json:"id"`
+	CaseID       string    `json:"case_id"`
+	UserID       string    `json:"user_id"`
+	Filename     string    `json:"filename"`
+	FileSize     int64     `json:"file_size"`
+	FileType     string    `json:"file_type"`
+	Content      string    `json:"content,omitempty"`
+	Summary      string    `json:"summary,omitempty"`
+	Status       string    `json:"status"`
+	ProcessedAt  time.Time `json:"processed_at"`
 }
 
-type UploadResponse struct {
-	Success      bool              `json:"success"`
-	DocumentID   string            `json:"documentId"`
-	URL          string            `json:"url"`
-	ObjectName   string            `json:"objectName"`
-	Message      string            `json:"message"`
-	Metadata     *DocumentMetadata `json:"metadata,omitempty"`
+type ProcessingResult struct {
+	DocumentID string    `json:"document_id"`
+	ChunksCreated int    `json:"chunks_created"`
+	Summary    string    `json:"summary"`
+	ProcessingTime float64 `json:"processing_time_ms"`
 }
 
-func NewUploadService() (*UploadService, error) {
-	// Initialize MinIO client
-	endpoint := os.Getenv("MINIO_ENDPOINT")
-	if endpoint == "" {
-		endpoint = "localhost:9000"
+func loadConfig() Config {
+	return Config{
+		Port:         getEnv("UPLOAD_PORT", "8093"),
+		DatabaseURL:  getEnv("DATABASE_URL", "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"),
+		RedisURL:     getEnv("REDIS_URL", "redis://localhost:6379"),
+		OllamaURL:    getEnv("OLLAMA_URL", "http://localhost:11434"),
+		MinIOURL:     getEnv("MINIO_URL", "http://localhost:9000"),
+		EmbedModel:   getEnv("OLLAMA_EMBED_MODEL", "nomic-embed-text:latest"),
 	}
-	
-	accessKey := os.Getenv("MINIO_ACCESS_KEY")
-	if accessKey == "" {
-		accessKey = "minioadmin"
-	}
-	
-	secretKey := os.Getenv("MINIO_SECRET_KEY")
-	if secretKey == "" {
-		secretKey = "minioadmin"
-	}
-	
-	bucketName := os.Getenv("MINIO_BUCKET")
-	if bucketName == "" {
-		bucketName = "legal-documents"
-	}
-	
-	useSSL := os.Getenv("MINIO_USE_SSL") == "true"
+}
 
-	minioClient, err := minioClient.NewClient(endpoint, accessKey, secretKey, bucketName, useSSL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize MinIO client: %w", err)
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
 	}
+	return defaultValue
+}
 
+func NewUploadService(config Config) (*UploadService, error) {
 	// Initialize PostgreSQL connection
-	var db *sql.DB
-	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
-		db, err = sql.Open("postgres", dbURL)
-		if err != nil {
-			log.Printf("Warning: Failed to connect to PostgreSQL: %v", err)
-		} else {
-			if err := db.Ping(); err != nil {
-				log.Printf("Warning: PostgreSQL ping failed: %v", err)
-				db = nil
-			} else {
-				log.Println("✅ PostgreSQL connected successfully")
-				if err := initDatabase(db); err != nil {
-					log.Printf("Warning: Database initialization failed: %v", err)
-				}
-			}
-		}
+	db, err := pgxpool.New(context.Background(), config.DatabaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
+	}
+
+	// Initialize Redis connection
+	opt, err := redis.ParseURL(config.RedisURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse redis URL: %w", err)
+	}
+	
+	redisClient := redis.NewClient(opt)
+	ctx := context.Background()
+	if err := redisClient.Ping(ctx).Err(); err != nil {
+		log.Printf("Warning: Redis connection failed: %v", err)
 	}
 
 	return &UploadService{
-		minio: minioClient,
-		db:    db,
+		db:     db,
+		redis:  redisClient,
+		config: config,
 	}, nil
 }
 
-func initDatabase(db *sql.DB) error {
-	schema := `
-	CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-	CREATE EXTENSION IF NOT EXISTS vector;
-
-	CREATE TABLE IF NOT EXISTS document_metadata (
-		id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-		case_id VARCHAR(255) NOT NULL,
-		filename VARCHAR(500) NOT NULL,
-		object_name VARCHAR(1000) NOT NULL UNIQUE,
-		content_type VARCHAR(100),
-		size_bytes BIGINT,
-		upload_time TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-		document_type VARCHAR(100),
-		tags JSONB,
-		metadata JSONB,
-		processing_status VARCHAR(50) DEFAULT 'uploaded',
-		embedding vector(384), -- nomic-embed-text dimensions
-		extracted_text TEXT,
-		created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-		updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-	);
-
-	CREATE INDEX IF NOT EXISTS idx_document_case_id ON document_metadata(case_id);
-	CREATE INDEX IF NOT EXISTS idx_document_type ON document_metadata(document_type);
-	CREATE INDEX IF NOT EXISTS idx_document_status ON document_metadata(processing_status);
-	CREATE INDEX IF NOT EXISTS idx_document_embedding ON document_metadata USING ivfflat (embedding vector_cosine_ops);
-	CREATE INDEX IF NOT EXISTS idx_document_tags ON document_metadata USING gin(tags);
-	CREATE INDEX IF NOT EXISTS idx_document_metadata ON document_metadata USING gin(metadata);
-	`
-
-	_, err := db.Exec(schema)
-	return err
-}
-
-func (s *UploadService) handleUpload(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Parse multipart form
-	err := r.ParseMultipartForm(100 << 20) // 100MB max
-	if err != nil {
-		http.Error(w, "Failed to parse form", http.StatusBadRequest)
-		return
-	}
-
-	file, header, err := r.FormFile("file")
-	if err != nil {
-		http.Error(w, "No file provided", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-
-	// Get form parameters
-	caseID := r.FormValue("caseId")
-	documentType := r.FormValue("documentType")
-	if caseID == "" || documentType == "" {
-		http.Error(w, "caseId and documentType are required", http.StatusBadRequest)
-		return
-	}
-
-	// Parse tags and metadata
-	tags := make(map[string]string)
-	if tagsStr := r.FormValue("tags"); tagsStr != "" {
-		json.Unmarshal([]byte(tagsStr), &tags)
-	}
-
-	metadata := make(map[string]string)
-	if metadataStr := r.FormValue("metadata"); metadataStr != "" {
-		json.Unmarshal([]byte(metadataStr), &metadata)
-	}
-
-	// Upload to MinIO
-	uploadResult, err := s.minio.UploadFile(r.Context(), file, header, minioClient.UploadOptions{
-		CaseID:       caseID,
-		DocumentType: documentType,
-		Tags:         tags,
-		Metadata:     metadata,
-	})
-	if err != nil {
-		log.Printf("MinIO upload failed: %v", err)
-		http.Error(w, "Upload failed", http.StatusInternalServerError)
-		return
-	}
-
-	// Save metadata to PostgreSQL
-	var documentID string
-	if s.db != nil {
-		documentID, err = s.saveMetadata(r.Context(), uploadResult, caseID, documentType, tags, metadata)
-		if err != nil {
-			log.Printf("Database save failed: %v", err)
-			// Don't fail the upload, just log the error
-		}
-	}
-
-	response := UploadResponse{
-		Success:    true,
-		DocumentID: documentID,
-		URL:        uploadResult.URL,
-		ObjectName: uploadResult.ObjectName,
-		Message:    "File uploaded successfully",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-
-	// Trigger background processing
-	go s.processDocument(context.Background(), documentID, uploadResult.ObjectName)
-}
-
-func (s *UploadService) saveMetadata(ctx context.Context, result *minioClient.UploadResult, caseID, documentType string, tags map[string]string, metadata map[string]string) (string, error) {
-	var documentID string
+func (u *UploadService) extractTextFromFile(filename string, content []byte) (string, error) {
+	// Simple text extraction - in production, use proper PDF/DOCX parsers
+	ext := strings.ToLower(filepath.Ext(filename))
 	
-	tagsJSON, _ := json.Marshal(tags)
-	metadataJSON, _ := json.Marshal(metadata)
-
-	query := `
-		INSERT INTO document_metadata 
-		(case_id, filename, object_name, content_type, size_bytes, document_type, tags, metadata)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		RETURNING id
-	`
-
-	err := s.db.QueryRowContext(ctx, query,
-		caseID,
-		result.Metadata["filename"],
-		result.ObjectName,
-		result.Metadata["content-type"],
-		result.Size,
-		documentType,
-		tagsJSON,
-		metadataJSON,
-	).Scan(&documentID)
-
-	return documentID, err
+	switch ext {
+	case ".txt":
+		return string(content), nil
+	case ".pdf":
+		// For now, return placeholder - integrate with pdf-parse or similar
+		return fmt.Sprintf("PDF content extracted from %s (placeholder)", filename), nil
+	case ".docx":
+		// For now, return placeholder - integrate with docx parser
+		return fmt.Sprintf("DOCX content extracted from %s (placeholder)", filename), nil
+	default:
+		return string(content), nil
+	}
 }
 
-func (s *UploadService) processDocument(ctx context.Context, documentID, objectName string) {
-	if s.db == nil {
-		return
-	}
-
-	log.Printf("🔄 Processing document: %s", documentID)
-
-	// Update status to processing
-	s.updateProcessingStatus(ctx, documentID, "processing")
-
-	// 1. Extract text (placeholder - integrate with your text extraction service)
-	extractedText := s.extractText(ctx, objectName)
+func (u *UploadService) generateEmbedding(text string) ([]float32, error) {
+	url := fmt.Sprintf("%s/api/embeddings", u.config.OllamaURL)
 	
-	// 2. Generate embeddings via RAG service
-	embedding := s.generateEmbedding(ctx, extractedText)
-	
-	// 3. Update database with results
-	if err := s.updateDocumentProcessing(ctx, documentID, extractedText, embedding); err != nil {
-		log.Printf("❌ Failed to update document processing: %v", err)
-		s.updateProcessingStatus(ctx, documentID, "failed")
-		return
-	}
-
-	s.updateProcessingStatus(ctx, documentID, "completed")
-	log.Printf("✅ Document processing completed: %s", documentID)
-}
-
-func (s *UploadService) extractText(ctx context.Context, objectName string) string {
-	// Placeholder - integrate with your text extraction service
-	// You could call another service here or implement OCR/PDF parsing
-	return "Extracted text placeholder for " + objectName
-}
-
-func (s *UploadService) generateEmbedding(ctx context.Context, text string) []float32 {
-	// Call your RAG service for embeddings
-	ragURL := os.Getenv("RAG_SERVICE_URL")
-	if ragURL == "" {
-		ragURL = "http://localhost:8092"
-	}
-
-	// Make HTTP request to /embed endpoint
 	payload := map[string]interface{}{
-		"texts": []string{text},
+		"model":  u.config.EmbedModel,
+		"prompt": text,
 	}
-
-	payloadBytes, _ := json.Marshal(payload)
 	
-	resp, err := http.Post(ragURL+"/embed", "application/json", 
-		http.NewRequest("POST", ragURL+"/embed", nil).Body)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
-		log.Printf("Embedding generation failed: %v", err)
-		return make([]float32, 384) // Return zero vector
+		return nil, err
+	}
+	
+	resp, err := http.Post(url, "application/json", bytes.NewReader(payloadBytes))
+	if err != nil {
+		return nil, err
 	}
 	defer resp.Body.Close()
-
-	var embedResp struct {
-		Vectors [][]float32 `json:"vectors"`
+	
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
 	}
 	
-	if err := json.NewDecoder(resp.Body).Decode(&embedResp); err != nil {
-		log.Printf("Embedding response parsing failed: %v", err)
-		return make([]float32, 384)
+	embeddings, ok := result["embedding"].([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid embedding response")
 	}
-
-	if len(embedResp.Vectors) > 0 {
-		return embedResp.Vectors[0]
+	
+	embedding := make([]float32, len(embeddings))
+	for i, v := range embeddings {
+		if f, ok := v.(float64); ok {
+			embedding[i] = float32(f)
+		}
 	}
-
-	return make([]float32, 384)
+	
+	return embedding, nil
 }
 
-func (s *UploadService) updateProcessingStatus(ctx context.Context, documentID, status string) {
-	if s.db == nil {
-		return
+func (u *UploadService) chunkText(text string, chunkSize int) []string {
+	if len(text) <= chunkSize {
+		return []string{text}
 	}
-
-	_, err := s.db.ExecContext(ctx, 
-		"UPDATE document_metadata SET processing_status = $1, updated_at = NOW() WHERE id = $2",
-		status, documentID)
-	if err != nil {
-		log.Printf("Failed to update processing status: %v", err)
+	
+	var chunks []string
+	for i := 0; i < len(text); i += chunkSize {
+		end := i + chunkSize
+		if end > len(text) {
+			end = len(text)
+		}
+		chunks = append(chunks, text[i:end])
 	}
+	
+	return chunks
 }
 
-func (s *UploadService) updateDocumentProcessing(ctx context.Context, documentID, extractedText string, embedding []float32) error {
-	query := `
-		UPDATE document_metadata 
-		SET extracted_text = $1, embedding = $2, updated_at = NOW()
-		WHERE id = $3
-	`
-
-	_, err := s.db.ExecContext(ctx, query, extractedText, pq.Array(embedding), documentID)
+func (u *UploadService) processDocument(docID, content string) error {
+	start := time.Now()
+	
+	// Chunk the document
+	chunks := u.chunkText(content, 500) // 500 character chunks
+	
+	// Generate embeddings for each chunk
+	for i, chunk := range chunks {
+		embedding, err := u.generateEmbedding(chunk)
+		if err != nil {
+			log.Printf("Failed to generate embedding for chunk %d: %v", i, err)
+			continue
+		}
+		
+		// Store chunk with embedding
+		_, err = u.db.Exec(context.Background(),
+			`INSERT INTO document_embeddings (document_id, chunk_number, chunk_text, embedding)
+			 VALUES ($1, $2, $3, $4)`,
+			docID, i+1, chunk, pgvector.NewVector(embedding))
+		
+		if err != nil {
+			log.Printf("Failed to store chunk %d: %v", i, err)
+		}
+	}
+	
+	// Update processing status
+	_, err := u.db.Exec(context.Background(),
+		`UPDATE document_metadata 
+		 SET processing_status = 'completed', updated_at = NOW()
+		 WHERE id = $1`,
+		docID)
+	
+	processingTime := time.Since(start)
+	log.Printf("Document %s processed in %v with %d chunks", docID, processingTime, len(chunks))
+	
 	return err
 }
 
-func (s *UploadService) handleSearch(w http.ResponseWriter, r *http.Request) {
-	if s.db == nil {
-		http.Error(w, "Database not available", http.StatusServiceUnavailable)
-		return
-	}
-
-	query := r.URL.Query().Get("q")
-	caseID := r.URL.Query().Get("caseId")
-	
-	if query == "" {
-		http.Error(w, "Query parameter 'q' is required", http.StatusBadRequest)
-		return
-	}
-
-	// Generate embedding for search query
-	embedding := s.generateEmbedding(r.Context(), query)
-
-	// Perform vector search
-	sqlQuery := `
-		SELECT id, case_id, filename, object_name, document_type, 
-			   extracted_text, (embedding <=> $1) as distance
-		FROM document_metadata 
-		WHERE ($2 = '' OR case_id = $2) AND embedding IS NOT NULL
-		ORDER BY embedding <=> $1
-		LIMIT 10
-	`
-
-	rows, err := s.db.QueryContext(r.Context(), sqlQuery, pq.Array(embedding), caseID)
+func (u *UploadService) handleUpload(c *gin.Context) {
+	// Parse multipart form
+	form, err := c.MultipartForm()
 	if err != nil {
-		log.Printf("Search query failed: %v", err)
-		http.Error(w, "Search failed", http.StatusInternalServerError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form"})
 		return
 	}
-	defer rows.Close()
-
-	var results []map[string]interface{}
-	for rows.Next() {
-		var id, caseId, filename, objectName, docType, text string
-		var distance float64
-
-		err := rows.Scan(&id, &caseId, &filename, &objectName, &docType, &text, &distance)
+	
+	files := form.File["files"]
+	if len(files) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No files provided"})
+		return
+	}
+	
+	caseID := c.PostForm("case_id")
+	userID := c.PostForm("user_id")
+	
+	var results []DocumentUpload
+	
+	for _, file := range files {
+		// Read file content
+		src, err := file.Open()
 		if err != nil {
 			continue
 		}
-
-		results = append(results, map[string]interface{}{
-			"id":           id,
-			"caseId":       caseId,
-			"filename":     filename,
-			"objectName":   objectName,
-			"documentType": docType,
-			"extractedText": text,
-			"similarity":   1.0 - distance, // Convert distance to similarity
+		
+		content, err := io.ReadAll(src)
+		src.Close()
+		if err != nil {
+			continue
+		}
+		
+		// Extract text
+		extractedText, err := u.extractTextFromFile(file.Filename, content)
+		if err != nil {
+			log.Printf("Failed to extract text from %s: %v", file.Filename, err)
+			extractedText = string(content) // Fallback
+		}
+		
+		// Store document metadata
+		var docID string
+		err = u.db.QueryRow(context.Background(),
+			`INSERT INTO document_metadata 
+			 (case_id, user_id, original_filename, file_size, file_type, extracted_text, upload_status, processing_status)
+			 VALUES ($1, $2, $3, $4, $5, $6, 'completed', 'pending')
+			 RETURNING id`,
+			caseID, userID, file.Filename, file.Size, file.Header.Get("Content-Type"), extractedText).Scan(&docID)
+		
+		if err != nil {
+			log.Printf("Failed to store document metadata: %v", err)
+			continue
+		}
+		
+		// Process document asynchronously
+		go u.processDocument(docID, extractedText)
+		
+		results = append(results, DocumentUpload{
+			ID:       docID,
+			CaseID:   caseID,
+			UserID:   userID,
+			Filename: file.Filename,
+			FileSize: file.Size,
+			FileType: file.Header.Get("Content-Type"),
+			Status:   "processing",
 		})
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"query":   query,
-		"results": results,
+	
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Files uploaded successfully",
+		"documents": results,
 	})
 }
 
-func main() {
-	service, err := NewUploadService()
+func (u *UploadService) handleStatus(c *gin.Context) {
+	docID := c.Param("id")
+	
+	var doc DocumentUpload
+	err := u.db.QueryRow(context.Background(),
+		`SELECT id, case_id, user_id, original_filename, file_size, file_type, 
+		        upload_status, processing_status, created_at
+		 FROM document_metadata WHERE id = $1`,
+		docID).Scan(&doc.ID, &doc.CaseID, &doc.UserID, &doc.Filename, 
+		           &doc.FileSize, &doc.FileType, &doc.Status, &doc.ProcessedAt)
+	
 	if err != nil {
-		log.Fatalf("Failed to create upload service: %v", err)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Document not found"})
+		return
 	}
-
-	r := mux.NewRouter()
-
-	// Upload endpoint
-	r.HandleFunc("/upload", service.handleUpload).Methods("POST", "OPTIONS")
 	
-	// Search endpoint
-	r.HandleFunc("/search", service.handleSearch).Methods("GET", "OPTIONS")
-	
-	// Health check
-	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"status": "healthy",
-			"time":   time.Now().Format(time.RFC3339),
-			"minio":  service.minio != nil,
-			"db":     service.db != nil,
-		})
-	}).Methods("GET")
+	c.JSON(http.StatusOK, doc)
+}
 
-	// CORS setup
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:3000"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-		AllowCredentials: true,
+func (u *UploadService) handleHealth(c *gin.Context) {
+	health := map[string]interface{}{
+		"status":    "healthy",
+		"timestamp": time.Now(),
+		"services": map[string]bool{
+			"database": u.checkDatabase(),
+			"redis":    u.checkRedis(),
+			"ollama":   u.checkOllama(),
+		},
+	}
+	c.JSON(http.StatusOK, health)
+}
+
+func (u *UploadService) checkDatabase() bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return u.db.Ping(ctx) == nil
+}
+
+func (u *UploadService) checkRedis() bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return u.redis.Ping(ctx).Err() == nil
+}
+
+func (u *UploadService) checkOllama() bool {
+	resp, err := http.Get(fmt.Sprintf("%s/api/tags", u.config.OllamaURL))
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode == 200
+}
+
+func (u *UploadService) setupRoutes() *gin.Engine {
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Logger(), gin.Recovery())
+	
+	// CORS middleware
+	router.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type")
+		
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		
+		c.Next()
 	})
-
-	handler := c.Handler(r)
-
-	port := os.Getenv("UPLOAD_SERVICE_PORT")
-	if port == "" {
-		port = "8093"
-	}
-
-	fmt.Printf("🚀 Upload service starting on port %s\n", port)
-	fmt.Printf("📁 MinIO endpoint: %s\n", os.Getenv("MINIO_ENDPOINT"))
-	fmt.Printf("🗄️  Database: %v\n", service.db != nil)
 	
-	log.Fatal(http.ListenAndServe(":"+port, handler))
+	// Routes
+	router.POST("/upload", u.handleUpload)
+	router.GET("/status/:id", u.handleStatus)
+	router.GET("/health", u.handleHealth)
+	
+	// Root endpoint
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"service": "Legal AI Upload Service",
+			"version": "1.0.0",
+			"status":  "running",
+			"endpoints": []string{
+				"/upload",
+				"/status/:id",
+				"/health",
+			},
+		})
+	})
+	
+	return router
+}
+
+func main() {
+	config := loadConfig()
+	
+	log.Printf("Starting Upload Service...")
+	log.Printf("Port: %s", config.Port)
+	log.Printf("Embed Model: %s", config.EmbedModel)
+	
+	service, err := NewUploadService(config)
+	if err != nil {
+		log.Fatalf("Failed to initialize upload service: %v", err)
+	}
+	defer service.db.Close()
+	defer service.redis.Close()
+	
+	router := service.setupRoutes()
+	
+	log.Printf("Upload Service running on port %s", config.Port)
+	log.Printf("Access the API at: http://localhost:%s/upload", config.Port)
+	
+	if err := router.Run(":" + config.Port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }

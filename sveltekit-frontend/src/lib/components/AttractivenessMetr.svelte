@@ -13,7 +13,7 @@
 
 
     
-  export let score: number = 5; // Current attractiveness score (1-10)
+  let { score = $bindable() } = $props(); // number = 5; // Current attractiveness score (1-10)
           
     
   let hoveredScore: number | null = null;
@@ -45,8 +45,8 @@
   function handleMouseLeave() {
     hoveredScore = null;
 }
-  $: displayScore = hoveredScore !== null ? hoveredScore : score;
-  $: sizeClasses = {
+  let displayScore = $derived(hoveredScore !== null ? hoveredScore : score;);
+  let sizeClasses = $derived({);
     sm: 'w-4 h-4',
     md: 'w-6 h-6', 
     lg: 'w-8 h-8'
@@ -74,9 +74,9 @@
         class:active={isActive}
         class:hovered={isHovered}
         disabled={readOnly}
-        on:click={() => handleRatingClick(rating)}
-        on:mouseenter={() => handleMouseEnter(rating)}
-        on:mouseleave={handleMouseLeave}
+        onclick={() => handleRatingClick(rating)}
+        onmouseenter={() => handleMouseEnter(rating)}
+        onmouseleave={handleMouseLeave}
         aria-label="Rate {rating} out of 10"
       >
         <svg
@@ -100,7 +100,7 @@
         min="1"
         max="10"
         bind:value={score}
-        on:input={() => onchange?.()}
+        oninput={() => onchange?.()}
         class="space-y-4"
       />
     </div>

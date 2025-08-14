@@ -5,10 +5,10 @@ Real-time collaboration interface for multiple investigators working on evidence
 <script lang="ts">
   interface Props {
     collaborationSession: {;
-    activeCollaborators: string[];;
-    userId: string;;
-    evidenceId: string;;
-    wsConnection: WebSocket | null;;
+    activeCollaborators: string[];
+    userId: string;
+    evidenceId: string;
+    wsConnection: WebSocket | null;
     onAddAnnotation: (content: string, position: any) ;
   }
   let {

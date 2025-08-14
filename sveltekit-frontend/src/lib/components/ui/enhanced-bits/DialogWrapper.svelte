@@ -38,7 +38,7 @@
       <p use:descEl class="modal-description">{description}</p>
     {/if}
     <div class="modal-body">
-      <slot />
+      <slot></slot>
     </div>
     <button use:close class="modal-close">×</button>
   </div>

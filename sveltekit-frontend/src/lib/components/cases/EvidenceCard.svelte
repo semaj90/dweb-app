@@ -69,8 +69,8 @@
         return "bg-gray-100 text-gray-800";
     }
   }
-  $: evidenceIcon = getEvidenceIcon(evidence.evidenceType || evidence.type);
-  $: formattedDate = formatDistanceToNow(new Date(evidence.createdAt || evidence.dateCollected || Date.now()), {
+  let evidenceIcon = $derived(getEvidenceIcon(evidence.evidenceType || evidence.type););
+  let formattedDate = $derived(formatDistanceToNow(new Date(evidence.createdAt || evidence.dateCollected || Date.now()), {);
     addSuffix: true,
   });
 

@@ -48,10 +48,10 @@
 	let selectedDocumentType = 'auto';
 
 	// OCR stores
-	$: processing = ocrService.processing$;
-	$: progress = ocrService.progress$;
-	$: ocrResult = ocrService.currentResult$;
-	$: extractedFields = ocrService.extractedFields$;
+	let processing = $derived(ocrService.processing$;);
+	let progress = $derived(ocrService.progress$;);
+	let ocrResult = $derived(ocrService.currentResult$;);
+	let extractedFields = $derived(ocrService.extractedFields$;);
 
 	// Form validation
 	const formErrors = writable<Record<string, string>>({});
@@ -264,8 +264,8 @@
 				<div 
 					class="border-2 border-dashed border-yorha-border rounded-lg p-8 text-center transition-colors duration-200 hover:border-yorha-primary hover:bg-yorha-bg-secondary/50"
 					class:border-yorha-primary={uploadedFile}
-					on:drop={handleDrop}
-					on:dragover={handleDragOver}
+					ondrop={handleDrop}
+					ondragover={handleDragOver}
 					role="button"
 					tabindex="0"
 				>
@@ -292,7 +292,7 @@
 						type="file"
 						accept=".pdf,.png,.jpg,.jpeg,.tiff"
 						class="hidden"
-						on:change={(e) => {
+						onchange={(e) => {
 							const files = e.target?.files;
 							if (files && files.length > 0) {
 								uploadedFile = files[0];
@@ -305,7 +305,7 @@
 						<Button 
 							variant="outline" 
 							class="mt-4"
-							on:click={() => fileInput.click()}
+							onclick={() => fileInput.click()}
 						>
 							Browse Files
 						</Button>
@@ -325,7 +325,7 @@
 
 				<!-- OCR Results Preview -->
 				{#if $ocrResult && showPreview}
-					<div class="bg-yorha-bg-secondary rounded-md p-4 border border-yorha-border" transition:fly={{ y: 20 }}>
+					<div class="bg-yorha-bg-secondary rounded-md p-4 border border-yorha-border" transitionfly={{ y: 20 }}>
 						<div class="flex items-center justify-between mb-2">
 							<h4 class="font-medium text-yorha-text-primary">Extraction Results</h4>
 							<Badge class="bg-yorha-success text-yorha-bg-primary">
@@ -388,7 +388,7 @@
 									bind:value={field.value}
 									placeholder={`Enter ${field.label.toLowerCase()}...`}
 									class="min-h-[80px] bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
-									on:input={(e) => handleFieldChange(field.name, e.target.value)}
+									oninput={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{:else}
 								<Input
@@ -398,7 +398,7 @@
 									class="bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
 									class:border-yorha-danger={$formErrors[field.name]}
 									class:border-yorha-success={field.confidence && field.confidence > 0.8}
-									on:input={(e) => handleFieldChange(field.name, e.target.value)}
+									oninput={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{/if}
 
@@ -411,7 +411,7 @@
 
 							<!-- Smart Suggestions -->
 							{#if activeSuggestions[field.name] && activeSuggestions[field.name].length > 0}
-								<div class="space-y-1" transition:fly={{ y: -10 }}>
+								<div class="space-y-1" transitionfly={{ y: -10 }}>
 									<p class="text-xs text-yorha-text-secondary">Suggestions:</p>
 									<div class="flex flex-wrap gap-1">
 										{#each activeSuggestions[field.name] as suggestion}
@@ -419,7 +419,7 @@
 												variant="outline"
 												size="sm"
 												class="text-xs h-6 px-2"
-												on:click={() => applySuggestion(field.name, suggestion)}
+												onclick={() => applySuggestion(field.name, suggestion)}
 											>
 												{suggestion}
 											</Button>
@@ -456,7 +456,7 @@
 					<div class="flex items-center space-x-3">
 						<Button 
 							variant="outline"
-							on:click={() => {
+							onclick={() => {
 								populatedFields = populatedFields.map(f => ({ ...f, value: '' }));
 								formErrors.set({});
 							}}
@@ -487,7 +487,7 @@
 					<Button
 						variant="ghost"
 						size="sm"
-						on:click={() => showPreview = !showPreview}
+						onclick={() => showPreview = !showPreview}
 					>
 						{showPreview ? 'Hide' : 'Show'}
 					</Button>

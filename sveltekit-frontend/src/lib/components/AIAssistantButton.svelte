@@ -1,7 +1,7 @@
 // Production AI Assistant Component - bits-ui Implementation
 // File: AIAssistantButton.svelte
 
-<script>
+<script lang="ts">
   interface Props {
     onresponse?: (event?: any) => void;
     onerror?: (event?: any) => void;
@@ -173,7 +173,7 @@
   <!-- Action Buttons -->
   <div class="grid grid-cols-3 gap-3">
     <Button.Root
-      on:click={testGemma3}
+      onclick={testGemma3}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
     >
@@ -186,7 +186,7 @@
     </Button.Root>
 
     <Button.Root
-      on:click={testSynthesis}
+      onclick={testSynthesis}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
     >
@@ -199,7 +199,7 @@
     </Button.Root>
 
     <Button.Root
-      on:click={testRAG}
+      onclick={testRAG}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
     >

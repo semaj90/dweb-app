@@ -68,9 +68,9 @@
 
 
   // Props
-      export let maxFileSize = 100 * 1024 * 1024; // 100MB
-  export let maxTotalSize = 500 * 1024 * 1024; // 500MB
-        export let chunkSize = 1024 * 1024; // 1MB chunks for large files
+      let { maxFileSize = $bindable() } = $props(); // 100 * 1024 * 1024; // 100MB
+  let { maxTotalSize = $bindable() } = $props(); // 500 * 1024 * 1024; // 500MB
+        let { chunkSize = $bindable() } = $props(); // 1024 * 1024; // 1MB chunks for large files
       export const enableDragDrop = true;
 
   // State
@@ -554,14 +554,14 @@
     class="space-y-4"
     class:drag-over={isDragOver}
     class:disabled
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
     role="button"
     tabindex={0}
     aria-label="File upload area. Click to select files or drag and drop files here."
     onclick={() => !disabled && fileInput.click()}
-    on:keydown={(e) => {
+    onkeydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
         fileInput.click();

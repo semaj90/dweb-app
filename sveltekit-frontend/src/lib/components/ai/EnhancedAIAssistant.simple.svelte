@@ -112,14 +112,14 @@ Would you like me to elaborate on any of these aspects?`,
       <div class="space-y-4">
         <button
           class="space-y-4"
-          on:click={() => (showSettings = !showSettings)}
+          onclick={() => (showSettings = !showSettings)}
           title="Settings"
         >
           <Settings class="space-y-4" />
         </button>
         <button
           class="space-y-4"
-          on:click={() => clearMessages()}
+          onclick={() => clearMessages()}
           title="Clear conversation"
         >
           <Trash2 class="space-y-4" />
@@ -141,7 +141,7 @@ Would you like me to elaborate on any of these aspects?`,
               {#each message.references as reference}
                 <button
                   class="space-y-4"
-                  on:click={() => handleReferenceClick(reference)}
+                  onclick={() => handleReferenceClick(reference)}
                 >
                   <Quote class="space-y-4" />
                   <span class="space-y-4">{reference.title}</span>
@@ -189,7 +189,7 @@ Would you like me to elaborate on any of these aspects?`,
     <div class="space-y-4">
       <div class="space-y-4">
         <h4 class="space-y-4">AI Assistant Settings</h4>
-        <button class="space-y-4" on:click={() => (showSettings = false)}
+        <button class="space-y-4" onclick={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -248,8 +248,8 @@ Would you like me to elaborate on any of these aspects?`,
   {#if showCitationDialog}
     <div
       class="space-y-4"
-      on:click={() => (showCitationDialog = false)}
-      on:keydown={(e) => {
+      onclick={() => (showCitationDialog = false)}
+      onkeydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
         }
@@ -273,12 +273,12 @@ Would you like me to elaborate on any of these aspects?`,
           </div>
 
           <div class="space-y-4">
-            <button class="space-y-4" on:click={() => insertCitation()}>
+            <button class="space-y-4" onclick={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="space-y-4"
-              on:click={() => navigator.clipboard.writeText(selectedCitation)}
+              onclick={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy to Clipboard
             </button>
@@ -288,7 +288,7 @@ Would you like me to elaborate on any of these aspects?`,
         <div class="space-y-4">
           <button
             class="space-y-4"
-            on:click={() => (showCitationDialog = false)}
+            onclick={() => (showCitationDialog = false)}
           >
             Close
           </button>

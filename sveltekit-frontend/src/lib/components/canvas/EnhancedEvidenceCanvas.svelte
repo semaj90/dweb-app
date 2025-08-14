@@ -460,7 +460,7 @@
         <Button
           variant={selectedTool === "select" ? "primary" : "outline"}
           size="sm"
-          on:click={() => selectTool("select")}
+          onclick={() => selectTool("select")}
           disabled={readonly}
         >
           <Move class="space-y-4" />
@@ -468,7 +468,7 @@
         <Button
           variant={selectedTool === "draw" ? "primary" : "outline"}
           size="sm"
-          on:click={() => selectTool("draw")}
+          onclick={() => selectTool("draw")}
           disabled={readonly}
         >
           ✏️
@@ -476,7 +476,7 @@
         <Button
           variant={selectedTool === "text" ? "primary" : "outline"}
           size="sm"
-          on:click={() => selectTool("text")}
+          onclick={() => selectTool("text")}
           disabled={readonly}
         >
           <Type class="space-y-4" />
@@ -491,14 +491,14 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => addShape("rectangle")}
+            onclick={() => addShape("rectangle")}
           >
             <Square class="space-y-4" />
           </Button>
           <Button
             variant="outline"
             size="sm"
-            on:click={() => addShape("circle")}
+            onclick={() => addShape("circle")}
           >
             <Circle class="space-y-4" />
           </Button>
@@ -512,7 +512,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => undo()}
+          onclick={() => undo()}
           disabled={readonly || historyIndex <= 0}
         >
           <Undo class="space-y-4" />
@@ -520,7 +520,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => redo()}
+          onclick={() => redo()}
           disabled={readonly || historyIndex >= canvasHistory.length - 1}
         >
           <Redo class="space-y-4" />
@@ -529,16 +529,16 @@
 
       <!-- Zoom -->
       <div class="space-y-4">
-        <Button variant="outline" size="sm" on:click={() => zoomOut()}>
+        <Button variant="outline" size="sm" onclick={() => zoomOut()}>
           <ZoomOut class="space-y-4" />
         </Button>
         <span class="space-y-4"
           >{Math.round(zoom * 100)}%</span
         >
-        <Button variant="outline" size="sm" on:click={() => zoomIn()}>
+        <Button variant="outline" size="sm" onclick={() => zoomIn()}>
           <ZoomIn class="space-y-4" />
         </Button>
-        <Button variant="outline" size="sm" on:click={() => resetZoom()}
+        <Button variant="outline" size="sm" onclick={() => resetZoom()}
           >Reset</Button
         >
       </div>
@@ -547,15 +547,15 @@
     <!-- Actions -->
     <div class="space-y-4">
       {#if !readonly}
-        <Button variant="outline" size="sm" on:click={() => deleteSelected()}>
+        <Button variant="outline" size="sm" onclick={() => deleteSelected()}>
           <Trash2 class="space-y-4" />
         </Button>
-        <Button variant="outline" size="sm" on:click={() => saveCanvas()}>
+        <Button variant="outline" size="sm" onclick={() => saveCanvas()}>
           <Save class="space-y-4" />
           Save
         </Button>
       {/if}
-      <Button variant="outline" size="sm" on:click={() => exportCanvas()}>
+      <Button variant="outline" size="sm" onclick={() => exportCanvas()}>
         <Download class="space-y-4" />
         Export
       </Button>

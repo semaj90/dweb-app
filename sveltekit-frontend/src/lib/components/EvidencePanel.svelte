@@ -1,6 +1,7 @@
 <script lang="ts">
   interface Props {
-    caseId: string;;
+    caseId: string;
+;
     onEvidenceDrop: (evidence: Evidence) ;
   }
   let {
@@ -14,7 +15,7 @@
   import { createEventDispatcher, onMount } from "svelte";
   import { writable } from "svelte/store";
 
-    export let onEvidenceDrop: (evidence: Evidence) => void = () => {};
+    let { onEvidenceDrop = $bindable() } = $props(); // (evidence: Evidence) => void = () => {};
 
   const evidenceList = writable<Evidence[]>([]);
   const isUploading = writable(false);

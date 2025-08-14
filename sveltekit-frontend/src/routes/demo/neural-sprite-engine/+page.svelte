@@ -421,8 +421,8 @@
   }
   
   // Reactive statements
-  $: selectedScenario = demoScenarios.find(s => s.id === selectedDemo);
-  $: predictionList = $predictedNextStates;
+  let selectedScenario = $derived(demoScenarios.find(s => s.id === selectedDemo););
+  let predictionList = $derived($predictedNextStates;);
 </script>
 
 <svelte:head>
@@ -466,7 +466,7 @@
               class="scenario-btn"
               class:active={selectedDemo === scenario.id}
               style="border-color: {scenario.color}"
-              on:click={() => { selectedDemo = scenario.id; resetDemo(); }}
+              onclick={() => { selectedDemo = scenario.id; resetDemo(); }}
             >
               <div class="scenario-name">{scenario.name}</div>
               <div class="scenario-desc">{scenario.description}</div>
@@ -495,17 +495,17 @@
         <h3>🎮 Playback Controls</h3>
         <div class="control-buttons">
           {#if !isPlaying}
-            <button class="nes-btn primary" on:click={playDemo}>
+            <button class="nes-btn primary" onclick={playDemo}>
               <Play size="16" />
               Play Demo
             </button>
           {:else}
-            <button class="nes-btn secondary" on:click={stopDemo}>
+            <button class="nes-btn secondary" onclick={stopDemo}>
               <Pause size="16" />
               Pause
             </button>
           {/if}
-          <button class="nes-btn reset" on:click={resetDemo}>
+          <button class="nes-btn reset" onclick={resetDemo}>
             <Square size="16" />
             Reset
           </button>

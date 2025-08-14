@@ -39,21 +39,20 @@
     | "contract"
     | "case_law"
     | "general" = "evidence";
-  
+
   const { state, send } = useMachine(aiSummaryMachine);
 
   // Reactive state helpers
-  $: isLoading =
-    $state.matches("loading") ||
+  let isLoading = $derived($state.matches("loading") ||);
     $state.matches("generating") ||
     $state.matches("analyzing") ||
     $state.matches("synthesizing");
-  $: isReady = $state.matches("ready");
-  $: isReading = $state.matches("ready.reading");
-  $: isPlaying = $state.context.isPlaying;
-  $: currentSection = $state.context.sections[$state.context.currentSection];
-  $: progress = $state.context.progress;
-  $: error = $state.context.error;
+  let isReady = $derived($state.matches("ready"););
+  let isReading = $derived($state.matches("ready.reading"););
+  let isPlaying = $derived($state.context.isPlaying;);
+  let currentSection = $derived($state.context.sections[$state.context.currentSection];);
+  let progress = $derived($state.context.progress;);
+  let error = $derived($state.context.error;);
 
   // Voice synthesis
   let speechSynthesis: SpeechSynthesis | null = null;

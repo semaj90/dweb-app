@@ -61,13 +61,13 @@
   });
 
   // Initialize Fuse when items change
-  $: if (items.length > 0) {
+  $effect(() => { if (items.length > 0) {
     fuse = new Fuse(items, fuseOptions);
     allTags = [...new Set(items.flatMap(item => item.tags || []))];
   }
 
   // Perform search when input changes
-  $: if (fuse && searchValue) {
+  $effect(() => { if (fuse && searchValue) {
     const fuseResults = fuse.search(searchValue);
     searchResults = fuseResults
       .map(result => result.item)
@@ -77,7 +77,7 @@
   }
 
   // Apply filters
-  $: filteredResults = searchResults.filter(item => {
+  let filteredResults = $derived(searchResults.filter(item => {);
     // Type filter
     if (selectedTypes.length > 0 && !selectedTypes.includes(item.type)) {
       return false;
@@ -99,10 +99,10 @@
   });
 
   // Update results when filters change
-  $: onResults(filteredResults);
+  $effect(() => { onResults(filteredResults);
 
   // Sync input value
-  $: searchValue = $inputValue;
+  let searchValue = $derived($inputValue;);
 
   // Handle item selection
   const handleSelect = (item: Evidence) => {
@@ -162,7 +162,7 @@
       {#if searchValue}
         <button
           class="clear-button"
-          on:click={() => clearSearch()}
+          onclick={() => clearSearch()}
           title="Clear search"
         >
           <X size={16} />
@@ -175,14 +175,14 @@
       <div
         use:melt={$menu}
         class="search-results"
-        transition:fly={{ y: -5, duration: 150 }}
+        transitionfly={{ y: -5, duration: 150 }}
       >
         {#each filteredResults as item (item.id)}
           <button
             use:melt={$option({ value: item.id, label: item.title })}
             class="search-result-item"
             class:highlighted={$isSelected(item.id)}
-            on:click={() => handleSelect(item)}
+            onclick={() => handleSelect(item)}
           >
             <div class="result-icon">
               {#if item.type === 'document'}
@@ -248,7 +248,7 @@
             <button
               class="filter-chip"
               class:active={selectedTypes.includes(type)}
-              on:click={() => toggleType(type)}
+              onclick={() => toggleType(type)}
             >
               {type}
             </button>
@@ -268,7 +268,7 @@
               <button
                 class="filter-chip"
                 class:active={selectedTags.includes(tag)}
-                on:click={() => toggleTag(tag)}
+                onclick={() => toggleTag(tag)}
               >
                 {tag}
               </button>
@@ -310,7 +310,7 @@
       {#each selectedTypes as type}
         <span class="active-filter">
           {type}
-          <button on:click={() => toggleType(type)}>
+          <button onclick={() => toggleType(type)}>
             <X size={12} />
           </button>
         </span>
@@ -319,7 +319,7 @@
       {#each selectedTags as tag}
         <span class="active-filter">
           #{tag}
-          <button on:click={() => toggleTag(tag)}>
+          <button onclick={() => toggleTag(tag)}>
             <X size={12} />
           </button>
         </span>
@@ -328,13 +328,13 @@
       {#if dateRange.start || dateRange.end}
         <span class="active-filter">
           {dateRange.start?.toLocaleDateString() || '...'} - {dateRange.end?.toLocaleDateString() || '...'}
-          <button on:click={() => dateRange = {}}>
+          <button onclick={() => dateRange = {}}>
             <X size={12} />
           </button>
         </span>
       {/if}
 
-      <button class="clear-all-filters" on:click={() => clearSearch()}>
+      <button class="clear-all-filters" onclick={() => clearSearch()}>
         Clear all
       </button>
     </div>

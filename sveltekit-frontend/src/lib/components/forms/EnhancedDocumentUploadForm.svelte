@@ -59,7 +59,7 @@
   import type { Infer, SuperValidated } from "sveltekit-superforms";
 
   // Props
-          
+
   // Form state management
   const formIntegration = createDocumentUploadForm(data, {
     onSuccess,
@@ -204,13 +204,12 @@
   // REACTIVE STATEMENTS
   // ============================================================================
 
-  $: stateValue = $state;
-  $: contextValue = $context;
-  $: canSubmit = $isValid && selectedFile && !$isSubmitting;
-  $: showProgress = $progress > 0 && $progress < 100;
-  $: isCompleted = stateValue === "completed";
-  $: isError =
-    stateValue === "uploadError" ||
+  let stateValue = $derived($state;);
+  let contextValue = $derived($context;);
+  let canSubmit = $derived($isValid && selectedFile && !$isSubmitting;);
+  let showProgress = $derived($progress > 0 && $progress < 100;);
+  let isCompleted = $derived(stateValue === "completed";);
+  let isError = $derived(stateValue === "uploadError" ||);
     stateValue === "processingError" ||
     stateValue === "failed";
 

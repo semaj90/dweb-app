@@ -159,19 +159,22 @@
       { icon: "🔍", label: "Evidence Analysis", action: () => activeTab = "analysis" },
       { icon: "⚖️", label: "Case Builder", action: () => console.log("Case Builder") },
       { icon: "📊", label: "Precedent Search", action: toggleFindModal },
-      { icon: "🤖", label: "AI Assistant", action: () => activeTab = "chat" }
+      { icon: "🤖", label: "AI Assistant", action: () => activeTab = "chat" },
+      { icon: "⭐", label: "Best Practices", action: () => window.location.href = "/best-practices" }
     ],
     detective: [
       { icon: "🕵️", label: "Investigation Tools", action: () => activeTab = "analysis" },
       { icon: "🔗", label: "Connection Analysis", action: () => console.log("Connections") },
       { icon: "📋", label: "Report Generator", action: () => activeTab = "chat" },
-      { icon: "🎯", label: "Lead Tracker", action: () => console.log("Leads") }
+      { icon: "🎯", label: "Lead Tracker", action: () => console.log("Leads") },
+      { icon: "⭐", label: "Best Practices", action: () => window.location.href = "/best-practices" }
     ],
     admin: [
       { icon: "📊", label: "System Dashboard", action: () => activeTab = "dashboard" },
       { icon: "⚡", label: "Performance Monitor", action: () => activeTab = "monitor" },
       { icon: "🔧", label: "System Config", action: () => console.log("Config") },
-      { icon: "👥", label: "User Management", action: () => console.log("Users") }
+      { icon: "👥", label: "User Management", action: () => console.log("Users") },
+      { icon: "⭐", label: "Best Practices", action: () => window.location.href = "/best-practices" }
     ]
   };
   

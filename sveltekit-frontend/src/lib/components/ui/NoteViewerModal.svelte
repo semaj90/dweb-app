@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    noteId: string;;
+    noteId: string;
     title: string ;
     content: string ;
     markdown: string ;
@@ -65,11 +65,11 @@
     },
   });
 
-  $: if (isOpen !== $open) {
+  $effect(() => { if (isOpen !== $open) {
     open.set(isOpen);
 }
   // Parse markdown to HTML for display
-  $: displayHtml = html || (markdown ? marked.parse(markdown) : "");
+  let displayHtml = $derived(html || (markdown ? marked.parse(markdown) : ""););
 
   async function handleSaveForLater() {
     try {
@@ -154,12 +154,12 @@
   <div
     use:melt={$overlay}
     class="space-y-4"
-    transition:fade={{ duration: 150 }}
+    transitionfade={{ duration: 150 }}
   >
     <div
       use:melt={$dialogContent}
       class="space-y-4"
-      transition:fly={{ y: -20, duration: 200 }}
+      transitionfly={{ y: -20, duration: 200 }}
     >
       <!-- Header -->
       <div
@@ -205,7 +205,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => startEdit()}
+                onclick={() => startEdit()}
                 title="Edit Note"
               >
                 <Edit3 class="space-y-4" />
@@ -214,7 +214,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => cancelEdit()}
+                onclick={() => cancelEdit()}
               >
                 Cancel
               </button>
@@ -224,7 +224,7 @@
           <button
             type="button"
             class="space-y-4"
-            on:click={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
+            onclick={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
             title={isSaved ? "Remove from saved" : "Save for later"}
           >
             {#if isSaved}
@@ -257,7 +257,7 @@
                 {tag}
                 <button
                   type="button"
-                  on:click={() => removeTag(tag)}
+                  onclick={() => removeTag(tag)}
                   class="space-y-4"
                 >
                   <X class="space-y-4" />
@@ -267,7 +267,7 @@
 
             <input
               bind:value={newTag}
-              on:keydown={(e) => e.key === "Enter" && addTag()}
+              onkeydown={(e) => e.key === "Enter" && addTag()}
               class="space-y-4"
               placeholder="Add tag..."
             />
@@ -289,7 +289,7 @@
           <RichTextEditor
             content={editedContent}
             placeholder="Edit your note..."
-            on:save={handleEditorSave}
+            onsave={handleEditorSave}
             autoSave={false}
           />
         {:else if displayHtml}

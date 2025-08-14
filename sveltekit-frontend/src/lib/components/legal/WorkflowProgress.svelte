@@ -4,9 +4,9 @@ Visual progress indicator for the Evidence Chain of Custody workflow
 -->
 <script lang="ts">
   interface Props {
-    progress: number;;
-    stage: string;;
-    stageName: string;;
+    progress: number;
+    stage: string;
+    stageName: string;
   }
   let {
     progress,

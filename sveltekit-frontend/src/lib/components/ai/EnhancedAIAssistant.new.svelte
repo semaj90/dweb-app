@@ -104,12 +104,12 @@ I can provide more specific guidance if you share additional details about your 
     <div class="space-y-4">
       <button
         class="space-y-4"
-        on:click={() => (showSettings = !showSettings)}
+        onclick={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="space-y-4" />
       </button>
-      <button class="space-y-4" on:click={() => clearMessages()} title="Clear">
+      <button class="space-y-4" onclick={() => clearMessages()} title="Clear">
         <Trash2 class="space-y-4" />
       </button>
     </div>
@@ -129,7 +129,7 @@ I can provide more specific guidance if you share additional details about your 
             {#each message.references as reference}
               <button
                 class="space-y-4"
-                on:click={() => handleReferenceClick(reference)}
+                onclick={() => handleReferenceClick(reference)}
               >
                 <Quote class="space-y-4" />
                 <span class="space-y-4">{reference.title}</span>
@@ -174,7 +174,7 @@ I can provide more specific guidance if you share additional details about your 
     <div class="space-y-4">
       <div class="space-y-4">
         <h4>Settings</h4>
-        <button class="space-y-4" on:click={() => (showSettings = false)}
+        <button class="space-y-4" onclick={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -235,14 +235,14 @@ I can provide more specific guidance if you share additional details about your 
       aria-modal="true"
       aria-labelledby="citation-dialog-title"
       tabindex={-1}
-      on:click={() => (showCitationDialog = false)}
-      on:keydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
+      onclick={() => (showCitationDialog = false)}
+      onkeydown={(e) => e.key === "Escape" && (showCitationDialog = false)}
     >
       <div
         class="space-y-4"
         role="document"
         on:click|stopPropagation
-        on:keydown={(e) => {
+        onkeydown={(e) => {
           if (e.key === "Escape") {
             showCitationDialog = false;
           }
@@ -259,12 +259,12 @@ I can provide more specific guidance if you share additional details about your 
           </div>
 
           <div class="space-y-4">
-            <button class="space-y-4" on:click={() => insertCitation()}>
+            <button class="space-y-4" onclick={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="space-y-4"
-              on:click={() => navigator.clipboard.writeText(selectedCitation)}
+              onclick={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy
             </button>
@@ -274,7 +274,7 @@ I can provide more specific guidance if you share additional details about your 
         <div class="space-y-4">
           <button
             class="space-y-4"
-            on:click={() => (showCitationDialog = false)}
+            onclick={() => (showCitationDialog = false)}
           >
             Close
           </button>

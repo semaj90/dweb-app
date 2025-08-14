@@ -268,8 +268,8 @@ While the company demonstrates strong commitment to compliance, several areas re
       {#if selectedDocument}
         <LegalDocumentProcessor
           bind:document={selectedDocument}
-          {onComplete}={onProcessingComplete}
-          {onError}={onProcessingError}
+          onComplete={onProcessingComplete}
+          onError={onProcessingError}
           autoStart={false}
         />
       {:else}

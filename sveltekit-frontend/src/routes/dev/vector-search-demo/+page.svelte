@@ -257,7 +257,7 @@
 
       <div class="form-actions">
         <button
-          onclick={performSearch}
+          on:click={performSearch}
           disabled={isSearching || !query.trim()}
           class="search-button"
         >
@@ -265,7 +265,7 @@
         </button>
 
         <button
-          onclick={indexSampleDocument}
+          on:click={indexSampleDocument}
           class="index-button"
         >
           📄 Index Sample Document

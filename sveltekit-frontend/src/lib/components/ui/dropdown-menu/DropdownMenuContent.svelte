@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    menu: any;;
+    menu: any;
   }
   let {
     menu
@@ -13,7 +13,7 @@
 <div 
   use:menu 
   class="space-y-4"
-  {...$$restProps}
+  
 >
-  <slot />
+  <slot></slot>
 </div>

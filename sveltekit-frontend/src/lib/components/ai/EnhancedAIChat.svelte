@@ -17,12 +17,12 @@
   import type { ChatMessage, MessageAnalysis, RAGContext, Recommendation } from '$lib/types/ai-chat';
 
   // Props
-  export let caseId: string = '';
-  export let userId: string = '';
-  export let enableWebGPU: boolean = true;
-  export let enableAttentionTracking: boolean = true;
-  export let showAnalysisPanel: boolean = true;
-  export let maxMessages: number = 100;
+  let { caseId = $bindable() } = $props(); // string = '';
+  let { userId = $bindable() } = $props(); // string = '';
+  let { enableWebGPU = $bindable() } = $props(); // boolean = true;
+  let { enableAttentionTracking = $bindable() } = $props(); // boolean = true;
+  let { showAnalysisPanel = $bindable() } = $props(); // boolean = true;
+  let { maxMessages = $bindable() } = $props(); // number = 100;
 
   // Component state
   let chatContainer: HTMLDivElement;

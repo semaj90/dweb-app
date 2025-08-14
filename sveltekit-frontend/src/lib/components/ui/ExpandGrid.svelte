@@ -26,7 +26,7 @@
   
               
   let className = "";
-  export { className as class };
+  ;
 
   
   let isExpanded = false;
@@ -52,7 +52,7 @@
       isExpanded = false;
       onexpand?.();
 }}
-  $: currentColumns = isExpanded ? expandedColumns : columns;
+  let currentColumns = $derived(isExpanded ? expandedColumns : columns;);
 </script>
 
 <div
@@ -65,14 +65,14 @@
     --expand-duration: {expandDuration};
     --easing: {easing};
   "
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
-  on:focusin={handleFocusIn}
-  on:focusout={handleFocusOut}
+  onmouseenter={handleMouseEnter}
+  onmouseleave={handleMouseLeave}
+  onfocusin={handleFocusIn}
+  onfocusout={handleFocusOut}
   role="grid"
   tabindex={0}
 >
-  <slot />
+  <slot></slot>
 </div>
 
 <style>

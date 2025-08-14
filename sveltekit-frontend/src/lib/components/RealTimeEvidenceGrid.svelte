@@ -70,13 +70,13 @@
   let totalPages = 0;
 
   // Subscribe to store values
-  $: evidence = $evidenceStore.evidence || [];
-  $: isLoading = $evidenceStore.isLoading || false;
-  $: isConnected = $evidenceStore.isConnected || false;
-  $: error = $evidenceStore.error || null;
+  let evidence = $derived($evidenceStore.evidence || [];);
+  let isLoading = $derived($evidenceStore.isLoading || false;);
+  let isConnected = $derived($evidenceStore.isConnected || false;);
+  let error = $derived($evidenceStore.error || null;);
 
   // Reactive filtering and sorting
-  $: {
+  $effect(() => { {
     filteredEvidence = evidence
       .filter((item) => {
         if (caseId && item.caseId !== caseId) return false;
@@ -343,7 +343,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => evidenceStore.undo()}
+      onclick={() => evidenceStore.undo()}
       disabled={!evidenceStore.canUndo()}
       title="Undo (Ctrl+Z)"
     >
@@ -353,7 +353,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => evidenceStore.redo()}
+      onclick={() => evidenceStore.redo()}
       disabled={!evidenceStore.canRedo()}
       title="Redo (Ctrl+Y)"
     >
@@ -363,7 +363,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => syncWithServer()}
+      onclick={() => syncWithServer()}
       disabled={isLoading}
       title="Sync with server"
     >
@@ -382,7 +382,7 @@
       <div class="space-y-4">
         <button
           class="space-y-4"
-          on:click={() => (error = null)}
+          onclick={() => (error = null)}
         >
           <span class="space-y-4">Dismiss</span>
           ✕
@@ -441,7 +441,7 @@
         <Button
           variant="ghost"
           size="sm"
-          on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          onclick={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
         >
           {#if sortOrder === "asc"}
             <SortAsc class="space-y-4" />
@@ -458,7 +458,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+        onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
       >
         {#if viewMode === "grid"}
           <List class="space-y-4" />
@@ -469,14 +469,14 @@
 
       <!-- Selection Actions -->
       {#if selectedEvidence.size > 0}
-        <Button variant="outline" size="sm" on:click={() => clearSelection()}>
+        <Button variant="outline" size="sm" onclick={() => clearSelection()}>
           Clear ({selectedEvidence.size})
         </Button>
 
         <Button
           variant="danger"
           size="sm"
-          on:click={() => {
+          onclick={() => {
             if (confirm(`Delete ${selectedEvidence.size} selected items?`)) {
               selectedEvidence.forEach((id) => deleteEvidence(id));
             }
@@ -486,13 +486,13 @@
           Delete
         </Button>
       {:else}
-        <Button variant="ghost" size="sm" on:click={() => selectAll()}>
+        <Button variant="ghost" size="sm" onclick={() => selectAll()}>
           Select All
         </Button>
       {/if}
 
       <!-- Add Evidence -->
-      <Button on:click={() => createEvidence()}>
+      <Button onclick={() => createEvidence()}>
         <span class="space-y-4">+</span>
         Add Evidence
       </Button>
@@ -523,7 +523,7 @@
             ? "No evidence matches your current filters."
             : "No evidence has been added yet."}
         </p>
-        <Button on:click={() => createEvidence()}>Add First Evidence</Button>
+        <Button onclick={() => createEvidence()}>Add First Evidence</Button>
       </div>
     </div>
   {:else}
@@ -542,7 +542,7 @@
                 <input
                   type="checkbox"
                   checked={selectedEvidence.has(item.id)}
-                  on:change={() => toggleSelection(item.id)}
+                  onchange={() => toggleSelection(item.id)}
                   class="space-y-4"
                 />
                 <svelte:component
@@ -563,7 +563,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => (editingEvidence = item.id)}
+                  onclick={() => (editingEvidence = item.id)}
                 >
                   <Eye class="space-y-4" />
                 </Button>
@@ -571,7 +571,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => deleteEvidence(item.id)}
+                  onclick={() => deleteEvidence(item.id)}
                 >
                   <Trash2 class="space-y-4" />
                 </Button>
@@ -595,7 +595,7 @@
                 <div class="space-y-4">
                   <Button
                     size="sm"
-                    on:click={() =>
+                    onclick={() =>
                       updateEvidence(item.id, {
                         title: item.title,
                         description: item.description,
@@ -606,7 +606,7 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => (editingEvidence = null)}
+                    onclick={() => (editingEvidence = null)}
                   >
                     Cancel
                   </Button>
@@ -663,7 +663,7 @@
               >
                 <input
                   type="checkbox"
-                  on:change={(e) =>
+                  onchange={(e) =>
                     (e.target as HTMLInputElement).checked
                       ? selectAll()
                       : clearSelection()}
@@ -700,7 +700,7 @@
                   <input
                     type="checkbox"
                     checked={selectedEvidence.has(item.id)}
-                    on:change={() => toggleSelection(item.id)}
+                    onchange={() => toggleSelection(item.id)}
                     class="space-y-4"
                   />
                 </td>
@@ -748,14 +748,14 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => (editingEvidence = item.id)}
+                      onclick={() => (editingEvidence = item.id)}
                     >
                       <Eye class="space-y-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => deleteEvidence(item.id)}
+                      onclick={() => deleteEvidence(item.id)}
                     >
                       <Trash2 class="space-y-4" />
                     </Button>
@@ -783,7 +783,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage === 0}
-            on:click={() => currentPage--}
+            onclick={() => currentPage--}
           >
             Previous
           </Button>
@@ -796,7 +796,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage >= totalPages - 1}
-            on:click={() => currentPage++}
+            onclick={() => currentPage++}
           >
             Next
           </Button>

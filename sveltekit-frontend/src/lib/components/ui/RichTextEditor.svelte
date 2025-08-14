@@ -218,7 +218,7 @@
     <!-- Heading Dropdown -->
     <select
       class="space-y-4"
-      on:change={(e) =>
+      onchange={(e) =>
         setHeading(parseInt((e.target as HTMLInputElement).value))}
     >
       <option value="0">Normal</option>
@@ -233,7 +233,7 @@
     <button
       type="button"
       class="space-y-4"
-      on:click={() => toggleBold()}
+      onclick={() => toggleBold()}
       title="Bold"
     >
       <Bold class="space-y-4" />
@@ -242,7 +242,7 @@
     <button
       type="button"
       class="space-y-4"
-      on:click={() => toggleItalic()}
+      onclick={() => toggleItalic()}
       title="Italic"
     >
       <Italic class="space-y-4" />
@@ -254,7 +254,7 @@
     <button
       type="button"
       class="space-y-4"
-      on:click={() => toggleBulletList()}
+      onclick={() => toggleBulletList()}
       title="Bullet List"
     >
       <List class="space-y-4" />
@@ -263,7 +263,7 @@
     <button
       type="button"
       class="space-y-4"
-      on:click={() => toggleOrderedList()}
+      onclick={() => toggleOrderedList()}
       title="Numbered List"
     >
       <ListOrdered class="space-y-4" />
@@ -275,7 +275,7 @@
     <button
       type="button"
       class="space-y-4"
-      on:click={() => addImage()}
+      onclick={() => addImage()}
       title="Add Image"
     >
       <ImageIcon class="space-y-4" />
@@ -287,7 +287,7 @@
     <button
       type="button"
       class="space-y-4"
-      on:click={() => saveContent()}
+      onclick={() => saveContent()}
       title="Save Content"
     >
       <Save class="space-y-4" />
