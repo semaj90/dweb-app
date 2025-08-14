@@ -126,3 +126,43 @@ src/lib/wasm/dist/
 ########################################
 sveltekit-frontend/todos/
 81125_nvme.txt
+
+########################################
+# Prevent root directory clutter
+########################################
+# Scripts should go in scripts/ subdirectories
+/*.bat
+/*.ps1
+/*.mjs
+/*.js
+!vite.config.js
+!svelte.config.js
+!playwright.config.ts
+!drizzle.config.ts
+!ecosystem.config.js
+!common.config.ts
+!pg.config.ts
+!uno.config.ts
+!unocss.config.ts
+!graphql.config.js
+!codegen.yml
+
+# Documentation should go in docs/ subdirectories  
+/*-GUIDE.md
+/*-README.md
+/*-STATUS.md
+/*-SUMMARY.md
+/TODO*.md
+/PHASE*.md
+/ERROR*.md
+
+# Log and temporary files should go in logs/
+/*.txt
+/*.log
+!README.txt
+
+# Model files should go in config/models/
+/Modelfile*
+
+# Keep only essential root files
+# package.json, README.md, LICENSE, .gitignore, .gitattributes, docker-compose.yml, etc.

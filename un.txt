@@ -1,1 +1,0 @@
-apply harmonic design spacing to this layout, given fibbinonauci 
