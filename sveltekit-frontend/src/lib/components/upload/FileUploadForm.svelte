@@ -231,17 +231,6 @@
             on:change={handleFileSelect}
             accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
           />
-          <!-- Transparent overlay input to capture clicks for file selection when no file is selected -->
-          {#if !selectedFile}
-            <input
-              type="file"
-              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              on:change={handleFileSelect}
-              accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
-              aria-hidden="true"
-              tabindex="-1"
-            />
-          {/if}
           {#if $errors.file}
             <span class="text-sm text-destructive">{$errors.file}</span>
           {/if}
