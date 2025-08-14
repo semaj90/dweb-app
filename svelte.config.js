@@ -1,18 +1,2 @@
-import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-	preprocess: vitePreprocess(),
-	kit: {
-	adapter: adapter(),
-		alias: {
-			$lib: './src/lib',
-			$components: './src/lib/components',
-			$services: './src/lib/services',
-			$types: './src/lib/types'
-		}
-	}
-};
-
-export default config;
+// Root workspace stub: actual SvelteKit config is in sveltekit-frontend/svelte.config.js
+export default {};

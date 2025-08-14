@@ -51,12 +51,11 @@
   let dragActive = false;
   let uploadProgress = 0;
   let previewUrl: string | null = null;
-  let previewUrl = $state<string | null>(null);
+  let fileInputEl: HTMLInputElement | null = null;
   // Initialize form with caseId if provided
   $: if (caseId) {
     $form.caseId = caseId;
   }
-  });
 
   // File type icons
   const fileTypeIcons = {
@@ -136,6 +135,17 @@
     uploadProgress = 0;
   }
 
+  function openFilePicker() {
+    fileInputEl?.click();
+  }
+
+  function onDropzoneKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openFilePicker();
+    }
+  }
+
   // Format file size
   function formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
@@ -165,7 +175,12 @@
               `${selectedFile ? 'bg-muted/30' : ''}`}
             on:drop={handleDrop}
             on:dragover={handleDragOver}
-            on:dragleave={handleDragLeave}>
+            on:dragleave={handleDragLeave}
+            on:click={openFilePicker}
+            on:keydown={onDropzoneKeydown}
+            role="button"
+            tabindex="0"
+            aria-label={selectedFile ? `Change file ${selectedFile.name}` : 'Upload a file by clicking or dragging'}>
             {#if selectedFile}
               {@const SvelteComponent = fileTypeIcons[$form.type] ?? FileText}
               <div class="space-y-4">
@@ -179,15 +194,19 @@
                       </p>
                     </div>
                   </div>
-                  <Button type="button" variant="ghost" size="sm" on:click={removeFile}>
-                    <X class="h-4 w-4" />
-                  </Button>
+                  <div class="flex items-center gap-2">
+                    <Button type="button" variant="secondary" size="sm" on:click|stopPropagation={openFilePicker}>
+                      Change
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" on:click|stopPropagation={removeFile} aria-label="Remove file">
+                      <X class="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 {#if previewUrl && $form.type === 'image'}
                   <img src={previewUrl} alt="Preview" class="max-h-48 rounded-md mx-auto" />
                 {/if}
-
                 {#if uploadProgress > 0}
                   <Progress value={uploadProgress} class="h-2" />
                 {/if}
@@ -201,16 +220,28 @@
                 <p class="text-xs text-muted-foreground mt-1">
                   Max size: 50MB • Supported: PDF, Word, Images, Video, Audio
                 </p>
-                <input
-                  type="file"
-                  id="file"
-                  name="file"
-                  class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  on:change={handleFileSelect}
-                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav" />
               </div>
             {/if}
           </div>
+          <!-- Hidden input to allow programmatic open when a file is already selected -->
+          <input
+            bind:this={fileInputEl}
+            type="file"
+            class="hidden"
+            on:change={handleFileSelect}
+            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
+          />
+          <!-- Transparent overlay input to capture clicks for file selection when no file is selected -->
+          {#if !selectedFile}
+            <input
+              type="file"
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              on:change={handleFileSelect}
+              accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
+              aria-hidden="true"
+              tabindex="-1"
+            />
+          {/if}
           {#if $errors.file}
             <span class="text-sm text-destructive">{$errors.file}</span>
           {/if}
