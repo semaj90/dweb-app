@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
     report: Report | null ;
-    caseId: string;;
+    caseId: string;
     onSave: (report: Report) ;
     autoSaveEnabled?: any;
     readOnly?: any;
@@ -395,13 +395,13 @@
       <div class="space-y-4">
         <button
           class="space-y-4"
-          on:click={() => (showAiPanel = !showAiPanel)}
+          onclick={() => (showAiPanel = !showAiPanel)}
         >
           AI Assist
         </button>
         <button
           class="space-y-4"
-          on:click={() => saveReport()}
+          onclick={() => saveReport()}
           disabled={!isDirty || isLoading}
         >
           Save
@@ -417,21 +417,21 @@
       <div class="space-y-4">
         <button
           type="button"
-          on:click={() => formatText("bold")}
+          onclick={() => formatText("bold")}
           title="Bold (Ctrl+B)"
         >
           <strong>B</strong>
         </button>
         <button
           type="button"
-          on:click={() => formatText("italic")}
+          onclick={() => formatText("italic")}
           title="Italic (Ctrl+I)"
         >
           <em>I</em>
         </button>
         <button
           type="button"
-          on:click={() => formatText("underline")}
+          onclick={() => formatText("underline")}
           title="Underline (Ctrl+U)"
         >
           <u>U</u>
@@ -439,7 +439,7 @@
         <div class="space-y-4"></div>
         <button
           type="button"
-          on:click={() => insertCitationPrompt()}
+          onclick={() => insertCitationPrompt()}
           title="Insert Citation (Ctrl+K)"
         >
           📎 Citation
@@ -468,7 +468,7 @@
       <h3>Citations</h3>
       <button
         class="space-y-4"
-        on:click={() => (citationSidebar.style.display = "none")}>×</button
+        onclick={() => (citationSidebar.style.display = "none")}>×</button
       >
     </div>
 
@@ -484,7 +484,7 @@
             <div class="space-y-4">{citation.source}</div>
             <button
               class="space-y-4"
-              on:click={() => insertCitation(citation)}
+              onclick={() => insertCitation(citation)}
             >
               Add
             </button>
@@ -499,7 +499,7 @@
     <div class="space-y-4">
       <div class="space-y-4">
         <h3>AI Suggestions</h3>
-        <button class="space-y-4" on:click={() => (showAiPanel = false)}
+        <button class="space-y-4" onclick={() => (showAiPanel = false)}
           >×</button
         >
       </div>
@@ -513,7 +513,7 @@
               <p>{suggestion}</p>
               <button
                 class="space-y-4"
-                on:click={() => insertAiSuggestion(suggestion)}
+                onclick={() => insertAiSuggestion(suggestion)}
               >
                 Use This
               </button>
@@ -535,7 +535,7 @@
           <span class="space-y-4">[{citation.source}]</span>
           <button
             class="space-y-4"
-            on:click={() => removeCitation(citation.id)}>×</button
+            onclick={() => removeCitation(citation.id)}>×</button
           >
         </div>
       {/each}

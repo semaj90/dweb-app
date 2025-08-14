@@ -35,7 +35,7 @@
 }
 </script>
 
-<Dialog.Root open={isOpen} on:close={closeModal}>
+<Dialog.Root open={isOpen} onclose={closeModal}>
   <Dialog.Content size="lg">
   <Dialog.Header>
     <Dialog.Title>AI Summary</Dialog.Title>
@@ -64,7 +64,7 @@
       <!-- Summary Content -->
       <div class="space-y-4">
         <div class="space-y-4">
-          <Button on:click={() => copyToClipboard()} variant="ghost" size="sm" aria-label="Copy summary to clipboard">
+          <Button onclick={() => copyToClipboard()} variant="ghost" size="sm" aria-label="Copy summary to clipboard">
             <Copy class="space-y-4" />
             <span class="space-y-4">Copy</span>
           </Button>
@@ -88,7 +88,7 @@
 
   <Dialog.Footer>
     <Dialog.Close asChild>
-      <Button on:click={() => closeModal()} variant="secondary" aria-label="Close summary modal">
+      <Button onclick={() => closeModal()} variant="secondary" aria-label="Close summary modal">
         <X class="space-y-4" />
         <span class="space-y-4">Close</span>
       </Button>

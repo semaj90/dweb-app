@@ -763,14 +763,14 @@
   <canvas
     bind:this={canvas}
     class="space-y-4"
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:click={handleCanvasClick}
-    on:mousedown={handleMouseDown}
-    on:mousemove={handleMouseMove}
-    on:mouseup={handleMouseUp}
-    on:mouseleave={handleMouseUp}
-    on:wheel={handleWheel}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    onclick={handleCanvasClick}
+    onmousedown={handleMouseDown}
+    onmousemove={handleMouseMove}
+    onmouseup={handleMouseUp}
+    onmouseleave={handleMouseUp}
+    onwheel={handleWheel}
     on:contextmenu|preventDefault
   ></canvas>
 

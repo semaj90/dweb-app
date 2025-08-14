@@ -1,6 +1,7 @@
 <script lang="ts">
   interface Props {
-    item: Evidence;;
+    item: Evidence;
+;
   }
   let {
     item
@@ -14,7 +15,7 @@
   import type { Evidence } from "$lib/types/index";
   import { createEventDispatcher } from "svelte";
 
-  
+
   const dispatch = createEventDispatcher();
 
   function getEvidenceIcon(type: string) {

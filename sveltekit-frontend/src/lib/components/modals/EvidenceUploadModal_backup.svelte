@@ -17,7 +17,7 @@
       <p class="space-y-4">Modal is working!</p>
       <button
         class="space-y-4"
-        on:click={() => closeModal()}
+        onclick={() => closeModal()}
       >
         Close
       </button>

@@ -364,9 +364,9 @@
   <!-- Chat overlay -->
   <div
     class="chat-overlay"
-    transition:fade={{ duration: 200 }}
+    transitionfade={{ duration: 200 }}
     on:click|self={closeChat}
-    on:keydown={(e) => e.key === "Escape" && closeChat()}
+    onkeydown={(e) => e.key === "Escape" && closeChat()}
     role="dialog"
     aria-modal="true"
     aria-labelledby="chat-title"
@@ -375,7 +375,7 @@
     <!-- Chat container -->
     <div
       class="chat-container"
-      transition:fly={{ y: 50, duration: 300, easing: quintOut }}
+      transitionfly={{ y: 50, duration: 300, easing: quintOut }}
     >
       <!-- Header -->
       <div class="chat-header">
@@ -392,7 +392,7 @@
             <button
               class="mode-button"
               class:active={showModeSelector}
-              on:click={() => (showModeSelector = !showModeSelector)}
+              onclick={() => (showModeSelector = !showModeSelector)}
               title="Select AI mode"
             >
               {#each aiModes as mode}
@@ -406,13 +406,13 @@
             {#if showModeSelector}
               <div
                 class="mode-dropdown"
-                transition:scale={{ duration: 200, easing: elasticOut }}
+                transitionscale={{ duration: 200, easing: elasticOut }}
               >
                 {#each aiModes as mode}
                   <button
                     class="mode-option"
                     class:selected={mode.id === selectedMode}
-                    on:click={() => {
+                    onclick={() => {
                       selectedMode = mode.id;
                       showModeSelector = false;
                     }}
@@ -433,7 +433,7 @@
         <div class="header-actions">
           <button
             class="header-action"
-            on:click={() => clearConversation()}
+            onclick={() => clearConversation()}
             title="Clear conversation"
             disabled={isGenerating}
           >
@@ -441,7 +441,7 @@
           </button>
           <button
             class="header-action"
-            on:click={() => closeChat()}
+            onclick={() => closeChat()}
             title="Close chat"
           >
             <X size={16} />
@@ -457,7 +457,7 @@
             class:user={message.role === "user"}
             class:assistant={message.role === "assistant"}
             class:error={message.isError}
-            transition:fly={{
+            transitionfly={{
               x: message.role === "user" ? 20 : -20,
               duration: 300,
             }}
@@ -501,7 +501,7 @@
                     {#each message.actions as action}
                       <button
                         class="action-button"
-                        on:click={() => handleActionClick(action)}
+                        onclick={() => handleActionClick(action)}
                         title={action.text}
                       >
                         {action.text}
@@ -531,13 +531,13 @@
 
       <!-- Quick actions (when no messages) -->
       {#if $messages.length === 0}
-        <div class="quick-actions" transition:fade={{ delay: 300 }}>
+        <div class="quick-actions" transitionfade={{ delay: 300 }}>
           <h3>Quick Actions</h3>
           <div class="action-grid">
             {#each quickActions as action}
               <button
                 class="quick-action"
-                on:click={() => handleQuickAction(action.text)}
+                onclick={() => handleQuickAction(action.text)}
                 disabled={isGenerating}
               >
                 <svelte:component this={action.icon} size={20} />
@@ -556,7 +556,7 @@
             bind:value={currentMessage}
             placeholder="Ask about your case, evidence, or legal strategy..."
             disabled={isGenerating}
-            on:keydown={handleKeydown}
+            onkeydown={handleKeydown}
             rows="4"
             class="message-input"
           ></textarea>
@@ -565,7 +565,7 @@
             class="send-button"
             class:sending={isGenerating}
             disabled={!currentMessage.trim() || isGenerating}
-            on:click={() => sendMessage()}
+            onclick={() => sendMessage()}
             title="Send message"
           >
             {#if isGenerating}

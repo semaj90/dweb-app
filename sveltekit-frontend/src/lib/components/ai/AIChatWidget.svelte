@@ -238,21 +238,21 @@
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => copyToClipboard(message.content)}
+                            onclick={() => copyToClipboard(message.content)}
                           >
                             <Copy class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => provideFeedback(message.id, 'positive')}
+                            onclick={() => provideFeedback(message.id, 'positive')}
                           >
                             <ThumbsUp class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => provideFeedback(message.id, 'negative')}
+                            onclick={() => provideFeedback(message.id, 'negative')}
                           >
                             <ThumbsDown class="h-3 w-3" />
                           </Button>
@@ -270,7 +270,7 @@
                         variant="outline"
                         size="sm"
                         class="text-xs h-auto py-1 px-2"
-                        on:click={() => handleSuggestionClick(suggestion)}
+                        onclick={() => handleSuggestionClick(suggestion)}
                       >
                         {suggestion}
                       </Button>
@@ -323,14 +323,14 @@
           disabled={isLoading}
           class="flex-1"
         />
-        <Button on:click={sendMessage} disabled={isLoading || !currentMessage.trim()}>
+        <Button onclick={sendMessage} disabled={isLoading || !currentMessage.trim()}>
           {#if isLoading}
             <Loader2 class="h-4 w-4 animate-spin" />
           {:else}
             <Send class="h-4 w-4" />
           {/if}
         </Button>
-        <Button variant="outline" on:click={clearChat}>
+        <Button variant="outline" onclick={clearChat}>
           <X class="h-4 w-4" />
         </Button>
       </div>

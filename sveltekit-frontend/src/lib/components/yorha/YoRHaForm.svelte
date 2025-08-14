@@ -273,7 +273,7 @@
           type="button"
           class="form-button cancel"
           disabled={loading}
-          on:click={handleCancel}
+          onclick={handleCancel}
         >
           <span class="button-icon">✕</span>
           {cancelLabel}
@@ -284,7 +284,7 @@
         type="submit"
         class="form-button submit"
         disabled={loading || Object.keys(errors).length > 0}
-        on:click={handleSubmit}
+        onclick={handleSubmit}
       >
         {#if loading}
           <span class="button-spinner">◌</span>

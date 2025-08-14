@@ -1,6 +1,7 @@
 <script lang="ts">
   interface Props {
-    caseId: string;;
+    caseId: string;
+;
     onEvidenceDrop: (evidence: Evidence) ;
   }
   let {

@@ -193,13 +193,13 @@ import Input from "$lib/components/ui/Input.svelte";
     searchResults = [];
 }
   // Reactive search
-  $: if (searchQuery) {
+  $effect(() => { if (searchQuery) {
     performSearch();
   } else {
     searchResults = [];
 }
   // Auto-generate insights when node changes
-  $: if (selectedNode?.aiTags) {
+  $effect(() => { if (selectedNode?.aiTags) {
     generateInsights();
 }
 </script>
@@ -217,7 +217,7 @@ import Input from "$lib/components/ui/Input.svelte";
         class="space-y-4"
       />
       {#if searchQuery}
-        <Button on:click={clearSearch} variant="outline" size="sm">Clear</Button>
+        <Button onclick={clearSearch} variant="outline" size="sm">Clear</Button>
       {/if}
     </div>
 
@@ -255,7 +255,7 @@ import Input from "$lib/components/ui/Input.svelte";
         <div class="space-y-4">
           <h3 class="space-y-4">AI Analysis</h3>
           <Button
-            on:click={reprocessWithAI}
+            onclick={reprocessWithAI}
             disabled={isProcessing}
             variant="outline"
             size="sm"
@@ -306,7 +306,7 @@ import Input from "$lib/components/ui/Input.svelte";
       <div class="space-y-4">
         <div class="space-y-4">🤖</div>
         <div class="space-y-4">No AI analysis available</div>
-        <Button on:click={reprocessWithAI} disabled={isProcessing}>
+        <Button onclick={reprocessWithAI} disabled={isProcessing}>
           {isProcessing ? "Processing..." : "Analyze with AI"}
         </Button>
       </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    message: any;;
+    message: any;
   }
   let {
     message
@@ -134,7 +134,7 @@
             variant="ghost"
             size="sm"
             class="space-y-4"
-            on:click={() => copyToClipboard()}
+            onclick={() => copyToClipboard()}
             title="Copy message"
           >
             <Copy class="space-y-4" />
@@ -145,7 +145,7 @@
             variant="ghost"
             size="sm"
             class="space-y-4"
-            on:click={() => toggleSaved()}
+            onclick={() => toggleSaved()}
             title={message.saved ? "Remove from saved" : "Save message"}
           >
             {#if message.saved}

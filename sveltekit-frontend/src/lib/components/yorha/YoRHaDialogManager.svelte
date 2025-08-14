@@ -38,8 +38,8 @@
     position={dialog.position}
     persistent={dialog.persistent}
     value={dialog.value}
-    on:close={() => handleDialogClose(dialog)}
-    on:confirm={(event) => handleDialogConfirm(dialog, event)}
-    on:cancel={() => handleDialogCancel(dialog)}
+    onclose={() => handleDialogClose(dialog)}
+    onconfirm={(event) => handleDialogConfirm(dialog, event)}
+    oncancel={() => handleDialogCancel(dialog)}
   />
 {/each}

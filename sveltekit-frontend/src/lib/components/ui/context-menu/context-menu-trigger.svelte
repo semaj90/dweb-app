@@ -42,6 +42,6 @@
   <slot {builder} />
 {:else}
   <div use:builder.action>
-    <slot />
+    <slot></slot>
   </div>
 {/if}

@@ -39,7 +39,7 @@
     | "contract"
     | "case_law"
     | "general" = "evidence";
-  
+
   const { state, send } = useMachine(aiSummaryMachine);
 
   // Reactive state helpers

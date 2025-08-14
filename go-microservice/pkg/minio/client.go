@@ -84,13 +84,13 @@ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *mu
 		timestamp,
 		header.Filename)
 
-	// Prepare metadata (prefix with x-amz-meta- to avoid conflicts)
+	// Prepare metadata
 	metadata := map[string]string{
-		"x-case-id":       opts.CaseID,
-		"x-document-type": opts.DocumentType,
-		"x-filename":      header.Filename,
-		"x-upload-time":   time.Now().Format(time.RFC3339),
-		"x-file-size":     fmt.Sprintf("%d", header.Size),
+		"case-id":       opts.CaseID,
+		"document-type": opts.DocumentType,
+		"filename":      header.Filename,
+		"upload-time":   time.Now().Format(time.RFC3339),
+		"file-size":     fmt.Sprintf("%d", header.Size),
 	}
 
 	// Add custom metadata

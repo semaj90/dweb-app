@@ -90,7 +90,7 @@
             Return Home
           </a>
           <button 
-            on:click={() => window.location.reload()} 
+            onclick={() => window.location.reload()} 
             class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             Check Again

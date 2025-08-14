@@ -173,7 +173,7 @@
       <button
         type="button"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
-        on:click={() => showPassword = !showPassword}
+        onclick={() => showPassword = !showPassword}
         tabindex="-1"
       >
         {#if showPassword}

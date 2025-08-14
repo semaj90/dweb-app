@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
     timelineEvents: Array<{;
-    caseId: string;;
+    caseId: string;
   }
   let {
     timelineEvents,
@@ -150,7 +150,7 @@
                 <div class="flex-1">
                   <button 
                     class="text-left w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    on:click={() => toggleDate(date)}
+                    onclick={() => toggleDate(date)}
                   >
                     <div>
                       <h3 class="font-semibold text-lg">{formatDate(date)}</h3>

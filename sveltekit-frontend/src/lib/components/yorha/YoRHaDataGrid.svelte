@@ -280,7 +280,7 @@
             class:yorha-sorted-asc={sortConfig?.column === column.key && sortConfig?.direction === 'asc'}
             class:yorha-sorted-desc={sortConfig?.column === column.key && sortConfig?.direction === 'desc'}
             style:width={getColumnWidth(column)}
-            on:click={() => handleSort(column)}
+            onclick={() => handleSort(column)}
           >
             <div class="yorha-header-content">
               <span class="yorha-header-text">{column.title}</span>
@@ -334,7 +334,7 @@
                 class:yorha-editable={column.editable && editable}
                 class:yorha-editing={editingCell?.row === rowIndex && editingCell?.col === column.key}
                 style:width={getColumnWidth(column)}
-                on:click={() => startEdit(rowIndex, column.key)}
+                onclick={() => startEdit(rowIndex, column.key)}
               >
                 {#if editingCell?.row === rowIndex && editingCell?.col === column.key}
                   {#if column.type === 'select' && column.options}

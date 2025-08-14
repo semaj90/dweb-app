@@ -546,7 +546,7 @@ let searchTimeout: ReturnType<typeof setTimeout>;
 											<Button size="sm" variant="outline">
 												<Download class="h-3 w-3" />
 											</Button>
-											<Button size="sm" variant="outline" on:click={() => deleteEvidence(item.id)}>
+											<Button size="sm" variant="outline" onclick={() => deleteEvidence(item.id)}>
 												<Trash2 class="h-3 w-3" />
 											</Button>
 										</div>

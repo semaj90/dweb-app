@@ -345,7 +345,7 @@
     <div class="space-y-4">
       <button
         class="space-y-4"
-        on:click={() => sidebarOpen.update((open) => !open)}
+        onclick={() => sidebarOpen.update((open) => !open)}
       >
         {$sidebarOpen ? "◀" : "▶"}
         {$sidebarOpen ? "Hide" : "Show"} Sidebar
@@ -353,7 +353,7 @@
 
       <button
         class="space-y-4"
-        on:click={() => generateCaseSummary()}
+        onclick={() => generateCaseSummary()}
         disabled={aiGenerating}
       >
         {#if aiGenerating}
@@ -366,7 +366,7 @@
 
       <button
         class="space-y-4"
-        on:click={() => generateProsecutionStrategy()}
+        onclick={() => generateProsecutionStrategy()}
         disabled={aiGenerating}
       >
         📋 Prosecution Strategy
@@ -397,7 +397,7 @@
         <button
           class="space-y-4"
           class:active={$activeTab === "evidence"}
-          on:click={() => activeTab.set("evidence")}
+          onclick={() => activeTab.set("evidence")}
           title="Evidence List (Ctrl/Cmd + 3)"
         >
           📁 Evidence
@@ -405,7 +405,7 @@
         <button
           class="space-y-4"
           class:active={$activeTab === "reports"}
-          on:click={() => activeTab.set("reports")}
+          onclick={() => activeTab.set("reports")}
           title="AI Reports (Ctrl/Cmd + 4)"
         >
           📊 AI Reports
@@ -415,7 +415,7 @@
       <div class="space-y-4">
         {#if $activeTab === "evidence"}
           <div class="space-y-4">
-            <EvidenceUploader {caseId} on:uploaded={handleEvidenceUploaded} />
+            <EvidenceUploader {caseId} onuploaded={handleEvidenceUploaded} />
 
             <div class="space-y-4">
               <div class="space-y-4">
@@ -462,7 +462,7 @@
                   </div>
                   <button
                     class="space-y-4"
-                    on:click={() => canvasEditor?.addEvidenceToCanvas(evidence)}
+                    onclick={() => canvasEditor?.addEvidenceToCanvas(evidence)}
                   >
                     ➕
                   </button>
@@ -491,7 +491,7 @@
                 </div>
                 <button
                   class="space-y-4"
-                  on:click={() =>
+                  onclick={() =>
                     reportEditor?.setContent(report.richTextContent)}
                 >
                   Load into Editor
@@ -516,7 +516,7 @@
         <button
           class="space-y-4"
           class:active={$activeTab === "canvas"}
-          on:click={() => activeTab.set("canvas")}
+          onclick={() => activeTab.set("canvas")}
           title="Interactive Canvas (Ctrl/Cmd + 1)"
         >
           🎨 Interactive Canvas
@@ -524,7 +524,7 @@
         <button
           class="space-y-4"
           class:active={$activeTab === "editor"}
-          on:click={() => activeTab.set("editor")}
+          onclick={() => activeTab.set("editor")}
           title="Report Editor (Ctrl/Cmd + 2)"
         >
           📝 Report Editor

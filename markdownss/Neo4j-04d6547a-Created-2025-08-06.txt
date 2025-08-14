@@ -5,7 +5,7 @@ NEO4J_PASSWORD=VGLunwtms0Hn9K8bQO8RWan01_ePnzJBUsGWRSRRaeg
 NEO4J_DATABASE=neo4j
 AURA_INSTANCEID=04d6547a
 AURA_INSTANCENAME=Free instance
-
+neo4j desktop 
 
 PS C:\Users\james\Desktop\deeds-web\deeds-web-app> taskkill /F /IM upload-service.exe 2>$null; Start-Sleep 1; $env:DATABASE_URL='postgresql://postgres:postgres@localhost:5432/legal_ai_db?sslmode=disable'; $env:MINIO_ENDPOINT='localhost:9000'; $env:MINIO_ACCESS_KEY='minioadmin'; $env:MINIO_SECRET_KEY='minioadmin123'; $env:MINIO_BUCKET='legal-documents'; .\bin\upload-service.exe
 MINIO_SECRET_KEY='minioadmin123'\x3b $env:MINIO_BUCKET='legal-documents'\x3b .\x5cbin\x5cupload-service.exeSUCCESS: The process "upload-service.exe" with PID 27700 has been terminated.
@@ -15,14 +15,6 @@ Check the spelling of the name, or if a path was included, verify that the path 
 PS C:\Users\james\Desktop\deeds-web\deeds-web-app> 
 
 
-
-# Wait 60 seconds before connecting using these details, or login to https://console.neo4j.io to validate the Aura Instance is available
-NEO4J_URI=neo4j+s://04d6547a.databases.neo4j.io
-NEO4J_USERNAME=neo4j
-NEO4J_PASSWORD=VGLunwtms0Hn9K8bQO8RWan01_ePnzJBUsGWRSRRaeg
-NEO4J_DATABASE=neo4j
-AURA_INSTANCEID=04d6547a
-AURA_INSTANCENAME=Free instance
 
 
 PS C:\Users\james\Desktop\deeds-web\deeds-web-app> taskkill /F /IM upload-service.exe 2>$null; Start-Sleep 1; $env:DATABASE_URL='postgresql://postgres:postgres@localhost:5432/legal_ai_db?sslmode=disable'; $env:MINIO_ENDPOINT='localhost:9000'; $env:MINIO_ACCESS_KEY='minioadmin'; $env:MINIO_SECRET_KEY='minioadmin123'; $env:MINIO_BUCKET='legal-documents'; .\bin\upload-service.exe

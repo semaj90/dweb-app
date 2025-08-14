@@ -206,7 +206,7 @@
 			disabled={isSearching}
 		/>
 		<Button 
-			on:click={performSearch}
+			onclick={performSearch}
 			disabled={isSearching || !query.trim()}
 			class="px-6"
 		>
@@ -225,7 +225,7 @@
 			<div class="flex flex-wrap gap-2">
 				{#each searchHistory as item}
 					<button
-						on:click={() => selectHistoryItem(item)}
+						onclick={() => selectHistoryItem(item)}
 						class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
 					>
 						{item}

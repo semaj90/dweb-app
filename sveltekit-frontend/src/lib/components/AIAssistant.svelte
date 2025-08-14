@@ -46,7 +46,7 @@
       placeholder="Ask a legal question..."
       rows={3}
     />
-    <Button on:click={queryAI} disabled={isLoading}>
+    <Button onclick={queryAI} disabled={isLoading}>
       {isLoading ? 'Thinking...' : 'Ask AI'}
     </Button>
     {#if response}

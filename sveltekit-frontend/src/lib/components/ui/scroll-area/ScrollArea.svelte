@@ -15,7 +15,7 @@
 	{...rest}
 >
 	<ScrollAreaPrimitive.Viewport class="h-full w-full rounded-[inherit]">
-		<slot />
+		<slot></slot>
 	</ScrollAreaPrimitive.Viewport>
 	<ScrollAreaPrimitive.Scrollbar orientation="vertical" />
 	<ScrollAreaPrimitive.Scrollbar orientation="horizontal" />

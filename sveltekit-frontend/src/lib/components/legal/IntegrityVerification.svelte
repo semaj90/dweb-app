@@ -4,10 +4,10 @@ Displays detailed integrity verification results with AI analysis
 -->
 <script lang="ts">
   interface Props {
-    integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';;
+    integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';
     verificationResults: {;
-    originalHash: string;;
-    currentHash: string | undefined;;
+    originalHash: string;
+    currentHash: string | undefined;
     aiAnalysis: {;
     showDetails: boolean ;
   }

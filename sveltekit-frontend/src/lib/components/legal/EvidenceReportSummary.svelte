@@ -27,7 +27,7 @@
   } from "lucide-svelte";
   import AISummaryReader from "./AISummaryReader.svelte";
 
-        
+
   interface EvidenceReport {
     id: string;
     title: string;

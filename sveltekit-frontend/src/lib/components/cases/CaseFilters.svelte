@@ -50,7 +50,7 @@
   // }
   
               
-  $: {
+  $effect(() => { {
     // TODO: IMPLEMENT ADVANCED FILTERING LOGIC
     // =======================================
     // 1. Debounced search with fuzzy matching

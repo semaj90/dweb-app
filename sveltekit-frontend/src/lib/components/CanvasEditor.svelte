@@ -1,7 +1,7 @@
 <script lang="ts">
   interface Props {
     canvasState: CanvasState | null ;
-    reportId: string;;
+    reportId: string;
     evidence: Evidence[] ;
     citationPoints: CitationPoint[] ;
     onSave: (canvasState: CanvasState) ;
@@ -790,7 +790,7 @@
 				console.error('Invalid evidence drop:', e);
 }}}
 	// Attach drop event to canvas element
-	$: if (canvasElement) {
+	$effect(() => { if (canvasElement) {
 		canvasElement.ondragover = (e) => { e.preventDefault(); };
 		canvasElement.ondrop = handleDrop;
 }
@@ -850,7 +850,7 @@
 					</div>
 					<button
 						class="space-y-4"
-						on:click={() => addEvidenceMarker(item)}
+						onclick={() => addEvidenceMarker(item)}
 						disabled={readOnly}
 						title="Add evidence marker to canvas"
 					>
@@ -873,7 +873,7 @@
 					</div>
 					<button
 						class="space-y-4"
-						on:click={() => addCitationMarker(citation)}
+						onclick={() => addCitationMarker(citation)}
 						disabled={readOnly}
 						title="Add citation marker to canvas"
 					>

@@ -5,10 +5,10 @@ Real-time collaboration interface for multiple investigators working on evidence
 <script lang="ts">
   interface Props {
     collaborationSession: {;
-    activeCollaborators: string[];;
-    userId: string;;
-    evidenceId: string;;
-    wsConnection: WebSocket | null;;
+    activeCollaborators: string[];
+    userId: string;
+    evidenceId: string;
+    wsConnection: WebSocket | null;
     onAddAnnotation: (content: string, position: any) ;
   }
   let {
@@ -311,7 +311,7 @@ Real-time collaboration interface for multiple investigators working on evidence
               }}
             />
             <Button 
-              on:click={sendMessage}
+              onclick={sendMessage}
               disabled={!newMessage.trim()}
               size="sm"
               class="self-end"
@@ -334,7 +334,7 @@ Real-time collaboration interface for multiple investigators working on evidence
           <Button
             variant="outline"
             size="sm"
-            on:click={() => showAnnotationInput = !showAnnotationInput}
+            onclick={() => showAnnotationInput = !showAnnotationInput}
           >
             Add Note
           </Button>
@@ -349,10 +349,10 @@ Real-time collaboration interface for multiple investigators working on evidence
               class="mb-3"
             />
             <div class="flex space-x-2">
-              <Button on:click={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
+              <Button onclick={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
                 Add Annotation
               </Button>
-              <Button on:click={() => showAnnotationInput = false} variant="outline" size="sm">
+              <Button onclick={() => showAnnotationInput = false} variant="outline" size="sm">
                 Cancel
               </Button>
             </div>

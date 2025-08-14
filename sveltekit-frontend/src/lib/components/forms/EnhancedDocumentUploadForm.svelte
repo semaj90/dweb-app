@@ -59,7 +59,7 @@
   import type { Infer, SuperValidated } from "sveltekit-superforms";
 
   // Props
-          
+
   // Form state management
   const formIntegration = createDocumentUploadForm(data, {
     onSuccess,

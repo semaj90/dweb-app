@@ -123,10 +123,10 @@
       class:near-limit={isNearLimit}
       class:at-limit={isAtLimit}
       rows={rows}
-      on:input={handleInput}
-      on:keydown={handleKeydown}
-      on:focus={handleFocus}
-      on:blur={handleBlur}
+      oninput={handleInput}
+      onkeydown={handleKeydown}
+      onfocus={handleFocus}
+      onblur={handleBlur}
       aria-label="Chat message input"
       spellcheck="true"
     ></textarea>
@@ -147,7 +147,7 @@
         class="send-button"
         disabled={disabled}
         class:has-content={value.trim().length > 0}
-        on:click={() => handleSend()}
+        onclick={() => handleSend()}
         title="Send message (Enter)"
         aria-label="Send message"
       >

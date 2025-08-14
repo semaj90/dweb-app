@@ -252,7 +252,7 @@
               <Button
                 variant="outline"
                 type="button"
-                on:click={() => (showAdvancedFilters = !showAdvancedFilters)}
+                onclick={() => (showAdvancedFilters = !showAdvancedFilters)}
               >
                 <Filter class="space-y-4" />
                 Filters
@@ -264,7 +264,7 @@
                 <Button
                   variant="outline"
                   type="button"
-                  on:click={() => clearFilters()}
+                  onclick={() => clearFilters()}
                 >
                   Clear Filters
                 </Button>
@@ -393,7 +393,7 @@
               {#each searchResults.results as result}
                 <div
                   class="space-y-4"
-                  on:click={() => handleResultClick(result)}
+                  onclick={() => handleResultClick(result)}
                   onkeydown={(e) =>
                     e.key === "Enter" && handleResultClick(result)}
                   role="button"
@@ -481,7 +481,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => selectQuickSearch(search)}
+                onclick={() => selectQuickSearch(search)}
               >
                 {search}
               </button>
@@ -502,7 +502,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => selectQuickSearch(search)}
+                onclick={() => selectQuickSearch(search)}
               >
                 {search}
               </button>

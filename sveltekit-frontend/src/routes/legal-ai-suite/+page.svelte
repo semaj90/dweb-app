@@ -337,7 +337,7 @@
 					<!-- Processing Controls -->
 					<div class="flex space-x-2">
 						<Button 
-							on:click={processLegalDocuments} 
+							onclick={processLegalDocuments} 
 							disabled={!canProcess}
 							class="flex-1"
 						>
@@ -403,7 +403,7 @@
 					<!-- Query Controls -->
 					<div class="flex space-x-2">
 						<Button 
-							on:click={executeRAGQuery} 
+							onclick={executeRAGQuery} 
 							disabled={!ragQuery.trim()}
 							class="flex-1"
 						>
@@ -510,7 +510,7 @@
 					<AlertCircle class="h-5 w-5" />
 					<span>Real-time System Logs</span>
 				</CardTitle>
-				<Button variant="outline" size="sm" on:click={clearLogs}>
+				<Button variant="outline" size="sm" onclick={clearLogs}>
 					Clear Logs
 				</Button>
 			</CardHeader>

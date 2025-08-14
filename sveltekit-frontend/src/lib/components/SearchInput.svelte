@@ -56,17 +56,17 @@
 		{placeholder}
 		class="space-y-4"
 		type="text"
-		on:input={handleInput}
-		on:keydown={handleKeydown}
-		on:focus={handleFocus}
-		on:blur={handleBlur}
+		oninput={handleInput}
+		onkeydown={handleKeydown}
+		onfocus={handleFocus}
+		onblur={handleBlur}
 		aria-label="Search"
 	/>
 	
 	{#if value}
 		<button
 			class="space-y-4"
-			on:click={() => clearValue()}
+			onclick={() => clearValue()}
 			aria-label="Clear search"
 			type="button"
 		>

@@ -12,5 +12,5 @@
   )}
   
 >
-  <slot />
+  <slot></slot>
 </div>

@@ -4,22 +4,22 @@
     accept?: string;
     multiple?: boolean;
   }
-  
+
   let { onFileSelected = () => {}, accept = "*", multiple = false }: Props = $props();
-  
+
   let dragActive = false;
   let fileInput: HTMLInputElement;
-  
+
   function handleDrop(e: DragEvent) {
     e.preventDefault();
     dragActive = false;
-    
+
     if (e.dataTransfer?.files) {
       const files = Array.from(e.dataTransfer.files);
       onFileSelected(files);
     }
   }
-  
+
   function handleFileSelect(e: Event) {
     const target = e.target as HTMLInputElement;
     if (target.files) {
@@ -45,7 +45,7 @@
     on:change={handleFileSelect}
     class="hidden"
   />
-  
+
   <div class="space-y-4">
     <div class="text-4xl">📁</div>
     <div>

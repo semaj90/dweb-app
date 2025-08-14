@@ -101,7 +101,7 @@
       {#if !isEditing}
         <button
           type="button"
-          on:click={() => generateCaseNumber()}
+          onclick={() => generateCaseNumber()}
           class="space-y-4"
         >
           Generate Case #
@@ -258,7 +258,7 @@
               {tag}
               <button
                 type="button"
-                on:click={() => removeTag(tag)}
+                onclick={() => removeTag(tag)}
                 class="space-y-4"
               >
                 ×
@@ -271,14 +271,14 @@
             type="text"
             id="tagInput"
             bind:value={tagInput}
-            on:keydown={handleTagKeydown}
+            onkeydown={handleTagKeydown}
             placeholder="Add a tag..."
             class="space-y-4"
             aria-label="Add tag"
           />
           <button
             type="button"
-            on:click={() => addTag()}
+            onclick={() => addTag()}
             class="space-y-4"
           >
             Add Tag
@@ -314,7 +314,7 @@
       <div class="space-y-4">
         <button
           type="button"
-          on:click={() => dispatch('cancel')}
+          onclick={() => dispatch('cancel')}
           class="space-y-4"
           disabled={$submitting}
         >

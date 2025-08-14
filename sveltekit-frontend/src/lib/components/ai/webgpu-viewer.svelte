@@ -371,7 +371,7 @@ function zoomOut() {
 }
 
 // React to prop changes
-$: if (embeddings.length > 0 && device) {
+$effect(() => { if (embeddings.length > 0 && device) {
   updateEmbeddings(embeddings);
   render();
 }
@@ -379,20 +379,20 @@ $: if (embeddings.length > 0 && device) {
 
 <div class="webgpu-viewer">
   <div class="controls">
-    <button on:click={togglePlay} class="control-btn" title={isPlaying ? 'Pause' : 'Play'}>
+    <button onclick={togglePlay} class="control-btn" title={isPlaying ? 'Pause' : 'Play'}>
       {#if isPlaying}
         <Pause class="h-4 w-4" />
       {:else}
         <Play class="h-4 w-4" />
       {/if}
     </button>
-    <button on:click={resetView} class="control-btn" title="Reset View">
+    <button onclick={resetView} class="control-btn" title="Reset View">
       <RotateCw class="h-4 w-4" />
     </button>
-    <button on:click={zoomIn} class="control-btn" title="Zoom In">
+    <button onclick={zoomIn} class="control-btn" title="Zoom In">
       <ZoomIn class="h-4 w-4" />
     </button>
-    <button on:click={zoomOut} class="control-btn" title="Zoom Out">
+    <button onclick={zoomOut} class="control-btn" title="Zoom Out">
       <ZoomOut class="h-4 w-4" />
     </button>
     <div class="info">

@@ -45,15 +45,15 @@
   onMount(() => {
     checkSystemHealth();
     generateDemoEmbeddings();
-    
+
     // Start monitoring if specified
     if (isMonitoring) {
       startPerformanceMonitoring();
     }
 
     // Initialize prefetch machine with demo context
-    prefetchSend({ 
-      type: 'USER_ACTION', 
+    prefetchSend({
+      type: 'USER_ACTION',
       action: 'demo_start',
       context: { demo: true, documents: demoDocuments.length }
     });
@@ -68,11 +68,11 @@
 
     for (const check of healthChecks) {
       try {
-        const response = await fetch(check.url, { 
+        const response = await fetch(check.url, {
           method: 'GET',
           signal: AbortSignal.timeout(5000)
         });
-        
+
         systemHealth[check.name] = {
           status: response.ok ? 'healthy' : 'error',
           details: response.ok ? 'Connected' : `HTTP ${response.status}`
@@ -135,7 +135,7 @@
       if (response.ok) {
         const data = await response.json();
         console.log('Ollama Analysis Response:', data.response);
-        
+
         // Trigger prefetch based on analysis success
         prefetchSend({
           type: 'USER_ACTION',
@@ -176,10 +176,10 @@
         const data = await response.json();
         console.log('Generated embedding:', data.embedding?.slice(0, 5));
         performanceMetrics.embeddingsGenerated++;
-        
+
         // Cache hit simulation
         performanceMetrics.cacheHitRate = Math.min(
-          95, 
+          95,
           performanceMetrics.cacheHitRate + Math.random() * 10
         );
 
@@ -197,7 +197,7 @@
     try {
       performanceMetrics.requests++;
       performanceMetrics.vectorSimilarityQueries++;
-      
+
       const response = await fetch('http://localhost:8080/search-similar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -211,10 +211,10 @@
       if (response.ok) {
         const data = await response.json();
         console.log('Similarity search results:', data);
-        
+
         // Update cache statistics
         prefetchSend({ type: 'CACHE_HIT', resource: 'similarity_search' });
-        
+
         return data;
       } else {
         throw new Error(`Similarity search failed: ${response.statusText}`);
@@ -228,7 +228,7 @@
 
   function startPerformanceMonitoring() {
     isMonitoring = true;
-    
+
     const interval = setInterval(() => {
       if (!isMonitoring) {
         clearInterval(interval);
@@ -237,7 +237,7 @@
 
       // Simulate metrics updates
       performanceMetrics.cacheHitRate = Math.min(
-        95, 
+        95,
         performanceMetrics.cacheHitRate + (Math.random() - 0.5) * 5
       );
 
@@ -259,7 +259,7 @@
 
   function openAgentShell() {
     agentShellOpen = true;
-    
+
     // Notify prefetch machine
     prefetchSend({
       type: 'USER_ACTION',
@@ -296,13 +296,13 @@
     queueLength: $prefetchState.context.prefetchQueue.length
   });
 
-  let hitRate = $derived(prefetchStats.cacheHits + prefetchStats.cacheMisses > 0 
+  let hitRate = $derived(prefetchStats.cacheHits + prefetchStats.cacheMisses > 0
     ? Math.round((prefetchStats.cacheHits / (prefetchStats.cacheHits + prefetchStats.cacheMisses)) * 100)
     : 0);
 </script>
 
 <div class="ai-integration-demo min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
-  
+
   <!-- Header -->
   <div class="mb-8">
     <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
@@ -386,11 +386,11 @@
                 Regenerate Embeddings
               </Button>
             </div>
-            
+
             <!-- WebGPU Canvas -->
             <div class="rounded-lg overflow-hidden border border-slate-700">
-              <WebGPUViewer 
-                {embeddings} 
+              <WebGPUViewer
+                {embeddings}
                 {labels}
                 docId="demo-integration"
                 autoRotate={true}
@@ -440,7 +440,7 @@
 
             <!-- Agent Shell Modal -->
             {#if agentShellOpen}
-              <OllamaAgentShell 
+              <OllamaAgentShell
                 bind:open={agentShellOpen}
                 docId="demo-integration"
                 initialPrompt="Analyze the legal document embeddings and provide insights on document similarity patterns."
@@ -527,7 +527,7 @@
                 Real-time system performance monitoring and statistics
               </CardDescription>
             </div>
-            <Button 
+            <Button
               on:click={isMonitoring ? stopPerformanceMonitoring : startPerformanceMonitoring}
               class={isMonitoring ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
             >

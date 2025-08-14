@@ -53,5 +53,5 @@
   style:min-height={minHeight}
   style:max-height={maxHeight}
 >
-  <slot />
+  <slot></slot>
 </div>

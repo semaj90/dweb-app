@@ -49,7 +49,7 @@
     role="menu"
     tabindex={-1}
   >
-    <slot />
+    <slot></slot>
   </div>
 {/if}
 

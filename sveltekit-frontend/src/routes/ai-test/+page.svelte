@@ -305,7 +305,7 @@
     <div class="text-center mt-8">
       <Button
         variant="outline"
-        on:click={checkSystemStatus}
+        onclick={checkSystemStatus}
         disabled={isLoading}
         class="gap-2"
       >

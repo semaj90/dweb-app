@@ -214,7 +214,7 @@
     });
 }
   // Reset when closing
-  $: if (!$open) {
+  $effect(() => { if (!$open) {
     searchQuery = "";
     selectedIndex = 0;
 }
@@ -229,7 +229,7 @@
   <div
     use:melt={$content}
     class="space-y-4"
-    transition:fly={{ y: -10, duration: 150 }}
+    transitionfly={{ y: -10, duration: 150 }}
   >
     <div class="space-y-4">
       <Search size={16} />
@@ -254,7 +254,7 @@
             <button
               class="space-y-4"
               class:selected={globalIndex === selectedIndex}
-              on:click={() => executeCommand(command)}
+              onclick={() => executeCommand(command)}
               onmouseenter={() => (selectedIndex = globalIndex)}
             >
               <svelte:component this={command.icon} size={16} />

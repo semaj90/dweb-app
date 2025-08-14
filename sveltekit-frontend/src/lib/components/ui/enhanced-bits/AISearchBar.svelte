@@ -58,11 +58,11 @@
     icon={Search}
     iconPosition="left"
     class="flex-1 vector-search-input"
-    on:keydown={handleKeyDown}
+    onkeydown={handleKeyDown}
     legal
     aiAssisted
   />
-  <Button variant="yorha" on:click={handleSearch} loading={loading} legal>
+  <Button variant="yorha" onclick={handleSearch} loading={loading} legal>
     <Search class="w-4 h-4 mr-1" />
     Search
   </Button>

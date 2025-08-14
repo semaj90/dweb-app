@@ -163,7 +163,7 @@
 	});
 
 	// Reactive selection handling
-	$: if ($selected && $selected.value !== selectedProvider) {
+	$effect(() => { if ($selected && $selected.value !== selectedProvider) {
 		selectedProvider = $selected.value;
 		dispatch('providerSelected', { provider: selectedProvider });
 	}
@@ -239,7 +239,7 @@
 		<div
 			use:melt={$menu}
 			class="z-50 min-w-[320px] rounded-md border border-yorha-border bg-yorha-bg-primary p-1 shadow-lg focus:outline-none"
-			transition:fly={{ y: -5, duration: 150 }}
+			transitionfly={{ y: -5, duration: 150 }}
 		>
 			{#each $providers as provider (provider.id)}
 				<div

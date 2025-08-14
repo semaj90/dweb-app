@@ -62,15 +62,15 @@
   <div
     bind:this={modalElement}
     class="modal-backdrop"
-    on:click={handleOutsideClick}
+    onclick={handleOutsideClick}
     onkeydown={(e) => { if (e.key === 'Escape') handleClose(); }}
     role="presentation"
     aria-hidden="true"
-    transition:fade={{ duration: 200 }}
+    transitionfade={{ duration: 200 }}
   >
     <div
       class="modal-content {sizeClasses}"
-      transition:fly={{ y: 50, duration: 300 }}
+      transitionfly={{ y: 50, duration: 300 }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
@@ -81,7 +81,7 @@
           <button
             type="button"
             class="modal-close"
-            on:click={handleClose}
+            onclick={handleClose}
             aria-label="Close"
           >
             <svg

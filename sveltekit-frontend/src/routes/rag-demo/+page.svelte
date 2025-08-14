@@ -154,7 +154,7 @@
         <div class="space-y-4">
           <h2 class="space-y-4">System Status</h2>
           <button
-            on:click={() => checkSystemStatus()}
+            onclick={() => checkSystemStatus()}
             class="space-y-4"
             disabled={isLoadingStatus}
           >
@@ -231,7 +231,7 @@
               showReferences={true}
               enableVoiceInput={true}
               maxHeight="500px"
-              on:response={handleAIResponse}
+              onresponse={handleAIResponse}
               on:referenceClicked={handleReferenceClick}
             />
           </div>
@@ -246,7 +246,7 @@
             {#each demoQueries as query}
               <button
                 class="space-y-4"
-                on:click={() => (testQuery = query)}
+                onclick={() => (testQuery = query)}
               >
                 "{query}"
               </button>
@@ -275,7 +275,7 @@
                 class="space-y-4"
               />
               <button
-                on:click={() => testVectorSearch()}
+                onclick={() => testVectorSearch()}
                 disabled={!testQuery.trim() || isTestingSearch}
                 class="space-y-4"
               >
@@ -376,13 +376,13 @@
             </a>
             <button
               class="space-y-4"
-              on:click={() => window.open("/cases", "_blank")}
+              onclick={() => window.open("/cases", "_blank")}
             >
               → Browse Case Database
             </button>
             <button
               class="space-y-4"
-              on:click={() => window.open("/evidence", "_blank")}
+              onclick={() => window.open("/evidence", "_blank")}
             >
               → Browse Evidence Collection
             </button>

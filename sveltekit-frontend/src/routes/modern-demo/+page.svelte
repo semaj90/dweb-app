@@ -127,7 +127,7 @@
     ratio="golden"
     collapsible={true}
     bind:collapsed={sidebarCollapsed}
-    on:toggle={(e) => console.log("Sidebar toggled:", e.detail.collapsed)}
+    ontoggle={(e) => console.log("Sidebar toggled:", e.detail.collapsed)}
   >
     <div class="space-y-4" slot="default">
       <section class="space-y-4">
@@ -145,7 +145,7 @@
           bind:value={textareaValue}
           placeholder="Type # for commands or Ctrl+K for command menu..."
           rows={6}
-          on:input={handleTextareaInput}
+          oninput={handleTextareaInput}
           on:commandInsert={handleCommandInsert}
         />
       </section>
@@ -161,7 +161,7 @@
           columns={1}
           expandedColumns={3}
           expandDuration="0.4s"
-          on:expand={handleGridExpand}
+          onexpand={handleGridExpand}
         >
           {#each sampleEvidence as evidence}
             <div class="space-y-4">

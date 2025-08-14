@@ -14,7 +14,7 @@
 		{ href: '/dev/mcp-tools', label: 'MCP Tools', icon: '🔧' }
 	];
 	
-	let currentPath = $derived($page.url.pathname;);
+	let currentPath = $derived($page.url.pathname);
 	
 	// Optimized navigation with instant transitions
 	function handleNavigation(href: string, event?: Event) {
@@ -37,7 +37,7 @@
 						<Button
 							variant={currentPath === item.href ? 'default' : 'ghost'}
 							size="sm"
-							on:click={() => handleNavigation(item.href)}
+							onclick={() => handleNavigation(item.href)}
 							class={cn(
 								"justify-start gap-2 cursor-pointer transition-all duration-100",
 								currentPath === item.href && "bg-muted"
@@ -55,7 +55,7 @@
 				<Button
 					variant="outline"
 					size="sm"
-					on:click={() => {
+					onclick={() => {
 						// Trigger global FindModal via Ctrl+K event
 						window.dispatchEvent(new KeyboardEvent('keydown', {
 							key: 'k',

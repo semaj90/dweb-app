@@ -277,7 +277,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
       <Button
         variant="outline"
         size="sm"
-        on:click={refreshStatus}
+        onclick={refreshStatus}
         disabled={isProcessing}
       >
         <RefreshCw class="h-4 w-4 mr-2 {isProcessing ? 'animate-spin' : ''}" />
@@ -287,13 +287,13 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
       <Button
         variant="outline"
         size="sm"
-        on:click={() => showSettings = !showSettings}
+        onclick={() => showSettings = !showSettings}
       >
         <Settings class="h-4 w-4" />
       </Button>
       
       {#if !isInitialized}
-        <Button on:click={initializeOrchestrator} disabled={isProcessing}>
+        <Button onclick={initializeOrchestrator} disabled={isProcessing}>
           <Play class="h-4 w-4 mr-2" />
           Initialize
         </Button>
@@ -397,7 +397,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
                 variant="outline"
                 size="sm"
                 class="w-full mt-2"
-                on:click={() => submitTestTask(provider.id)}
+                onclick={() => submitTestTask(provider.id)}
                 disabled={provider.status !== 'online'}
               >
                 Test Connection
@@ -418,7 +418,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
             <Activity class="h-5 w-5" />
             Active Tasks ({activeTasks.size})
           </span>
-          <Button variant="outline" size="sm" on:click={clearCompletedTasks}>
+          <Button variant="outline" size="sm" onclick={clearCompletedTasks}>
             Clear Completed
           </Button>
         </CardTitle>
@@ -447,7 +447,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => cancelTask(taskId)}
+                  onclick={() => cancelTask(taskId)}
                 >
                   <X class="h-4 w-4" />
                 </Button>

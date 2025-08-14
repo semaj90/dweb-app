@@ -47,7 +47,7 @@
         <a href="#" class="nav-item">AI Assistant</a>
         
         <button
-          on:click={() => isDarkMode = !isDarkMode}
+          onclick={() => isDarkMode = !isDarkMode}
           class="nier-button-outline px-4 py-2 rounded-lg"
           class:dark={isDarkMode}
         >
@@ -73,7 +73,7 @@
     <div class="flex gap-2 border-b nier-divider">
       {#each ['overview', 'components', 'forms', 'cards'] as tab}
         <button
-          on:click={() => activeTab = tab}
+          onclick={() => activeTab = tab}
           class="px-6 py-3 font-medium capitalize nier-transition"
           class:text-harvard-crimson={activeTab === tab}
           class:dark:text-digital-green={activeTab === tab}
@@ -214,13 +214,13 @@
             <div
               use:melt={$overlay}
               class="nier-modal-overlay"
-              transition:fade={{ duration: 200 }}
+              transitionfade={{ duration: 200 }}
             />
             
             <div
               use:melt={$content}
               class="nier-modal"
-              transition:fly={{ y: 20, duration: 300 }}
+              transitionfly={{ y: 20, duration: 300 }}
             >
               <h2 use:melt={$title} class="text-2xl font-display nier-heading mb-4">
                 System Alert

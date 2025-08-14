@@ -289,14 +289,14 @@ import {
     <!-- Action Buttons -->
     <div class="flex gap-2 mt-4">
       <button
-        on:click={() => onView(caseData.id)}
+        onclick={() => onView(caseData.id)}
         class="nier-button-primary text-sm px-4 py-2 flex-1"
       >
         <Eye class="w-4 h-4" />
         View Details
       </button>
       <button
-        on:click={() => onEdit(caseData.id)}
+        onclick={() => onEdit(caseData.id)}
         class="nier-button-outline text-sm px-4 py-2"
       >
         <Edit class="w-4 h-4" />
@@ -313,11 +313,11 @@ import {
   <div
     use:melt={$menu}
     class="nier-panel p-2 min-w-[200px] z-50"
-    transition:scale={{ duration: 200, start: 0.95 }}
+    transitionscale={{ duration: 200, start: 0.95 }}
   >
     <button
       use:melt={$item}
-      on:click={() => onView(caseData.id)}
+      onclick={() => onView(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-nier-white/50 dark:hover:bg-nier-black/50 nier-transition w-full text-left"
     >
       <Eye class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
@@ -326,7 +326,7 @@ import {
 
     <button
       use:melt={$item}
-      on:click={() => onEdit(caseData.id)}
+      onclick={() => onEdit(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-nier-white/50 dark:hover:bg-nier-black/50 nier-transition w-full text-left"
     >
       <Edit class="w-4 h-4 text-nier-gray dark:text-nier-silver" />
@@ -337,7 +337,7 @@ import {
 
     <button
       use:melt={$item}
-      on:click={() => onArchive(caseData.id)}
+      onclick={() => onArchive(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-nier-amber/10 text-nier-amber nier-transition w-full text-left"
     >
       <Archive class="w-4 h-4" />
@@ -346,7 +346,7 @@ import {
 
     <button
       use:melt={$item}
-      on:click={() => onDelete(caseData.id)}
+      onclick={() => onDelete(caseData.id)}
       class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-harvard-crimson/10 text-harvard-crimson nier-transition w-full text-left"
     >
       <Trash2 class="w-4 h-4" />

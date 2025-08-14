@@ -146,7 +146,9 @@ Priority: High
   function updateSearch() {
     setNoteFilter({ search: searchQuery, noteType: selectedNoteType });
 }
-  $: updateSearch();
+  $effect(() => {
+    updateSearch();
+  });
 </script>
 
 <svelte:head>
@@ -199,7 +201,7 @@ Priority: High
                 type="text"
                 placeholder="Add tags (comma separated)"
                 class="space-y-4"
-                on:blur={(e) => {
+                onblur={(e) => {
                   const tags = (e.target as HTMLInputElement).value.split(',').map(t => t.trim()).filter(t => t);
                   currentNote.tags = tags;
                 }}
@@ -209,8 +211,8 @@ Priority: High
             <RichTextEditor
               content={currentNote.content}
               placeholder="Start writing your note..."
-              on:save={handleEditorSave}
-              on:change={handleEditorChange}
+              onsave={handleEditorSave}
+              onchange={handleEditorChange}
               autoSave={true}
               autoSaveDelay={3000}
             />
@@ -280,7 +282,7 @@ Priority: High
 
             <button
               type="button"
-              on:click={() => createNewNote()}
+              onclick={() => createNewNote()}
               class="space-y-4"
             >
               <Plus class="space-y-4" />
@@ -301,7 +303,7 @@ Priority: High
             {#each $filteredNotes as note (note.id)}
               <button
                 type="button"
-                on:click={() => viewNote(note)}
+                onclick={() => viewNote(note)}
                 class="space-y-4"
               >
                 <div class="space-y-4">
@@ -364,7 +366,7 @@ Priority: High
     caseId={selectedNote.caseId}
     createdAt={new Date(selectedNote.savedAt)}
     canEdit={true}
-    on:save={(event) => {
+    onsave={(event) => {
       console.log('Note updated:', event.detail);
       // Refresh the note in the list
       notesManager.saveNote(event.detail);

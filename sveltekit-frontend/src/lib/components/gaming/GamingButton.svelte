@@ -72,7 +72,7 @@
 	class:pressed={isPressed}
 	class:glow={glowEffect}
 	{disabled}
-	on:click={handleClick}
+	onclick={handleClick}
 	
 >
 	{#if loading}

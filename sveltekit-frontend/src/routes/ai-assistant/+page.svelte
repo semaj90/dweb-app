@@ -102,28 +102,28 @@ onMount(checkSystemStatus);
     <div class="grid grid-cols-4 gap-3">
       <Button.Root 
         class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-        on:click={() => synthesize('correlation')}
+        onclick={() => synthesize('correlation')}
         disabled={loading}
       >
         Correlation
       </Button.Root>
       <Button.Root 
         class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-        on:click={() => synthesize('timeline')}
+        onclick={() => synthesize('timeline')}
         disabled={loading}
       >
         Timeline
       </Button.Root>
       <Button.Root 
         class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded"
-        on:click={() => synthesize('compare')}
+        onclick={() => synthesize('compare')}
         disabled={loading}
       >
         Compare
       </Button.Root>
       <Button.Root 
         class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded"
-        on:click={() => synthesize('merge')}
+        onclick={() => synthesize('merge')}
         disabled={loading}
       >
         Merge
@@ -136,7 +136,7 @@ onMount(checkSystemStatus);
     <h2 class="text-xl mb-3">Gemma3 Legal AI</h2>
     <Button.Root 
       class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded"
-      on:click={testGemma3}
+      onclick={testGemma3}
       disabled={loading}
     >
       Test Legal Query
@@ -161,13 +161,13 @@ onMount(checkSystemStatus);
   <div class="mt-6 flex gap-3">
     <Button.Root 
       class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
-      on:click={checkSystemStatus}
+      onclick={checkSystemStatus}
     >
       Refresh Status
     </Button.Root>
     <Button.Root 
       class="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded"
-      on:click={() => window.open('/api/health', '_blank')}
+      onclick={() => window.open('/api/health', '_blank')}
     >
       Health Check
     </Button.Root>

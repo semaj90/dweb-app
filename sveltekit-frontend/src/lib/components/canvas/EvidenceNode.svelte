@@ -250,9 +250,9 @@
   <div class="resize-handles">
     <div 
       class="resize-handle resize-bottom-right"
-      on:mousedown={(e) => handleResize('bottom-right', e)}
-      on:touchstart={(e) => handleResizeTouch('bottom-right', e)}
-      on:keydown={(e) => {
+      onmousedown={(e) => handleResize('bottom-right', e)}
+      ontouchstart={(e) => handleResizeTouch('bottom-right', e)}
+      onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('bottom-right', e);
@@ -264,9 +264,9 @@
     ></div>
     <div 
       class="resize-handle resize-bottom"
-      on:mousedown={(e) => handleResize('bottom', e)}
-      on:touchstart={(e) => handleResizeTouch('bottom', e)}
-      on:keydown={(e) => {
+      onmousedown={(e) => handleResize('bottom', e)}
+      ontouchstart={(e) => handleResizeTouch('bottom', e)}
+      onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('bottom', e);
@@ -278,9 +278,9 @@
     ></div>
     <div 
       class="resize-handle resize-right"
-      on:mousedown={(e) => handleResize('right', e)}
-      on:touchstart={(e) => handleResizeTouch('right', e)}
-      on:keydown={(e) => {
+      onmousedown={(e) => handleResize('right', e)}
+      ontouchstart={(e) => handleResizeTouch('right', e)}
+      onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           handleResize('right', e);

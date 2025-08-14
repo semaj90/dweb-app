@@ -234,7 +234,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => aiStore.sendMessage(query)}
+                onclick={() => aiStore.sendMessage(query)}
                 disabled={$status.isLoading}
               >
                 {query}
@@ -266,7 +266,7 @@
             <button
               type="button"
               class="space-y-4"
-              on:click={() => testAPIDirectly()}
+              onclick={() => testAPIDirectly()}
               disabled={manualTestLoading}
             >
               {manualTestLoading ? "⏳ Testing..." : "🚀 Test API"}
@@ -275,7 +275,7 @@
             <button
               type="button"
               class="space-y-4"
-              on:click={() => checkHealthEndpoints()}
+              onclick={() => checkHealthEndpoints()}
             >
               🏥 Check Health
             </button>
@@ -382,21 +382,21 @@
           <button
             type="button"
             class="space-y-4"
-            on:click={() => aiStore.clearConversation()}
+            onclick={() => aiStore.clearConversation()}
           >
             🗑️ Clear Conversation
           </button>
           <button
             type="button"
             class="space-y-4"
-            on:click={() => aiStore.reset()}
+            onclick={() => aiStore.reset()}
           >
             🔄 Reset All Stores
           </button>
           <button
             type="button"
             class="space-y-4"
-            on:click={() => aiStore.initialize()}
+            onclick={() => aiStore.initialize()}
           >
             🔄 Reinitialize AI
           </button>
@@ -439,7 +439,7 @@
             <button
               type="button"
               class="space-y-4"
-              on:click={() => checkHealthEndpoints()}
+              onclick={() => checkHealthEndpoints()}
             >
               Check Health Status
             </button>
@@ -492,7 +492,7 @@
       {#each sampleQueries as sampleQuery}
         <button
           class="space-y-4"
-          on:click={() => selectQuery(sampleQuery)}
+          onclick={() => selectQuery(sampleQuery)}
         >
           <span class="space-y-4">{sampleQuery}</span>
         </button>
@@ -514,7 +514,7 @@
     ></textarea>
 
     <button
-      on:click={() => testGemma3()}
+      onclick={() => testGemma3()}
       disabled={isLoading || !query.trim()}
       class="space-y-4"
     >

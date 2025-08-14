@@ -193,7 +193,7 @@ While the company demonstrates strong commitment to compliance, several areas re
         <div class="space-y-4">
           {#each sampleDocuments as doc, index}
             <button
-              on:click={() => selectDocument(doc)}
+              onclick={() => selectDocument(doc)}
               class="w-full text-left p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors {selectedDocument === doc ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700'}"
             >
               <div class="flex items-start justify-between">
@@ -223,7 +223,7 @@ While the company demonstrates strong commitment to compliance, several areas re
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-2xl font-semibold">Processing History</h2>
             <button
-              on:click={clearResults}
+              onclick={clearResults}
               class="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
             >
               Clear History
@@ -268,8 +268,8 @@ While the company demonstrates strong commitment to compliance, several areas re
       {#if selectedDocument}
         <LegalDocumentProcessor
           bind:document={selectedDocument}
-          {onComplete}={onProcessingComplete}
-          {onError}={onProcessingError}
+          onComplete={onProcessingComplete}
+          onError={onProcessingError}
           autoStart={false}
         />
       {:else}

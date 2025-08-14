@@ -5,7 +5,7 @@ Displays the chronological chain of custody events with detailed audit trail
 <script lang="ts">
   interface Props {
     events: Array<{;
-    currentStage: string;;
+    currentStage: string;
   }
   let {
     events,

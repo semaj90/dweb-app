@@ -39,7 +39,7 @@
   let calculatedMainFlex: number;
   let calculatedSidebarFlex: number;
 
-  $: {
+  $effect(() => { {
     switch (ratio) {
       case "golden":
         calculatedMainFlex = 1.618;
@@ -69,7 +69,7 @@
 }}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div
   class="space-y-4"
@@ -96,7 +96,7 @@
       {#if collapsible}
         <button
           class="space-y-4"
-          on:click={() => toggleSidebar()}
+          onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -133,7 +133,7 @@
       {#if collapsible}
         <button
           class="space-y-4"
-          on:click={() => toggleSidebar()}
+          onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}

@@ -93,9 +93,6 @@ func NewUploadService() (*UploadService, error) {
 				log.Println("✅ PostgreSQL connected successfully")
 				if err := initDatabase(db); err != nil {
 					log.Printf("Warning: Database initialization failed: %v", err)
-					// Continue without failing - graceful degradation
-				} else {
-					log.Println("✅ Database schema initialized successfully")
 				}
 			}
 		}
@@ -108,20 +105,10 @@ func NewUploadService() (*UploadService, error) {
 }
 
 func initDatabase(db *sql.DB) error {
-	log.Println("🔧 Initializing database schema...")
-
-	// Try to create extensions first
-	_, err := db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
-	if err != nil {
-		log.Printf("Warning: Failed to create uuid-ossp extension: %v", err)
-	}
-
-	_, err = db.Exec(`CREATE EXTENSION IF NOT EXISTS vector;`)
-	if err != nil {
-		log.Printf("Warning: Failed to create vector extension: %v", err)
-	}
-
 	schema := `
+	CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+	CREATE EXTENSION IF NOT EXISTS vector;
+
 	CREATE TABLE IF NOT EXISTS document_metadata (
 		id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 		case_id VARCHAR(255) NOT NULL,
@@ -143,23 +130,13 @@ func initDatabase(db *sql.DB) error {
 	CREATE INDEX IF NOT EXISTS idx_document_case_id ON document_metadata(case_id);
 	CREATE INDEX IF NOT EXISTS idx_document_type ON document_metadata(document_type);
 	CREATE INDEX IF NOT EXISTS idx_document_status ON document_metadata(processing_status);
+	CREATE INDEX IF NOT EXISTS idx_document_embedding ON document_metadata USING ivfflat (embedding vector_cosine_ops);
 	CREATE INDEX IF NOT EXISTS idx_document_tags ON document_metadata USING gin(tags);
 	CREATE INDEX IF NOT EXISTS idx_document_metadata ON document_metadata USING gin(metadata);
 	`
 
-	_, err = db.Exec(schema)
-	if err != nil {
-		log.Printf("Warning: Failed to create table and basic indexes: %v", err)
-		return err
-	}
-
-	// Try to create vector index separately since it might fail
-	_, err = db.Exec(`CREATE INDEX IF NOT EXISTS idx_document_embedding ON document_metadata USING ivfflat (embedding vector_cosine_ops);`)
-	if err != nil {
-		log.Printf("Warning: Failed to create vector index (this is optional): %v", err)
-	}
-
-	return nil
+	_, err := db.Exec(schema)
+	return err
 }
 
 func (s *UploadService) handleUpload(w http.ResponseWriter, r *http.Request) {
@@ -478,8 +455,6 @@ func main() {
 	fmt.Printf("📁 MinIO endpoint: %s\n", os.Getenv("MINIO_ENDPOINT"))
 	fmt.Printf("🗄️  Database: %v\n", service.db != nil)
 
-	log.Printf("About to start server on :%s", port)
-	if err := http.ListenAndServe(":"+port, handler); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
-	}
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
+

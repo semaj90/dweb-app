@@ -264,7 +264,7 @@
     />
     <button 
       class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-      on:click={() => fileInput.click()}
+      onclick={() => fileInput.click()}
     >
       Select Files
     </button>
@@ -291,7 +291,7 @@
         </div>
         <button 
           class="text-gray-400 hover:text-red-400 transition-colors"
-          on:click={() => removeUpload(upload.id)}
+          onclick={() => removeUpload(upload.id)}
         >
           ✕
         </button>
@@ -353,7 +353,7 @@
           <div class="flex space-x-3">
             <button 
               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
-              on:click={() => downloadProcessedData(upload)}
+              onclick={() => downloadProcessedData(upload)}
             >
               📥 Download JSON
             </button>

@@ -16,7 +16,7 @@
 }
 </script>
 
-<Button on:click={() => showModal = true}>Select Case</Button>
+<Button onclick={() => showModal = true}>Select Case</Button>
 
 <Modal bind:open={showModal} title="Select a Case">
   <div slot="description">
@@ -25,7 +25,7 @@
 
   <div class="space-y-4">
     {#each cases as caseItem}
-      <Button on:click={() => selectCase(caseItem.id)} variant="secondary">
+      <Button onclick={() => selectCase(caseItem.id)} variant="secondary">
         {caseItem.name}
       </Button>
     {/each}

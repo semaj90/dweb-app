@@ -210,7 +210,7 @@
         variant="outline" 
         size="sm" 
         class="flex-1 text-xs"
-        on:click={() => showFullDetails = !showFullDetails}
+        onclick={() => showFullDetails = !showFullDetails}
       >
         {showFullDetails ? 'Less' : 'More'} Info
       </Button>

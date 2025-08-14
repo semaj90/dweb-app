@@ -12,13 +12,13 @@
   import CardTitle from '$lib/components/ui/CardTitle.svelte';
   import { Badge } from '$lib/components/ui/badge';
   import Input from '$lib/components/ui/Input.svelte';
-  
+
   let systemInitialized = $state(false);
   let testQuery = $state('');
   let selectedModel = $state('claude-3-5-sonnet');
   let processingStatus = $state('idle');
   let analysisResults = $state(null);
-  
+
   const modelOptions = [
     { value: 'claude-3-5-sonnet', label: 'Claude 3.5 Sonnet' },
     { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
@@ -32,13 +32,13 @@
     }
     systemInitialized = true;
   });
-  
+
   function handleAnalyze() {
     if (!testQuery.trim()) return;
-    
+
     processingStatus = 'processing';
     analysisResults = null;
-    
+
     // Simulate AI processing
     setTimeout(() => {
       analysisResults = {
@@ -142,11 +142,11 @@
               class="w-full h-24 bg-slate-800 border-slate-600 text-white placeholder-slate-400 resize-none"
             />
           </div>
-          
+
           <div class="flex items-center gap-4">
             <div class="flex-1">
               <label class="block text-sm font-medium mb-2">AI Model</label>
-              <select 
+              <select
                 bind:value={selectedModel}
                 class="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-white"
               >
@@ -159,15 +159,15 @@
 
           <!-- Action Buttons -->
           <div class="flex gap-4">
-            <Button 
+            <Button
               on:click={handleAnalyze}
               disabled={!testQuery.trim() || processingStatus === 'processing' || !systemInitialized}
               class="bg-blue-600 hover:bg-blue-700 text-white"
             >
               {processingStatus === 'processing' ? 'Analyzing...' : 'Analyze with AI'}
             </Button>
-            
-            <Button 
+
+            <Button
               variant="outline"
               on:click={handleClear}
               disabled={processingStatus === 'processing'}
@@ -200,7 +200,7 @@
                   {analysisResults.confidence}% Confidence
                 </Badge>
               </div>
-              
+
               <div class="text-sm text-slate-300 mb-3">
                 Processed in {analysisResults.processingTime} using {analysisResults.model}
               </div>

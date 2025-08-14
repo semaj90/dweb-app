@@ -112,17 +112,12 @@ export default defineConfig({
   globalSetup: "./tests/global-setup.ts",
   globalTeardown: "./tests/global-teardown.ts",
 
-  // Web server configuration for development
-  webServer: [
-    {
-      command: "npm run dev:quick",
-      url: "http://localhost:5173",
-      reuseExistingServer: !process.env.CI,
-      timeout: 120 * 1000,
-      stdout: "pipe",
-      stderr: "pipe",
-    },
-  ],
+  // Web server configuration - disabled since dev server is already running
+  // webServer: {
+  //   command: "npm run dev",
+  //   url: "http://localhost:5173",
+  //   reuseExistingServer: true,
+  // },
 
   // Test timeout
   timeout: 60 * 1000,

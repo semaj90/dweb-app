@@ -50,7 +50,7 @@
       <div 
         use:menu 
         class="space-y-4"
-        transition:fade={{ duration: 150 }}
+        transitionfade={{ duration: 150 }}
       >
         {#each items as item, index}
           <div 
@@ -75,7 +75,7 @@
   
   <!-- Melt UI Dialog -->
   {#if $open}
-    <div use:overlay class="space-y-4" transition:fade={{ duration: 150 }}>
+    <div use:overlay class="space-y-4" transitionfade={{ duration: 150 }}>
       <div use:content class="space-y-4">
         <h3 use:dialogTitle class="space-y-4">
           Case Management System

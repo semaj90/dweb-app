@@ -9,5 +9,5 @@
   class={cn("text-2xl font-semibold leading-none tracking-tight", className)}
   
 >
-  <slot />
+  <slot></slot>
 </h3>

@@ -18,5 +18,5 @@
   role="alert"
   {...restProps}
 >
-  <slot />
+  <slot></slot>
 </div>

@@ -32,14 +32,14 @@
   <div
     use:overlay
     class="space-y-4"
-    transition:fade={{ duration: 200 }}
+    transitionfade={{ duration: 200 }}
   ></div>
 
   <!-- Content -->
   <div
     use:content
     class="space-y-4"
-    transition:fly={{ y: -20, duration: 200  }}
+    transitionfly={{ y: -20, duration: 200  }}
     
   >
     {#if children}

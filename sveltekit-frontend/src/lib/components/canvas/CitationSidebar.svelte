@@ -34,7 +34,7 @@
   ];
 
   // Reactive filtering
-  $: {
+  $effect(() => { {
     filteredCitations = citations.filter((citation) => {
       const matchesSearch =
         searchQuery === "" ||
@@ -113,7 +113,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => toggleFavorite(citation)}
+                onclick={() => toggleFavorite(citation)}
                 class="space-y-4"
               >
                 <Star class="space-y-4" />
@@ -122,7 +122,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => copyCitation(citation)}
+                onclick={() => copyCitation(citation)}
                 title="Copy citation"
               >
                 <Copy class="space-y-4" />
@@ -131,7 +131,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => deleteCitation(citation)}
+                onclick={() => deleteCitation(citation)}
                 title="Delete citation"
                 class="space-y-4"
               >
@@ -167,8 +167,8 @@
             draggable={true}
             role="button"
             tabindex={0}
-            on:dragstart={(e) => handleDragStart(e, citation)}
-            on:keydown={(e) => {
+            ondragstart={(e) => handleDragStart(e, citation)}
+            onkeydown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 // For keyboard users, trigger a click event instead
@@ -203,7 +203,7 @@
           <Button
             variant="secondary"
             size="sm"
-            on:click={() => {
+            onclick={() => {
               searchQuery = "";
               selectedCategory = "all";
             "

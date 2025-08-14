@@ -4,8 +4,8 @@
 -->
 <script lang="ts">
   interface Props {
-    name: string;;
-    label: string;;
+    name: string;
+    label: string;
     type: | "text";
     value: string ;
     placeholder: string ;
@@ -162,7 +162,7 @@
   export { focusInput as focus };
 
   // Reactive validation
-  $: if (value !== undefined) {
+  $effect(() => { if (value !== undefined) {
     validateField();
 }
 </script>
@@ -203,10 +203,10 @@
         class:textarea-error={showErrorState}
         class:textarea-success={showSuccessState}
         class:textarea-disabled={disabled}
-        on:input={handleInput}
-        on:change={handleChange}
-        on:focus={handleFocus}
-        on:blur={handleBlur}
+        oninput={handleInput}
+        onchange={handleChange}
+        onfocus={handleFocus}
+        onblur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       ></textarea>
@@ -233,10 +233,10 @@
         class:input-success={showSuccessState}
         class:input-disabled={disabled}
         class:pr-12={type === "password" && showPasswordToggle}
-        on:input={handleInput}
-        on:change={handleChange}
-        on:focus={handleFocus}
-        on:blur={handleBlur}
+        oninput={handleInput}
+        onchange={handleChange}
+        onfocus={handleFocus}
+        onblur={handleBlur}
         aria-describedby="{name}-help {name}-error"
         aria-invalid={showErrorState}
       />
@@ -246,7 +246,7 @@
         <button
           type="button"
           class="space-y-4"
-          on:click={() => togglePasswordVisibility()}
+          onclick={() => togglePasswordVisibility()}
           aria-label={showPassword ? "Hide password" : "Show password"}
           tabindex={-1}
         >

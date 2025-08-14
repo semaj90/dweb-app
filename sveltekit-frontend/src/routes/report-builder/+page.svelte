@@ -172,10 +172,10 @@
 			<p class="space-y-4">AI-powered case analysis and report generation</p>
 			
 			<div class="space-y-4">
-				<button class="space-y-4" on:click={() => createNewReport()}>
+				<button class="space-y-4" onclick={() => createNewReport()}>
 					📄 New Report
 				</button>
-				<button class="space-y-4" on:click={() => createNewCanvas()}>
+				<button class="space-y-4" onclick={() => createNewCanvas()}>
 					🎨 New Canvas
 				</button>
 			</div>
@@ -186,7 +186,7 @@
 	{#if error}
 		<div class="space-y-4">
 			❌ {error}
-			<button on:click={() => error = ''} class="space-y-4">×</button>
+			<button onclick={() => error = ''} class="space-y-4">×</button>
 		</div>
 	{/if}
 
@@ -202,14 +202,14 @@
 			<button 
 				class="space-y-4"
 				class:active={activeTab === 'editor'}
-				on:click={() => activeTab = 'editor'}
+				onclick={() => activeTab = 'editor'}
 			>
 				📝 Report Editor
 			</button>
 			<button 
 				class="space-y-4"
 				class:active={activeTab === 'canvas'}
-				on:click={() => activeTab = 'canvas'}
+				onclick={() => activeTab = 'canvas'}
 			>
 				🎨 Interactive Canvas
 			</button>

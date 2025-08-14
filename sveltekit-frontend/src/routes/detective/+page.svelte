@@ -173,7 +173,7 @@
           
           <div class="space-y-4">
             <button 
-              on:click={() => currentView = 'board'}
+              onclick={() => currentView = 'board'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -181,7 +181,7 @@
             </button>
             
             <button 
-              on:click={() => currentView = 'create-case'}
+              onclick={() => currentView = 'create-case'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -189,7 +189,7 @@
             </button>
             
             <button 
-              on:click={() => currentView = 'auth-demo'}
+              onclick={() => currentView = 'auth-demo'}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -197,7 +197,7 @@
             </button>
             
             <button 
-              on:click={() => simulateCollaboration()}
+              onclick={() => simulateCollaboration()}
               class="space-y-4"
             >
               <i class="space-y-4"></i>
@@ -217,7 +217,7 @@
             <div class="space-y-4">
               <span class="space-y-4">Welcome, {$auth.user?.name || $auth.user?.email}</span>
               <button 
-                on:click={() => auth.logout()}
+                onclick={() => auth.logout()}
                 class="space-y-4"
               >
                 Logout
@@ -244,8 +244,8 @@
     {:else if currentView === 'create-case'}
       <div class="space-y-4">
         <CaseForm 
-          on:success={handleCaseFormSuccess}
-          on:cancel={handleCaseFormCancel}
+          onsuccess={handleCaseFormSuccess}
+          oncancel={handleCaseFormCancel}
         />
       </div>
     {:else if currentView === 'auth-demo'}
@@ -265,7 +265,7 @@
               
               <div class="space-y-4">
                 <button 
-                  on:click={() => auth.login('test@example.com', 'password123')}
+                  onclick={() => auth.login('test@example.com', 'password123')}
                   class="space-y-4"
                   disabled={$auth.isLoading}
                 >
@@ -273,7 +273,7 @@
                 </button>
                 
                 <button 
-                  on:click={() => auth.logout()}
+                  onclick={() => auth.logout()}
                   class="space-y-4"
                   disabled={!$auth.isAuthenticated}
                 >
@@ -281,7 +281,7 @@
                 </button>
                 
                 <button 
-                  on:click={() => auth.checkAuth()}
+                  onclick={() => auth.checkAuth()}
                   class="space-y-4"
                   disabled={$auth.isLoading}
                 >

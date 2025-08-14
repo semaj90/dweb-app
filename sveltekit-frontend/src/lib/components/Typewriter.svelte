@@ -15,7 +15,7 @@
   let i = 0;
   let intervalId: NodeJS.Timeout | null = null;
   
-  $: if (text && i === 0) {
+  $effect(() => { if (text && i === 0) {
     output = '';
     i = 0;
     

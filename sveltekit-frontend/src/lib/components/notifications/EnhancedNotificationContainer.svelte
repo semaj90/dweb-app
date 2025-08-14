@@ -196,7 +196,7 @@ mcp<script lang="ts">
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => (maxVisible += 5)}
+        onclick={() => (maxVisible += 5)}
         class="space-y-4"
       >
         +{hiddenCount} more notifications
@@ -214,10 +214,10 @@ mcp<script lang="ts">
         role="alert"
         aria-labelledby="notification-title-{notification.id}"
         aria-describedby="notification-message-{notification.id}"
-        on:mouseenter={() => pauseTimer(notification)}
-        on:mouseleave={() => resumeTimer(notification)}
-        on:focusin={() => pauseTimer(notification)}
-        on:focusout={() => resumeTimer(notification)}
+        onmouseenter={() => pauseTimer(notification)}
+        onmouseleave={() => resumeTimer(notification)}
+        onfocusin={() => pauseTimer(notification)}
+        onfocusout={() => resumeTimer(notification)}
       >
         <div
           class="space-y-4"
@@ -273,7 +273,7 @@ mcp<script lang="ts">
                           variant={action.variant === "primary"
                             ? "default"
                             : "ghost"}
-                          on:click={() =>
+                          onclick={() =>
                             handleNotificationAction(notification, action)}
                           class="space-y-4"
                         >
@@ -289,7 +289,7 @@ mcp<script lang="ts">
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => dismissNotification(notification.id)}
+                    onclick={() => dismissNotification(notification.id)}
                     class="space-y-4"
                     aria-label="Dismiss notification"
                   >
@@ -310,7 +310,7 @@ mcp<script lang="ts">
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => dismissAll()}
+        onclick={() => dismissAll()}
         class="space-y-4"
       >
         Clear all ({$notifications.notifications.length})

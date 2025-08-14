@@ -554,14 +554,14 @@
     class="space-y-4"
     class:drag-over={isDragOver}
     class:disabled
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
     role="button"
     tabindex={0}
     aria-label="File upload area. Click to select files or drag and drop files here."
-    on:click={() => !disabled && fileInput.click()}
-    on:keydown={(e) => {
+    onclick={() => !disabled && fileInput.click()}
+    onkeydown={(e) => {
       if ((e.key === "Enter" || e.key === " ") && !disabled) {
         e.preventDefault();
         fileInput.click();
@@ -600,7 +600,7 @@
         {#if enableCameraCapture}
           <Button
             variant="secondary"
-            on:click={handleCameraCaptureClick}
+            onclick={handleCameraCaptureClick}
             {disabled}
           >
             <Camera class="space-y-4" />
@@ -611,7 +611,7 @@
         {#if enableAudioRecording}
           <Button
             variant="secondary"
-            on:click={handleAudioRecordingClick}
+            onclick={handleAudioRecordingClick}
             {disabled}
             class={isRecording ? "bg-red-100 text-red-700" : ""}
           >
@@ -647,7 +647,7 @@
           {#if !autoUpload && files.some((f) => f.status === "pending")}
             <Button
               size="sm"
-              on:click={() => uploadFiles()}
+              onclick={() => uploadFiles()}
               disabled={isUploading}
             >
               {#if isUploading}
@@ -662,7 +662,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (files = [])}
+            onclick={() => (files = [])}
             disabled={isUploading}
           >
             Clear All
@@ -736,7 +736,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => window.open(file.url, "_blank")}
+                  onclick={() => window.open(file.url, "_blank")}
                   aria-label="View {file.name}"
                 >
                   <Eye class="space-y-4" />
@@ -747,7 +747,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => retryUpload(file.id)}
+                  onclick={() => retryUpload(file.id)}
                   aria-label="Retry upload of {file.name}"
                 >
                   <Upload class="space-y-4" />
@@ -757,7 +757,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => removeFile(file.id)}
+                onclick={() => removeFile(file.id)}
                 disabled={file.status === "uploading"}
                 aria-label="Remove {file.name}"
               >

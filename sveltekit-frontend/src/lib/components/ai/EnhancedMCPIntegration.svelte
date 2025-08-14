@@ -444,10 +444,10 @@
 					bind:value={queryInput}
 					placeholder="Enter your query..."
 					class="query-input"
-					on:keydown={(e) => e.key === 'Enter' && executeQuery()}
+					onkeydown={(e) => e.key === 'Enter' && executeQuery()}
 				/>
 				<button 
-					on:click={executeQuery}
+					onclick={executeQuery}
 					disabled={!queryInput.trim() || !selectedTool || isProcessing}
 					class="execute-button"
 				>
@@ -462,7 +462,7 @@
 				{#each $contextualSuggestions as suggestion}
 					<button 
 						class="suggestion-item suggestion-{suggestion.priority}"
-						on:click={suggestion.action}
+						onclick={suggestion.action}
 						disabled={isProcessing}
 					>
 						<div class="suggestion-title">{suggestion.title}</div>

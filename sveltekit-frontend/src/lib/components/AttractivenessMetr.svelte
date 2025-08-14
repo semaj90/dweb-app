@@ -74,9 +74,9 @@
         class:active={isActive}
         class:hovered={isHovered}
         disabled={readOnly}
-        on:click={() => handleRatingClick(rating)}
-        on:mouseenter={() => handleMouseEnter(rating)}
-        on:mouseleave={handleMouseLeave}
+        onclick={() => handleRatingClick(rating)}
+        onmouseenter={() => handleMouseEnter(rating)}
+        onmouseleave={handleMouseLeave}
         aria-label="Rate {rating} out of 10"
       >
         <svg
@@ -100,7 +100,7 @@
         min="1"
         max="10"
         bind:value={score}
-        on:input={() => onchange?.()}
+        oninput={() => onchange?.()}
         class="space-y-4"
       />
     </div>

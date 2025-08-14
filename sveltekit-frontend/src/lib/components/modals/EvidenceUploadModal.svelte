@@ -16,8 +16,8 @@
     Upload,
     X,
   } from "lucide-svelte";
-  
-  
+
+
   let fileInput: HTMLInputElement;
   let dragActive = false;
 

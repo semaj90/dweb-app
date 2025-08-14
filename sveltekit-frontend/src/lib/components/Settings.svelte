@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    isOpen: boolean;;
+    isOpen: boolean;
     settings: {;
   }
   let {

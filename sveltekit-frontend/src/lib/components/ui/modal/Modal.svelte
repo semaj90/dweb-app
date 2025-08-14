@@ -13,7 +13,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h2>{title}</h2>
-				<button on:click={() => open = false}>×</button>
+				<button onclick={() => open = false}>×</button>
 			</div>
 			<div class="modal-body">
 				{#if children}

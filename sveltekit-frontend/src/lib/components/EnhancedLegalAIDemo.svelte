@@ -283,7 +283,7 @@
               class="w-full"
             />
             <Button
-              on:click={() => addCustomEvidence()}
+              onclick={() => addCustomEvidence()}
               disabled={!evidenceText.trim() || processingActive}
               class="w-full"
             >
@@ -310,7 +310,7 @@
                 <Button
                   size="sm"
                   variant="outline"
-                  on:click={() => addDemoEvidence(demo)}
+                  onclick={() => addDemoEvidence(demo)}
                   disabled={processingActive}
                   class="w-full"
                 >
@@ -327,16 +327,16 @@
             <CardTitle>System Controls</CardTitle>
           </CardHeader>
           <CardContent class="space-y-3">
-            <Button variant="outline" on:click={() => checkSystemHealth()} class="w-full">
+            <Button variant="outline" onclick={() => checkSystemHealth()} class="w-full">
               Health Check
             </Button>
-            <Button variant="outline" on:click={() => syncCache()} class="w-full">
+            <Button variant="outline" onclick={() => syncCache()} class="w-full">
               Sync Cache
             </Button>
-            <Button variant="outline" on:click={() => clearErrors()} class="w-full">
+            <Button variant="outline" onclick={() => clearErrors()} class="w-full">
               Clear Errors
             </Button>
-            <Button variant="destructive" on:click={() => clearCache()} class="w-full">
+            <Button variant="destructive" onclick={() => clearCache()} class="w-full">
               Clear Cache
             </Button>
           </CardContent>

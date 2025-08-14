@@ -181,7 +181,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => loadScenario(scenario)}
+                  onclick={() => loadScenario(scenario)}
                   class="justify-start text-left"
                 >
                   {scenario.title}
@@ -199,7 +199,7 @@ Furthermore, the doctrine of mitigation requires that the injured party take rea
                 <CardTitle>AI-Enhanced Legal Editor</CardTitle>
                 <CardDescription>Start typing to see intelligent suggestions appear</CardDescription>
               </div>
-              <Button on:click={resetDemo} variant="outline" size="sm">
+              <Button onclick={resetDemo} variant="outline" size="sm">
                 Reset Demo
               </Button>
             </div>

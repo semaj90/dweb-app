@@ -18,7 +18,7 @@
   const openWritable = writable(open);
 
   // Keep the writable in sync with the prop
-  $: openWritable.set(open);
+  $effect(() => { openWritable.set(open);
 
   const {
     elements: { trigger, overlay, content, title, description, close },

@@ -180,7 +180,7 @@
         <span class="yorha-selection-count">
           {selectedRows.size} SELECTED
         </span>
-        <button class="yorha-action-btn" on:click={() => selectedRows.clear()}>
+        <button class="yorha-action-btn" onclick={() => selectedRows.clear()}>
           CLEAR SELECTION
         </button>
       </div>
@@ -211,7 +211,7 @@
               class:yorha-sorted-asc={sortColumn === column.key && sortDirection === 'asc'}
               class:yorha-sorted-desc={sortColumn === column.key && sortDirection === 'desc'}
               style:width={column.width}
-              on:click={() => handleSort(column)}
+              onclick={() => handleSort(column)}
             >
               <div class="yorha-header-content">
                 <span class="yorha-header-text">{column.title}</span>
@@ -307,14 +307,14 @@
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === 1}
-          on:click={() => currentPage = 1}
+          onclick={() => currentPage = 1}
         >
           ⟨⟨
         </button>
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === 1}
-          on:click={() => currentPage--}
+          onclick={() => currentPage--}
         >
           ⟨
         </button>
@@ -326,14 +326,14 @@
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === totalPages}
-          on:click={() => currentPage++}
+          onclick={() => currentPage++}
         >
           ⟩
         </button>
         <button 
           class="yorha-pagination-btn"
           disabled={currentPage === totalPages}
-          on:click={() => currentPage = totalPages}
+          onclick={() => currentPage = totalPages}
         >
           ⟩⟩
         </button>

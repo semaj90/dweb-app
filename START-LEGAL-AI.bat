@@ -1,42 +1,64 @@
 @echo off
-echo 🚀 Legal AI System - Production Launch
-echo =====================================
+REM ================================================================================
+REM LEGAL AI PLATFORM - QUICK START
+REM ================================================================================
 
-echo Setting up environment...
-set POSTGRES_PASSWORD=LegalAI2024!
-set OLLAMA_PARALLEL=2
+echo.
+echo ================================================================================
+echo STARTING LEGAL AI PLATFORM - COMPLETE PIPELINE
+echo ================================================================================
+echo.
 
-echo Checking Docker Desktop...
-docker version >nul 2>&1
-if errorlevel 1 (
-    echo ❌ Docker Desktop not running. Please start Docker Desktop first.
-    pause
-    exit /b 1
-)
+echo [1/8] Starting PostgreSQL...
+net start postgresql-x64-17 2>nul
 
-echo Stopping any existing containers...
-docker-compose -f docker-compose-unified.yml down --remove-orphans
+echo [2/8] Starting Redis...
+start /min redis-server
 
-echo Starting Legal AI services with GPU support...
-docker-compose -f docker-compose-unified.yml --profile gpu up -d
+echo [3/8] Starting Ollama...
+start /min ollama serve
 
-echo Waiting for services to initialize...
-timeout /t 30 /nobreak >nul
+timeout /t 3 /nobreak >nul
 
-echo Checking service health...
-docker-compose -f docker-compose-unified.yml ps
+echo [4/8] Starting MinIO...
+if not exist minio-data mkdir minio-data
+start /min minio.exe server ./minio-data --address :9000 --console-address :9001
 
-echo Creating database tables...
+echo [5/8] Starting Enhanced RAG...
+cd go-services\cmd\enhanced-rag
+start /min cmd /c "go run main.go"
+cd ..\..\..
+
+echo [6/8] Starting Upload Service...
+cd go-microservice
+start /min cmd /c "go run main.go"
+cd ..
+
+echo [7/8] Starting XState Manager...
+cd go-services\cmd\xstate-manager
+start /min cmd /c "go run main.go"
+cd ..\..\..
+
+echo [8/8] Starting Frontend...
 cd sveltekit-frontend
-npm run db:migrate 2>nul || echo ⚠️ Database migration pending
+start cmd /k "npm run dev -- --host 0.0.0.0"
+cd ..
 
-echo ✅ Legal AI System Ready!
+timeout /t 5 /nobreak >nul
+
 echo.
-echo Services:
-echo - Database: localhost:5432
-echo - Redis: localhost:6379  
-echo - Qdrant: localhost:6333
-echo - Ollama: localhost:11434
-echo - Frontend: npm run dev (port 5173)
+echo ================================================================================
+echo LEGAL AI PLATFORM STARTED SUCCESSFULLY!
+echo ================================================================================
 echo.
-pause
+echo Access Points:
+echo - Frontend:       http://localhost:5173
+echo - RAG API:        http://localhost:8094/api/rag
+echo - Upload API:     http://localhost:8093/upload
+echo - MinIO Console:  http://localhost:9001
+echo - Ollama API:     http://localhost:11434
+echo.
+echo Press any key to open the frontend in your browser...
+pause >nul
+
+start http://localhost:5173

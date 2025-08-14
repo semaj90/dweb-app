@@ -73,8 +73,8 @@ const CONFIG = {
       port: 8080,
       grpcPort: 50051,
       healthUrl: 'http://localhost:8080/health',
-      // Run the enhanced gRPC/HTTP2 server directly in dev
-      command: 'go run enhanced-grpc-legal-server.go',
+      // Run the working server for development
+      command: 'go run working-server.go',
       // Execute from the go-microservice directory
       cwd: path.join(process.cwd(), 'go-microservice'),
       priority: 6

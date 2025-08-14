@@ -179,26 +179,26 @@
       <button 
         class="yorha-control-btn" 
         class:active={selectedDemo === 'table'}
-        on:click={() => selectedDemo = 'table'}
+        onclick={() => selectedDemo = 'table'}
       >
         BASIC TABLE
       </button>
       <button 
         class="yorha-control-btn" 
         class:active={selectedDemo === 'grid'}
-        on:click={() => selectedDemo = 'grid'}
+        onclick={() => selectedDemo = 'grid'}
       >
         DATA GRID
       </button>
       <button 
         class="yorha-control-btn yorha-action"
-        on:click={() => toggleLoading(selectedDemo as 'table' | 'grid')}
+        onclick={() => toggleLoading(selectedDemo as 'table' | 'grid')}
       >
         TEST LOADING
       </button>
       <button 
         class="yorha-control-btn yorha-warning"
-        on:click={triggerGlitch}
+        onclick={triggerGlitch}
       >
         GLITCH EFFECT
       </button>
@@ -229,7 +229,7 @@
         <svelte:fragment slot="actions" let:row>
           <button 
             class="yorha-action-btn-sm" 
-            on:click={() => mockAIAnalysis(row)}
+            onclick={() => mockAIAnalysis(row)}
           >
             ANALYZE
           </button>
@@ -298,7 +298,7 @@
         <svelte:fragment slot="actions" let:row>
           <button 
             class="yorha-action-btn" 
-            on:click={() => mockAIAnalysis(row)}
+            onclick={() => mockAIAnalysis(row)}
           >
             ANALYZE
           </button>

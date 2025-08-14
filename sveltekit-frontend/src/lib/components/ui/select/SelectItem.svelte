@@ -38,11 +38,11 @@
   class="space-y-4"
   role="option"
   aria-selected={isSelected ? "true" : "false"}
-  on:click={() => handleClick()}
-  on:keydown={(e) => e.key === "Enter" && handleClick()}
+  onclick={() => handleClick()}
+  onkeydown={(e) => e.key === "Enter" && handleClick()}
   tabindex={0}
 >
-  <slot />
+  <slot></slot>
 </div>
 
 <style>

@@ -139,7 +139,7 @@
             bind:title={documentTitle}
             autoSave={true}
             autoSaveInterval={5000}
-            on:save={handleSave}
+            onsave={handleSave}
           />
         </div>
       </section>

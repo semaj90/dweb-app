@@ -97,8 +97,8 @@
 {#each $modals.modals as modal (modal.id)}
 	<div
 		class="space-y-4"
-		on:click={(e) => handleBackdropClick(e, modal)}
-		on:keydown={(e) => handleKeydown(e, modal)}
+		onclick={(e) => handleBackdropClick(e, modal)}
+		onkeydown={(e) => handleKeydown(e, modal)}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="{modal.id}-title"
@@ -146,7 +146,7 @@
 					{#if modal.closable !== false}
 						<button
 							class="space-y-4"
-							on:click={() => modals.close(modal.id)}
+							onclick={() => modals.close(modal.id)}
 							aria-label="Close modal"
 						>
 							<iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
@@ -177,7 +177,7 @@
 							{#each builtInModal.actions as action}
 								<Button
 									variant={action.variant}
-									on:click={() => action.action()}
+									onclick={() => action.action()}
 								>
 									{action.label}
 								</Button>
@@ -189,8 +189,8 @@
 					<svelte:component
 						this={modal.component}
 						{...modal.props}
-						on:close={() => modals.close(modal.id)}
-						on:confirm={modal.onConfirm}
+						onclose={() => modals.close(modal.id)}
+						onconfirm={modal.onConfirm}
 					/>
 				{:else}
 					<!-- Default slot content -->

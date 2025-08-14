@@ -14,7 +14,7 @@
   import { User, Bot, AlertTriangle } from 'lucide-svelte';
     let { analyticsLog = $bindable() } = $props(); // (event: any) => void = () => {};
 
-  $: if (message && message.content) {
+  $effect(() => { if (message && message.content) {
     analyticsLog({ event: 'chat_message_rendered', role: message.role, timestamp: Date.now() });
   }
 </script>

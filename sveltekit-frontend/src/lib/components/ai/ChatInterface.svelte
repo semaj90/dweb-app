@@ -345,7 +345,7 @@
   });
 
   // Reactive scroll to bottom when new messages arrive
-  $: if ($currentConversation?.messages) {
+  $effect(() => { if ($currentConversation?.messages) {
     tick().then(scrollToBottom);
 }
 </script>
@@ -360,14 +360,14 @@
           loading={$isLoading}
           premium={true}
           size="sm"
-          on:toggle={handleThinkingToggle}
+          ontoggle={handleThinkingToggle}
         />
 
         {#if caseId}
           <Button
             variant="outline"
             size="sm"
-            on:click={quickAnalyzeEvidence}
+            onclick={quickAnalyzeEvidence}
             disabled={$isLoading}
           >
             🔍 Quick Analysis
@@ -464,8 +464,8 @@
   {#if $showProactivePrompt}
     <div class="space-y-4">
       <ProactivePrompt
-        on:accept={handleProactiveResponse}
-        on:dismiss={() => showProactivePrompt.set(false)}
+        onaccept={handleProactiveResponse}
+        ondismiss={() => showProactivePrompt.set(false)}
       />
     </div>
   {/if}
@@ -481,8 +481,8 @@
             ? "Ask for detailed analysis... (Enter to send, Shift+Enter for new line)"
             : "Type your message... (Enter to send, Shift+Enter for new line)"}
           class="space-y-4"
-          on:keydown={handleKeyDown}
-          on:input={autoResize}
+          onkeydown={handleKeyDown}
+          oninput={autoResize}
           disabled={$isLoading}
         />
       </div>
@@ -491,7 +491,7 @@
         variant="default"
         size="sm"
         class="space-y-4"
-        on:click={() => sendMessage()}
+        onclick={() => sendMessage()}
         disabled={$isLoading || !messageInput.trim()}
       >
         {#if $isLoading}

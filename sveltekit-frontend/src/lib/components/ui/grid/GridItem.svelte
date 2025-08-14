@@ -42,5 +42,5 @@
     className
   )}
 >
-  <slot />
+  <slot></slot>
 </div>

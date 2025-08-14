@@ -112,7 +112,7 @@
 
   <div class="mb-6">
     <button 
-      on:click={runAITests}
+      onclick={runAITests}
       disabled={isRunning}
       class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
     >

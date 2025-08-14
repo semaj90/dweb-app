@@ -11,5 +11,5 @@
 </script>
 
 <div use:melt={$trigger}>
-  <slot />
+  <slot></slot>
 </div>

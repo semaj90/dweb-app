@@ -107,7 +107,7 @@
           onkeydown={handleKeydown}
           class="flex-1"
         />
-        <Button on:click={performSearch} disabled={isSearching || !searchQuery.trim()}>
+        <Button onclick={performSearch} disabled={isSearching || !searchQuery.trim()}>
           {#if isSearching}
             Loading...
           {:else}

@@ -132,7 +132,7 @@
       menu={menuOpen}
       class="space-y-4"
       style="position:fixed;left:{x}px;top:{y}px;"
-      on:keydown={(e) => {
+      onkeydown={(e) => {
         if (e.detail && e.detail.key === "Escape") closeMenu();
       }}
       aria-label="Evidence context menu"
@@ -142,27 +142,27 @@
           Evidence Actions
         </p>
       </div>
-      <DropdownMenuItem on:select={viewEvidence}>
+      <DropdownMenuItem onselect={viewEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">View Details</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={editEvidence}>
+      <DropdownMenuItem onselect={editEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Edit</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={downloadEvidence}>
+      <DropdownMenuItem onselect={downloadEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Download</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={duplicateEvidence}>
+      <DropdownMenuItem onselect={duplicateEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Duplicate</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={auditEvidence}>
+      <DropdownMenuItem onselect={auditEvidence}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Audit (Semantic/Vector)</span>
       </DropdownMenuItem>
-      <DropdownMenuItem on:select={triggerAgentReview}>
+      <DropdownMenuItem onselect={triggerAgentReview}>
         <i class="space-y-4"></i>
         <span class="space-y-4">Trigger Agent Review</span>
       </DropdownMenuItem>
@@ -174,7 +174,7 @@
           </p>
         </div>
         {#each cases as case_}
-          <DropdownMenuItem on:select={() => sendToCase(case_.id)}>
+          <DropdownMenuItem onselect={() => sendToCase(case_.id)}>
             <i class="space-y-4"></i>
             <div class="space-y-4">
               <div class="space-y-4">{case_.title}</div>
@@ -192,7 +192,7 @@
         </p>
       </div>
       <DropdownMenuItem
-        on:select={deleteEvidence}
+        onselect={deleteEvidence}
         class="space-y-4"
       >
         <i class="space-y-4"></i>

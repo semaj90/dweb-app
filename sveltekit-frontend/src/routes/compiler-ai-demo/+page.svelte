@@ -245,7 +245,7 @@
     <!-- Controls -->
     <div class="flex gap-4 mb-8 justify-center">
       <Button 
-        on:click={startMonitoring} 
+        onclick={startMonitoring} 
         disabled={!systemInitialized || isMonitoring}
         class="bg-green-600 hover:bg-green-700"
       >
@@ -253,7 +253,7 @@
       </Button>
       
       <Button 
-        on:click={stopMonitoring} 
+        onclick={stopMonitoring} 
         disabled={!isMonitoring}
         class="bg-red-600 hover:bg-red-700"
       >
@@ -261,7 +261,7 @@
       </Button>
       
       <Button 
-        on:click={addTestError} 
+        onclick={addTestError} 
         disabled={!systemInitialized}
         class="bg-orange-600 hover:bg-orange-700"
       >
@@ -285,7 +285,7 @@
             {@const IconComponent = getEventIcon(event)}
             <div 
               class="p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors"
-              on:click={() => selectedEvent = event}
+              onclick={() => selectedEvent = event}
               class:ring-2={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
               class:ring-blue-500={selectedEvent?.logs[0]?.id === event.logs[0]?.id}
             >
@@ -331,7 +331,7 @@
             {@const IconComponent = getPatchIcon(patch)}
             <div 
               class="p-3 rounded-lg bg-slate-700/50 border border-slate-600 cursor-pointer hover:bg-slate-700 transition-colors"
-              on:click={() => selectedPatch = patch}
+              onclick={() => selectedPatch = patch}
               class:ring-2={selectedPatch?.id === patch.id}
               class:ring-green-500={selectedPatch?.id === patch.id}
             >

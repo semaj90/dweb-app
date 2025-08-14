@@ -40,7 +40,7 @@
     aria-label="Text to analyze"
   ></textarea>
   <button
-    on:click={analyzeWWWH}
+    onclick={analyzeWWWH}
     disabled={loading || !inputText.trim()}
     class="uno-bg-primary uno-text-white uno-px-4 uno-py-2 uno-rounded uno-font-semibold uno-shadow-sm uno-transition hover:uno-bg-primary-600 focus-visible:uno-outline focus-visible:uno-outline-2 focus-visible:uno-outline-primary"
     aria-busy={loading}

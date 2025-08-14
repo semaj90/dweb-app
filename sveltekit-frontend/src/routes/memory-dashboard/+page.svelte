@@ -90,7 +90,7 @@
       {/if}
       <button 
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={triggerOptimization}
+        onclick={triggerOptimization}
         disabled={isLoading}
       >
         {isLoading ? 'Optimizing...' : 'Run Optimization'}
@@ -230,7 +230,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <button 
         class="p-4 border border-gray-300 rounded-lg hover:bg-gray-50 text-left transition-colors"
-        on:click={loadData}
+        onclick={loadData}
         disabled={isLoading}
       >
         <div class="font-medium mb-1">Refresh Data</div>
@@ -239,7 +239,7 @@
       
       <button 
         class="p-4 border border-blue-300 rounded-lg hover:bg-blue-50 text-left transition-colors"
-        on:click={triggerOptimization}
+        onclick={triggerOptimization}
         disabled={isLoading}
       >
         <div class="font-medium mb-1 text-blue-700">Run Optimization</div>

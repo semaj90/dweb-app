@@ -110,11 +110,11 @@
   ];
   
   // Watch for node changes and auto-populate form
-  $: if (selectedNode) {
+  $effect(() => { if (selectedNode) {
     autoPopulateForm(selectedNode);
 }
   // Track changes for auto-save
-  $: if ($formData && selectedNode) {
+  $effect(() => { if ($formData && selectedNode) {
     hasUnsavedChanges = true;
     scheduleAutoSave();
 }
@@ -500,7 +500,7 @@
           {/if}
           
           <button 
-            on:click={reanalyzeWithAI}
+            onclick={reanalyzeWithAI}
             disabled={isLoading}
             class="space-y-4"
           >
@@ -658,7 +658,7 @@
                       {tag}
                       {#if !readOnly}
                         <button 
-                          on:click={() => removeCustomTag(tag)}
+                          onclick={() => removeCustomTag(tag)}
                           class="space-y-4"
                         >×</button>
                       {/if}
@@ -671,11 +671,11 @@
                     <input
                       bind:value={customTag}
                       placeholder="Add custom tag"
-                      on:keydown={(e) => e.key === 'Enter' && addCustomTag()}
+                      onkeydown={(e) => e.key === 'Enter' && addCustomTag()}
                       class="space-y-4"
                     />
                     <button 
-                      on:click={addCustomTag} 
+                      onclick={addCustomTag} 
                       class="space-y-4"
                     >Add</button>
                   </div>
@@ -707,7 +707,7 @@
                         👤 {person}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removePerson(person)}
+                            onclick={() => removePerson(person)}
                             class="space-y-4"
                           >×</button>
                         {/if}
@@ -720,11 +720,11 @@
                       <input
                         bind:value={customPerson}
                         placeholder="Add person"
-                        on:keydown={(e) => e.key === 'Enter' && addCustomPerson()}
+                        onkeydown={(e) => e.key === 'Enter' && addCustomPerson()}
                         class="space-y-4"
                       />
                       <button 
-                        on:click={addCustomPerson} 
+                        onclick={addCustomPerson} 
                         class="space-y-4"
                       >Add</button>
                     </div>
@@ -750,7 +750,7 @@
                         📍 {location}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removeLocation(location)}
+                            onclick={() => removeLocation(location)}
                             class="space-y-4"
                           >×</button>
                         {/if}
@@ -763,11 +763,11 @@
                       <input
                         bind:value={customLocation}
                         placeholder="Add location"
-                        on:keydown={(e) => e.key === 'Enter' && addCustomLocation()}
+                        onkeydown={(e) => e.key === 'Enter' && addCustomLocation()}
                         class="space-y-4"
                       />
                       <button 
-                        on:click={addCustomLocation} 
+                        onclick={addCustomLocation} 
                         class="space-y-4"
                       >Add</button>
                     </div>
@@ -793,7 +793,7 @@
                         🏢 {org}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removeOrganization(org)}
+                            onclick={() => removeOrganization(org)}
                             class="space-y-4"
                           >×</button>
                         {/if}
@@ -806,11 +806,11 @@
                       <input
                         bind:value={customOrganization}
                         placeholder="Add organization"
-                        on:keydown={(e) => e.key === 'Enter' && addCustomOrganization()}
+                        onkeydown={(e) => e.key === 'Enter' && addCustomOrganization()}
                         class="space-y-4"
                       />
                       <button 
-                        on:click={addCustomOrganization} 
+                        onclick={addCustomOrganization} 
                         class="space-y-4"
                       >Add</button>
                     </div>
@@ -872,7 +872,7 @@
                         ⚡ {action}
                         {#if !readOnly}
                           <button 
-                            on:click={() => removeAction(action)}
+                            onclick={() => removeAction(action)}
                             class="space-y-4"
                           >×</button>
                         {/if}
@@ -885,11 +885,11 @@
                       <input
                         bind:value={customAction}
                         placeholder="Add action item"
-                        on:keydown={(e) => e.key === 'Enter' && addCustomAction()}
+                        onkeydown={(e) => e.key === 'Enter' && addCustomAction()}
                         class="space-y-4"
                       />
                       <button 
-                        on:click={addCustomAction} 
+                        onclick={addCustomAction} 
                         class="space-y-4"
                       >Add</button>
                     </div>
@@ -989,7 +989,7 @@
         {#if !readOnly}
           <div class="space-y-4">
             <button 
-              on:click={handleSave}
+              onclick={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
               class="space-y-4"
             >
