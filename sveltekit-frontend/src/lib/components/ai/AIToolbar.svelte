@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Badge } from "$lib/components/ui/badge/index.js";
-  import { Textarea } from "$lib/components/ui/textarea/index.js";
-  import { Loader2, Bot, MessageSquare, FileText, Search, Sparkles, Zap } from "lucide-svelte";
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Badge } from '$lib/components/ui/badge/index.js';
+  import { Textarea } from '$lib/components/ui/textarea/index.js';
+  import { Loader2, Bot, MessageSquare, FileText, Search, Sparkles, Zap } from 'lucide-svelte';
 
   // Props
-  let { 
+  let {
     onAISearch = null,
-    onAIChat = null, 
+    onAIChat = null,
     onAISummarize = null,
     disabled = false,
-    compact = false 
+    compact = false,
   } = $props();
 
   // State
@@ -29,10 +29,10 @@
   // Enhanced AI Search with LangChain.js and vector similarity
   async function performAISearch() {
     if (!aiSearchQuery.trim() || isAISearching) return;
-    
+
     isAISearching = true;
     aiSearchResults = [];
-    
+
     try {
       const response = await fetch('/api/ai/enhanced-legal-search', {
         method: 'POST',
@@ -45,18 +45,20 @@
           useAI: true,
           advancedOptions: {
             useVector: true,
-            similarityThreshold: 0.7
-          }
-        })
+            similarityThreshold: 0.7,
+          },
+        }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         aiSearchResults = result.results || [];
-        console.log(`🔍 Enhanced AI search found ${aiSearchResults.length} results in ${result.searchTime}`);
+        console.log(
+          `🔍 Enhanced AI search found ${aiSearchResults.length} results in ${result.searchTime}`
+        );
         console.log('Search analytics:', result.analytics);
-        
+
         if (onAISearch) {
           onAISearch(result);
         }
@@ -84,12 +86,12 @@
           query: aiSearchQuery,
           jurisdiction: 'all',
           category: 'all',
-          useAI: true
-        })
+          useAI: true,
+        }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         aiSearchResults = result.laws || [];
         if (onAISearch) {
@@ -104,22 +106,22 @@
   // AI Chat
   async function performAIChat() {
     if (!aiChatMessage.trim() || isAIChatting) return;
-    
+
     isAIChatting = true;
     aiChatResponse = '';
-    
+
     try {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: aiChatMessage,
-          temperature: 0.7
-        })
+          temperature: 0.7,
+        }),
       });
 
       const result = await response.json();
-      
+
       if (result.response) {
         aiChatResponse = result.response;
         if (onAIChat) {
@@ -138,10 +140,10 @@
   // AI Summarization
   async function performAISummarization() {
     if (!summarizeText.trim() || isSummarizing) return;
-    
+
     isSummarizing = true;
     summaryResult = '';
-    
+
     try {
       const response = await fetch('/api/ai/summarize', {
         method: 'POST',
@@ -149,12 +151,12 @@
         body: JSON.stringify({
           text: summarizeText,
           type: 'legal',
-          options: { max_tokens: 500 }
-        })
+          options: { max_tokens: 500 },
+        }),
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         summaryResult = result.summary;
         if (onAISummarize) {
@@ -204,7 +206,6 @@
   </div>
 
   <div class="grid grid-cols-1 {compact ? 'lg:grid-cols-1' : 'lg:grid-cols-3'} gap-6">
-    
     <!-- AI Search -->
     <Card class="border-primary/20">
       <CardHeader class="pb-3">
@@ -222,14 +223,12 @@
               bind:value={aiSearchQuery}
               onkeydown={handleAISearchKeydown}
               {disabled}
-              class="pl-10"
-            />
+              class="pl-10" />
           </div>
-          <Button 
-            onclick={performAISearch} 
+          <Button
+            onclick={performAISearch}
             disabled={disabled || isAISearching || !aiSearchQuery.trim()}
-            size="sm"
-          >
+            size="sm">
             {#if isAISearching}
               <Loader2 class="h-4 w-4 animate-spin" />
             {:else}
@@ -237,7 +236,7 @@
             {/if}
           </Button>
         </div>
-        
+
         {#if aiSearchResults.length > 0}
           <div class="space-y-2 max-h-32 overflow-y-auto">
             {#each aiSearchResults.slice(0, 3) as result}
@@ -272,14 +271,12 @@
             onkeydown={handleAIChatKeydown}
             {disabled}
             rows="2"
-            class="resize-none"
-          />
-          <Button 
-            onclick={performAIChat} 
+            class="resize-none" />
+          <Button
+            onclick={performAIChat}
             disabled={disabled || isAIChatting || !aiChatMessage.trim()}
             size="sm"
-            class="w-full"
-          >
+            class="w-full">
             {#if isAIChatting}
               <Loader2 class="h-4 w-4 animate-spin mr-2" />
               Thinking...
@@ -289,9 +286,10 @@
             {/if}
           </Button>
         </div>
-        
+
         {#if aiChatResponse}
-          <div class="p-3 bg-green-50 dark:bg-green-950/30 rounded text-sm max-h-32 overflow-y-auto">
+          <div
+            class="p-3 bg-green-50 dark:bg-green-950/30 rounded text-sm max-h-32 overflow-y-auto">
             <div class="prose prose-sm max-w-none">
               <p class="whitespace-pre-wrap">{aiChatResponse}</p>
             </div>
@@ -315,14 +313,12 @@
             bind:value={summarizeText}
             {disabled}
             rows="2"
-            class="resize-none"
-          />
-          <Button 
-            onclick={performAISummarization} 
+            class="resize-none" />
+          <Button
+            onclick={performAISummarization}
             disabled={disabled || isSummarizing || !summarizeText.trim()}
             size="sm"
-            class="w-full"
-          >
+            class="w-full">
             {#if isSummarizing}
               <Loader2 class="h-4 w-4 animate-spin mr-2" />
               Summarizing...
@@ -332,7 +328,7 @@
             {/if}
           </Button>
         </div>
-        
+
         {#if summaryResult}
           <div class="p-3 bg-blue-50 dark:bg-blue-950/30 rounded text-sm max-h-32 overflow-y-auto">
             <div class="prose prose-sm max-w-none">
@@ -347,38 +343,42 @@
   <!-- Clear Results Button -->
   {#if aiSearchResults.length > 0 || aiChatResponse || summaryResult}
     <div class="text-center">
-      <Button variant="outline" onclick={clearResults} size="sm">
-        Clear All Results
-      </Button>
+      <Button variant="outline" onclick={clearResults} size="sm">Clear All Results</Button>
     </div>
   {/if}
 
   <!-- Quick Actions -->
   <div class="flex flex-wrap gap-2 justify-center">
-    <Button 
-      variant="outline" 
-      size="sm" 
-      onclick={() => { aiSearchQuery = 'California murder laws'; performAISearch(); }}
-      disabled={disabled || isAISearching}
-    >
+    <Button
+      variant="outline"
+      size="sm"
+      onclick={() => {
+        aiSearchQuery = 'California murder laws';
+        performAISearch();
+      }}
+      disabled={disabled || isAISearching}>
       <Bot class="h-3 w-3 mr-1" />
       Murder Laws
     </Button>
-    <Button 
-      variant="outline" 
-      size="sm" 
-      onclick={() => { aiChatMessage = 'What are the elements of a valid contract?'; performAIChat(); }}
-      disabled={disabled || isAIChatting}
-    >
+    <Button
+      variant="outline"
+      size="sm"
+      onclick={() => {
+        aiChatMessage = 'What are the elements of a valid contract?';
+        performAIChat();
+      }}
+      disabled={disabled || isAIChatting}>
       <MessageSquare class="h-3 w-3 mr-1" />
       Contract Elements
     </Button>
-    <Button 
-      variant="outline" 
-      size="sm" 
-      onclick={() => { aiSearchQuery = 'evidence admissibility rules'; performAISearch(); }}
-      disabled={disabled || isAISearching}
-    >
+    <Button
+      variant="outline"
+      size="sm"
+      onclick={() => {
+        aiSearchQuery = 'evidence admissibility rules';
+        performAISearch();
+      }}
+      disabled={disabled || isAISearching}>
       <Search class="h-3 w-3 mr-1" />
       Evidence Rules
     </Button>

@@ -17,15 +17,15 @@
     embeddings: boolean;
     vectorSearch: boolean;
 }
-  let systemStatus: SystemStatus = {
+  let systemStatus: SystemStatus = $state({
     database: false,
     qdrant: false,
     embeddings: false,
     vectorSearch: false,
-  };
+  });
 
-  let isLoadingStatus = true;
-  let testQuery = "";
+  let isLoadingStatus = $state(true);
+  let testQuery = $state("");
   interface TestResults {
     error?: string;
     data?: unknown;
@@ -39,8 +39,8 @@
     executionTime?: number;
     source?: string;
 }
-  let testResults: TestResults | null = null;
-  let isTestingSearch = false;
+  let testResults: TestResults | null = $state(null);
+  let isTestingSearch = $state(false);
 
   // Demo queries
   const demoQueries = [

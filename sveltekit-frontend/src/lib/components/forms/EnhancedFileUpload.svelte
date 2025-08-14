@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <!--
   Enhanced File Upload Component with Superforms and Zod Validation
   Features: Drag & drop, progress tracking, AI processing, validation, preview

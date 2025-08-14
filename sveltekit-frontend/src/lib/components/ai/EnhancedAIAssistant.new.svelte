@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Attributes need to be unique
+https://svelte.dev/e/attribute_duplicate -->
 <!-- Enhanced AI Assistant - Simplified Version -->
 <script lang="ts">
   interface Props {

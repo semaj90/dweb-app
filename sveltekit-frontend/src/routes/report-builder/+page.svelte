@@ -1,21 +1,21 @@
 <script lang="ts">
   import type { Evidence } from '$lib/types/api';
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import ReportEditor from "$lib/components/ReportEditor.svelte";
 	import CanvasEditor from "$lib/components/CanvasEditor.svelte";
 	import type { Report, CanvasState, CitationPoint } from "$lib/data/types";
 
-	let currentReport: Report | null = null;
-	let currentCanvasState: CanvasState | null = null;
-	let evidence: Evidence[] = [];
-	let citationPoints: CitationPoint[] = [];
-	let activeTab: 'editor' | 'canvas' = 'editor';
-	let isLoading = false;
-	let error = '';
+	let currentReport: Report | null = $state(null);
+	let currentCanvasState: CanvasState | null = $state(null);
+	let evidence: Evidence[] = $state([]);
+	let citationPoints: CitationPoint[] = $state([]);
+	let activeTab: 'editor' | 'canvas' = $state('editor');
+	let isLoading = $state(false);
+	let error = $state('');
 
 	// Demo case ID - in real app this would come from the route
-	const caseId = $page.params.caseId || 'demo-case-123';
+	const caseId = page.params.caseId || 'demo-case-123';
 
 	onMount(async () => {
 		await loadDemoData();

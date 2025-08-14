@@ -1,6 +1,14 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-import { logQueue } from '../../../../lib/server/queues/logQueue';
+// import { logQueue } from '../../../../lib/server/queues/logQueue'; // Temporarily disabled
+
+// Simple stub for logQueue
+const logQueue = {
+  add: async (data: any) => {
+    console.log('Queue operation (stub):', data);
+    return Promise.resolve();
+  }
+};
 
 export async function POST({ request }) {
   try {

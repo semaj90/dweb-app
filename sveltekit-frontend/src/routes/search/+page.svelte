@@ -41,18 +41,18 @@
     source?: string;
 }
   // Search state
-  let searchQuery = "";
-  let searchResults: SearchResults | null = null;
-  let isSearching = false;
-  let searchError: string | null = null;
-  let searchHistory: string[] = [];
+  let searchQuery = $state("");
+  let searchResults: SearchResults | null = $state(null);
+  let isSearching = $state(false);
+  let searchError: string | null = $state(null);
+  let searchHistory: string[] = $state([]);
 
   // Filters
-  let selectedType = "";
-  let selectedCaseId = "";
-  let threshold = 0.7;
-  let limit = 20;
-  let showAdvancedFilters = false;
+  let selectedType = $state("");
+  let selectedCaseId = $state("");
+  let threshold = $state(0.7);
+  let limit = $state(20);
+  let showAdvancedFilters = $state(false);
 
   // Recent searches (simulated)
   let recentSearches = [
@@ -391,6 +391,7 @@
           {#if searchResults.results.length > 0}
             <div class="space-y-4">
               {#each searchResults.results as result}
+                {@const SvelteComponent = getResultIcon(result.type)}
                 <div
                   class="space-y-4"
                   onclick={() => handleResultClick(result)}
@@ -401,8 +402,7 @@
                 >
                   <div class="space-y-4">
                     <div class="space-y-4">
-                      <svelte:component
-                        this={getResultIcon(result.type)}
+                      <SvelteComponent
                         class="space-y-4"
                       />
                     </div>

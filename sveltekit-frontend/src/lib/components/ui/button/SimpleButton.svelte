@@ -46,7 +46,7 @@
   ].filter(Boolean).join(' '));
  </script>
 
-<button class={classes} on:click={handleClick} {...rest}>
+<button class={classes} onclick={handleClick} {...rest}>
   {#if children}
     {@render children()}
   {:else}

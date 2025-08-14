@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 import type { Case } from '$lib/types';
 
 
@@ -69,10 +71,10 @@ import type { Case } from '$lib/types';
       default:
         return FileText;
 }}
-  let statusIcon = $derived(getStatusIcon(caseData.status););
-  let formattedDate = $derived(formatDistanceToNow(new Date(caseData.openedAt), {);
+  let statusIcon = $derived(getStatusIcon(caseData.status));
+  let formattedDate = $derived(formatDistanceToNow(new Date(caseData.openedAt), {
     addSuffix: true,
-  });
+  }));
 </script>
 
 <div
@@ -88,10 +90,9 @@ import type { Case } from '$lib/types';
     <div class="space-y-4">
       <!-- Case Title and Number -->
       <div class="space-y-4">
-        <svelte:component
-          this={statusIcon}
-          class="space-y-4"
-        />
+        {#if statusIcon}
+          <statusIcon class="space-y-4"></statusIcon>
+        {/if}
         <h3 class="space-y-4">
           {caseData.title}
         </h3>

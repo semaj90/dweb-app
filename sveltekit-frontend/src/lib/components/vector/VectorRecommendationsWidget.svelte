@@ -207,14 +207,15 @@ Compact AI recommendations component for sidebar/dashboard use
     {:else}
       <div class="space-y-3">
         {#each recommendations as rec}
+          {@const SvelteComponent = getRecommendationIcon(rec.type)}
           <button
             type="button"
             class="w-full text-left p-3 rounded-lg border-l-4 {getRecommendationColor(rec.type)} hover:shadow-md transition-all duration-200"
-            on:click={() => onRecommendationClick(rec)}
+            onclick={() => onRecommendationClick(rec)}
           >
             <div class="flex items-start justify-between mb-2">
               <div class="flex items-center gap-2">
-                <svelte:component this={getRecommendationIcon(rec.type)} class="h-4 w-4" />
+                <SvelteComponent class="h-4 w-4" />
                 <span class="font-medium text-sm leading-tight">{rec.title}</span>
               </div>
               <ChevronRight class="h-3 w-3 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -227,7 +228,8 @@ Compact AI recommendations component for sidebar/dashboard use
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <Badge class={`text-xs ${getPriorityColor(rec.priority)}`}>
-                  <svelte:component this={getPriorityIcon(rec.priority)} class="h-2 w-2 mr-1" />
+                  {@const SvelteComponent_1 = getPriorityIcon(rec.priority)}
+                  <SvelteComponent_1 class="h-2 w-2 mr-1" />
                   {rec.priority}
                 </Badge>
                 <Badge variant="outline" class="text-xs">{rec.category}</Badge>

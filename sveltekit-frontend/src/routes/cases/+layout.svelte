@@ -309,7 +309,7 @@ import type { Case } from '$lib/types';
 
     <!-- Main Content Area -->
     <main class="space-y-4">
-      <slot></slot>
+      {@render children?.()}
     </main>
 
 

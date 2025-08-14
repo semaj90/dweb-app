@@ -6,10 +6,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
-  import Card from '$lib/components/ui/Card.svelte';
-  import CardContent from '$lib/components/ui/CardContent.svelte';
-  import CardHeader from '$lib/components/ui/CardHeader.svelte';
-  import CardTitle from '$lib/components/ui/CardTitle.svelte';
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import Input from '$lib/components/ui/Input.svelte';
 
@@ -22,13 +19,13 @@
   const modelOptions = [
     { value: 'claude-3-5-sonnet', label: 'Claude 3.5 Sonnet' },
     { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-    { value: 'gemma-3-27b', label: 'Local Gemma 3 27B' }
+    { value: 'gemma-3-27b', label: 'Local Gemma 3 27B' },
   ];
 
   onMount(async () => {
     // Simulate system initialization
     for (let i = 0; i <= 100; i += 20) {
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
     }
     systemInitialized = true;
   });
@@ -46,15 +43,15 @@
         entities: [
           { text: 'Legal Entity', type: 'Organization', confidence: 0.95 },
           { text: 'Contract Terms', type: 'Legal Concept', confidence: 0.88 },
-          { text: 'Liability Clause', type: 'Legal Provision', confidence: 0.91 }
+          { text: 'Liability Clause', type: 'Legal Provision', confidence: 0.91 },
         ],
         recommendations: [
           'Review section 4.2 for potential liability issues',
           'Consider adding indemnification clause',
-          'Verify compliance with local regulations'
+          'Verify compliance with local regulations',
         ],
         processingTime: '2.3s',
-        model: selectedModel
+        model: selectedModel,
       };
       processingStatus = 'completed';
     }, 2500);
@@ -77,7 +74,8 @@
     <div class="container mx-auto px-4 py-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <h1
+            class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             Enhanced RAG Studio
           </h1>
           <p class="text-slate-400 mt-2">AI-Powered Legal Document Analysis System</p>
@@ -86,9 +84,7 @@
           <Badge class="bg-green-900 text-green-400 border-green-400">
             {systemInitialized ? '✅ Online' : '⏳ Initializing...'}
           </Badge>
-          <Badge class="bg-blue-900 text-blue-400 border-blue-400">
-            SvelteKit 2 + Svelte 5
-          </Badge>
+          <Badge class="bg-blue-900 text-blue-400 border-blue-400">SvelteKit 2 + Svelte 5</Badge>
         </div>
       </div>
     </div>
@@ -139,8 +135,7 @@
             <Input
               bind:value={testQuery}
               placeholder="Enter legal question, paste contract text, or describe evidence to analyze..."
-              class="w-full h-24 bg-slate-800 border-slate-600 text-white placeholder-slate-400 resize-none"
-            />
+              class="w-full h-24 bg-slate-800 border-slate-600 text-white placeholder-slate-400 resize-none" />
           </div>
 
           <div class="flex items-center gap-4">
@@ -148,8 +143,7 @@
               <label class="block text-sm font-medium mb-2">AI Model</label>
               <select
                 bind:value={selectedModel}
-                class="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-white"
-              >
+                class="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-white">
                 {#each modelOptions as option}
                   <option value={option.value}>{option.label}</option>
                 {/each}
@@ -161,17 +155,17 @@
           <div class="flex gap-4">
             <Button
               on:click={handleAnalyze}
-              disabled={!testQuery.trim() || processingStatus === 'processing' || !systemInitialized}
-              class="bg-blue-600 hover:bg-blue-700 text-white"
-            >
+              disabled={!testQuery.trim() ||
+                processingStatus === 'processing' ||
+                !systemInitialized}
+              class="bg-blue-600 hover:bg-blue-700 text-white">
               {processingStatus === 'processing' ? 'Analyzing...' : 'Analyze with AI'}
             </Button>
 
             <Button
               variant="outline"
               on:click={handleClear}
-              disabled={processingStatus === 'processing'}
-            >
+              disabled={processingStatus === 'processing'}>
               Clear
             </Button>
           </div>
@@ -181,7 +175,9 @@
         {#if processingStatus === 'processing'}
           <div class="p-4 bg-slate-800 border border-blue-500/30 rounded-lg">
             <div class="flex items-center gap-3">
-              <div class="w-6 h-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent"></div>
+              <div
+                class="w-6 h-6 animate-spin rounded-full border-2 border-blue-400 border-t-transparent">
+              </div>
               <div>
                 <div class="text-blue-400 font-semibold">AI Analysis in Progress</div>
                 <div class="text-sm text-slate-400">Processing with {selectedModel}...</div>

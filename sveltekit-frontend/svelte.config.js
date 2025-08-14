@@ -16,8 +16,6 @@ const config = {
   compilerOptions: {
     // Enable dev mode for proper SvelteKit development behavior
     dev: process.env.NODE_ENV === 'development',
-    // Enable performance optimizations
-    immutable: true,
     // Reduce bundle size
     css: 'injected'
   },

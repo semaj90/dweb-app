@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <!--
   Security Monitoring Dashboard
   Displays security events, system health, and security metrics
@@ -30,26 +32,26 @@
   import { onDestroy, onMount } from "svelte";
   import { writable } from "svelte/store";
 
-  let securityEvents: SecurityEvent[] = [];
-  let filteredEvents: SecurityEvent[] = [];
-  let selectedSeverity = "";
-  let selectedType = "";
-  let showDetails = new Set<number>();
-  let refreshInterval: number | null = null;
-  let loading = false;
+  let securityEvents: SecurityEvent[] = $state([]);
+  let filteredEvents: SecurityEvent[] = $state([]);
+  let selectedSeverity = $state("");
+  let selectedType = $state("");
+  let showDetails = $state(new Set<number>());
+  let refreshInterval: number | null = $state(null);
+  let loading = $state(false);
 
   // Security metrics
-  let criticalEvents = $derived(securityEvents.filter();
+  let criticalEvents = $derived(securityEvents.filter(
     (e) => e.severity === "critical"
-  ).length;
-  let highEvents = $derived(securityEvents.filter((e) => e.severity === "high").length;);
-  let recentEvents = $derived(securityEvents.filter();
+  ).length);
+  let highEvents = $derived(securityEvents.filter((e) => e.severity === "high").length);
+  let recentEvents = $derived(securityEvents.filter(
     (e) => Date.now() - e.timestamp < 24 * 60 * 60 * 1000
-  ).length;
-  let loginAttempts = $derived(securityEvents.filter((e) => e.type === "login").length;);
-  let accessDeniedEvents = $derived(securityEvents.filter();
+  ).length);
+  let loginAttempts = $derived(securityEvents.filter((e) => e.type === "login").length);
+  let accessDeniedEvents = $derived(securityEvents.filter(
     (e) => e.type === "access_denied"
-  ).length;
+  ).length);
 
   // System status
   const systemHealth = writable({
@@ -206,9 +208,11 @@
         return "text-base-content";
 }}
   // Reactive statements
-  $effect(() => { if (selectedSeverity || selectedType) {
-    filterEvents();
-}
+  $effect(() => { 
+    if (selectedSeverity || selectedType) {
+      filterEvents();
+    }
+  });
 </script>
 
 <div class="space-y-4">

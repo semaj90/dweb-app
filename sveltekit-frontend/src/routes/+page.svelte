@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax
+https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { writable, derived } from 'svelte/store';
@@ -209,11 +211,11 @@
 
         <!-- Actions -->
         <div class="flex space-x-2">
-          <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" on:click={clearChat}>
+          <button class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick={clearChat}>
             Clear Chat
           </button>
           {#if !$isAIConnected}
-            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" on:click={retryConnection}>
+            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onclick={retryConnection}>
               Reconnect
             </button>
           {/if}
@@ -252,7 +254,7 @@
                 <div class="grid gap-2">
                   {#each sampleQueries as query}
                     <button
-                      on:click={() => useSampleQuery(query)}
+                      onclick={() => useSampleQuery(query)}
                       class="text-left p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-colors"
                     >
                       <span class="text-gray-700">{query}</span>
@@ -348,7 +350,7 @@
               <span class="text-red-800 text-sm">{$chatState.error}</span>
             </div>
             <button
-              on:click={() => chatState.update(s => ({ ...s, error: null }))}
+              onclick={() => chatState.update(s => ({ ...s, error: null }))}
               class="text-red-600 hover:text-red-800"
             >
               ✕
@@ -374,7 +376,7 @@
 
           <div class="flex flex-col space-y-2">
             <button
-              on:click={sendMessage}
+              onclick={sendMessage}
               disabled={!canSend}
               class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
@@ -461,12 +463,12 @@
       <div>
         <h4 class="font-medium text-gray-900 mb-3">Quick Actions</h4>
         <div class="space-y-2">
-          <button class="w-full px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" on:click={clearChat}>
+          <button class="w-full px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick={clearChat}>
             🗑️ Clear Conversation
           </button>
 
           {#if !$isAIConnected}
-            <button class="w-full px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" on:click={retryConnection}>
+            <button class="w-full px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onclick={retryConnection}>
               🔄 Retry Connection
             </button>
           {/if}

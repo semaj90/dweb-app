@@ -3,20 +3,20 @@
   import { fade, fly } from 'svelte/transition';
 
   // Test state
-  let testResults: any = {};
-  let isRunning = false;
-  let currentTest = '';
-  let testLog: string[] = [];
+  let testResults: any = $state({});
+  let isRunning = $state(false);
+  let currentTest = $state('');
+  let testLog: string[] = $state([]);
 
   // Service status
-  let ollamaStatus = 'unknown';
-  let svelteKitStatus = 'unknown';
-  let modelStatus = 'unknown';
+  let ollamaStatus = $state('unknown');
+  let svelteKitStatus = $state('unknown');
+  let modelStatus = $state('unknown');
 
   // Test chat
-  let chatMessage = 'What are the essential elements of a valid contract?';
-  let chatResponse = '';
-  let chatLoading = false;
+  let chatMessage = $state('What are the essential elements of a valid contract?');
+  let chatResponse = $state('');
+  let chatLoading = $state(false);
 
   onMount(() => {
     runHealthChecks();

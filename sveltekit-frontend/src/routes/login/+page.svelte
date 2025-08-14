@@ -122,7 +122,7 @@
         {#each demoUsers as demoUser}
           <button
             type="button"
-            on:click={() => quickLogin(demoUser)}
+            onclick={() => quickLogin(demoUser)}
             class="demo-user-button"
             title="Click to fill login form with {demoUser.name} credentials"
           >

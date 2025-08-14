@@ -1,8 +1,8 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/tauri';
-  let uploadResult = '';
-  let error = '';
-  let loading = false;
+  let uploadResult = $state('');
+  let error = $state('');
+  let loading = $state(false);
 
   async function handleUpload() {
     uploadResult = '';

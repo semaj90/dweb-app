@@ -18,7 +18,7 @@ export default defineConfig({
   },
   // Enable pgvector extension support
   extensionsFilters: ["vector"],
-  
+
   // Introspection settings for pgvector
   introspect: {
     casing: "snake_case",

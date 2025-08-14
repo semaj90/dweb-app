@@ -1,13 +1,13 @@
 <script lang="ts">
   import UploadArea from './UploadArea.svelte';
 
-  let uploadComponent: UploadArea;
-  let uploadStatus = '';
-  let uploadedFiles: any[] = [];
-  let showProgress = true;
-  let autoUpload = false;
-  let maxFiles = 5;
-  let maxFileSize = 10 * 1024 * 1024; // 10MB
+  let uploadComponent: UploadArea = $state();
+  let uploadStatus = $state('');
+  let uploadedFiles: any[] = $state([]);
+  let showProgress = $state(true);
+  let autoUpload = $state(false);
+  let maxFiles = $state(5);
+  let maxFileSize = $state(10 * 1024 * 1024); // 10MB
 
   function handleUploadStart(event: CustomEvent) {
     uploadStatus = `Starting upload of ${event.detail.files.length} files...`;

@@ -15,7 +15,7 @@ import type { User } from '$lib/types/user';
 
 
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import SearchInput from "./SearchInput.svelte";
 
   import { FolderOpen, Home, LogOut, MoreVertical, Palette, Settings, Shield, User as UserIcon } from "lucide-svelte";

@@ -15,11 +15,11 @@
   const { isReady, isRtx3060, systemHealth, performance } = wasmGpu.derived;
   
   // Demo state
-  let benchmarkRunning = false;
-  let benchmarkResults: { operation: string; time: number; throughput: number }[] = [];
+  let benchmarkRunning = $state(false);
+  let benchmarkResults: { operation: string; time: number; throughput: number }[] = $state([]);
   let testVectorCount = 100;
   let testDimensions = 384;
-  let similarityResults: Float32Array | null = null;
+  let similarityResults: Float32Array | null = $state(null);
   
   // Legal AI test scenarios
   const legalTestScenarios = [
@@ -46,7 +46,7 @@
     }
   ];
   
-  let selectedScenario = legalTestScenarios[0];
+  let selectedScenario = $state(legalTestScenarios[0]);
   
   onMount(async () => {
     console.log('🎮 WASM GPU Demo component mounted');

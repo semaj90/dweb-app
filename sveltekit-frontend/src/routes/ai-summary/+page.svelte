@@ -4,12 +4,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   
-  let caseData = null;
-  let summary = '';
-  let isGenerating = false;
-  let summaryType = 'prosecution';
-  let confidence = 0;
-  let ragScore = 0;
+  let caseData = $state(null);
+  let summary = $state('');
+  let isGenerating = $state(false);
+  let summaryType = $state('prosecution');
+  let confidence = $state(0);
+  let ragScore = $state(0);
   
   const generateSummary = async () => {
     isGenerating = true;

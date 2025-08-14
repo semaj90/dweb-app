@@ -457,7 +457,7 @@ Manages AutoGen and CrewAI multi-agent workflows
               {#each workflows as workflow}
                 <SelectItem value={workflow.id}>
                   <div class="flex items-center gap-2">
-                    <svelte:component this={workflow.icon} class="h-4 w-4" />
+                    <workflow.icon class="h-4 w-4" />
                     {workflow.name}
                   </div>
                 </SelectItem>
@@ -493,9 +493,10 @@ Manages AutoGen and CrewAI multi-agent workflows
 
       {#if selectedWorkflow}
         {@const workflow = workflows.find(w => w.id === selectedWorkflow)}
+        {@const SvelteComponent = workflow?.icon || Activity}
         <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <div class="flex items-start gap-3">
-            <svelte:component this={workflow?.icon || Activity} class="h-5 w-5 text-blue-500 mt-0.5" />
+            <SvelteComponent class="h-5 w-5 text-blue-500 mt-0.5" />
             <div>
               <p class="font-medium text-blue-800 dark:text-blue-300">{workflow?.name}</p>
               <p class="text-sm text-blue-600 dark:text-blue-400">{workflow?.description}</p>

@@ -258,15 +258,15 @@
   >
     <div class="flex items-center gap-3">
       {#if selectedModel}
+        {@const SvelteComponent = getProviderIcon(selectedModel.provider)}
+        {@const SvelteComponent_1 = getStatusIcon(selectedModel.status)}
         <div class="flex items-center gap-2">
-          <svelte:component 
-            this={getProviderIcon(selectedModel.provider)} 
+          <SvelteComponent 
             class="h-4 w-4 text-blue-500" 
           />
           <span class="font-medium">{selectedModel.displayName}</span>
           <div class="flex items-center gap-1">
-            <svelte:component 
-              this={getStatusIcon(selectedModel.status)} 
+            <SvelteComponent_1 
               class="h-3 w-3 {getStatusColor(selectedModel.status)} {selectedModel.status === 'loading' ? 'animate-spin' : ''}"
             />
             <span class="text-xs {getStatusColor(selectedModel.status)}">
@@ -294,6 +294,8 @@
     >
       <div class="py-1">
         {#each filteredModels as model (model.id)}
+          {@const SvelteComponent_2 = getProviderIcon(model.provider)}
+          {@const SvelteComponent_3 = getStatusIcon(model.status)}
           <button
             use:melt={$option({ value: model, label: model.displayName })}
             class="flex w-full items-center justify-between px-4 py-3 text-sm
@@ -304,8 +306,7 @@
             <div class="flex items-center gap-3 flex-1 min-w-0">
               <!-- Provider Icon -->
               <div class="flex-shrink-0">
-                <svelte:component 
-                  this={getProviderIcon(model.provider)} 
+                <SvelteComponent_2 
                   class="h-5 w-5 {$isSelected(model) ? 'text-blue-500' : 'text-gray-400'}" 
                 />
               </div>
@@ -343,8 +344,7 @@
               <div class="flex items-center gap-2 flex-shrink-0">
                 <!-- Status Indicator -->
                 <div class="flex items-center gap-1">
-                  <svelte:component 
-                    this={getStatusIcon(model.status)} 
+                  <SvelteComponent_3 
                     class="h-4 w-4 {getStatusColor(model.status)} {model.status === 'loading' ? 'animate-spin' : ''}"
                   />
                   <span class="text-xs {getStatusColor(model.status)} font-medium">

@@ -1,18 +1,18 @@
 <script lang="ts">
   import Fuse from 'fuse.js';
-  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Badge } from "$lib/components/ui/badge/index.js";
-  import { Search, ExternalLink, Sparkles, FileText, Scale } from "lucide-svelte";
-  import { legalDocuments, type LegalDocument } from "$lib/data/legal-documents";
+  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Badge } from '$lib/components/ui/badge/index.js';
+  import { Search, ExternalLink, Sparkles, FileText, Scale } from 'lucide-svelte';
+  import { legalDocuments, type LegalDocument } from '$lib/data/legal-documents';
 
   // Props
-  let { 
-    placeholder = "Search laws, cases, and legal documents...",
+  let {
+    placeholder = 'Search laws, cases, and legal documents...',
     maxResults = 10,
     showCategories = true,
-    compact = false 
+    compact = false,
   } = $props();
 
   // State
@@ -26,7 +26,7 @@
       { name: 'title', weight: 0.4 },
       { name: 'description', weight: 0.3 },
       { name: 'content', weight: 0.2 },
-      { name: 'code', weight: 0.1 }
+      { name: 'code', weight: 0.1 },
     ],
     threshold: 0.4, // More permissive for legal terms
     distance: 100,
@@ -34,7 +34,7 @@
     includeMatches: true,
     minMatchCharLength: 2,
     shouldSort: true,
-    findAllMatches: false
+    findAllMatches: false,
   };
 
   const fuse = new Fuse(legalDocuments, fuseOptions);
@@ -81,21 +81,21 @@
 
   function highlightMatches(text: string, matches?: readonly Fuse.FuseResultMatch[]): string {
     if (!matches) return text;
-    
+
     let highlightedText = text;
     const sortedMatches = [...matches].sort((a, b) => b.indices[0][0] - a.indices[0][0]);
-    
+
     for (const match of sortedMatches) {
       for (const [start, end] of match.indices.reverse()) {
-        highlightedText = 
-          highlightedText.slice(0, start) + 
-          '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">' + 
-          highlightedText.slice(start, end + 1) + 
-          '</mark>' + 
+        highlightedText =
+          highlightedText.slice(0, start) +
+          '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">' +
+          highlightedText.slice(start, end + 1) +
+          '</mark>' +
           highlightedText.slice(end + 1);
       }
     }
-    
+
     return highlightedText;
   }
 
@@ -108,7 +108,7 @@
       corporate: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
       constitutional: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
       family: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-      administrative: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+      administrative: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
     };
     return colors[category] || colors.administrative;
   }
@@ -117,7 +117,7 @@
     const colors = {
       california: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
       federal: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      state: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+      state: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     };
     return colors[jurisdiction] || colors.state;
   }
@@ -144,19 +144,11 @@
     <CardContent>
       <div class="flex gap-2">
         <div class="relative flex-1">
-          <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            {placeholder}
-            bind:value={searchQuery}
-            onkeydown={handleKeydown}
-            class="pl-10"
-          />
+          <Search
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input {placeholder} bind:value={searchQuery} onkeydown={handleKeydown} class="pl-10" />
         </div>
-        <Button 
-          onclick={performSearch} 
-          disabled={isSearching || !searchQuery.trim()}
-          size="sm"
-        >
+        <Button onclick={performSearch} disabled={isSearching || !searchQuery.trim()} size="sm">
           {#if isSearching}
             Searching...
           {:else}
@@ -164,7 +156,7 @@
           {/if}
         </Button>
       </div>
-      
+
       {#if searchQuery && searchResults.length > 0}
         <div class="mt-2 text-sm text-muted-foreground">
           Found {searchResults.length} result{searchResults.length === 1 ? '' : 's'} for "{searchQuery}"
@@ -182,9 +174,12 @@
             <div class="flex items-start justify-between">
               <div class="flex-1 space-y-2">
                 <CardTitle class="text-base leading-tight">
-                  {@html highlightMatches(result.item.title, result.matches?.filter(m => m.key === 'title'))}
+                  {@html highlightMatches(
+                    result.item.title,
+                    result.matches?.filter((m) => m.key === 'title')
+                  )}
                 </CardTitle>
-                
+
                 <div class="flex flex-wrap gap-2">
                   <Badge class={getJurisdictionColor(result.item.jurisdiction)}>
                     {result.item.jurisdiction}
@@ -201,25 +196,28 @@
                   </Badge>
                 </div>
               </div>
-              
+
               <div class="text-right text-xs text-muted-foreground">
                 #{index + 1}
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent class="pt-0">
             <p class="text-sm text-muted-foreground mb-3">
-              {@html highlightMatches(result.item.description, result.matches?.filter(m => m.key === 'description'))}
+              {@html highlightMatches(
+                result.item.description,
+                result.matches?.filter((m) => m.key === 'description')
+              )}
             </p>
-            
-            {#if result.matches?.some(m => m.key === 'content')}
+
+            {#if result.matches?.some((m) => m.key === 'content')}
               <div class="text-xs bg-muted/50 p-2 rounded mb-3">
                 <div class="font-medium mb-1">Content Match:</div>
                 <div class="text-muted-foreground">
                   {@html highlightMatches(
                     result.item.content.substring(0, 200) + '...',
-                    result.matches?.filter(m => m.key === 'content')
+                    result.matches?.filter((m) => m.key === 'content')
                   )}
                 </div>
               </div>
@@ -252,7 +250,11 @@
               </Button>
               {#if result.item.url}
                 <Button size="sm" variant="outline">
-                  <a href={result.item.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-1">
+                  <a
+                    href={result.item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1">
                     <ExternalLink class="h-3 w-3" />
                     Full Text
                   </a>
@@ -288,11 +290,13 @@
       <CardContent>
         <div class="flex flex-wrap gap-2">
           {#each ['murder', 'contract liability', 'evidence rules', 'robbery', 'constitutional rights', 'family law'] as suggestion}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onclick={() => { searchQuery = suggestion; performSearch(); }}
-            >
+            <Button
+              variant="outline"
+              size="sm"
+              onclick={() => {
+                searchQuery = suggestion;
+                performSearch();
+              }}>
               {suggestion}
             </Button>
           {/each}
@@ -309,7 +313,7 @@
     border-radius: 0.25rem;
     font-weight: 500;
   }
-  
+
   :global(.dark mark) {
     background-color: rgb(133 77 14 / 0.8);
     color: rgb(254 240 138);

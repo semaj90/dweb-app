@@ -567,8 +567,9 @@ function formatTime(timestamp: number): string {
             </span>
             <span>
               {#if message.type === "ai" && message.confidence !== undefined}
+                {@const SvelteComponent = getConfidenceIcon(message.confidence)}
                 <div class={getConfidenceColor(message.confidence)}>
-                  <svelte:component this={getConfidenceIcon(message.confidence)} />
+                  <SvelteComponent />
                   <span>{Math.round(message.confidence * 100)}%</span>
                 </div>
               {/if}

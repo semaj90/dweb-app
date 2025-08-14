@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { BookOpen, Plus, Search, Tag } from 'lucide-svelte';
   import { onMount } from 'svelte';
   import DragDropZone from '$lib/components/ui/DragDropZone.svelte';
@@ -8,11 +8,11 @@
   import RichTextEditor from '$lib/components/ui/RichTextEditor.svelte';
   import { filteredNotes, notesManager, setNoteFilter } from '$lib/stores/saved-notes';
 
-  let searchQuery = '';
-  let selectedNoteType = '';
-  let showNoteModal = false;
-  let selectedNote: any = null;
-  let isCreatingNote = false;
+  let searchQuery = $state('');
+  let selectedNoteType = $state('');
+  let showNoteModal = $state(false);
+  let selectedNote: any = $state(null);
+  let isCreatingNote = $state(false);
 
   // Demo data
   let demoMarkdown = `# Legal Case Analysis
@@ -47,8 +47,8 @@ Priority: High
 - Request additional forensic analysis
 - Coordinate with district attorney's office`;
 
-  let editorContent = '';
-  let currentNote = {
+  let editorContent = $state('');
+  let currentNote = $state({
     id: '',
     title: 'New Case Note',
     content: '',
@@ -59,7 +59,7 @@ Priority: High
     tags: ['demo', 'test'],
     userId: 'demo-user',
     caseId: undefined as string | undefined
-  };
+  });
 
   onMount(async () => {
     // Load saved notes from IndexedDB
@@ -130,7 +130,7 @@ Priority: High
       noteType: 'general',
       tags: [],
       userId: 'demo-user',
-      caseId: $page.url.searchParams.get('caseId') || undefined
+      caseId: page.url.searchParams.get('caseId') || undefined
     };
     isCreatingNote = true;
 }

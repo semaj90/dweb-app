@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  let items: any[] = [];
-  let count = 0;
+  let items: any[] = $state([]);
+  let count = $state(0);
   onMount(async () => {
     try {
       const res = await fetch("/logs/svelte-suggestions.json");

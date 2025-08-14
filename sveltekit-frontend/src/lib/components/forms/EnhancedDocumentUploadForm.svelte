@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: `<script>` was left open
+https://svelte.dev/e/element_unclosed -->
 <!-- Enhanced Document Upload Form with XState + Superforms + Zod -->
 <!-- Production-ready form with state management, validation, and progress tracking -->
 

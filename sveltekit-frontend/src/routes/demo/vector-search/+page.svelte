@@ -1,42 +1,34 @@
 <script lang="ts">
-  import { Badge } from "$lib/components/ui/badge";
-  import { Button } from "$lib/components/ui/button";
+  import { Badge } from '$lib/components/ui/badge';
+  import { Button } from '$lib/components/ui/button';
   import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-  } from "$lib/components/ui/card";
-  import { Input } from "$lib/components/ui/input";
-  import { Label } from "$lib/components/ui/label";
+  } from '$lib/components/ui/card';
+  import { Input } from '$lib/components/ui/input';
+  import { Label } from '$lib/components/ui/label';
   import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-  } from "$lib/components/ui/select";
-  import { Slider } from "$lib/components/ui/slider";
-  import { Switch } from "$lib/components/ui/switch";
+  } from '$lib/components/ui/select';
+  import { Slider } from '$lib/components/ui/slider';
+  import { Switch } from '$lib/components/ui/switch';
   import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-  } from "$lib/components/ui/tooltip";
-  import {
-    Brain,
-    Briefcase,
-    FileText,
-    Info,
-    Scale,
-    Search,
-    Sparkles,
-  } from "lucide-svelte";
+  } from '$lib/components/ui/tooltip';
+  import { Brain, Briefcase, FileText, Info, Scale, Search, Sparkles } from 'lucide-svelte';
 
-  let query = $state("");
-  let documentType = $state<"document" | "evidence" | "case">("document");
+  let query = $state('');
+  let documentType = $state<'document' | 'evidence' | 'case'>('document');
   let threshold = $state([0.7]);
   let limit = $state(10);
   let personalized = $state(false);
@@ -60,9 +52,9 @@
     results = [];
 
     try {
-      const response = await fetch("/api/vector/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/vector/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query,
           options: {
@@ -71,32 +63,32 @@
             limit,
             personalized,
             includeExplanation,
-            userId: "demo-user", // In production, get from auth
+            userId: 'demo-user', // In production, get from auth
           },
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Search failed");
+        throw new Error('Search failed');
       }
 
       const data = await response.json();
       results = data.results || [];
     } catch (err) {
-      error = err instanceof Error ? err.message : "Search failed";
+      error = err instanceof Error ? err.message : 'Search failed';
     } finally {
       searching = false;
     }
   }
 
   function getRankingColor(factor: string, value: number): string {
-    if (value >= 0.8) return "text-green-600";
-    if (value >= 0.6) return "text-yellow-600";
-    return "text-gray-600";
+    if (value >= 0.8) return 'text-green-600';
+    if (value >= 0.6) return 'text-yellow-600';
+    return 'text-gray-600';
   }
 
   function formatScore(score: number): string {
-    return (score * 100).toFixed(1) + "%";
+    return (score * 100).toFixed(1) + '%';
   }
 </script>
 
@@ -115,9 +107,7 @@
   <Card class="mb-8">
     <CardHeader>
       <CardTitle>Search Configuration</CardTitle>
-      <CardDescription>
-        Configure your semantic search parameters
-      </CardDescription>
+      <CardDescription>Configure your semantic search parameters</CardDescription>
     </CardHeader>
     <CardContent class="space-y-6">
       <!-- Search Query -->
@@ -129,16 +119,10 @@
             bind:value={query}
             placeholder="Enter your legal search query..."
             class="flex-1"
-            on:keydown={(e) => e.key === "Enter" && performSearch()}
-          />
-          <Button
-            on:click={performSearch}
-            disabled={searching || !query.trim()}
-          >
+            on:keydown={(e) => e.key === 'Enter' && performSearch()} />
+          <Button on:click={performSearch} disabled={searching || !query.trim()}>
             {#if searching}
-              <div
-                class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"
-              ></div>
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               Searching...
             {:else}
               <Search class="mr-2 h-4 w-4" />
@@ -190,9 +174,7 @@
       <div class="space-y-2">
         <div class="flex items-center justify-between">
           <Label for="threshold">Similarity Threshold</Label>
-          <span class="text-sm text-muted-foreground"
-            >{formatScore(threshold[0])}</span
-          >
+          <span class="text-sm text-muted-foreground">{formatScore(threshold[0])}</span>
         </div>
         <Slider
           id="threshold"
@@ -200,8 +182,7 @@
           min={0.3}
           max={0.95}
           step={0.05}
-          class="py-2"
-        />
+          class="py-2" />
         <div class="flex justify-between text-xs text-muted-foreground">
           <span>Broad (30%)</span>
           <span>Focused (95%)</span>
@@ -212,24 +193,16 @@
       <div class="space-y-4">
         <div class="flex items-center justify-between">
           <div class="space-y-0.5">
-            <Label for="personalized" class="text-base font-medium">
-              Personalized Results
-            </Label>
-            <p class="text-sm text-muted-foreground">
-              Rank results based on your search history
-            </p>
+            <Label for="personalized" class="text-base font-medium">Personalized Results</Label>
+            <p class="text-sm text-muted-foreground">Rank results based on your search history</p>
           </div>
           <Switch id="personalized" bind:checked={personalized} />
         </div>
 
         <div class="flex items-center justify-between">
           <div class="space-y-0.5">
-            <Label for="explanation" class="text-base font-medium">
-              Include Explanations
-            </Label>
-            <p class="text-sm text-muted-foreground">
-              Show why each result was ranked
-            </p>
+            <Label for="explanation" class="text-base font-medium">Include Explanations</Label>
+            <p class="text-sm text-muted-foreground">Show why each result was ranked</p>
           </div>
           <Switch id="explanation" bind:checked={includeExplanation} />
         </div>
@@ -262,9 +235,7 @@
                   Result #{index + 1}
                 </CardTitle>
                 <CardDescription class="mt-1">
-                  {result.metadata?.filename ||
-                    result.metadata?.title ||
-                    "Untitled"}
+                  {result.metadata?.filename || result.metadata?.title || 'Untitled'}
                 </CardDescription>
               </div>
               <Badge variant="secondary" class="text-lg">
@@ -293,26 +264,24 @@
                       <TooltipTrigger>
                         <div class="text-center p-2 bg-muted rounded">
                           <div class="text-xs text-muted-foreground capitalize">
-                            {factor.replace(/([A-Z])/g, " $1").trim()}
+                            {factor.replace(/([A-Z])/g, ' $1').trim()}
                           </div>
-                          <div
-                            class={`font-semibold ${getRankingColor(factor, value)}`}
-                          >
+                          <div class={`font-semibold ${getRankingColor(factor, value)}`}>
                             {formatScore(value)}
                           </div>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p class="max-w-xs">
-                          {#if factor === "vectorSimilarity"}
+                          {#if factor === 'vectorSimilarity'}
                             Semantic similarity between query and content
-                          {:else if factor === "documentRecency"}
+                          {:else if factor === 'documentRecency'}
                             How recently the document was created/updated
-                          {:else if factor === "userPreference"}
+                          {:else if factor === 'userPreference'}
                             Based on your search history and interactions
-                          {:else if factor === "contextRelevance"}
+                          {:else if factor === 'contextRelevance'}
                             Quality of metadata and AI analysis
-                          {:else if factor === "entityOverlap"}
+                          {:else if factor === 'entityOverlap'}
                             Shared entities between query and document
                           {/if}
                         </p>
@@ -337,7 +306,7 @@
             {#if result.metadata && Object.keys(result.metadata).length > 0}
               <div class="flex flex-wrap gap-2">
                 {#each Object.entries(result.metadata).slice(0, 5) as [key, value]}
-                  {#if typeof value === "string" || typeof value === "number"}
+                  {#if typeof value === 'string' || typeof value === 'number'}
                     <Badge variant="outline" class="text-xs">
                       {key}: {value}
                     </Badge>
@@ -353,9 +322,7 @@
     <Card>
       <CardContent class="py-12">
         <div class="flex flex-col items-center justify-center space-y-4">
-          <div
-            class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"
-          ></div>
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           <p class="text-muted-foreground">Searching through vectors...</p>
         </div>
       </CardContent>

@@ -9,7 +9,7 @@
 
 
   import { getContext, onDestroy, onMount } from 'svelte';
-  import type { Writable } from 'svelte/store';
+  import type { Writable } from 'svelte/store'; children,
   
     
   const { isOpen, position, close } = getContext<{
@@ -49,7 +49,7 @@
     role="menu"
     tabindex={-1}
   >
-    <slot></slot>
+    {@render children?.()}
   </div>
 {/if}
 

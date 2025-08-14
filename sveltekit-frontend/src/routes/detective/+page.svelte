@@ -6,8 +6,8 @@
   
   const auth = getAuthContext();
   
-  let currentView = 'board'; // 'board' | 'create-case' | 'auth-demo'
-  let mounted = false;
+  let currentView = $state('board'); // 'board' | 'create-case' | 'auth-demo'
+  let mounted = $state(false);
   
   // Sample evidence data for the detective board
   let sampleEvidence = [

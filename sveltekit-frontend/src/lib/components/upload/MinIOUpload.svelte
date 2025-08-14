@@ -2,7 +2,7 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms/client';
   import { fileUploadSchema, type FileUploadData } from '$lib/schemas/upload';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { invalidateAll } from '$app/navigation';
   import type { PageData } from './$types';
   

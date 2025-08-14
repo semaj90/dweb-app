@@ -4,8 +4,19 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
-  import Card from '$lib/components/ui/Card.svelte';
-  import { Activity, Cpu, MemoryStick, Users, Zap, RefreshCw, TrendingUp, TrendingDown, AlertTriangle, CheckCircle } from 'lucide-svelte';
+  import { Card } from '$lib/components/ui/card';
+  import {
+    Activity,
+    Cpu,
+    MemoryStick,
+    Users,
+    Zap,
+    RefreshCw,
+    TrendingUp,
+    TrendingDown,
+    AlertTriangle,
+    CheckCircle,
+  } from 'lucide-svelte';
   import type { ClusterHealth, WorkerMetrics } from '$lib/services/nodejs-cluster-architecture';
 
   // Cluster state
@@ -16,13 +27,13 @@
     averageResponseTime: 0,
     memoryUsage: { total: 0, average: 0, peak: 0 },
     cpuUsage: { total: 0, average: 0 },
-    errors: { total: 0, rate: 0 }
+    errors: { total: 0, rate: 0 },
   });
 
   let workerMetrics = $state<WorkerMetrics[]>([]);
   let isConnected = $state(false);
   let lastUpdate = $state<string>('');
-  
+
   // Control state
   let isScaling = $state(false);
   let isRestarting = $state(false);
@@ -45,10 +56,10 @@
     try {
       // Initial data load
       await fetchClusterStatus();
-      
+
       // Setup real-time updates via Server-Sent Events
       eventSource = new EventSource('/api/admin/cluster/events');
-      
+
       eventSource.onopen = () => {
         isConnected = true;
         console.log('🔗 Connected to cluster monitoring');
@@ -56,13 +67,13 @@
 
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        
+
         if (data.type === 'health') {
           clusterHealth = data.payload;
         } else if (data.type === 'workers') {
           workerMetrics = data.payload;
         }
-        
+
         lastUpdate = new Date().toLocaleTimeString();
       };
 
@@ -73,7 +84,6 @@
 
       // Fallback polling
       updateInterval = setInterval(fetchClusterStatus, 10000);
-      
     } catch (error) {
       console.error('Failed to initialize cluster monitoring:', error);
     }
@@ -95,14 +105,14 @@
 
   async function scaleCluster(workers: number) {
     if (isScaling) return;
-    
+
     isScaling = true;
-    
+
     try {
       const response = await fetch('/api/admin/cluster/scale', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workers })
+        body: JSON.stringify({ workers }),
       });
 
       if (response.ok) {
@@ -115,22 +125,26 @@
       console.error('Failed to scale cluster:', error);
       alert('Failed to scale cluster. Check console for details.');
     } finally {
-      setTimeout(() => isScaling = false, 3000);
+      setTimeout(() => (isScaling = false), 3000);
     }
   }
 
   async function rollingRestart() {
     if (isRestarting) return;
-    
-    if (!confirm('Are you sure you want to perform a rolling restart? This will restart all workers one by one.')) {
+
+    if (
+      !confirm(
+        'Are you sure you want to perform a rolling restart? This will restart all workers one by one.'
+      )
+    ) {
       return;
     }
-    
+
     isRestarting = true;
-    
+
     try {
       const response = await fetch('/api/admin/cluster/restart', {
-        method: 'POST'
+        method: 'POST',
       });
 
       if (response.ok) {
@@ -142,7 +156,7 @@
       console.error('Failed to restart cluster:', error);
       alert('Failed to restart cluster. Check console for details.');
     } finally {
-      setTimeout(() => isRestarting = false, 10000);
+      setTimeout(() => (isRestarting = false), 10000);
     }
   }
 
@@ -164,26 +178,42 @@
 
   function getWorkerStatusColor(status: string): string {
     switch (status) {
-      case 'online': return 'text-green-400';
-      case 'starting': return 'text-yellow-400';
-      case 'disconnected': return 'text-orange-400';
-      case 'dead': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'online':
+        return 'text-green-400';
+      case 'starting':
+        return 'text-yellow-400';
+      case 'disconnected':
+        return 'text-orange-400';
+      case 'dead':
+        return 'text-red-400';
+      default:
+        return 'text-gray-400';
     }
   }
 
   // Reactive computations
-  let healthRatio = $derived(clusterHealth.totalWorkers > 0 ? clusterHealth.healthyWorkers / clusterHealth.totalWorkers : 0);
-  let memoryUsagePercent = $derived(clusterHealth.memoryUsage.average > 0 ? (clusterHealth.memoryUsage.average / (512 * 1024 * 1024)) * 100 : 0);
-  let errorRateStatus = $derived(clusterHealth.errors.rate > 10 ? 'high' : clusterHealth.errors.rate > 5 ? 'medium' : 'low');
+  let healthRatio = $derived(
+    clusterHealth.totalWorkers > 0 ? clusterHealth.healthyWorkers / clusterHealth.totalWorkers : 0
+  );
+  let memoryUsagePercent = $derived(
+    clusterHealth.memoryUsage.average > 0
+      ? (clusterHealth.memoryUsage.average / (512 * 1024 * 1024)) * 100
+      : 0
+  );
+  let errorRateStatus = $derived(
+    clusterHealth.errors.rate > 10 ? 'high' : clusterHealth.errors.rate > 5 ? 'medium' : 'low'
+  );
 </script>
 
 <svelte:head>
   <title>Node.js Cluster Management - Legal AI Admin</title>
-  <meta name="description" content="Real-time monitoring and management for Node.js cluster architecture" />
+  <meta
+    name="description"
+    content="Real-time monitoring and management for Node.js cluster architecture" />
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
   <!-- Header -->
   <div class="max-w-7xl mx-auto mb-8">
     <div class="flex justify-between items-center mb-6">
@@ -195,7 +225,7 @@
         </h1>
         <p class="text-gray-300">Real-time monitoring and scaling for SvelteKit 2 application</p>
       </div>
-      
+
       <div class="flex items-center gap-4">
         <div class="flex items-center gap-2">
           {#if isConnected}
@@ -206,7 +236,7 @@
             <span class="text-sm text-red-400">Disconnected</span>
           {/if}
         </div>
-        
+
         {#if lastUpdate}
           <span class="text-sm text-gray-400">Last update: {lastUpdate}</span>
         {/if}
@@ -224,7 +254,7 @@
           <div>
             <h3 class="font-semibold text-white">Workers</h3>
             <p class="text-sm text-gray-400">
-              <span class="{getHealthColor(healthRatio)}">{clusterHealth.healthyWorkers}</span>
+              <span class={getHealthColor(healthRatio)}>{clusterHealth.healthyWorkers}</span>
               /{clusterHealth.totalWorkers}
             </p>
           </div>
@@ -286,8 +316,17 @@
       <!-- Error Rate -->
       <Card class="p-4 bg-slate-800/50 border-slate-700">
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg" class:bg-red-100={errorRateStatus === 'high'} class:bg-yellow-100={errorRateStatus === 'medium'} class:bg-green-100={errorRateStatus === 'low'}>
-            <AlertTriangle class="h-5 w-5 {errorRateStatus === 'high' ? 'text-red-600' : errorRateStatus === 'medium' ? 'text-yellow-600' : 'text-green-600'}" />
+          <div
+            class="p-2 rounded-lg"
+            class:bg-red-100={errorRateStatus === 'high'}
+            class:bg-yellow-100={errorRateStatus === 'medium'}
+            class:bg-green-100={errorRateStatus === 'low'}>
+            <AlertTriangle
+              class="h-5 w-5 {errorRateStatus === 'high'
+                ? 'text-red-600'
+                : errorRateStatus === 'medium'
+                  ? 'text-yellow-600'
+                  : 'text-green-600'}" />
           </div>
           <div>
             <h3 class="font-semibold text-white">Errors/min</h3>
@@ -305,25 +344,23 @@
           <TrendingUp class="h-5 w-5" />
           Cluster Scaling
         </h3>
-        
+
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-2">Target Workers</label>
-            <input 
-              type="number" 
+            <input
+              type="number"
               bind:value={targetWorkers}
-              min="1" 
+              min="1"
               max="16"
-              class="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white"
-            />
+              class="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white" />
           </div>
-          
+
           <div class="flex gap-2">
-            <Button 
+            <Button
               onclick={() => scaleCluster(targetWorkers)}
               disabled={isScaling || targetWorkers === clusterHealth.totalWorkers}
-              class="flex-1"
-            >
+              class="flex-1">
               {#if isScaling}
                 <RefreshCw class="h-4 w-4 mr-2 animate-spin" />
                 Scaling...
@@ -332,22 +369,20 @@
                 Scale
               {/if}
             </Button>
-            
-            <Button 
+
+            <Button
               onclick={() => scaleCluster(clusterHealth.totalWorkers + 1)}
               disabled={isScaling}
               variant="outline"
-              class="px-3"
-            >
+              class="px-3">
               +1
             </Button>
-            
-            <Button 
+
+            <Button
               onclick={() => scaleCluster(Math.max(1, clusterHealth.totalWorkers - 1))}
               disabled={isScaling || clusterHealth.totalWorkers <= 1}
               variant="outline"
-              class="px-3"
-            >
+              class="px-3">
               -1
             </Button>
           </div>
@@ -360,13 +395,12 @@
           <RefreshCw class="h-5 w-5" />
           Operations
         </h3>
-        
+
         <div class="space-y-3">
-          <Button 
+          <Button
             onclick={rollingRestart}
             disabled={isRestarting}
-            class="w-full bg-orange-600 hover:bg-orange-700"
-          >
+            class="w-full bg-orange-600 hover:bg-orange-700">
             {#if isRestarting}
               <RefreshCw class="h-4 w-4 mr-2 animate-spin" />
               Restarting...
@@ -375,12 +409,8 @@
               Rolling Restart
             {/if}
           </Button>
-          
-          <Button 
-            onclick={fetchClusterStatus}
-            variant="outline"
-            class="w-full"
-          >
+
+          <Button onclick={fetchClusterStatus} variant="outline" class="w-full">
             <RefreshCw class="h-4 w-4 mr-2" />
             Refresh Status
           </Button>
@@ -393,27 +423,37 @@
           <Activity class="h-5 w-5" />
           Health Summary
         </h3>
-        
+
         <div class="space-y-3">
           <div class="flex justify-between">
             <span class="text-gray-400">Cluster Health:</span>
-            <span class="{getHealthColor(healthRatio)}">{(healthRatio * 100).toFixed(0)}%</span>
+            <span class={getHealthColor(healthRatio)}>{(healthRatio * 100).toFixed(0)}%</span>
           </div>
-          
+
           <div class="flex justify-between">
             <span class="text-gray-400">Memory Usage:</span>
-            <span class="{memoryUsagePercent > 80 ? 'text-red-400' : memoryUsagePercent > 60 ? 'text-yellow-400' : 'text-green-400'}">
+            <span
+              class={memoryUsagePercent > 80
+                ? 'text-red-400'
+                : memoryUsagePercent > 60
+                  ? 'text-yellow-400'
+                  : 'text-green-400'}>
               {memoryUsagePercent.toFixed(1)}%
             </span>
           </div>
-          
+
           <div class="flex justify-between">
             <span class="text-gray-400">Error Rate:</span>
-            <span class="{errorRateStatus === 'high' ? 'text-red-400' : errorRateStatus === 'medium' ? 'text-yellow-400' : 'text-green-400'}">
+            <span
+              class={errorRateStatus === 'high'
+                ? 'text-red-400'
+                : errorRateStatus === 'medium'
+                  ? 'text-yellow-400'
+                  : 'text-green-400'}>
               {errorRateStatus.toUpperCase()}
             </span>
           </div>
-          
+
           <div class="flex justify-between">
             <span class="text-gray-400">Peak Memory:</span>
             <span class="text-white">{formatBytes(clusterHealth.memoryUsage.peak)}</span>
@@ -430,7 +470,7 @@
         <Users class="h-5 w-5" />
         Worker Details
       </h3>
-      
+
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead>
@@ -459,9 +499,15 @@
                 <td class="py-3 px-4">{worker.connections}</td>
                 <td class="py-3 px-4">{worker.requestsHandled.toLocaleString()}</td>
                 <td class="py-3 px-4">{formatBytes(worker.memoryUsage.heapUsed)}</td>
-                <td class="py-3 px-4">{formatCpuTime(worker.cpuUsage.user + worker.cpuUsage.system)}</td>
+                <td class="py-3 px-4"
+                  >{formatCpuTime(worker.cpuUsage.user + worker.cpuUsage.system)}</td>
                 <td class="py-3 px-4">
-                  <span class="{worker.errors > 10 ? 'text-red-400' : worker.errors > 5 ? 'text-yellow-400' : 'text-gray-400'}">
+                  <span
+                    class={worker.errors > 10
+                      ? 'text-red-400'
+                      : worker.errors > 5
+                        ? 'text-yellow-400'
+                        : 'text-gray-400'}>
                     {worker.errors}
                   </span>
                 </td>
@@ -486,17 +532,17 @@
   .overflow-x-auto::-webkit-scrollbar {
     height: 6px;
   }
-  
+
   .overflow-x-auto::-webkit-scrollbar-track {
     background: rgba(51, 65, 85, 0.3);
     border-radius: 3px;
   }
-  
+
   .overflow-x-auto::-webkit-scrollbar-thumb {
     background: rgba(71, 85, 105, 0.8);
     border-radius: 3px;
   }
-  
+
   .overflow-x-auto::-webkit-scrollbar-thumb:hover {
     background: rgba(71, 85, 105, 1);
   }

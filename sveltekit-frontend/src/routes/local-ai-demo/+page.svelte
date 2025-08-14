@@ -24,17 +24,17 @@
     tauriLLM: boolean;
     localModels: LocalModel[];
 }
-  let systemStatus: SystemStatus = {
+  let systemStatus: SystemStatus = $state({
     database: false,
     qdrant: false,
     embeddings: false,
     vectorSearch: false,
     tauriLLM: false,
     localModels: [],
-  };
+  });
 
-  let isLoadingStatus = true;
-  let testQuery = "";
+  let isLoadingStatus = $state(true);
+  let testQuery = $state("");
   interface TestResults {
     error?: string;
     data?: unknown;
@@ -48,10 +48,10 @@
     executionTime?: number;
     source?: string;
 }
-  let testResults: TestResults | null = null;
-  let isTestingSearch = false;
-  let selectedProvider: "auto" | "local" | "cloud" = "auto";
-  let legalAnalysisText = "";
+  let testResults: TestResults | null = $state(null);
+  let isTestingSearch = $state(false);
+  let selectedProvider: "auto" | "local" | "cloud" = $state("auto");
+  let legalAnalysisText = $state("");
 
   interface AnalysisResults {
     error?: string;
@@ -67,8 +67,8 @@
       confidence: number;
     }>;
 }
-  let analysisResults: AnalysisResults | null = null;
-  let isAnalyzing = false;
+  let analysisResults: AnalysisResults | null = $state(null);
+  let isAnalyzing = $state(false);
 
   // Demo queries optimized for legal domain
   const legalDemoQueries = [
@@ -616,6 +616,7 @@
 
                     {#if testResults.results && testResults.results.length > 0}
                       {#each testResults.results as result}
+                        {@const SvelteComponent = getProviderIcon(result.source)}
                         <div
                           class="space-y-4"
                         >
@@ -627,8 +628,7 @@
                               <span class="space-y-4">
                                 {Math.round(result.score * 100)}% match
                               </span>
-                              <svelte:component
-                                this={getProviderIcon(result.source)}
+                              <SvelteComponent
                                 class="space-y-4"
                               />
                             </div>

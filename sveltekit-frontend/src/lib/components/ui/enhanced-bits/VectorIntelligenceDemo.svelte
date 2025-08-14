@@ -323,10 +323,10 @@
       <Card variant="yorha" legal class="p-4">
         <div class="semantic-entity-container">
           {#each semanticEntities as entity (entity.text)}
+            {@const SvelteComponent = entityIcons[entity.type]}
             <div class={cn('semantic-entity-tag', entityColors[entity.type])}>
               <div class="flex items-center gap-1">
-                <svelte:component
-                  this={entityIcons[entity.type]}
+                <SvelteComponent
                   class="w-3 h-3"
                 />
                 <span class="text-xs font-medium">{entity.text}</span>
@@ -367,14 +367,14 @@
             clickable
             class="vector-result-item"
           >
+            {@const SvelteComponent_1 = result.source.type === 'case' ? Scale :
+                          result.source.type === 'precedent' ? FileText :
+                          FileText}
             <div class="space-y-3">
               <!-- Result Header -->
               <div class="flex items-start justify-between">
                 <div class="flex items-center gap-2">
-                  <svelte:component
-                    this={result.source.type === 'case' ? Scale :
-                          result.source.type === 'precedent' ? FileText :
-                          FileText}
+                  <SvelteComponent_1
                     class="w-4 h-4 text-nier-text-muted"
                   />
                   <span class="text-sm font-medium text-nier-text-primary">

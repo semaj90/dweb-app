@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import { Button, Card, Input } from '$lib/components/ui/enhanced';
 	import { nierClasses, animationClasses } from '$lib/components/ui/enhanced';
 
@@ -94,7 +96,7 @@
 			<!-- Interactive Demo -->
 			<Card class="p-6 space-y-4 col-span-full lg:col-span-2">
 				<h3 class="text-xl font-semibold">Interactive Demo</h3>
-				<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+				<form onsubmit={preventDefault(handleSubmit)} class="space-y-4">
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<Input
 							bind:value={name}

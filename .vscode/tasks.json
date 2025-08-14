@@ -981,15 +981,127 @@
       "presentation": { "reveal": "always", "panel": "shared" }
     },
     {
+      "label": "GPU: Check NVIDIA SMI",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-Command", "nvidia-smi"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "vLLM: Start Server (CUDA, OpenAI API)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-Command",
+      "$env:CUDA_VISIBLE_DEVICES='0'; python -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 8000 --model mistralai/Mistral-7B-Instruct-v0.3 --dtype float16 --tensor-parallel-size 1"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start vLLM with CUDA for GPU-accelerated analysis (OpenAI-compatible API on :8000)"
+    },
+    {
+      "label": "vLLM: Health (8000)",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-sS", "http://localhost:8000/v1/models"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "AI: GPU Analyze (vLLM chat test)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+      "-sS",
+      "-X", "POST",
+      "-H", "Content-Type: application/json",
+      "-d", "{\"model\":\"mistralai/Mistral-7B-Instruct-v0.3\",\"messages\":[{\"role\":\"user\",\"content\":\"Summarize the legal implications of breach of contract in one paragraph.\"}]}",
+      "http://localhost:8000/v1/chat/completions"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Sanity check: GPU-accelerated model responds via vLLM"
+    },
+    {
+      "label": "MCP: Context7 Server (GPU vLLM)",
+      "type": "shell",
+      "command": "node",
+      "args": ["${workspaceFolder}/mcp-servers/context7-server.js"],
+      "options": {
+      "env": {
+        "STACK_CONFIG": "${workspaceFolder}/context7-docs/context7-mcp-config.json",
+        "DOC_SOURCES": "${workspaceFolder}/context7-docs",
+        "ENABLE_VLLM": "true",
+        "VLLM_ENDPOINT": "http://localhost:8000/v1",
+        "SERVER_PORT": "4000",
+        "CUDA_VISIBLE_DEVICES": "0"
+      }
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": {
+      "pattern": {
+        "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+        "file": 1,
+        "line": 2,
+        "column": 3,
+        "severity": 4,
+        "message": 5
+      },
+      "background": {
+        "activeOnStart": true,
+        "beginsPattern": "^.*Context7 server starting.*$",
+        "endsPattern": "^.*Context7 server ready.*$"
+      }
+      },
+      "detail": "Start Context7 MCP with GPU-accelerated vLLM backend"
+    },
+    {
+      "label": "Ollama: Force GPU Analyze",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-Command",
+      "$env:OLLAMA_GPU_LAYERS='999'; ollama run llama3.1 'Summarize indemnification obligations in commercial contracts in 3 bullets.'"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Use Ollama with maximum GPU layers for fast local analysis"
+    },
+    {
+      "label": "Ollama: Force GPU Analyze (gemma3-legal)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-Command",
+      "$env:OLLAMA_GPU_LAYERS='999'; ollama run gemma3-legal 'Summarize indemnification obligations in commercial contracts in 3 bullets.'"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Use Ollama gemma3-legal with maximum GPU layers for fast local analysis"
+    },
+    {
       "label": "Backup: tasks.json & kratos main.go",
       "type": "shell",
       "command": "powershell",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "scripts/backup-tasks.ps1"
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/backup-tasks.ps1"
       ],
       "group": "build",
       "presentation": { "reveal": "always", "panel": "shared" }
@@ -999,10 +1111,10 @@
       "type": "shell",
       "command": "powershell",
       "args": [
-        "-NoProfile",
-        "-Command",
-        "cd go-services; go mod tidy; go build -o ./bin/kratos-server.exe ./cmd/kratos-server; Start-Process -NoNewWindow -FilePath './bin/kratos-server.exe'"
-      },
+      "-NoProfile",
+      "-Command",
+      "cd go-services; go mod tidy; go build -o ./bin/kratos-server.exe ./cmd/kratos-server; Start-Process -NoNewWindow -FilePath './bin/kratos-server.exe'"
+      ],
       "group": "build",
       "presentation": { "reveal": "always", "panel": "new" },
       "detail": "Build and run Go-Kratos legal AI server"
@@ -1266,80 +1378,6 @@
       "detail": "Create legal-documents bucket in MinIO"
     },
     {
-      "label": "🔧 Git LFS: Setup & Install",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "scripts/setup-git-lfs.ps1"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "new"
-      },
-      "detail": "Install and configure Git LFS for large file management"
-    },
-    {
-      "label": "📊 Git LFS: Status & Tracking",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "Write-Host '📊 Git LFS Status Report' -ForegroundColor Cyan; try { git lfs track; Write-Host '\\n🔍 LFS Objects:' -ForegroundColor Yellow; git lfs ls-files | Select-Object -First 10 } catch { Write-Host '⚠️ Git LFS not initialized. Run: Git LFS: Setup & Install' -ForegroundColor Red }"
-      ],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "shared"
-      },
-      "detail": "Show Git LFS tracking rules and managed files"
-    },
-    {
-      "label": "🗄️ Git LFS: Push Large Files",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "Write-Host '🚀 Pushing Git LFS files to GitHub...' -ForegroundColor Cyan; git lfs push --all origin main"
-      ],
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "new"
-      },
-      "detail": "Push all LFS-tracked files to GitHub (separate from regular git push)"
-    },
-    {
-      "label": "🔍 Git: Analyze Large Files",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-Command",
-        "Write-Host '🔍 Finding large files in repository...' -ForegroundColor Cyan; Get-ChildItem -Recurse -File | Where-Object { $_.Length -gt 10MB -and $_.FullName -notmatch 'node_modules|\\.git|minio-data|Ollama' } | Sort-Object Length -Descending | Select-Object -First 20 | Format-Table Name, @{L='Size(MB)';E={[math]::Round($_.Length/1MB,2)}}, FullName -AutoSize"
-      ],
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "new"
-      },
-      "detail": "Find files larger than 10MB that might need LFS tracking"
-    },
-    {
       "label": "⚡ Batch Fix: Priority 1 Parse Errors",
       "type": "shell",
       "command": "powershell",
@@ -1400,7 +1438,24 @@
     {
       "label": "✅ TypeScript Check - Fixed Barrel Exports",
       "type": "shell",
-      "command": "cd sveltekit-frontend && timeout 60 npx tsc --noEmit --skipLibCheck",
+      "command": "npx",
+      "args": ["tsc", "--noEmit", "--skipLibCheck"],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+    {
+      "label": "🚀 Quick Check - Ultra Fast",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check:ultra-fast"],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
       "group": "test",
       "presentation": {
         "echo": true,
@@ -1408,17 +1463,8 @@
         "focus": true,
         "panel": "shared"
       },
-      "detail": "Verify TypeScript compilation after fixing barrel export conflicts"
+      "detail": "Ultra-fast TypeScript and Svelte check"
     },
-    {
-      "label": "🚀 Quick Check - Ultra Fast",
-      "type": "shell",
-      "command": "cd sveltekit-frontend && npm run check:ultra-fast",
-      "group": "test",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
         "panel": "shared"
       },
       "detail": "Ultra-fast TypeScript and Svelte check"

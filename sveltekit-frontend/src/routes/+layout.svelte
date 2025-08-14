@@ -1,18 +1,26 @@
 
 <script lang="ts">
+// import { createBubbler } from 'svelte/legacy';
+// const bubble = createBubbler();
 import '../app.css';
 import '../lib/styles/nier.css';
 import '../lib/styles/theme.css';
 import Navigation from '$lib/components/Navigation.svelte';
-import YoRHaNotificationManager from '$lib/components/yorha/YoRHaNotificationManager.svelte';
-import YoRHaDialogManager from '$lib/components/yorha/YoRHaDialogManager.svelte';
-import YoRHaModalManager from '$lib/components/yorha/YoRHaModalManager.svelte';
+// Temporarily disabled YoRHa managers due to Svelte 5 compatibility issues
+// import YoRHaNotificationManager from '$lib/components/yorha/YoRHaNotificationManager.svelte';
+// import YoRHaDialogManager from '$lib/components/yorha/YoRHaDialogManager.svelte';
+// import YoRHaModalManager from '$lib/components/yorha/YoRHaModalManager.svelte';
 import { notificationStore as notificationStoreExport } from '$lib/stores/notifications';
 // import { aiService } from '$lib/services/ai-service';
 import { onMount } from 'svelte';
+  interface Props {
+    children?: import('svelte').Snippet;
+  }
 
-let llmEndpoint = '';
-let llmStatus: 'Ollama' | 'vLLM' | 'offline' = 'offline';
+  let { children }: Props = $props();
+
+let llmEndpoint = $state('');
+let llmStatus: 'Ollama' | 'vLLM' | 'offline' = $state('offline');
 
 onMount(() => {
   // Temporary disable AI service connection for development
@@ -39,7 +47,7 @@ onMount(() => {
 });
 </script>
 
-<svelte:window on:keydown />
+<!-- <svelte:window onkeydown={bubble('keydown')} /> -->
 
 <main class="min-h-screen bg-background font-mono">
   <Navigation />
@@ -54,11 +62,11 @@ onMount(() => {
 	</span>
   </div>
   <div class="container mx-auto p-4">
-	<slot></slot>
+	{@render children?.()}
   </div>
   
-  <!-- Global UI Managers -->
-  <YoRHaNotificationManager />
+  <!-- Global UI Managers - Temporarily disabled for Svelte 5 compatibility -->
+  <!-- <YoRHaNotificationManager />
   <YoRHaDialogManager />
-  <YoRHaModalManager />
+  <YoRHaModalManager /> -->
 </main>

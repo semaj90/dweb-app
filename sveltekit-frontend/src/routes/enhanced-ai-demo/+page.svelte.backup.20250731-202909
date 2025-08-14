@@ -10,15 +10,15 @@
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
-  
+
   // Enhanced system initialization
-  import { 
+  import {
     initializeEnhancedMachines,
     evidenceProcessingStore,
-    streamingStore 
+    streamingStore
   } from '$lib/stores/enhancedStateMachines';
   import { enhancedLoki, enhancedLokiStore } from '$lib/stores/enhancedLokiStore';
-  
+
   let systemInitialized = false;
   let initializationProgress = 0;
   let initializationSteps = [
@@ -42,9 +42,9 @@
       for (let i = 0; i < initializationSteps.length; i++) {
         currentStep = initializationSteps[i];
         initializationProgress = ((i + 1) / initializationSteps.length) * 100;
-        
+
         await new Promise(resolve => setTimeout(resolve, 800)); // Visual delay for demo
-        
+
         switch (i) {
           case 0:
             await enhancedLoki.init();
@@ -177,7 +177,7 @@
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-  
+
   <!-- Header Section -->
   <div class="bg-white shadow-sm border-b">
     <div class="max-w-7xl mx-auto px-6 py-8">
@@ -204,15 +204,15 @@
             </Badge>
           </div>
         </div>
-        
+
         <div class="flex space-x-3">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             on:click={() => showArchitectureDocs = !showArchitectureDocs}
           >
             Architecture Docs
           </Button>
-          <Button 
+          <Button
             variant="outline"
             on:click={() => showImplementationGuide = !showImplementationGuide}
           >
@@ -233,18 +233,18 @@
         <CardContent class="space-y-6">
           <!-- Progress Bar -->
           <div class="w-full bg-gray-200 rounded-full h-3">
-            <div 
+            <div
               class="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out"
               style="width: {initializationProgress}%"
             ></div>
           </div>
-          
+
           <!-- Current Step -->
           <div class="text-center">
             <p class="text-lg font-medium text-gray-800">{currentStep}</p>
             <p class="text-sm text-gray-500 mt-1">{initializationProgress.toFixed(0)}% complete</p>
           </div>
-          
+
           <!-- System Components -->
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
             {#each ['Loki.js', 'XState', 'WebSocket', 'AI Models', 'Cache', 'Ready'] as component, i}
@@ -352,7 +352,7 @@
             <li>• WebSocket Real-time Updates</li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="font-bold text-lg mb-3">AI Models</h3>
           <ul class="space-y-1 text-sm text-gray-600">
@@ -363,7 +363,7 @@
             <li>• Graph relationship discovery</li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="font-bold text-lg mb-3">Features</h3>
           <ul class="space-y-1 text-sm text-gray-600">
@@ -377,7 +377,7 @@
           </ul>
         </div>
       </div>
-      
+
       <div class="border-t pt-6 mt-6 text-center">
         <p class="text-gray-500 text-sm">
           Enhanced Legal AI System - Built with modern web technologies for high-performance legal document processing
@@ -394,18 +394,18 @@
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
   }
-  
+
   .shimmer {
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }
-  
+
   /* Smooth transitions */
   .transition-all {
     transition: all 0.3s ease-in-out;
   }
-  
+
   /* Custom gradient text */
   .gradient-text {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

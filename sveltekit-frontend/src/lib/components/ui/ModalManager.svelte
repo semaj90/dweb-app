@@ -186,8 +186,7 @@
 					{/if}
 				{:else if modal.component}
 					<!-- Custom Svelte component -->
-					<svelte:component
-						this={modal.component}
+					<modal.component
 						{...modal.props}
 						onclose={() => modals.close(modal.id)}
 						onconfirm={modal.onConfirm}

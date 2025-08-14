@@ -1,6 +1,6 @@
 <!-- Demo Navigation Component -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   
   interface NavItem {
@@ -62,7 +62,7 @@
   }
 
   function isCurrentPage(href: string): boolean {
-    return $page.url.pathname === href;
+    return page.url.pathname === href;
   }
 </script>
 

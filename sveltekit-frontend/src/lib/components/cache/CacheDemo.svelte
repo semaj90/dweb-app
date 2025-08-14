@@ -30,11 +30,11 @@
   const testResults = writable<any[]>([]);
 
   // Form state
-  let cacheKey = '';
-  let cacheValue = '';
-  let selectedTTL = '300'; // 5 minutes default
-  let selectedPriority = 'medium';
-  let selectedTags = '';
+  let cacheKey = $state('');
+  let cacheValue = $state('');
+  let selectedTTL = $state('300'); // 5 minutes default
+  let selectedPriority = $state('medium');
+  let selectedTags = $state('');
 
   // Demo data
   const ttlOptions = [

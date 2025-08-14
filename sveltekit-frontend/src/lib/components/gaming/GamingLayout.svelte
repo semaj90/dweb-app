@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import GamingHUD from './GamingHUD.svelte';
 	import GamingPanel from './GamingPanel.svelte';
 	import GamingButton from './GamingButton.svelte';
@@ -50,7 +50,7 @@
 		children
 	}: GamingLayoutProps = $props();
 	
-	let currentPath = $derived($page.url.pathname);
+	let currentPath = $derived(page.url.pathname);
 	let sidebarCollapsed = $state(false);
 	
 	function toggleSidebar() {
@@ -69,7 +69,7 @@
 			userLevel={user.level}
 			experience={user.experience}
 			maxExperience={user.maxExperience}
-			currentCase={$page.data?.currentCase || "CASE-2024-001"}
+			currentCase={page.data?.currentCase || "CASE-2024-001"}
 			documentsAnalyzed={stats.documentsAnalyzed}
 			accuracyScore={stats.accuracyScore}
 		/>

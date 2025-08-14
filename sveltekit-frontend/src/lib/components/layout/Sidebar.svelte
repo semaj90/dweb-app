@@ -1,10 +1,12 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     open?: any;
   }
   let { open = false }: Props = $props();
 
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import Button from "$lib/components/ui/Button.svelte";
   import { cn } from "$lib/utils";
   import {
@@ -29,7 +31,7 @@
     mounted = true;
   });
 
-  let currentPath = $derived($page.url.pathname;);
+  let currentPath = $derived(page.url.pathname;);
 
   const navigation = [
     {

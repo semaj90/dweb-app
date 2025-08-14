@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unterminated string constant
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { createDropdownMenu, createToolbar, melt } from "@melt-ui/svelte";
   import {

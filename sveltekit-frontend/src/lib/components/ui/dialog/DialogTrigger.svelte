@@ -1,15 +1,14 @@
 <script lang="ts">
+  import { melt } from '@melt-ui/svelte';
+  
   interface Props {
     trigger: any;
   }
-  let {
+  let { children,
     trigger
   }: Props = $props();
+</script>
 
-
-
-  </script>
-
-<button use:trigger >
-  <slot></slot>
+<button use:melt={trigger}>
+  {@render children?.()}
 </button>

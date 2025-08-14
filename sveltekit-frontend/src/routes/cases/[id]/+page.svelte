@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { writable } from "svelte/store";
   import CanvasEditor from '$lib/components/CanvasEditor.svelte';
   import EvidencePanel from '$lib/components/EvidencePanel.svelte';
 
-  let caseId = $page.params.id;
-  let caseDetails = $page.data.caseDetails;
+  let caseId = page.params.id;
+  let caseDetails = page.data.caseDetails;
   let evidence = caseDetails?.evidence || [];
-  let canvasState: any = null;
+  let canvasState: any = $state(null);
 
   let showSidebar = writable(false);
   let sidebarHovered = false;

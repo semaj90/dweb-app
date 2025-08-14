@@ -1,5 +1,5 @@
 <script lang="ts">
-  let {
+  let { 
     class: className = '',
     children,
     ...restProps
@@ -7,5 +7,5 @@
 </script>
 
 <div class="text-sm [&_p]:leading-relaxed {className}" {...restProps}>
-  <slot></slot>
+  {@render children?.()}
 </div>

@@ -3,9 +3,9 @@
   import { aiAgentStore, isAIConnected, systemHealth, currentConversation } from '$lib/stores/ai-agent';
   import type { User } from '$lib/types';
 
-  let testMessage = 'Hello, can you help me with legal questions?';
-  let connectionStatus = 'checking...';
-  let testResults: string[] = [];
+  let testMessage = $state('Hello, can you help me with legal questions?');
+  let connectionStatus = $state('checking...');
+  let testResults: string[] = $state([]);
 
   onMount(async () => {
     await runSystemTests();

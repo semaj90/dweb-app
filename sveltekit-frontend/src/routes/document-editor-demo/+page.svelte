@@ -2,12 +2,12 @@
 <script lang="ts">
   import LegalDocumentEditor from "$lib/components/editor/LegalDocumentEditor.svelte";
 
-  let documentId = "doc-1"; // Use sample document ID
+  let documentId = $state("doc-1"); // Use sample document ID
   let caseId = "case-123";
   let selectedDocumentType: "brief" | "contract" | "motion" | "evidence" =
-    "brief";
-  let editorTitle = "Criminal Case Brief Demo";
-  let isReadonly = false;
+    $state("brief");
+  let editorTitle = $state("Criminal Case Brief Demo");
+  let isReadonly = $state(false);
 
   function handleSave(event: CustomEvent) {
     console.log("Document saved:", event.detail);

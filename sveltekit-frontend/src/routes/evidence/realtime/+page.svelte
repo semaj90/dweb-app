@@ -18,28 +18,28 @@
   import { onMount } from "svelte";
 
   // Demo state
-  let selectedCaseId: string | undefined = undefined;
-  let searchQuery = "";
-  let selectedTypes: string[] = [];
-  let showAdvancedFilters = false;
-  let demoMode = false;
+  let selectedCaseId: string | undefined = $state(undefined);
+  let searchQuery = $state("");
+  let selectedTypes: string[] = $state([]);
+  let showAdvancedFilters = $state(false);
+  let demoMode = $state(false);
 
   // Store values - Access individual store properties correctly
   const { isConnected, evidence, isLoading, error } = evidenceStore;
 
   // Analytics data
-  let stats = { total: 0, byType: {}, byCase: {}, recentCount: 0 };
+  let stats = $state({ total: 0, byType: {}, byCase: {}, recentCount: 0 });
   let syncStatus: {
     pending: number;
     failed: number;
     total: number;
     inProgress: boolean;
-  } = {
+  } = $state({
     pending: 0,
     failed: 0,
     total: 0,
     inProgress: false,
-  };
+  });
 
   onMount(() => {
     // Update stats when evidence changes

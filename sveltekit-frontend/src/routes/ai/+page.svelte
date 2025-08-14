@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import ChatInterface from "$lib/components/ai/ChatInterface.svelte";
   import { Button } from "$lib/components/ui/button";
   import {
@@ -27,7 +27,7 @@
   });
 
   function startNewChat() {
-    const caseId = $page.url.searchParams.get("caseId") || undefined;
+    const caseId = page.url.searchParams.get("caseId") || undefined;
     chatActions.newConversation(caseId);
     selectedConversationId = null;
     showHistory = false;
@@ -149,11 +149,11 @@
                     {formatDate(conversation.updated.toString())} • {conversation
                       .messages.length} messages
                   </p>
-                  {#if $page.url.searchParams.get("caseId")}
+                  {#if page.url.searchParams.get("caseId")}
                     <span
                       class="space-y-4"
                     >
-                      Case: {$page.url.searchParams.get("caseId")}
+                      Case: {page.url.searchParams.get("caseId")}
                     </span>
                   {/if}
                 </button>
@@ -193,9 +193,9 @@
                 <h2 class="space-y-4">
                   {$chatStore.currentConversation?.title || "New Conversation"}
                 </h2>
-                {#if $chatStore.currentConversation?.id && $page.url.searchParams.get("caseId")}
+                {#if $chatStore.currentConversation?.id && page.url.searchParams.get("caseId")}
                   <p class="space-y-4">
-                    Case: {$page.url.searchParams.get("caseId")}
+                    Case: {page.url.searchParams.get("caseId")}
                   </p>
                 {/if}
               </div>
@@ -228,7 +228,7 @@
           <div class="space-y-4">
             <ChatInterface
               height="500px"
-              caseId={$page.url.searchParams.get("caseId")}
+              caseId={page.url.searchParams.get("caseId")}
             />
           </div>
         </div>

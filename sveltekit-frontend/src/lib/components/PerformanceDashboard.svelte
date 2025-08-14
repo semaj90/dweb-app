@@ -25,7 +25,7 @@
   const logs = writable<any[]>([]);
   
   let refreshInterval: NodeJS.Timeout;
-  let autoRefresh = true;
+  let autoRefresh = $state(true);
 
   onMount(() => {
     loadMetrics();

@@ -440,13 +440,13 @@
     bind:this={dropZone}
     class="drop-zone"
     class:dragging={$isDragging}
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex="0"
-    on:click={() => fileInput?.click()}
-    on:keydown={(e) => e.key === "Enter" && fileInput?.click()}
+    onclick={() => fileInput?.click()}
+    onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
   >
     <div class="drop-zone-content">
       <Upload class="drop-zone-icon" size={48} />
@@ -474,7 +474,7 @@
     type="file"
     multiple
     accept={acceptedTypes}
-    on:change={handleFileSelect}
+    onchange={handleFileSelect}
     class="sr-only"
   />
 
@@ -512,7 +512,8 @@
                 {#if file.preview}
                   <img src={file.preview} alt="Preview" class="preview-image" />
                 {:else}
-                  <svelte:component this={getFileIcon(file.file)} size={24} />
+                  {@const SvelteComponent = getFileIcon(file.file)}
+                  <SvelteComponent size={24} />
                 {/if}
               </div>
 

@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax
+https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <!-- YoRHa Modal Component with Terminal Styling -->
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
@@ -109,7 +111,7 @@
 {#if open}
   <div
     class="yorha-modal-backdrop {type}"
-    on:click={handleBackdropClick}
+    onclick={handleBackdropClick}
     onkeydown={handleKeydown}
     transition:fade={{ duration: 200 }}
     role="dialog"

@@ -6,7 +6,7 @@
   interface Props {
     class?: string;
   }
-  let {
+  let { children, placeholder,
     class: class_ = ""
   }: Props = $props();
 
@@ -23,11 +23,11 @@
 
 <span class="space-y-4">
   {#if $selected}
-    <slot value={$selected}>
+    {#if children}{@render children({ value: $selected, })}{:else}
       {$selected}
-    </slot>
+    {/if}
   {:else}
-    <slot name="placeholder">Select an option...</slot>
+    {#if placeholder}{@render placeholder()}{:else}Select an option...{/if}
   {/if}
 </span>
 

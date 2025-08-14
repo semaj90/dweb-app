@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
 	import { Button as MeltButton } from '@melt-ui/svelte';
 	import { cva, type VariantProps } from 'class-variance-authority';

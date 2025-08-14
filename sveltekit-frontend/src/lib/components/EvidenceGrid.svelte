@@ -360,8 +360,8 @@
                     loading="lazy"
                   />
                 {:else}
-                  <svelte:component
-                    this={getFileIcon(item.evidenceType, item.mimeType)}
+                  {@const SvelteComponent = getFileIcon(item.evidenceType, item.mimeType)}
+                  <SvelteComponent
                     class="space-y-4"
                   />
                 {/if}
@@ -434,6 +434,7 @@
         <!-- List view -->
         <div class="space-y-4">
           {#each filteredData as item (item.id)}
+            {@const SvelteComponent_1 = getFileIcon(item.evidenceType, item.mimeType)}
             <div
               class="space-y-4"
               onclick={() => toggleSelection(item)}
@@ -449,8 +450,7 @@
 
               <!-- File icon -->
               <div class="space-y-4">
-                <svelte:component
-                  this={getFileIcon(item.evidenceType, item.mimeType)}
+                <SvelteComponent_1
                   class="space-y-4"
                 />
               </div>

@@ -1,7 +1,9 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { Button } from "$lib/components/ui/button";
-  import Card from '$lib/components/ui/Card.svelte';
+  import { Card } from '$lib/components/ui/card';
   import Form from '$lib/components/ui/Form.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import { notifications } from '$lib/stores/notification';
@@ -134,18 +136,13 @@
 
 <div class="space-y-4">
   <div class="space-y-4">
-    <h1 class="space-y-4">
-      Create New Case
-    </h1>
+    <h1 class="space-y-4">Create New Case</h1>
     <p class="space-y-4">
-      Fill out the form below to create a new legal case. All required fields
-      must be completed.
+      Fill out the form below to create a new legal case. All required fields must be completed.
     </p>
     <div class="space-y-4">
       <p>
-        💡 Tip: Use <kbd class="space-y-4"
-          >Ctrl+S</kbd
-        >
+        💡 Tip: Use <kbd class="space-y-4">Ctrl+S</kbd>
         to save,
         <kbd class="space-y-4">Ctrl+R</kbd>
         to reset
@@ -163,24 +160,11 @@
       submitVariant="primary"
       showResetButton={true}
       loading={isSubmitting}
-      class="space-y-4"
-    >
-      <div
-        slot="default"
-        let:form
-        let:formApi
-        let:values
-        let:errors
-        let:isValid
-        let:isDirty
-      >
+      class="space-y-4">
+      <div slot="default" let:form let:formApi let:values let:errors let:isValid let:isDirty>
         <!-- Basic Information -->
         <div class="space-y-4">
-          <h2
-            class="space-y-4"
-          >
-            Basic Information
-          </h2>
+          <h2 class="space-y-4">Basic Information</h2>
 
           <div class="space-y-4">
             <div class="space-y-4">
@@ -188,24 +172,16 @@
                 label="Case Title"
                 placeholder="Enter a descriptive title for the case"
                 required
-                value={formValues.title || ""}
+                value={formValues.title || ''}
                 error={formErrors.title}
                 data-icon="${1}"
                 clearable
-                oninput={(e) =>
-                  formApi?.setField(
-                    "title",
-                    (e.target as HTMLInputElement)?.value
-                  )}
-                onblur={() => formApi?.touchField("title")}
-              />
+                oninput={(e) => formApi?.setField('title', (e.target as HTMLInputElement)?.value)}
+                onblur={() => formApi?.touchField('title')} />
             </div>
 
             <div class="space-y-4">
-              <label
-                for="case-description"
-                class="space-y-4"
-              >
+              <label for="case-description" class="space-y-4">
                 Description <span class="space-y-4">*</span>
               </label>
               <textarea
@@ -213,17 +189,12 @@
                 class="space-y-4"
                 rows="4"
                 placeholder="Provide a detailed description of the case"
-                value={values.description || ""}
+                value={values.description || ''}
                 class:border-red-300={errors.description}
-                class:border-green-300={values.description &&
-                  !errors.description}
+                class:border-green-300={values.description && !errors.description}
                 oninput={(e) =>
-                  formApi.setField(
-                    "description",
-                    (e.target as HTMLTextAreaElement)?.value
-                  )}
-                onblur={() => formApi.touchField("description")}
-              ></textarea>
+                  formApi.setField('description', (e.target as HTMLTextAreaElement)?.value)}
+                onblur={() => formApi.touchField('description')}></textarea>
               {#if errors.description}
                 <p class="space-y-4">
                   {errors.description}
@@ -232,23 +203,16 @@
             </div>
 
             <div>
-              <label
-                for="case-priority"
-                class="space-y-4"
-              >
+              <label for="case-priority" class="space-y-4">
                 Priority <span class="space-y-4">*</span>
               </label>
               <select
                 id="case-priority"
                 class="space-y-4"
-                value={values.priority || "medium"}
+                value={values.priority || 'medium'}
                 onchange={(e) =>
-                  formApi.setField(
-                    "priority",
-                    (e.target as HTMLSelectElement)?.value
-                  )}
-                onblur={() => formApi.touchField("priority")}
-              >
+                  formApi.setField('priority', (e.target as HTMLSelectElement)?.value)}
+                onblur={() => formApi.touchField('priority')}>
                 <option value="low">🟢 Low</option>
                 <option value="medium">🟡 Medium</option>
                 <option value="high">🟠 High</option>
@@ -260,43 +224,30 @@
               <Input
                 label="Due Date"
                 type="date"
-                value={values.dueDate || ""}
+                value={values.dueDate || ''}
                 error={errors.dueDate}
                 data-icon="${1}"
-                oninput={(e) =>
-                  formApi.setField(
-                    "dueDate",
-                    (e.target as HTMLInputElement)?.value
-                  )}
-                onblur={() => formApi.touchField("dueDate")}
-              />
+                oninput={(e) => formApi.setField('dueDate', (e.target as HTMLInputElement)?.value)}
+                onblur={() => formApi.touchField('dueDate')} />
             </div>
           </div>
         </div>
 
         <!-- Assignment -->
         <div class="space-y-4">
-          <h2
-            class="space-y-4"
-          >
-            Assignment & Tags
-          </h2>
+          <h2 class="space-y-4">Assignment & Tags</h2>
 
           <div class="space-y-4">
             <div>
               <Input
                 label="Assigned To"
                 placeholder="Enter assignee email or name"
-                value={values.assignedTo || ""}
+                value={values.assignedTo || ''}
                 error={errors.assignedTo}
                 data-icon="${1}"
                 oninput={(e) =>
-                  formApi.setField(
-                    "assignedTo",
-                    (e.target as HTMLInputElement)?.value
-                  )}
-                onblur={() => formApi.touchField("assignedTo")}
-              />
+                  formApi.setField('assignedTo', (e.target as HTMLInputElement)?.value)}
+                onblur={() => formApi.touchField('assignedTo')} />
             </div>
 
             <div>
@@ -305,25 +256,19 @@
                   <Input
                     label="Tags"
                     placeholder="Enter tags separated by commas"
-                    value={values.tags || ""}
+                    value={values.tags || ''}
                     error={errors.tags}
                     data-icon="${1}"
                     clearable
-                    oninput={(e) =>
-                      formApi.setField(
-                        "tags",
-                        (e.target as HTMLInputElement)?.value
-                      )}
-                    onblur={() => formApi.touchField("tags")}
-                  />
+                    oninput={(e) => formApi.setField('tags', (e.target as HTMLInputElement)?.value)}
+                    onblur={() => formApi.touchField('tags')} />
                 </div>
                 <Button
                   type="button"
                   variant="secondary"
                   size="md"
                   data-icon="${1}"
-                  onclick={() => addTag()}
-                >
+                  onclick={() => addTag()}>
                   Add
                 </Button>
               </div>
@@ -332,9 +277,7 @@
         </div>
 
         <!-- Form Status -->
-        <div
-          class="space-y-4"
-        >
+        <div class="space-y-4">
           <div class="space-y-4">
             {#if isDirty}
               <span class="space-y-4">
@@ -350,8 +293,9 @@
           </div>
 
           <div class="space-y-4">
-            Valid: {isValid ? "✅" : "❌"} | Fields: {Object.keys(values)
-              .length} | Errors: {Object.keys(errors).length}
+            Valid: {isValid ? '✅' : '❌'} | Fields: {Object.keys(values).length} | Errors: {Object.keys(
+              errors
+            ).length}
           </div>
         </div>
       </div>
@@ -363,8 +307,8 @@
   /* @unocss-include */
   kbd {
     font-family:
-      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
-      "Liberation Mono", "Courier New", monospace;
+      ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono',
+      'Courier New', monospace;
     font-size: 0.75rem;
-}
+  }
 </style>

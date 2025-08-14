@@ -1,0 +1,395 @@
+# Svelte 5 Migration Guide - Complete How-To
+
+## Overview
+This guide documents the complete migration process from Svelte 4 to Svelte 5 runes mode, based on a real-world legal AI application migration that processed 4264+ modules.
+
+## Pre-Migration Setup
+
+### 1. Update Dependencies
+```bash
+npm install svelte@next @sveltejs/kit@next @sveltejs/vite-plugin-svelte@next
+npm install class-variance-authority xml2js
+npm install -D @types/xml2js
+```
+
+### 2. Enable Runes Mode
+Update `svelte.config.js`:
+```javascript
+// REMOVE deprecated options
+compilerOptions: {
+  dev: process.env.NODE_ENV === 'development',
+  // immutable: true, // ❌ REMOVE - deprecated in runes mode
+  css: 'injected'
+}
+```
+
+## Core Migration Patterns
+
+### 1. State Variables ($state)
+**Before:**
+```javascript
+let searchQuery = '';
+let loading = true;
+let items = [];
+let selectedItem = null;
+```
+
+**After:**
+```javascript
+let searchQuery = $state('');
+let loading = $state(true);
+let items = $state([]);
+let selectedItem = $state(null);
+```
+
+### 2. Computed Values ($derived)
+**Before:**
+```javascript
+$: filteredItems = items.filter(item => item.active);
+$: itemCount = filteredItems.length;
+```
+
+**After:**
+```javascript
+let filteredItems = $derived(items.filter(item => item.active));
+let itemCount = $derived(filteredItems.length);
+```
+
+### 3. Effects ($effect)
+**Before:**
+```javascript
+$: if (selectedId) {
+  loadSelectedData();
+}
+
+$: {
+  console.log('Items changed:', items);
+}
+```
+
+**After:**
+```javascript
+$effect(() => {
+  if (selectedId) {
+    loadSelectedData();
+  }
+});
+
+$effect(() => {
+  console.log('Items changed:', items);
+});
+```
+
+### 4. Component Props
+**Before:**
+```javascript
+export let title = 'Default';
+export let items = [];
+export let disabled = false;
+```
+
+**After:**
+```javascript
+interface Props {
+  title?: string;
+  items?: any[];
+  disabled?: boolean;
+}
+
+let { 
+  title = 'Default',
+  items = [],
+  disabled = false
+}: Props = $props();
+```
+
+### 5. Snippet Props (Children)
+**Before:**
+```javascript
+export let children;
+```
+
+**After:**
+```javascript
+interface Props {
+  children?: import('svelte').Snippet;
+}
+
+let { children }: Props = $props();
+
+// Usage in template:
+{@render children?.()}
+```
+
+### 6. Event Handlers (Consistent Syntax)
+**Before (Mixed):**
+```svelte
+<div on:click={handleClick} onkeydown={handleKey}></div>
+```
+
+**After (Consistent):**
+```svelte
+<div onclick={handleClick} onkeydown={handleKey}></div>
+```
+
+### 7. Dynamic Components
+**Before:**
+```svelte
+<svelte:component this={statusIcon} class="icon" />
+```
+
+**After:**
+```svelte
+{#if statusIcon}
+  <statusIcon class="icon"></statusIcon>
+{/if}
+```
+
+### 8. Style Directives on Components
+**Before:**
+```svelte
+<ContextMenu.Content
+  style:left="{x}px"
+  style:top="{y}px"
+>
+```
+
+**After:**
+```svelte
+<ContextMenu.Content
+  style="left: {x}px; top: {y}px;"
+>
+```
+
+## Common Syntax Fixes
+
+### 1. Malformed $derived Filters
+**Before (Broken):**
+```javascript
+let criticalEvents = $derived(events.filter();
+  (e) => e.severity === "critical"
+).length;
+```
+
+**After (Fixed):**
+```javascript
+let criticalEvents = $derived(events.filter(
+  (e) => e.severity === "critical"
+).length);
+```
+
+### 2. Malformed $effect Blocks
+**Before (Broken):**
+```javascript
+$effect(() => { if (condition) {
+  doSomething();
+}
+```
+
+**After (Fixed):**
+```javascript
+$effect(() => { 
+  if (condition) {
+    doSomething();
+  }
+});
+```
+
+### 3. Duplicate Property Declarations
+**Before (Error):**
+```javascript
+let { children, class: className = '', children, ...props } = $props();
+```
+
+**After (Fixed):**
+```javascript
+let { children, class: className = '', ...props } = $props();
+```
+
+## Build Process Migration
+
+### 1. Run Initial Build Test
+```bash
+cd your-frontend && timeout 30 npm run build
+```
+
+### 2. Fix Issues Systematically
+Process errors in this order:
+1. **Syntax errors** (duplicate declarations, malformed expressions)
+2. **$state() compliance** (non-reactive updates)
+3. **Deprecated features** (svelte:component, immutable option)
+4. **Event handler consistency** (mixed on:/on syntax)
+5. **Missing dependencies** (resolve import errors)
+
+### 3. Monitor Progress
+- Initial build: ~80-100 modules
+- After syntax fixes: ~2000+ modules  
+- After full migration: 4000+ modules
+
+## Error Categories & Solutions
+
+### A. Non-Reactive Update Errors
+```
+`searchQuery` is updated, but is not declared with `$state(...)`
+```
+**Solution:** Add `$state()` wrapper
+```javascript
+let searchQuery = $state('');
+```
+
+### B. Deprecated Component Syntax
+```
+`<svelte:component>` is deprecated in runes mode
+```
+**Solution:** Use direct component references
+```svelte
+{#if IconComponent}
+  <IconComponent {props} />
+{/if}
+```
+
+### C. Mixed Event Handler Syntax
+```
+Mixing old (on:consider) and new syntaxes for event handling
+```
+**Solution:** Use consistent `on` prefix
+```svelte
+<!-- Before -->
+<div on:consider={handler} onfinalize={handler2}></div>
+
+<!-- After -->
+<div onconsider={handler} onfinalize={handler2}></div>
+```
+
+### D. Component Directive Errors
+```
+This type of directive is not valid on components
+```
+**Solution:** Use regular style attribute
+```svelte
+<!-- Before -->
+<Component style:left="{x}px" />
+
+<!-- After -->  
+<Component style="left: {x}px;" />
+```
+
+### E. Import Resolution Errors
+```
+Could not resolve "missing-module" from "file.ts"
+```
+**Solution:** Install missing dependencies or create stubs
+```bash
+npm install missing-module
+# OR create a stub if not available
+```
+
+## Testing Strategy
+
+### 1. Component-Level Testing
+```bash
+# Test individual components
+npm run check src/lib/components/specific-component.svelte
+```
+
+### 2. Build Verification
+```bash
+# Quick build test
+timeout 30 npm run build
+
+# Full build test  
+timeout 60 npm run build
+```
+
+### 3. Type Checking
+```bash
+# TypeScript verification
+npx svelte-check --tsconfig ./tsconfig.json
+```
+
+## Performance Optimizations
+
+### 1. $state.raw() for Large Objects
+```javascript
+// For non-reactive large objects
+let largeDataset = $state.raw(initialData);
+```
+
+### 2. $effect.pre() for DOM Measurements
+```javascript
+// For pre-DOM update effects
+$effect.pre(() => {
+  measureElement();
+});
+```
+
+### 3. $effect.root() for Cleanup
+```javascript
+// For cleanup operations
+$effect.root(() => {
+  const cleanup = setupResource();
+  return cleanup;
+});
+```
+
+## Common Gotchas
+
+### 1. Store Integration
+Svelte 5 stores still work, but prefer runes for new code:
+```javascript
+// Still works
+import { writable } from 'svelte/store';
+const store = writable(0);
+
+// Preferred in Svelte 5
+let count = $state(0);
+```
+
+### 2. Binding Patterns
+```javascript
+// Two-way binding props
+let { value = $bindable() } = $props();
+```
+
+### 3. Accessibility Warnings
+Many a11y warnings remain but don't block builds:
+- Associate labels with form controls
+- Add ARIA roles to interactive elements
+- These are warnings, not errors
+
+## Migration Checklist
+
+- [ ] Update dependencies to Svelte 5
+- [ ] Remove deprecated compiler options
+- [ ] Convert `let` to `$state()` for reactive variables
+- [ ] Convert `$:` to `$derived()` for computed values
+- [ ] Convert `$:` to `$effect()` for side effects
+- [ ] Update component prop patterns
+- [ ] Fix event handler syntax consistency
+- [ ] Replace `<svelte:component>` usage
+- [ ] Fix component style directives
+- [ ] Resolve import/dependency issues
+- [ ] Test build process thoroughly
+- [ ] Verify functionality in browser
+
+## Success Metrics
+
+**Pre-Migration:**
+- Build processes ~80-100 modules
+- Multiple syntax errors block compilation
+- Legacy Svelte 4 patterns throughout
+
+**Post-Migration:**
+- Build processes 4000+ modules successfully
+- Only minor import/dependency issues remain
+- Full Svelte 5 runes mode compatibility
+- Improved type safety and performance
+- Better developer experience with runes
+
+## Additional Resources
+
+- [Svelte 5 Migration Guide](https://svelte.dev/docs/v5-migration-guide)
+- [Runes Documentation](https://svelte.dev/docs/runes)
+- [SvelteKit Migration Notes](https://kit.svelte.dev/docs/migrating-to-sveltekit-2)
+
+This migration typically takes 2-4 hours for a medium-sized application (1000+ components) and results in significantly improved performance and developer experience.

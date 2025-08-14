@@ -56,29 +56,29 @@
   }
 
   // Component state
-  let serviceStatus = {
+  let serviceStatus = $state({
     healthy: false,
     loading: true,
     services: {} as Record<string, string>,
     version: "",
     config: {} as Record<string, any>,
-  };
+  });
 
-  let documentContent = "";
-  let selectedDocumentType = "contract";
-  let selectedJurisdiction = "US";
-  let selectedPracticeArea = "commercial";
-  let useGPU = true;
-  let processing = false;
-  let processResult: DocumentResponse | null = null;
+  let documentContent = $state("");
+  let selectedDocumentType = $state("contract");
+  let selectedJurisdiction = $state("US");
+  let selectedPracticeArea = $state("commercial");
+  let useGPU = $state(true);
+  let processing = $state(false);
+  let processResult: DocumentResponse | null = $state(null);
 
-  let searchQuery = "";
-  let searchLimit = 10;
-  let searching = false;
-  let searchResults: VectorSearchResponse | null = null;
+  let searchQuery = $state("");
+  let searchLimit = $state(10);
+  let searching = $state(false);
+  let searchResults: VectorSearchResponse | null = $state(null);
 
-  let showProcessDialog = false;
-  let showSearchDialog = false;
+  let showProcessDialog = $state(false);
+  let showSearchDialog = $state(false);
 
   // Enhanced configuration
   // Enhanced configuration

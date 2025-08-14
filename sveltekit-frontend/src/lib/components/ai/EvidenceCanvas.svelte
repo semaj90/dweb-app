@@ -1,11 +1,11 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api/clients/api-client";
   import { onMount } from "svelte";
-  let canvasEl: HTMLCanvasElement;
+  let canvasEl: HTMLCanvasElement = $state();
   let fabricCanvas: any;
 
-  let analyzing = false;
-  let error: string | null = null;
+  let analyzing = $state(false);
+  let error: string | null = $state(null);
   let result: {
     analysis?: string;
     summary?: string;
@@ -13,14 +13,14 @@
     processing_time_ms?: number;
     status?: string;
     error?: string;
-  } | null = null;
-  let options = {
+  } | null = $state(null);
+  let options = $state({
     analyze_layout: true,
     extract_entities: true,
     generate_summary: true,
     confidence_level: 0.8,
     context_window: 4096,
-  };
+  });
 
   onMount(async () => {
     const { fabric } = await import("fabric");
@@ -94,7 +94,7 @@
 </script>
 
 <div class="toolbar">
-  <button on:click={analyzeCanvas} disabled={analyzing}
+  <button onclick={analyzeCanvas} disabled={analyzing}
     >{analyzing ? "Analyzing…" : "Analyze Canvas"}</button
   >
   <label
@@ -106,7 +106,7 @@
   <label
     ><input type="checkbox" bind:checked={options.generate_summary} /> Summary</label
   >
-  <span class="spacer" />
+  <span class="spacer"></span>
   <small
     >Ctx: <input
       type="number"

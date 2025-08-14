@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  let prompt = "Explain the legal concept of due process in criminal law.";
-  let response = "";
-  let isLoading = false;
-  let status: any = null;
-  let error = "";
+  let prompt = $state("Explain the legal concept of due process in criminal law.");
+  let response = $state("");
+  let isLoading = $state(false);
+  let status: any = $state(null);
+  let error = $state("");
 
   async function testGemma3() {
     if (!prompt.trim()) {

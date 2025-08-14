@@ -8,7 +8,7 @@
     { id: "case-2", name: "People v. Jane Smith" },
   ];
 
-  let showModal = false;
+  let showModal = $state(false);
 
   function selectCase(caseId: string) {
     user.selectCase(caseId);
@@ -19,9 +19,11 @@
 <Button onclick={() => showModal = true}>Select Case</Button>
 
 <Modal bind:open={showModal} title="Select a Case">
-  <div slot="description">
-    Choose a case to view its details and evidence.
-  </div>
+  {#snippet description()}
+    <div >
+      Choose a case to view its details and evidence.
+    </div>
+  {/snippet}
 
   <div class="space-y-4">
     {#each cases as caseItem}

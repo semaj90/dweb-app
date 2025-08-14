@@ -2,7 +2,7 @@
   import ProfessionalEditor from '$lib/components/editor/ProfessionalEditor.svelte';
   import { FileText, Zap, Keyboard, Eye, Save, BarChart3 } from 'lucide-svelte';
 
-  let editorContent = `<h1>Professional Document Editor</h1>
+  let editorContent = $state(`<h1>Professional Document Editor</h1>
 
 <p>This is a demonstration of the professional document editor with advanced features designed for legal professionals and content creators.</p>
 
@@ -34,9 +34,9 @@
   <li>Legality of purpose</li>
 </ol>
 
-<p>Try using the keyboard shortcuts to format this text, or switch to focus mode for distraction-free writing.</p>`;
+<p>Try using the keyboard shortcuts to format this text, or switch to focus mode for distraction-free writing.</p>`);
 
-  let documentTitle = 'Professional Editor Demo';
+  let documentTitle = $state('Professional Editor Demo');
 
   function handleSave(event: CustomEvent) {
     console.log('Document saved:', event.detail);

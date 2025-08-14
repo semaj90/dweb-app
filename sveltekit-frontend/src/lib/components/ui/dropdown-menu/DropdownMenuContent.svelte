@@ -2,7 +2,7 @@
   interface Props {
     menu: any;
   }
-  let {
+  let { children,
     menu
   }: Props = $props();
 
@@ -15,5 +15,5 @@
   class="space-y-4"
   
 >
-  <slot></slot>
+  {@render children?.()}
 </div>

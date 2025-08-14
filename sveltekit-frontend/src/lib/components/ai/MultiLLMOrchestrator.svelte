@@ -368,7 +368,7 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
           <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center gap-2">
-                <svelte:component this={provider.icon} class="h-5 w-5 text-blue-500" />
+                <provider.icon class="h-5 w-5 text-blue-500" />
                 <span class="font-medium">{provider.name}</span>
               </div>
               <Badge 
@@ -426,10 +426,10 @@ Provides UI for managing multiple AI workers and orchestrating parallel processi
       <CardContent>
         <div class="space-y-3">
           {#each Array.from(activeTasks.entries()) as [taskId, task]}
+            {@const SvelteComponent = getProviderIcon(task.providerId)}
             <div class="flex items-center justify-between p-3 border rounded-lg">
               <div class="flex items-center gap-3">
-                <svelte:component 
-                  this={getProviderIcon(task.providerId)} 
+                <SvelteComponent 
                   class="h-4 w-4 text-blue-500" 
                 />
                 <div>

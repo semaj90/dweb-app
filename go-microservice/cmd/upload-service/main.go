@@ -84,7 +84,7 @@ func NewUploadService(config Config) (*UploadService, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse redis URL: %w", err)
 	}
-	
+
 	redisClient := redis.NewClient(opt)
 	ctx := context.Background()
 	if err := redisClient.Ping(ctx).Err(); err != nil {
@@ -101,7 +101,7 @@ func NewUploadService(config Config) (*UploadService, error) {
 func (u *UploadService) extractTextFromFile(filename string, content []byte) (string, error) {
 	// Simple text extraction - in production, use proper PDF/DOCX parsers
 	ext := strings.ToLower(filepath.Ext(filename))
-	
+
 	switch ext {
 	case ".txt":
 		return string(content), nil
@@ -118,40 +118,40 @@ func (u *UploadService) extractTextFromFile(filename string, content []byte) (st
 
 func (u *UploadService) generateEmbedding(text string) ([]float32, error) {
 	url := fmt.Sprintf("%s/api/embeddings", u.config.OllamaURL)
-	
+
 	payload := map[string]interface{}{
 		"model":  u.config.EmbedModel,
 		"prompt": text,
 	}
-	
+
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	resp, err := http.Post(url, "application/json", bytes.NewReader(payloadBytes))
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	
+
 	var result map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, err
 	}
-	
+
 	embeddings, ok := result["embedding"].([]interface{})
 	if !ok {
 		return nil, fmt.Errorf("invalid embedding response")
 	}
-	
+
 	embedding := make([]float32, len(embeddings))
 	for i, v := range embeddings {
 		if f, ok := v.(float64); ok {
 			embedding[i] = float32(f)
 		}
 	}
-	
+
 	return embedding, nil
 }
 
@@ -159,7 +159,7 @@ func (u *UploadService) chunkText(text string, chunkSize int) []string {
 	if len(text) <= chunkSize {
 		return []string{text}
 	}
-	
+
 	var chunks []string
 	for i := 0; i < len(text); i += chunkSize {
 		end := i + chunkSize
@@ -168,16 +168,16 @@ func (u *UploadService) chunkText(text string, chunkSize int) []string {
 		}
 		chunks = append(chunks, text[i:end])
 	}
-	
+
 	return chunks
 }
 
 func (u *UploadService) processDocument(docID, content string) error {
 	start := time.Now()
-	
+
 	// Chunk the document
 	chunks := u.chunkText(content, 500) // 500 character chunks
-	
+
 	// Generate embeddings for each chunk
 	for i, chunk := range chunks {
 		embedding, err := u.generateEmbedding(chunk)
@@ -185,28 +185,28 @@ func (u *UploadService) processDocument(docID, content string) error {
 			log.Printf("Failed to generate embedding for chunk %d: %v", i, err)
 			continue
 		}
-		
+
 		// Store chunk with embedding
 		_, err = u.db.Exec(context.Background(),
 			`INSERT INTO document_embeddings (document_id, chunk_number, chunk_text, embedding)
 			 VALUES ($1, $2, $3, $4)`,
 			docID, i+1, chunk, pgvector.NewVector(embedding))
-		
+
 		if err != nil {
 			log.Printf("Failed to store chunk %d: %v", i, err)
 		}
 	}
-	
+
 	// Update processing status
 	_, err := u.db.Exec(context.Background(),
-		`UPDATE document_metadata 
+		`UPDATE document_metadata
 		 SET processing_status = 'completed', updated_at = NOW()
 		 WHERE id = $1`,
 		docID)
-	
+
 	processingTime := time.Since(start)
 	log.Printf("Document %s processed in %v with %d chunks", docID, processingTime, len(chunks))
-	
+
 	return err
 }
 
@@ -217,55 +217,55 @@ func (u *UploadService) handleUpload(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form"})
 		return
 	}
-	
+
 	files := form.File["files"]
 	if len(files) == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No files provided"})
 		return
 	}
-	
+
 	caseID := c.PostForm("case_id")
 	userID := c.PostForm("user_id")
-	
+
 	var results []DocumentUpload
-	
+
 	for _, file := range files {
 		// Read file content
 		src, err := file.Open()
 		if err != nil {
 			continue
 		}
-		
+
 		content, err := io.ReadAll(src)
 		src.Close()
 		if err != nil {
 			continue
 		}
-		
+
 		// Extract text
 		extractedText, err := u.extractTextFromFile(file.Filename, content)
 		if err != nil {
 			log.Printf("Failed to extract text from %s: %v", file.Filename, err)
 			extractedText = string(content) // Fallback
 		}
-		
+
 		// Store document metadata
 		var docID string
 		err = u.db.QueryRow(context.Background(),
-			`INSERT INTO document_metadata 
+			`INSERT INTO document_metadata
 			 (case_id, user_id, original_filename, file_size, file_type, extracted_text, upload_status, processing_status)
 			 VALUES ($1, $2, $3, $4, $5, $6, 'completed', 'pending')
 			 RETURNING id`,
 			caseID, userID, file.Filename, file.Size, file.Header.Get("Content-Type"), extractedText).Scan(&docID)
-		
+
 		if err != nil {
 			log.Printf("Failed to store document metadata: %v", err)
 			continue
 		}
-		
+
 		// Process document asynchronously
 		go u.processDocument(docID, extractedText)
-		
+
 		results = append(results, DocumentUpload{
 			ID:       docID,
 			CaseID:   caseID,
@@ -276,7 +276,7 @@ func (u *UploadService) handleUpload(c *gin.Context) {
 			Status:   "processing",
 		})
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Files uploaded successfully",
 		"documents": results,
@@ -285,20 +285,20 @@ func (u *UploadService) handleUpload(c *gin.Context) {
 
 func (u *UploadService) handleStatus(c *gin.Context) {
 	docID := c.Param("id")
-	
+
 	var doc DocumentUpload
 	err := u.db.QueryRow(context.Background(),
-		`SELECT id, case_id, user_id, original_filename, file_size, file_type, 
+		`SELECT id, case_id, user_id, original_filename, file_size, file_type,
 		        upload_status, processing_status, created_at
 		 FROM document_metadata WHERE id = $1`,
-		docID).Scan(&doc.ID, &doc.CaseID, &doc.UserID, &doc.Filename, 
+		docID).Scan(&doc.ID, &doc.CaseID, &doc.UserID, &doc.Filename,
 		           &doc.FileSize, &doc.FileType, &doc.Status, &doc.ProcessedAt)
-	
+
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Document not found"})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, doc)
 }
 
@@ -340,26 +340,26 @@ func (u *UploadService) setupRoutes() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	
+
 	// CORS middleware
 	router.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-		
+
 		c.Next()
 	})
-	
+
 	// Routes
 	router.POST("/upload", u.handleUpload)
 	router.GET("/status/:id", u.handleStatus)
 	router.GET("/health", u.handleHealth)
-	
+
 	// Root endpoint
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -373,29 +373,29 @@ func (u *UploadService) setupRoutes() *gin.Engine {
 			},
 		})
 	})
-	
+
 	return router
 }
 
 func main() {
 	config := loadConfig()
-	
+
 	log.Printf("Starting Upload Service...")
 	log.Printf("Port: %s", config.Port)
 	log.Printf("Embed Model: %s", config.EmbedModel)
-	
+
 	service, err := NewUploadService(config)
 	if err != nil {
 		log.Fatalf("Failed to initialize upload service: %v", err)
 	}
 	defer service.db.Close()
 	defer service.redis.Close()
-	
+
 	router := service.setupRoutes()
-	
+
 	log.Printf("Upload Service running on port %s", config.Port)
 	log.Printf("Access the API at: http://localhost:%s/upload", config.Port)
-	
+
 	if err := router.Run(":" + config.Port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

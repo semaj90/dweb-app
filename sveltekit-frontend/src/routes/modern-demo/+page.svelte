@@ -7,9 +7,9 @@
   import type { Evidence } from "$lib/stores/report";
   import { onMount } from "svelte";
 
-  let sidebarCollapsed = false;
+  let sidebarCollapsed = $state(false);
   let textareaValue =
-    "Try typing # or pressing Ctrl+K to open the command menu!\n\nThis smart textarea integrates with your citations and commands.";
+    $state("Try typing # or pressing Ctrl+K to open the command menu!\n\nThis smart textarea integrates with your citations and commands.");
 
   // Sample evidence data
   const sampleEvidence = [
@@ -129,7 +129,7 @@
     bind:collapsed={sidebarCollapsed}
     ontoggle={(e) => console.log("Sidebar toggled:", e.detail.collapsed)}
   >
-    <div class="space-y-4" slot="default">
+    <div class="space-y-4" >
       <section class="space-y-4">
         <h2>📝 Smart Textarea with Command Menu</h2>
         <p>
@@ -222,52 +222,54 @@
       </section>
     </div>
 
-    <div class="space-y-4" slot="sidebar">
-      <h3>📋 Citations</h3>
-      <p>Recent citations from your library:</p>
+    {#snippet sidebar()}
+        <div class="space-y-4" >
+        <h3>📋 Citations</h3>
+        <p>Recent citations from your library:</p>
 
-      <div class="space-y-4">
-        {#each citationStore.getRecentCitations($citationStore, 5) as citation}
-          <div class="space-y-4">
-            <div class="space-y-4">{citation.title}</div>
+        <div class="space-y-4">
+          {#each citationStore.getRecentCitations($citationStore, 5) as citation}
             <div class="space-y-4">
-              {citation.source || citation.author}
+              <div class="space-y-4">{citation.title}</div>
+              <div class="space-y-4">
+                {citation.source || citation.author}
+              </div>
+              <div class="space-y-4">{citation.date}</div>
             </div>
-            <div class="space-y-4">{citation.date}</div>
+          {/each}
+        </div>
+
+        <h3>🔧 Keyboard Shortcuts</h3>
+        <div class="space-y-4">
+          <div class="space-y-4">
+            <kbd>Ctrl</kbd> + <kbd>K</kbd>
+            <span>Open command menu</span>
           </div>
-        {/each}
-      </div>
+          <div class="space-y-4">
+            <kbd>#</kbd>
+            <span>Trigger command menu</span>
+          </div>
+          <div class="space-y-4">
+            <kbd>Ctrl</kbd> + <kbd>\</kbd>
+            <span>Toggle sidebar</span>
+          </div>
+          <div class="space-y-4">
+            <kbd>Ctrl</kbd> + <kbd>1-4</kbd>
+            <span>Switch tabs</span>
+          </div>
+        </div>
 
-      <h3>🔧 Keyboard Shortcuts</h3>
-      <div class="space-y-4">
-        <div class="space-y-4">
-          <kbd>Ctrl</kbd> + <kbd>K</kbd>
-          <span>Open command menu</span>
-        </div>
-        <div class="space-y-4">
-          <kbd>#</kbd>
-          <span>Trigger command menu</span>
-        </div>
-        <div class="space-y-4">
-          <kbd>Ctrl</kbd> + <kbd>\</kbd>
-          <span>Toggle sidebar</span>
-        </div>
-        <div class="space-y-4">
-          <kbd>Ctrl</kbd> + <kbd>1-4</kbd>
-          <span>Switch tabs</span>
-        </div>
+        <h3>🎨 CSS Features</h3>
+        <ul class="space-y-4">
+          <li>CSS Grid with dynamic columns</li>
+          <li>Flexbox golden ratio layouts</li>
+          <li>Smooth transitions and animations</li>
+          <li>Hover effects and micro-interactions</li>
+          <li>Responsive breakpoints</li>
+          <li>CSS custom properties</li>
+        </ul>
       </div>
-
-      <h3>🎨 CSS Features</h3>
-      <ul class="space-y-4">
-        <li>CSS Grid with dynamic columns</li>
-        <li>Flexbox golden ratio layouts</li>
-        <li>Smooth transitions and animations</li>
-        <li>Hover effects and micro-interactions</li>
-        <li>Responsive breakpoints</li>
-        <li>CSS custom properties</li>
-      </ul>
-    </div>
+      {/snippet}
   </GoldenLayout>
 </div>
 

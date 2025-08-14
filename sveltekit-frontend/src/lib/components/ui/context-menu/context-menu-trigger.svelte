@@ -9,7 +9,7 @@
 
 
   import { getContext } from 'svelte';
-  import type { Writable } from 'svelte/store';
+  import type { Writable } from 'svelte/store'; children,
   
   interface BuilderAction {
     action: (node: HTMLElement) => void;
@@ -39,9 +39,9 @@
 </script>
 
 {#if asChild}
-  <slot {builder} />
+  {@render children?.({ builder, })}
 {:else}
   <div use:builder.action>
-    <slot></slot>
+    {@render children?.()}
   </div>
 {/if}

@@ -8,8 +8,8 @@
   const currentTest = writable<string>('');
   
   // Test configuration
-  let selectedComponent = 'sveltekit';
-  let testQuery = 'Context7 legal AI stack analysis';
+  let selectedComponent = $state('sveltekit');
+  let testQuery = $state('Context7 legal AI stack analysis');
   
   const components = [
     'sveltekit', 'drizzle', 'unocss', 'bits-ui', 'xstate', 

@@ -2,12 +2,12 @@
   import { onMount } from 'svelte';
   import { speak } from "./speak";
 
-  let isSupported = false;
-  let isListening = false;
-  let finalTranscript = '';
-  let interimTranscript = '';
+  let isSupported = $state(false);
+  let isListening = $state(false);
+  let finalTranscript = $state('');
+  let interimTranscript = $state('');
   let currentTranscript = '';
-  let recognition: any;
+  let recognition: any = $state();
 
   onMount(() => {
     // Initialize speech recognition

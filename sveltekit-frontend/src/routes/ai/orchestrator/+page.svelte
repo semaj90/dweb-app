@@ -262,9 +262,9 @@ Showcases the service worker-based AI orchestration system
               </p>
               <div class="space-y-2 mb-4">
                 {#each scenario.tasks as task}
+                  {@const SvelteComponent = getProviderIcon(task.provider)}
                   <div class="flex items-center gap-2 text-xs">
-                    <svelte:component 
-                      this={getProviderIcon(task.provider)} 
+                    <SvelteComponent 
                       class="h-3 w-3 text-blue-500" 
                     />
                     <span class="text-gray-600 dark:text-gray-400">{task.focus}</span>
@@ -367,11 +367,11 @@ Showcases the service worker-based AI orchestration system
           {:else}
             <div class="space-y-3 max-h-96 overflow-y-auto">
               {#each demoResults as result}
+                {@const SvelteComponent_1 = getProviderIcon(result.task.providerId)}
                 <div class="border rounded-lg p-3 {result.error ? 'border-red-200 bg-red-50 dark:bg-red-900/20' : result.response ? 'border-green-200 bg-green-50 dark:bg-green-900/20' : 'border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20'}">
                   <div class="flex items-start justify-between mb-2">
                     <div class="flex items-center gap-2">
-                      <svelte:component 
-                        this={getProviderIcon(result.task.providerId)} 
+                      <SvelteComponent_1 
                         class="h-4 w-4 text-blue-500" 
                       />
                       <span class="font-medium text-sm">

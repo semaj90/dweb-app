@@ -10,7 +10,7 @@
     onClose?: () => void;
   }
 
-  let {
+  let { children,
     open = $bindable(false),
     title = '',
     description = '',
@@ -29,7 +29,7 @@
 </script>
 
 {#if $dialogOpen}
-  <div use:overlay class="modal-overlay" />
+  <div use:overlay class="modal-overlay"></div>
   <div use:content class="modal-content">
     {#if title}
       <h2 use:titleEl class="modal-title">{title}</h2>
@@ -38,7 +38,7 @@
       <p use:descEl class="modal-description">{description}</p>
     {/if}
     <div class="modal-body">
-      <slot></slot>
+      {@render children?.()}
     </div>
     <button use:close class="modal-close">×</button>
   </div>

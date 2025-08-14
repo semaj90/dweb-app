@@ -15,9 +15,9 @@
   import { context7Service } from '$lib/services/context7Service';
 
   // Component state
-  let activeTab = 'overview';
-  let systemStatus = 'initializing';
-  let context7Stats: any = null;
+  let activeTab = $state('overview');
+  let systemStatus = $state('initializing');
+  let context7Stats: any = $state(null);
 
   // Phase 5 features checklist
   const phase5Features = [
@@ -223,8 +223,7 @@
             {#each phase5Features as feature}
               <div class="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div class="flex items-start gap-3">
-                  <svelte:component 
-                    this={feature.icon} 
+                  <feature.icon 
                     class="h-8 w-8 {getStatusIcon(feature.status)} flex-shrink-0 mt-1" 
                   />
                   <div class="flex-1">

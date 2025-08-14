@@ -10,7 +10,6 @@ Ollama/lib/ollama/cuda_v12/cublas64_12.dll
 
 # Large service binaries
 minio.exe
-minio-data/
 qdrant-extracted/
 qdrant-extracted/qdrant.exe
 neo4j-community-*.zip

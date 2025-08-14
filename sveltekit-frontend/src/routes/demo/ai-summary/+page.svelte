@@ -5,7 +5,7 @@
   import { Brain, FileText, GitMerge, Play } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
-  let activeTab = 'summary-reader';
+  let activeTab = $state('summary-reader');
   let demoMode = 'interactive';
 
   // Mock data for demonstrations

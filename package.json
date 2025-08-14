@@ -15,36 +15,36 @@
     "setup": "zx scripts/setup.mjs",
     "build": "cd sveltekit-frontend && npm run build",
     "test": "zx scripts/test.mjs",
-    
+
     "_comment_frontend": "=== FRONTEND DEVELOPMENT ===",
     "dev:frontend": "cd sveltekit-frontend && npm run dev",
     "check:full": "cd sveltekit-frontend && npm run check:all",
     "check": "cd sveltekit-frontend && npm run check:ultra-fast",
     "check:fast": "cd sveltekit-frontend && npm run check:fast",
     "check:ultra-fast": "cd sveltekit-frontend && npm run check:ultra-fast",
-    
+
     "_comment_deployment": "=== DEPLOYMENT & ORCHESTRATION ===",
     "deploy": "zx scripts/deploy.mjs",
     "changes:since": "node scripts/list-changes-since.mjs",
     "tag:legacy-go": "node scripts/tag-legacy-go-files.mjs",
-    
+
     "_comment_cli": "=== CLI TOOLS ===",
     "cli:detect": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cli-detect-update.ps1",
     "cli:update": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cli-detect-update.ps1 -AutoUpdate",
-    
+
     "_comment_ai": "=== AI & MACHINE LEARNING ===",
     "ai:chat": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ollama-json.ps1 -Mode chat -Prompt 'Hello from CI'",
     "ai:embed": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ollama-json.ps1 -Mode embeddings -Prompt 'contract liability terms'",
-    
+
     "_comment_vector": "=== VECTOR OPERATIONS ===",
     "vector:scan": "node scripts/scan-and-embed.mjs",
     "vector:search": "node scripts/search.mjs",
     "logs:ws": "node scripts/log-ws-server.mjs",
-    
+
     "_comment_seed": "=== DATA SEEDING ===",
     "seed:lawpdfs": "node scripts/seed-lawpdfs.mjs",
     "seed:quick": "cross-env SEED_PDF_DIR=./lawpdfs SEED_LIMIT=5 node scripts/seed-lawpdfs.mjs",
-    
+
     "_comment_startup_legacy": "=== LEGACY STARTUP METHODS ===",
     "dev:full": "./START-LEGAL-AI.bat",
     "dev:full:powershell": "powershell -ExecutionPolicy Bypass -File ./COMPLETE-LEGAL-AI-WIRE-UP.ps1 -Start",
@@ -52,7 +52,7 @@
     "dev:full:stop": "powershell -ExecutionPolicy Bypass -File ./COMPLETE-LEGAL-AI-WIRE-UP.ps1 -Stop",
     "dev:full:test": "powershell -ExecutionPolicy Bypass -File ./COMPLETE-LEGAL-AI-WIRE-UP.ps1 -Test",
     "dev:full:install": "powershell -ExecutionPolicy Bypass -File ./COMPLETE-LEGAL-AI-WIRE-UP.ps1 -Install",
-    
+
     "_comment_production": "=== COMPREHENSIVE PRODUCTION SYSTEM ===",
     "prod:install": "powershell -ExecutionPolicy Bypass -File ./COMPREHENSIVE-PRODUCTION-INTEGRATION.ps1 -Command Install",
     "prod:start": "powershell -ExecutionPolicy Bypass -File ./COMPREHENSIVE-PRODUCTION-INTEGRATION.ps1 -Command Start",
@@ -60,21 +60,21 @@
     "prod:status": "powershell -ExecutionPolicy Bypass -File ./COMPREHENSIVE-PRODUCTION-INTEGRATION.ps1 -Command Status",
     "prod:test": "powershell -ExecutionPolicy Bypass -File ./COMPREHENSIVE-PRODUCTION-INTEGRATION.ps1 -Command Test",
     "prod:build": "powershell -ExecutionPolicy Bypass -File ./COMPREHENSIVE-PRODUCTION-INTEGRATION.ps1 -Command Build",
-    
+
     "_comment_rabbitmq_legacy": "=== LEGACY RABBITMQ & NEO4J ===",
     "rabbitmq:install": "powershell -ExecutionPolicy Bypass -File ./SETUP-RABBITMQ-NEO4J-KRATOS.ps1 -Command Install",
     "rabbitmq:start": "powershell -ExecutionPolicy Bypass -File ./SETUP-RABBITMQ-NEO4J-KRATOS.ps1 -Command Start",
     "rabbitmq:stop": "powershell -ExecutionPolicy Bypass -File ./SETUP-RABBITMQ-NEO4J-KRATOS.ps1 -Command Stop",
     "rabbitmq:status": "powershell -ExecutionPolicy Bypass -File ./SETUP-RABBITMQ-NEO4J-KRATOS.ps1 -Command Status",
     "rabbitmq:configure": "powershell -ExecutionPolicy Bypass -File ./SETUP-RABBITMQ-NEO4J-KRATOS.ps1 -Command Configure",
-    
+
     "_comment_nats": "=== NATS MESSAGE STREAMING ===",
     "nats:start": "powershell -Command \"Start-Process -NoNewWindow -FilePath '.\\\\nats-server.exe' -ArgumentList '--port','4222','--http_port','8222'\"",
     "nats:stop": "powershell -Command \"Get-Process -Name 'nats-server' -ErrorAction SilentlyContinue | Stop-Process -Force\"",
     "nats:status": "curl -s http://localhost:8222/varz | jq .port",
     "nats:pub": "powershell -Command \"'.\\\\nats.exe' pub legal.ai.test 'Hello NATS'\"",
     "nats:sub": "powershell -Command \"'.\\\\nats.exe' sub legal.ai.test\"",
-    
+
     "_comment_kratos": "=== ORY KRATOS IDENTITY MANAGEMENT ===",
     "kratos:start": "powershell -Command \"Start-Process -NoNewWindow -FilePath '.\\\\kratos.exe' -ArgumentList 'serve','--dev','--config','kratos\\\\kratos.yml'\"",
     "kratos:stop": "powershell -Command \"Get-Process -Name 'kratos' -ErrorAction SilentlyContinue | Stop-Process -Force\"",
@@ -82,7 +82,7 @@
     "kratos:status": "curl -s http://localhost:4434/health/ready",
     "kratos:admin": "start http://localhost:4434",
     "kratos:public": "start http://localhost:4433",
-    
+
     "_comment_neo4j": "=== NEO4J GRAPH DATABASE ===",
     "neo4j:start": "powershell -Command \"Start-Service -Name 'Neo4j' -ErrorAction SilentlyContinue\"",
     "neo4j:stop": "powershell -Command \"Stop-Service -Name 'Neo4j' -Force -ErrorAction SilentlyContinue\"",
@@ -90,7 +90,7 @@
     "neo4j:browser": "start http://localhost:7474",
     "neo4j:query": "node scripts/neo4j-query.mjs",
     "neo4j:backup": "node scripts/neo4j-backup.mjs",
-    
+
     "_comment_gpu_webgpu": "=== GPU & WEBGPU PROCESSING ===",
     "gpu:test": "node scripts/test-gpu-worker.mjs",
     "gpu:status": "node scripts/gpu-status.mjs",
@@ -99,20 +99,20 @@
     "gpu:similarity": "curl -X POST http://localhost:8094/api/gpu/similarity -H \"Content-Type: application/json\" -d '{\"vector_a\":[0.1,0.2,0.3,0.4],\"vector_b\":[0.2,0.3,0.4,0.5]}'",
     "gpu:cluster": "curl -X POST http://localhost:8094/api/gpu/cluster -H \"Content-Type: application/json\" -d '{\"data_points\":[[1,2],[3,4],[5,6]],\"k\":2}'",
     "gpu:memory": "curl -s http://localhost:8094/health | jq .gpu_memory_mb",
-    
+
     "_comment_worker": "=== SERVICE WORKER & BACKGROUND ===",
     "worker:register": "node scripts/register-service-worker.mjs",
     "worker:test": "node scripts/test-service-worker.mjs",
     "worker:gpu": "node scripts/test-gpu-service-worker.mjs",
     "worker:unregister": "node scripts/unregister-service-worker.mjs",
-    
+
     "_comment_xstate": "=== XSTATE STATE MANAGEMENT ===",
     "xstate:visualize": "node scripts/xstate-visualizer.mjs",
     "xstate:test": "node scripts/test-xstate-machines.mjs",
     "xstate:debug": "node scripts/xstate-debug.mjs",
     "xstate:event": "curl -X POST http://localhost:8094/api/xstate/event -H \"Content-Type: application/json\" -d '{\"machine_id\":\"legal-ai\",\"event\":\"START_SEARCH\",\"data\":{\"query\":\"contract law\"}}'",
     "xstate:state": "curl -s http://localhost:8094/api/xstate/state | jq .current_state",
-    
+
     "_comment_go": "=== GO MICROSERVICES ===",
     "go:build": "cd go-microservice && go build -o bin/enhanced-rag.exe cmd/enhanced-rag/main.go",
     "go:build:upload": "cd go-microservice && go build -o bin/upload-service.exe cmd/upload-service/main.go",
@@ -124,7 +124,7 @@
     "go:run:production": "cd go-microservice && go run cmd/production-rag/main.go",
     "go:mod:tidy": "cd go-microservice && go mod tidy",
     "go:mod:download": "cd go-microservice && go mod download",
-    
+
     "_comment_protocols": "=== MULTI-PROTOCOL TESTING ===",
     "test:http": "curl -s http://localhost:8094/health | jq",
     "test:grpc": "node scripts/test-grpc.mjs",
@@ -132,7 +132,7 @@
     "test:websocket": "node scripts/test-websocket.mjs",
     "test:nats-ws": "node scripts/test-nats-websocket-bridge.mjs",
     "test:all-protocols": "npm run test:http && npm run test:grpc && npm run test:quic && npm run test:websocket && npm run test:nats-ws",
-    
+
     "_comment_ai_ml": "=== AI & MACHINE LEARNING ===",
     "som:train": "node scripts/som-training.mjs",
     "som:visualize": "node scripts/som-visualizer.mjs",
@@ -142,7 +142,7 @@
     "vector:similarity": "node scripts/test-vector-similarity.mjs",
     "tensor:parse": "node scripts/test-tensor-parsing.mjs",
     "json:parse": "node scripts/test-json-tensor-parsing.mjs",
-    
+
     "_comment_integration": "=== INTEGRATION & E2E TESTING ===",
     "test:integration": "node scripts/integration-test.mjs",
     "test:e2e": "cd sveltekit-frontend && npm run test:e2e",
@@ -151,7 +151,7 @@
     "test:gpu-integration": "node scripts/test-gpu-integration.mjs",
     "test:production": "node scripts/test-production-integration.mjs",
     "test:comprehensive": "npm run prod:test",
-    
+
     "_comment_monitoring": "=== MONITORING & OBSERVABILITY ===",
     "monitor:start": "node scripts/monitoring-dashboard.mjs",
     "monitor:metrics": "node scripts/collect-metrics.mjs",
@@ -160,7 +160,7 @@
     "monitor:gpu": "node scripts/monitor-gpu-usage.mjs",
     "monitor:nats": "curl -s http://localhost:8222/varz | jq",
     "monitor:rabbitmq": "curl -s -u guest:guest http://localhost:15672/api/overview | jq",
-    
+
     "_comment_database": "=== DATABASE OPERATIONS ===",
     "db:migrate": "cd sveltekit-frontend && npx drizzle-kit migrate",
     "db:studio": "cd sveltekit-frontend && npx drizzle-kit studio",
@@ -169,12 +169,12 @@
     "db:backup": "node scripts/backup-database.mjs",
     "db:restore": "node scripts/restore-database.mjs",
     "db:status": "curl -s http://localhost:8094/api/db/status | jq",
-    
+
     "_comment_legal": "=== LEGAL-SPECIFIC OPERATIONS ===",
     "legal:precedent": "curl -X POST http://localhost:8094/api/legal/precedent-search -H \"Content-Type: application/json\" -d '{\"case_type\":\"contract\",\"keywords\":[\"liability\",\"breach\"]}'",
     "legal:compliance": "curl -X POST http://localhost:8094/api/legal/compliance-check -H \"Content-Type: application/json\" -d '{\"document_id\":\"doc-001\",\"regulations\":[\"GDPR\",\"SOX\"]}'",
     "legal:case-analysis": "curl -X POST http://localhost:8094/api/legal/case-analysis -H \"Content-Type: application/json\" -d '{\"case_id\":\"case-001\",\"analysis_type\":\"comprehensive\"}'",
-    
+
     "_comment_production_deploy": "=== PRODUCTION DEPLOYMENT ===",
     "production:build": "npm run go:build:all && npm run build",
     "production:start": "npm run prod:start",
@@ -183,7 +183,7 @@
     "production:backup": "node scripts/production-backup.mjs",
     "production:rollback": "node scripts/production-rollback.mjs",
     "production:scale": "node scripts/production-scale.mjs",
-    
+
     "_comment_development": "=== DEVELOPMENT TOOLS ===",
     "dev:docs": "node scripts/generate-docs.mjs",
     "dev:lint": "cd sveltekit-frontend && npm run lint",
@@ -191,19 +191,19 @@
     "dev:clean": "node scripts/clean-build-artifacts.mjs",
     "dev:reset-hard": "npm run dev:clean && npm run db:reset && npm run prod:stop && npm run prod:start",
     "dev:typecheck": "cd sveltekit-frontend && npx svelte-check --tsconfig ./tsconfig.json",
-    
+
     "_comment_mcp": "=== MCP FILESYSTEM INTEGRATION ===",
     "mcp:search": "node mcp-servers/mcp-filesystem-search.ts search",
     "mcp:index": "node mcp-servers/mcp-filesystem-search.ts index",
     "mcp:grep": "node mcp-servers/mcp-filesystem-search.ts grep",
     "mcp:graph": "node mcp-servers/mcp-filesystem-search.ts read_graph",
     "mcp:server": "node mcp-servers/mcp-server.js",
-    
+
     "_comment_context7": "=== CONTEXT7 INTEGRATION ===",
     "context7:start": "node scripts/context7-integration.mjs",
     "context7:patterns": "node scripts/context7-patterns.mjs",
     "context7:best-practices": "node scripts/context7-best-practices.mjs",
-    
+
     "_comment_utility": "=== UTILITY SCRIPTS ===",
     "utils:port-check": "node scripts/check-ports.mjs",
     "utils:system-info": "node scripts/system-info.mjs",
@@ -211,7 +211,7 @@
     "utils:optimize": "node scripts/optimize-system.mjs",
     "utils:cache-clear": "node scripts/clear-cache.mjs",
     "utils:memory-usage": "node scripts/memory-usage.mjs",
-    
+
     "_comment_quick_start": "=== QUICK START COMMANDS ===",
     "start:production": "npm run prod:start",
     "start:legacy": "npm run dev:full",

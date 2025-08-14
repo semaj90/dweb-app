@@ -9,7 +9,7 @@
 
 
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import SearchInput from "./SearchInput.svelte";
   import type { User } from "$lib/types/user";
 
@@ -60,7 +60,7 @@
 
   // Check if current route is active
   function isActiveRoute(path: string): boolean {
-    return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
+    return page.url.pathname === path || page.url.pathname.startsWith(path + '/');
   }
 </script>
 

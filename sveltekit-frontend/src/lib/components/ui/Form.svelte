@@ -21,7 +21,7 @@
     onchange?: (event: { values: Record<string, any> }) => void;
   }
 
-  let {
+  let { children,
     options = {},
     submitText = "Submit",
     submitVariant = "primary",
@@ -95,14 +95,7 @@
   {...restProps}
 >
   <!-- Form content -->
-  <slot
-    {form}
-    {formApi}
-    values={$form.values}
-    errors={$form.errors}
-    isValid={$form.isValid}
-    isDirty={$form.isDirty}
-  />
+  {@render children?.({ form, formApi, values: $form.values, errors: $form.errors, isValid: $form.isValid, isDirty: $form.isDirty, })}
 
   <!-- Form actions -->
   {#if showSubmitButton || showResetButton}

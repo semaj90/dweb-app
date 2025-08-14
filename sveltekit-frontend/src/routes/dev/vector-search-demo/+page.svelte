@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: A component can have a single top-level `<script>` element and/or a single top-level `<script module>` element
+https://svelte.dev/e/script_duplicate -->
 <script lang="ts">
   import { onMount } from 'svelte'
   let query = 'contract liability terms'

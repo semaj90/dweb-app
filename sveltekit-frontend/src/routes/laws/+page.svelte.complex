@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { enhance } from '$app/forms';
-  import * as Card from "$lib/components/ui/card/index.js";
+  import * as Card from "$lib/components/ui/Card";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Select from "$lib/components/ui/select/index.js";
@@ -31,15 +31,15 @@
   // Filtered quick links based on selection
   let filteredQuickLinks = $derived(() => {
     if (selectedJurisdiction === 'all') return data.quickLinks;
-    return data.quickLinks.filter(link => 
-      link.jurisdiction === selectedJurisdiction || 
+    return data.quickLinks.filter(link =>
+      link.jurisdiction === selectedJurisdiction ||
       link.jurisdiction === 'federal'
     );
   });
 
   async function performSearch() {
     if (!searchQuery.trim()) return;
-    
+
     isSearching = true;
     try {
       const params = new URLSearchParams({
@@ -50,7 +50,7 @@
 
       const response = await fetch(`/api/laws/search?${params}`);
       const result = await response.json();
-      
+
       if (result.success) {
         searchResults = result.laws || [];
       } else {
@@ -67,7 +67,7 @@
 
   async function performAISearch() {
     if (!searchQuery.trim()) return;
-    
+
     isSearching = true;
     try {
       const response = await fetch('/api/ai/legal-search', {
@@ -82,7 +82,7 @@
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         searchResults = result.laws || [];
       }
@@ -98,7 +98,7 @@
     aiSummaryDialog = true;
     isGeneratingSummary = true;
     aiSummary = '';
-    
+
     try {
       const response = await fetch('/api/ai/summarize', {
         method: 'POST',
@@ -111,7 +111,7 @@
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         aiSummary = result.summary;
       } else {
@@ -162,7 +162,7 @@
   <div class="text-center space-y-4">
     <h1 class="text-4xl font-bold tracking-tight">Legal Resources</h1>
     <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-      Browse California and state laws with AI-powered search and summaries. 
+      Browse California and state laws with AI-powered search and summaries.
       Access legal codes, regulations, and statutes with intelligent assistance.
     </p>
   </div>
@@ -196,7 +196,7 @@
             </Select.Content>
           </Select.Root>
         </div>
-        
+
         <div class="space-y-2">
           <label class="text-sm font-medium">Category</label>
           <Select.Root bind:selected={selectedCategory}>
@@ -255,8 +255,8 @@
         </Tabs.Content>
 
         <Tabs.Content value="client" class="space-y-4">
-          <FuseLegalSearch 
-            data={data.quickLinks} 
+          <FuseLegalSearch
+            data={data.quickLinks}
             onResultSelect={handleFuseSearchAction}
             placeholder="Instant search through quick links..."
             maxResults={6}
@@ -297,7 +297,7 @@
       <BookOpen class="h-6 w-6" />
       Quick Access
     </h2>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {#each filteredQuickLinks as link}
         <Card.Root class="hover:shadow-lg transition-all duration-200 group">
@@ -335,7 +335,7 @@
       <h2 class="text-2xl font-semibold">
         Search Results ({searchResults.length})
       </h2>
-      
+
       <div class="space-y-4">
         {#each searchResults as law}
           <Card.Root>
@@ -395,7 +395,7 @@
         AI-generated summary of {selectedLaw?.jurisdiction} law
       </Dialog.Description>
     </Dialog.Header>
-    
+
     <div class="space-y-4">
       {#if isGeneratingSummary}
         <div class="flex items-center justify-center py-8">
@@ -407,7 +407,7 @@
           <p>{aiSummary}</p>
         </div>
       {/if}
-      
+
       <div class="flex justify-end gap-2 pt-4">
         <Button variant="outline" onclick={() => aiSummaryDialog = false}>
           Close
@@ -424,7 +424,7 @@
 </Dialog.Root>
 
 <!-- AI Chat Widget -->
-<AIChatWidget 
+<AIChatWidget
   bind:open={aiChatOpen}
   context={chatContext}
   title="Legal AI Assistant"

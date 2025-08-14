@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: `{@const}` must be the immediate child of `{#snippet}`, `{#if}`, `{:else if}`, `{:else}`, `{#each}`, `{:then}`, `{:catch}`, `<svelte:fragment>`, `<svelte:boundary` or `<Component>`
+https://svelte.dev/e/const_tag_invalid_placement -->
 <!-- AI Demo Page - SvelteKit 2.0 + Svelte 5 + Ollama Integration -->
 <script lang="ts">
   import OllamaChatInterface from "$lib/components/OllamaChatInterface.svelte";

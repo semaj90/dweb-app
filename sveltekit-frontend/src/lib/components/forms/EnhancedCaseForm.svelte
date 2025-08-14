@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Identifier 'case_' has already been declared
+https://svelte.dev/e/js_parse_error -->
 <!-- Enhanced Case Form with proper schema mapping -->
 <script lang="ts">
   interface Props {

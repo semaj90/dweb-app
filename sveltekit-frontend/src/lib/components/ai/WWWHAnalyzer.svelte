@@ -1,9 +1,9 @@
 <script lang="ts">
   // Svelte 5 runes pattern
-  let inputText = '';
-  let result: string | null = null;
-  let loading = false;
-  let error: string | null = null;
+  let inputText = $state('');
+  let result: string | null = $state(null);
+  let loading = $state(false);
+  let error: string | null = $state(null);
 
   async function analyzeWWWH() {
     if (!inputText.trim()) return;

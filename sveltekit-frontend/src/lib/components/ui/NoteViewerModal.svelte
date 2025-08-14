@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     noteId: string;
@@ -14,7 +16,7 @@
     isOpen?: any;
     mode: "view" | "edit" ;
     canEdit?: any;
-    onSave: ((data: any) ;
+    onSave: (data: any) => void;
   }
   let {
     noteId,
@@ -31,7 +33,7 @@
     isOpen = false,
     mode = "view",
     canEdit = true,
-    onSave = > void) | undefined = undefined
+    onSave = undefined
   }: Props = $props();
 
 
@@ -48,11 +50,11 @@
   import RichTextEditor from "./RichTextEditor.svelte";
 
                               
-  let isSaved = false;
-  let editedContent = content;
-  let editedTitle = title;
-  let editedTags = [...tags];
-  let newTag = "";
+  let isSaved = $state(false);
+  let editedContent = $state(content);
+  let editedTitle = $state(title);
+  let editedTags = $state([...tags]);
+  let newTag = $state("");
 
   const {
     elements: { trigger, overlay, content: dialogContent, close },
@@ -65,11 +67,13 @@
     },
   });
 
-  $effect(() => { if (isOpen !== $open) {
-    open.set(isOpen);
-}
+  $effect(() => { 
+    if (isOpen !== $open) {
+      open.set(isOpen);
+    }
+  });
   // Parse markdown to HTML for display
-  let displayHtml = $derived(html || (markdown ? marked.parse(markdown) : ""););
+  let displayHtml = $derived(html || (markdown ? marked.parse(markdown) : ""));
 
   async function handleSaveForLater() {
     try {

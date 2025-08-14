@@ -1,11 +1,16 @@
 <script lang="ts">
   interface Props {
+    [key: string]: any
+  }
+
+  let { ...props }: Props = $props();
+  interface Props {
     onsummary?: (event?: any) => void;
   }
 
 
-    let summary = "";
-  let loading = false;
+    let summary = $state("");
+  let loading = $state(false);
   
   async function getSummary(text: string) {
     loading = true;
@@ -23,7 +28,7 @@
 
 <button
   class="space-y-4"
-  onclick={() => getSummary($$props.text)}
+  onclick={() => getSummary(props.text)}
   disabled={loading}
 >
   {#if loading}

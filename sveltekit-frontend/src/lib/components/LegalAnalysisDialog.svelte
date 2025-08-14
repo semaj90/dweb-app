@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: `</DialogDescription>` attempted to close an element that was not open
+https://svelte.dev/e/element_invalid_closing_tag -->
 <!-- Legal Case Analysis Dialog - Bits UI Component -->
 <script lang="ts">
   import { Dialog } from 'bits-ui/components/dialog';

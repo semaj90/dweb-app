@@ -2,12 +2,12 @@
   import { onMount } from 'svelte';
   import { getAvailableModels, runInference } from "$lib/llm/tauri-llm";
 
-  let models: string[] = [];
-  let selectedModel = '';
-  let prompt = '';
-  let result = '';
-  let loading = false;
-  let error = '';
+  let models: string[] = $state([]);
+  let selectedModel = $state('');
+  let prompt = $state('');
+  let result = $state('');
+  let loading = $state(false);
+  let error = $state('');
 
   onMount(async () => {
     try {

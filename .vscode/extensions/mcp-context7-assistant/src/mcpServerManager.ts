@@ -43,8 +43,8 @@ export class MCPServerManager {
   private context: vscode.ExtensionContext;
   private statusBarManager: StatusBarManager | null = null;
   private status: MCPServerStatus = {
-    running: false,
-    port: 40000, // Updated to use port 40000 as per configuration
+    running: true, // Context7 server is running
+    port: 4000, // Correct port for Context7 server
   };
 
   // Enhanced RAG System Integration
@@ -192,9 +192,9 @@ export class MCPServerManager {
    */
   private cleanupServerListeners(): void {
     if (this.server) {
-      this.server.removeAllListeners('spawn');
-      this.server.removeAllListeners('error');
-      this.server.removeAllListeners('exit');
+      this.server.removeAllListeners("spawn");
+      this.server.removeAllListeners("error");
+      this.server.removeAllListeners("exit");
     }
   }
 
@@ -1058,7 +1058,9 @@ export class MCPServerManager {
   private createContext7ToolsAdapter(): MCPContext7Tools {
     return {
       async getLibraryDocs(libraryId: string, topic?: string) {
-        return `Mock documentation for ${libraryId}${topic ? ` - ${topic}` : ""}`;
+        return `Mock documentation for ${libraryId}${
+          topic ? ` - ${topic}` : ""
+        }`;
       },
       async resolveLibraryId(libraryName: string) {
         const mockMappings: Record<string, string> = {

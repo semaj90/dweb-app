@@ -1,6 +1,6 @@
 <!-- YoRHa Terminal Navigation Component -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
 
   interface NavigationProps {
     brand?: string;
@@ -23,7 +23,7 @@
     ]
   }: NavigationProps = $props();
 
-  let currentPath = $derived($page.url.pathname);
+  let currentPath = $derived(page.url.pathname);
 
   function isActive(href: string): boolean {
     return currentPath === href || (href !== '/' && currentPath.startsWith(href));

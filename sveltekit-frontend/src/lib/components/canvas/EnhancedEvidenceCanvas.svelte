@@ -7,6 +7,7 @@
 
 
   import { browser } from "$app/environment";
+  import { onMount, onDestroy } from "svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import { notifications } from "$lib/stores/notification";
   import {
@@ -29,14 +30,14 @@
   // Dynamically imported in onMount for SSR safety
   let canvasService: any = null;
   let currentMode: string = "evidence";
-  let canvasContainer: HTMLDivElement;
+  let canvasContainer: HTMLDivElement = $state();
   let fabricCanvas: any = null;
-  let selectedTool = "select";
+  let selectedTool = $state("select");
   let isDrawing = false;
-  let fabricLoaded = false;
-  let canvasHistory: string[] = [];
-  let historyIndex = -1;
-  let zoom = 1;
+  let fabricLoaded = $state(false);
+  let canvasHistory: string[] = $state([]);
+  let historyIndex = $state(-1);
+  let zoom = $state(1);
   let readonly = false;
   let caseId: string | undefined = undefined;
   let evidenceItems: Array<any> = [];

@@ -423,7 +423,7 @@
     <canvas
       bind:this={canvasElement}
       class="block"
-    />
+></canvas>
     
     {#if isLoading}
       <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">

@@ -18,10 +18,10 @@
   import { onMount } from "svelte";
 
   // Import state
-  let importFile: File | null = null;
-  let importType = "all";
-  let overwriteExisting = false;
-  let isImporting = false;
+  let importFile: File | null = $state(null);
+  let importType = $state("all");
+  let overwriteExisting = $state(false);
+  let isImporting = $state(false);
   let importResults: {
     success: boolean;
     message: string;
@@ -33,7 +33,7 @@
       errors: string[];
     };
     error?: string;
-  } | null = null;
+  } | null = $state(null);
   let filePreview: {
     name: string;
     size: number;
@@ -41,11 +41,11 @@
     content?: string;
     data?: any;
     raw?: string;
-  } | null = null;
-  let dragActive = false;
+  } | null = $state(null);
+  let dragActive = $state(false);
 
   // File input reference
-  let fileInput: HTMLInputElement;
+  let fileInput: HTMLInputElement = $state();
 
   // Supported file types
   const supportedTypes = [

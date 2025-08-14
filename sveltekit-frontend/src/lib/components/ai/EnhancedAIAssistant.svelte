@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: `<div>` was left open
+https://svelte.dev/e/element_unclosed -->
 <script lang="ts">
   interface Props {
     onresponse?: (event?: any) => void;

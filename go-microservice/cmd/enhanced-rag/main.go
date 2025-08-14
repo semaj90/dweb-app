@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net"
 	"net/http"
 	"os"
@@ -21,8 +22,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/lucas-clemente/quic-go"
-	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/quic-go/quic-go"
+	"github.com/quic-go/quic-go/http3"
 	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 	"gorm.io/driver/postgres"
@@ -39,28 +40,28 @@ type EnhancedLegalAIService struct {
 	grpcServer   *grpc.Server
 	quicServer   *http3.Server
 	wsUpgrader   websocket.Upgrader
-	
+
 	// Messaging & Queues
 	rabbitmq     *RabbitMQManager
-	
+
 	// AI & Processing
 	aiProcessor  *AIProcessor
 	gpuManager   *GPUManager
 	som          *SelfOrganizingMap
-	
+
 	// State Management
 	stateManager *XStateManager
-	
+
 	// Database
 	db           *gorm.DB
-	
+
 	// Configuration
 	config       *ServiceConfig
-	
+
 	// Connection pools
 	wsConnections sync.Map
 	clients       sync.Map
-	
+
 	// Metrics
 	metrics      *ServiceMetrics
 }
@@ -112,24 +113,24 @@ func NewRabbitMQManager(url string) (*RabbitMQManager, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %v", err)
 	}
-	
+
 	ch, err := conn.Channel()
 	if err != nil {
 		return nil, fmt.Errorf("failed to open channel: %v", err)
 	}
-	
+
 	manager := &RabbitMQManager{
 		connection: conn,
 		channel:    ch,
 		queues:     make(map[string]amqp.Queue),
 		exchanges:  make(map[string]string),
 	}
-	
+
 	// Setup exchanges and queues
 	if err := manager.setupInfrastructure(); err != nil {
 		return nil, err
 	}
-	
+
 	return manager, nil
 }
 
@@ -137,11 +138,11 @@ func (rmq *RabbitMQManager) setupInfrastructure() error {
 	// Declare exchanges
 	exchanges := []string{
 		"legal.ai.direct",
-		"legal.ai.topic", 
+		"legal.ai.topic",
 		"legal.ai.fanout",
 		"legal.ai.delayed",
 	}
-	
+
 	for _, exchange := range exchanges {
 		if err := rmq.channel.ExchangeDeclare(
 			exchange, "topic", true, false, false, false, nil,
@@ -150,11 +151,11 @@ func (rmq *RabbitMQManager) setupInfrastructure() error {
 		}
 		rmq.exchanges[exchange] = "topic"
 	}
-	
+
 	// Declare queues
 	queueNames := []string{
 		"document.analysis",
-		"vector.search", 
+		"vector.search",
 		"chat.processing",
 		"gpu.computation",
 		"xstate.events",
@@ -162,7 +163,7 @@ func (rmq *RabbitMQManager) setupInfrastructure() error {
 		"precedent.search",
 		"compliance.check",
 	}
-	
+
 	for _, queueName := range queueNames {
 		queue, err := rmq.channel.QueueDeclare(
 			queueName, true, false, false, false, nil,
@@ -171,7 +172,7 @@ func (rmq *RabbitMQManager) setupInfrastructure() error {
 			return err
 		}
 		rmq.queues[queueName] = queue
-		
+
 		// Bind queue to exchange
 		if err := rmq.channel.QueueBind(
 			queueName, queueName, "legal.ai.topic", false, nil,
@@ -179,19 +180,19 @@ func (rmq *RabbitMQManager) setupInfrastructure() error {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
 func (rmq *RabbitMQManager) PublishMessage(queue string, message *Message) error {
 	rmq.mutex.Lock()
 	defer rmq.mutex.Unlock()
-	
+
 	body, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
-	
+
 	return rmq.channel.Publish(
 		"legal.ai.topic", queue, false, false,
 		amqp.Publishing{
@@ -212,7 +213,7 @@ func (rmq *RabbitMQManager) ConsumeMessages(queue string, handler func(*Message)
 	if err != nil {
 		return err
 	}
-	
+
 	go func() {
 		for msg := range messages {
 			var message Message
@@ -221,7 +222,7 @@ func (rmq *RabbitMQManager) ConsumeMessages(queue string, handler func(*Message)
 				msg.Nack(false, false)
 				continue
 			}
-			
+
 			if err := handler(&message); err != nil {
 				log.Printf("Error handling message: %v", err)
 				msg.Nack(false, true) // Requeue
@@ -230,7 +231,7 @@ func (rmq *RabbitMQManager) ConsumeMessages(queue string, handler func(*Message)
 			}
 		}
 	}()
-	
+
 	return nil
 }
 
@@ -300,9 +301,9 @@ func NewGPUMemoryPool() *GPUMemoryPool {
 func (gpu *GPUManager) CreateVertexBuffer(id string, data []float32, usage string) error {
 	gpu.mutex.Lock()
 	defer gpu.mutex.Unlock()
-	
+
 	size := len(data) * 4 // float32 = 4 bytes
-	
+
 	// Allocate GPU memory
 	allocation := &MemoryAllocation{
 		ID:       id,
@@ -311,11 +312,11 @@ func (gpu *GPUManager) CreateVertexBuffer(id string, data []float32, usage strin
 		Created:  time.Now(),
 		LastUsed: time.Now(),
 	}
-	
+
 	if !gpu.memoryPool.Allocate(allocation) {
 		return fmt.Errorf("insufficient GPU memory for vertex buffer %s", id)
 	}
-	
+
 	buffer := &VertexBuffer{
 		ID:         id,
 		Size:       size,
@@ -323,9 +324,9 @@ func (gpu *GPUManager) CreateVertexBuffer(id string, data []float32, usage strin
 		Usage:      usage,
 		LastUpdate: time.Now(),
 	}
-	
+
 	gpu.vertexBuffers[id] = buffer
-	
+
 	log.Printf("Created GPU vertex buffer: %s (%d bytes)", id, size)
 	return nil
 }
@@ -333,20 +334,20 @@ func (gpu *GPUManager) CreateVertexBuffer(id string, data []float32, usage strin
 func (gpu *GPUManager) UpdateVertexBuffer(id string, data []float32) error {
 	gpu.mutex.Lock()
 	defer gpu.mutex.Unlock()
-	
+
 	buffer, exists := gpu.vertexBuffers[id]
 	if !exists {
 		return fmt.Errorf("vertex buffer %s not found", id)
 	}
-	
+
 	buffer.Data = data
 	buffer.LastUpdate = time.Now()
-	
+
 	// Update GPU memory allocation
 	if allocation, exists := gpu.memoryPool.Allocations[id]; exists {
 		allocation.LastUsed = time.Now()
 	}
-	
+
 	return nil
 }
 
@@ -354,14 +355,14 @@ func (gpu *GPUManager) ExecuteComputeShader(shaderID string, inputs map[string]i
 	gpu.mutex.RLock()
 	shader, exists := gpu.computeShaders[shaderID]
 	gpu.mutex.RUnlock()
-	
+
 	if !exists {
 		return nil, fmt.Errorf("compute shader %s not found", shaderID)
 	}
-	
+
 	// Simulate GPU compute execution
 	results := make(map[string]interface{})
-	
+
 	switch shaderID {
 	case "vector_similarity":
 		results["similarity_scores"] = gpu.computeVectorSimilarity(inputs)
@@ -370,7 +371,7 @@ func (gpu *GPUManager) ExecuteComputeShader(shaderID string, inputs map[string]i
 	case "document_embedding":
 		results["embeddings"] = gpu.computeEmbeddings(inputs)
 	}
-	
+
 	return results, nil
 }
 
@@ -402,15 +403,15 @@ func (gpu *GPUManager) computeEmbeddings(inputs map[string]interface{}) []float3
 func (pool *GPUMemoryPool) Allocate(allocation *MemoryAllocation) bool {
 	pool.mutex.Lock()
 	defer pool.mutex.Unlock()
-	
+
 	if pool.AvailableMemory < allocation.Size {
 		return false
 	}
-	
+
 	pool.Allocations[allocation.ID] = allocation
 	pool.AvailableMemory -= allocation.Size
 	pool.UsedMemory += allocation.Size
-	
+
 	return true
 }
 
@@ -461,7 +462,7 @@ func NewSelfOrganizingMap(width, height, inputSize int) *SelfOrganizingMap {
 		Radius:      float64(width) / 2,
 		EventBus:    NewEventBus(),
 	}
-	
+
 	// Initialize neurons
 	for y := 0; y < height; y++ {
 		som.Neurons[y] = make([]*SOMNeuron, width)
@@ -472,16 +473,16 @@ func NewSelfOrganizingMap(width, height, inputSize int) *SelfOrganizingMap {
 				Weights: make([]float64, inputSize),
 				Hits:    0,
 			}
-			
+
 			// Random weight initialization
 			for i := range neuron.Weights {
 				neuron.Weights[i] = (float64(i%100) / 100.0) - 0.5
 			}
-			
+
 			som.Neurons[y][x] = neuron
 		}
 	}
-	
+
 	return som
 }
 
@@ -494,7 +495,7 @@ func NewEventBus() *EventBus {
 func (bus *EventBus) Subscribe(eventType string, listener EventListener) {
 	bus.mutex.Lock()
 	defer bus.mutex.Unlock()
-	
+
 	bus.listeners[eventType] = append(bus.listeners[eventType], listener)
 }
 
@@ -502,11 +503,11 @@ func (bus *EventBus) Publish(event *Event) {
 	bus.mutex.RLock()
 	listeners, exists := bus.listeners[event.Type]
 	bus.mutex.RUnlock()
-	
+
 	if !exists {
 		return
 	}
-	
+
 	for _, listener := range listeners {
 		go listener(event) // Async event handling
 	}
@@ -515,7 +516,7 @@ func (bus *EventBus) Publish(event *Event) {
 func (som *SelfOrganizingMap) Train(inputVectors [][]float64) {
 	som.mutex.Lock()
 	defer som.mutex.Unlock()
-	
+
 	som.EventBus.Publish(&Event{
 		Type: "som.training.started",
 		Data: map[string]interface{}{
@@ -525,16 +526,16 @@ func (som *SelfOrganizingMap) Train(inputVectors [][]float64) {
 		Timestamp: time.Now(),
 		Source:    "som",
 	})
-	
+
 	for iteration := 0; iteration < som.Iterations; iteration++ {
 		for _, input := range inputVectors {
 			// Find best matching unit (BMU)
 			bmu := som.findBMU(input)
-			
+
 			// Update weights in neighborhood
 			som.updateNeighborhood(bmu, input, iteration)
 		}
-		
+
 		// Publish progress event
 		if iteration%100 == 0 {
 			som.EventBus.Publish(&Event{
@@ -548,7 +549,7 @@ func (som *SelfOrganizingMap) Train(inputVectors [][]float64) {
 			})
 		}
 	}
-	
+
 	som.EventBus.Publish(&Event{
 		Type: "som.training.completed",
 		Data: map[string]interface{}{
@@ -562,31 +563,31 @@ func (som *SelfOrganizingMap) Train(inputVectors [][]float64) {
 func (som *SelfOrganizingMap) findBMU(input []float64) *SOMNeuron {
 	var bmu *SOMNeuron
 	minDistance := float64(^uint(0) >> 1) // Max float64
-	
+
 	for y := 0; y < som.Height; y++ {
 		for x := 0; x < som.Width; x++ {
 			neuron := som.Neurons[y][x]
 			distance := som.euclideanDistance(input, neuron.Weights)
-			
+
 			if distance < minDistance {
 				minDistance = distance
 				bmu = neuron
 			}
 		}
 	}
-	
+
 	return bmu
 }
 
 func (som *SelfOrganizingMap) updateNeighborhood(bmu *SOMNeuron, input []float64, iteration int) {
 	currentRadius := som.Radius * (1 - float64(iteration)/float64(som.Iterations))
 	currentLearningRate := som.LearningRate * (1 - float64(iteration)/float64(som.Iterations))
-	
+
 	for y := 0; y < som.Height; y++ {
 		for x := 0; x < som.Width; x++ {
 			neuron := som.Neurons[y][x]
 			distance := som.neuronDistance(bmu, neuron)
-			
+
 			if distance <= currentRadius {
 				influence := som.calculateInfluence(distance, currentRadius)
 				som.updateNeuronWeights(neuron, input, currentLearningRate*influence)
@@ -669,30 +670,30 @@ func NewXStateManager() *XStateManager {
 		contexts: make(map[string]map[string]interface{}),
 		events:   make(chan *StateEvent, 1000),
 	}
-	
+
 	// Start event processor
 	go manager.processEvents()
-	
+
 	return manager
 }
 
 func (xsm *XStateManager) CreateMachine(id string, config map[string]interface{}) error {
 	xsm.mutex.Lock()
 	defer xsm.mutex.Unlock()
-	
+
 	machine := &StateMachine{
 		ID:          id,
 		States:      make(map[string]*State),
 		Transitions: make(map[string][]Transition),
 		Context:     make(map[string]interface{}),
 	}
-	
+
 	// Parse configuration
 	if initial, ok := config["initial"].(string); ok {
 		machine.InitialState = initial
 		machine.CurrentState = initial
 	}
-	
+
 	if states, ok := config["states"].(map[string]interface{}); ok {
 		for stateID, stateConfig := range states {
 			state := &State{
@@ -700,7 +701,7 @@ func (xsm *XStateManager) CreateMachine(id string, config map[string]interface{}
 				Type: "normal",
 				Meta: make(map[string]interface{}),
 			}
-			
+
 			if sc, ok := stateConfig.(map[string]interface{}); ok {
 				if stateType, ok := sc["type"].(string); ok {
 					state.Type = stateType
@@ -709,14 +710,14 @@ func (xsm *XStateManager) CreateMachine(id string, config map[string]interface{}
 					state.Actions = actions
 				}
 			}
-			
+
 			machine.States[stateID] = state
 		}
 	}
-	
+
 	xsm.machines[id] = machine
 	xsm.contexts[id] = machine.Context
-	
+
 	return nil
 }
 
@@ -727,7 +728,7 @@ func (xsm *XStateManager) SendEvent(machineID string, eventType string, data map
 		Data:      data,
 		Timestamp: time.Now(),
 	}
-	
+
 	select {
 	case xsm.events <- event:
 		return nil
@@ -745,29 +746,29 @@ func (xsm *XStateManager) processEvents() {
 func (xsm *XStateManager) handleEvent(event *StateEvent) {
 	xsm.mutex.Lock()
 	defer xsm.mutex.Unlock()
-	
+
 	machine, exists := xsm.machines[event.MachineID]
 	if !exists {
 		log.Printf("Machine %s not found", event.MachineID)
 		return
 	}
-	
+
 	// Process state transition
 	transitions, exists := machine.Transitions[machine.CurrentState]
 	if !exists {
 		return
 	}
-	
+
 	for _, transition := range transitions {
 		if transition.Event == event.Type {
 			// Execute transition
 			machine.CurrentState = transition.Target
-			
+
 			// Execute actions
 			for _, action := range transition.Actions {
 				xsm.executeAction(machine, action, event.Data)
 			}
-			
+
 			log.Printf("Machine %s transitioned to %s", event.MachineID, transition.Target)
 			break
 		}
@@ -797,26 +798,26 @@ func (service *EnhancedLegalAIService) startQUICServer() error {
 		Certificates: []tls.Certificate{service.generateSelfSignedCert()},
 		NextProtos:   []string{"h3"},
 	}
-	
+
 	server := &http3.Server{
 		Handler: service.createQUICHandler(),
 		Addr:    ":" + service.config.QUICPort,
 		TLSConfig: tlsConfig,
 	}
-	
+
 	service.quicServer = server
-	
+
 	log.Printf("🚀 QUIC server starting on port %s", service.config.QUICPort)
 	return server.ListenAndServe()
 }
 
 func (service *EnhancedLegalAIService) createQUICHandler() http.Handler {
 	mux := http.NewServeMux()
-	
+
 	mux.HandleFunc("/api/quic/search", service.handleQUICSearch)
 	mux.HandleFunc("/api/quic/chat", service.handleQUICChat)
 	mux.HandleFunc("/api/quic/stream", service.handleQUICStream)
-	
+
 	return mux
 }
 
@@ -824,14 +825,14 @@ func (service *EnhancedLegalAIService) handleQUICSearch(w http.ResponseWriter, r
 	// QUIC-optimized search with multiplexing
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("X-Protocol", "QUIC")
-	
+
 	response := map[string]interface{}{
 		"protocol": "QUIC",
 		"results":  []string{"Result 1", "Result 2", "Result 3"},
 		"latency":  "5ms",
 		"streams":  4,
 	}
-	
+
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -839,14 +840,14 @@ func (service *EnhancedLegalAIService) handleQUICChat(w http.ResponseWriter, r *
 	// QUIC-optimized chat with stream multiplexing
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("X-Protocol", "QUIC")
-	
+
 	response := map[string]interface{}{
 		"protocol": "QUIC",
 		"message":  "Chat response via QUIC protocol",
 		"stream_id": 1,
 		"multiplexed": true,
 	}
-	
+
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -854,14 +855,14 @@ func (service *EnhancedLegalAIService) handleQUICStream(w http.ResponseWriter, r
 	// QUIC streaming endpoint
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("X-Protocol", "QUIC")
-	
+
 	for i := 0; i < 10; i++ {
 		data := map[string]interface{}{
 			"id":   i,
 			"data": fmt.Sprintf("Stream data %d", i),
 			"time": time.Now(),
 		}
-		
+
 		json.NewEncoder(w).Encode(data)
 		time.Sleep(100 * time.Millisecond)
 	}
@@ -897,7 +898,7 @@ func (service *EnhancedLegalAIService) handleWebSocket(w http.ResponseWriter, r 
 		return
 	}
 	defer conn.Close()
-	
+
 	// Create connection object
 	wsConn := &WSConnection{
 		ID:        generateID(),
@@ -908,13 +909,13 @@ func (service *EnhancedLegalAIService) handleWebSocket(w http.ResponseWriter, r 
 		LastPing:  time.Now(),
 		Subscriptions: []string{},
 	}
-	
+
 	// Store connection
 	service.wsConnections.Store(wsConn.ID, wsConn)
 	service.metrics.WSConnections++
-	
+
 	log.Printf("WebSocket connected: %s", wsConn.ID)
-	
+
 	// Handle messages
 	for {
 		var message map[string]interface{}
@@ -922,10 +923,10 @@ func (service *EnhancedLegalAIService) handleWebSocket(w http.ResponseWriter, r 
 			log.Printf("WebSocket read error: %v", err)
 			break
 		}
-		
+
 		service.handleWebSocketMessage(wsConn, message)
 	}
-	
+
 	// Cleanup
 	service.wsConnections.Delete(wsConn.ID)
 	service.metrics.WSConnections--
@@ -937,7 +938,7 @@ func (service *EnhancedLegalAIService) handleWebSocketMessage(conn *WSConnection
 	if !ok {
 		return
 	}
-	
+
 	switch msgType {
 	case "ping":
 		conn.LastPing = time.Now()
@@ -945,7 +946,7 @@ func (service *EnhancedLegalAIService) handleWebSocketMessage(conn *WSConnection
 			"type": "pong",
 			"timestamp": time.Now(),
 		})
-		
+
 	case "subscribe":
 		if channels, ok := message["channels"].([]interface{}); ok {
 			for _, ch := range channels {
@@ -954,15 +955,15 @@ func (service *EnhancedLegalAIService) handleWebSocketMessage(conn *WSConnection
 				}
 			}
 		}
-		
+
 	case "gpu_compute":
 		// Process GPU computation request
 		go service.handleGPUComputeRequest(conn, message)
-		
+
 	case "som_training":
 		// Process SOM training request
 		go service.handleSOMTrainingRequest(conn, message)
-		
+
 	case "xstate_event":
 		// Process XState event
 		service.handleXStateEvent(conn, message)
@@ -976,14 +977,14 @@ func (service *EnhancedLegalAIService) sendWebSocketMessage(conn *WSConnection, 
 func (service *EnhancedLegalAIService) broadcastToSubscribers(channel string, message map[string]interface{}) {
 	service.wsConnections.Range(func(key, value interface{}) bool {
 		conn := value.(*WSConnection)
-		
+
 		for _, sub := range conn.Subscriptions {
 			if sub == channel {
 				service.sendWebSocketMessage(conn, message)
 				break
 			}
 		}
-		
+
 		return true
 	})
 }
@@ -997,37 +998,37 @@ func NewEnhancedLegalAIService(config *ServiceConfig) (*EnhancedLegalAIService, 
 		config:  config,
 		metrics: &ServiceMetrics{},
 	}
-	
+
 	// Initialize components
 	var err error
-	
+
 	// Database
 	service.db, err = gorm.Open(postgres.Open(config.PostgresURL), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
-	
+
 	// RabbitMQ
 	service.rabbitmq, err = NewRabbitMQManager(config.RabbitMQURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %v", err)
 	}
-	
+
 	// GPU Manager
 	service.gpuManager = NewGPUManager(config.GPUEnabled, 0)
-	
+
 	// Self-Organizing Map
 	service.som = NewSelfOrganizingMap(20, 20, 384) // 384D embeddings
-	
+
 	// XState Manager
 	service.stateManager = NewXStateManager()
-	
+
 	// WebSocket setup
 	service.setupWebSocket()
-	
+
 	// Setup event listeners
 	service.setupEventListeners()
-	
+
 	return service, nil
 }
 
@@ -1039,7 +1040,7 @@ func (service *EnhancedLegalAIService) setupEventListeners() {
 			"data": event.Data,
 		})
 	})
-	
+
 	// GPU computation events
 	service.som.EventBus.Subscribe("gpu.computation.completed", func(event *Event) {
 		service.broadcastToSubscribers("gpu_updates", map[string]interface{}{
@@ -1056,26 +1057,26 @@ func (service *EnhancedLegalAIService) Start() error {
 			log.Printf("HTTP server error: %v", err)
 		}
 	}()
-	
+
 	go func() {
 		if err := service.startGRPCServer(); err != nil {
 			log.Printf("gRPC server error: %v", err)
 		}
 	}()
-	
+
 	go func() {
 		if err := service.startQUICServer(); err != nil {
 			log.Printf("QUIC server error: %v", err)
 		}
 	}()
-	
+
 	// Setup message consumers
 	service.setupMessageConsumers()
-	
+
 	log.Printf("🚀 Enhanced Legal AI Service started with full integration")
-	log.Printf("📡 HTTP: :%s, gRPC: :%s, QUIC: :%s", 
+	log.Printf("📡 HTTP: :%s, gRPC: :%s, QUIC: :%s",
 		service.config.HTTPPort, service.config.GRPCPort, service.config.QUICPort)
-	
+
 	// Block main goroutine
 	select {}
 }
@@ -1083,19 +1084,19 @@ func (service *EnhancedLegalAIService) Start() error {
 func (service *EnhancedLegalAIService) startHTTPServer() error {
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	
+
 	// CORS
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	config.AllowHeaders = []string{"*"}
 	router.Use(cors.New(config))
-	
+
 	// WebSocket endpoint
 	router.GET("/ws", func(c *gin.Context) {
 		service.handleWebSocket(c.Writer, c.Request)
 	})
-	
+
 	// API routes
 	api := router.Group("/api")
 	{
@@ -1104,12 +1105,12 @@ func (service *EnhancedLegalAIService) startHTTPServer() error {
 		api.POST("/som/train", service.handleSOMTrain)
 		api.POST("/xstate/event", service.handleXStateEventHTTP)
 	}
-	
+
 	server := &http.Server{
 		Addr:    ":" + service.config.HTTPPort,
 		Handler: router,
 	}
-	
+
 	service.httpServer = server
 	return server.ListenAndServe()
 }
@@ -1125,12 +1126,12 @@ func main() {
 		GPUEnabled:  true,
 		Debug:       true,
 	}
-	
+
 	service, err := NewEnhancedLegalAIService(config)
 	if err != nil {
 		log.Fatalf("Failed to create service: %v", err)
 	}
-	
+
 	if err := service.Start(); err != nil {
 		log.Fatalf("Failed to start service: %v", err)
 	}
@@ -1151,5 +1152,3 @@ func (service *EnhancedLegalAIService) generateSelfSignedCert() tls.Certificate 
 	return cert
 }
 
-// Additional imports needed
-import "math"

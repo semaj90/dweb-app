@@ -9,7 +9,7 @@
 
 
 
-  import { melt } from "@melt-ui/svelte";
+  import { melt } from "@melt-ui/svelte"; children,
   
     
     const contextMenu = (getContext("contextMenu") as any) || {
@@ -30,5 +30,5 @@
   {disabled}
   onclick={() => handleSelect()}
 >
-  <slot></slot>
+  {@render children?.()}
 </button>

@@ -564,9 +564,9 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
           <CardContent>
             <div class="space-y-3">
               {#each currentResult.nextActions as action}
+                {@const SvelteComponent = getActionIcon(action.type)}
                 <div class="flex items-start gap-3 p-3 border rounded-lg">
-                  <svelte:component 
-                    this={getActionIcon(action.type)} 
+                  <SvelteComponent 
                     class="h-5 w-5 text-blue-500 mt-0.5" 
                   />
                   <div class="flex-1">

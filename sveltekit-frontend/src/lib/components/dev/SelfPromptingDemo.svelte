@@ -25,12 +25,12 @@
   const currentPhase = writable<string>('idle');
 
   // Workflow configuration
-  let selectedWorkflow = 'legal-evidence-analysis';
-  let initialPrompt = 'Analyze the evidence for case CASE-2024-001 and build a comprehensive legal argument';
-  let enableSelfPrompting = true;
-  let enableMultiAgent = true;
-  let maxIterations = 3;
-  let currentIteration = 0;
+  let selectedWorkflow = $state('legal-evidence-analysis');
+  let initialPrompt = $state('Analyze the evidence for case CASE-2024-001 and build a comprehensive legal argument');
+  let enableSelfPrompting = $state(true);
+  let enableMultiAgent = $state(true);
+  let maxIterations = $state(3);
+  let currentIteration = $state(0);
 
   // Progress tracking
   const progress = derived([currentPhase, isRunning], ([$phase, $running]) => {

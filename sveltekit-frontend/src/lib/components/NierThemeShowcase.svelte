@@ -215,7 +215,7 @@
               use:melt={$overlay}
               class="nier-modal-overlay"
               transitionfade={{ duration: 200 }}
-            />
+></div>
             
             <div
               use:melt={$content}

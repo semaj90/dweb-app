@@ -24,9 +24,9 @@
     Sparkles
   } from 'lucide-svelte';
 
-  let activeTheme = 'default';
-  let showGrid = true;
-  let componentFilter = 'all';
+  let activeTheme = $state('default');
+  let showGrid = $state(true);
+  let componentFilter = $state('all');
 
   const themeVariants = {
     default: { name: 'YoRHa Default', class: '' },
@@ -90,7 +90,7 @@
     { name: 'Data Tables', description: 'Sortable, filterable tables for legal data' }
   ];
 
-  let demoContent = `<h1>Legal Document Analysis</h1>
+  let demoContent = $state(`<h1>Legal Document Analysis</h1>
 <p>This professional editor demonstrates advanced typography and formatting capabilities designed specifically for legal professionals.</p>
 
 <h2>Contract Analysis Summary</h2>
@@ -103,7 +103,7 @@
   <li><strong>Intellectual Property</strong> - Work-for-hire agreement with copyright assignment</li>
 </ul>
 
-<p>Use <kbd>Ctrl+B</kbd> for bold, <kbd>Ctrl+I</kbd> for italic, and <kbd>F11</kbd> for fullscreen mode.</p>`;
+<p>Use <kbd>Ctrl+B</kbd> for bold, <kbd>Ctrl+I</kbd> for italic, and <kbd>F11</kbd> for fullscreen mode.</p>`);
 </script>
 
 <svelte:head>
@@ -211,8 +211,7 @@
         {#each features as feature}
           <Card class="feature-showcase">
             <CardContent class="text-center p-6">
-              <svelte:component 
-                this={feature.icon} 
+              <feature.icon 
                 class="feature-icon {feature.color} mx-auto mb-4" 
               />
               <h3 class="feature-title">{feature.title}</h3>

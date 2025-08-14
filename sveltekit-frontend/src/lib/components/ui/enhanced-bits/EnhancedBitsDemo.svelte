@@ -122,7 +122,7 @@
           onclick={() => currentTab = section.id}
         >
           <div class="flex items-center gap-2">
-            <svelte:component this={section.icon} class="w-4 h-4" />
+            <section.icon class="w-4 h-4" />
             {section.label}
           </div>
         </button>
@@ -308,62 +308,64 @@
           legal
           caseManagement
         >
-          <div slot="content">
-            <div class="yorha-panel-header">
-              <h2 class="text-xl font-gothic text-nier-text-primary">Case Management System</h2>
-              <p class="text-nier-text-secondary mt-2">
-                Comprehensive case tracking and evidence management for legal professionals.
-              </p>
-            </div>
-            
-            <div class="yorha-panel-content space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Select
-                  bind:value={selectedCaseType}
-                  options={caseTypes}
-                  placeholder="Select case type..."
-                  legal
-                  caseType
-                  label="Case Category"
-                />
-                
-                <Input
-                  variant="legal"
-                  placeholder="Enter case title..."
-                  label="Case Title"
-                  required
-                  legal
-                />
+          {#snippet content()}
+                            <div >
+              <div class="yorha-panel-header">
+                <h2 class="text-xl font-gothic text-nier-text-primary">Case Management System</h2>
+                <p class="text-nier-text-secondary mt-2">
+                  Comprehensive case tracking and evidence management for legal professionals.
+                </p>
               </div>
               
-              <div class="agent-card p-4">
-                <h3 class="font-semibold text-nier-text-primary mb-2">AI Assistant Recommendations</h3>
-                <ul class="space-y-2 text-sm text-nier-text-secondary">
-                  <li class="flex items-center gap-2">
-                    <div class="ai-status-indicator ai-status-online w-2 h-2"></div>
-                    Configure evidence collection strategy
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <div class="ai-status-indicator ai-status-online w-2 h-2"></div>
-                    Set up automated document review
-                  </li>
-                  <li class="flex items-center gap-2">
-                    <div class="ai-status-indicator ai-status-processing w-2 h-2"></div>
-                    Schedule precedent research
-                  </li>
-                </ul>
+              <div class="yorha-panel-content space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select
+                    bind:value={selectedCaseType}
+                    options={caseTypes}
+                    placeholder="Select case type..."
+                    legal
+                    caseType
+                    label="Case Category"
+                  />
+                  
+                  <Input
+                    variant="legal"
+                    placeholder="Enter case title..."
+                    label="Case Title"
+                    required
+                    legal
+                  />
+                </div>
+                
+                <div class="agent-card p-4">
+                  <h3 class="font-semibold text-nier-text-primary mb-2">AI Assistant Recommendations</h3>
+                  <ul class="space-y-2 text-sm text-nier-text-secondary">
+                    <li class="flex items-center gap-2">
+                      <div class="ai-status-indicator ai-status-online w-2 h-2"></div>
+                      Configure evidence collection strategy
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <div class="ai-status-indicator ai-status-online w-2 h-2"></div>
+                      Set up automated document review
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <div class="ai-status-indicator ai-status-processing w-2 h-2"></div>
+                      Schedule precedent research
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="bits-dialog-footer">
+                <Button variant="outline" onclick={() => dialogOpen = false}>
+                  Cancel
+                </Button>
+                <Button variant="primary" legal>
+                  Create Case
+                </Button>
               </div>
             </div>
-            
-            <div class="bits-dialog-footer">
-              <Button variant="outline" onclick={() => dialogOpen = false}>
-                Cancel
-              </Button>
-              <Button variant="primary" legal>
-                Create Case
-              </Button>
-            </div>
-          </div>
+                          {/snippet}
         </Dialog>
 
         <!-- Evidence Upload Dialog -->
@@ -373,52 +375,54 @@
           legal
           evidenceAnalysis
         >
-          <div slot="content">
-            <div class="yorha-panel-header">
-              <h2 class="text-xl font-gothic text-nier-text-primary">Evidence Upload</h2>
-              <p class="text-nier-text-secondary mt-2">
-                Upload and categorize evidence with AI-powered analysis.
-              </p>
-            </div>
-            
-            <div class="yorha-panel-content space-y-4">
-              <Select
-                options={evidenceCategories}
-                placeholder="Select evidence category..."
-                legal
-                evidenceCategory
-                label="Evidence Type"
-              />
-              
-              {#if evidenceUploadProgress > 0}
-                <div class="processing-bar">
-                  <div 
-                    class="processing-indicator" 
-                    style="width: {evidenceUploadProgress}%"
-                  ></div>
-                </div>
-                <p class="text-sm text-nier-text-secondary text-center">
-                  Processing evidence... {evidenceUploadProgress}%
+          {#snippet content()}
+                            <div >
+              <div class="yorha-panel-header">
+                <h2 class="text-xl font-gothic text-nier-text-primary">Evidence Upload</h2>
+                <p class="text-nier-text-secondary mt-2">
+                  Upload and categorize evidence with AI-powered analysis.
                 </p>
-              {:else}
-                <div class="yorha-drop-zone p-8 text-center">
-                  <FileText class="w-12 h-12 mx-auto mb-4 text-nier-text-muted" />
-                  <p class="text-nier-text-secondary">
-                    Drop files here or click to browse
+              </div>
+              
+              <div class="yorha-panel-content space-y-4">
+                <Select
+                  options={evidenceCategories}
+                  placeholder="Select evidence category..."
+                  legal
+                  evidenceCategory
+                  label="Evidence Type"
+                />
+                
+                {#if evidenceUploadProgress > 0}
+                  <div class="processing-bar">
+                    <div 
+                      class="processing-indicator" 
+                      style="width: {evidenceUploadProgress}%"
+                    ></div>
+                  </div>
+                  <p class="text-sm text-nier-text-secondary text-center">
+                    Processing evidence... {evidenceUploadProgress}%
                   </p>
-                </div>
-              {/if}
+                {:else}
+                  <div class="yorha-drop-zone p-8 text-center">
+                    <FileText class="w-12 h-12 mx-auto mb-4 text-nier-text-muted" />
+                    <p class="text-nier-text-secondary">
+                      Drop files here or click to browse
+                    </p>
+                  </div>
+                {/if}
+              </div>
+              
+              <div class="bits-dialog-footer">
+                <Button variant="outline" onclick={() => evidenceDialogOpen = false}>
+                  Cancel
+                </Button>
+                <Button variant="primary" legal onclick={uploadEvidence} disabled={evidenceUploadProgress > 0}>
+                  Upload Evidence
+                </Button>
+              </div>
             </div>
-            
-            <div class="bits-dialog-footer">
-              <Button variant="outline" onclick={() => evidenceDialogOpen = false}>
-                Cancel
-              </Button>
-              <Button variant="primary" legal onclick={uploadEvidence} disabled={evidenceUploadProgress > 0}>
-                Upload Evidence
-              </Button>
-            </div>
-          </div>
+                          {/snippet}
         </Dialog>
       </div>
 

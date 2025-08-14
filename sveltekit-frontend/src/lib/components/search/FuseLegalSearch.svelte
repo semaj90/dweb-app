@@ -1,18 +1,18 @@
 <script lang="ts">
   import Fuse from 'fuse.js';
   import { onMount } from 'svelte';
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Badge } from "$lib/components/ui/badge/index.js";
-  import { Search, Loader2, ExternalLink, Bot } from "lucide-svelte";
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import * as Card from '$lib/components/ui/card';
+  import { Badge } from '$lib/components/ui/badge/index.js';
+  import { Search, Loader2, ExternalLink, Bot } from 'lucide-svelte';
 
-  let { 
-    data = [], 
-    placeholder = "Search laws and regulations...",
+  let {
+    data = [],
+    placeholder = 'Search laws and regulations...',
     onResultSelect = null,
     showAIActions = true,
-    maxResults = 10
+    maxResults = 10,
   } = $props();
 
   let searchQuery = $state('');
@@ -26,15 +26,15 @@
       { name: 'title', weight: 0.4 },
       { name: 'description', weight: 0.3 },
       { name: 'code', weight: 0.2 },
-      { name: 'keywords', weight: 0.1 }
+      { name: 'keywords', weight: 0.1 },
     ],
     threshold: 0.3, // Lower = more strict matching
-    distance: 100,   // How far to search for pattern
+    distance: 100, // How far to search for pattern
     minMatchCharLength: 2,
     includeScore: true,
     includeMatches: true,
     ignoreLocation: true, // Search anywhere in the text
-    useExtendedSearch: true // Enable advanced search patterns
+    useExtendedSearch: true, // Enable advanced search patterns
   };
 
   // Initialize Fuse.js when data changes
@@ -60,11 +60,11 @@
     }
 
     isSearching = true;
-    
+
     try {
       // Use Fuse.js extended search patterns
       let query = searchQuery;
-      
+
       // Add smart query preprocessing
       if (query.includes('murder') || query.includes('homicide')) {
         query = `murder | homicide | killing`;
@@ -75,15 +75,14 @@
       }
 
       const results = fuse.search(query).slice(0, maxResults);
-      
+
       // Process results with highlighting and scoring
-      searchResults = results.map(result => ({
+      searchResults = results.map((result) => ({
         ...result.item,
         fuseScore: result.score,
         matches: result.matches || [],
-        highlighted: highlightMatches(result.item, result.matches || [])
+        highlighted: highlightMatches(result.item, result.matches || []),
       }));
-
     } catch (error) {
       console.error('Fuse search error:', error);
       searchResults = [];
@@ -94,25 +93,25 @@
 
   function highlightMatches(item, matches) {
     const highlighted = { ...item };
-    
-    matches.forEach(match => {
+
+    matches.forEach((match) => {
       if (match.key && highlighted[match.key]) {
         let text = highlighted[match.key];
-        
+
         // Sort indices in reverse order to avoid offset issues
         const indices = [...match.indices].sort((a, b) => b[0] - a[0]);
-        
+
         indices.forEach(([start, end]) => {
           const before = text.substring(0, start);
           const matched = text.substring(start, end + 1);
           const after = text.substring(end + 1);
           text = `${before}<mark class="bg-yellow-200 dark:bg-yellow-900 px-1 rounded">${matched}</mark>${after}`;
         });
-        
+
         highlighted[match.key] = text;
       }
     });
-    
+
     return highlighted;
   }
 
@@ -145,15 +144,12 @@
 <div class="space-y-4">
   <!-- Search Input -->
   <div class="relative">
-    <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-    <Input
-      bind:value={searchQuery}
-      {placeholder}
-      onkeydown={handleKeydown}
-      class="pl-10"
-    />
+    <Search
+      class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <Input bind:value={searchQuery} {placeholder} onkeydown={handleKeydown} class="pl-10" />
     {#if isSearching}
-      <Loader2 class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+      <Loader2
+        class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
     {/if}
   </div>
 
@@ -201,31 +197,20 @@
               {/if}
             </div>
           </Card.Header>
-          
+
           {#if showAIActions}
             <Card.Content class="pt-0">
               <div class="flex gap-2 flex-wrap">
-                <Button 
-                  size="sm" 
-                  onclick={() => handleAIAction(law, 'summary')}
-                >
+                <Button size="sm" onclick={() => handleAIAction(law, 'summary')}>
                   <Bot class="h-3 w-3 mr-1" />
                   AI Summary
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onclick={() => handleAIAction(law, 'chat')}
-                >
+                <Button variant="outline" size="sm" onclick={() => handleAIAction(law, 'chat')}>
                   <Bot class="h-3 w-3 mr-1" />
                   Ask AI
                 </Button>
                 {#if law.fullTextUrl}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    asChild
-                  >
+                  <Button variant="outline" size="sm" asChild>
                     <a href={law.fullTextUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink class="h-3 w-3 mr-1" />
                       Full Text
@@ -259,7 +244,7 @@
     border-radius: 0.25rem;
     font-weight: 500;
   }
-  
+
   :global(.dark mark) {
     background-color: theme(colors.yellow.900);
     color: theme(colors.yellow.100);

@@ -10,14 +10,14 @@
 	import TypewriterResponse from '$lib/components/ai/TypewriterResponse.svelte';
 	
 	// Demo state
-	let cacheStats = { hits: 0, misses: 0, evictions: 0, total_size: 0, items_count: 0 };
-	let recommendations: any[] = [];
-	let bestPractices: any[] = [];
-	let demoQuery = 'Review contract liability clauses for potential risks';
-	let isLoading = false;
-	let showTypewriter = false;
-	let aiResponse = '';
-	let userActivity: any[] = [];
+	let cacheStats = $state({ hits: 0, misses: 0, evictions: 0, total_size: 0, items_count: 0 });
+	let recommendations: any[] = $state([]);
+	let bestPractices: any[] = $state([]);
+	let demoQuery = $state('Review contract liability clauses for potential risks');
+	let isLoading = $state(false);
+	let showTypewriter = $state(false);
+	let aiResponse = $state('');
+	let userActivity: any[] = $state([]);
 	
 	// Demo data
 	const legalQueries = [

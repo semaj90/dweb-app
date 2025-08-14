@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     oncitationSelected?: (event?: any) => void;
@@ -14,11 +16,11 @@
   import type { Citation } from "$lib/types/api";
   import { Copy, Search, Star, Tag, Trash2 } from "lucide-svelte";
     import Badge from '$lib/components/ui/Badge.svelte';
-  import Card from '$lib/components/ui/Card.svelte';
+  import { Card } from '$lib/components/ui/card';
   import Input from '$lib/components/ui/Input.svelte';
 
-  
-  
+
+
   let searchQuery = "";
   let selectedCategory = "all";
   let filteredCitations: Citation[] = [];

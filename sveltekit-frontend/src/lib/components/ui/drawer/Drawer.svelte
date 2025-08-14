@@ -12,7 +12,7 @@
 
 
 
-  import { X } from "lucide-svelte";
+  import { X } from "lucide-svelte"; children,
   
           
   
@@ -51,7 +51,7 @@
         </button>
       </div>
       <div class="space-y-4">
-        <slot></slot>
+        {@render children?.()}
       </div>
     </div>
   </div>

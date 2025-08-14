@@ -2,10 +2,10 @@
 import { Button } from 'bits-ui';
 import { onMount } from 'svelte';
 
-let response = '';
-let loading = false;
-let error = '';
-let systemStatus = { gpu: false, ollama: false, synthesis: false };
+let response = $state('');
+let loading = $state(false);
+let error = $state('');
+let systemStatus = $state({ gpu: false, ollama: false, synthesis: false });
 
 async function checkSystemStatus() {
   try {

@@ -238,8 +238,7 @@ export function activate(context: vscode.ExtensionContext) {
         <Card>
           <CardContent class="p-4">
             <div class="flex items-center justify-between mb-2">
-              <svelte:component 
-                this={feature.icon} 
+              <feature.icon 
                 class="h-6 w-6 {getStatusColor(feature.status)}" 
               />
               <div class="w-2 h-2 rounded-full {feature.status ? 'bg-green-500' : 'bg-red-500'}"></div>
@@ -279,7 +278,7 @@ export function activate(context: vscode.ExtensionContext) {
               <div class="border rounded-lg p-4">
                 <div class="flex items-center gap-3 mb-3">
                   <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <svelte:component this={feature.icon} class="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    <feature.icon class="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
                     <h3 class="font-semibold">{feature.name}</h3>
@@ -365,7 +364,7 @@ export function activate(context: vscode.ExtensionContext) {
             <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
               <div class="flex items-center gap-3 mb-3">
                 <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                  <svelte:component this={useCase.icon} class="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <useCase.icon class="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <h3 class="font-semibold">{useCase.title}</h3>
               </div>

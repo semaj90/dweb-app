@@ -4,7 +4,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
-  import Card from '$lib/components/ui/Card.svelte';
+  import { Card } from '$lib/components/ui/card';
   import { createPhase13Integration } from '$lib/state/phase13StateMachine';
   import { createStatelessAPICoordinator } from '$lib/services/stateless-api-coordinator';
   import { createEnhancedRAGEngine, RAGHelpers } from '$lib/services/enhanced-rag-pagerank';
@@ -33,7 +33,7 @@
   let feedbackCount = $state(0);
 
   // Demo data
-  let searchQuery = $state("contract liability clauses");
+  let searchQuery = $state('contract liability clauses');
   let searchResults = $state<any[]>([]);
   let recommendations = $state<any[]>([]);
   let systemHealth = $state(0);
@@ -48,24 +48,28 @@
         enableRedis: true,
         enableNATS: true,
         enableWebSocket: true,
-        taskTimeout: 30000
+        taskTimeout: 30000,
       });
-      
+
       // 2. Initialize Enhanced RAG Engine
       ragEngine = createEnhancedRAGEngine(apiCoordinator.coordinator);
-      
+
       // 3. Initialize Context7 MCP Integration
-      context7Integration = createContext7Phase13Integration({
-        enableSemanticSearch: true,
-        enableMemoryGraph: true,
-        enableAgentOrchestration: true,
-        enableBestPractices: true
-      }, ragEngine.engine, apiCoordinator.coordinator);
+      context7Integration = createContext7Phase13Integration(
+        {
+          enableSemanticSearch: true,
+          enableMemoryGraph: true,
+          enableAgentOrchestration: true,
+          enableBestPractices: true,
+        },
+        ragEngine.engine,
+        apiCoordinator.coordinator
+      );
 
       // 4. Initialize Phase 13 State Machine with WebGL
       if (canvas) {
         phase13System = createPhase13Integration(canvas);
-        
+
         // Subscribe to system stores
         phase13System.stores.webglStatus.subscribe((status: any) => {
           webglReady = status.initialized && status.streaming;
@@ -108,7 +112,7 @@
       });
 
       context7Integration.stores.integrationStatus.subscribe((status: any) => {
-        context7Active = status.overall === "HEALTHY";
+        context7Active = status.overall === 'HEALTHY';
       });
 
       // Add sample documents to RAG
@@ -116,7 +120,6 @@
 
       systemInitialized = true;
       console.log('✅ Phase 13 system initialized successfully');
-
     } catch (error) {
       console.error('❌ Phase 13 initialization failed:', error);
     }
@@ -135,32 +138,30 @@
 
     const sampleDocs = [
       {
-        title: "Employment Contract Template",
-        content: "This employment contract contains liability clauses for workplace safety, intellectual property protection, and confidentiality agreements. The contractor assumes liability for damages caused by negligence.",
-        type: "CONTRACT" as const,
-        metadata: { jurisdiction: "Federal", caseId: "CASE-2024-001" }
+        title: 'Employment Contract Template',
+        content:
+          'This employment contract contains liability clauses for workplace safety, intellectual property protection, and confidentiality agreements. The contractor assumes liability for damages caused by negligence.',
+        type: 'CONTRACT' as const,
+        metadata: { jurisdiction: 'Federal', caseId: 'CASE-2024-001' },
       },
       {
-        title: "Product Liability Case Study",
-        content: "In this landmark case, the court established precedent for manufacturer liability in cases of defective products. The ruling clarifies burden of proof requirements for consumer protection claims.",
-        type: "CASE_LAW" as const,
-        metadata: { jurisdiction: "Federal", caseId: "CASE-2024-002" }
+        title: 'Product Liability Case Study',
+        content:
+          'In this landmark case, the court established precedent for manufacturer liability in cases of defective products. The ruling clarifies burden of proof requirements for consumer protection claims.',
+        type: 'CASE_LAW' as const,
+        metadata: { jurisdiction: 'Federal', caseId: 'CASE-2024-002' },
       },
       {
-        title: "Consumer Protection Statute",
-        content: "Federal regulations governing consumer rights and business liability. Includes provisions for warranty claims, return policies, and damage compensation procedures.",
-        type: "STATUTE" as const,
-        metadata: { jurisdiction: "Federal" }
-      }
+        title: 'Consumer Protection Statute',
+        content:
+          'Federal regulations governing consumer rights and business liability. Includes provisions for warranty claims, return policies, and damage compensation procedures.',
+        type: 'STATUTE' as const,
+        metadata: { jurisdiction: 'Federal' },
+      },
     ];
 
     for (const doc of sampleDocs) {
-      const fullDoc = RAGHelpers.createDocument(
-        doc.content,
-        doc.title,
-        doc.type,
-        doc.metadata
-      );
+      const fullDoc = RAGHelpers.createDocument(doc.content, doc.title, doc.type, doc.metadata);
       ragEngine.addDocument(fullDoc);
     }
   }
@@ -168,15 +169,11 @@
   // Demo functions
   async function startWebGLDemo() {
     if (!phase13System) return;
-    
+
     try {
       // Generate sample vertex data
-      const vertices = new Float32Array([
-        -0.5, -0.5, 0.0,
-         0.5, -0.5, 0.0,
-         0.0,  0.5, 0.0
-      ]);
-      
+      const vertices = new Float32Array([-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.0, 0.5, 0.0]);
+
       phase13System.startVertexStreaming(vertices);
       console.log('🎮 WebGL vertex streaming started');
     } catch (error) {
@@ -186,22 +183,22 @@
 
   async function startAPICoordination() {
     if (!phase13System) return;
-    
+
     try {
       phase13System.startAPICoordination();
-      
+
       // Submit sample tasks
       if (apiCoordinator) {
         await apiCoordinator.submitTask({
-          type: "LEGAL_ANALYSIS",
-          payload: { caseId: "CASE-2024-001", query: searchQuery },
-          priority: "HIGH",
+          type: 'LEGAL_ANALYSIS',
+          payload: { caseId: 'CASE-2024-001', query: searchQuery },
+          priority: 'HIGH',
           maxRetries: 2,
           timeout: 30000,
-          metadata: { estimatedDuration: 15000 }
+          metadata: { estimatedDuration: 15000 },
         });
       }
-      
+
       console.log('📡 API coordination started');
     } catch (error) {
       console.error('API coordination failed:', error);
@@ -210,28 +207,28 @@
 
   async function performEnhancedRAGSearch() {
     if (!ragEngine) return;
-    
+
     try {
       ragActive = true;
       const startTime = Date.now();
-      
+
       const query = RAGHelpers.createLegalQuery(searchQuery, {
-        caseId: "CASE-2024-001",
-        jurisdiction: "Federal",
-        documentTypes: ["CONTRACT", "CASE_LAW", "STATUTE"],
-        maxResults: 10
+        caseId: 'CASE-2024-001',
+        jurisdiction: 'Federal',
+        documentTypes: ['CONTRACT', 'CASE_LAW', 'STATUTE'],
+        maxResults: 10,
       });
 
       const results = await ragEngine.queryDocuments({
         ...query,
         id: `query_${Date.now()}`,
         timestamp: Date.now(),
-        sessionId: "demo_session"
+        sessionId: 'demo_session',
       });
 
       ragQueryTime = Date.now() - startTime;
       searchResults = results.slice(0, 5);
-      
+
       console.log('🔍 Enhanced RAG search completed:', results.length, 'results');
     } catch (error) {
       console.error('RAG search failed:', error);
@@ -242,17 +239,17 @@
 
   async function getContext7Recommendations() {
     if (!context7Integration) return;
-    
+
     try {
       const recs = await context7Integration.getRecommendations(
         `Legal AI system optimization for: ${searchQuery}`,
         {
-          priority: "HIGH",
+          priority: 'HIGH',
           includeImplementationPlan: true,
-          maxRecommendations: 5
+          maxRecommendations: 5,
         }
       );
-      
+
       recommendations = recs.slice(0, 3);
       console.log('🧠 Context7 recommendations received:', recs.length);
     } catch (error) {
@@ -262,23 +259,23 @@
 
   async function submitPositiveFeedback(resultIndex: number) {
     if (!ragEngine || !searchResults[resultIndex]) return;
-    
+
     try {
       await ragEngine.submitFeedback({
-        queryId: "demo_query",
+        queryId: 'demo_query',
         documentId: searchResults[resultIndex].document.id,
-        vote: "POSITIVE",
+        vote: 'POSITIVE',
         relevanceScore: 0.9,
         context: {
           queryText: searchQuery,
           resultPosition: resultIndex,
-          timeSpentViewing: 5000
-        }
+          timeSpentViewing: 5000,
+        },
       });
-      
+
       // Update PageRank
       phase13System.updatePageRank(searchResults[resultIndex].document.id, 0.1);
-      
+
       console.log('👍 Positive feedback submitted');
     } catch (error) {
       console.error('Feedback submission failed:', error);
@@ -288,18 +285,18 @@
   async function runFullDemo() {
     try {
       console.log('🚀 Starting full Phase 13 demo...');
-      
+
       await startWebGLDemo();
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       await startAPICoordination();
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       await performEnhancedRAGSearch();
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       await getContext7Recommendations();
-      
+
       console.log('✅ Full Phase 13 demo completed successfully!');
     } catch (error) {
       console.error('❌ Full demo failed:', error);
@@ -309,14 +306,17 @@
 
 <svelte:head>
   <title>Phase 13 Enhanced Features Demo - Deeds Legal AI</title>
-  <meta name="description" content="Demonstration of Phase 13 enhanced features with XState, WebGL, Enhanced RAG, and Context7 MCP integration" />
+  <meta
+    name="description"
+    content="Demonstration of Phase 13 enhanced features with XState, WebGL, Enhanced RAG, and Context7 MCP integration" />
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
   <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+      <h1
+        class="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
         🚀 Phase 13 Enhanced Features Demo
       </h1>
       <p class="text-xl text-gray-300 max-w-4xl mx-auto">
@@ -328,7 +328,10 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
       <Card class="p-4 bg-slate-800/50 border-slate-700">
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg" class:bg-green-100={webglReady} class:bg-red-100={!webglReady}>
+          <div
+            class="p-2 rounded-lg"
+            class:bg-green-100={webglReady}
+            class:bg-red-100={!webglReady}>
             <Cpu class="h-5 w-5 {webglReady ? 'text-green-600' : 'text-red-600'}" />
           </div>
           <div>
@@ -352,8 +355,14 @@
 
       <Card class="p-4 bg-slate-800/50 border-slate-700">
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg" class:bg-green-100={ragActive || searchResults.length > 0} class:bg-red-100={!ragActive && searchResults.length === 0}>
-            <Zap class="h-5 w-5 {(ragActive || searchResults.length > 0) ? 'text-green-600' : 'text-red-600'}" />
+          <div
+            class="p-2 rounded-lg"
+            class:bg-green-100={ragActive || searchResults.length > 0}
+            class:bg-red-100={!ragActive && searchResults.length === 0}>
+            <Zap
+              class="h-5 w-5 {ragActive || searchResults.length > 0
+                ? 'text-green-600'
+                : 'text-red-600'}" />
           </div>
           <div>
             <h3 class="font-semibold text-white">Enhanced RAG</h3>
@@ -364,7 +373,10 @@
 
       <Card class="p-4 bg-slate-800/50 border-slate-700">
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg" class:bg-green-100={context7Active} class:bg-red-100={!context7Active}>
+          <div
+            class="p-2 rounded-lg"
+            class:bg-green-100={context7Active}
+            class:bg-red-100={!context7Active}>
             <Activity class="h-5 w-5 {context7Active ? 'text-green-600' : 'text-red-600'}" />
           </div>
           <div>
@@ -379,23 +391,21 @@
     <Card class="p-6 mb-8 bg-slate-800/50 border-slate-700">
       <h3 class="text-lg font-semibold text-white mb-4">WebGL Vertex Streaming Canvas</h3>
       <div class="flex gap-4 items-start">
-        <canvas 
+        <canvas
           bind:this={canvas}
-          width="400" 
-          height="300" 
-          class="border border-slate-600 rounded bg-black"
-        ></canvas>
+          width="400"
+          height="300"
+          class="border border-slate-600 rounded bg-black"></canvas>
         <div class="flex flex-col gap-2">
-          <Button 
-            onclick={startWebGLDemo} 
+          <Button
+            onclick={startWebGLDemo}
             disabled={!systemInitialized}
             variant="outline"
-            class="text-white border-slate-600 hover:bg-slate-700"
-          >
+            class="text-white border-slate-600 hover:bg-slate-700">
             Start WebGL Demo
           </Button>
           <p class="text-sm text-gray-400">
-            Frame Rate: {frameRate} fps<br>
+            Frame Rate: {frameRate} fps<br />
             Status: {webglReady ? 'Streaming' : 'Idle'}
           </p>
         </div>
@@ -408,25 +418,22 @@
       <Card class="p-6 bg-slate-800/50 border-slate-700">
         <h3 class="text-lg font-semibold text-white mb-4">Enhanced RAG Search</h3>
         <div class="space-y-4">
-          <input 
+          <input
             bind:value={searchQuery}
             placeholder="Enter legal search query..."
-            class="w-full p-3 rounded border border-slate-600 bg-slate-700 text-white placeholder-gray-400"
-          />
+            class="w-full p-3 rounded border border-slate-600 bg-slate-700 text-white placeholder-gray-400" />
           <div class="flex gap-2">
-            <Button 
+            <Button
               onclick={performEnhancedRAGSearch}
               disabled={!systemInitialized || ragActive}
-              class="bg-blue-600 hover:bg-blue-700"
-            >
+              class="bg-blue-600 hover:bg-blue-700">
               {ragActive ? 'Searching...' : 'Search'}
             </Button>
-            <Button 
+            <Button
               onclick={getContext7Recommendations}
               disabled={!systemInitialized}
               variant="outline"
-              class="text-white border-slate-600 hover:bg-slate-700"
-            >
+              class="text-white border-slate-600 hover:bg-slate-700">
               Get Recommendations
             </Button>
           </div>
@@ -440,22 +447,20 @@
       <Card class="p-6 bg-slate-800/50 border-slate-700">
         <h3 class="text-lg font-semibold text-white mb-4">System Controls</h3>
         <div class="space-y-4">
-          <Button 
+          <Button
             onclick={startAPICoordination}
             disabled={!systemInitialized || apiActive}
-            class="w-full bg-green-600 hover:bg-green-700"
-          >
+            class="w-full bg-green-600 hover:bg-green-700">
             {apiActive ? 'API Active' : 'Start API Coordination'}
           </Button>
-          <Button 
+          <Button
             onclick={runFullDemo}
             disabled={!systemInitialized}
-            class="w-full bg-purple-600 hover:bg-purple-700"
-          >
+            class="w-full bg-purple-600 hover:bg-purple-700">
             Run Full Demo
           </Button>
           <div class="text-sm text-gray-400">
-            System Status: {systemInitialized ? 'Initialized' : 'Initializing...'}<br>
+            System Status: {systemInitialized ? 'Initialized' : 'Initializing...'}<br />
             Health: {systemHealth}%
           </div>
         </div>
@@ -483,17 +488,18 @@
                 <span class="text-xs text-gray-400">
                   PageRank: {result.pageRankBoost?.toFixed(3) || '0.000'}
                 </span>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   onclick={() => submitPositiveFeedback(index)}
-                  class="text-xs bg-green-600 hover:bg-green-700"
-                >
+                  class="text-xs bg-green-600 hover:bg-green-700">
                   👍 Relevant
                 </Button>
               </div>
             </div>
           {:else}
-            <p class="text-gray-400 text-center py-8">No search results yet. Try performing a search.</p>
+            <p class="text-gray-400 text-center py-8">
+              No search results yet. Try performing a search.
+            </p>
           {/each}
         </div>
       </Card>
@@ -508,11 +514,12 @@
                 <span class="text-xs px-2 py-1 rounded bg-purple-600 text-white capitalize">
                   {rec.agent}
                 </span>
-                <span class="text-xs px-2 py-1 rounded text-white" 
-                      class:bg-red-600={rec.priority === 'CRITICAL'}
-                      class:bg-orange-600={rec.priority === 'HIGH'}
-                      class:bg-yellow-600={rec.priority === 'MEDIUM'}
-                      class:bg-green-600={rec.priority === 'LOW'}>
+                <span
+                  class="text-xs px-2 py-1 rounded text-white"
+                  class:bg-red-600={rec.priority === 'CRITICAL'}
+                  class:bg-orange-600={rec.priority === 'HIGH'}
+                  class:bg-yellow-600={rec.priority === 'MEDIUM'}
+                  class:bg-green-600={rec.priority === 'LOW'}>
                   {rec.priority}
                 </span>
               </div>
@@ -528,7 +535,9 @@
               </div>
             </div>
           {:else}
-            <p class="text-gray-400 text-center py-8">No recommendations yet. Click "Get Recommendations" above.</p>
+            <p class="text-gray-400 text-center py-8">
+              No recommendations yet. Click "Get Recommendations" above.
+            </p>
           {/each}
         </div>
       </Card>
@@ -537,10 +546,12 @@
     <!-- Footer -->
     <div class="mt-12 text-center text-gray-400">
       <p class="text-sm">
-        Phase 13 Enhanced Features Demo - Powered by SvelteKit 2, XState, WebGL2, Enhanced RAG, and Context7 MCP
+        Phase 13 Enhanced Features Demo - Powered by SvelteKit 2, XState, WebGL2, Enhanced RAG, and
+        Context7 MCP
       </p>
       <p class="text-xs mt-2">
-        🚀 Features: Vertex Streaming, Stateless APIs, PageRank Feedback, Agent Orchestration, Memory Graph
+        🚀 Features: Vertex Streaming, Stateless APIs, PageRank Feedback, Agent Orchestration,
+        Memory Graph
       </p>
     </div>
   </div>
@@ -548,6 +559,11 @@
 
 <style>
   :global(body) {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
   }
 </style>

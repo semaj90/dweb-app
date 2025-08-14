@@ -3,13 +3,13 @@
 	import EnhancedChat from '$lib/components/EnhancedChat.svelte';
 	import { onMount } from 'svelte';
 
-	let connectionStatus = 'testing';
-	let services = {
+	let connectionStatus = $state('testing');
+	let services = $state({
 		ollama: false,
 		postgresql: false,
 		redis: false,
 		minio: false
-	};
+	});
 
 	async function checkServices() {
 		connectionStatus = 'testing';

@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Identifier 'loadMoreThreshold' has already been declared
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     onloadMore?: (event?: any) => void;

@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <!-- Case Summary Modal with AI-generated insights -->
 <script lang="ts">
   interface Props {

@@ -31,7 +31,7 @@
     theme?: 'dark' | 'light';
   }
 
-  let {
+  let { actions,
     columns,
     data = [],
     loading = false,
@@ -276,11 +276,11 @@
                     </span>
                   {:else if column.type === 'action'}
                     <div class="yorha-action-buttons">
-                      <slot name="actions" {row} {index}>
+                      {#if actions}{@render actions({ row, index, })}{:else}
                         <!-- Default action buttons -->
                         <button class="yorha-action-btn-sm">VIEW</button>
                         <button class="yorha-action-btn-sm">EDIT</button>
-                      </slot>
+                      {/if}
                     </div>
                   {:else}
                     <span class="yorha-cell-content">

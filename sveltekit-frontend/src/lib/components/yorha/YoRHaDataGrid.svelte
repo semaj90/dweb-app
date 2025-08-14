@@ -37,7 +37,7 @@
     glitchEffect?: boolean;
   }
 
-  let {
+  let { actions,
     columns,
     data = [],
     loading = false,
@@ -369,10 +369,10 @@
                 {:else}
                   {#if column.type === 'action'}
                     <div class="yorha-action-buttons">
-                      <slot name="actions" {row} rowIndex={row._originalIndex || rowIndex}>
+                      {#if actions}{@render actions({ row, rowIndex: row._originalIndex || rowIndex, })}{:else}
                         <button class="yorha-action-btn">EDIT</button>
                         <button class="yorha-action-btn yorha-danger">DELETE</button>
-                      </slot>
+                      {/if}
                     </div>
                   {:else if column.type === 'boolean'}
                     <span class="yorha-boolean-indicator {row[column.key] ? 'yorha-true' : 'yorha-false'}">

@@ -18,7 +18,7 @@
   import { X } from "lucide-svelte";
     import { quadOut } from "svelte/easing";
   import { fade, fly } from "svelte/transition";
-  import { cn } from '$lib/utils';
+  import { cn } from '$lib/utils'; trigger, children, footer,
 
   
               
@@ -45,7 +45,7 @@
 </script>
 
 <!-- Trigger slot -->
-<slot name="trigger" />
+{@render trigger?.()}
 
 <!-- Overlay -->
 {#if open}
@@ -109,12 +109,12 @@
 
     <!-- Content slot -->
     <div class="space-y-4">
-      <slot></slot>
+      {@render children?.()}
     </div>
 
     <!-- Footer slot -->
     <div class="space-y-4">
-      <slot name="footer" {close} />
+      {@render footer?.({ close, })}
     </div>
   </div>
 {/if}

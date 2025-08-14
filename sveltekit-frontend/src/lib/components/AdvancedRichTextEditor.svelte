@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <!-- Lightweight Rich Text Editor with Enhanced Image Support -->
 <script lang="ts">
   interface Props {

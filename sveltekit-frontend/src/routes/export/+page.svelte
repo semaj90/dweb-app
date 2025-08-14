@@ -16,19 +16,19 @@
   import { onMount } from "svelte";
 
   // Export state
-  let exportLoading = false;
-  let exportError: string | null = null;
-  let exportSuccess = false;
-  let availableCases: Case[] = [];
+  let exportLoading = $state(false);
+  let exportError: string | null = $state(null);
+  let exportSuccess = $state(false);
+  let availableCases: Case[] = $state([]);
 
   // Export configuration
-  let format: "json" | "csv" | "xml" = "json";
-  let includeEvidence = true;
-  let includeCases = true;
-  let includeAnalytics = false;
-  let selectedCaseIds: string[] = [];
-  let dateFrom = "";
-  let dateTo = "";
+  let format: "json" | "csv" | "xml" = $state("json");
+  let includeEvidence = $state(true);
+  let includeCases = $state(true);
+  let includeAnalytics = $state(false);
+  let selectedCaseIds: string[] = $state([]);
+  let dateFrom = $state("");
+  let dateTo = $state("");
 
   onMount(() => {
     loadAvailableCases();

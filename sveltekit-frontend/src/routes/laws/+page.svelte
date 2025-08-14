@@ -1,11 +1,18 @@
 <script lang="ts">
-  import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { Badge } from "$lib/components/ui/badge/index.js";
-  import { Search, BookOpen, ExternalLink, Bot, MessageSquare } from "lucide-svelte";
-  import AIToolbar from "$lib/components/ai/AIToolbar.svelte";
-  import EnhancedFuseSearch from "$lib/components/search/EnhancedFuseSearch.svelte";
+  import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+  } from '$lib/components/ui/card';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { Badge } from '$lib/components/ui/badge/index.js';
+  import { Search, BookOpen, ExternalLink, Bot, MessageSquare } from 'lucide-svelte';
+  import AIToolbar from '$lib/components/ai/AIToolbar.svelte';
+  import EnhancedFuseSearch from '$lib/components/search/EnhancedFuseSearch.svelte';
 
   let { data } = $props();
 
@@ -16,18 +23,18 @@
 
   async function performSearch() {
     if (!searchQuery.trim()) return;
-    
+
     isSearching = true;
     try {
       const params = new URLSearchParams({
         q: searchQuery,
         jurisdiction: 'all',
-        category: 'all'
+        category: 'all',
       });
 
       const response = await fetch(`/api/laws/search?${params}`);
       const result = await response.json();
-      
+
       if (result.success) {
         searchResults = result.laws || [];
       } else {
@@ -69,7 +76,9 @@
 
 <svelte:head>
   <title>Legal Resources - Laws & Regulations | YoRHa Legal AI</title>
-  <meta name="description" content="Browse California and state laws with AI-powered search and summaries" />
+  <meta
+    name="description"
+    content="Browse California and state laws with AI-powered search and summaries" />
 </svelte:head>
 
 <div class="container mx-auto py-8 space-y-8">
@@ -82,11 +91,10 @@
   </div>
 
   <!-- AI Toolbar -->
-  <AIToolbar 
+  <AIToolbar
     onAISearch={handleAISearchResult}
     onAIChat={handleAIChatResult}
-    onAISummarize={handleAISummarizeResult}
-  />
+    onAISummarize={handleAISummarizeResult} />
 
   <!-- Enhanced Fuse.js Search -->
   <EnhancedFuseSearch maxResults={10} />
@@ -105,8 +113,7 @@
           placeholder="Search laws, codes, regulations..."
           bind:value={searchQuery}
           onkeydown={handleKeydown}
-          class="flex-1"
-        />
+          class="flex-1" />
         <Button onclick={performSearch} disabled={isSearching || !searchQuery.trim()}>
           {#if isSearching}
             Loading...
@@ -125,7 +132,7 @@
       <BookOpen class="h-6 w-6" />
       Quick Access
     </h2>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {#each data.quickLinks as link}
         <Card class="hover:shadow-lg transition-all duration-200">
@@ -139,7 +146,11 @@
           </CardHeader>
           <CardContent>
             <Button class="w-full">
-              <a href={link.url} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2">
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2">
                 <ExternalLink class="h-4 w-4" />
                 Browse {link.title}
               </a>
@@ -156,7 +167,7 @@
       <h2 class="text-2xl font-semibold">
         Search Results ({searchResults.length})
       </h2>
-      
+
       <div class="space-y-4">
         {#each searchResults as law}
           <Card>

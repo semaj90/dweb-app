@@ -1,20 +1,30 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
-  import * as Card from "$lib/components/ui/card/index.js";
-  import { Input } from "$lib/components/ui/input/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
-  import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
-  import { Badge } from "$lib/components/ui/badge/index.js";
-  import { MessageSquare, Send, Bot, User, Loader2, X, Copy, ThumbsUp, ThumbsDown } from "lucide-svelte";
+  import * as Dialog from '$lib/components/ui/dialog/index.js';
+  import * as Card from '$lib/components/ui/card';
+  import { Input } from '$lib/components/ui/input/index.js';
+  import { Button } from '$lib/components/ui/button/index.js';
+  import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+  import { Badge } from '$lib/components/ui/badge/index.js';
+  import {
+    MessageSquare,
+    Send,
+    Bot,
+    User,
+    Loader2,
+    X,
+    Copy,
+    ThumbsUp,
+    ThumbsDown,
+  } from 'lucide-svelte';
 
-  let { 
+  let {
     open = $bindable(false),
     context = null,
-    title = "AI Legal Assistant",
-    placeholder = "Ask about legal matters...",
+    title = 'AI Legal Assistant',
+    placeholder = 'Ask about legal matters...',
     caseId = null,
-    documentId = null
+    documentId = null,
   } = $props();
 
   let messages = $state([]);
@@ -48,13 +58,15 @@
 
   function addSystemMessage() {
     if (context) {
-      messages = [{
-        id: Date.now(),
-        role: 'system',
-        content: `I have context about: ${context.title || 'Legal Document'}. How can I help you understand or analyze this?`,
-        timestamp: new Date().toISOString(),
-        type: 'context'
-      }];
+      messages = [
+        {
+          id: Date.now(),
+          role: 'system',
+          content: `I have context about: ${context.title || 'Legal Document'}. How can I help you understand or analyze this?`,
+          timestamp: new Date().toISOString(),
+          type: 'context',
+        },
+      ];
     }
   }
 
@@ -65,7 +77,7 @@
       id: Date.now(),
       role: 'user',
       content: currentMessage.trim(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     messages = [...messages, userMessage];
@@ -88,8 +100,8 @@
           context: contextText ? [contextText] : undefined,
           caseId,
           documentId,
-          temperature: 0.7
-        })
+          temperature: 0.7,
+        }),
       });
 
       if (!response.ok) {
@@ -97,27 +109,26 @@
       }
 
       const data = await response.json();
-      
+
       const aiMessage = {
         id: Date.now() + 1,
         role: 'assistant',
         content: data.response || 'I apologize, but I could not generate a response.',
         timestamp: new Date().toISOString(),
         metadata: data.performance || {},
-        suggestions: data.suggestions || []
+        suggestions: data.suggestions || [],
       };
 
       messages = [...messages, aiMessage];
-
     } catch (error) {
       console.error('AI chat error:', error);
-      
+
       const errorMessage = {
         id: Date.now() + 1,
         role: 'assistant',
         content: 'I apologize, but I encountered an error. Please try again.',
         timestamp: new Date().toISOString(),
-        error: true
+        error: true,
       };
 
       messages = [...messages, errorMessage];
@@ -150,9 +161,9 @@
   }
 
   function formatTimestamp(timestamp) {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
     });
   }
 
@@ -170,8 +181,8 @@
           messageId,
           feedback,
           caseId,
-          documentId
-        })
+          documentId,
+        }),
       });
     } catch (error) {
       console.error('Failed to provide feedback:', error);
@@ -189,7 +200,7 @@
       <Dialog.Description>
         Ask questions about legal matters, get case analysis, and receive AI-powered assistance.
         {#if context}
-          <br><strong>Context:</strong> {context.title}
+          <br /><strong>Context:</strong> {context.title}
         {/if}
       </Dialog.Description>
     </Dialog.Header>
@@ -203,11 +214,13 @@
               {#if message.role !== 'user'}
                 <div class="flex-shrink-0">
                   {#if message.type === 'context'}
-                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                    <div
+                      class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                       <MessageSquare class="h-4 w-4 text-blue-600 dark:text-blue-400" />
                     </div>
                   {:else}
-                    <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                    <div
+                      class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
                       <Bot class="h-4 w-4 text-green-600 dark:text-green-400" />
                     </div>
                   {/if}
@@ -215,13 +228,20 @@
               {/if}
 
               <div class="flex-1 max-w-[80%] {message.role === 'user' ? 'order-first' : ''}">
-                <Card.Root class="{message.role === 'user' ? 'bg-primary text-primary-foreground' : ''} {message.error ? 'border-red-200 dark:border-red-800' : ''}">
+                <Card.Root
+                  class="{message.role === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : ''} {message.error ? 'border-red-200 dark:border-red-800' : ''}">
                   <Card.Content class="p-3">
-                    <div class="prose prose-sm max-w-none {message.role === 'user' ? 'prose-invert' : ''}">
+                    <div
+                      class="prose prose-sm max-w-none {message.role === 'user'
+                        ? 'prose-invert'
+                        : ''}">
                       <p class="whitespace-pre-wrap">{message.content}</p>
                     </div>
-                    
-                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-border/50">
+
+                    <div
+                      class="flex items-center justify-between mt-3 pt-2 border-t border-border/50">
                       <div class="flex items-center gap-2">
                         <span class="text-xs opacity-70">
                           {formatTimestamp(message.timestamp)}
@@ -232,28 +252,25 @@
                           </Badge>
                         {/if}
                       </div>
-                      
+
                       {#if message.role === 'assistant' && !message.error}
                         <div class="flex items-center gap-1">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onclick={() => copyToClipboard(message.content)}
-                          >
+                            onclick={() => copyToClipboard(message.content)}>
                             <Copy class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onclick={() => provideFeedback(message.id, 'positive')}
-                          >
+                            onclick={() => provideFeedback(message.id, 'positive')}>
                             <ThumbsUp class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onclick={() => provideFeedback(message.id, 'negative')}
-                          >
+                            onclick={() => provideFeedback(message.id, 'negative')}>
                             <ThumbsDown class="h-3 w-3" />
                           </Button>
                         </div>
@@ -270,8 +287,7 @@
                         variant="outline"
                         size="sm"
                         class="text-xs h-auto py-1 px-2"
-                        onclick={() => handleSuggestionClick(suggestion)}
-                      >
+                        onclick={() => handleSuggestionClick(suggestion)}>
                         {suggestion}
                       </Button>
                     {/each}
@@ -292,7 +308,8 @@
           {#if isLoading}
             <div class="flex gap-3 justify-start">
               <div class="flex-shrink-0">
-                <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
                   <Loader2 class="h-4 w-4 text-green-600 dark:text-green-400 animate-spin" />
                 </div>
               </div>
@@ -321,8 +338,7 @@
           {placeholder}
           onkeydown={handleKeydown}
           disabled={isLoading}
-          class="flex-1"
-        />
+          class="flex-1" />
         <Button onclick={sendMessage} disabled={isLoading || !currentMessage.trim()}>
           {#if isLoading}
             <Loader2 class="h-4 w-4 animate-spin" />
@@ -334,7 +350,7 @@
           <X class="h-4 w-4" />
         </Button>
       </div>
-      
+
       {#if messages.length === 0 && context}
         <div class="mt-3 text-sm text-muted-foreground">
           <p>You can ask questions like:</p>

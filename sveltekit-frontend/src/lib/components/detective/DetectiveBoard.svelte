@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: `$evidenceStore` is an illegal variable name. To reference a global variable called `$evidenceStore`, use `globalThis.$evidenceStore`
+https://svelte.dev/e/global_reference_invalid -->
 <script lang="ts">
   import Badge from "$lib/components/ui/Badge.svelte";
   import Button from "$lib/components/ui/button/Button.svelte";
@@ -21,12 +23,16 @@
   import { keyboardShortcuts } from "$lib/stores";
   import { get as getStore } from "svelte/store";
   // Save to logic: update user activity store, backend, Qdrant, Loki.js, MCP, LLM
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import {
     callContext7Tool,
     getContextAwareSuggestions,
   } from "$lib/ai/mcp-helpers";
   import Fuse from "fuse.js";
+  import { evidenceStore } from "$lib/stores/evidence-unified";
+  
+  // Stub for activeUsers - replace with actual implementation
+  const activeUsers = writable([]);
 
   async function saveTo(target: string) {
     if (!contextMenu.item) return closeContextMenu();
@@ -37,7 +43,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: $page.data.user?.id,
+          userId: page.data.user?.id,
           evidenceId: contextMenu.item.id,
           action: "save",
           target,
@@ -125,7 +131,7 @@
     findModal.suggestions = [];
     // 1. Local fuzzy search (Fuse.js)
     try {
-      const items = $evidenceStore;
+      const items = get(evidenceStore);
       const fuse = new Fuse(items, { keys: ["title", "description", "tags"] });
       findModal.results = fuse.search(
         findModal.query || contextMenu.item.title || ""
@@ -279,13 +285,13 @@
                     borderRadius: "8px",
                   },
                 }}
-                on:consider={(e) => handleDndConsider(e, column.id)}
-                on:finalize={(e) => handleDndFinalize(e, column.id)}
+                onconsider={(e) => handleDndConsider(e, column.id)}
+                onfinalize={(e) => handleDndFinalize(e, column.id)}
               >
                 {#each column.items as item (item.id)}
                   <div
                     class="cursor-grab active:cursor-grabbing transition-transform hover:scale-105"
-                    on:contextmenu={(e) => handleRightClick(e, item)}
+                    oncontextmenu={(e) => handleRightClick(e, item)}
                     role="button"
                     tabindex="0"
                   >
@@ -362,8 +368,7 @@
   <ContextMenu.Root>
     <ContextMenu.Content
       class="fixed"
-      style:left="{contextMenu.x}px"
-      style:top="{contextMenu.y}px"
+      style="left: {contextMenu.x}px; top: {contextMenu.y}px;"
     >
       <div class="space-y-4">
         <p class="space-y-4">Evidence Actions</p>

@@ -2,10 +2,10 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   
-  let systemStatus = null;
-  let memoryPrediction = null;
-  let isLoading = true;
-  let error = null;
+  let systemStatus = $state(null);
+  let memoryPrediction = $state(null);
+  let isLoading = $state(true);
+  let error = $state(null);
 
   onMount(async () => {
     if (browser) {

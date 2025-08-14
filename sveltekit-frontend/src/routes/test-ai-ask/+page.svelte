@@ -10,11 +10,11 @@
   } from "$lib/stores/ai-store";
 
   // Page state
-  let isPageReady = false;
-  let manualTestQuery = "What are the key elements of a valid contract?";
-  let manualTestResponse: any = null;
-  let manualTestLoading = false;
-  let manualTestError: string | null = null;
+  let isPageReady = $state(false);
+  let manualTestQuery = $state("What are the key elements of a valid contract?");
+  let manualTestResponse: any = $state(null);
+  let manualTestLoading = $state(false);
+  let manualTestError: string | null = $state(null);
   let healthCheckResults: any = null;
   let selectedExample = "";
 
@@ -31,7 +31,7 @@
   ];
 
   // Missing variables that are referenced in template
-  let query = "";
+  let query = $state("");
   let isLoading = false;
   let error: string | null = null;
   let response: any = null;

@@ -10,30 +10,30 @@
   } from '$lib/utils/mcp-helpers';
 
   // Component state
-  let selectedTool = 'analyze-stack';
-  let component = 'sveltekit';
-  let context = 'legal-ai';
-  let area = 'performance';
-  let feature = '';
-  let requirements = '';
-  let library = '';
-  let topic = '';
+  let selectedTool = $state('analyze-stack');
+  let component = $state('sveltekit');
+  let context = $state('legal-ai');
+  let area = $state('performance');
+  let feature = $state('');
+  let requirements = $state('');
+  let library = $state('');
+  let topic = $state('');
   
   // RAG-specific variables
-  let ragQuery = '';
-  let maxResults = 10;
-  let confidenceThreshold = 0.7;
-  let ragCaseId = '';
-  let documentTypes = '';
-  let filePath = '';
-  let documentType = 'general';
-  let documentTitle = '';
-  let documentId = '';
-  let integrationType = 'api-integration';
+  let ragQuery = $state('');
+  let maxResults = $state(10);
+  let confidenceThreshold = $state(0.7);
+  let ragCaseId = $state('');
+  let documentTypes = $state('');
+  let filePath = $state('');
+  let documentType = $state('general');
+  let documentTitle = $state('');
+  let documentId = $state('');
+  let integrationType = $state('api-integration');
   
-  let result = '';
-  let loading = false;
-  let error = '';
+  let result = $state('');
+  let loading = $state(false);
+  let error = $state('');
 
   // Available options
   const tools = [

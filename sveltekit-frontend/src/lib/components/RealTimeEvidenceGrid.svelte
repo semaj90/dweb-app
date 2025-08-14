@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Identifier 'evidence' has already been declared
+https://svelte.dev/e/js_parse_error -->
 <!-- Real-time Evidence Grid with WebSocket and local sync -->
 <script lang="ts">
   interface Props {

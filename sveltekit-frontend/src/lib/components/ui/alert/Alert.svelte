@@ -1,10 +1,16 @@
 <script lang="ts">
-  let {
+  interface Props {
+    variant?: 'default' | 'destructive' | 'warning';
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let { 
     variant = 'default',
     class: className = '',
     children,
     ...restProps
-  } = $props();
+  }: Props = $props();
 
   const variants = {
     default: 'bg-background text-foreground',
@@ -18,5 +24,5 @@
   role="alert"
   {...restProps}
 >
-  <slot></slot>
+  {@render children?.()}
 </div>

@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <!-- AI Processing Dashboard - Integration Demo -->
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';

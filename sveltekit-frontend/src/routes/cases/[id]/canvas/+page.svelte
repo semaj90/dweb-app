@@ -1,5 +1,7 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { caseService } from "$lib/services/caseService";
   import { onMount } from "svelte";
   // Canvas Components
@@ -59,7 +61,7 @@
     error: caseServiceError,
   } = caseService;
 
-  let caseId = $derived($page.params.id;);
+  let caseId = $derived(page.params.id;);
   let canvasElement: HTMLElement;
   let contextMenuState: ContextMenuState = { show: false, x: 0, y: 0 };
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
   interface Props {
     onsuccess?: (event?: any) => void;
   }
@@ -6,11 +8,11 @@
 
   import Modal from "../ui/Modal.svelte";
   // Adjust path to melt-ui or bits-ui as needed
-    let email = "";
-  let password = "";
-  let confirmPassword = "";
-  let loading = false;
-  let error = "";
+    let email = $state("");
+  let password = $state("");
+  let confirmPassword = $state("");
+  let loading = $state(false);
+  let error = $state("");
   
   async function handleRegister() {
     loading = true;
@@ -32,7 +34,7 @@
 </script>
 
 <Modal open>
-  <form on:submit|preventDefault={handleRegister}>
+  <form onsubmit={preventDefault(handleRegister)}>
     <h2>Register</h2>
     {#if error}<div class="space-y-4">{error}</div>{/if}
     <input type="email" bind:value={email} placeholder="Email" required />

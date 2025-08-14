@@ -2,23 +2,23 @@
   import { onMount, onDestroy } from 'svelte';
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
-  
+
   // Import all advanced AI components
   import DocumentAnalysis from "$lib/components/DocumentAnalysis.svelte";
   import LegalChat from "$lib/components/LegalChat.svelte";
   import AISummarization from "$lib/components/AISummarization.svelte";
   import FindModal from "$lib/components/ai/FindModal.svelte";
-  
+
   // Import system integration components
   import SystemHealthDashboard from "$lib/components/dashboard/SystemHealthDashboard.svelte";
   import PerformanceMonitor from "$lib/components/dashboard/PerformanceMonitor.svelte";
   import AIRecommendations from "$lib/components/ai/AIRecommendations.svelte";
   import RealTimeMetrics from "$lib/components/dashboard/RealTimeMetrics.svelte";
-  
+
   // Import the comprehensive AI system
   import { createAISystemStore } from '$lib/stores/ai-system-store';
   import { createWebSocketStore } from '$lib/stores/websocket-store';
-  
+
   // State management with Svelte 5 runes
   let activeTab = $state<"dashboard" | "chat" | "analysis" | "search" | "monitor">("dashboard");
   let systemHealth = $state<any>({});
@@ -28,22 +28,22 @@
   let showFindModal = $state(false);
   let webSocketConnection = $state<WebSocket | null>(null);
   let connectionStatus = $state<"connecting" | "connected" | "disconnected" | "error">("disconnected");
-  
+
   // AI System Integration
   const aiSystemStore = browser ? createAISystemStore() : null;
   const webSocketStore = browser ? createWebSocketStore() : null;
-  
+
   // Reactive system state
   let systemState = $derived(aiSystemStore?.systemState || {});
   let wsState = $derived(webSocketStore?.connectionState || {});
-  
+
   // Initialize comprehensive AI system on mount
   onMount(async () => {
     if (!browser) return;
-    
+
     try {
       console.log('🚀 Initializing Comprehensive AI System...');
-      
+
       // Initialize AI system store
       if (aiSystemStore) {
         await aiSystemStore.initialize({
@@ -59,41 +59,41 @@
             enableRealTimeMetrics: true
           }
         });
-        
+
         isSystemInitialized = true;
         console.log('✅ AI System initialized successfully');
       }
-      
+
       // Initialize WebSocket connection for real-time updates
       if (webSocketStore) {
         await webSocketStore.connect('ws://localhost:8080/ws');
         webSocketConnection = webSocketStore.socket;
-        
+
         webSocketStore.on('system-health', (data: any) => {
           systemHealth = data;
         });
-        
+
         webSocketStore.on('performance-metrics', (data: any) => {
           performanceMetrics = data;
         });
-        
+
         webSocketStore.on('ai-recommendations', (data: any) => {
           aiRecommendations = data;
         });
-        
+
         connectionStatus = "connected";
         console.log('🌐 WebSocket connection established');
       }
-      
+
       // Start periodic health checks
       startHealthChecks();
-      
+
     } catch (error) {
       console.error('❌ System initialization failed:', error);
       connectionStatus = "error";
     }
   });
-  
+
   onDestroy(() => {
     if (browser) {
       webSocketStore?.disconnect();
@@ -103,29 +103,29 @@
       }
     }
   });
-  
-  let healthCheckInterval: NodeJS.Timeout;
-  
+
+  let healthCheckInterval: ReturnType<typeof setInterval> | undefined;
+
   function startHealthChecks() {
     healthCheckInterval = setInterval(async () => {
       if (aiSystemStore) {
         try {
           const health = await aiSystemStore.getSystemHealth();
           systemHealth = health;
-          
+
           const metrics = await aiSystemStore.getPerformanceMetrics();
           performanceMetrics = metrics;
-          
+
           const recommendations = await aiSystemStore.getRecommendations();
           aiRecommendations = recommendations;
-          
+
         } catch (error) {
           console.warn('Health check failed:', error);
         }
       }
     }, 5000); // Every 5 seconds
   }
-  
+
   // Event handlers
   function handleAnalysisComplete(result: any) {
     console.log("Analysis complete:", result);
@@ -133,18 +133,18 @@
       aiSystemStore.logAnalysis(result);
     }
   }
-  
+
   function handleChatMessage(message: any) {
     console.log("New message:", message);
     if (aiSystemStore) {
       aiSystemStore.logInteraction(message);
     }
   }
-  
+
   function toggleFindModal() {
     showFindModal = !showFindModal;
   }
-  
+
   // Keyboard shortcuts
   function handleKeydown(event: KeyboardEvent) {
     if (event.ctrlKey && event.key === 'k') {
@@ -152,7 +152,7 @@
       toggleFindModal();
     }
   }
-  
+
   // Quick actions for different user roles
   const quickActions = {
     prosecutor: [
@@ -177,7 +177,7 @@
       { icon: "⭐", label: "Best Practices", action: () => window.location.href = "/best-practices" }
     ]
   };
-  
+
   // Current user role (would come from auth in real app)
   const currentUserRole = "prosecutor";
   const userActions = quickActions[currentUserRole];
@@ -194,7 +194,7 @@
           <h1 class="text-2xl font-bold text-white">
             🏛️ Legal AI Command Center
           </h1>
-          
+
           <!-- Tab Navigation -->
           <nav class="flex gap-1">
             {#each [
@@ -205,7 +205,7 @@
               { id: "monitor", label: "Monitor", icon: "⚡" }
             ] as tab}
               <button
-                onclick={() => activeTab = tab.id}
+                on:click={() => activeTab = tab.id}
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                 class:bg-blue-600={activeTab === tab.id}
                 class:text-white={activeTab === tab.id}
@@ -218,26 +218,26 @@
             {/each}
           </nav>
         </div>
-        
+
         <!-- System Status Indicator -->
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-2 text-sm">
-            <div 
+            <div
               class="w-2 h-2 rounded-full"
               class:bg-green-400={connectionStatus === "connected"}
               class:bg-yellow-400={connectionStatus === "connecting"}
               class:bg-red-400={connectionStatus === "disconnected" || connectionStatus === "error"}
             ></div>
             <span class="text-slate-300">
-              {connectionStatus === "connected" ? "System Online" : 
+              {connectionStatus === "connected" ? "System Online" :
                connectionStatus === "connecting" ? "Connecting..." :
                connectionStatus === "error" ? "System Error" : "Offline"}
             </span>
           </div>
-          
+
           <!-- Quick Search Button -->
           <button
-            onclick={toggleFindModal}
+            on:click={toggleFindModal}
             class="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-300 text-sm transition-colors"
             title="Search (Ctrl+K)"
           >
@@ -272,7 +272,7 @@
               <div class="grid grid-cols-1 gap-3">
                 {#each userActions as action}
                   <button
-                    onclick={action.action}
+                    on:click={action.action}
                     class="flex items-center gap-3 w-full p-4 bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600 rounded-lg transition-all duration-200 text-left group"
                   >
                     <span class="text-2xl group-hover:scale-110 transition-transform">{action.icon}</span>
@@ -281,7 +281,7 @@
                 {/each}
               </div>
             </div>
-            
+
             <!-- AI Recommendations -->
             {#if aiRecommendations.length > 0}
               <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6 mt-6">
@@ -290,23 +290,23 @@
               </div>
             {/if}
           </div>
-          
+
           <!-- System Dashboard -->
           <div class="lg:col-span-2">
-            <SystemHealthDashboard 
+            <SystemHealthDashboard
               health={systemHealth}
               metrics={performanceMetrics}
             />
           </div>
         </div>
-        
+
         <!-- Real-time Metrics Strip -->
         {#if Object.keys(performanceMetrics).length > 0}
           <div class="mt-8">
             <RealTimeMetrics metrics={performanceMetrics} />
           </div>
         {/if}
-        
+
       {:else if activeTab === "chat"}
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <!-- Main Chat Interface -->
@@ -319,12 +319,12 @@
               <div class="h-96">
                 <LegalChat
                   systemPrompt="You are an expert legal AI assistant with access to comprehensive legal databases, precedent analysis, and multi-model reasoning capabilities. Provide accurate, professional legal guidance."
-                  onMessage={handleChatMessage}
+                  on:message={handleChatMessage}
                 />
               </div>
             </div>
           </div>
-          
+
           <!-- Chat Sidebar -->
           <div class="lg:col-span-1 space-y-6">
             <!-- Model Status -->
@@ -349,7 +349,7 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Recent Insights -->
             <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
               <h3 class="font-semibold text-white mb-3">💡 Recent Insights</h3>
@@ -366,7 +366,7 @@
             </div>
           </div>
         </div>
-        
+
       {:else if activeTab === "analysis"}
         <div class="max-w-4xl mx-auto">
           <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl overflow-hidden">
@@ -378,10 +378,10 @@
             </div>
             <div class="p-6">
               <DocumentAnalysis
-                onAnalysisComplete={handleAnalysisComplete}
+                on:analysisComplete={handleAnalysisComplete}
                 maxSizeMB={50}
               />
-              
+
               <!-- AI Summarization Panel -->
               <div class="mt-8 border-t border-slate-700 pt-8">
                 <h3 class="text-lg font-semibold text-white mb-4">🧠 AI Summarization</h3>
@@ -390,18 +390,18 @@
             </div>
           </div>
         </div>
-        
+
       {:else if activeTab === "search"}
         <div class="max-w-6xl mx-auto">
           <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-8">
             <div class="text-center mb-8">
               <h2 class="text-2xl font-semibold text-white mb-4">🔍 Enhanced Semantic Search</h2>
               <p class="text-slate-400 max-w-2xl mx-auto">
-                Search through legal documents using advanced semantic analysis, vector embeddings, 
+                Search through legal documents using advanced semantic analysis, vector embeddings,
                 and fuzzy matching powered by Fuse.js and enhanced RAG systems.
               </p>
             </div>
-            
+
             <!-- Search Interface -->
             <div class="max-w-2xl mx-auto mb-8">
               <div class="relative">
@@ -414,7 +414,7 @@
                   <span class="text-slate-400 text-xl">🔍</span>
                 </div>
               </div>
-              
+
               <div class="flex gap-2 mt-4 flex-wrap">
                 {#each ["Contract Analysis", "Case Law", "Precedents", "Evidence", "Regulations"] as tag}
                   <button class="px-3 py-1 bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-full text-sm text-slate-300 transition-colors">
@@ -423,7 +423,7 @@
                 {/each}
               </div>
             </div>
-            
+
             <!-- Search Results Placeholder -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {#each Array(6) as _, i}
@@ -444,17 +444,17 @@
             </div>
           </div>
         </div>
-        
+
       {:else if activeTab === "monitor"}
         <div class="space-y-8">
           <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
             <h2 class="text-xl font-semibold text-white mb-6">⚡ Performance Monitor</h2>
-            <PerformanceMonitor 
+            <PerformanceMonitor
               metrics={performanceMetrics}
               health={systemHealth}
             />
           </div>
-          
+
           <!-- System Components Status -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {#each [
@@ -486,9 +486,9 @@
 
   <!-- Find Modal -->
   {#if showFindModal}
-    <FindModal 
+    <FindModal
       bind:isOpen={showFindModal}
-      onClose={() => showFindModal = false}
+      on:close={() => showFindModal = false}
     />
   {/if}
 </div>
@@ -498,16 +498,16 @@
   :global(::-webkit-scrollbar) {
     width: 8px;
   }
-  
+
   :global(::-webkit-scrollbar-track) {
     background: #1e293b;
   }
-  
+
   :global(::-webkit-scrollbar-thumb) {
     background: #475569;
     border-radius: 4px;
   }
-  
+
   :global(::-webkit-scrollbar-thumb:hover) {
     background: #64748b;
   }

@@ -3,9 +3,9 @@
   import type { Report } from "$lib/types/index";
   import { onMount } from "svelte";
 
-  let reports: Report[] = [];
-  let loading = true;
-  let error: string | null = null;
+  let reports: Report[] = $state([]);
+  let loading = $state(true);
+  let error: string | null = $state(null);
 
   onMount(async () => {
     try {

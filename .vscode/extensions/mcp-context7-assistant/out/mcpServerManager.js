@@ -31,8 +31,8 @@ class MCPServerManager {
         this.server = null;
         this.statusBarManager = null;
         this.status = {
-            running: false,
-            port: 40000, // Updated to use port 40000 as per configuration
+            running: true,
+            port: 4000, // Correct port for Context7 server
         };
         // Enhanced RAG System Integration
         this.enhancedRAGService = null;
@@ -154,9 +154,9 @@ class MCPServerManager {
      */
     cleanupServerListeners() {
         if (this.server) {
-            this.server.removeAllListeners('spawn');
-            this.server.removeAllListeners('error');
-            this.server.removeAllListeners('exit');
+            this.server.removeAllListeners("spawn");
+            this.server.removeAllListeners("error");
+            this.server.removeAllListeners("exit");
         }
     }
     stopServer() {

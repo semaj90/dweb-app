@@ -1,0 +1,72 @@
+
+> yorha-legal-ai-frontend@1.0.0 check:full
+> node scripts/run-complete-check.mjs
+
+Debugger listening on ws://127.0.0.1:61741/5666ad15-7a31-4795-9c89-83430c813f2c
+For help, see: https://nodejs.org/en/docs/inspector
+Debugger attached.
+[34m[1m
+╔════════════════════════════════════════╗
+║    COMPLETE INTEGRATION CHECK          ║
+╚════════════════════════════════════════╝
+[0m
+
+[36mℹ️  Checking npm packages...[0m
+[32m✅  Package chalk is installed[0m
+[32m✅  Package ora is installed[0m
+[32m✅  Package glob is installed[0m
+[32m✅  Package concurrently is installed[0m
+[32m✅  Package ws is installed[0m
+[32m✅  Package rimraf is installed[0m
+[36mℹ️  Running TypeScript check...[0m
+[32m✅  TypeScript: No errors[0m
+[36mℹ️  Checking system requirements...[0m
+[32m✅  Node.js v22.17.1 (OK)[0m
+[32m✅  Go installed: go version go1.24.5 windows/amd64[0m
+[32m✅  GPU detected: NVIDIA GeForce RTX 3060 Ti, 8192 MiB[0m
+[36mℹ️  Checking critical services...[0m
+[31m❌  Frontend (5173): fetch failed[0m
+[31m❌  Go API (8084): fetch failed[0m
+[31m❌  Redis (6379): Not accessible[0m
+[31m❌  Ollama (11434): fetch failed[0m
+[32m✅  PostgreSQL (5432): Port open[0m
+[36mℹ️  🚀 Checking Enhanced RAG Tool Performance...[0m
+[31m❌  Enhanced RAG check failed: fetch failed[0m
+[36mℹ️  Verifying file structure...[0m
+[31m❌  File missing: ../main.go[0m
+[31m❌  File missing: package.json[0m
+[31m❌  File missing: tsconfig.json[0m
+[31m❌  File missing: ../database/schema-jsonb-enhanced.sql[0m
+[31m❌  File missing: src/lib/db/schema-jsonb.ts[0m
+[31m❌  File missing: src/routes/api/ai/vector-search/+server.ts[0m
+[31m❌  File missing: ../812aisummarizeintegration.md[0m
+[31m❌  File missing: ../TODO-AI-INTEGRATION.md[0m
+[31m❌  File missing: ../FINAL-INTEGRATION-REPORT.md[0m
+[31m❌  Directory missing: ../ai-summarized-documents[0m
+[31m❌  Directory missing: ../ai-summarized-documents/contracts[0m
+[31m❌  Directory missing: ../ai-summarized-documents/legal-briefs[0m
+[31m❌  Directory missing: ../ai-summarized-documents/case-studies[0m
+[31m❌  Directory missing: ../ai-summarized-documents/embeddings[0m
+[31m❌  Directory missing: ../ai-summarized-documents/cache[0m
+[31m❌  Directory missing: scripts[0m
+[31m❌  Directory missing: src/lib/db[0m
+[31m❌  Directory missing: src/routes/api/ai[0m
+[32m✅  Report saved to: C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\scripts\INTEGRATION-CHECK-2025-08-14T15-33-48-299Z.md[0m
+
+[1m[36m
+════════════════════════════════════════
+           CHECK COMPLETE
+════════════════════════════════════════
+[0m
+
+📊 Results:
+  [32m✅ Successes: 12[0m
+  [33m⚠️  Warnings: 0[0m
+  [31m❌ Errors: 23[0m
+
+🚀 Enhanced RAG: ERROR
+[33m⚠️  Please review the report for required actions.[0m
+
+📄 Full report: C:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend\scripts\INTEGRATION-CHECK-2025-08-14T15-33-48-299Z.md
+
+Waiting for the debugger to disconnect...

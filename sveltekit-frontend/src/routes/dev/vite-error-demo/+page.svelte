@@ -4,9 +4,9 @@
   import { logCustomError } from '$lib/vite/vscode-error-logger';
   import { vscodeIntegration, errorNavigator } from '$lib/vite/vscode-extension';
 
-  let errorLog: any[] = [];
-  let errorStats = { total: 0, errors: 0, warnings: 0, info: 0 };
-  let isWatching = false;
+  let errorLog: any[] = $state([]);
+  let errorStats = $state({ total: 0, errors: 0, warnings: 0, info: 0 });
+  let isWatching = $state(false);
 
   // Demo error generators
   const demoErrors = [

@@ -4,8 +4,11 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { Button } from '$lib/components/ui/button';
-  import Card from '$lib/components/ui/Card.svelte';
-  import { createGPUClusterManager, checkGPUCapabilities } from '$lib/services/gpu-cluster-acceleration';
+  import { Card } from '$lib/components/ui/card';
+  import {
+    createGPUClusterManager,
+    checkGPUCapabilities,
+  } from '$lib/services/gpu-cluster-acceleration';
   import { createWebGLShaderCache, LEGAL_AI_SHADERS } from '$lib/utils/webgl-shader-cache';
   import { Activity, Cpu, Zap, Eye, BarChart3, Network, Clock } from 'lucide-svelte';
 
@@ -16,7 +19,7 @@
     webgl: false,
     webgl2: false,
     webgpu: false,
-    extensions: [] as string[]
+    extensions: [] as string[],
   });
 
   // Canvas and WebGL context
@@ -37,7 +40,7 @@
     cacheHitRate: 0,
     compilationTime: 0,
     frameRate: 0,
-    contextSwitches: 0
+    contextSwitches: 0,
   });
 
   let shaderMetrics = $state({
@@ -45,7 +48,7 @@
     cacheHits: 0,
     cacheMisses: 0,
     averageCompilationTime: 0,
-    memoryUsage: 0
+    memoryUsage: 0,
   });
 
   // Demo data
@@ -85,7 +88,7 @@
 
       // Initialize WebGL context
       if (canvas) {
-        gl = canvas.getContext('webgl2') || canvas.getContext('webgl') as WebGL2RenderingContext;
+        gl = canvas.getContext('webgl2') || (canvas.getContext('webgl') as WebGL2RenderingContext);
 
         if (!gl) {
           throw new Error('Failed to get WebGL context');
@@ -120,7 +123,7 @@
             cacheHitRate: metrics.cacheHitRate * 100,
             compilationTime: metrics.compilationTime,
             frameRate: metrics.performance.frameRate,
-            contextSwitches: metrics.performance.contextSwitches
+            contextSwitches: metrics.performance.contextSwitches,
           };
         });
       }
@@ -132,14 +135,13 @@
             cacheHits: metrics.cacheHits,
             cacheMisses: metrics.cacheMisses,
             averageCompilationTime: metrics.averageCompilationTime,
-            memoryUsage: metrics.memoryUsage
+            memoryUsage: metrics.memoryUsage,
           };
         });
       }
 
       isInitialized = true;
       console.log('✅ GPU Demo initialized successfully');
-
     } catch (error) {
       console.error('❌ GPU Demo initialization failed:', error);
     }
@@ -151,9 +153,9 @@
     attentionData = new Float32Array(attentionSize * 3); // x, y, attention
 
     for (let i = 0; i < attentionSize; i++) {
-      const x = (i % 64) / 63 * 2 - 1; // -1 to 1
-      const y = Math.floor(i / 64) / 63 * 2 - 1;
-      const attention = Math.random() * Math.exp(-((x*x + y*y) * 2)); // Gaussian-like
+      const x = ((i % 64) / 63) * 2 - 1; // -1 to 1
+      const y = (Math.floor(i / 64) / 63) * 2 - 1;
+      const attention = Math.random() * Math.exp(-((x * x + y * y) * 2)); // Gaussian-like
 
       attentionData[i * 3] = x;
       attentionData[i * 3 + 1] = y;
@@ -169,13 +171,13 @@
       const radius = 0.5 + Math.random() * 0.3;
       const pageRank = Math.random();
 
-      documentData[i * 7] = Math.cos(angle) * radius;     // x
+      documentData[i * 7] = Math.cos(angle) * radius; // x
       documentData[i * 7 + 1] = Math.sin(angle) * radius; // y
       documentData[i * 7 + 2] = (Math.random() - 0.5) * 0.2; // z
-      documentData[i * 7 + 3] = 0.3 + pageRank * 0.7;    // r
-      documentData[i * 7 + 4] = 0.2 + pageRank * 0.3;    // g
-      documentData[i * 7 + 5] = 0.8 - pageRank * 0.3;    // b
-      documentData[i * 7 + 6] = pageRank;                 // pageRank
+      documentData[i * 7 + 3] = 0.3 + pageRank * 0.7; // r
+      documentData[i * 7 + 4] = 0.2 + pageRank * 0.3; // g
+      documentData[i * 7 + 5] = 0.8 - pageRank * 0.3; // b
+      documentData[i * 7 + 6] = pageRank; // pageRank
     }
 
     // Generate timeline data (simulating evidence timeline)
@@ -186,13 +188,13 @@
       const t = i / (timelineCount - 1);
       const importance = Math.random();
 
-      timelineData[i * 6] = t * 2 - 1;                    // x (time axis)
+      timelineData[i * 6] = t * 2 - 1; // x (time axis)
       timelineData[i * 6 + 1] = (Math.random() - 0.5) * 0.5; // y (random offset)
-      timelineData[i * 6 + 2] = t;                        // timestamp
-      timelineData[i * 6 + 3] = importance;               // importance
-      timelineData[i * 6 + 4] = importance;               // r
-      timelineData[i * 6 + 5] = 0.5 + importance * 0.5;  // g
-      timelineData[i * 6 + 6] = 1.0 - importance * 0.5;  // b
+      timelineData[i * 6 + 2] = t; // timestamp
+      timelineData[i * 6 + 3] = importance; // importance
+      timelineData[i * 6 + 4] = importance; // r
+      timelineData[i * 6 + 5] = 0.5 + importance * 0.5; // g
+      timelineData[i * 6 + 6] = 1.0 - importance * 0.5; // b
     }
 
     console.log('📊 Demo data generated');
@@ -213,7 +215,6 @@
 
       // Start render loop
       renderLoop();
-
     } catch (error) {
       console.error(`Failed to start ${type} visualization:`, error);
     }
@@ -271,7 +272,7 @@
         u_scale: 0.2,
         u_lowColor: [0.1, 0.1, 0.8],
         u_highColor: [0.8, 0.2, 0.2],
-        u_intensity: 1.0
+        u_intensity: 1.0,
       };
 
       shaderCache.setUniforms(program, uniforms);
@@ -280,14 +281,13 @@
       const attributes = {
         a_position: { buffer: positionBuffer, size: 2 },
         a_texCoord: { buffer: positionBuffer, size: 2 },
-        a_attention: { buffer: positionBuffer, size: 1, offset: 2 * 4 }
+        a_attention: { buffer: positionBuffer, size: 1, offset: 2 * 4 },
       };
 
       shaderCache.setupVertexAttributes(program, attributes);
 
       // Render
       gl.drawArrays(gl.POINTS, 0, attentionData.length / 3);
-
     } catch (error) {
       console.error('Attention heatmap render error:', error);
     }
@@ -307,7 +307,7 @@
         u_matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         u_time: time,
         u_nodeSize: 10.0,
-        u_alpha: 0.8
+        u_alpha: 0.8,
       };
 
       shaderCache.setUniforms(program, uniforms);
@@ -315,13 +315,12 @@
       const attributes = {
         a_position: { buffer: positionBuffer, size: 3 },
         a_color: { buffer: positionBuffer, size: 3, offset: 3 * 4 },
-        a_pageRank: { buffer: positionBuffer, size: 1, offset: 6 * 4 }
+        a_pageRank: { buffer: positionBuffer, size: 1, offset: 6 * 4 },
       };
 
       shaderCache.setupVertexAttributes(program, attributes);
 
       gl.drawArrays(gl.POINTS, 0, documentData.length / 7);
-
     } catch (error) {
       console.error('Document network render error:', error);
     }
@@ -341,7 +340,7 @@
         u_matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         u_currentTime: (time * 0.1) % 1.0,
         u_timeRange: 1.0,
-        u_alpha: 0.8
+        u_alpha: 0.8,
       };
 
       shaderCache.setUniforms(program, uniforms);
@@ -350,13 +349,12 @@
         a_position: { buffer: positionBuffer, size: 2 },
         a_timestamp: { buffer: positionBuffer, size: 1, offset: 2 * 4 },
         a_importance: { buffer: positionBuffer, size: 1, offset: 3 * 4 },
-        a_evidenceColor: { buffer: positionBuffer, size: 3, offset: 4 * 4 }
+        a_evidenceColor: { buffer: positionBuffer, size: 3, offset: 4 * 4 },
       };
 
       shaderCache.setupVertexAttributes(program, attributes);
 
       gl.drawArrays(gl.POINTS, 0, timelineData.length / 7);
-
     } catch (error) {
       console.error('Evidence timeline render error:', error);
     }
@@ -369,7 +367,6 @@
     try {
       const program = await shaderCache.getShaderProgram('legal-ai-textFlow');
       // Implementation would be similar to other renderers
-
     } catch (error) {
       console.error('Text flow render error:', error);
     }
@@ -395,12 +392,11 @@
         expectedDuration: 10,
         callback: (result: any) => {
           console.log('GPU workload result:', result);
-        }
+        },
       };
 
       const result = await gpuManager.executeWorkload(workload);
       console.log('🔥 GPU workload completed:', result);
-
     } catch (error) {
       console.error('GPU workload failed:', error);
     }
@@ -417,10 +413,13 @@
 
 <svelte:head>
   <title>GPU Cluster Demo - Legal AI</title>
-  <meta name="description" content="Real-time GPU-accelerated legal AI visualizations with multi-cluster support">
+  <meta
+    name="description"
+    content="Real-time GPU-accelerated legal AI visualizations with multi-cluster support" />
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-6">
   <!-- Header -->
   <div class="max-w-7xl mx-auto mb-8">
     <div class="text-center mb-8">
@@ -430,7 +429,8 @@
         </span>
       </h1>
       <p class="text-xl text-gray-300 max-w-4xl mx-auto">
-        Real-time WebGL/WebGPU accelerated legal AI visualizations with multi-cluster GPU context switching
+        Real-time WebGL/WebGPU accelerated legal AI visualizations with multi-cluster GPU context
+        switching
       </p>
     </div>
 
@@ -443,38 +443,62 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg" class:bg-green-100={gpuCapabilities.webgl} class:bg-red-100={!gpuCapabilities.webgl}>
-            <div class="h-4 w-4" class:text-green-600={gpuCapabilities.webgl} class:text-red-600={!gpuCapabilities.webgl}>
+          <div
+            class="p-2 rounded-lg"
+            class:bg-green-100={gpuCapabilities.webgl}
+            class:bg-red-100={!gpuCapabilities.webgl}>
+            <div
+              class="h-4 w-4"
+              class:text-green-600={gpuCapabilities.webgl}
+              class:text-red-600={!gpuCapabilities.webgl}>
               <Activity class="h-4 w-4" />
             </div>
           </div>
           <div>
             <p class="font-medium">WebGL</p>
-            <p class="text-sm text-gray-400">{gpuCapabilities.webgl ? 'Supported' : 'Not Available'}</p>
+            <p class="text-sm text-gray-400">
+              {gpuCapabilities.webgl ? 'Supported' : 'Not Available'}
+            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg" class:bg-green-100={gpuCapabilities.webgl2} class:bg-red-100={!gpuCapabilities.webgl2}>
-            <div class="h-4 w-4" class:text-green-600={gpuCapabilities.webgl2} class:text-red-600={!gpuCapabilities.webgl2}>
+          <div
+            class="p-2 rounded-lg"
+            class:bg-green-100={gpuCapabilities.webgl2}
+            class:bg-red-100={!gpuCapabilities.webgl2}>
+            <div
+              class="h-4 w-4"
+              class:text-green-600={gpuCapabilities.webgl2}
+              class:text-red-600={!gpuCapabilities.webgl2}>
               <Zap class="h-4 w-4" />
             </div>
           </div>
           <div>
             <p class="font-medium">WebGL 2</p>
-            <p class="text-sm text-gray-400">{gpuCapabilities.webgl2 ? 'Supported' : 'Not Available'}</p>
+            <p class="text-sm text-gray-400">
+              {gpuCapabilities.webgl2 ? 'Supported' : 'Not Available'}
+            </p>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg" class:bg-green-100={gpuCapabilities.webgpu} class:bg-red-100={!gpuCapabilities.webgpu}>
-            <div class="h-4 w-4" class:text-green-600={gpuCapabilities.webgpu} class:text-red-600={!gpuCapabilities.webgpu}>
+          <div
+            class="p-2 rounded-lg"
+            class:bg-green-100={gpuCapabilities.webgpu}
+            class:bg-red-100={!gpuCapabilities.webgpu}>
+            <div
+              class="h-4 w-4"
+              class:text-green-600={gpuCapabilities.webgpu}
+              class:text-red-600={!gpuCapabilities.webgpu}>
               <Cpu class="h-4 w-4" />
             </div>
           </div>
           <div>
             <p class="font-medium">WebGPU</p>
-            <p class="text-sm text-gray-400">{gpuCapabilities.webgpu ? 'Supported' : 'Not Available'}</p>
+            <p class="text-sm text-gray-400">
+              {gpuCapabilities.webgpu ? 'Supported' : 'Not Available'}
+            </p>
           </div>
         </div>
       </div>
@@ -487,7 +511,8 @@
               <span class="px-2 py-1 text-xs bg-slate-700 rounded">{extension}</span>
             {/each}
             {#if gpuCapabilities.extensions.length > 10}
-              <span class="px-2 py-1 text-xs bg-slate-600 rounded">+{gpuCapabilities.extensions.length - 10} more</span>
+              <span class="px-2 py-1 text-xs bg-slate-600 rounded"
+                >+{gpuCapabilities.extensions.length - 10} more</span>
             {/if}
           </div>
         </div>
@@ -504,7 +529,9 @@
           </div>
           <div>
             <h3 class="font-semibold text-white">GPU Contexts</h3>
-            <p class="text-sm text-gray-400">{gpuMetrics.activeContexts}/{gpuMetrics.totalContexts}</p>
+            <p class="text-sm text-gray-400">
+              {gpuMetrics.activeContexts}/{gpuMetrics.totalContexts}
+            </p>
           </div>
         </div>
       </Card>
@@ -567,8 +594,7 @@
             width="500"
             height="400"
             class="w-full border border-slate-600 rounded bg-black"
-            style="max-width: 100%; height: auto;"
-          ></canvas>
+            style="max-width: 100%; height: auto;"></canvas>
 
           {#if !isInitialized}
             <div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded">
@@ -586,8 +612,7 @@
             onclick={() => startVisualization('attentionHeatmap')}
             disabled={!isInitialized}
             variant={activeVisualization === 'attentionHeatmap' ? 'default' : 'outline'}
-            class="text-sm"
-          >
+            class="text-sm">
             Attention Heatmap
           </Button>
 
@@ -595,8 +620,7 @@
             onclick={() => startVisualization('documentNetwork')}
             disabled={!isInitialized}
             variant={activeVisualization === 'documentNetwork' ? 'default' : 'outline'}
-            class="text-sm"
-          >
+            class="text-sm">
             Document Network
           </Button>
 
@@ -604,8 +628,7 @@
             onclick={() => startVisualization('evidenceTimeline')}
             disabled={!isInitialized}
             variant={activeVisualization === 'evidenceTimeline' ? 'default' : 'outline'}
-            class="text-sm"
-          >
+            class="text-sm">
             Evidence Timeline
           </Button>
 
@@ -613,8 +636,7 @@
             onclick={() => startVisualization('textFlow')}
             disabled={!isInitialized}
             variant={activeVisualization === 'textFlow' ? 'default' : 'outline'}
-            class="text-sm"
-          >
+            class="text-sm">
             Text Flow
           </Button>
         </div>
@@ -631,8 +653,7 @@
             onclick={executeGPUWorkload}
             disabled={!isInitialized}
             variant="outline"
-            class="text-white border-slate-600 hover:bg-slate-700"
-          >
+            class="text-white border-slate-600 hover:bg-slate-700">
             Execute GPU Workload
           </Button>
         </div>
@@ -669,8 +690,8 @@
             <div class="w-full bg-slate-700 rounded-full h-2">
               <div
                 class="bg-green-500 h-2 rounded-full transition-all duration-500"
-                style="width: {gpuMetrics.cacheHitRate}%"
-              ></div>
+                style="width: {gpuMetrics.cacheHitRate}%">
+              </div>
             </div>
           </div>
         </div>

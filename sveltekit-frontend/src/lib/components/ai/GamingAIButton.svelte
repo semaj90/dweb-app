@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Expected token >
+https://svelte.dev/e/expected_token -->
 <script lang="ts">
   import { onMount } from 'svelte'
   import { scale, fly } from 'svelte/transition'

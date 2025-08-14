@@ -372,7 +372,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             Semantic Search
           </h3>
           {#each demoSearchQueries as example}
-            <div class="demo-example-card" on:click={() => loadDemoQuery(example.query)}>
+            <div class="demo-example-card" onclick={() => loadDemoQuery(example.query)}>
               <h4 class="font-medium text-sm mb-1">{example.category}</h4>
               <p class="text-xs text-muted-foreground mb-2">{example.description}</p>
               <p class="text-xs bg-muted p-2 rounded font-mono">{example.query}</p>
@@ -387,7 +387,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             AI Recommendations
           </h3>
           {#each demoRecommendationContexts as example}
-            <div class="demo-example-card" on:click={() => loadDemoContext(example.context, example.role)}>
+            <div class="demo-example-card" onclick={() => loadDemoContext(example.context, example.role)}>
               <h4 class="font-medium text-sm mb-1">{example.description}</h4>
               <Badge class="bits-badge-outline text-xs mb-2">{example.role}</Badge>
               <p class="text-xs text-muted-foreground">{example.context.substring(0, 80)}...</p>
@@ -402,7 +402,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             Document Analysis
           </h3>
           {#each demoAnalysisContent as example}
-            <div class="demo-example-card" on:click={() => loadDemoContent(example.content)}>
+            <div class="demo-example-card" onclick={() => loadDemoContent(example.content)}>
               <h4 class="font-medium text-sm mb-1">{example.type}</h4>
               <p class="text-xs text-muted-foreground mb-2">{example.description}</p>
               <p class="text-xs bg-muted p-2 rounded">{example.content.substring(0, 60)}...</p>
@@ -677,10 +677,11 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
           <CardContent class="shadcn-card-content">
             <div class="recommendation-container">
               {#each recommendations as rec}
+                {@const SvelteComponent = getRecommendationIcon(rec.type)}
                 <div class={getRecommendationColor(rec.type)}>
                   <div class="recommendation-header">
                     <div class="flex items-center gap-2">
-                      <svelte:component this={getRecommendationIcon(rec.type)} class="h-4 w-4" />
+                      <SvelteComponent class="h-4 w-4" />
                       <span class="recommendation-title">{rec.title}</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -774,8 +775,9 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
               {#if semanticAnalysis.entities?.length > 0}
                 <div class="semantic-entity-container">
                   {#each semanticAnalysis.entities as entity}
+                    {@const SvelteComponent_1 = getEntityIcon(entity.type)}
                     <div class={getEntityColor(entity.type)}>
-                      <svelte:component this={getEntityIcon(entity.type)} class="h-3 w-3 mr-1" />
+                      <SvelteComponent_1 class="h-3 w-3 mr-1" />
                       {entity.text}
                       <Badge class="ml-1 text-xs">{Math.round(entity.confidence * 100)}%</Badge>
                     </div>

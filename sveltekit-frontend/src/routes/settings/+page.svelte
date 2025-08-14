@@ -7,7 +7,7 @@
   import { onMount } from "svelte";
 
   // Profile settings
-  let profile = {
+  let profile = $state({
     name: "",
     email: "",
     role: "investigator",
@@ -15,10 +15,10 @@
     phone: "",
     bio: "",
     avatar: null as File | null,
-  };
+  });
 
   // App preferences
-  let preferences = {
+  let preferences = $state({
     theme: "light",
     language: "en",
     timezone: "UTC",
@@ -30,33 +30,33 @@
     autoSave: true,
     defaultViewMode: "grid",
     itemsPerPage: 20,
-  };
+  });
 
   // Security settings
-  let security = {
+  let security = $state({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
     twoFactorEnabled: false,
     sessionTimeout: 30, // minutes
     allowRememberMe: true,
-  };
+  });
 
   // Export/Import settings
-  let dataSettings = {
+  let dataSettings = $state({
     includePersonalData: true,
     includeSystemLogs: false,
     exportFormat: "json",
     autoBackup: false,
     backupFrequency: "weekly",
-  };
+  });
 
   // State
-  let activeTab = "profile";
-  let isLoading = false;
-  let isSaving = false;
-  let showPasswords = false;
-  let avatarPreview: string | null = null;
+  let activeTab = $state("profile");
+  let isLoading = $state(false);
+  let isSaving = $state(false);
+  let showPasswords = $state(false);
+  let avatarPreview: string | null = $state(null);
 
   // Available options
   const themes = [

@@ -1,10 +1,10 @@
 <!-- AI Chat Test Page - Showcasing Svelte 5 + bits-ui + Docker Ollama Integration -->
 <script lang="ts">
-  import { onMount } from "svelte";
-  import Button from "$lib/components/ui/button/Button.svelte";
-  import Card from "$lib/components/ui/Card.svelte";
-  import Badge from "$lib/components/ui/Badge.svelte";
-  import EnhancedAIChatTest from "$lib/components/ai/EnhancedAIChatTest.svelte";
+  import { onMount } from 'svelte';
+  import Button from '$lib/components/ui/button/Button.svelte';
+  import { Card } from '$lib/components/ui/Card';
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import EnhancedAIChatTest from '$lib/components/ai/EnhancedAIChatTest.svelte';
   import {
     Bot,
     MessageCircle,
@@ -15,8 +15,8 @@
     XCircle,
     Loader2,
     Server,
-    HardDrive
-  } from "lucide-svelte";
+    HardDrive,
+  } from 'lucide-svelte';
 
   // State using Svelte 5 runes
   let systemStatus = $state<{
@@ -41,31 +41,31 @@
   async function checkSystemStatus() {
     try {
       isLoading = true;
-      const response = await fetch("/api/system/check");
+      const response = await fetch('/api/system/check');
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       const data = await response.json();
-      
+
       // Normalize the response structure for compatibility
       systemStatus = {
         services: data.services,
         environment: data.environment,
         // Legacy compatibility
         ollama: data.services?.ollama || data.ollama,
-        database: data.services?.database || data.database
+        database: data.services?.database || data.database,
       };
     } catch (error) {
-      console.error("Failed to check system status:", error);
+      console.error('Failed to check system status:', error);
       systemStatus = {
         services: {
-          ollama: { status: "error", error: "Failed to connect" },
-          database: { status: "error", error: "Failed to connect" }
+          ollama: { status: 'error', error: 'Failed to connect' },
+          database: { status: 'error', error: 'Failed to connect' },
         },
-        environment: { ollamaUrl: "unknown" },
+        environment: { ollamaUrl: 'unknown' },
         // Legacy compatibility
-        ollama: { status: "error", error: "Failed to connect" },
-        database: { status: "error", error: "Failed to connect" }
+        ollama: { status: 'error', error: 'Failed to connect' },
+        database: { status: 'error', error: 'Failed to connect' },
       };
     } finally {
       isLoading = false;
@@ -74,49 +74,57 @@
 
   function getStatusIcon(status: string) {
     switch (status) {
-      case "connected": return CheckCircle;
-      case "error":
-      case "disconnected":
+      case 'connected':
+        return CheckCircle;
+      case 'error':
+      case 'disconnected':
         return XCircle;
-      default: return Loader2;
+      default:
+        return Loader2;
     }
   }
 
   function getStatusColor(status: string) {
     switch (status) {
-      case "connected": return "text-green-500";
-      case "error":
-      case "disconnected":
-        return "text-red-500";
-      default: return "text-yellow-500";
+      case 'connected':
+        return 'text-green-500';
+      case 'error':
+      case 'disconnected':
+        return 'text-red-500';
+      default:
+        return 'text-yellow-500';
     }
   }
 
   function getStatusText(status: string) {
     switch (status) {
-      case "connected": return "Connected";
-      case "error": return "Error";
-      case "disconnected": return "Disconnected";
-      default: return "Checking...";
+      case 'connected':
+        return 'Connected';
+      case 'error':
+        return 'Error';
+      case 'disconnected':
+        return 'Disconnected';
+      default:
+        return 'Checking...';
     }
   }
 </script>
 
 <svelte:head>
   <title>AI Chat Assistant Test - Deeds Legal AI</title>
-  <meta name="description" content="Test page for the enhanced AI chat assistant with Docker Ollama integration" />
+  <meta
+    name="description"
+    content="Test page for the enhanced AI chat assistant with Docker Ollama integration" />
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
   <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">
-        🤖 Enhanced AI Legal Assistant
-      </h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">🤖 Enhanced AI Legal Assistant</h1>
       <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-        Powered by Gemma3 Legal Enhanced model running locally on RTX 3060 Ti GPU
-        with Docker, Ollama, and Svelte 5 + bits-ui integration
+        Powered by Gemma3 Legal Enhanced model running locally on RTX 3060 Ti GPU with Docker,
+        Ollama, and Svelte 5 + bits-ui integration
       </p>
     </div>
 
@@ -246,18 +254,13 @@
     <!-- Chat Interface -->
     <div class="text-center mb-8">
       <div class="bg-white rounded-lg shadow-lg p-8 max-w-2xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">
-          Test the AI Chat Assistant
-        </h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Test the AI Chat Assistant</h2>
         <p class="text-gray-600 mb-6">
-          Click below to open the enhanced chat interface and start a conversation
-          with your local AI legal assistant.
+          Click below to open the enhanced chat interface and start a conversation with your local
+          AI legal assistant.
         </p>
 
-        <EnhancedAIChatTest
-          bind:open={chatOpen}
-          caseId="TEST-CASE-001"
-        />
+        <EnhancedAIChatTest bind:open={chatOpen} caseId="TEST-CASE-001" />
 
         <div class="mt-4 text-sm text-gray-500">
           <p>💡 Try asking about legal concepts, case analysis, or document review</p>
@@ -295,7 +298,8 @@
         <div class="mt-4 p-4 bg-gray-50 rounded-lg">
           <h4 class="font-semibold text-gray-900 mb-2">Connection Details</h4>
           <p class="text-sm text-gray-600">
-            Ollama URL: <code class="bg-white px-2 py-1 rounded">{systemStatus.environment.ollamaUrl}</code>
+            Ollama URL: <code class="bg-white px-2 py-1 rounded"
+              >{systemStatus.environment.ollamaUrl}</code>
           </p>
         </div>
       {/if}
@@ -303,12 +307,7 @@
 
     <!-- Refresh Button -->
     <div class="text-center mt-8">
-      <Button
-        variant="outline"
-        onclick={checkSystemStatus}
-        disabled={isLoading}
-        class="gap-2"
-      >
+      <Button variant="outline" onclick={checkSystemStatus} disabled={isLoading} class="gap-2">
         {#if isLoading}
           <Loader2 class="h-4 w-4 animate-spin" />
         {:else}
@@ -323,7 +322,12 @@
 <style>
   /* Custom styles for enhanced appearance */
   :global(body) {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
   }
 
   :global(code) {

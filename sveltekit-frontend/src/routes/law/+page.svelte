@@ -1,10 +1,12 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { onMount } from 'svelte';
   
-  let laws: any[] = [];
-  let loading = true;
-  let error: string | null = null;
-  let searchQuery = '';
+  let laws: any[] = $state([]);
+  let loading = $state(true);
+  let error: string | null = $state(null);
+  let searchQuery = $state('');
   
   onMount(async () => {
     try {
@@ -22,11 +24,11 @@
 }
   });
   
-  let filteredLaws = $derived(laws.filter(law => );
+  let filteredLaws = $derived(laws.filter(law => 
     law.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     law.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     law.code?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ));
 </script>
 
 <svelte:head>

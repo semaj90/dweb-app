@@ -1,3 +1,5 @@
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
 <!--
   Windows-Native GGUF Runtime Demo
   Showcases RTX 3060 optimization without SentencePiece/Triton
@@ -46,10 +48,10 @@
   onMount(async () => {
     // Initialize WebGPU for visualization
     await initializeWebGPU();
-    
+
     // Start demo animation
     startVisualization();
-    
+
     // Initialize service worker communication
     initializeServiceWorkerComm();
   });
@@ -123,10 +125,10 @@
     try {
       // Create command encoder
       const commandEncoder = device.createCommandEncoder();
-      
+
       // Get current texture
       const textureView = ctx.getCurrentTexture().createView();
-      
+
       // Create render pass
       const renderPass = commandEncoder.beginRenderPass({
         colorAttachments: [{
@@ -220,7 +222,7 @@
     try {
       // Submit WebGPU task to service worker
       const channel = new MessageChannel();
-      
+
       const result = await new Promise((resolve, reject) => {
         channel.port1.onmessage = (event) => {
           if (event.data.type === 'WEBGPU_RESULT') {
@@ -353,10 +355,10 @@
       results: results
     };
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { 
-      type: 'application/json' 
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json'
     });
-    
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -386,7 +388,7 @@
             RTX 3060 Optimized • No SentencePiece • No Triton • WebGPU Accelerated
           </p>
         </div>
-        
+
         <div class="flex items-center gap-4">
           <div class="text-right">
             <div class="text-sm text-slate-400">System Status</div>
@@ -438,7 +440,7 @@
       <Card class="bg-slate-800/50 border-blue-800/30">
         <div class="p-6">
           <h2 class="text-xl font-semibold mb-4">Demo Input</h2>
-          
+
           <div class="mb-4">
             <label for="demo-input" class="block text-sm font-medium text-slate-300 mb-2">
               Legal Document Text
@@ -502,7 +504,7 @@
       <Card class="bg-slate-800/50 border-blue-800/30">
         <div class="p-6">
           <h2 class="text-xl font-semibold mb-4">WebGPU Visualization</h2>
-          
+
           <div class="relative">
             <canvas
               bind:this={canvas}
@@ -512,7 +514,7 @@
             >
               WebGPU not supported
             </canvas>
-            
+
             <div class="absolute top-2 right-2 bg-black/50 rounded px-2 py-1 text-xs">
               {webgpuStatus.available ? 'WebGPU Active' : 'WebGPU Unavailable'}
             </div>
@@ -540,7 +542,7 @@
     {#if results.length > 0}
       <div class="mt-8">
         <h2 class="text-2xl font-semibold mb-6">Processing Results</h2>
-        
+
         <div class="space-y-4">
           {#each results as result (result.id)}
             <Card class="bg-slate-800/50 border-blue-800/30">
@@ -592,7 +594,7 @@
     <!-- Technical Specifications -->
     <div class="mt-12">
       <h2 class="text-2xl font-semibold mb-6">Technical Specifications</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card class="bg-slate-800/50 border-blue-800/30">
           <div class="p-6">
@@ -660,6 +662,6 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
   }
-  
+
   /* Removed unused hover effects and processing class */
 </style>
