@@ -1,0 +1,46 @@
+# MCP Context7 Kratos Multi-Cluster Configuration
+# Copied structure for compatibility
+
+server:
+  http:
+    network: tcp
+    addr: 0.0.0.0:8080
+    timeout:
+      read: 30s
+      write: 30s
+  grpc:
+    network: tcp
+    addr: 0.0.0.0:9090
+    timeout: 30s
+
+context7:
+  base_port: 40000
+  worker_count: 8
+  enable_quic: true
+
+gpu:
+  enabled: true
+  device_id: 0
+  max_ops: 1000
+
+# Logging configuration
+log:
+  level: INFO
+  format: json
+  
+# Database configuration (copied from original)
+database:
+  driver: postgres
+  source: postgresql://legal_admin:123456@localhost:5432/legal_ai_db
+  
+# Redis configuration (copied from original)
+redis:
+  addr: localhost:6379
+  password: ""
+  db: 0
+  
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus_addr: 0.0.0.0:8081
+  jaeger_endpoint: http://localhost:14268/api/traces

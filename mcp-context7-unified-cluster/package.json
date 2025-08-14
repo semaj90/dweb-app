@@ -1,0 +1,57 @@
+{
+  "name": "mcp-context7-unified-cluster",
+  "version": "1.0.0",
+  "description": "MCP Context7 GPU-accelerated Node.js multi-cluster with JSONB integration for enhanced RAG",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "cluster": "node cluster-manager.js",
+    "simd": "node nodejs-simd-parser/simd-processor.js",
+    "gpu": "node gpu-acceleration/gpu-cluster.js",
+    "admin": "node admin-web-interface/admin-server.js",
+    "test": "node test/integration-test.js"
+  },
+  "dependencies": {
+    "@mcp/sdk": "^0.5.0",
+    "@minio/minio-js": "^7.1.3",
+    "@pgvector/pgvector": "^0.1.8",
+    "@redis/client": "^1.5.8",
+    "@simdjson/simdjson": "^3.1.0",
+    "cuda.js": "^1.0.0",
+    "express": "^4.18.2",
+    "fastify": "^4.21.0",
+    "go-wasm": "^1.0.0",
+    "ioredis": "^5.3.2",
+    "lokijs": "^1.5.12",
+    "node-datachannel": "^0.6.0",
+    "node-webrtc": "^0.4.9",
+    "ollama": "^0.5.0",
+    "pg": "^8.11.3",
+    "quic": "^1.0.0",
+    "qdrant-js": "^1.8.2",
+    "sharp": "^0.32.6",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.0",
+    "ws": "^8.13.0",
+    "xstate": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0",
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "mcp",
+    "context7",
+    "gpu",
+    "simd",
+    "cluster",
+    "jsonb",
+    "llama",
+    "rag",
+    "machine-learning"
+  ],
+  "author": "Legal AI Team",
+  "license": "MIT"
+}

@@ -18,13 +18,14 @@
     contextLength: 4096,
     gpuLayers: 32, // RTX 3060 optimized
     flashAttention: true,
-    threads: navigator.hardwareConcurrency || 8
+    threads: navigator.hardwareConcurrency || 8,
   });
 
   const orchestrator = createNodeJSOrchestrator();
 
   // Reactive state
-  let demoInput = 'Analyze the liability provisions in this employment contract and identify potential legal risks.';
+  let demoInput =
+    'Analyze the liability provisions in this employment contract and identify potential legal risks.';
   let isProcessing = false;
   let results: any[] = [];
   let currentDemo = 'inference';
@@ -46,10 +47,10 @@
   onMount(async () => {
     // Initialize WebGPU for visualization
     await initializeWebGPU();
-    
+
     // Start demo animation
     startVisualization();
-    
+
     // Initialize service worker communication
     initializeServiceWorkerComm();
   });
@@ -70,7 +71,7 @@
       }
 
       const adapter = await navigator.gpu.requestAdapter({
-        powerPreference: 'high-performance'
+        powerPreference: 'high-performance',
       });
 
       if (!adapter) {
@@ -82,8 +83,8 @@
         requiredFeatures: [],
         requiredLimits: {
           maxBufferSize: 64 * 1024 * 1024, // 64MB
-          maxStorageBufferBindingSize: 32 * 1024 * 1024 // 32MB
-        }
+          maxStorageBufferBindingSize: 32 * 1024 * 1024, // 32MB
+        },
       });
 
       if (canvas) {
@@ -93,14 +94,13 @@
           ctx.configure({
             device,
             format,
-            alphaMode: 'premultiplied'
+            alphaMode: 'premultiplied',
           });
         }
       }
 
       webgpuStatus = { available: true, device };
       console.log('✅ WebGPU initialized for RTX 3060');
-
     } catch (error) {
       console.error('❌ WebGPU initialization failed:', error);
     }
@@ -123,18 +123,20 @@
     try {
       // Create command encoder
       const commandEncoder = device.createCommandEncoder();
-      
+
       // Get current texture
       const textureView = ctx.getCurrentTexture().createView();
-      
+
       // Create render pass
       const renderPass = commandEncoder.beginRenderPass({
-        colorAttachments: [{
-          view: textureView,
-          clearValue: { r: 0.1, g: 0.1, b: 0.2, a: 1.0 },
-          loadOp: 'clear',
-          storeOp: 'store'
-        }]
+        colorAttachments: [
+          {
+            view: textureView,
+            clearValue: { r: 0.1, g: 0.1, b: 0.2, a: 1.0 },
+            loadOp: 'clear',
+            storeOp: 'store',
+          },
+        ],
       });
 
       renderPass.end();
@@ -146,7 +148,6 @@
       performanceMetrics.fps = Math.round(Math.random() * 60 + 30);
       performanceMetrics.latency = Math.round(Math.random() * 50 + 10);
       performanceMetrics.throughput = Math.round(Math.random() * 100 + 50);
-
     } catch (error) {
       console.error('WebGPU render error:', error);
     }
@@ -154,7 +155,7 @@
 
   function initializeServiceWorkerComm() {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
+      navigator.serviceWorker.ready.then((registration) => {
         // Test WebGPU status in service worker
         const channel = new MessageChannel();
         channel.port1.onmessage = (event) => {
@@ -163,9 +164,12 @@
           }
         };
 
-        registration.active?.postMessage({
-          type: 'GET_WEBGPU_STATUS'
-        }, [channel.port2]);
+        registration.active?.postMessage(
+          {
+            type: 'GET_WEBGPU_STATUS',
+          },
+          [channel.port2]
+        );
       });
     }
   }
@@ -194,13 +198,12 @@
             tokensPerSecond: response.tokensPerSecond,
             memoryUsed: response.memoryUsed,
             windowsOptimized: true,
-            rtx3060Accelerated: true
+            rtx3060Accelerated: true,
           },
-          timestamp: new Date().toLocaleTimeString()
+          timestamp: new Date().toLocaleTimeString(),
         },
-        ...results
+        ...results,
       ];
-
     } catch (error) {
       console.error('GGUF inference failed:', error);
       alert('GGUF inference failed: ' + error.message);
@@ -220,7 +223,7 @@
     try {
       // Submit WebGPU task to service worker
       const channel = new MessageChannel();
-      
+
       const result = await new Promise((resolve, reject) => {
         channel.port1.onmessage = (event) => {
           if (event.data.type === 'WEBGPU_RESULT') {
@@ -231,17 +234,20 @@
         };
 
         // Send task to service worker
-        navigator.serviceWorker.ready.then(registration => {
-          registration.active?.postMessage({
-            type: 'PROCESS_WEBGPU_TASK',
-            data: {
-              operation: 'DOCUMENT_ANALYSIS',
-              parameters: {
-                document: demoInput,
-                analysisType: 'LEGAL_RISK'
-              }
-            }
-          }, [channel.port2]);
+        navigator.serviceWorker.ready.then((registration) => {
+          registration.active?.postMessage(
+            {
+              type: 'PROCESS_WEBGPU_TASK',
+              data: {
+                operation: 'DOCUMENT_ANALYSIS',
+                parameters: {
+                  document: demoInput,
+                  analysisType: 'LEGAL_RISK',
+                },
+              },
+            },
+            [channel.port2]
+          );
         });
 
         // Timeout after 10 seconds
@@ -258,13 +264,12 @@
             processingTime: (result as any).processingTime || 0,
             gpuProcessed: (result as any).gpuProcessed || false,
             confidence: (result as any).confidence || 0,
-            legalRisk: (result as any).legalRisk || 'Low'
+            legalRisk: (result as any).legalRisk || 'Low',
           },
-          timestamp: new Date().toLocaleTimeString()
+          timestamp: new Date().toLocaleTimeString(),
         },
-        ...results
+        ...results,
       ];
-
     } catch (error) {
       console.error('WebGPU processing failed:', error);
       alert('WebGPU processing failed: ' + error.message);
@@ -284,26 +289,26 @@
           payload: { prompt: demoInput, maxTokens: 200 },
           priority: 'HIGH',
           timeout: 30000,
-          maxRetries: 2
+          maxRetries: 2,
         }),
         orchestrator.submitTask({
           type: 'VECTOR_SEARCH',
           payload: { query: demoInput, topK: 5 },
           priority: 'MEDIUM',
           timeout: 15000,
-          maxRetries: 3
+          maxRetries: 3,
         }),
         orchestrator.submitTask({
           type: 'DOCUMENT_PROCESSING',
           payload: { document: demoInput, operation: 'EXTRACT_TEXT' },
           priority: 'MEDIUM',
           timeout: 20000,
-          maxRetries: 2
-        })
+          maxRetries: 2,
+        }),
       ]);
 
       // Wait for completion (simplified - real implementation would use callbacks)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       results = [
         {
@@ -316,13 +321,12 @@
             activeWorkers: $metrics.activeWorkers,
             throughput: $metrics.throughputPerSecond,
             cpuUtilization: $metrics.cpuUtilization,
-            memoryUtilization: $metrics.memoryUtilization
+            memoryUtilization: $metrics.memoryUtilization,
           },
-          timestamp: new Date().toLocaleTimeString()
+          timestamp: new Date().toLocaleTimeString(),
         },
-        ...results
+        ...results,
       ];
-
     } catch (error) {
       console.error('Node.js orchestration failed:', error);
       alert('Node.js orchestration failed: ' + error.message);
@@ -342,21 +346,21 @@
         userAgent: navigator.userAgent,
         hardwareConcurrency: navigator.hardwareConcurrency,
         webgpuAvailable: webgpuStatus.available,
-        ggufRuntimeReady: $modelStatus.loaded
+        ggufRuntimeReady: $modelStatus.loaded,
       },
       performanceMetrics: {
         modelStatus: $modelStatus,
         runtimeStats: $runtimeStats,
         orchestrationMetrics: $metrics,
-        systemHealth: $systemHealth
+        systemHealth: $systemHealth,
       },
-      results: results
+      results: results,
     };
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { 
-      type: 'application/json' 
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+      type: 'application/json',
     });
-    
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -370,7 +374,9 @@
 
 <svelte:head>
   <title>Windows-Native GGUF Runtime Demo | Legal AI</title>
-  <meta name="description" content="RTX 3060 optimized GGUF runtime with WebGPU acceleration for legal AI applications" />
+  <meta
+    name="description"
+    content="RTX 3060 optimized GGUF runtime with WebGPU acceleration for legal AI applications" />
 </svelte:head>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
@@ -379,20 +385,28 @@
     <div class="container mx-auto px-4 py-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+          <h1
+            class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
             Windows-Native GGUF Runtime
           </h1>
           <p class="text-slate-400 mt-2">
             RTX 3060 Optimized • No SentencePiece • No Triton • WebGPU Accelerated
           </p>
         </div>
-        
+
         <div class="flex items-center gap-4">
           <div class="text-right">
             <div class="text-sm text-slate-400">System Status</div>
             <div class="flex items-center gap-2">
-              <div class="w-2 h-2 rounded-full {$modelStatus.loaded ? 'bg-green-400' : $modelStatus.loading ? 'bg-yellow-400' : 'bg-red-400'}"></div>
-              <span class="text-sm">{$modelStatus.loaded ? 'Ready' : $modelStatus.loading ? 'Loading' : 'Error'}</span>
+              <div
+                class="w-2 h-2 rounded-full {$modelStatus.loaded
+                  ? 'bg-green-400'
+                  : $modelStatus.loading
+                    ? 'bg-yellow-400'
+                    : 'bg-red-400'}">
+              </div>
+              <span class="text-sm"
+                >{$modelStatus.loaded ? 'Ready' : $modelStatus.loading ? 'Loading' : 'Error'}</span>
             </div>
           </div>
         </div>
@@ -419,14 +433,18 @@
 
       <Card class="bg-slate-800/50 border-blue-800/30">
         <div class="p-4">
-          <div class="text-2xl font-bold text-cyan-400">{$metrics.activeWorkers}/{$metrics.totalWorkers}</div>
+          <div class="text-2xl font-bold text-cyan-400">
+            {$metrics.activeWorkers}/{$metrics.totalWorkers}
+          </div>
           <div class="text-sm text-slate-400">Active Workers</div>
         </div>
       </Card>
 
       <Card class="bg-slate-800/50 border-blue-800/30">
         <div class="p-4">
-          <div class="text-2xl font-bold text-purple-400">{Math.round($systemHealth.efficiency)}%</div>
+          <div class="text-2xl font-bold text-purple-400">
+            {Math.round($systemHealth.efficiency)}%
+          </div>
           <div class="text-sm text-slate-400">System Efficiency</div>
         </div>
       </Card>
@@ -438,7 +456,7 @@
       <Card class="bg-slate-800/50 border-blue-800/30">
         <div class="p-6">
           <h2 class="text-xl font-semibold mb-4">Demo Input</h2>
-          
+
           <div class="mb-4">
             <label for="demo-input" class="block text-sm font-medium text-slate-300 mb-2">
               Legal Document Text
@@ -448,32 +466,28 @@
               bind:value={demoInput}
               rows="4"
               class="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter legal text for analysis..."
-            ></textarea>
+              placeholder="Enter legal text for analysis..."></textarea>
           </div>
 
           <div class="flex flex-wrap gap-3">
             <Button
               on:click={runGGUFInference}
               disabled={isProcessing || !$modelStatus.loaded}
-              class="bg-blue-600 hover:bg-blue-700 text-white"
-            >
+              class="bg-blue-600 hover:bg-blue-700 text-white">
               {isProcessing ? 'Processing...' : 'GGUF Inference'}
             </Button>
 
             <Button
               on:click={runWebGPUProcessing}
               disabled={isProcessing || !webgpuStatus.available}
-              class="bg-green-600 hover:bg-green-700 text-white"
-            >
+              class="bg-green-600 hover:bg-green-700 text-white">
               WebGPU Processing
             </Button>
 
             <Button
               on:click={runNodeJSOrchestration}
               disabled={isProcessing}
-              class="bg-purple-600 hover:bg-purple-700 text-white"
-            >
+              class="bg-purple-600 hover:bg-purple-700 text-white">
               Node.js Orchestration
             </Button>
           </div>
@@ -482,16 +496,14 @@
             <Button
               on:click={clearResults}
               variant="outline"
-              class="border-slate-600 text-slate-300 hover:bg-slate-700"
-            >
+              class="border-slate-600 text-slate-300 hover:bg-slate-700">
               Clear Results
             </Button>
 
             <Button
               on:click={exportResults}
               variant="outline"
-              class="border-slate-600 text-slate-300 hover:bg-slate-700"
-            >
+              class="border-slate-600 text-slate-300 hover:bg-slate-700">
               Export Data
             </Button>
           </div>
@@ -502,17 +514,16 @@
       <Card class="bg-slate-800/50 border-blue-800/30">
         <div class="p-6">
           <h2 class="text-xl font-semibold mb-4">WebGPU Visualization</h2>
-          
+
           <div class="relative">
             <canvas
               bind:this={canvas}
               width="400"
               height="200"
-              class="w-full border border-slate-600 rounded-md bg-slate-900"
-            >
+              class="w-full border border-slate-600 rounded-md bg-slate-900">
               WebGPU not supported
             </canvas>
-            
+
             <div class="absolute top-2 right-2 bg-black/50 rounded px-2 py-1 text-xs">
               {webgpuStatus.available ? 'WebGPU Active' : 'WebGPU Unavailable'}
             </div>
@@ -540,7 +551,7 @@
     {#if results.length > 0}
       <div class="mt-8">
         <h2 class="text-2xl font-semibold mb-6">Processing Results</h2>
-        
+
         <div class="space-y-4">
           {#each results as result (result.id)}
             <Card class="bg-slate-800/50 border-blue-800/30">
@@ -574,7 +585,9 @@
                   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                     {#each Object.entries(result.metrics) as [key, value]}
                       <div class="bg-slate-700 rounded p-2">
-                        <div class="text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</div>
+                        <div class="text-slate-400 capitalize">
+                          {key.replace(/([A-Z])/g, ' $1')}
+                        </div>
                         <div class="font-mono text-white">
                           {typeof value === 'number' ? Math.round(value * 100) / 100 : value}
                         </div>
@@ -592,7 +605,7 @@
     <!-- Technical Specifications -->
     <div class="mt-12">
       <h2 class="text-2xl font-semibold mb-6">Technical Specifications</h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card class="bg-slate-800/50 border-blue-800/30">
           <div class="p-6">
@@ -657,9 +670,14 @@
 
   /* Animation for processing states */
   @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
-  
+
   /* Removed unused hover effects and processing class */
 </style>

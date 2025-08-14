@@ -1,38 +1,29 @@
 <script lang="ts">
-  import Badge from "$lib/components/ui/Badge.svelte";
-  import { Button } from "$lib/components/ui/button";
-  import CardRoot from "$lib/components/ui/Card.svelte";
-  import CardContent from "$lib/components/ui/CardContent.svelte";
-  import CardHeader from "$lib/components/ui/CardHeader.svelte";
-  import DialogContent from "$lib/components/ui/dialog/DialogContent.svelte";
-  import DialogDescription from "$lib/components/ui/dialog/DialogDescription.svelte";
-  import DialogFooter from "$lib/components/ui/dialog/DialogFooter.svelte";
-  import DialogHeader from "$lib/components/ui/dialog/DialogHeader.svelte";
-  import DialogRoot from "$lib/components/ui/dialog/DialogRoot.svelte";
-  import DialogTitle from "$lib/components/ui/dialog/DialogTitle.svelte";
-  import DropdownMenuContent from "$lib/components/ui/dropdown-menu/DropdownMenuContent.svelte";
-  import DropdownMenuItem from "$lib/components/ui/dropdown-menu/DropdownMenuItem.svelte";
-  import DropdownMenuRoot from "$lib/components/ui/dropdown-menu/DropdownMenuRoot.svelte";
-  import DropdownMenuSeparator from "$lib/components/ui/dropdown-menu/DropdownMenuSeparator.svelte";
-  import DropdownMenuTrigger from "$lib/components/ui/dropdown-menu/DropdownMenuTrigger.svelte";
-  import Input from "$lib/components/ui/Input.svelte";
-  import {
-    Copy,
-    Edit,
-    MoreVertical,
-    Plus,
-    Search,
-    Star,
-    Tag,
-    Trash2,
-  } from "lucide-svelte";
-  import { onMount } from "svelte";
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import { Button } from '$lib/components/ui/button';
+  import CardRoot from '$lib/components/ui/Card.svelte';
+  import CardContent from '$lib/components/ui/CardContent.svelte';
+  import CardHeader from '$lib/components/ui/CardHeader.svelte';
+  import DialogContent from '$lib/components/ui/dialog/DialogContent.svelte';
+  import DialogDescription from '$lib/components/ui/dialog/DialogDescription.svelte';
+  import DialogFooter from '$lib/components/ui/dialog/DialogFooter.svelte';
+  import DialogHeader from '$lib/components/ui/dialog/DialogHeader.svelte';
+  import DialogRoot from '$lib/components/ui/dialog/DialogRoot.svelte';
+  import DialogTitle from '$lib/components/ui/dialog/DialogTitle.svelte';
+  import DropdownMenuContent from '$lib/components/ui/dropdown-menu/DropdownMenuContent.svelte';
+  import DropdownMenuItem from '$lib/components/ui/dropdown-menu/DropdownMenuItem.svelte';
+  import DropdownMenuRoot from '$lib/components/ui/dropdown-menu/DropdownMenuRoot.svelte';
+  import DropdownMenuSeparator from '$lib/components/ui/dropdown-menu/DropdownMenuSeparator.svelte';
+  import DropdownMenuTrigger from '$lib/components/ui/dropdown-menu/DropdownMenuTrigger.svelte';
+  import Input from '$lib/components/ui/Input.svelte';
+  import { Copy, Edit, MoreVertical, Plus, Search, Star, Tag, Trash2 } from 'lucide-svelte';
+  import { onMount } from 'svelte';
 
-  import type { Citation } from "$lib/types/api";
+  import type { Citation } from '$lib/types/api';
 
   let editingCitation: Citation | null = null;
-  let searchQuery = "";
-  let selectedCategory = "all";
+  let searchQuery = '';
+  let selectedCategory = 'all';
   let showAddDialog = false;
   let filteredCitations: Citation[] = [];
   let savedCitations: Citation[] = [];
@@ -41,67 +32,63 @@
   onMount(() => {
     savedCitations = [
       {
-        id: "1",
-        title: "Miranda Rights",
-        content: "The defendant must be clearly informed of their rights...",
-        source: "Miranda v. Arizona, 384 U.S. 436 (1966)",
-        category: "case-law",
-        tags: ["constitutional", "police-procedure", "rights"],
+        id: '1',
+        title: 'Miranda Rights',
+        content: 'The defendant must be clearly informed of their rights...',
+        source: 'Miranda v. Arizona, 384 U.S. 436 (1966)',
+        category: 'case-law',
+        tags: ['constitutional', 'police-procedure', 'rights'],
         createdAt: new Date(),
         updatedAt: new Date(),
         isFavorite: true,
-        notes: "Landmark case establishing Miranda warnings"
-}
+        notes: 'Landmark case establishing Miranda warnings',
+      },
     ];
   });
 
   // New citation form
   let newCitation = {
-    title: "",
-    content: "",
-    source: "",
-    category: "general",
-    tags: "",
-    notes: "",
+    title: '',
+    content: '',
+    source: '',
+    category: 'general',
+    tags: '',
+    notes: '',
   };
 
   // Categories for filtering
   const categories = [
-    { value: "all", label: "All Categories" },
-    { value: "general", label: "General" },
-    { value: "constitutional", label: "Constitutional Law" },
-    { value: "case-law", label: "Case Law" },
-    { value: "statutes", label: "Statutes" },
-    { value: "evidence", label: "Evidence" },
-    { value: "report-citations", label: "From Reports" },
+    { value: 'all', label: 'All Categories' },
+    { value: 'general', label: 'General' },
+    { value: 'constitutional', label: 'Constitutional Law' },
+    { value: 'case-law', label: 'Case Law' },
+    { value: 'statutes', label: 'Statutes' },
+    { value: 'evidence', label: 'Evidence' },
+    { value: 'report-citations', label: 'From Reports' },
   ];
 
   // Reactive filtering with Fuse.js-like search
   $: {
     filteredCitations = savedCitations.filter((citation) => {
       const matchesSearch =
-        searchQuery === "" ||
+        searchQuery === '' ||
         citation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         citation.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
         citation.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (citation.notes &&
-          citation.notes.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        citation.tags.some((tag: string) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        (citation.notes && citation.notes.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        citation.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      const matchesCategory =
-        selectedCategory === "all" || citation.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'all' || citation.category === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
-}
+  }
   async function saveCitation() {
     try {
       const citation = {
         ...newCitation,
         tags: newCitation.tags
-          .split(",")
+          .split(',')
           .map((tag) => tag.trim())
           .filter((tag) => tag.length > 0),
         id: crypto.randomUUID(),
@@ -116,61 +103,66 @@
 
       // Reset form
       newCitation = {
-        title: "",
-        content: "",
-        source: "",
-        category: "general",
-        tags: "",
-        notes: "",
+        title: '',
+        content: '',
+        source: '',
+        category: 'general',
+        tags: '',
+        notes: '',
       };
 
       showAddDialog = false;
     } catch (error) {
-      console.error("Error saving citation:", error);
-}}
+      console.error('Error saving citation:', error);
+    }
+  }
   async function deleteCitation(citationId: string) {
     try {
       // In a real app, this would DELETE /api/user/saved-citations/{id}
       savedCitations = savedCitations.filter((c) => c.id !== citationId);
     } catch (error) {
-      console.error("Error deleting citation:", error);
-}}
+      console.error('Error deleting citation:', error);
+    }
+  }
   async function toggleFavorite(citation: any) {
     try {
       citation.isFavorite = !citation.isFavorite;
       // In a real app, this would PATCH /api/user/saved-citations/{id}
       savedCitations = [...savedCitations];
     } catch (error) {
-      console.error("Error updating citation:", error);
-}}
+      console.error('Error updating citation:', error);
+    }
+  }
   function copyCitation(citation: any) {
     const citationText = `${citation.content}\n\nSource: ${citation.source}`;
     navigator.clipboard.writeText(citationText);
-}
+  }
   function editCitation(citation: any) {
     editingCitation = { ...citation };
-    editingCitation.tags = citation.tags.join(", ");
-}
+    editingCitation.tags = citation.tags.join(', ');
+  }
   async function updateCitation() {
     try {
       const updated = {
         ...editingCitation,
         tags: Array.isArray(editingCitation.tags)
           ? editingCitation.tags
-          : (editingCitation.tags as any as string)?.split(",")
-          .map((tag: string) => tag.trim())
-          .filter((tag: string) => tag.length > 0),
+          : (editingCitation.tags as any as string)
+              ?.split(',')
+              .map((tag: string) => tag.trim())
+              .filter((tag: string) => tag.length > 0),
       };
 
       const index = savedCitations.findIndex((c) => c.id === updated.id);
       if (index >= 0) {
         savedCitations[index] = updated;
         savedCitations = [...savedCitations];
-}
+      }
       editingCitation = null;
     } catch (error) {
-      console.error("Error updating citation:", error);
-}}
+      console.error('Error updating citation:', error);
+    }
+  }
   // Stats
   $: totalCitations = savedCitations.length;
   $: favoriteCitations = savedCitations.filter((c) => c.isFavorite).length;
@@ -178,16 +170,19 @@
     acc[citation.category] = (acc[citation.category] || 0) + 1;
     return acc;
   }, {});
-  
+
   // Helper variable for editing tags as string
   let editingTagsString = '';
   $: if (editingCitation) {
     editingTagsString = editingCitation.tags?.join(', ') || '';
   }
-  
+
   function updateEditingTags(tagsString: string) {
     if (editingCitation) {
-      editingCitation.tags = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag);
+      editingCitation.tags = tagsString
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag);
     }
   }
 </script>
@@ -202,9 +197,7 @@
     <div class="space-y-4">
       <div class="space-y-4">
         <h1 class="space-y-4">Saved Citations</h1>
-        <p class="space-y-4">
-          Manage your collection of legal citations and references
-        </p>
+        <p class="space-y-4">Manage your collection of legal citations and references</p>
       </div>
 
       <div class="space-y-4">
@@ -229,8 +222,7 @@
           type="text"
           placeholder="Search citations..."
           bind:value={searchQuery}
-          class="space-y-4"
-        />
+          class="space-y-4" />
       </div>
 
       <select bind:value={selectedCategory} class="space-y-4">
@@ -265,9 +257,7 @@
               <DropdownMenuContent {menu}>
                 <DropdownMenuItem onclick={() => toggleFavorite(citation)}>
                   <Star class="w-4 h-4 mr-2" />
-                  {citation.isFavorite
-                    ? "Remove from favorites"
-                    : "Add to favorites"}
+                  {citation.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                 </DropdownMenuItem>
                 <DropdownMenuItem onclick={() => copyCitation(citation)}>
                   <Copy class="w-4 h-4 mr-2" />
@@ -280,8 +270,7 @@
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onclick={() => deleteCitation(citation.id)}
-                  class="text-destructive"
-                >
+                  class="text-destructive">
                   <Trash2 class="w-4 h-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
@@ -341,25 +330,22 @@
     {#if filteredCitations.length === 0}
       <div class="space-y-4">
         <div class="space-y-4">
-          {#if searchQuery || selectedCategory !== "all"}
+          {#if searchQuery || selectedCategory !== 'all'}
             <h3 class="space-y-4">No citations found</h3>
-            <p class="space-y-4">
-              No citations match your current search criteria.
-            </p>
+            <p class="space-y-4">No citations match your current search criteria.</p>
             <Button
               variant="secondary"
               on:click={() => {
-                searchQuery = "";
-                selectedCategory = "all";
-              }}
-            >
+                searchQuery = '';
+                selectedCategory = 'all';
+              }}>
               Clear filters
             </Button>
           {:else}
             <h3 class="space-y-4">No saved citations</h3>
             <p class="space-y-4">
-              You haven't saved any citations yet. Start by adding citations
-              from reports or create new ones.
+              You haven't saved any citations yet. Start by adding citations from reports or create
+              new ones.
             </p>
             <Button onclick={() => (showAddDialog = true)}>
               <Plus class="space-y-4" />
@@ -374,27 +360,16 @@
 
 <!-- Add Citation Dialog -->
 <DialogRoot bind:open={showAddDialog}>
-  <DialogContent
-    size="sm"
-    overlay={{}}
-    content={{}}
-    openState={showAddDialog}
-  >
+  <DialogContent size="sm" overlay={{}} content={{}} openState={showAddDialog}>
     <DialogHeader>
       <DialogTitle title="Add New Citation" />
-      <DialogDescription
-        description="Create a new citation to save for future reference."
-      />
+      <DialogDescription description="Create a new citation to save for future reference." />
     </DialogHeader>
 
     <div class="space-y-4">
       <div class="space-y-4">
         <label for="title">Title</label>
-        <Input
-          id="title"
-          bind:value={newCitation.title}
-          placeholder="Citation title"
-        />
+        <Input id="title" bind:value={newCitation.title} placeholder="Citation title" />
       </div>
 
       <div class="space-y-4">
@@ -403,17 +378,12 @@
           id="content"
           bind:value={newCitation.content}
           placeholder="Citation text or quote"
-          rows="4"
-        ></textarea>
+          rows="4"></textarea>
       </div>
 
       <div class="space-y-4">
         <label for="source">Source</label>
-        <Input
-          id="source"
-          bind:value={newCitation.source}
-          placeholder="Source reference"
-        />
+        <Input id="source" bind:value={newCitation.source} placeholder="Source reference" />
       </div>
 
       <div class="space-y-4">
@@ -428,11 +398,7 @@
 
         <div class="space-y-4">
           <label for="tags">Tags</label>
-          <Input
-            id="tags"
-            bind:value={newCitation.tags}
-            placeholder="tag1, tag2, tag3"
-          />
+          <Input id="tags" bind:value={newCitation.tags} placeholder="tag1, tag2, tag3" />
         </div>
       </div>
 
@@ -442,19 +408,13 @@
           id="notes"
           bind:value={newCitation.notes}
           placeholder="Personal notes about this citation"
-          rows="4"
-        ></textarea>
+          rows="4"></textarea>
       </div>
     </div>
 
     <DialogFooter>
-      <Button variant="secondary" onclick={() => (showAddDialog = false)}
-        >Cancel</Button
-      >
-      <Button
-        onclick={() => saveCitation()}
-        disabled={!newCitation.title || !newCitation.content}
-      >
+      <Button variant="secondary" onclick={() => (showAddDialog = false)}>Cancel</Button>
+      <Button onclick={() => saveCitation()} disabled={!newCitation.title || !newCitation.content}>
         Save Citation
       </Button>
     </DialogFooter>
@@ -464,12 +424,7 @@
 <!-- Edit Citation Dialog -->
 {#if editingCitation}
   <DialogRoot open={true} onOpenChange={() => (editingCitation = null)}>
-    <DialogContent
-      size="sm"
-      overlay={{}}
-      content={{}}
-      openState={true}
-    >
+    <DialogContent size="sm" overlay={{}} content={{}} openState={true}>
       <DialogHeader>
         <DialogTitle title="Edit Citation" />
       </DialogHeader>
@@ -482,11 +437,7 @@
 
         <div class="space-y-4">
           <label for="edit-content">Content</label>
-          <textarea
-            id="edit-content"
-            bind:value={editingCitation.content}
-            rows="4"
-          ></textarea>
+          <textarea id="edit-content" bind:value={editingCitation.content} rows="4"></textarea>
         </div>
 
         <div class="space-y-4">
@@ -506,25 +457,21 @@
 
           <div class="space-y-4">
             <label for="edit-tags">Tags</label>
-            <Input 
-              id="edit-tags" 
+            <Input
+              id="edit-tags"
               bind:value={editingTagsString}
-              oninput={(e) => updateEditingTags((e.target as HTMLInputElement).value)}
-            />
+              oninput={(e) => updateEditingTags((e.target as HTMLInputElement).value)} />
           </div>
         </div>
 
         <div class="space-y-4">
           <label for="edit-notes">Notes</label>
-          <textarea id="edit-notes" bind:value={editingCitation.notes} rows="4"
-          ></textarea>
+          <textarea id="edit-notes" bind:value={editingCitation.notes} rows="4"></textarea>
         </div>
       </div>
 
       <DialogFooter>
-        <Button variant="secondary" onclick={() => (editingCitation = null)}
-          >Cancel</Button
-        >
+        <Button variant="secondary" onclick={() => (editingCitation = null)}>Cancel</Button>
         <Button onclick={() => updateCitation()}>Update Citation</Button>
       </DialogFooter>
     </DialogContent>
@@ -537,6 +484,6 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 </style>
