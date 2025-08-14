@@ -1,4 +1,8 @@
-package main
+// Deprecated: moved to pkg/enhancedrag and cmd/enhanced-rag. Keeping file for reference but not compiled.
+//go:build ignore
+// +build ignore
+
+package ignored
 
 import (
 	"encoding/json"
@@ -581,22 +585,4 @@ func (s *EnhancedRAGService) Start() error {
 	return r.Run(":" + s.port)
 }
 
-func StartEnhancedRAGService() {
-	log.Println("=== Enhanced RAG Service with Real-time LLM Training ===")
-	log.Println("🎯 Features:")
-	log.Println("   ✅ Frontend Integration: WebSocket connections for live user behavior tracking")
-	log.Println("   ✅ Real-time LLM Training: User patterns feeding into contextual legal AI responses")
-	log.Println("   ✅ Personalized Legal Assistance: Search results tailored to user interaction history")
-	log.Println("   ✅ Advanced Document Analysis: 37 law PDFs with semantic embeddings and legal entity extraction")
-	log.Println("   ✅ Context7 Integration: Advanced stack analysis and documentation access")
-
-	service := NewEnhancedRAGService()
-
-	if err := service.Start(); err != nil {
-		log.Fatalf("Failed to start Enhanced RAG Service: %v", err)
-	}
-}
-
-func main() {
-	StartEnhancedRAGService()
-}
+// This file is excluded from builds.

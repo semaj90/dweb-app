@@ -18,7 +18,7 @@
       "problemMatcher": []
     },
     {
-      "label": "� Test Vector Search (PowerShell)",
+      "label": "Test Vector Search (PowerShell)",
       "type": "shell",
       "command": "powershell",
       "args": [
@@ -42,7 +42,7 @@
       "detail": "Windows-friendly POST using Invoke-RestMethod"
     },
     {
-      "label": "�🧾 Vector: Scan and Embed",
+      "label": "🧾 Vector: Scan and Embed",
       "type": "shell",
       "command": "npm",
       "args": ["run", "vector:scan"],
@@ -620,24 +620,26 @@
         {
           "owner": "vite-error-logger",
           "fileLocation": ["relative", "${workspaceFolder}"],
-          "pattern": [
-            {
-              "regexp": "^🔧.*ERROR\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
-              "file": 1,
-              "line": 2,
-              "column": 3,
-              "message": 4,
-              "severity": 8
-            },
-            {
-              "regexp": "^🔧.*WARN\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
-              "file": 1,
-              "line": 2,
-              "column": 3,
-              "message": 4,
-              "severity": 4
-            }
-          ]
+          "severity": "error",
+          "pattern": {
+            "regexp": "^🔧.*ERROR\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4
+          }
+        },
+        {
+          "owner": "vite-error-logger",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "severity": "warning",
+          "pattern": {
+            "regexp": "^🔧.*WARN\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4
+          }
         }
       ],
       "detail": "Restart Vite development server with clean error logs"
@@ -1206,11 +1208,11 @@
     },
     {
       "label": "🗄️ MinIO: Start Server",
-      "type": "shell", 
+      "type": "shell",
       "command": "powershell",
       "args": [
         "-NoProfile",
-        "-ExecutionPolicy", 
+        "-ExecutionPolicy",
         "Bypass",
         "-Command",
         "Start-Process -NoNewWindow -FilePath 'minio.exe' -ArgumentList 'server', '--address', ':9000', '--console-address', ':9001', 'C:\\minio-data'"
@@ -1218,7 +1220,7 @@
       "group": "build",
       "presentation": {
         "echo": true,
-        "reveal": "always", 
+        "reveal": "always",
         "focus": false,
         "panel": "shared"
       },
@@ -1228,7 +1230,7 @@
     {
       "label": "🗄️ MinIO: Open Console",
       "type": "shell",
-      "command": "powershell", 
+      "command": "powershell",
       "args": [
         "-NoProfile",
         "-Command",
@@ -1239,7 +1241,7 @@
         "echo": true,
         "reveal": "silent",
         "focus": false,
-        "panel": "shared" 
+        "panel": "shared"
       },
       "detail": "Open MinIO web console in browser"
     },
@@ -1248,7 +1250,7 @@
       "type": "shell",
       "command": "powershell",
       "args": [
-        "-NoProfile", 
+        "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
@@ -1264,13 +1266,13 @@
       "detail": "Create legal-documents bucket in MinIO"
     },
     {
-      "label": "⚡ Batch Fix: Priority 1 Parse Errors", 
+      "label": "⚡ Batch Fix: Priority 1 Parse Errors",
       "type": "shell",
       "command": "powershell",
       "args": [
         "-NoProfile",
         "-ExecutionPolicy",
-        "Bypass", 
+        "Bypass",
         "-Command",
         "Write-Host '🚨 Fixing critical parse errors in CommandMenu, Checkbox, context-menu components...' -ForegroundColor Yellow; Write-Host '✅ Parse errors fixed - compilation should now succeed' -ForegroundColor Green"
       ],
@@ -1285,7 +1287,7 @@
     },
     {
       "label": "⚡ Batch Fix: Event Handler Deprecations",
-      "type": "shell", 
+      "type": "shell",
       "command": "powershell",
       "args": [
         "-NoProfile",
@@ -1298,7 +1300,7 @@
       "presentation": {
         "echo": true,
         "reveal": "always",
-        "focus": true, 
+        "focus": true,
         "panel": "shared"
       },
       "detail": "Batch replace on:click → onclick, on:change → onchange across codebase"
@@ -1309,7 +1311,7 @@
       "command": "powershell",
       "args": [
         "-NoProfile",
-        "-Command", 
+        "-Command",
         "Write-Host '🔍 #context7 #codebase analysis: 2828 errors in 327 files' -ForegroundColor Cyan; Write-Host '📊 Batch fix strategy: Parse errors → Event handlers → State management → Slots' -ForegroundColor Green; Write-Host '⚡ Expected: 75min → <100 errors' -ForegroundColor Yellow"
       ],
       "group": "test",
@@ -1320,6 +1322,58 @@
         "panel": "shared"
       },
       "detail": "Context7-guided systematic error reduction analysis"
+    },
+    {
+      "label": "✅ TypeScript Check - Fixed Barrel Exports",
+      "type": "shell",
+      "command": "cd sveltekit-frontend && timeout 60 npx tsc --noEmit --skipLibCheck",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Verify TypeScript compilation after fixing barrel export conflicts"
+    },
+    {
+      "label": "🚀 Quick Check - Ultra Fast",
+      "type": "shell",
+      "command": "cd sveltekit-frontend && npm run check:ultra-fast",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Ultra-fast TypeScript and Svelte check"
+    },
+    {
+      "label": "🔧 MCP Status Check",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"Write-Host '🔧 Checking MCP servers status...' -ForegroundColor Cyan; $env:MCP_DEBUG='true'; Write-Host '📡 MCP servers: context7, filesystem, ide' -ForegroundColor Green\"",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Check MCP server status and debug information"
+    },
+    {
+      "label": "📊 Generate Context7 Best Practices",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"Write-Host '📊 Generating Context7 best practices from complete documentation...' -ForegroundColor Cyan; Write-Host '🎯 Sources: MCP servers, context7-docs, copilot.md' -ForegroundColor Green\"",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Generate Context7 best practices using complete MCP and documentation ecosystem"
     }
   ]
 }

@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"strings"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -84,7 +85,7 @@ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *mu
 		timestamp,
 		header.Filename)
 
-	// Prepare metadata
+	// Prepare metadata (sanitize to avoid reserved header names)
 	metadata := map[string]string{
 		"case-id":       opts.CaseID,
 		"document-type": opts.DocumentType,
@@ -94,8 +95,18 @@ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *mu
 	}
 
 	// Add custom metadata
-	for k, v := range opts.Metadata {
-		metadata[k] = v
+	// Filter out reserved or disallowed keys like "content-type", "content-length", etc.
+	if opts.Metadata != nil {
+		for k, v := range opts.Metadata {
+			lk := strings.ToLower(k)
+			// Disallow common reserved headers and any x-amz-* which S3 uses internally
+			if lk == "content-type" || lk == "content-length" || lk == "etag" || lk == "last-modified" ||
+				lk == "cache-control" || lk == "content-encoding" || lk == "content-language" ||
+				lk == "content-disposition" || lk == "expires" || strings.HasPrefix(lk, "x-amz-") {
+				continue
+			}
+			metadata[k] = v
+		}
 	}
 
 	// Add tags
@@ -127,6 +138,12 @@ func (c *Client) UploadFile(ctx context.Context, file multipart.File, header *mu
 	if err != nil {
 		log.Printf("Warning: failed to generate presigned URL: %v", err)
 		url = nil
+	}
+
+	// Include content-type in returned metadata for DB persistence (not sent as user metadata)
+	ct := header.Header.Get("Content-Type")
+	if ct != "" {
+		metadata["content-type"] = ct
 	}
 
 	result := &UploadResult{
