@@ -16,6 +16,28 @@ neo4j-community-*.zip
 neo4j-community-5.21.2-windows.zip
 neo4j-community-5.23.0-windows.zip
 
+# Go microservice binaries (large executables)
+go-microservice/bin/
+go-microservice/bin/enhanced-rag.exe
+go-microservice/bin/upload-service.exe
+*.exe
+legal-ai-service.exe
+enhanced-rag.exe
+upload-service.exe
+
+# Redis binaries and data
+redis-windows/
+redis-windows-latest/
+redis-server.exe
+redis-cli.exe
+redis.conf
+dump.rdb
+
+# MinIO data and cache
+minio-data/
+minio-cache/
+.minio.sys/
+
 ########################################
 # Node and package caches
 ########################################
