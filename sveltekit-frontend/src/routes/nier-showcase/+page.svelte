@@ -5,7 +5,7 @@
   import NierAIAssistant from '$lib/components/ai/NierAIAssistant.svelte'
   import AIAssistant from '$lib/components/AIAssistant.svelte'
   import { Button } from 'bits-ui'
-  import type { User } from '$lib/types'
+  import type { User } from '$lib/types/index'
 
   let isDarkMode = $state(false);
   let showAIAssistant = $state(false);
@@ -19,8 +19,10 @@
     lastName: 'White',
     avatarUrl: '',
     role: 'admin',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-01-01T00:00:00Z',
     isActive: true,
-    permissions: ['read', 'write', 'admin']
+    emailVerified: true
   }
 
   // Sample case data
@@ -120,7 +122,7 @@
 
 <div class="min-h-screen bg-nier-white dark:bg-nier-black transition-colors duration-500">
   <!-- Header -->
-  <NierHeader {user} bind:isDarkMode />
+  <NierHeader {user} />
 
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -267,11 +269,9 @@
   </footer>
 
   <!-- AI Assistant -->
-  <NierAIAssistant
-    bind:isOpen={showAIAssistant}
-    onClose={() => showAIAssistant = false}
-    caseContext={sampleCases[0]}
-  />
+  {#if showAIAssistant}
+    <NierAIAssistant />
+  {/if}
 
   <!-- Floating Action Button -->
   <button

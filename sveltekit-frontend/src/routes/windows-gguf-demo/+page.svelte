@@ -26,12 +26,12 @@ https://svelte.dev/e/js_parse_error -->
   const orchestrator = createNodeJSOrchestrator();
 
   // Reactive state
-  let demoInput = 'Analyze the liability provisions in this employment contract and identify potential legal risks.';
-  let isProcessing = false;
-  let results: any[] = [];
-  let currentDemo = 'inference';
-  let webgpuStatus = { available: false, device: null };
-  let performanceMetrics = { fps: 0, latency: 0, throughput: 0 };
+  let demoInput = $state('Analyze the liability provisions in this employment contract and identify potential legal risks.');
+  let isProcessing = $state(false);
+  let results = $state<any[]>([]);
+  let currentDemo = $state('inference');
+  let webgpuStatus = $state({ available: false, device: null });
+  let performanceMetrics = $state({ fps: 0, latency: 0, throughput: 0 });
 
   // WebGPU visualization
   let canvas: HTMLCanvasElement;

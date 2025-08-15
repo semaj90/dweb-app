@@ -184,7 +184,7 @@
       </div>
       <div class="space-y-4">
         <span class="space-y-4">AI Initializing:</span>
-        <span class="space-y-4" class:loading={$status.isInitializing}
+        <span class="space-y-4" class:disabled={!isPageReady}
           >{$status.isInitializing ? "⏳" : "✅"}</span
         >
       </div>

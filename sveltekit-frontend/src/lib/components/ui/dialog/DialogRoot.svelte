@@ -20,7 +20,9 @@ https://svelte.dev/e/js_parse_error -->
   const openWritable = writable(open);
 
   // Keep the writable in sync with the prop
-  $effect(() => { openWritable.set(open);
+  $effect(() => {
+    openWritable.set(open);
+  });
 
   const {
     elements: { trigger, overlay, content, title, description, close },
@@ -31,7 +33,7 @@ https://svelte.dev/e/js_parse_error -->
       open = next;
       onOpenChange?.(next);
       return next;
-}
+    }
   });
 
 </script>

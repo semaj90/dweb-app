@@ -41,7 +41,7 @@ https://svelte.dev/e/js_parse_error -->
   let calculatedMainFlex: number;
   let calculatedSidebarFlex: number;
 
-  $effect(() => { {
+  $effect(() => {
     switch (ratio) {
       case "golden":
         calculatedMainFlex = 1.618;
@@ -59,16 +59,20 @@ https://svelte.dev/e/js_parse_error -->
         calculatedMainFlex = mainFlex;
         calculatedSidebarFlex = sidebarFlex;
         break;
-}}
+    }
+  });
+
   function toggleSidebar() {
     collapsed = !collapsed;
     ontoggle?.();
-}
+  }
+
   function handleKeydown(e: KeyboardEvent) {
     if (collapsible && (e.ctrlKey || e.metaKey) && e.key === "\\") {
       e.preventDefault();
       toggleSidebar();
-}}
+    }
+  }
 </script>
 
 <svelte:window onkeydown={handleKeydown} />

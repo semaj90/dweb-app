@@ -145,8 +145,8 @@
           bind:value={textareaValue}
           placeholder="Type # for commands or Ctrl+K for command menu..."
           rows={6}
-          oninput={handleTextareaInput}
-          on:commandInsert={handleCommandInsert}
+          onInput={handleTextareaInput}
+          onCommandInsert={handleCommandInsert}
         />
       </section>
 

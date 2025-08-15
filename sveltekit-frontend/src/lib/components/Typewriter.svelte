@@ -17,24 +17,28 @@ https://svelte.dev/e/js_parse_error -->
   let i = 0;
   let intervalId: NodeJS.Timeout | null = null;
   
-  $effect(() => { if (text && i === 0) {
-    output = '';
-    i = 0;
-    
-    if (intervalId) {
-      clearInterval(intervalId);
-}
-    intervalId = setInterval(() => {
-      if (i < text.length) {
-        output += text[i];
-        i++;
-      } else {
-        if (intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
-}}
-    }, speed);
-}
+  $effect(() => {
+    if (text) {
+      output = '';
+      i = 0;
+      
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      
+      intervalId = setInterval(() => {
+        if (i < text.length) {
+          output += text[i];
+          i++;
+        } else {
+          if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+          }
+        }
+      }, speed);
+    }
+  });
 </script>
 
 <div class="space-y-4">
