@@ -1,0 +1,775 @@
+// gRPC Protocol Buffer Definitions for Legal AI Services
+// Comprehensive service definitions for migration from REST to gRPC
+
+syntax = "proto3";
+
+package legal_ai.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/legal-ai/proto/legal_ai/v1";
+
+// ========================================
+// Document Analysis Service
+// ========================================
+
+service DocumentAnalysisService {
+  // Analyze a legal document with AI
+  rpc AnalyzeDocument(AnalyzeDocumentRequest) returns (AnalyzeDocumentResponse);
+  
+  // Get analysis results by document ID
+  rpc GetAnalysis(GetAnalysisRequest) returns (GetAnalysisResponse);
+  
+  // Stream analysis progress for large documents
+  rpc AnalyzeDocumentStream(AnalyzeDocumentRequest) returns (stream AnalysisProgressResponse);
+  
+  // Batch analyze multiple documents
+  rpc BatchAnalyzeDocuments(BatchAnalyzeRequest) returns (stream BatchAnalyzeResponse);
+}
+
+message AnalyzeDocumentRequest {
+  string title = 1;
+  string content = 2;
+  DocumentType document_type = 3;
+  Jurisdiction jurisdiction = 4;
+  PracticeArea practice_area = 5;
+  string file_name = 6;
+  int64 file_size = 7;
+  string mime_type = 8;
+  map<string, string> metadata = 9;
+  AnalysisOptions options = 10;
+}
+
+message AnalysisOptions {
+  bool generate_embeddings = 1;
+  bool extract_entities = 2;
+  bool analyze_sentiment = 3;
+  bool identify_risks = 4;
+  bool generate_summary = 5;
+  int32 chunk_size = 6;
+  int32 chunk_overlap = 7;
+  string model_name = 8;
+  float temperature = 9;
+}
+
+message AnalyzeDocumentResponse {
+  string document_id = 1;
+  DocumentAnalysis analysis = 2;
+  EmbeddingInfo embeddings = 3;
+  ProcessingInfo processing = 4;
+  repeated string warnings = 5;
+}
+
+message DocumentAnalysis {
+  string summary = 1;
+  repeated Entity entities = 2;
+  repeated string key_terms = 3;
+  repeated Risk risks = 4;
+  repeated string recommendations = 5;
+  float sentiment_score = 6;
+  int32 complexity_score = 7;
+  repeated string parties = 8;
+  repeated string obligations = 9;
+  repeated string extracted_dates = 10;
+  repeated string extracted_amounts = 11;
+  float confidence_level = 12;
+  int64 processing_time_ms = 13;
+  string model_used = 14;
+  int32 tokens_used = 15;
+}
+
+message Entity {
+  string type = 1;
+  string value = 2;
+  float confidence = 3;
+  int32 start_offset = 4;
+  int32 end_offset = 5;
+}
+
+message Risk {
+  string type = 1;
+  RiskSeverity severity = 2;
+  string description = 3;
+  float probability = 4;
+  string mitigation = 5;
+}
+
+message EmbeddingInfo {
+  repeated float content_vector = 1;
+  repeated float title_vector = 2;
+  int32 dimensions = 3;
+  string model = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message ProcessingInfo {
+  ProcessingStatus status = 1;
+  int64 processing_time_ms = 2;
+  int32 chunks_processed = 3;
+  int32 total_chunks = 4;
+  float progress_percentage = 5;
+}
+
+// ========================================
+// Document Search Service
+// ========================================
+
+service DocumentSearchService {
+  // Semantic search using vector embeddings
+  rpc SemanticSearch(SearchRequest) returns (SearchResponse);
+  
+  // Full-text search using PostgreSQL FTS
+  rpc FullTextSearch(SearchRequest) returns (SearchResponse);
+  
+  // Hybrid search combining semantic and full-text
+  rpc HybridSearch(SearchRequest) returns (SearchResponse);
+  
+  // Stream search results for large result sets
+  rpc SearchStream(SearchRequest) returns (stream SearchResultChunk);
+  
+  // Get similar documents by document ID
+  rpc FindSimilarDocuments(SimilarDocumentsRequest) returns (SearchResponse);
+}
+
+message SearchRequest {
+  string query = 1;
+  SearchType search_type = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+  SearchFilters filters = 5;
+  float similarity_threshold = 6;
+  SearchOptions options = 7;
+}
+
+message SearchFilters {
+  repeated DocumentType document_types = 1;
+  repeated Jurisdiction jurisdictions = 2;
+  repeated PracticeArea practice_areas = 3;
+  DateRange date_range = 4;
+  repeated string tags = 5;
+  map<string, string> metadata_filters = 6;
+}
+
+message SearchOptions {
+  bool include_content = 1;
+  bool include_embeddings = 2;
+  bool enable_reranking = 3;
+  string reranking_model = 4;
+  int32 max_excerpt_length = 5;
+}
+
+message SearchResponse {
+  repeated SearchResult results = 1;
+  SearchMetadata metadata = 2;
+  PaginationInfo pagination = 3;
+  repeated string suggestions = 4;
+}
+
+message SearchResult {
+  float score = 1;
+  int32 rank = 2;
+  string document_id = 3;
+  string title = 4;
+  string excerpt = 5;
+  DocumentType document_type = 6;
+  Jurisdiction jurisdiction = 7;
+  PracticeArea practice_area = 8;
+  google.protobuf.Struct metadata = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  float similarity = 12;
+  repeated string highlighted_terms = 13;
+}
+
+message SearchMetadata {
+  string query = 1;
+  SearchType search_type = 2;
+  int32 total_results = 3;
+  int64 processing_time_ms = 4;
+  string model_used = 5;
+  string embedding_model = 6;
+  int32 vector_dimensions = 7;
+  bool reranked = 8;
+}
+
+// ========================================
+// Document Storage Service
+// ========================================
+
+service DocumentStorageService {
+  // Store document with embeddings
+  rpc StoreDocument(StoreDocumentRequest) returns (StoreDocumentResponse);
+  
+  // Retrieve document by ID
+  rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse);
+  
+  // Update document content
+  rpc UpdateDocument(UpdateDocumentRequest) returns (UpdateDocumentResponse);
+  
+  // Delete document
+  rpc DeleteDocument(DeleteDocumentRequest) returns (google.protobuf.Empty);
+  
+  // Batch operations
+  rpc BatchStoreDocuments(stream BatchStoreRequest) returns (stream BatchStoreResponse);
+  
+  // List documents with filtering
+  rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse);
+}
+
+message StoreDocumentRequest {
+  string title = 1;
+  string content = 2;
+  DocumentType document_type = 3;
+  Jurisdiction jurisdiction = 4;
+  PracticeArea practice_area = 5;
+  string file_name = 6;
+  int64 file_size = 7;
+  string mime_type = 8;
+  map<string, string> metadata = 9;
+  bool generate_embeddings = 10;
+  int32 chunk_size = 11;
+  int32 chunk_overlap = 12;
+  bool detect_duplicates = 13;
+}
+
+message StoreDocumentResponse {
+  string document_id = 1;
+  Document document = 2;
+  EmbeddingInfo embeddings = 3;
+  ProcessingInfo processing = 4;
+  bool is_duplicate = 5;
+  string duplicate_of = 6;
+}
+
+// ========================================
+// AI Service
+// ========================================
+
+service AIService {
+  // Generate embeddings for text
+  rpc GenerateEmbeddings(EmbeddingRequest) returns (EmbeddingResponse);
+  
+  // Perform AI analysis with custom prompts
+  rpc AnalyzeWithAI(AIAnalysisRequest) returns (AIAnalysisResponse);
+  
+  // Legal research with AI assistance
+  rpc LegalResearch(LegalResearchRequest) returns (LegalResearchResponse);
+  
+  // Question answering with document context
+  rpc AnswerQuestion(QuestionAnsweringRequest) returns (QuestionAnsweringResponse);
+  
+  // Stream AI responses for long-form content
+  rpc StreamAIResponse(AIAnalysisRequest) returns (stream AIResponseChunk);
+  
+  // Health check for AI services
+  rpc GetAIHealth(google.protobuf.Empty) returns (AIHealthResponse);
+}
+
+message EmbeddingRequest {
+  string text = 1;
+  string model = 2;
+  string document_id = 3;
+  string content_type = 4;
+  map<string, string> metadata = 5;
+  bool save_to_database = 6;
+}
+
+message EmbeddingResponse {
+  repeated float embedding = 1;
+  int32 dimensions = 2;
+  string model = 3;
+  EmbeddingRecord saved_record = 4;
+  int64 processing_time_ms = 5;
+}
+
+message AIAnalysisRequest {
+  string title = 1;
+  string content = 2;
+  DocumentType document_type = 3;
+  string custom_prompt = 4;
+  AIModelConfig model_config = 5;
+  AnalysisType analysis_type = 6;
+}
+
+message AIModelConfig {
+  string model_name = 1;
+  float temperature = 2;
+  int32 max_tokens = 3;
+  float top_p = 4;
+  float frequency_penalty = 5;
+  float presence_penalty = 6;
+  repeated string stop_sequences = 7;
+}
+
+message LegalResearchRequest {
+  string query = 1;
+  Jurisdiction jurisdiction = 2;
+  PracticeArea practice_area = 3;
+  repeated DocumentType document_types = 4;
+  int32 limit = 5;
+  string model = 6;
+  string embedding_model = 7;
+  bool enable_reranking = 8;
+  SearchType search_type = 9;
+}
+
+message LegalResearchResponse {
+  repeated LegalResearchResult results = 1;
+  ResearchSynthesis synthesis = 2;
+  ResearchMetadata metadata = 3;
+  repeated string suggestions = 4;
+}
+
+message LegalResearchResult {
+  Document document = 1;
+  float similarity = 2;
+  float relevance_score = 3;
+  string explanation = 4;
+  repeated string key_passages = 5;
+  repeated string citations = 6;
+}
+
+message ResearchSynthesis {
+  string summary = 1;
+  repeated string key_findings = 2;
+  repeated string recommendations = 3;
+  float confidence_level = 4;
+}
+
+// ========================================
+// OCR Service  
+// ========================================
+
+service OCRService {
+  // Extract text from images with language detection
+  rpc ExtractText(OCRRequest) returns (OCRResponse);
+  
+  // Stream OCR progress for large files
+  rpc ExtractTextStream(OCRRequest) returns (stream OCRProgressResponse);
+  
+  // Get supported languages
+  rpc GetSupportedLanguages(google.protobuf.Empty) returns (SupportedLanguagesResponse);
+  
+  // OCR health check
+  rpc GetOCRHealth(google.protobuf.Empty) returns (OCRHealthResponse);
+}
+
+message OCRRequest {
+  bytes image_data = 1;
+  string file_name = 2;
+  string mime_type = 3;
+  repeated string languages = 4;
+  bool preprocess = 5;
+  OCROptions options = 6;
+}
+
+message OCROptions {
+  int32 dpi = 1;
+  string page_seg_mode = 2;
+  string ocr_engine_mode = 3;
+  bool preserve_interword_spaces = 4;
+  map<string, string> tesseract_config = 5;
+}
+
+message OCRResponse {
+  OCRResult result = 1;
+  OCRMetadata metadata = 2;
+  repeated string warnings = 3;
+}
+
+message OCRResult {
+  string text = 1;
+  float confidence = 2;
+  repeated string languages = 3;
+  string detected_language = 4;
+  int32 word_count = 5;
+  int32 character_count = 6;
+  repeated TextBlock blocks = 7;
+  repeated TextParagraph paragraphs = 8;
+  repeated TextLine lines = 9;
+  repeated TextWord words = 10;
+}
+
+// ========================================
+// Common Types
+// ========================================
+
+enum DocumentType {
+  DOCUMENT_TYPE_UNSPECIFIED = 0;
+  DOCUMENT_TYPE_CONTRACT = 1;
+  DOCUMENT_TYPE_MOTION = 2;
+  DOCUMENT_TYPE_BRIEF = 3;
+  DOCUMENT_TYPE_STATUTE = 4;
+  DOCUMENT_TYPE_REGULATION = 5;
+  DOCUMENT_TYPE_CASE = 6;
+  DOCUMENT_TYPE_GENERAL = 7;
+  DOCUMENT_TYPE_MEMORANDUM = 8;
+  DOCUMENT_TYPE_CORRESPONDENCE = 9;
+  DOCUMENT_TYPE_PLEADING = 10;
+}
+
+enum Jurisdiction {
+  JURISDICTION_UNSPECIFIED = 0;
+  JURISDICTION_FEDERAL = 1;
+  JURISDICTION_STATE = 2;
+  JURISDICTION_LOCAL = 3;
+  JURISDICTION_INTERNATIONAL = 4;
+}
+
+enum PracticeArea {
+  PRACTICE_AREA_UNSPECIFIED = 0;
+  PRACTICE_AREA_CRIMINAL = 1;
+  PRACTICE_AREA_CIVIL = 2;
+  PRACTICE_AREA_CORPORATE = 3;
+  PRACTICE_AREA_FAMILY = 4;
+  PRACTICE_AREA_IMMIGRATION = 5;
+  PRACTICE_AREA_TAX = 6;
+  PRACTICE_AREA_GENERAL = 7;
+  PRACTICE_AREA_INTELLECTUAL_PROPERTY = 8;
+  PRACTICE_AREA_EMPLOYMENT = 9;
+  PRACTICE_AREA_REAL_ESTATE = 10;
+}
+
+enum SearchType {
+  SEARCH_TYPE_UNSPECIFIED = 0;
+  SEARCH_TYPE_SEMANTIC = 1;
+  SEARCH_TYPE_FULL_TEXT = 2;
+  SEARCH_TYPE_HYBRID = 3;
+}
+
+enum ProcessingStatus {
+  PROCESSING_STATUS_UNSPECIFIED = 0;
+  PROCESSING_STATUS_PENDING = 1;
+  PROCESSING_STATUS_PROCESSING = 2;
+  PROCESSING_STATUS_COMPLETED = 3;
+  PROCESSING_STATUS_FAILED = 4;
+  PROCESSING_STATUS_CANCELLED = 5;
+}
+
+enum RiskSeverity {
+  RISK_SEVERITY_UNSPECIFIED = 0;
+  RISK_SEVERITY_LOW = 1;
+  RISK_SEVERITY_MEDIUM = 2;
+  RISK_SEVERITY_HIGH = 3;
+  RISK_SEVERITY_CRITICAL = 4;
+}
+
+enum AnalysisType {
+  ANALYSIS_TYPE_UNSPECIFIED = 0;
+  ANALYSIS_TYPE_COMPREHENSIVE = 1;
+  ANALYSIS_TYPE_QUICK = 2;
+  ANALYSIS_TYPE_FOCUSED = 3;
+  ANALYSIS_TYPE_SUMMARY = 4;
+  ANALYSIS_TYPE_RISK_ASSESSMENT = 5;
+}
+
+message Document {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  DocumentType document_type = 4;
+  Jurisdiction jurisdiction = 5;
+  PracticeArea practice_area = 6;
+  ProcessingStatus processing_status = 7;
+  repeated string tags = 8;
+  map<string, string> metadata = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  string file_name = 12;
+  int64 file_size = 13;
+  string mime_type = 14;
+  string file_hash = 15;
+}
+
+message DateRange {
+  google.protobuf.Timestamp start = 1;
+  google.protobuf.Timestamp end = 2;
+}
+
+message PaginationInfo {
+  bool has_more = 1;
+  int32 next_offset = 2;
+  int32 total_count = 3;
+  int32 page_size = 4;
+}
+
+message EmbeddingRecord {
+  string id = 1;
+  string content_id = 2;
+  string content_type = 3;
+  string model = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message TextBlock {
+  string text = 1;
+  float confidence = 2;
+  BoundingBox bounding_box = 3;
+}
+
+message TextParagraph {
+  string text = 1;
+  float confidence = 2;
+  BoundingBox bounding_box = 3;
+}
+
+message TextLine {
+  string text = 1;
+  float confidence = 2;
+  BoundingBox bounding_box = 3;
+}
+
+message TextWord {
+  string text = 1;
+  float confidence = 2;
+  BoundingBox bounding_box = 3;
+}
+
+message BoundingBox {
+  int32 x = 1;
+  int32 y = 2;
+  int32 width = 3;
+  int32 height = 4;
+}
+
+// ========================================
+// Streaming Types
+// ========================================
+
+message AnalysisProgressResponse {
+  string document_id = 1;
+  ProcessingInfo progress = 2;
+  string current_step = 3;
+  string message = 4;
+  DocumentAnalysis partial_analysis = 5;
+}
+
+message SearchResultChunk {
+  repeated SearchResult results = 1;
+  bool is_final_chunk = 2;
+  int32 chunk_index = 3;
+}
+
+message AIResponseChunk {
+  string text = 1;
+  bool is_final = 2;
+  int32 chunk_index = 3;
+  map<string, string> metadata = 4;
+}
+
+message OCRProgressResponse {
+  float progress_percentage = 1;
+  string current_step = 2;
+  string message = 3;
+  OCRResult partial_result = 4;
+}
+
+// ========================================
+// Batch Operations
+// ========================================
+
+message BatchAnalyzeRequest {
+  repeated AnalyzeDocumentRequest requests = 1;
+  BatchOptions options = 2;
+}
+
+message BatchAnalyzeResponse {
+  string batch_id = 1;
+  int32 request_index = 2;
+  AnalyzeDocumentResponse response = 3;
+  bool is_complete = 4;
+  BatchProgress progress = 5;
+}
+
+message BatchStoreRequest {
+  repeated StoreDocumentRequest requests = 1;
+  BatchOptions options = 2;
+}
+
+message BatchStoreResponse {
+  string batch_id = 1;
+  int32 request_index = 2;
+  StoreDocumentResponse response = 3;
+  bool is_complete = 4;
+  BatchProgress progress = 5;
+}
+
+message BatchOptions {
+  int32 concurrency_limit = 1;
+  bool stop_on_error = 2;
+  int32 timeout_seconds = 3;
+  map<string, string> metadata = 4;
+}
+
+message BatchProgress {
+  int32 total_requests = 1;
+  int32 completed_requests = 2;
+  int32 failed_requests = 3;
+  float progress_percentage = 4;
+  int64 elapsed_time_ms = 5;
+  int64 estimated_remaining_ms = 6;
+}
+
+// ========================================
+// Health Check Responses
+// ========================================
+
+message AIHealthResponse {
+  HealthStatus status = 1;
+  repeated ServiceHealth services = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  map<string, string> metadata = 4;
+}
+
+message OCRHealthResponse {
+  HealthStatus status = 1;
+  repeated ServiceHealth services = 2;
+  SupportedLanguagesResponse supported_languages = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+message ServiceHealth {
+  string name = 1;
+  HealthStatus status = 2;
+  int64 response_time_ms = 3;
+  string version = 4;
+  map<string, string> details = 5;
+}
+
+message SupportedLanguagesResponse {
+  repeated Language languages = 1;
+  int32 total_count = 2;
+}
+
+message Language {
+  string code = 1;
+  string name = 2;
+  string native_name = 3;
+  bool supported = 4;
+}
+
+enum HealthStatus {
+  HEALTH_STATUS_UNSPECIFIED = 0;
+  HEALTH_STATUS_HEALTHY = 1;
+  HEALTH_STATUS_DEGRADED = 2;
+  HEALTH_STATUS_UNHEALTHY = 3;
+}
+
+// ========================================
+// Request/Response for remaining operations
+// ========================================
+
+message GetAnalysisRequest {
+  string document_id = 1;
+  bool include_embeddings = 2;
+}
+
+message GetAnalysisResponse {
+  Document document = 1;
+  DocumentAnalysis analysis = 2;
+  EmbeddingInfo embeddings = 3;
+}
+
+message SimilarDocumentsRequest {
+  string document_id = 1;
+  int32 limit = 2;
+  float similarity_threshold = 3;
+  SearchFilters filters = 4;
+}
+
+message GetDocumentRequest {
+  string document_id = 1;
+  bool include_content = 2;
+  bool include_embeddings = 3;
+}
+
+message GetDocumentResponse {
+  Document document = 1;
+  EmbeddingInfo embeddings = 2;
+}
+
+message UpdateDocumentRequest {
+  string document_id = 1;
+  Document document = 2;
+  bool regenerate_embeddings = 3;
+}
+
+message UpdateDocumentResponse {
+  Document document = 1;
+  EmbeddingInfo embeddings = 2;
+  ProcessingInfo processing = 3;
+}
+
+message DeleteDocumentRequest {
+  string document_id = 1;
+  bool delete_embeddings = 2;
+}
+
+message ListDocumentsRequest {
+  SearchFilters filters = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+  string order_by = 4;
+  bool ascending = 5;
+}
+
+message ListDocumentsResponse {
+  repeated Document documents = 1;
+  PaginationInfo pagination = 2;
+}
+
+message QuestionAnsweringRequest {
+  string question = 1;
+  repeated string context_document_ids = 2;
+  AIModelConfig model_config = 3;
+  QAOptions options = 4;
+}
+
+message QAOptions {
+  bool include_source_quotes = 1;
+  int32 max_context_length = 2;
+  float confidence_threshold = 3;
+}
+
+message QuestionAnsweringResponse {
+  string answer = 1;
+  float confidence = 2;
+  repeated QASource sources = 3;
+  int64 processing_time_ms = 4;
+}
+
+message QASource {
+  string document_id = 1;
+  string content = 2;
+  float relevance = 3;
+  string citation = 4;
+}
+
+message AIAnalysisResponse {
+  DocumentAnalysis analysis = 1;
+  int64 processing_time_ms = 2;
+  AIModelConfig model_config = 3;
+  int32 tokens_used = 4;
+}
+
+message ResearchMetadata {
+  string query = 1;
+  int32 total_found = 2;
+  int32 returned = 3;
+  Jurisdiction jurisdiction = 4;
+  PracticeArea practice_area = 5;
+  SearchType search_type = 6;
+  bool reranked = 7;
+  int64 processing_time_ms = 8;
+}
+
+message OCRMetadata {
+  string original_file_name = 1;
+  int64 file_size = 2;
+  string mime_type = 3;
+  bool preprocessed = 4;
+  int64 processing_time_ms = 5;
+  string tesseract_version = 6;
+}

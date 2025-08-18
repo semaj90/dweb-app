@@ -1,0 +1,33 @@
+LEGAL CONTRACT ANALYSIS - TEST DOCUMENT
+
+CONTRACT TERMS AND CONDITIONS
+
+1. INDEMNIFICATION CLAUSE
+The contractor agrees to indemnify and hold harmless the client from any claims, damages, or losses arising from the performance of services under this agreement.
+
+2. LIABILITY LIMITATIONS
+In no event shall either party be liable for consequential, incidental, or punitive damages exceeding the total contract value.
+
+3. DISPUTE RESOLUTION
+Any disputes arising under this contract shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association.
+
+4. INTELLECTUAL PROPERTY
+All work products, inventions, and intellectual property created during the performance of this contract shall be owned by the client.
+
+5. CONFIDENTIALITY
+Both parties agree to maintain strict confidentiality regarding proprietary information disclosed during the contract term.
+
+6. TERMINATION PROVISIONS
+This contract may be terminated by either party with thirty (30) days written notice.
+
+PERFORMANCE SPECIFICATIONS
+
+The contractor shall deliver services meeting the following criteria:
+- Compliance with all applicable laws and regulations
+- Professional standards of care
+- Timely completion of deliverables
+- Regular progress reporting
+
+This document serves as a test case for the RAG (Retrieval-Augmented Generation) system, demonstrating how legal contracts can be processed, embedded, and made searchable through semantic similarity matching.
+
+Key searchable terms: contract, indemnification, liability, arbitration, intellectual property, confidentiality, termination, compliance, legal obligations.

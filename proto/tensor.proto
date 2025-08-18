@@ -1,0 +1,140 @@
+syntax = "proto3";
+
+package tensor;
+
+option go_package = "github.com/enhanced-rag/tensor/pb";
+
+// Tensor operation request
+message TensorRequest {
+  string session_id = 1;
+  string operation = 2;
+  TensorData input_a = 3;
+  TensorData input_b = 4;
+  TensorParams params = 5;
+  bool use_gpu = 6;
+  string cache_key = 7;
+  repeated string url_hints = 8; // URLs for heuristic learning
+}
+
+// Tensor data container
+message TensorData {
+  repeated float values = 1;
+  repeated int32 shape = 2;
+  string dtype = 3;
+  bytes raw_bytes = 4; // For efficient binary transfer
+}
+
+// Operation parameters
+message TensorParams {
+  int32 m = 1; // Matrix dimensions
+  int32 n = 2;
+  int32 k = 3;
+  int32 kernel_size = 4; // Convolution params
+  int32 stride = 5;
+  int32 padding = 6;
+  float learning_rate = 7; // ML params
+  float dropout = 8;
+  int32 num_heads = 9; // Attention params
+  int32 hidden_dim = 10;
+}
+
+// Tensor operation response
+message TensorResponse {
+  string session_id = 1;
+  TensorData output = 2;
+  bool cached = 3;
+  int64 compute_time_ms = 4;
+  string device_used = 5; // "gpu", "wasm", "cpu"
+  CacheStats cache_stats = 6;
+}
+
+// Cache statistics
+message CacheStats {
+  int32 total_hits = 1;
+  int32 total_misses = 2;
+  int32 cache_size_mb = 3;
+  repeated string top_urls = 4;
+  map<string, float> heuristic_scores = 5;
+}
+
+// Vertex buffer message
+message VertexBuffer {
+  string buffer_id = 1;
+  repeated float vertices = 2;
+  repeated int32 indices = 3;
+  int64 timestamp = 4;
+  float score = 5;
+}
+
+// Batch operation request
+message BatchTensorRequest {
+  string session_id = 1;
+  repeated TensorRequest operations = 2;
+  bool parallel = 3;
+  int32 max_workers = 4;
+}
+
+// Batch operation response
+message BatchTensorResponse {
+  string session_id = 1;
+  repeated TensorResponse results = 2;
+  int64 total_time_ms = 3;
+  float speedup = 4; // Compared to sequential
+}
+
+// Stream operation for real-time processing
+message StreamTensorRequest {
+  string stream_id = 1;
+  oneof data {
+    TensorRequest operation = 2;
+    bytes chunk = 3; // For streaming large tensors
+    bool end_stream = 4;
+  }
+}
+
+// Service definition
+service TensorService {
+  // Single operation
+  rpc ProcessTensor(TensorRequest) returns (TensorResponse);
+  
+  // Batch operations
+  rpc ProcessBatch(BatchTensorRequest) returns (BatchTensorResponse);
+  
+  // Streaming operations
+  rpc StreamProcess(stream StreamTensorRequest) returns (stream TensorResponse);
+  
+  // Cache management
+  rpc GetCacheStats(CacheStatsRequest) returns (CacheStats);
+  rpc PreloadCache(PreloadRequest) returns (PreloadResponse);
+  
+  // Vertex buffer operations
+  rpc StoreVertexBuffer(VertexBuffer) returns (StoreResponse);
+  rpc GetVertexBuffer(GetVertexRequest) returns (VertexBuffer);
+}
+
+// Cache stats request
+message CacheStatsRequest {
+  string session_id = 1;
+  bool detailed = 2;
+}
+
+// Preload request for heuristic optimization
+message PreloadRequest {
+  string session_id = 1;
+  repeated string urls = 2;
+  repeated string operations = 3;
+}
+
+message PreloadResponse {
+  int32 preloaded_count = 1;
+  repeated string preloaded_keys = 2;
+}
+
+message StoreResponse {
+  bool success = 1;
+  string buffer_id = 2;
+}
+
+message GetVertexRequest {
+  string buffer_id = 1;
+}

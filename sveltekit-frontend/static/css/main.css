@@ -1,0 +1,105 @@
+/* YoRHa Legal AI Main Styles */
+:root {
+  --yorha-primary: #C7A882;
+  --yorha-secondary: #8B7355;
+  --yorha-background: #000000;
+  --yorha-surface: #1a1a1a;
+  --yorha-text: #ffffff;
+  --yorha-text-muted: #cccccc;
+  --yorha-border: #333333;
+  --yorha-accent: #D4AF37;
+  --yorha-error: #ff6b6b;
+  --yorha-success: #51cf66;
+  --yorha-warning: #ffd43b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  background-color: var(--yorha-background);
+  color: var(--yorha-text);
+  line-height: 1.6;
+}
+
+.yorha-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.yorha-button {
+  background: var(--yorha-primary);
+  color: var(--yorha-background);
+  border: 2px solid var(--yorha-primary);
+  padding: 8px 16px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.yorha-button:hover {
+  background: transparent;
+  color: var(--yorha-primary);
+}
+
+.yorha-input {
+  background: var(--yorha-surface);
+  border: 1px solid var(--yorha-border);
+  color: var(--yorha-text);
+  padding: 12px;
+  font-family: inherit;
+  width: 100%;
+}
+
+.yorha-input:focus {
+  outline: none;
+  border-color: var(--yorha-primary);
+  box-shadow: 0 0 0 2px rgba(199, 168, 130, 0.2);
+}
+
+.yorha-card {
+  background: var(--yorha-surface);
+  border: 1px solid var(--yorha-border);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.yorha-header {
+  border-bottom: 2px solid var(--yorha-primary);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.yorha-grid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .yorha-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.error {
+  color: var(--yorha-error);
+  border-color: var(--yorha-error);
+}
+
+.success {
+  color: var(--yorha-success);
+  border-color: var(--yorha-success);
+}

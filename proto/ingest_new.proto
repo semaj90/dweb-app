@@ -1,0 +1,26 @@
+syntax = "proto3";
+package ingest;
+
+service Ingestion {
+  rpc StreamChunks(stream IngestChunk) returns (IngestAck);
+}
+
+message IngestChunk {
+  string doc_id = 1;
+  uint32 chunk_index = 2;
+  uint32 total_chunks = 3;
+  bytes content = 4;
+  string mime_type = 5;
+  string hash = 6;
+  repeated string tags = 7;
+  map<string,string> meta = 8;
+  bool final = 9;
+}
+
+message IngestAck {
+  string doc_id = 1;
+  uint32 received_chunks = 2;
+  bool complete = 3;
+  string status = 4;
+  string message = 5;
+}

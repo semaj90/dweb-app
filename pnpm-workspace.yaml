@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - packages/*
+  - microservices/*
+  - analytics-engine
+  - sveltekit-frontend
+  - vscode-llm-extension
+  - unocss-main/unocss-main

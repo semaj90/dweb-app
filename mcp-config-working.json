@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "context7-server": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\mcp-servers\\mcp-context7-wrapper.js"
+      ],
+      "env": {
+        "PROJECT_ROOT": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app",
+        "OLLAMA_ENDPOINT": "http://localhost:11434",
+        "DATABASE_URL": "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+        "NODE_ENV": "development"
+      }
+    }
+  }
+}

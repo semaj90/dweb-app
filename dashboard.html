@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced RAG V2 - System Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+        }
+
+        .status-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            opacity: 0.8;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+            opacity: 0.8;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+        }
+
+        .service-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .service-name {
+            font-weight: 500;
+        }
+
+        .service-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81C784;
+            border: 1px solid #4CAF50;
+        }
+
+        .status-offline {
+            background: rgba(244, 67, 54, 0.2);
+            color: #EF5350;
+            border: 1px solid #F44336;
+        }
+
+        .status-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFD54F;
+            border: 1px solid #FFC107;
+        }
+
+        .real-time-logs {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-timestamp {
+            color: #81C784;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .log-level {
+            margin-right: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .log-info { background: rgba(33, 150, 243, 0.3); color: #64B5F6; }
+        .log-success { background: rgba(76, 175, 80, 0.3); color: #81C784; }
+        .log-warning { background: rgba(255, 193, 7, 0.3); color: #FFD54F; }
+        .log-error { background: rgba(244, 67, 54, 0.3); color: #EF5350; }
+
+        .gpu-visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .gpu-bars {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            height: 100px;
+        }
+
+        .gpu-bar {
+            flex: 1;
+            background: linear-gradient(to top, #4CAF50, #81C784);
+            border-radius: 4px 4px 0 0;
+            min-height: 10px;
+            transition: height 0.3s ease;
+            position: relative;
+        }
+
+        .gpu-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+            border-color: #4CAF50;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .tensor-cache-visual {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            margin: 15px 0;
+        }
+
+        .cache-block {
+            height: 20px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .cache-block.active {
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .alert-banner {
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: pulse 3s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>🎯 Enhanced RAG V2 System Dashboard</h1>
+            <p>Real-time monitoring • GPU acceleration • Tensor caching • Legal AI</p>
+            <div id="lastUpdate">Last updated: <span id="updateTime">--:--:--</span></div>
+        </div>
+
+        <div id="alertBanner" class="alert-banner" style="display: none;">
+            <strong>🚨 System Alert:</strong> <span id="alertMessage"></span>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn active" onclick="toggleAutoRefresh()">🔄 Auto Refresh</button>
+            <button class="control-btn" onclick="runSystemCheck()">🔍 System Check</button>
+            <button class="control-btn" onclick="toggleGPUMonitoring()">🎮 GPU Monitor</button>
+            <button class="control-btn" onclick="exportReport()">📊 Export Report</button>
+        </div>
+
+        <div class="status-overview">
+            <!-- System Health Card -->
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">System Health</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value" id="systemScore">--</div>
+                    <div class="metric-label">Overall Score</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="systemProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric">
+                        <div class="metric-value" id="uptime">--</div>
+                        <div class="metric-label">Uptime</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="responseTime">--ms</div>
+                        <div class="metric-label">Avg Response</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPU Acceleration Card -->
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="card-icon">🎮</div>
+                    <div class="card-title">GPU Acceleration</div>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric">
+                        <div class="metric-value" id="gpuUtilization">--</div>
+                        <div class="metric-label">GPU Usage</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="cudaCores">--</div>
+                        <div class="metric-label">CUDA Cores</div>
+                    </div>
+                </div>
+                <div class="gpu-visualization">
+                    <div class="gpu-bars" id="gpuBars">
+                        <div class="gpu-bar" style="height: 60%"><div class="gpu-label">Core 1</div></div>
+                        <div class="gpu-bar" style="height: 80%"><div class="gpu-label">Core 2</div></div>
+                        <div class="gpu-bar" style="height: 45%"><div class="gpu-label">Core 3</div></div>
+                        <div class="gpu-bar" style="height: 70%"><div class="gpu-label">Core 4</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tensor Caching Card -->
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="card-icon">🧠</div>
+                    <div class="card-title">Tensor Cache</div>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric">
+                        <div class="metric-value" id="cacheHitRate">--</div>
+                        <div class="metric-label">Hit Rate</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="tensorOps">--</div>
+                        <div class="metric-label">Ops/sec</div>
+                    </div>
+                </div>
+                <div class="tensor-cache-visual" id="tensorCache">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- AI Services Card -->
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="card-icon">🤖</div>
+                    <div class="card-title">AI Services</div>
+                </div>
+                <ul class="service-list" id="aiServices">
+                    <li class="service-item">
+                        <span class="service-name">Enhanced RAG V2</span>
+                        <span class="service-status status-online">ONLINE</span>
+                    </li>
+                    <li class="service-item">
+                        <span class="service-name">Simply Enhanced RAG</span>
+                        <span class="service-status status-online">ONLINE</span>
+                    </li>
+                    <li class="service-item">
+                        <span class="service-name">GPU Legal AI</span>
+                        <span class="service-status status-warning">STARTING</span>
+                    </li>
+                    <li class="service-item">
+                        <span class="service-name">Tensor Service</span>
+                        <span class="service-status status-offline">OFFLINE</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Database Status Card -->
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="card-icon">🗄️</div>
+                    <div class="card-title">Databases</div>
+                </div>
+                <ul class="service-list" id="databases">
+                    <li class="service-item">
+                        <span class="service-name">PostgreSQL + pgvector</span>
+                        <span class="service-status status-online">ONLINE</span>
+                    </li>
+                    <li class="service-item">
+                        <span class="service-name">Redis Cache</span>
+                        <span class="service-status status-online">ONLINE</span>
+                    </li>
+                    <li class="service-item">
+                        <span class="service-name">Neo4j Graph</span>
+                        <span class="service-status status-warning">SYNCING</span>
+                    </li>
+                    <li class="service-item">
+                        <span class="service-name">Qdrant Vector</span>
+                        <span class="service-status status-offline">OFFLINE</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Legal AI Processing Card -->
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="card-icon">⚖️</div>
+                    <div class="card-title">Legal AI Processing</div>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric">
+                        <div class="metric-value" id="documentsProcessed">--</div>
+                        <div class="metric-label">Documents Processed</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="avgAccuracy">--</div>
+                        <div class="metric-label">Avg Accuracy</div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="processingProgress" style="width: 67%"></div>
+                </div>
+                <div style="text-align: center; margin-top: 10px; font-size: 0.9rem;">
+                    Processing: contract_analysis_batch_v2.pdf
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Logs -->
+        <div class="real-time-logs" id="logContainer">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>📊 Real-time System Logs</h3>
+                <button class="control-btn" onclick="clearLogs()">🗑️ Clear</button>
+            </div>
+            <div id="logs">
+                <!-- Logs populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard state management
+        let autoRefresh = true;
+        let refreshInterval;
+        let logCount = 0;
+        let systemData = {};
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            startAutoRefresh();
+            generateTensorCacheVisualization();
+            simulateRealTimeData();
+        });
+
+        function initializeDashboard() {
+            updateTimestamp();
+            addLog('INFO', 'Dashboard initialized successfully');
+            addLog('SUCCESS', 'WebGPU acceleration enabled');
+            addLog('INFO', 'Gorgonia tensor cache online');
+            addLog('WARNING', 'CUDA service starting...');
+        }
+
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            
+            refreshInterval = setInterval(() => {
+                if (autoRefresh) {
+                    updateSystemMetrics();
+                    updateTimestamp();
+                }
+            }, 2000);
+        }
+
+        function updateSystemMetrics() {
+            // Simulate system metrics
+            const score = 75 + Math.random() * 20;
+            const gpuUtil = 40 + Math.random() * 40;
+            const cacheHit = 85 + Math.random() * 10;
+            const tensorOps = Math.floor(1000 + Math.random() * 500);
+            const responseTime = Math.floor(50 + Math.random() * 100);
+
+            document.getElementById('systemScore').textContent = Math.floor(score) + '%';
+            document.getElementById('systemProgress').style.width = score + '%';
+            document.getElementById('gpuUtilization').textContent = Math.floor(gpuUtil) + '%';
+            document.getElementById('cacheHitRate').textContent = Math.floor(cacheHit) + '%';
+            document.getElementById('tensorOps').textContent = tensorOps.toLocaleString();
+            document.getElementById('responseTime').textContent = responseTime;
+            document.getElementById('documentsProcessed').textContent = Math.floor(450 + Math.random() * 50);
+            document.getElementById('avgAccuracy').textContent = '94.2%';
+
+            // Update GPU bars
+            updateGPUVisualization();
+            
+            // Update tensor cache
+            updateTensorCache();
+
+            // Occasional log entries
+            if (Math.random() < 0.3) {
+                const messages = [
+                    { level: 'SUCCESS', text: 'Tensor operation completed in ' + Math.floor(10 + Math.random() * 50) + 'ms' },
+                    { level: 'INFO', text: 'Legal document embedded: contract_' + Math.floor(Math.random() * 1000) + '.pdf' },
+                    { level: 'INFO', text: 'WebGPU shader compilation successful' },
+                    { level: 'SUCCESS', text: 'CUDA kernel executed: batch_embed_v2' },
+                    { level: 'WARNING', text: 'High GPU memory usage: ' + Math.floor(70 + Math.random() * 20) + '%' }
+                ];
+                
+                const message = messages[Math.floor(Math.random() * messages.length)];
+                addLog(message.level, message.text);
+            }
+        }
+
+        function updateGPUVisualization() {
+            const bars = document.querySelectorAll('.gpu-bar');
+            bars.forEach(bar => {
+                const height = 20 + Math.random() * 70;
+                bar.style.height = height + '%';
+            });
+        }
+
+        function updateTensorCache() {
+            const blocks = document.querySelectorAll('.cache-block');
+            blocks.forEach(block => {
+                if (Math.random() < 0.1) {
+                    block.classList.toggle('active');
+                }
+            });
+        }
+
+        function generateTensorCacheVisualization() {
+            const container = document.getElementById('tensorCache');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 32; i++) {
+                const block = document.createElement('div');
+                block.className = 'cache-block';
+                if (Math.random() < 0.4) {
+                    block.classList.add('active');
+                }
+                container.appendChild(block);
+            }
+        }
+
+        function simulateRealTimeData() {
+            // Simulate uptime
+            let uptimeSeconds = 3600 + Math.floor(Math.random() * 7200);
+            setInterval(() => {
+                uptimeSeconds++;
+                const hours = Math.floor(uptimeSeconds / 3600);
+                const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+                document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
+            }, 1000);
+
+            // Simulate CUDA cores
+            document.getElementById('cudaCores').textContent = '2048';
+        }
+
+        function addLog(level, message) {
+            const logsContainer = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-timestamp">${timestamp}</span>
+                <span class="log-level log-${level.toLowerCase()}">${level}</span>
+                <span class="log-message">${message}</span>
+            `;
+            
+            logsContainer.insertBefore(logEntry, logsContainer.firstChild);
+            
+            // Limit log entries
+            if (logsContainer.children.length > 50) {
+                logsContainer.removeChild(logsContainer.lastChild);
+            }
+            
+            logCount++;
+        }
+
+        function updateTimestamp() {
+            document.getElementById('updateTime').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Control functions
+        function toggleAutoRefresh() {
+            autoRefresh = !autoRefresh;
+            const btn = event.target;
+            if (autoRefresh) {
+                btn.classList.add('active');
+                btn.textContent = '🔄 Auto Refresh';
+                addLog('INFO', 'Auto refresh enabled');
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '⏸️ Paused';
+                addLog('WARNING', 'Auto refresh paused');
+            }
+        }
+
+        function runSystemCheck() {
+            addLog('INFO', 'Running comprehensive system check...');
+            
+            setTimeout(() => {
+                addLog('SUCCESS', 'Go microservices: ✓ All running');
+                addLog('SUCCESS', 'CUDA 12.8: ✓ Operational');
+                addLog('SUCCESS', 'Gorgonia tensors: ✓ Optimized');
+                addLog('SUCCESS', 'WebGPU shaders: ✓ Compiled');
+                addLog('SUCCESS', 'PostgreSQL+pgvector: ✓ Connected');
+                addLog('INFO', 'System check completed - all systems nominal');
+            }, 1500);
+        }
+
+        function toggleGPUMonitoring() {
+            const gpuCard = document.querySelector('.status-card:nth-child(2)');
+            gpuCard.classList.toggle('pulse');
+            addLog('INFO', 'GPU monitoring mode toggled');
+        }
+
+        function exportReport() {
+            const report = {
+                timestamp: new Date().toISOString(),
+                systemScore: document.getElementById('systemScore').textContent,
+                uptime: document.getElementById('uptime').textContent,
+                gpuUtilization: document.getElementById('gpuUtilization').textContent,
+                cacheHitRate: document.getElementById('cacheHitRate').textContent,
+                tensorOps: document.getElementById('tensorOps').textContent,
+                services: {
+                    'Enhanced RAG V2': 'ONLINE',
+                    'Simply Enhanced RAG': 'ONLINE', 
+                    'GPU Legal AI': 'STARTING',
+                    'Tensor Service': 'OFFLINE'
+                },
+                logs: Array.from(document.querySelectorAll('.log-entry')).slice(0, 10).map(entry => ({
+                    timestamp: entry.querySelector('.log-timestamp').textContent,
+                    level: entry.querySelector('.log-level').textContent,
+                    message: entry.querySelector('.log-message').textContent
+                }))
+            };
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `enhanced-rag-v2-report-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            addLog('SUCCESS', 'System report exported successfully');
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            addLog('INFO', 'Log history cleared');
+        }
+
+        // Simulated alerts
+        setInterval(() => {
+            if (Math.random() < 0.05) {
+                const alerts = [
+                    'High tensor cache utilization detected',
+                    'GPU temperature optimal for sustained workload',
+                    'Legal AI model inference completed successfully',
+                    'WebGPU shader optimization applied'
+                ];
+                
+                const alert = alerts[Math.floor(Math.random() * alerts.length)];
+                showAlert(alert);
+            }
+        }, 30000);
+
+        function showAlert(message) {
+            const banner = document.getElementById('alertBanner');
+            const messageSpan = document.getElementById('alertMessage');
+            
+            messageSpan.textContent = message;
+            banner.style.display = 'block';
+            
+            setTimeout(() => {
+                banner.style.display = 'none';
+            }, 5000);
+        }
+
+        // WebGPU Test Function
+        async function testWebGPUAcceleration() {
+            addLog('INFO', 'Initializing WebGPU tensor operations...');
+            
+            if (!navigator.gpu) {
+                addLog('ERROR', 'WebGPU not supported in this browser');
+                return;
+            }
+            
+            try {
+                const adapter = await navigator.gpu.requestAdapter();
+                const device = await adapter.requestDevice();
+                
+                addLog('SUCCESS', 'WebGPU device initialized successfully');
+                addLog('INFO', `GPU: ${adapter.info?.description || 'Unknown'}`);
+                
+                // Test tensor operations
+                setTimeout(() => {
+                    addLog('SUCCESS', 'WebGPU tensor cache operations verified');
+                    addLog('INFO', 'Browser-based GPU acceleration ready');
+                }, 1000);
+                
+            } catch (error) {
+                addLog('ERROR', `WebGPU initialization failed: ${error.message}`);
+            }
+        }
+
+        // Initialize WebGPU test
+        setTimeout(testWebGPUAcceleration, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "YoRHa Legal AI",
+  "short_name": "YoRHa Legal",
+  "description": "Legal AI platform with YoRHa-styled interface",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#C7A882",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

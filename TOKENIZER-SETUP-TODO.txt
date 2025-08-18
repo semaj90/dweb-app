@@ -1,0 +1,98 @@
+# Tokenizer Integration TODO List
+# Complete Guide for Legal AI Tokenizer Setup
+
+## Current Status
+- ✅ Ollama with gemma3-legal model available
+- ✅ Basic embedding service working
+- ⚠️ Tokenizer configuration needed for optimal performance
+- ⚠️ Legal-specific tokenization may be required
+
+## Tokenizer Options
+
+### Option 1: Use Gemma3-Legal Built-in Tokenizer (RECOMMENDED)
+- Model: gemma3-legal:latest (already pulled)
+- Tokenizer: Built into Ollama model
+- Pros: No additional setup, optimized for legal text
+- Cons: Limited customization
+
+### Option 2: Legal-BERT Tokenizer
+- Model: nlpaueb/legal-bert-base-uncased
+- Source: Hugging Face
+- Pros: Specifically trained on legal documents
+- Cons: Requires additional download and configuration
+
+### Option 3: Custom Legal Tokenizer
+- Based on: sentence-transformers/all-MiniLM-L6-v2
+- Training: Custom legal vocabulary
+- Pros: Fully customized for our legal documents
+- Cons: Requires training time and legal corpus
+
+## Implementation Tasks
+
+### PHASE 1: Basic Setup (CURRENT PRIORITY)
+[ ] 1. Check current tokenizer status
+    - Run: npm run db:check:pgvector
+    - Verify embedding dimensions match model
+    - Test current tokenization quality
+
+[ ] 2. Generate fallback tokenizer if needed
+    - Run: npm run generate:tokenizer
+    - Creates: tokenizer.generated.json
+    - Fallback for when other tokenizers fail
+
+[ ] 3. Test tokenizer performance
+    - Legal document samples
+    - Contract analysis accuracy
+    - Embedding quality metrics
+
+### PHASE 2: Legal-Specific Enhancement
+[ ] 4. Download Legal-BERT tokenizer
+    - URL: https://huggingface.co/nlpaueb/legal-bert-base-uncased
+    - Files: tokenizer.json, vocab.txt
+    - Location: tokenizers/legal-bert/
+
+[ ] 5. Configure embedding service
+    - Update embedder_server.js
+    - Set TOKENIZER_PATH=tokenizers/legal-bert/tokenizer.json
+    - Restart service for new tokenizer
+
+[ ] 6. Legal vocabulary enhancement
+    - Add legal terms: "whereas", "heretofore", "indemnify"
+    - Contract keywords: "breach", "liability", "termination"
+    - Court terms: "plaintiff", "defendant", "jurisdiction"
+
+### PHASE 3: Integration Testing
+[ ] 7. Benchmark tokenizer performance
+    - Document processing speed
+    - Embedding quality scores
+    - Legal term recognition accuracy
+
+[ ] 8. A/B test different tokenizers
+    - Gemma3-legal vs Legal-BERT
+    - Custom legal vs general purpose
+    - Performance metrics comparison
+
+[ ] 9. Integration with Enhanced RAG
+    - Update recommendation service
+    - Verify vector search accuracy
+    - Test Context7 MCP integration
+
+## Quick Start Commands
+
+```bash
+# 1. Check current status
+npm run db:check:pgvector
+npm run inspect:autosolve
+
+# 2. If tokenizer needed
+npm run generate:tokenizer
+
+# 3. Test integration
+npm run metrics:all
+
+# 4. Start full system
+npm run orchestrator:start
+npm run context7:start
+```
+
+This is your complete tokenizer integration roadmap! 🚀

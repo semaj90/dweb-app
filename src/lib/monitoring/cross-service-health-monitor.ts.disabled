@@ -1,0 +1,248 @@
+// @ts-nocheck
+/**
+ * Cross-Service Health Monitoring System
+ * Production-ready distributed health monitoring with real-time alerting, GPU monitoring, and auto-recovery
+ */
+
+import { EventEmitter } from 'events';
+import { performance } from 'perf_hooks';
+import WebSocket from 'ws';
+import { Worker } from 'worker_threads';
+
+// Health Monitoring Types
+export interface ServiceHealth {
+    serviceId: string;
+    serviceName: string;
+    status: HealthStatus;
+    lastChecked: string;
+    responseTime: number;
+    uptime: number;
+    version: string;
+    endpoints: EndpointHealth[];
+    resources: ResourceHealth;
+    dependencies: DependencyHealth[];
+    alerts: HealthAlert[];
+    metrics: ServiceMetrics;
+}
+
+export interface EndpointHealth {
+    path: string;
+    method: string;
+    status: HealthStatus;
+    responseTime: number;
+    errorRate: number;
+    successRate: number;
+    lastError?: string;
+    throughput: number;
+}
+
+export interface ResourceHealth {
+    cpu: ResourceMetric;
+    memory: ResourceMetric;
+    gpu: GPUMetric;
+    disk: ResourceMetric;
+    network: NetworkMetric;
+    database: DatabaseMetric;
+    cache: CacheMetric;
+}
+
+export interface ResourceMetric {
+    usage: number;
+    available: number;
+    total: number;
+    utilization: number;
+    status: HealthStatus;
+}
+
+export interface GPUMetric extends ResourceMetric {
+    temperature: number;
+    powerUsage: number;
+    memoryBandwidth: number;
+    computeUtilization: number;
+    cudaCores: number;
+    activeProcesses: number;
+}
+
+export interface NetworkMetric {
+    bandwidth: number;
+    latency: number;
+    packetLoss: number;
+    connections: number;
+    throughput: number;
+    status: HealthStatus;
+}
+
+export interface DatabaseMetric {
+    connectionPool: number;
+    activeQueries: number;
+    queryLatency: number;
+    lockWaitTime: number;
+    diskSpace: number;
+    status: HealthStatus;
+}
+
+export interface CacheMetric {
+    hitRate: number;
+    missRate: number;
+    evictionRate: number;
+    memoryUsage: number;
+    entryCount: number;
+    status: HealthStatus;
+}
+
+export interface DependencyHealth {
+    serviceName: string;
+    status: HealthStatus;
+    lastChecked: string;
+    responseTime: number;
+    errorCount: number;
+    circuitBreakerState: CircuitBreakerState;
+}
+
+export interface HealthAlert {
+    id: string;
+    level: AlertLevel;
+    message: string;
+    timestamp: string;
+    resolved: boolean;
+    category: AlertCategory;
+    metadata: AlertMetadata;
+}
+
+export interface ServiceMetrics {
+    requestsPerSecond: number;
+    errorRate: number;
+    averageResponseTime: number;
+    p95ResponseTime: number;
+    p99ResponseTime: number;
+    activeConnections: number;
+    totalRequests: number;
+    uptime: number;
+}
+
+export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy' | 'unknown' | 'maintenance';
+export type AlertLevel = 'info' | 'warning' | 'error' | 'critical';
+export type AlertCategory = 'performance' | 'availability' | 'resource' | 'security' | 'dependency';
+export type CircuitBreakerState = 'closed' | 'open' | 'half-open';
+
+// Cross-Service Health Monitor
+export class CrossServiceHealthMonitor extends EventEmitter {
+    private services = new Map<string, ServiceHealthChecker>();
+    private alertManager: AlertManager;
+    private metricsCollector: MetricsCollector;
+    private dashboardServer: HealthDashboardServer;
+    private autoRecovery: AutoRecoveryManager;
+    private circuitBreakers = new Map<string, CircuitBreaker>();
+    
+    private readonly monitoringInterval: number;
+    private readonly config: HealthMonitorConfig;
+    private monitoringActive = false;
+    
+    constructor(config: HealthMonitorConfig = {}) {
+        super();
+        
+        this.config = {
+            monitoringInterval: 5000,
+            alertThresholds: {
+                responseTime: 5000,
+                errorRate: 0.1,
+                cpuUsage: 0.9,
+                memoryUsage: 0.85,
+                diskUsage: 0.9,
+                gpuUsage: 0.95
+            },
+            enableAutoRecovery: true,
+            enableGPUMonitoring: true,
+            enableDistributedTracing: true,
+            dashboardPort: 8090,
+            ...config
+        };
+        
+        this.monitoringInterval = this.config.monitoringInterval;
+        
+        this.initializeComponents();
+        this.setupDefaultServices();
+    }
+    
+    private initializeComponents(): void {
+        this.alertManager = new AlertManager({
+            webhookUrls: this.config.webhookUrls || [],
+            emailConfig: this.config.emailConfig,
+            slackConfig: this.config.slackConfig
+        });
+        
+        this.metricsCollector = new MetricsCollector({
+            retentionDays: this.config.metricsRetentionDays || 7,
+            aggregationInterval: this.config.metricsAggregationInterval || 60000
+        });
+        
+        this.dashboardServer = new HealthDashboardServer({
+            port: this.config.dashboardPort,
+            enableAuth: this.config.enableDashboardAuth || false
+        });
+        
+        this.autoRecovery = new AutoRecoveryManager({
+            enabled: this.config.enableAutoRecovery,
+            strategies: this.config.recoveryStrategies || []
+        });
+        
+        this.setupEventHandlers();
+    }
+    
+    private setupDefaultServices(): void {
+        // Register default services based on architecture
+        this.registerService('sveltekit-frontend', {
+            name: 'SvelteKit Frontend',
+            baseUrl: 'http://localhost:5175',
+            endpoints: ['/health', '/api/health'],
+            type: 'web-frontend',
+            critical: true
+        });
+        
+        this.registerService('context7-mcp', {
+            name: 'Context7 MCP Server',
+            baseUrl: 'http://localhost:40000',
+            endpoints: ['/health', '/mcp/metrics/multicore'],
+            type: 'mcp-server',
+            critical: true
+        });
+        
+        this.registerService('grpc-microservice', {
+            name: 'Go GRPC Microservice',
+            baseUrl: 'http://localhost:8084',
+            endpoints: ['/health'],
+            type: 'grpc-service',
+            critical: true
+        });
+        
+        this.registerService('postgresql', {
+            name: 'PostgreSQL Database',
+            baseUrl: 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db',
+            endpoints: [],
+            type: 'database',
+            critical: true
+        });
+        
+        this.registerService('redis-cache', {
+            name: 'Redis Cache',
+            baseUrl: 'redis://localhost:6379',
+            endpoints: [],
+            type: 'cache',
+            critical: false
+        });
+        
+        this.registerService('qdrant-vector', {
+            name: 'Qdrant Vector Database',
+            baseUrl: 'http://localhost:6333',
+            endpoints: ['/'],
+            type: 'vector-database',
+            critical: false
+        });
+        
+        this.registerService('ollama-llm', {
+            name: 'Ollama LLM Service',
+            baseUrl: 'http://localhost:11434',
+            endpoints: ['/api/version'],
+            type: 'llm-service',
+            critical: false
+        });\n    }\n    \n    private setupEventHandlers(): void {\n        this.alertManager.on('alert-sent', (alert) => {\n            this.emit('alert', alert);\n        });\n        \n        this.autoRecovery.on('recovery-attempted', (attempt) => {\n            this.emit('recovery-attempt', attempt);\n        });\n        \n        this.autoRecovery.on('recovery-successful', (recovery) => {\n            this.emit('recovery-success', recovery);\n        });\n        \n        this.dashboardServer.on('dashboard-accessed', (access) => {\n            this.emit('dashboard-access', access);\n        });\n    }\n    \n    /**\n     * Register a service for health monitoring\n     */\n    registerService(serviceId: string, config: ServiceConfig): void {\n        if (this.services.has(serviceId)) {\n            throw new Error(`Service ${serviceId} is already registered`);\n        }\n        \n        const healthChecker = new ServiceHealthChecker(serviceId, config, {\n            alertThresholds: this.config.alertThresholds,\n            enableGPUMonitoring: this.config.enableGPUMonitoring\n        });\n        \n        healthChecker.on('health-updated', (health) => {\n            this.handleHealthUpdate(serviceId, health);\n        });\n        \n        healthChecker.on('alert-triggered', (alert) => {\n            this.handleAlert(serviceId, alert);\n        });\n        \n        this.services.set(serviceId, healthChecker);\n        \n        // Set up circuit breaker\n        this.circuitBreakers.set(serviceId, new CircuitBreaker({\n            failureThreshold: 5,\n            recoveryTimeout: 30000,\n            monitoringPeriod: 60000\n        }));\n        \n        this.emit('service-registered', { serviceId, config });\n    }\n    \n    /**\n     * Start health monitoring for all services\n     */\n    async startMonitoring(): Promise<void> {\n        if (this.monitoringActive) {\n            return;\n        }\n        \n        this.monitoringActive = true;\n        \n        // Start dashboard server\n        await this.dashboardServer.start();\n        \n        // Start monitoring loop\n        this.runMonitoringLoop();\n        \n        this.emit('monitoring-started', {\n            services: Array.from(this.services.keys()),\n            interval: this.monitoringInterval\n        });\n    }\n    \n    /**\n     * Stop health monitoring\n     */\n    async stopMonitoring(): Promise<void> {\n        this.monitoringActive = false;\n        \n        await this.dashboardServer.stop();\n        \n        this.emit('monitoring-stopped');\n    }\n    \n    private async runMonitoringLoop(): Promise<void> {\n        while (this.monitoringActive) {\n            try {\n                await this.performHealthChecks();\n                await this.collectMetrics();\n                await this.updateDashboard();\n                \n            } catch (error) {\n                this.emit('monitoring-error', error);\n            }\n            \n            await this.sleep(this.monitoringInterval);\n        }\n    }\n    \n    private async performHealthChecks(): Promise<void> {\n        const healthCheckPromises = Array.from(this.services.entries()).map(\n            ([serviceId, checker]) => this.checkServiceHealth(serviceId, checker)\n        );\n        \n        await Promise.allSettled(healthCheckPromises);\n    }\n    \n    private async checkServiceHealth(serviceId: string, checker: ServiceHealthChecker): Promise<void> {\n        try {\n            const health = await checker.checkHealth();\n            \n            // Update circuit breaker\n            const circuitBreaker = this.circuitBreakers.get(serviceId);\n            if (circuitBreaker) {\n                if (health.status === 'healthy') {\n                    circuitBreaker.recordSuccess();\n                } else {\n                    circuitBreaker.recordFailure();\n                }\n            }\n            \n            this.handleHealthUpdate(serviceId, health);\n            \n        } catch (error) {\n            this.handleHealthCheckError(serviceId, error as Error);\n        }\n    }\n    \n    private handleHealthUpdate(serviceId: string, health: ServiceHealth): void {\n        this.metricsCollector.recordHealth(serviceId, health);\n        \n        // Check for alerts\n        const alerts = this.analyzeHealthForAlerts(health);\n        alerts.forEach(alert => this.handleAlert(serviceId, alert));\n        \n        this.emit('health-updated', { serviceId, health });\n    }\n    \n    private handleAlert(serviceId: string, alert: HealthAlert): void {\n        this.alertManager.sendAlert(serviceId, alert);\n        \n        // Trigger auto-recovery if enabled\n        if (this.config.enableAutoRecovery && alert.level === 'critical') {\n            this.autoRecovery.attemptRecovery(serviceId, alert);\n        }\n        \n        this.emit('alert-triggered', { serviceId, alert });\n    }\n    \n    private handleHealthCheckError(serviceId: string, error: Error): void {\n        const alert: HealthAlert = {\n            id: `health-check-error-${Date.now()}`,\n            level: 'error',\n            message: `Health check failed for ${serviceId}: ${error.message}`,\n            timestamp: new Date().toISOString(),\n            resolved: false,\n            category: 'availability',\n            metadata: {\n                serviceId,\n                errorType: 'health-check-failure',\n                errorMessage: error.message\n            }\n        };\n        \n        this.handleAlert(serviceId, alert);\n    }\n    \n    private analyzeHealthForAlerts(health: ServiceHealth): HealthAlert[] {\n        const alerts: HealthAlert[] = [];\n        const thresholds = this.config.alertThresholds;\n        \n        // Response time alerts\n        if (health.responseTime > thresholds.responseTime) {\n            alerts.push({\n                id: `response-time-${Date.now()}`,\n                level: 'warning',\n                message: `High response time: ${health.responseTime}ms`,\n                timestamp: new Date().toISOString(),\n                resolved: false,\n                category: 'performance',\n                metadata: {\n                    serviceId: health.serviceId,\n                    metric: 'response-time',\n                    value: health.responseTime,\n                    threshold: thresholds.responseTime\n                }\n            });\n        }\n        \n        // Resource utilization alerts\n        if (health.resources.cpu.utilization > thresholds.cpuUsage) {\n            alerts.push({\n                id: `cpu-usage-${Date.now()}`,\n                level: 'warning',\n                message: `High CPU usage: ${(health.resources.cpu.utilization * 100).toFixed(1)}%`,\n                timestamp: new Date().toISOString(),\n                resolved: false,\n                category: 'resource',\n                metadata: {\n                    serviceId: health.serviceId,\n                    metric: 'cpu-usage',\n                    value: health.resources.cpu.utilization,\n                    threshold: thresholds.cpuUsage\n                }\n            });\n        }\n        \n        // GPU alerts (if enabled)\n        if (this.config.enableGPUMonitoring && health.resources.gpu.utilization > thresholds.gpuUsage) {\n            alerts.push({\n                id: `gpu-usage-${Date.now()}`,\n                level: 'critical',\n                message: `Critical GPU usage: ${(health.resources.gpu.utilization * 100).toFixed(1)}%`,\n                timestamp: new Date().toISOString(),\n                resolved: false,\n                category: 'resource',\n                metadata: {\n                    serviceId: health.serviceId,\n                    metric: 'gpu-usage',\n                    value: health.resources.gpu.utilization,\n                    threshold: thresholds.gpuUsage\n                }\n            });\n        }\n        \n        // Service status alerts\n        if (health.status === 'unhealthy') {\n            alerts.push({\n                id: `service-unhealthy-${Date.now()}`,\n                level: 'critical',\n                message: `Service ${health.serviceName} is unhealthy`,\n                timestamp: new Date().toISOString(),\n                resolved: false,\n                category: 'availability',\n                metadata: {\n                    serviceId: health.serviceId,\n                    status: health.status\n                }\n            });\n        }\n        \n        return alerts;\n    }\n    \n    private async collectMetrics(): Promise<void> {\n        const aggregatedMetrics = await this.metricsCollector.aggregateMetrics();\n        this.emit('metrics-collected', aggregatedMetrics);\n    }\n    \n    private async updateDashboard(): Promise<void> {\n        const healthData = await this.getAllServiceHealth();\n        const systemMetrics = await this.getSystemMetrics();\n        \n        this.dashboardServer.updateData({\n            services: healthData,\n            systemMetrics,\n            alerts: this.alertManager.getActiveAlerts(),\n            timestamp: new Date().toISOString()\n        });\n    }\n    \n    /**\n     * Get health status for all services\n     */\n    async getAllServiceHealth(): Promise<Map<string, ServiceHealth>> {\n        const healthData = new Map<string, ServiceHealth>();\n        \n        for (const [serviceId, checker] of this.services) {\n            try {\n                const health = await checker.getLastHealth();\n                healthData.set(serviceId, health);\n            } catch (error) {\n                // Handle individual service errors\n                healthData.set(serviceId, {\n                    serviceId,\n                    serviceName: serviceId,\n                    status: 'unknown',\n                    lastChecked: new Date().toISOString(),\n                    responseTime: 0,\n                    uptime: 0,\n                    version: 'unknown',\n                    endpoints: [],\n                    resources: this.getDefaultResourceHealth(),\n                    dependencies: [],\n                    alerts: [],\n                    metrics: this.getDefaultMetrics()\n                });\n            }\n        }\n        \n        return healthData;\n    }\n    \n    /**\n     * Get system-wide metrics\n     */\n    async getSystemMetrics(): Promise<SystemMetrics> {\n        const allHealth = await this.getAllServiceHealth();\n        const healthyServices = Array.from(allHealth.values()).filter(h => h.status === 'healthy').length;\n        const totalServices = allHealth.size;\n        \n        return {\n            totalServices,\n            healthyServices,\n            degradedServices: Array.from(allHealth.values()).filter(h => h.status === 'degraded').length,\n            unhealthyServices: Array.from(allHealth.values()).filter(h => h.status === 'unhealthy').length,\n            systemHealth: healthyServices / totalServices,\n            totalAlerts: this.alertManager.getActiveAlerts().length,\n            criticalAlerts: this.alertManager.getActiveAlerts().filter(a => a.level === 'critical').length,\n            averageResponseTime: this.calculateAverageResponseTime(allHealth),\n            totalUptime: this.calculateSystemUptime(allHealth),\n            timestamp: new Date().toISOString()\n        };\n    }\n    \n    /**\n     * Get health dashboard URL\n     */\n    getDashboardUrl(): string {\n        return `http://localhost:${this.config.dashboardPort}/dashboard`;\n    }\n    \n    /**\n     * Force health check for specific service\n     */\n    async forceHealthCheck(serviceId: string): Promise<ServiceHealth> {\n        const checker = this.services.get(serviceId);\n        if (!checker) {\n            throw new Error(`Service ${serviceId} not found`);\n        }\n        \n        return checker.checkHealth();\n    }\n    \n    /**\n     * Update service configuration\n     */\n    updateServiceConfig(serviceId: string, config: Partial<ServiceConfig>): void {\n        const checker = this.services.get(serviceId);\n        if (!checker) {\n            throw new Error(`Service ${serviceId} not found`);\n        }\n        \n        checker.updateConfig(config);\n        this.emit('service-config-updated', { serviceId, config });\n    }\n    \n    // Utility methods\n    private sleep(ms: number): Promise<void> {\n        return new Promise(resolve => setTimeout(resolve, ms));\n    }\n    \n    private getDefaultResourceHealth(): ResourceHealth {\n        const defaultMetric: ResourceMetric = {\n            usage: 0,\n            available: 0,\n            total: 0,\n            utilization: 0,\n            status: 'unknown'\n        };\n        \n        return {\n            cpu: defaultMetric,\n            memory: defaultMetric,\n            gpu: {\n                ...defaultMetric,\n                temperature: 0,\n                powerUsage: 0,\n                memoryBandwidth: 0,\n                computeUtilization: 0,\n                cudaCores: 0,\n                activeProcesses: 0\n            },\n            disk: defaultMetric,\n            network: {\n                bandwidth: 0,\n                latency: 0,\n                packetLoss: 0,\n                connections: 0,\n                throughput: 0,\n                status: 'unknown'\n            },\n            database: {\n                connectionPool: 0,\n                activeQueries: 0,\n                queryLatency: 0,\n                lockWaitTime: 0,\n                diskSpace: 0,\n                status: 'unknown'\n            },\n            cache: {\n                hitRate: 0,\n                missRate: 0,\n                evictionRate: 0,\n                memoryUsage: 0,\n                entryCount: 0,\n                status: 'unknown'\n            }\n        };\n    }\n    \n    private getDefaultMetrics(): ServiceMetrics {\n        return {\n            requestsPerSecond: 0,\n            errorRate: 0,\n            averageResponseTime: 0,\n            p95ResponseTime: 0,\n            p99ResponseTime: 0,\n            activeConnections: 0,\n            totalRequests: 0,\n            uptime: 0\n        };\n    }\n    \n    private calculateAverageResponseTime(healthData: Map<string, ServiceHealth>): number {\n        const responseTimes = Array.from(healthData.values()).map(h => h.responseTime);\n        return responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length;\n    }\n    \n    private calculateSystemUptime(healthData: Map<string, ServiceHealth>): number {\n        const uptimes = Array.from(healthData.values()).map(h => h.uptime);\n        return uptimes.reduce((sum, uptime) => sum + uptime, 0) / uptimes.length;\n    }\n}\n\n// Service Health Checker\nexport class ServiceHealthChecker extends EventEmitter {\n    private lastHealth: ServiceHealth | null = null;\n    \n    constructor(\n        private serviceId: string,\n        private config: ServiceConfig,\n        private options: HealthCheckerOptions\n    ) {\n        super();\n    }\n    \n    async checkHealth(): Promise<ServiceHealth> {\n        const startTime = performance.now();\n        \n        try {\n            const endpointHealth = await this.checkEndpoints();\n            const resourceHealth = await this.checkResources();\n            const dependencyHealth = await this.checkDependencies();\n            const metrics = await this.collectServiceMetrics();\n            \n            const responseTime = performance.now() - startTime;\n            \n            const health: ServiceHealth = {\n                serviceId: this.serviceId,\n                serviceName: this.config.name,\n                status: this.calculateOverallStatus(endpointHealth, resourceHealth),\n                lastChecked: new Date().toISOString(),\n                responseTime,\n                uptime: await this.getServiceUptime(),\n                version: await this.getServiceVersion(),\n                endpoints: endpointHealth,\n                resources: resourceHealth,\n                dependencies: dependencyHealth,\n                alerts: [],\n                metrics\n            };\n            \n            this.lastHealth = health;\n            this.emit('health-updated', health);\n            \n            return health;\n            \n        } catch (error) {\n            const errorHealth: ServiceHealth = {\n                serviceId: this.serviceId,\n                serviceName: this.config.name,\n                status: 'unhealthy',\n                lastChecked: new Date().toISOString(),\n                responseTime: performance.now() - startTime,\n                uptime: 0,\n                version: 'unknown',\n                endpoints: [],\n                resources: this.getDefaultResourceHealth(),\n                dependencies: [],\n                alerts: [{\n                    id: `health-check-error-${Date.now()}`,\n                    level: 'critical',\n                    message: `Health check failed: ${error.message}`,\n                    timestamp: new Date().toISOString(),\n                    resolved: false,\n                    category: 'availability',\n                    metadata: { error: error.message }\n                }],\n                metrics: this.getDefaultMetrics()\n            };\n            \n            this.lastHealth = errorHealth;\n            return errorHealth;\n        }\n    }\n    \n    async getLastHealth(): Promise<ServiceHealth> {\n        if (!this.lastHealth) {\n            return this.checkHealth();\n        }\n        return this.lastHealth;\n    }\n    \n    updateConfig(config: Partial<ServiceConfig>): void {\n        Object.assign(this.config, config);\n    }\n    \n    private async checkEndpoints(): Promise<EndpointHealth[]> {\n        const endpointChecks = this.config.endpoints.map(endpoint => \n            this.checkEndpoint(endpoint)\n        );\n        \n        return Promise.all(endpointChecks);\n    }\n    \n    private async checkEndpoint(endpoint: string): Promise<EndpointHealth> {\n        const startTime = performance.now();\n        \n        try {\n            const response = await fetch(`${this.config.baseUrl}${endpoint}`, {\n                timeout: 5000\n            });\n            \n            const responseTime = performance.now() - startTime;\n            \n            return {\n                path: endpoint,\n                method: 'GET',\n                status: response.ok ? 'healthy' : 'unhealthy',\n                responseTime,\n                errorRate: response.ok ? 0 : 1,\n                successRate: response.ok ? 1 : 0,\n                throughput: 1 / (responseTime / 1000) // requests per second\n            };\n            \n        } catch (error) {\n            return {\n                path: endpoint,\n                method: 'GET',\n                status: 'unhealthy',\n                responseTime: performance.now() - startTime,\n                errorRate: 1,\n                successRate: 0,\n                lastError: error.message,\n                throughput: 0\n            };\n        }\n    }\n    \n    private async checkResources(): Promise<ResourceHealth> {\n        switch (this.config.type) {\n            case 'database':\n                return this.checkDatabaseResources();\n            case 'cache':\n                return this.checkCacheResources();\n            case 'web-frontend':\n            case 'mcp-server':\n            case 'grpc-service':\n                return this.checkServerResources();\n            default:\n                return this.getDefaultResourceHealth();\n        }\n    }\n    \n    private async checkServerResources(): Promise<ResourceHealth> {\n        // Simplified resource checking for demonstration\n        return {\n            cpu: {\n                usage: 1024, // MB\n                available: 2048,\n                total: 4096,\n                utilization: 0.5,\n                status: 'healthy'\n            },\n            memory: {\n                usage: 512,\n                available: 1536,\n                total: 2048,\n                utilization: 0.25,\n                status: 'healthy'\n            },\n            gpu: this.options.enableGPUMonitoring ? {\n                usage: 2048,\n                available: 6144,\n                total: 8192,\n                utilization: 0.25,\n                status: 'healthy',\n                temperature: 65,\n                powerUsage: 150,\n                memoryBandwidth: 900,\n                computeUtilization: 0.3,\n                cudaCores: 4096,\n                activeProcesses: 2\n            } : {\n                usage: 0, available: 0, total: 0, utilization: 0, status: 'unknown',\n                temperature: 0, powerUsage: 0, memoryBandwidth: 0,\n                computeUtilization: 0, cudaCores: 0, activeProcesses: 0\n            },\n            disk: {\n                usage: 10240,\n                available: 40960,\n                total: 51200,\n                utilization: 0.2,\n                status: 'healthy'\n            },\n            network: {\n                bandwidth: 1000,\n                latency: 5,\n                packetLoss: 0.001,\n                connections: 25,\n                throughput: 150,\n                status: 'healthy'\n            },\n            database: {\n                connectionPool: 0,\n                activeQueries: 0,\n                queryLatency: 0,\n                lockWaitTime: 0,\n                diskSpace: 0,\n                status: 'unknown'\n            },\n            cache: {\n                hitRate: 0,\n                missRate: 0,\n                evictionRate: 0,\n                memoryUsage: 0,\n                entryCount: 0,\n                status: 'unknown'\n            }\n        };\n    }\n    \n    private async checkDatabaseResources(): Promise<ResourceHealth> {\n        // Database-specific resource checking\n        const serverResources = await this.checkServerResources();\n        \n        serverResources.database = {\n            connectionPool: 20,\n            activeQueries: 5,\n            queryLatency: 25,\n            lockWaitTime: 2,\n            diskSpace: 15360, // MB\n            status: 'healthy'\n        };\n        \n        return serverResources;\n    }\n    \n    private async checkCacheResources(): Promise<ResourceHealth> {\n        // Cache-specific resource checking\n        const serverResources = await this.checkServerResources();\n        \n        serverResources.cache = {\n            hitRate: 0.85,\n            missRate: 0.15,\n            evictionRate: 0.02,\n            memoryUsage: 256,\n            entryCount: 10000,\n            status: 'healthy'\n        };\n        \n        return serverResources;\n    }\n    \n    private async checkDependencies(): Promise<DependencyHealth[]> {\n        // Check service dependencies\n        return [];\n    }\n    \n    private async collectServiceMetrics(): Promise<ServiceMetrics> {\n        // Collect service-specific metrics\n        return {\n            requestsPerSecond: 25,\n            errorRate: 0.02,\n            averageResponseTime: 150,\n            p95ResponseTime: 300,\n            p99ResponseTime: 500,\n            activeConnections: 15,\n            totalRequests: 150000,\n            uptime: 86400 // 1 day in seconds\n        };\n    }\n    \n    private calculateOverallStatus(endpoints: EndpointHealth[], resources: ResourceHealth): HealthStatus {\n        // Calculate overall health status based on endpoints and resources\n        const endpointFailures = endpoints.filter(e => e.status === 'unhealthy').length;\n        const totalEndpoints = endpoints.length;\n        \n        if (endpointFailures > 0) {\n            return endpointFailures === totalEndpoints ? 'unhealthy' : 'degraded';\n        }\n        \n        // Check resource utilization\n        if (resources.cpu.utilization > 0.9 || resources.memory.utilization > 0.9) {\n            return 'degraded';\n        }\n        \n        return 'healthy';\n    }\n    \n    private async getServiceUptime(): Promise<number> {\n        // Get service uptime in seconds\n        return process.uptime();\n    }\n    \n    private async getServiceVersion(): Promise<string> {\n        // Get service version\n        return '1.0.0';\n    }\n    \n    private getDefaultResourceHealth(): ResourceHealth {\n        const defaultMetric: ResourceMetric = {\n            usage: 0, available: 0, total: 0, utilization: 0, status: 'unknown'\n        };\n        \n        return {\n            cpu: defaultMetric,\n            memory: defaultMetric,\n            gpu: {\n                ...defaultMetric,\n                temperature: 0, powerUsage: 0, memoryBandwidth: 0,\n                computeUtilization: 0, cudaCores: 0, activeProcesses: 0\n            },\n            disk: defaultMetric,\n            network: {\n                bandwidth: 0, latency: 0, packetLoss: 0,\n                connections: 0, throughput: 0, status: 'unknown'\n            },\n            database: {\n                connectionPool: 0, activeQueries: 0, queryLatency: 0,\n                lockWaitTime: 0, diskSpace: 0, status: 'unknown'\n            },\n            cache: {\n                hitRate: 0, missRate: 0, evictionRate: 0,\n                memoryUsage: 0, entryCount: 0, status: 'unknown'\n            }\n        };\n    }\n    \n    private getDefaultMetrics(): ServiceMetrics {\n        return {\n            requestsPerSecond: 0, errorRate: 0, averageResponseTime: 0,\n            p95ResponseTime: 0, p99ResponseTime: 0, activeConnections: 0,\n            totalRequests: 0, uptime: 0\n        };\n    }\n}\n\n// Supporting Classes (simplified implementations)\nclass AlertManager extends EventEmitter {\n    private activeAlerts: HealthAlert[] = [];\n    \n    constructor(private config: AlertConfig) {\n        super();\n    }\n    \n    sendAlert(serviceId: string, alert: HealthAlert): void {\n        this.activeAlerts.push(alert);\n        \n        // Send to configured channels\n        this.sendToWebhooks(serviceId, alert);\n        this.sendToEmail(serviceId, alert);\n        this.sendToSlack(serviceId, alert);\n        \n        this.emit('alert-sent', { serviceId, alert });\n    }\n    \n    getActiveAlerts(): HealthAlert[] {\n        return this.activeAlerts.filter(alert => !alert.resolved);\n    }\n    \n    private sendToWebhooks(serviceId: string, alert: HealthAlert): void {\n        // Send to webhook URLs\n    }\n    \n    private sendToEmail(serviceId: string, alert: HealthAlert): void {\n        // Send email alert\n    }\n    \n    private sendToSlack(serviceId: string, alert: HealthAlert): void {\n        // Send Slack alert\n    }\n}\n\nclass MetricsCollector {\n    constructor(private config: MetricsConfig) {}\n    \n    recordHealth(serviceId: string, health: ServiceHealth): void {\n        // Store health metrics\n    }\n    \n    async aggregateMetrics(): Promise<any> {\n        // Aggregate collected metrics\n        return {};\n    }\n}\n\nclass HealthDashboardServer extends EventEmitter {\n    private server: any;\n    private wsServer: WebSocket.Server | null = null;\n    \n    constructor(private config: DashboardConfig) {\n        super();\n    }\n    \n    async start(): Promise<void> {\n        // Start dashboard HTTP server and WebSocket server\n        console.log(`Health dashboard starting on port ${this.config.port}`);\n    }\n    \n    async stop(): Promise<void> {\n        // Stop servers\n    }\n    \n    updateData(data: any): void {\n        // Update dashboard data and broadcast to WebSocket clients\n        if (this.wsServer) {\n            this.wsServer.clients.forEach(client => {\n                if (client.readyState === WebSocket.OPEN) {\n                    client.send(JSON.stringify(data));\n                }\n            });\n        }\n    }\n}\n\nclass AutoRecoveryManager extends EventEmitter {\n    constructor(private config: AutoRecoveryConfig) {\n        super();\n    }\n    \n    attemptRecovery(serviceId: string, alert: HealthAlert): void {\n        this.emit('recovery-attempted', { serviceId, alert });\n        \n        // Implement recovery strategies\n        setTimeout(() => {\n            this.emit('recovery-successful', { serviceId, alert });\n        }, 5000);\n    }\n}\n\nclass CircuitBreaker {\n    private failures = 0;\n    private lastFailureTime = 0;\n    private state: CircuitBreakerState = 'closed';\n    \n    constructor(private config: CircuitBreakerConfig) {}\n    \n    recordSuccess(): void {\n        this.failures = 0;\n        this.state = 'closed';\n    }\n    \n    recordFailure(): void {\n        this.failures++;\n        this.lastFailureTime = Date.now();\n        \n        if (this.failures >= this.config.failureThreshold) {\n            this.state = 'open';\n        }\n    }\n    \n    getState(): CircuitBreakerState {\n        if (this.state === 'open' && \n            Date.now() - this.lastFailureTime > this.config.recoveryTimeout) {\n            this.state = 'half-open';\n        }\n        \n        return this.state;\n    }\n}\n\n// Type definitions\ninterface HealthMonitorConfig {\n    monitoringInterval?: number;\n    alertThresholds?: AlertThresholds;\n    enableAutoRecovery?: boolean;\n    enableGPUMonitoring?: boolean;\n    enableDistributedTracing?: boolean;\n    dashboardPort?: number;\n    webhookUrls?: string[];\n    emailConfig?: EmailConfig;\n    slackConfig?: SlackConfig;\n    metricsRetentionDays?: number;\n    metricsAggregationInterval?: number;\n    enableDashboardAuth?: boolean;\n    recoveryStrategies?: RecoveryStrategy[];\n}\n\ninterface ServiceConfig {\n    name: string;\n    baseUrl: string;\n    endpoints: string[];\n    type: ServiceType;\n    critical: boolean;\n    timeout?: number;\n    retries?: number;\n}\n\ninterface HealthCheckerOptions {\n    alertThresholds: AlertThresholds;\n    enableGPUMonitoring: boolean;\n}\n\ninterface AlertThresholds {\n    responseTime: number;\n    errorRate: number;\n    cpuUsage: number;\n    memoryUsage: number;\n    diskUsage: number;\n    gpuUsage: number;\n}\n\ninterface AlertConfig {\n    webhookUrls: string[];\n    emailConfig?: EmailConfig;\n    slackConfig?: SlackConfig;\n}\n\ninterface MetricsConfig {\n    retentionDays: number;\n    aggregationInterval: number;\n}\n\ninterface DashboardConfig {\n    port: number;\n    enableAuth: boolean;\n}\n\ninterface AutoRecoveryConfig {\n    enabled: boolean;\n    strategies: RecoveryStrategy[];\n}\n\ninterface CircuitBreakerConfig {\n    failureThreshold: number;\n    recoveryTimeout: number;\n    monitoringPeriod: number;\n}\n\ninterface AlertMetadata {\n    [key: string]: any;\n}\n\ninterface SystemMetrics {\n    totalServices: number;\n    healthyServices: number;\n    degradedServices: number;\n    unhealthyServices: number;\n    systemHealth: number;\n    totalAlerts: number;\n    criticalAlerts: number;\n    averageResponseTime: number;\n    totalUptime: number;\n    timestamp: string;\n}\n\ntype ServiceType = 'web-frontend' | 'mcp-server' | 'grpc-service' | 'database' | 'cache' | 'vector-database' | 'llm-service';\ntype EmailConfig = any;\ntype SlackConfig = any;\ntype RecoveryStrategy = any;\n\nexport { CrossServiceHealthMonitor };

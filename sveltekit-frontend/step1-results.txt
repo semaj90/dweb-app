@@ -1,0 +1,24 @@
+
+> yorha-legal-ai-frontend@1.0.0 check
+> npm run check:all
+
+
+> yorha-legal-ai-frontend@1.0.0 check:all
+> concurrently -n "TS,Svelte" -c "blue,orange" "npm run check:typescript" "npm run check:svelte"
+
+[TS] 
+[TS] > yorha-legal-ai-frontend@1.0.0 check:typescript
+[TS] > tsc --noEmit --skipLibCheck --incremental
+[TS] 
+[Svelte] 
+[Svelte] > yorha-legal-ai-frontend@1.0.0 check:svelte
+[Svelte] > svelte-check --tsconfig ./tsconfig.json --threshold warning
+[Svelte] 
+[Svelte] Loading svelte-check in workspace: c:\Users\james\Desktop\deeds-web\deeds-web-app\sveltekit-frontend
+[Svelte] Getting Svelte diagnostics...
+[Svelte] 
+[Svelte] ^C^CTerminate batch job (Y/N)? 
+[TS] ^C^CTerminate batch job (Y/N)? 
+[Svelte] npm run check:svelte exited with code 3221225786
+[TS] npm run check:typescript exited with code 3221225786
+^C^C

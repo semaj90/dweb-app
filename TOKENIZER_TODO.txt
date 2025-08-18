@@ -1,0 +1,39 @@
+Tokenizer Action Plan (Fallback + Preferred)
+
+1. Preferred Models
+- Gemma3 Legal (if available) for generative tasks (prompt-only, not embedding)
+- Legal-BERT or domain-tuned MiniLM for embeddings (768-dim compatibility)
+- Optionally nomic-embed-text for general semantic search (adjust vector size if adopted)
+
+2. Files Needed
+- onnx model: models/code-embed.onnx (or legal-bert.onnx)
+- tokenizer.json (HF fast tokenizer) matching the ONNX model
+
+3. Fallback Provided
+- scripts/generate-tokenizer.mjs creates tokenizer.generated.json (simple WordPiece-like vocab)
+- Usage: NODE_ENV=dev TOKENIZER_PATH=tokenizer.generated.json npm run embedder:server
+
+4. Validation Checklist
+- Load tokenizer: node -e "require('@huggingface/tokenizers').Tokenizer.fromFile('tokenizer.json').then(t=>console.log('tokens',t.encode('contract breach').length))"
+- Embedding sanity: node scripts/test-embeddings.mjs (ensure no random fallback logs)
+- Average token length distribution (optional metric)
+
+5. Migration Steps (when real tokenizer arrives)
+- Place real tokenizer.json in repo root or set TOKENIZER_PATH env
+- Replace models/code-embed.onnx with matching model file
+- Restart embedder & worker services; verify /metrics (fallbackCalls=0)
+
+6. Future Enhancements
+- Implement dynamic subword merge statistics based refinement on error corpus
+- Add caching layer keyed by sha256(snippet) to reduce duplicate embeddings
+- Integrate domain-specific stopword removal before tokenization for ranking stage (NOT for embeddings)
+
+7. Risks
+- Fallback tokenizer is naive: no subword segmentation -> OOV collisions
+- Embedding ONNX must align with expected vocab indices; mismatch causes degraded vectors
+
+8. Decision Log
+- Using 768-dim assumption to align with existing Qdrant collection
+- Will reindex if switching to a different dimensionality model.
+
+-- End

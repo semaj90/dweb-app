@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package wire;
+
+option go_package = "github.com/yourorg/deeds-web-app/proto/wire;wire";
+
+// Lightweight telemetry from client to server
+message Telemetry {
+  string session_id = 1;
+  string user_id = 2;
+  bool is_typing = 3;
+  bool visible = 4;
+  uint32 long_tasks = 5;
+  repeated string hints = 6; // UI hints (viewport buckets, routes)
+}
+
+// Server → client prefetch plan
+message PrefetchPlan {
+  repeated string urls = 1;
+  repeated string qdrant_ids = 2;
+}
+
+// Generic streaming frame over WebSocket/WebTransport
+message Frame {
+  oneof kind {
+    Telemetry telemetry = 1;
+    PrefetchPlan prefetch = 2;
+    bytes summary_delta = 3; // gzipped text or CRDT delta
+  }
+}

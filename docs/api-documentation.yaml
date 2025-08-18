@@ -1,0 +1,1204 @@
+openapi: 3.0.3
+info:
+  title: Legal AI API
+  description: |
+    Comprehensive Legal AI API for document analysis, search, and legal research.
+    
+    This API provides advanced legal document processing capabilities including:
+    - Document analysis with AI-powered insights
+    - Vector-based semantic search
+    - Legal research and precedent discovery
+    - OCR and text extraction
+    - AI synthesis and recommendations
+    
+    ## Authentication
+    Currently uses API key authentication. Include your API key in the `X-API-Key` header.
+    
+    ## Rate Limiting
+    - 1000 requests per hour for document analysis
+    - 5000 requests per hour for search operations
+    - 100 requests per hour for OCR operations
+    
+    ## Error Handling
+    The API uses standard HTTP status codes and returns detailed error messages in JSON format.
+  version: 2.0.0
+  contact:
+    name: Legal AI API Support
+    email: support@legalai.example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5173/api
+    description: Development server
+  - url: https://api.legalai.example.com/v2
+    description: Production server
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /documents/analyze:
+    post:
+      summary: Analyze legal document
+      description: |
+        Performs comprehensive AI analysis of a legal document including:
+        - Entity extraction
+        - Key term identification
+        - Risk assessment
+        - Sentiment analysis
+        - Complexity scoring
+        
+        The analysis includes vector embedding generation for semantic search capabilities.
+      tags:
+        - Document Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  description: Document title
+                  maxLength: 500
+                  example: "Software License Agreement"
+                content:
+                  type: string
+                  description: Full document content
+                  example: "This agreement contains liability and indemnity clauses..."
+                documentType:
+                  type: string
+                  enum: [contract, motion, brief, statute, regulation, case, general]
+                  default: general
+                  description: Type of legal document
+                jurisdiction:
+                  type: string
+                  enum: [federal, state, local, international]
+                  default: federal
+                  description: Legal jurisdiction
+                practiceArea:
+                  type: string
+                  enum: [criminal, civil, corporate, family, immigration, tax, general]
+                  description: Practice area of law
+                fileName:
+                  type: string
+                  description: Original file name
+                fileSize:
+                  type: integer
+                  description: File size in bytes
+                mimeType:
+                  type: string
+                  description: MIME type of original file
+      responses:
+        '200':
+          description: Document analyzed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  documentId:
+                    type: string
+                    example: "doc_123456789"
+                  analysis:
+                    $ref: '#/components/schemas/DocumentAnalysis'
+                  embeddings:
+                    type: object
+                    properties:
+                      contentDimensions:
+                        type: integer
+                        example: 384
+                      titleDimensions:
+                        type: integer
+                        example: 384
+                  processing:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "completed"
+                      processingTime:
+                        type: integer
+                        example: 1250
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    get:
+      summary: Retrieve document analysis
+      description: Get analysis results for a specific document or list recent analyses
+      tags:
+        - Document Analysis
+      parameters:
+        - name: id
+          in: query
+          description: Document ID to retrieve
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Number of documents to return (when not filtering by ID)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: status
+          in: query
+          description: Filter by processing status
+          schema:
+            type: string
+            enum: [pending, processing, completed, failed]
+        - name: type
+          in: query
+          description: Filter by document type
+          schema:
+            type: string
+            enum: [contract, motion, brief, statute, regulation, case, general]
+      responses:
+        '200':
+          description: Document(s) retrieved successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DocumentDetail'
+                  - $ref: '#/components/schemas/DocumentList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /documents/search:
+    post:
+      summary: Search documents
+      description: |
+        Advanced document search with multiple search types:
+        - **Semantic**: Vector-based similarity search
+        - **Full-text**: Traditional keyword search
+        - **Hybrid**: Combines semantic and full-text search
+        
+        Supports filtering by document type, jurisdiction, practice area, and date ranges.
+      tags:
+        - Document Search
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: Search query
+                  example: "contract breach liability damages"
+                searchType:
+                  type: string
+                  enum: [semantic, full-text, hybrid]
+                  default: semantic
+                  description: Type of search to perform
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                  default: 10
+                  description: Maximum number of results
+                offset:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                  description: Results offset for pagination
+                filters:
+                  type: object
+                  properties:
+                    documentType:
+                      type: string
+                      enum: [contract, motion, brief, statute, regulation, case, general]
+                    jurisdiction:
+                      type: string
+                      enum: [federal, state, local, international]
+                    practiceArea:
+                      type: string
+                      enum: [criminal, civil, corporate, family, immigration, tax, general]
+                    dateRange:
+                      type: object
+                      properties:
+                        start:
+                          type: string
+                          format: date-time
+                        end:
+                          type: string
+                          format: date-time
+                    tags:
+                      type: array
+                      items:
+                        type: string
+      responses:
+        '200':
+          description: Search completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+                  metadata:
+                    type: object
+                    properties:
+                      query:
+                        type: string
+                      searchType:
+                        type: string
+                      totalResults:
+                        type: integer
+                      processingTime:
+                        type: integer
+                      filters:
+                        type: object
+                  pagination:
+                    type: object
+                    properties:
+                      hasMore:
+                        type: boolean
+                      nextOffset:
+                        type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /documents/store:
+    post:
+      summary: Store document with embeddings
+      description: |
+        Stores a document in the database with optional embedding generation.
+        
+        Features:
+        - Automatic content chunking
+        - Vector embedding generation
+        - Deduplication based on content hash
+        - Batch processing support
+      tags:
+        - Document Storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  maxLength: 500
+                content:
+                  type: string
+                documentType:
+                  type: string
+                  enum: [contract, motion, brief, statute, regulation, case, general]
+                  default: general
+                jurisdiction:
+                  type: string
+                  enum: [federal, state, local, international]
+                  default: federal
+                practiceArea:
+                  type: string
+                  enum: [criminal, civil, corporate, family, immigration, tax, general]
+                  default: general
+                fileName:
+                  type: string
+                fileSize:
+                  type: integer
+                mimeType:
+                  type: string
+                metadata:
+                  type: object
+                generateEmbeddings:
+                  type: boolean
+                  default: true
+                  description: Whether to generate vector embeddings
+                chunkSize:
+                  type: integer
+                  default: 1000
+                  description: Size of text chunks for embedding
+                chunkOverlap:
+                  type: integer
+                  default: 200
+                  description: Overlap between text chunks
+      responses:
+        '200':
+          description: Document stored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  documentId:
+                    type: string
+                  document:
+                    $ref: '#/components/schemas/DocumentSummary'
+                  embeddings:
+                    type: object
+                    properties:
+                      chunks:
+                        type: integer
+                      embeddings:
+                        type: integer
+                      totalDimensions:
+                        type: integer
+                  processing:
+                    type: object
+                    properties:
+                      time:
+                        type: integer
+                      chunks:
+                        type: integer
+                      embeddingsGenerated:
+                        type: boolean
+        '409':
+          description: Document already exists (duplicate content hash)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Document already exists"
+                  documentId:
+                    type: string
+                  duplicate:
+                    type: boolean
+                    example: true
+
+  /ai/analyze:
+    post:
+      summary: AI-powered document analysis
+      description: |
+        Advanced AI analysis with enhanced features:
+        - Deep semantic understanding
+        - Legal entity recognition
+        - Risk assessment
+        - Compliance checking
+        - Citation extraction
+      tags:
+        - AI Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalysisRequest'
+      responses:
+        '200':
+          description: Analysis completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResponse'
+
+  /ai/embeddings:
+    post:
+      summary: Generate text embeddings
+      description: |
+        Generate vector embeddings for text content using various models.
+        
+        Supports:
+        - Multiple embedding models
+        - Batch processing
+        - Automatic storage
+        - Similarity calculations
+      tags:
+        - AI Embeddings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: Text to embed
+                  example: "This is a legal document about contract interpretation."
+                model:
+                  type: string
+                  default: "nomic-embed-text"
+                  enum: [nomic-embed-text, openai-ada-002, custom-legal-embed]
+                  description: Embedding model to use
+                documentId:
+                  type: string
+                  description: Optional document ID to associate with embedding
+                contentType:
+                  type: string
+                  default: "text"
+                  enum: [text, document, title, chunk]
+                metadata:
+                  type: object
+                  description: Additional metadata to store with embedding
+      responses:
+        '200':
+          description: Embedding generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  embedding:
+                    type: array
+                    items:
+                      type: number
+                    description: Vector embedding
+                  dimensions:
+                    type: integer
+                    example: 384
+                  model:
+                    type: string
+                  savedRecord:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      contentId:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+
+  /ai/legal-research:
+    post:
+      summary: Legal research and precedent discovery
+      description: |
+        Comprehensive legal research with:
+        - Precedent discovery
+        - Case law analysis
+        - Statute interpretation
+        - Jurisdiction-specific results
+        - Relevance scoring and reranking
+      tags:
+        - Legal Research
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  example: "contract breach damages precedent"
+                jurisdiction:
+                  type: string
+                  enum: [federal, state, local, all]
+                  default: federal
+                practiceArea:
+                  type: string
+                  enum: [criminal, civil, corporate, family, immigration, tax, general]
+                documentTypes:
+                  type: array
+                  items:
+                    type: string
+                    enum: [case, statute, regulation, brief]
+                  default: [case, statute]
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 50
+                  default: 10
+                enableReranking:
+                  type: boolean
+                  default: true
+                  description: Enable ML-based result reranking
+                searchType:
+                  type: string
+                  enum: [semantic, full-text, hybrid]
+                  default: semantic
+      responses:
+        '200':
+          description: Research completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LegalResearchResult'
+                  metadata:
+                    $ref: '#/components/schemas/ResearchMetadata'
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+                    description: Research improvement suggestions
+
+  /ai-synthesizer:
+    post:
+      summary: AI synthesis and analysis
+      description: |
+        Synthesizes information from multiple sources using advanced AI.
+        
+        Capabilities:
+        - Multi-document analysis
+        - Contextual synthesis
+        - Confidence scoring
+        - Source attribution
+      tags:
+        - AI Synthesis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  example: "What are the key liability risks in this contract?"
+                documents:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DocumentReference'
+                  description: Documents to analyze
+                synthesisType:
+                  type: string
+                  enum: [summary, analysis, comparison, recommendation]
+                  default: summary
+                options:
+                  type: object
+                  properties:
+                    maxLength:
+                      type: integer
+                      default: 1000
+                    includeSourceQuotes:
+                      type: boolean
+                      default: true
+                    confidenceThreshold:
+                      type: number
+                      minimum: 0
+                      maximum: 1
+                      default: 0.7
+      responses:
+        '200':
+          description: Synthesis completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      synthesis:
+                        type: string
+                        description: Synthesized analysis
+                      confidence:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                      documentsAnalyzed:
+                        type: integer
+                      synthesisType:
+                        type: string
+                      processingTime:
+                        type: integer
+                      metadata:
+                        type: object
+
+    get:
+      summary: Get AI synthesizer metrics
+      description: Retrieve system metrics and health status for the AI synthesizer
+      tags:
+        - AI Synthesis
+      responses:
+        '200':
+          description: Metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [operational, degraded, maintenance]
+                  metrics:
+                    type: object
+                    properties:
+                      totalRequests:
+                        type: integer
+                      totalErrors:
+                        type: integer
+                      avgResponseTime:
+                        type: number
+                      errorRate:
+                        type: number
+                      uptime:
+                        type: string
+                  services:
+                    type: object
+                    properties:
+                      aiSynthesizer:
+                        type: string
+                        enum: [healthy, degraded, unhealthy]
+                      vectorStore:
+                        type: string
+                        enum: [healthy, degraded, unhealthy]
+                      embeddingService:
+                        type: string
+                        enum: [healthy, degraded, unhealthy]
+                      llmProvider:
+                        type: string
+                        enum: [healthy, degraded, unhealthy]
+
+  /ocr/langextract:
+    post:
+      summary: OCR with language extraction
+      description: |
+        Extract text from images using OCR with language detection.
+        
+        Features:
+        - Multi-language support (70+ languages)
+        - Image preprocessing
+        - Confidence scoring
+        - Layout analysis
+        - Legal document optimization
+      tags:
+        - OCR
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: Image file (JPG, PNG, PDF, TIFF, etc.)
+                languages:
+                  type: string
+                  default: "eng"
+                  description: Comma-separated language codes (e.g., "eng,spa,fra")
+                  example: "eng,spa"
+                preprocess:
+                  type: boolean
+                  default: false
+                  description: Apply image preprocessing for better OCR results
+      responses:
+        '200':
+          description: OCR completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                        description: Extracted text
+                      confidence:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                      languages:
+                        type: array
+                        items:
+                          type: string
+                      detectedLanguage:
+                        type: string
+                      wordCount:
+                        type: integer
+                      characterCount:
+                        type: integer
+                      blocks:
+                        type: array
+                        items:
+                          type: object
+                        description: Text blocks with positioning
+                      paragraphs:
+                        type: array
+                        items:
+                          type: object
+                        description: Paragraph-level structure
+                      lines:
+                        type: array
+                        items:
+                          type: object
+                        description: Line-level structure
+                      words:
+                        type: array
+                        items:
+                          type: object
+                        description: Word-level structure with confidence
+                  metadata:
+                    type: object
+                    properties:
+                      originalFileName:
+                        type: string
+                      fileSize:
+                        type: integer
+                      mimeType:
+                        type: string
+                      preprocessed:
+                        type: boolean
+                      processingTime:
+                        type: integer
+                      tesseractVersion:
+                        type: string
+        '400':
+          description: Invalid file or parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "File must be an image"
+
+    get:
+      summary: Get OCR capabilities and status
+      description: Retrieve information about OCR capabilities, supported languages, and system status
+      tags:
+        - OCR
+      parameters:
+        - name: action
+          in: query
+          description: Type of information to retrieve
+          schema:
+            type: string
+            enum: [supported_languages, health, capabilities]
+          example: capabilities
+      responses:
+        '200':
+          description: Information retrieved successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      languages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            native:
+                              type: string
+                      total:
+                        type: integer
+                  - type: object
+                    properties:
+                      connected:
+                        type: boolean
+                      responseTime:
+                        type: integer
+                      error:
+                        type: string
+                  - type: object
+                    properties:
+                      features:
+                        type: array
+                        items:
+                          type: string
+                      supportedFormats:
+                        type: array
+                        items:
+                          type: string
+                      maxFileSize:
+                        type: string
+                      languages:
+                        type: integer
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    DocumentAnalysis:
+      type: object
+      properties:
+        entities:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: "organization"
+              value:
+                type: string
+                example: "Acme Corporation"
+              confidence:
+                type: number
+                example: 0.95
+        keyTerms:
+          type: array
+          items:
+            type: string
+          example: ["liability", "indemnity", "termination"]
+        sentimentScore:
+          type: number
+          minimum: -1
+          maximum: 1
+          example: 0.2
+        complexityScore:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 7
+        confidenceLevel:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.88
+        extractedDates:
+          type: array
+          items:
+            type: string
+          example: ["2024-01-15", "December 31, 2024"]
+        extractedAmounts:
+          type: array
+          items:
+            type: string
+          example: ["$50,000", "$1,500.00"]
+        parties:
+          type: array
+          items:
+            type: string
+          example: ["Acme Corporation", "Beta LLC"]
+        obligations:
+          type: array
+          items:
+            type: string
+        risks:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              severity:
+                type: string
+                enum: [low, medium, high]
+              description:
+                type: string
+        rawAnalysis:
+          type: string
+        processingTime:
+          type: integer
+        agentUsed:
+          type: string
+
+    SearchResult:
+      type: object
+      properties:
+        score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Relevance score
+        rank:
+          type: integer
+          description: Result ranking
+        id:
+          type: string
+          description: Document ID
+        title:
+          type: string
+          description: Document title
+        content:
+          type: string
+          description: Full document content
+        excerpt:
+          type: string
+          description: Relevant excerpt
+        type:
+          type: string
+          description: Document type
+        metadata:
+          type: object
+          properties:
+            jurisdiction:
+              type: string
+            practiceArea:
+              type: string
+            analysisResults:
+              type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    DocumentDetail:
+      type: object
+      properties:
+        document:
+          type: object
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            content:
+              type: string
+            documentType:
+              type: string
+            jurisdiction:
+              type: string
+            practiceArea:
+              type: string
+            analysisResults:
+              $ref: '#/components/schemas/DocumentAnalysis'
+            processingStatus:
+              type: string
+              enum: [pending, processing, completed, failed]
+            tags:
+              type: array
+              items:
+                type: string
+            metadata:
+              type: object
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    DocumentList:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentSummary'
+
+    DocumentSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        documentType:
+          type: string
+        jurisdiction:
+          type: string
+        practiceArea:
+          type: string
+        processingStatus:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        analysisResults:
+          type: object
+          description: Summary of analysis results
+
+    LegalResearchResult:
+      type: object
+      properties:
+        score:
+          type: number
+        rank:
+          type: integer
+        id:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+        type:
+          type: string
+        metadata:
+          type: object
+          properties:
+            jurisdiction:
+              type: string
+            practiceArea:
+              type: string
+            legalContext:
+              type: object
+              properties:
+                statutes:
+                  type: array
+                  items:
+                    type: string
+                cases:
+                  type: array
+                  items:
+                    type: string
+                regulations:
+                  type: array
+                  items:
+                    type: string
+            relevanceExplanation:
+              type: string
+            citationFormat:
+              type: string
+
+    ResearchMetadata:
+      type: object
+      properties:
+        query:
+          type: string
+        totalFound:
+          type: integer
+        returned:
+          type: integer
+        jurisdiction:
+          type: string
+        practiceArea:
+          type: string
+        searchType:
+          type: string
+        reranked:
+          type: boolean
+        processingTime:
+          type: integer
+
+    DocumentReference:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        excerpt:
+          type: string
+
+    AnalysisRequest:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          maxLength: 500
+        content:
+          type: string
+        documentType:
+          type: string
+          enum: [contract, motion, brief, statute, regulation, case, general]
+        jurisdiction:
+          type: string
+          enum: [federal, state, local, international]
+        practiceArea:
+          type: string
+          enum: [criminal, civil, corporate, family, immigration, tax, general]
+
+    AnalysisResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        documentId:
+          type: string
+        analysis:
+          $ref: '#/components/schemas/DocumentAnalysis'
+        embeddings:
+          type: object
+        processing:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Content and title are required"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Document not found"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Document analysis failed"
+              details:
+                type: string
+
+tags:
+  - name: Document Analysis
+    description: AI-powered legal document analysis and processing
+  - name: Document Search
+    description: Advanced document search with semantic and full-text capabilities
+  - name: Document Storage
+    description: Document storage with automatic embedding generation
+  - name: AI Analysis
+    description: Advanced AI analysis with enhanced features
+  - name: AI Embeddings
+    description: Text embedding generation and management
+  - name: Legal Research
+    description: Legal research and precedent discovery
+  - name: AI Synthesis
+    description: AI-powered information synthesis and analysis
+  - name: OCR
+    description: Optical Character Recognition with language detection

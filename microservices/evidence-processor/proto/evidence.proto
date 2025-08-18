@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package evidenceprocessor;
+
+option go_package = "github.com/deeds-evidence/evidence-processor/proto";
+
+// GPU information message
+message GPUInfo {
+  bool available = 1;
+  string device = 2;
+  int64 memory = 3;
+  int32 cores = 4;
+}
+
+// Process request message
+message ProcessRequest {
+  string evidence_id = 1;
+  repeated string steps = 2;
+  map<string, string> options = 3;
+  string user_id = 4;
+}
+
+// Process response message
+message ProcessResponse {
+  string job_id = 1;
+  string status = 2;
+  string message = 3;
+}
+
+// Status request message
+message StatusRequest {
+  string job_id = 1;
+}
+
+// Status response message
+message StatusResponse {
+  string job_id = 1;
+  string status = 2;
+  float progress = 3;
+  repeated string steps = 4;
+  string error = 5;
+  map<string, string> results = 6;
+}
+
+// Health request message
+message HealthRequest {}
+
+// Health response message
+message HealthResponse {
+  string status = 1;
+  GPUInfo gpu = 2;
+  map<string, float> metrics = 3;
+}
+
+// Evidence processor service
+service EvidenceProcessor {
+  rpc ProcessEvidence(ProcessRequest) returns (ProcessResponse);
+  rpc GetJobStatus(StatusRequest) returns (StatusResponse);
+  rpc HealthCheck(HealthRequest) returns (HealthResponse);
+}

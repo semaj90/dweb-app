@@ -1,0 +1,77 @@
+{
+  "context7_workers": {
+    "enabled": true,
+    "load_balancer": "round_robin",
+    "timeout": "30s",
+    "retry_attempts": 3,
+    "workers": [
+      {
+        "id": "worker_1",
+        "port": 4100,
+        "endpoint": "http://localhost:4100",
+        "health_path": "/health",
+        "capacity": 10
+      },
+      {
+        "id": "worker_2", 
+        "port": 4101,
+        "endpoint": "http://localhost:4101",
+        "health_path": "/health",
+        "capacity": 10
+      },
+      {
+        "id": "worker_3",
+        "port": 4102,
+        "endpoint": "http://localhost:4102", 
+        "health_path": "/health",
+        "capacity": 10
+      },
+      {
+        "id": "worker_4",
+        "port": 4103,
+        "endpoint": "http://localhost:4103",
+        "health_path": "/health",
+        "capacity": 10
+      },
+      {
+        "id": "worker_5",
+        "port": 4104,
+        "endpoint": "http://localhost:4104",
+        "health_path": "/health",
+        "capacity": 10
+      },
+      {
+        "id": "worker_6",
+        "port": 4105,
+        "endpoint": "http://localhost:4105",
+        "health_path": "/health",
+        "capacity": 10
+      },
+      {
+        "id": "worker_7",
+        "port": 4106,
+        "endpoint": "http://localhost:4106",
+        "health_path": "/health", 
+        "capacity": 10
+      },
+      {
+        "id": "worker_8",
+        "port": 4107,
+        "endpoint": "http://localhost:4107",
+        "health_path": "/health",
+        "capacity": 10
+      }
+    ]
+  },
+  "error_pipeline": {
+    "watch_files": [
+      "svelte-errors.json",
+      "build-errors.json", 
+      "type-errors.json"
+    ],
+    "parallel_processing": true,
+    "batch_size": 8,
+    "embedding_model": "nomic-embed-text",
+    "vector_dimensions": 384
+  }
+}

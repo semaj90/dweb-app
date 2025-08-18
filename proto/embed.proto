@@ -1,0 +1,29 @@
+syntax = "proto3";
+package embed;
+
+service Embedder {
+  rpc Embed(EmbedRequest) returns (EmbedResponse);
+  rpc BatchEmbed(BatchEmbedRequest) returns (BatchEmbedResponse);
+}
+
+message EmbedRequest {
+  string id = 1;
+  string text = 2;
+  int32 max_tokens = 3;
+  map<string,string> meta = 4;
+}
+
+message EmbedResponse {
+  string id = 1;
+  repeated float vector = 2;
+  int32 token_count = 3;
+}
+
+message BatchEmbedRequest {
+  repeated string texts = 1;
+  map<string,string> meta = 2;
+}
+
+message BatchEmbedResponse {
+  repeated EmbedResponse results = 1;
+}

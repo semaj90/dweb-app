@@ -1,0 +1,331 @@
+{
+  "name": "vscode-multi-core-auto-solver",
+  "version": "1.0.0",
+  "description": "Multi-core GPU-accelerated VS Code auto-solver with PostgreSQL vector storage and comprehensive search capabilities",
+  "main": "core/multi-core-solver.js",
+  "type": "module",
+  "scripts": {
+    "start": "node core/multi-core-solver.js",
+    "start:cluster": "MCP_MULTICORE=true MCP_WORKERS=8 node core/multi-core-solver.js",
+    "start:gpu": "ENABLE_GPU=true MCP_MULTICORE=true node core/multi-core-solver.js",
+    "test": "node --test tests/**/*.test.js",
+    "test:integration": "node tests/integration/full-system.test.js",
+    "build": "tsc && node scripts/build-extension.js",
+    "dev": "node --watch core/multi-core-solver.js",
+    "setup:db": "node scripts/setup-database.js",
+    "setup:services": "node scripts/setup-services.js",
+    "benchmark": "node benchmarks/performance-test.js",
+    "lint": "eslint . --ext .js,.ts",
+    "format": "prettier --write .",
+    "docs": "jsdoc -c jsdoc.json",
+    "clean": "rm -rf dist/ node_modules/.cache/ logs/",
+    "docker:build": "docker build -t vscode-auto-solver .",
+    "docker:run": "docker run -p 4100:4100 vscode-auto-solver"
+  },
+  "keywords": [
+    "vscode",
+    "auto-solver",
+    "multi-core",
+    "gpu-acceleration",
+    "postgresql",
+    "vector-search",
+    "semantic-analysis",
+    "langchain",
+    "qdrant",
+    "redis",
+    "fuse.js",
+    "indexeddb",
+    "service-workers"
+  ],
+  "author": "Legal AI Systems",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "pg": "^8.11.3",
+    "ioredis": "^5.3.2",
+    "@qdrant/js-client-rest": "^1.8.2",
+    "langchain": "^0.1.30",
+    "lokijs": "^1.5.12",
+    "fuse.js": "^7.0.0",
+    "ws": "^8.16.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.4.5",
+    "uuid": "^9.0.1",
+    "nanoid": "^5.0.6",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1",
+    "inquirer": "^9.2.15",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/pg": "^8.10.9",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.3.3",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "prettier": "^3.2.5",
+    "jsdoc": "^4.0.2",
+    "nodemon": "^3.1.0",
+    "concurrently": "^8.2.2",
+    "@vscode/vsce": "^2.24.0",
+    "vscode": "^1.1.37"
+  },
+  "optionalDependencies": {
+    "onnxruntime-node": "^1.17.1",
+    "@tensorflow/tfjs-node": "^4.17.0",
+    "@tensorflow/tfjs-node-gpu": "^4.17.0",
+    "sharp": "^0.33.2",
+    "canvas": "^2.11.2",
+    "sqlite3": "^5.1.6",
+    "better-sqlite3": "^9.4.3"
+  },
+  "peerDependencies": {
+    "vscode": "^1.85.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/legal-ai-systems/vscode-auto-solver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/legal-ai-systems/vscode-auto-solver/issues"
+  },
+  "homepage": "https://github.com/legal-ai-systems/vscode-auto-solver#readme",
+  "files": [
+    "core/",
+    "extensions/",
+    "services/",
+    "scripts/",
+    "README.md",
+    "LICENSE"
+  ],
+  "vscode": {
+    "engines": {
+      "vscode": "^1.85.0"
+    },
+    "categories": [
+      "Other",
+      "Machine Learning",
+      "Debuggers",
+      "Linters",
+      "Formatters"
+    ],
+    "activationEvents": [
+      "onStartupFinished",
+      "onLanguage:typescript",
+      "onLanguage:javascript",
+      "onLanguage:svelte",
+      "onLanguage:python",
+      "onLanguage:go",
+      "onLanguage:rust",
+      "onCommand:auto-solver.solveCurrent",
+      "onCommand:auto-solver.solveWorkspace"
+    ],
+    "main": "./extensions/vscode-integration.js",
+    "contributes": {
+      "commands": [
+        {
+          "command": "auto-solver.solveCurrent",
+          "title": "🧠 Auto-Solve Current File",
+          "category": "Auto-Solver"
+        },
+        {
+          "command": "auto-solver.solveWorkspace",
+          "title": "🚀 Auto-Solve Workspace",
+          "category": "Auto-Solver"
+        },
+        {
+          "command": "auto-solver.showMetrics",
+          "title": "📊 Show Metrics",
+          "category": "Auto-Solver"
+        },
+        {
+          "command": "auto-solver.toggleAutoSolve",
+          "title": "🔄 Toggle Auto-Solve",
+          "category": "Auto-Solver"
+        },
+        {
+          "command": "auto-solver.restart",
+          "title": "♻️ Restart Solver",
+          "category": "Auto-Solver"
+        }
+      ],
+      "keybindings": [
+        {
+          "command": "auto-solver.solveCurrent",
+          "key": "ctrl+shift+alt+s",
+          "mac": "cmd+shift+alt+s",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "auto-solver.solveWorkspace",
+          "key": "ctrl+shift+alt+w",
+          "mac": "cmd+shift+alt+w"
+        },
+        {
+          "command": "auto-solver.showMetrics",
+          "key": "ctrl+shift+alt+m",
+          "mac": "cmd+shift+alt+m"
+        }
+      ],
+      "configuration": {
+        "title": "Auto-Solver",
+        "properties": {
+          "autoSolver.enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable automatic problem solving"
+          },
+          "autoSolver.multiCore": {
+            "type": "boolean",
+            "default": true,
+            "description": "Use multi-core processing"
+          },
+          "autoSolver.maxWorkers": {
+            "type": "number",
+            "default": 4,
+            "minimum": 1,
+            "maximum": 16,
+            "description": "Maximum number of worker processes"
+          },
+          "autoSolver.enableGPU": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable GPU acceleration if available"
+          },
+          "autoSolver.autoApplyHighConfidence": {
+            "type": "boolean",
+            "default": false,
+            "description": "Automatically apply solutions with >90% confidence"
+          },
+          "autoSolver.confidenceThreshold": {
+            "type": "number",
+            "default": 0.7,
+            "minimum": 0.1,
+            "maximum": 1.0,
+            "description": "Minimum confidence score to suggest solutions"
+          },
+          "autoSolver.semanticAnalysis": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable semantic analysis of code"
+          },
+          "autoSolver.vectorStorage": {
+            "type": "string",
+            "enum": ["postgresql", "qdrant", "memory"],
+            "default": "postgresql",
+            "description": "Vector storage backend"
+          },
+          "autoSolver.cacheEnabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable Redis caching"
+          },
+          "autoSolver.fuzzySearch": {
+            "type": "boolean",
+            "default": true,
+            "description": "Enable Fuse.js fuzzy search"
+          },
+          "autoSolver.langchainEnabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable LangChain.js integration"
+          },
+          "autoSolver.debugMode": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable debug logging"
+          }
+        }
+      },
+      "statusBarItems": [
+        {
+          "id": "autoSolver.status",
+          "name": "Auto-Solver Status",
+          "text": "🧠 Auto-Solver",
+          "tooltip": "Click to show metrics",
+          "command": "auto-solver.showMetrics",
+          "alignment": "left",
+          "priority": 100
+        }
+      ],
+      "menus": {
+        "editor/context": [
+          {
+            "command": "auto-solver.solveCurrent",
+            "when": "editorHasSelection",
+            "group": "navigation"
+          }
+        ],
+        "explorer/context": [
+          {
+            "command": "auto-solver.solveWorkspace",
+            "when": "explorerResourceIsFolder",
+            "group": "navigation"
+          }
+        ]
+      }
+    }
+  },
+  "contributes": {
+    "taskDefinitions": [
+      {
+        "type": "auto-solver",
+        "required": ["command"],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "Auto-solver command to run"
+          },
+          "args": {
+            "type": "array",
+            "description": "Command arguments"
+          }
+        }
+      }
+    ]
+  },
+  "nodemonConfig": {
+    "watch": ["core/", "services/", "extensions/"],
+    "ext": "js,ts,json",
+    "ignore": ["node_modules/", "dist/", "logs/"],
+    "delay": "2500"
+  },
+  "eslintConfig": {
+    "extends": ["eslint:recommended", "prettier"],
+    "env": {
+      "node": true,
+      "es2022": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "warn",
+      "no-unused-vars": "error",
+      "prefer-const": "error"
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "printWidth": 120
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/legal-ai-systems"
+  }
+}

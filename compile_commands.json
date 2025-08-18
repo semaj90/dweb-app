@@ -1,0 +1,37 @@
+[
+  {
+    "directory": "C:/Users/james/Desktop/deeds-web/deeds-web-app/cuda-worker",
+    "command": "nvcc -std=c++14 -I\"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include\" -I\"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include/cuda\" -I\"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include/thrust\" -I\"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8/include/cub\" -D__CUDACC__ -D__NVCC__ -DCUDA_VERSION=12080 --expt-relaxed-constexpr --expt-extended-lambda -x cu cuda-worker.cu -o cuda-worker.exe",
+    "file": "cuda-worker/cuda-worker.cu"
+  },
+  {
+    "directory": "C:/Users/james/Desktop/deeds-web/deeds-web-app/go-microservice",
+    "command": "go build -tags simd -o bin/simd-parser.exe simd_parser.go",
+    "file": "go-microservice/simd_parser.go"
+  },
+  {
+    "directory": "C:/Users/james/Desktop/deeds-web/deeds-web-app/go-microservice",
+    "command": "go build -o bin/grpc-server.exe cmd/grpc-server/main.go",
+    "file": "go-microservice/cmd/grpc-server/main.go"
+  },
+  {
+    "directory": "C:/Users/james/Desktop/deeds-web/deeds-web-app/go-microservice",
+    "command": "go build -o bin/rag-kratos.exe cmd/rag-kratos/main.go",
+    "file": "go-microservice/cmd/rag-kratos/main.go"
+  },
+  {
+    "directory": "C:/Users/james/Desktop/deeds-web/deeds-web-app/go-microservice",
+    "command": "go build -v .",
+    "file": "go-microservice/enhanced-multicore-service.go"
+  },
+  {
+    "directory": "C:/Users/james/Desktop/deeds-web/deeds-web-app",
+    "command": "go build -v .",
+    "file": "go-llama-chat-service.go"
+  },
+  {
+    "directory": "C:/Users/james/Desktop/deeds-web/deeds-web-app/sveltekit-frontend",
+    "command": "npm run check",
+    "file": "sveltekit-frontend/src/app.html"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "name": "legal-ai-cluster-manager",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Node.js cluster manager for Legal AI system",
+  "main": "cluster-manager.js",
+  "scripts": {
+    "start": "node cluster-manager.js",
+    "dev": "node --inspect cluster-manager.js"
+  },
+  "keywords": ["cluster", "legal-ai", "node.js", "worker-processes"],
+  "author": "Legal AI System",
+  "license": "MIT"
+}
