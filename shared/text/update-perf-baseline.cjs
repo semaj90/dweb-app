@@ -20,8 +20,18 @@ function saveBaseline(perDoc) {
 }
 
 function runSplitterBenchmark(iterations = 50) {
+  // Try to leverage the real TS benchmark for parity.
+  try {
+    // Attempt lightweight ts-node registration if available.
+    try { require('ts-node/register/transpile-only'); } catch {}
+    const real = require('./benchmark-splitter.ts');
+    if (real && typeof real.runSplitterBenchmark === 'function') {
+      return { perDoc: real.runSplitterBenchmark(iterations).perDoc };
+    }
+  } catch (e) {
+    // Fallback below
+  }
   const { performance } = require('node:perf_hooks');
-  // Minimal inline splitter replicating essential splitting (period, question, exclamation)
   const re = /(?<=[.!?])\s+(?=[A-Z])/g;
   const sample = ['Section', 'Article', 'Exhibit', 'WHEREAS,', 'the', 'Party', 'Agreement', 'obligation', 'shall', 'be', 'binding', 'hereunder', 'Recital', 'A.', 'provided', 'however', 'that', 'pursuant', 'to', 'Sec.', '12.'];
   const texts = [];
@@ -30,12 +40,9 @@ function runSplitterBenchmark(iterations = 50) {
     texts.push(Array.from({ length: words }, () => sample[Math.floor(Math.random() * sample.length)]).join(' ') + '.');
   }
   const start = performance.now();
-  for (const t of texts) {
-    t.split(re);
-  }
+  for (const t of texts) t.split(re);
   const ms = performance.now() - start;
-  const perDoc = ms / iterations;
-  return { perDoc };
+  return { perDoc: ms / iterations };
 }
 
 (function main(){
