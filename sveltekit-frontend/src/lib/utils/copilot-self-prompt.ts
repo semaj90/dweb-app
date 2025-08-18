@@ -301,22 +301,29 @@ async function performSemanticSearch(
   context: any
 ): Promise<any[]> {
   try {
-    // Use MCP semantic search endpoint (production)
-    const response = await fetch("http://localhost:8000/api/semantic/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: prompt,
-        context: context.projectPath || process.cwd(),
-        limit: 20,
-        threshold: 0.7,
-        includeCode: true,
-        includeDocs: true,
-      }),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      // Sort by relevance_score if available
+    // Quick health check with timeout to avoid hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1000); // 1 second timeout
+    
+    try {
+      const response = await fetch("http://localhost:8000/api/semantic/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          query: prompt,
+          context: context.projectPath || process.cwd(),
+          limit: 20,
+          threshold: 0.7,
+          includeCode: true,
+          includeDocs: true,
+        }),
+      });
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Sort by relevance_score if available
       if (Array.isArray(data.results)) {
         return data.results.sort(
           (a, b) => (b.relevance_score || 0) - (a.relevance_score || 0)
@@ -324,10 +331,15 @@ async function performSemanticSearch(
       }
       return data.results || [];
     }
+    } catch (error) {
+      clearTimeout(timeoutId);
+      console.error("Semantic search service unavailable:", error.name);
+      return []; // Return empty array immediately instead of hanging
+    }
   } catch (error) {
     console.error("Semantic search failed:", error);
+    return []; // Fast fallback for any other errors
   }
-  return [];
 }
 
 /**
@@ -338,18 +350,25 @@ export async function accessMemoryMCP(
   context: any
 ): Promise<any[]> {
   try {
-    // Use MCP memory graph endpoint (production)
-    const response = await fetch("http://localhost:8000/api/memory/query", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: prompt,
-        context: context,
-        includeGraph: true,
-        includeHistory: true,
-      }),
-    });
-    if (response.ok) {
+    // Quick timeout to avoid hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1000);
+    
+    try {
+      const response = await fetch("http://localhost:8000/api/memory/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          query: prompt,
+          context: context,
+          includeGraph: true,
+          includeHistory: true,
+        }),
+      });
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
       const data = await response.json();
       // Sort by recency or relevance if available
       if (Array.isArray(data.memories)) {
@@ -359,10 +378,15 @@ export async function accessMemoryMCP(
       }
       return data.memories || [];
     }
+    } catch (error) {
+      clearTimeout(timeoutId);
+      console.error("Memory MCP service unavailable:", error.name);
+      return []; // Fast fallback
+    }
   } catch (error) {
     console.error("Memory MCP access failed:", error);
+    return []; // Fast fallback for any other errors
   }
-  return [];
 }
 
 /**
