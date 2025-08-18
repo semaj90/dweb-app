@@ -1,9 +1,112 @@
-# IDE & build artifacts
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+.yarn/install-state.gz
+
+# Build artifacts
+dist/
+build/
+.svelte-kit/
+.turbo/
 .tsbuildinfo
 playwright-report/
-.vscode/extensions/mcp-context7-assistant/out/
-dist/
-node_modules/
+.vercel/
+.velite/
+.contentlayer/
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.secure.template
+
+# IDE & Editor files
+.vscode/extensions/
+.vscode/launch.json
+.clangd
+.prettierrc
+.prettierignore
+
+# Runtime & Database files
 *.exe
+*.dll
+*.pdb
 *.log
-# end
+*.rdb
+dump.rdb
+logs/
+error-logs/
+minio-data/
+qdrant-windows/storage/
+neo4j-*/
+redis-*/
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.temp
+nul
+
+# Documentation & Reports (auto-generated)
+*-162k.md
+*sum*.txt
+*_addendum.txt
+*_delta*.txt
+*_errors_reduction_plan.txt
+AUTOSOLVE-*.md
+*-SUCCESS-REPORT.md
+*-SYSTEM-DEMONSTRATION.md
+*-TODO-CONFLICTS.md
+BEST_PRACTICES_*.md
+*-COMPLETE.md
+*-INTEGRATION-*.md
+*-STATUS*.md
+EVIDENCE_*.md
+*_TEST_RESULTS.md
+*_PIPELINE_TEST_REPORT.md
+SYSTEM-*.md
+*-SUMMARY.md
+*-GUIDE.md
+integration-*.json
+verification-*.json
+*-errors.txt
+*-errors.ndjson
+error-count.txt
+svelte-errors.*
+ts-errors*.txt
+
+# Archives & Binaries
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Go binaries
+go-microservice/*.exe
+go-services/
+backups/
+
+# Test files
+test-*.txt
+test-*.json
+test-*.html
+*test-results.json
+
+# Batch & Script outputs
+*.bat.log
+todolist_*/
+*.bat
+*.ps1
+*.mjs
+
+# Package files
+packages/
+
+# Auto-generated content  
+README-MODERNIZED.md
+README-WINDOWS-NATIVE.md
+DEPLOYMENT-*.md
+FIX-*.md
+ecosystem*.config.cjs
+ecosystem*.config.js
