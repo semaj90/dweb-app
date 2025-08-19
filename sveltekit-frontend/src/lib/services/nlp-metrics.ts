@@ -1,10 +1,11 @@
 // Prometheus-style metrics exposition for NLP embeddings.
 // Integrates with nlpMetrics from sentence-transformer service.
 import { nlpMetrics } from './sentence-transformer';
+import { getPipelineHistogram, getDedupeMetrics, getAutosolveMetrics, getQUICMetrics } from './pipeline-metrics';
 
 export function renderNlpMetrics(): string {
-  // Basic counters and summaries (gauges) in Prometheus text format
   const lines: string[] = [];
+  // Basic counters and summaries (gauges) in Prometheus text format
   lines.push('# HELP nlp_embeddings_total Total number of embeddings computed');
   lines.push('# TYPE nlp_embeddings_total counter');
   lines.push(`nlp_embeddings_total ${nlpMetrics.embeddings_total}`);
@@ -32,6 +33,55 @@ export function renderNlpMetrics(): string {
   lines.push('# HELP nlp_similarity_queries_total Similarity search invocations');
   lines.push('# TYPE nlp_similarity_queries_total counter');
   lines.push(`nlp_similarity_queries_total ${nlpMetrics.similarity_queries_total}`);
+
+  // Embedding dedupe
+  const dedupe = getDedupeMetrics();
+  lines.push('# HELP nlp_embedding_dedupe_hits Embedding hash deduplication hits');
+  lines.push('# TYPE nlp_embedding_dedupe_hits counter');
+  lines.push(`nlp_embedding_dedupe_hits ${dedupe.hits}`);
+  lines.push('# HELP nlp_embedding_dedupe_misses Embedding hash deduplication misses');
+  lines.push('# TYPE nlp_embedding_dedupe_misses counter');
+  lines.push(`nlp_embedding_dedupe_misses ${dedupe.misses}`);
+  lines.push('# HELP nlp_embedding_dedupe_ratio Current dedupe hit ratio');
+  lines.push('# TYPE nlp_embedding_dedupe_ratio gauge');
+  lines.push(`nlp_embedding_dedupe_ratio ${dedupe.ratio.toFixed(4)}`);
+
+  // Pipeline histogram
+  const hists = getPipelineHistogram();
+  lines.push('# HELP pipeline_stage_latency_ms Pipeline stage latency histogram (ms)');
+  lines.push('# TYPE pipeline_stage_latency_ms histogram');
+  for (const h of hists) {
+    const { stage, buckets, counts, inf, sum: hsum, count } = h;
+    buckets.forEach((b, i) => lines.push(`pipeline_stage_latency_ms_bucket{stage="${stage}",le="${b}"} ${counts[i]}`));
+    lines.push(`pipeline_stage_latency_ms_bucket{stage="${stage}",le="+Inf"} ${inf}`);
+    lines.push(`pipeline_stage_latency_ms_sum{stage="${stage}"} ${hsum.toFixed(2)}`);
+    lines.push(`pipeline_stage_latency_ms_count{stage="${stage}"} ${count}`);
+  }
+
+  // Autosolve summary
+  const auto = getAutosolveMetrics();
+  lines.push('# HELP autosolve_cycle_latency_ms Autosolve maintenance cycle latency summary (ms)');
+  lines.push('# TYPE autosolve_cycle_latency_ms summary');
+  lines.push(`autosolve_cycle_latency_ms{quantile="0.5"} ${auto.p50.toFixed(2)}`);
+  lines.push(`autosolve_cycle_latency_ms{quantile="0.9"} ${auto.p90.toFixed(2)}`);
+  lines.push(`autosolve_cycle_latency_ms{quantile="0.99"} ${auto.p99.toFixed(2)}`);
+  lines.push(`autosolve_cycle_latency_ms_sum ${auto.sum.toFixed(2)}`);
+  lines.push(`autosolve_cycle_latency_ms_count ${auto.count}`);
+
+  // QUIC metrics
+  const quic = getQUICMetrics();
+  lines.push('# HELP quic_total_connections Current QUIC connections');
+  lines.push('# TYPE quic_total_connections gauge');
+  lines.push(`quic_total_connections ${quic.total_connections}`);
+  lines.push('# HELP quic_total_streams Total QUIC streams opened');
+  lines.push('# TYPE quic_total_streams counter');
+  lines.push(`quic_total_streams ${quic.total_streams}`);
+  lines.push('# HELP quic_total_errors Total QUIC errors');
+  lines.push('# TYPE quic_total_errors counter');
+  lines.push(`quic_total_errors ${quic.total_errors}`);
+  lines.push('# HELP quic_avg_latency_ms Average QUIC stream latency (ms)');
+  lines.push('# TYPE quic_avg_latency_ms gauge');
+  lines.push(`quic_avg_latency_ms ${quic.avg_latency_ms}`);
 
   return lines.join('\n') + '\n';
 }
