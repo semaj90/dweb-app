@@ -2,6 +2,7 @@
 // Integrates with nlpMetrics from sentence-transformer service.
 import { nlpMetrics } from './sentence-transformer';
 import { getPipelineHistogram, getDedupeMetrics, getAutosolveMetrics, getQUICMetrics } from './pipeline-metrics';
+import { getRedisMetrics } from './redis-metrics';
 
 export function renderNlpMetrics(): string {
   const lines: string[] = [];
@@ -82,6 +83,25 @@ export function renderNlpMetrics(): string {
   lines.push('# HELP quic_avg_latency_ms Average QUIC stream latency (ms)');
   lines.push('# TYPE quic_avg_latency_ms gauge');
   lines.push(`quic_avg_latency_ms ${quic.avg_latency_ms}`);
+
+  // Redis metrics
+  const redis = getRedisMetrics();
+  lines.push('# HELP redis_up Redis health status (1=up,0=down)');
+  lines.push('# TYPE redis_up gauge');
+  lines.push(`redis_up ${redis.up}`);
+  lines.push('# HELP redis_last_ping_ms Last successful Redis PING latency (ms)');
+  lines.push('# TYPE redis_last_ping_ms gauge');
+  lines.push(`redis_last_ping_ms ${redis.last_ping_ms}`);
+  if (redis.last_ok_ts) {
+    lines.push('# HELP redis_last_ok_timestamp_seconds Last time Redis ping succeeded (unix epoch)');
+    lines.push('# TYPE redis_last_ok_timestamp_seconds gauge');
+    lines.push(`redis_last_ok_timestamp_seconds ${(redis.last_ok_ts / 1000).toFixed(0)}`);
+  }
+  if (redis.last_error_ts) {
+    lines.push('# HELP redis_last_error_timestamp_seconds Last time Redis ping failed (unix epoch)');
+    lines.push('# TYPE redis_last_error_timestamp_seconds gauge');
+    lines.push(`redis_last_error_timestamp_seconds ${(redis.last_error_ts / 1000).toFixed(0)}`);
+  }
 
   return lines.join('\n') + '\n';
 }

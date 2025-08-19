@@ -6,7 +6,8 @@
   interface PipelineHistogram { stage:string; buckets:number[]; counts:number[]; inf:number; sum:number; count:number }
   interface AutosolveMetrics { count:number; sum:number; p50:number; p90:number; p99:number }
   interface QUICMetrics { total_connections:number; total_streams:number; total_errors:number; avg_latency_ms:number }
-  let loading = true; let error: string | null = null; let nlp: NLPStats | null = null; let nats: NATSMetricSnapshot | null = null; let pipeline: PipelineHistogram[] = []; let autosolve: AutosolveMetrics | null = null; let quic: QUICMetrics | null = null; let lastRefreshed: Date | null = null;
+  interface RedisMetrics { up:number; last_ping_ms:number; last_ok_ts?:number|null; last_error_ts?:number|null }
+  let loading = true; let error: string | null = null; let nlp: NLPStats | null = null; let nats: NATSMetricSnapshot | null = null; let pipeline: PipelineHistogram[] = []; let autosolve: AutosolveMetrics | null = null; let quic: QUICMetrics | null = null; let redis: RedisMetrics | null = null; let lastRefreshed: Date | null = null;
   async function fetchNLP(){
     // Prometheus text parsing from /api/v1/nlp/metrics
     const res = await fetch('/api/v1/nlp/metrics');
@@ -68,12 +69,13 @@
   async function refresh(){
     loading = true; error = null;
     try {
-      const [nlpRes, natsRes, pipeRes, autoRes, quicRes] = await Promise.allSettled([fetchNLP(), fetchNATS(), fetchPipeline(), fetchAutosolve(), fetchQUIC()]);
+  const [nlpRes, natsRes, pipeRes, autoRes, quicRes, redisRes] = await Promise.allSettled([fetchNLP(), fetchNATS(), fetchPipeline(), fetchAutosolve(), fetchQUIC(), fetch('/api/v1/redis/metrics').then(r=> r.ok? r.json(): Promise.reject(new Error('Redis metrics fetch failed')))]);
       if(nlpRes.status==='fulfilled') nlp = nlpRes.value; else error = (nlpRes.reason?.message)||error;
       if(natsRes.status==='fulfilled') nats = natsRes.value; else error = (natsRes.reason?.message)||error;
       if(pipeRes.status==='rejected') error = (pipeRes.reason?.message)||error;
       if(autoRes.status==='rejected') error = (autoRes.reason?.message)||error;
       if(quicRes.status==='rejected') error = (quicRes.reason?.message)||error;
+  if(redisRes.status==='fulfilled') redis = (redisRes.value as any).redis; else error = (redisRes.reason?.message)||error;
       lastRefreshed = new Date();
     } catch (e:any){ error = e.message; }
     loading = false;
@@ -91,7 +93,7 @@
   {#if error}
     <div class="text-red-400">{error}</div>
   {/if}
-  <div class="grid md:grid-cols-3 gap-4">
+  <div class="grid md:grid-cols-4 gap-4">
     <section class="space-y-2">
       <h3 class="font-medium text-indigo-300">NLP Embeddings</h3>
       {#if nlp}
@@ -124,7 +126,7 @@
         </div>
       {:else}<div class="opacity-70">No NATS data</div>{/if}
     </section>
-    <section class="space-y-2">
+  <section class="space-y-2">
       <h3 class="font-medium text-amber-300">Pipeline / Autosolve / QUIC</h3>
       <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
         {#if pipeline.length}
@@ -144,6 +146,21 @@
           <span class="opacity-70">QUIC Errors</span><span>{quic.total_errors}</span>
         {/if}
       </div>
+    </section>
+    <section class="space-y-2">
+      <h3 class="font-medium text-pink-300">Redis Cache</h3>
+      {#if redis}
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+          <span class="opacity-70">Status</span><span class={redis.up ? 'text-green-400':'text-red-400'}>{redis.up ? 'up':'down'}</span>
+          <span class="opacity-70">Ping</span><span>{redis.last_ping_ms} ms</span>
+          {#if redis.last_ok_ts}
+            <span class="opacity-70">Last OK</span><span>{new Date(redis.last_ok_ts).toLocaleTimeString()}</span>
+          {/if}
+          {#if redis.last_error_ts}
+            <span class="opacity-70">Last Err</span><span>{new Date(redis.last_error_ts).toLocaleTimeString()}</span>
+          {/if}
+        </div>
+      {:else}<div class="opacity-70 text-xs">No Redis data</div>{/if}
     </section>
   </div>
   <div class="text-xs opacity-60">Last refreshed: {lastRefreshed ? lastRefreshed.toLocaleTimeString() : '—'}</div>
