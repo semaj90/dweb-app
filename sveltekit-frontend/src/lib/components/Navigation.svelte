@@ -4,18 +4,19 @@
 	import { cn } from '$lib/utils';
 	import Badge from '$lib/components/ui/Badge.svelte';
 	import Button from '$lib/components/ui/button/Button.svelte';
-	
+
 	const navItems = [
 		{ href: '/', label: 'Dashboard', icon: '🏠' },
 		{ href: '/evidence/analyze', label: 'Evidence Analysis', icon: '🔍' },
 		{ href: '/cases', label: 'Cases', icon: '📁' },
 		{ href: '/semantic-search-demo', label: 'Search Demo', icon: '🔎' },
 		{ href: '/dev/self-prompting-demo', label: 'Agent Orchestration', icon: '🤖' },
-		{ href: '/dev/mcp-tools', label: 'MCP Tools', icon: '🔧' }
+		{ href: '/dev/mcp-tools', label: 'MCP Tools', icon: '🔧' },
+		{ href: '/dev/metrics', label: 'Metrics', icon: '📊' } // added metrics
 	];
-	
+
 	let currentPath = $derived(page.url.pathname);
-	
+
 	// Optimized navigation with instant transitions
 	function handleNavigation(href: string, event?: Event) {
 		event?.preventDefault();
@@ -45,11 +46,14 @@
 						>
 							<span>{item.icon}</span>
 							{item.label}
+							{#if item.href === '/dev/metrics'}
+								<Badge variant="outline" class="ml-1 px-1 text-[10px]">live</Badge>
+							{/if}
 						</Button>
 					{/each}
 				</div>
 			</div>
-			
+
 			<div class="flex items-center space-x-4">
 				<!-- AI Search Button -->
 				<Button
@@ -68,7 +72,7 @@
 					<span>🔍</span>
 					AI Search
 				</Button>
-				
+
 				<Badge variant="outline" class="gap-2">
 					<span>🤖</span>
 					Multi-Agent Pipeline
