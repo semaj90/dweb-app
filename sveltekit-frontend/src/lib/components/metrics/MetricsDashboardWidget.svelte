@@ -3,7 +3,7 @@
   type NLPQuantiles = { p50:number; p90:number; p99:number };
   interface NLPStats { embeddings_total:number; cache_hits:number; cache_misses:number; latency: NLPQuantiles; similarity_queries_total:number; hit_ratio:number; dedupe_hits?:number; dedupe_misses?:number; dedupe_ratio?:number }
   interface NATSMetricSnapshot { connection:{ status:string; since:number|null; reconnectAttempts:number }; messaging:{ published:number; received:number; subjects: Record<string,string[]> } }
-  interface PipelineHistogram { stage:string; buckets:number[]; counts:number[]; inf:number; sum:number; count:number }
+  interface PipelineHistogram { stage:string; buckets:number[]; counts:number[]; inf:number; sum:number; count:number; recentSamples?: number[] }
   interface AutosolveMetrics { count:number; sum:number; p50:number; p90:number; p99:number }
   interface QUICMetrics { total_connections:number; total_streams:number; total_errors:number; avg_latency_ms:number }
   interface RedisMetrics { up:number; last_ping_ms:number; last_ok_ts?:number|null; last_error_ts?:number|null }
@@ -66,6 +66,29 @@
     quic = js.quic;
   }
 
+  function loadPersisted(){
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const raw = localStorage.getItem('metricsDashboardCache');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      nlp = parsed.nlp || nlp;
+      nats = parsed.nats || nats;
+      pipeline = parsed.pipeline || pipeline;
+      autosolve = parsed.autosolve || autosolve;
+      quic = parsed.quic || quic;
+      redis = parsed.redis || redis;
+      lastRefreshed = parsed.lastRefreshed ? new Date(parsed.lastRefreshed) : lastRefreshed;
+    } catch {}
+  }
+
+  function persist(){
+    if (typeof localStorage === 'undefined') return;
+    try {
+      localStorage.setItem('metricsDashboardCache', JSON.stringify({ nlp, nats, pipeline, autosolve, quic, redis, lastRefreshed }));
+    } catch {}
+  }
+
   async function refresh(){
     loading = true; error = null;
     try {
@@ -77,18 +100,23 @@
       if(quicRes.status==='rejected') error = (quicRes.reason?.message)||error;
   if(redisRes.status==='fulfilled') redis = (redisRes.value as any).redis; else error = (redisRes.reason?.message)||error;
       lastRefreshed = new Date();
+      persist();
     } catch (e:any){ error = e.message; }
     loading = false;
   }
 
   let interval: any;
-  onMount(()=>{ refresh(); interval = setInterval(refresh, 10000); return ()=> clearInterval(interval); });
+  onMount(()=>{ loadPersisted(); refresh(); interval = setInterval(()=>{
+    // If QUIC metrics stale (>30s) trigger only QUIC refresh more frequently
+    if (quic && Date.now() - (lastRefreshed?.getTime()||0) > 30000) { fetchQUIC().catch(()=>{}); }
+    refresh();
+  }, 10000); return ()=> clearInterval(interval); });
 </script>
 
 <div class="metrics-widget border rounded-lg p-4 bg-slate-900 text-slate-100 text-sm space-y-4">
   <div class="flex items-center justify-between">
     <h2 class="text-base font-semibold">AI Metrics Dashboard</h2>
-    <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" on:click={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
+  <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" onclick={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
   </div>
   {#if error}
     <div class="text-red-400">{error}</div>
@@ -131,7 +159,7 @@
       <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
         {#if pipeline.length}
           {#each pipeline as row}
-            <span class="opacity-70">{row.stage} avg</span><span>{row.count? (row.sum/row.count).toFixed(1):'0'} ms</span>
+            <span class="opacity-70">{row.stage} avg</span><span>{row.count? (row.sum/row.count).toFixed(1):'0'} ms ({row.count})</span>
           {/each}
         {:else}<span class="col-span-2 opacity-70">No pipeline data</span>{/if}
         {#if autosolve}

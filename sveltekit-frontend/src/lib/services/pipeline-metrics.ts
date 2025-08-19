@@ -16,7 +16,7 @@ export function recordEmbeddingDedupe(hit:boolean){ if(hit) dedupeHits++; else d
 export function recordAutosolveCycle(ms:number){ autosolveDurations.push(ms); if(autosolveDurations.length>200) autosolveDurations.shift(); }
 export function updateQUICMetrics(m: Partial<typeof quicMetrics>){ quicMetrics = { ...quicMetrics, ...m, timestamp: Date.now() }; }
 
-export function getPipelineHistogram(){ const buckets=[5,10,20,50,100,200,500,1000,2000]; return STAGES.map(stage=>{ const {samples,sum,count}=stageData[stage]; const counts=buckets.map(b=>samples.filter(v=>v<=b).length); const inf=samples.length; return {stage,buckets,counts,inf,sum,count}; }); }
+export function getPipelineHistogram() { const buckets = [5, 10, 20, 50, 100, 200, 500, 1000, 2000]; return STAGES.map(stage => { const { samples, sum, count } = stageData[stage]; const counts = buckets.map(b => samples.filter(v => v <= b).length); const inf = samples.length; return { stage, buckets, counts, inf, sum, count, recentSamples: samples.slice(-25) }; }); }
 export function getDedupeMetrics(){ const total=dedupeHits+dedupeMisses; return { hits:dedupeHits, misses:dedupeMisses, ratio: total? dedupeHits/total:0 }; }
 export function getAutosolveMetrics(){ const arr=[...autosolveDurations].sort((a,b)=>a-b); const count=arr.length; const sum=arr.reduce((a,b)=>a+b,0); const p=(q:number)=> count? arr[Math.min(count-1, Math.floor(q*(count-1)))] : 0; return { count,sum,p50:p(0.5),p90:p(0.9),p99:p(0.99) }; }
 export function getQUICMetrics(){ return quicMetrics; }
