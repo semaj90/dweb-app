@@ -2,7 +2,7 @@
 // Fixes $state(), $derived(), and runes syntax errors
 
 import type { Readable, Writable } from 'svelte/store';
-import type {
+// Orphaned content: import type {
   User,
   ChatSession,
   ChatMessage,
@@ -16,7 +16,6 @@ import type {
   AIModel,
   SearchFilters,
   SearchFacets,
-} from './global';
 
 // =====================================================
 // SVELTE 5 RUNES TYPES
@@ -242,9 +241,9 @@ export interface Breadcrumb {
 // IMPORT TYPE FIXES
 // =====================================================
 
-// Fix common import type errors
+// Fix common type errors
 export type { User } from './global';
-export type { ChatSession, ChatMessage } from './global';
+// Orphaned content: export type { ChatSession, ChatMessage
 export type { UploadedFile } from './global';
 export type { SearchResults } from './global';
 export type { AIResponse } from './global';

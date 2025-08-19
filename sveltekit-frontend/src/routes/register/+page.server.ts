@@ -1,13 +1,17 @@
 import { registerSchema } from "$lib/schemas/auth";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import {
+
 import { users } from "$lib/server/db/schema-postgres";
-import { hash } from "@node-rs/argon2";
+// Orphaned content: import {
+
 import { fail, redirect } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+// Orphaned content: import {
+
 import type { JSONSchema7 } from "json-schema";
-import { message, superValidate } from "sveltekit-superforms";
+// Orphaned content: import {
+message, superValidate
 import { zod } from "sveltekit-superforms/adapters";
-import type { Actions, PageServerLoad } from "./$types";
+// Orphaned content: import type { Actions, PageServerLoad
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (locals.user) {

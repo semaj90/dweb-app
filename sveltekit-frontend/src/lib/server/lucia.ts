@@ -1,16 +1,7 @@
+import { and, eq, gte } from "drizzle-orm";
 // Modern server-managed session authentication utilities (no Lucia)
 import { db } from "$lib/server/db/index";
-import { sessions } from "$lib/server/db/schema-postgres";
-import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
-import { and, eq, gte } from "drizzle-orm";
-
-// --- Helper Functions ---
-function generateId(length: number = 40): string {
-  return randomBytes(Math.ceil(length / 2))
-    .toString("hex")
-    .slice(0, length);
-}
+import { sessions, bcrypt from "bcryptjs";, // Orphaned content: import {, randomBytes, , // --- Helper Functions ---, function generateId(length: number = 40): string {,   return randomBytes(Math.ceil(length / 2)),     .toString("hex"),     .slice(0, length); } from
 
 function createDate(timeSpan: { days: number }): Date {
   const date = new Date();
@@ -81,7 +72,7 @@ export function setSessionCookie(
   cookies.set("session_id", sessionId, {
     path: "/",
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: import.meta.env.NODE_ENV === "production",
     sameSite: "lax",
     expires: expiresAt,
   });

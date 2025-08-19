@@ -1,10 +1,14 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/server/db/drizzle';
-import { evidence, cases } from '$lib/server/db/schema-postgres';
-import { eq, and, or, ilike, count, desc, asc } from 'drizzle-orm';
-import type { Evidence } from '$lib/server/db/schema-postgres';
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/drizzle";
+// Orphaned content: import { evidence, cases
+import {
+eq, and, or, ilike, count, desc, asc } from "drizzle-orm";
+// Orphaned content: import type { Evidence
+import {
+URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

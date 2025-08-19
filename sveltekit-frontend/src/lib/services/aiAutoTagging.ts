@@ -5,10 +5,12 @@
  * Stores embeddings in PostgreSQL pgvector, auto-tags with gemma3-legal
  */
 
-import { ollamaService } from './ollamaService';
-import { db } from '$lib/server/database';
-import { evidence } from '$lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { ollamaService } from "./ollamaService";
+// Orphaned content: import {
+
+import { evidence } from "$lib/db/schema";
+// Orphaned content: import {
+eq, sql
 import type { Evidence } from '$lib/types/legal-types';
 
 interface EvidenceMetadata {

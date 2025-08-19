@@ -4,12 +4,14 @@
  * Tracks AI pipeline performance, queue metrics, cache efficiency, and system health
  */
 
-import { writable, derived, readable } from 'svelte/store';
-import { browser } from '$app/environment';
-import { bullmqService } from './bullmqService';
-import { multiLayerCache } from './multiLayerCache';
-import { ollamaService } from './ollamaService';
-import { langChainService } from '../ai/langchain-ollama-service';
+import { writable, derived, readable } from "svelte/store";
+// Orphaned content: import {
+
+import { bullmqService } from "./bullmqService";
+// Orphaned content: import {
+
+import { ollamaService } from "./ollamaService";
+// Orphaned content: import {
 
 // Types for metrics
 export interface AIMetrics {

@@ -4,8 +4,8 @@
  * Integrates Redis Vector DB, Qdrant, and Ollama for production use
  */
 
-// import { redisVectorService } from "../../../services/redis-vector-service";
-import { logger } from "../logger";
+// { redisVectorService } from "../../../services/redis-vector-service";
+// Orphaned content: import {
 
 // Temporary stub for redis vector service
 const redisVectorService = {

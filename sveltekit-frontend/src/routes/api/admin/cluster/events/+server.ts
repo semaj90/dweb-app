@@ -4,9 +4,11 @@
  * Provides real-time cluster health and worker metrics via SSE
  */
 
-import type { RequestHandler } from './$types';
-import cluster from 'node:cluster';
-import type { Worker } from 'node:cluster';
+import type { RequestHandler } from './$types.js';
+// Orphaned content: import cluster from 'node:cluster';
+import type { Worker
+import {
+EventEmitter } from "events";
 
 export const GET: RequestHandler = async ({ request }) => {
   // Check if client accepts text/event-stream

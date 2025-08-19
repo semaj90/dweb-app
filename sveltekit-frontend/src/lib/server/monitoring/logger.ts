@@ -1,10 +1,10 @@
+import { dev } from "$app/environment";
 // @ts-nocheck
 /**
  * Advanced Logging & Performance Monitoring System
  * For Legal Case Management Application
  */
 
-import { dev } from "$app/environment";
 
 export interface LogEntry {
   timestamp: string;

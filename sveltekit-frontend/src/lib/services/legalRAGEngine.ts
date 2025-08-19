@@ -5,8 +5,9 @@
  */
 
 import type { QdrantClient } from '@qdrant/js-client-rest';
-import type { OllamaService } from './ollamaService';
-import { context7Service } from './context7Service';
+// Orphaned content: import type { OllamaService
+import {
+context7Service } from "./context7Service";
 
 export interface LegalDocument {
   id: string;

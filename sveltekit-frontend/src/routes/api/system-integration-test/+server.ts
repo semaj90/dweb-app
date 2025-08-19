@@ -2,11 +2,12 @@
 // Tests all system components including Context7, MCP, database orchestrator, and autosolve
 
 import { json, type RequestHandler } from '@sveltejs/kit';
+// Orphaned content: { URL
 import {
   testContext7Pipeline,
   testDatabaseOperations,
   runFullIntegrationTest,
-} from '$lib/services/comprehensive-database-orchestrator';
+} from "$lib/services/comprehensive-database-orchestrator";
 
 // GET /api/system-integration-test - Run comprehensive system test
 export const GET: RequestHandler = async ({ url }) => {

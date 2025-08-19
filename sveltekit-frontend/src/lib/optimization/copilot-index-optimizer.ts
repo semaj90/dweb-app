@@ -1,22 +1,12 @@
+import type { RAGSearchResult } from "$lib/types/rag";
 // @ts-nocheck
 /**
  * Copilot Index Optimizer - Advanced semantic search with Context7 MCP integration
  * Optimizes the copilot.md context for enhanced GitHub Copilot suggestions
  */
 
-import { simdIndexProcessor, type CopilotIndex, type CopilotIndexEntry } from './simd-json-index-processor';
-import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store';
-import type { RAGSearchResult } from '$lib/types/rag';
-
-// Context7 MCP integration patterns
-interface Context7Pattern {
-  id: string;
-  pattern: string;
-  priority: 'high' | 'medium' | 'low';
-  category: 'svelte5' | 'sveltekit' | 'typescript' | 'drizzle' | 'ui' | 'ai';
-  boostFactor: number;
-  keywords: string[];
-}
+import { simdIndexProcessor, type CopilotIndex, type CopilotIndexEntry } from "./simd-json-index-processor";
+import { enhancedRAGStore, , // Context7 MCP integration patterns, interface Context7Pattern {,   id: string;,   pattern: string;,   priority: 'high' | 'medium' | 'low';,   category: 'svelte5' | 'sveltekit' | 'typescript' | 'drizzle' | 'ui' | 'ai';,   boostFactor: number;,   keywords: string[]; } from
 
 // Enhanced index optimization configuration
 interface OptimizationConfig {

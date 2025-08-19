@@ -413,7 +413,7 @@ $effect(() => {
     onmousemove={handleMouseMove}
     onmouseup={handleMouseUp}
     onmouseleave={handleMouseUp}
-    onwheel={handleWheel}
+    on:wheel={handleWheel}
   />
   
   {#if labels.length > 0}

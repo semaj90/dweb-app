@@ -1,9 +1,9 @@
+import type { LegalDocument } from "./types/legal";
 /**
  * RAG Pipeline Integration Service
  * Orchestrates enhanced text processing, MMR summarization, and cross-encoder reranking
  */
 
-import type { LegalDocument } from './types/legal';
 
 interface SearchResult {
   document: LegalDocument;

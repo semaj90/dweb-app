@@ -235,7 +235,7 @@ https://svelte.dev/e/const_tag_invalid_placement -->
         <OllamaChatInterface
           {selectedModel}
           useRAG={true}
-          className="min-h-[400px]"
+          class="min-h-[400px]"
           data-testid="ollama-chat"
         />
       </CardContent>

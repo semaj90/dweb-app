@@ -3,7 +3,7 @@
 // Manages local model paths and configurations for the legal AI assistant
 
 import { existsSync } from "fs";
-import { join } from "path";
+// Orphaned content: import {
 
 // Base paths for local LLM installations (relative to project root)
 const projectRoot = process.cwd().includes("sveltekit-frontend")
@@ -19,8 +19,8 @@ export const LOCAL_LLM_PATHS = {
     app: join(projectRoot, "Ollama", "ollama app.exe"),
     baseUrl: "http://localhost:11434",
     modelsPath:
-      process.env.OLLAMA_MODELS ||
-      join(process.env.USERPROFILE || "", ".ollama", "models"),
+      import.meta.env.OLLAMA_MODELS ||
+      join(import.meta.env.USERPROFILE || "", ".ollama", "models"),
   },
 
   // llama.cpp installation
@@ -113,27 +113,27 @@ export function getPreferredProvider() {
 export const ENV_CONFIG = {
   // Ollama configuration
   OLLAMA_BASE_URL:
-    process.env.OLLAMA_BASE_URL || LOCAL_LLM_PATHS.ollama.baseUrl,
-  OLLAMA_MODELS: process.env.OLLAMA_MODELS || LOCAL_LLM_PATHS.ollama.modelsPath,
+    import.meta.env.OLLAMA_BASE_URL || LOCAL_LLM_PATHS.ollama.baseUrl,
+  OLLAMA_MODELS: import.meta.env.OLLAMA_MODELS || LOCAL_LLM_PATHS.ollama.modelsPath,
 
   // llama.cpp configuration
   LLAMA_CPP_BASE_URL:
-    process.env.LLAMA_CPP_BASE_URL || LOCAL_LLM_PATHS.llamaCpp.baseUrl,
+    import.meta.env.LLAMA_CPP_BASE_URL || LOCAL_LLM_PATHS.llamaCpp.baseUrl,
 
   // Model preferences
-  DEFAULT_MODEL: process.env.DEFAULT_LLM_MODEL || "gemma3-legal",
+  DEFAULT_MODEL: import.meta.env.DEFAULT_LLM_MODEL || "gemma3-legal",
   PREFERRED_PROVIDER:
-    process.env.PREFERRED_LLM_PROVIDER || getPreferredProvider(),
+    import.meta.env.PREFERRED_LLM_PROVIDER || getPreferredProvider(),
 
   // Performance settings
   MAX_CONCURRENT_REQUESTS: parseInt(
-    process.env.MAX_CONCURRENT_LLM_REQUESTS || "3",
+    import.meta.env.MAX_CONCURRENT_LLM_REQUESTS || "3",
   ),
-  REQUEST_TIMEOUT: parseInt(process.env.LLM_REQUEST_TIMEOUT || "30000"),
+  REQUEST_TIMEOUT: parseInt(import.meta.env.LLM_REQUEST_TIMEOUT || "30000"),
 
   // Development settings
-  DEBUG_LLM: process.env.DEBUG_LLM === "true",
-  LOG_LLM_REQUESTS: process.env.LOG_LLM_REQUESTS === "true",
+  DEBUG_LLM: import.meta.env.DEBUG_LLM === "true",
+  LOG_LLM_REQUESTS: import.meta.env.LOG_LLM_REQUESTS === "true",
 };
 
 // Helper function to start local services

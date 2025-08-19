@@ -1,3 +1,4 @@
+import stream from "stream";
 // Simple in-memory registry for active RAG streams to support interrupt & summary
 // NOTE: Non-persistent; fine for dev. For prod, consider Redis channel or durable map.
 import { randomUUID, createHash } from 'crypto';

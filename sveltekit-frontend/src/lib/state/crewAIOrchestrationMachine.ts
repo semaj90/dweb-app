@@ -2,8 +2,9 @@
 // XState CrewAI Orchestration Machine
 // Manages multi-agent workflows with self-prompting and auto-save
 
-import { setup, assign, fromPromise, raise } from 'xstate';
-import { crewAIOrchestrator, type DocumentReviewTask, type AgentResponse } from '$lib/ai/crewai-legal-agents';
+import { setup, assign, fromPromise, raise } from "xstate";
+// Orphaned content: import {
+crewAIOrchestrator, type DocumentReviewTask, type AgentResponse
 import { documentUpdateLoop } from '$lib/services/documentUpdateLoop';
 
 // ============================================================================

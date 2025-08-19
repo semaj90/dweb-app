@@ -314,7 +314,7 @@
     <div class="toolbar-right">
       <span 
         class="status" 
-        class:online={$isOnline}
+        class:on:line={$isOnline}
         aria-label={$isOnline ? 'Connected' : 'Disconnected'}
       >
         {$isOnline ? 'Online' : 'Offline'}

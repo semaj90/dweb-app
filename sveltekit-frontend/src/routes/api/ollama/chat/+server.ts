@@ -4,8 +4,9 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { ollamaChatStream } from '$lib/services/ollamaChatStream';
+// Orphaned content: import type { RequestHandler
+import {
+ollamaChatStream } from "$lib/services/ollamaChatStream";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

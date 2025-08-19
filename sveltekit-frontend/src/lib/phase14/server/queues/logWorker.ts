@@ -1,13 +1,6 @@
 // @ts-nocheck
-import { Worker } from 'bullmq';
-import { logQueue } from './logQueue';
-
-// Define the type for the log entry data
-interface LogEntryData {
-  timestamp: string;
-  level: string;
-  message: string;
-}
+import { Worker } from "bullmq";
+import { logQueue, , // Define the type for the log entry data, interface LogEntryData {,   timestamp: string;,   level: string;,   message: string; } from
 
 // Create a new BullMQ Worker instance
 // Ensure your Redis connection details are correct (same as logQueue)
@@ -19,8 +12,8 @@ const logWorker = new Worker<LogEntryData>('logQueue', async (job) => {
   // --- Placeholder for Ollama Nomic Embeddings --- 
   // Replace with actual Ollama API call to get embeddings
   try {
-    const ollamaEndpoint = process.env.OLLAMA_EMBEDDING_URL || 'http://localhost:11434/api/embeddings';
-    const embeddingModel = process.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text';
+    const ollamaEndpoint = import.meta.env.OLLAMA_EMBEDDING_URL || 'http://localhost:11434/api/embeddings';
+    const embeddingModel = import.meta.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text';
 
     console.log(`Generating embedding for: "${message}" using ${embeddingModel}`);
     

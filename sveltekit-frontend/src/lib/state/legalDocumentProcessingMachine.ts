@@ -5,9 +5,9 @@
  */
 
 import { createMachine, assign, type ActorRefFrom } from 'xstate';
-import type { LegalDocument, LegalEntities, LegalRAGOptions } from '$lib/services/legalRAGEngine';
+// Orphaned content: import type { LegalDocument, LegalEntities, LegalRAGOptions
 import type { EnhancedContext7Service } from '$lib/services/enhancedContext7Service';
-import type { QdrantService } from '$lib/services/qdrantService';
+// Orphaned content: import type { QdrantService
 
 // Context interface for the state machine
 export interface LegalDocumentContext {

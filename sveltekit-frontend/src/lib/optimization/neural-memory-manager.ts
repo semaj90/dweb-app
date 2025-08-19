@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 // @ts-nocheck
 /**
  * Neural Network-Based Memory Management System
@@ -5,7 +6,6 @@
  * Optimized for VS Code extension performance and Docker memory efficiency
  */
 
-import { EventEmitter } from "events";
 
 export interface MemoryPool {
   id: string;

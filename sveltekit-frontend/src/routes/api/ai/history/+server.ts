@@ -1,8 +1,10 @@
 // @ts-nocheck
 import { aiHistory } from "$lib/db/schema/aiHistory";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import {
+
 import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+// Orphaned content: import {
+
 import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ request, locals }) => {

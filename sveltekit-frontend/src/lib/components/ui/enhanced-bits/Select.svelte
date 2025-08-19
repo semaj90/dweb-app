@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { Select as BitsSelect } from 'bits-ui';
   import { cn } from '$lib/utils/cn';
   import { ChevronDown, Check } from 'lucide-svelte';

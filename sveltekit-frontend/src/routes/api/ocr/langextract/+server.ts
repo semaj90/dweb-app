@@ -1,12 +1,12 @@
+import sharp from "sharp";
 // Real OCR API endpoint with Tesseract.js and LegalBERT analysis
 import { error, json } from '@sveltejs/kit';
-import pdfParse from 'pdf-parse';
-import sharp from 'sharp';
-import { createWorker } from 'tesseract.js';
-import type { RequestHandler } from './$types';
+// Orphaned content: import pdfParse from 'pdf-parse';
+import {
 
-// Redis client for caching
-import { createRedisConnection } from '$lib/utils/redis-helper';
+import type { RequestHandler } from './$types';
+// Orphaned content: // Redis client for caching
+import { createRedisConnection
 // ... other imports ...
 
 const redis = createRedisConnection();

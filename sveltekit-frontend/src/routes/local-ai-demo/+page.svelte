@@ -168,7 +168,7 @@
         const result = await aiService.analyzeLegalDocument(legalAnalysisText);
         analysisResults = {
           ...result,
-          keyEntities: Array.isArray(result.keyEntities) && typeof result.keyEntities[0] === 'string' 
+          keyEntities: Array.isArray(result.keyEntities) && typeof result.keyEntities[0] === 'string'
             ? result.keyEntities.map((entity: string) => ({ text: entity, type: 'entity', confidence: 1.0 }))
             : result.keyEntities || []
         };
@@ -455,7 +455,7 @@
               showReferences={true}
               enableVoiceInput={true}
               maxHeight="400px"
-              onresponse={handleAIResponse}
+              on:response={handleAIResponse}
               on:referenceClicked={handleReferenceClick}
             />
           </div>

@@ -240,7 +240,7 @@
               <input
                 type="checkbox"
                 checked={formData.reviewed_sections.includes(criterion.id)}
-                on:change={() => toggleSectionReview(criterion.id)}
+                onchange={() => toggleSectionReview(criterion.id)}
                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
               />
             </div>
@@ -378,7 +378,7 @@
   <!-- Form Actions -->
   <div class="flex justify-between pt-6 border-t border-gray-200">
     <Button.Root
-      onclick={handlePrevious}
+      on:click={handlePrevious}
       disabled={isSubmitting}
       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
     >
@@ -387,7 +387,7 @@
 
     <div class="flex space-x-3">
       <Button.Root
-        onclick={handleSaveDraft}
+        on:click={handleSaveDraft}
         disabled={isSubmitting}
         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
@@ -395,7 +395,7 @@
       </Button.Root>
 
       <Button.Root
-        onclick={submitCase}
+        on:click={submitCase}
         disabled={!formData.completeness_check || formData.final_review.length < 50 || isSubmitting}
         class="px-8 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
       >

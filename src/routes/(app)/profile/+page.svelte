@@ -158,7 +158,7 @@
           {/if}
           {#if isEditing}
             <label class="avatar-upload" style="background-color: {colors.text}">
-              <input type="file" accept="image/*" on:change={handleAvatarChange} hidden />
+              <input type="file" accept="image/*" onchange={handleAvatarChange} hidden />
               <span style="color: {colors.bg}">📷</span>
             </label>
           {/if}
@@ -213,14 +213,14 @@
       <!-- Edit Controls -->
       <div class="edit-controls">
         {#if !isEditing}
-          <button on:click={startEdit} class="edit-btn" style="border-color: {colors.border}">
+          <button onclick={startEdit} class="edit-btn" style="border-color: {colors.border}">
             <span style="color: {colors.text}">✏️</span>
           </button>
         {:else}
-          <button on:click={saveProfile} class="save-btn" style="background-color: {colors.success}">
+          <button onclick={saveProfile} class="save-btn" style="background-color: {colors.success}">
             <span style="color: {colors.bg}">💾</span>
           </button>
-          <button on:click={cancelEdit} class="cancel-btn" style="border-color: {colors.error}">
+          <button onclick={cancelEdit} class="cancel-btn" style="border-color: {colors.error}">
             <span style="color: {colors.error}">✖️</span>
           </button>
         {/if}
@@ -234,7 +234,7 @@
       <button 
         class="tab"
         class:active={activeTab === tab}
-        on:click={() => activeTab = tab}
+        onclick={() => activeTab = tab}
         style="color: {activeTab === tab ? colors.bg : colors.text}; 
                background-color: {activeTab === tab ? colors.text : 'transparent'};
                border-color: {colors.border}"

@@ -794,7 +794,7 @@
         <Button
           variant="outline"
           size="sm"
-          onclick={() => {
+          on:click={() => {
             selectedType = "";
             selectedStatus = "";
             selectedCollector = "";
@@ -1003,7 +1003,7 @@
                     type="checkbox"
                     class="mx-auto px-4 max-w-7xl"
                     checked={selectedEvidence.has(evidence.id)}
-                    on:change={() => toggleEvidenceSelection(evidence.id)}
+                    onchange={() => toggleEvidenceSelection(evidence.id)}
                     aria-label="Select evidence {evidence.title ||
                       'Untitled Evidence'}"
                   />
@@ -1034,7 +1034,7 @@
                       <li>
                         <button 
                           class="mx-auto px-4 max-w-7xl"
-                          on:click={() => analyzeEvidence(evidence)}
+                          onclick={() => analyzeEvidence(evidence)}
                           disabled={analysisInProgress.has(evidence.id)}
                         >
                           {#if thinkingStyleEnabled}
@@ -1177,7 +1177,7 @@
                   type="checkbox"
                   class="mx-auto px-4 max-w-7xl"
                   checked={selectedEvidence.has(evidence.id)}
-                  on:change={() => toggleEvidenceSelection(evidence.id)}
+                  onchange={() => toggleEvidenceSelection(evidence.id)}
                   aria-label="Select evidence {evidence.title ||
                     'Untitled Evidence'}"
                 />
@@ -1422,7 +1422,7 @@
         ">Save Analysis</Button>
       </div>
     </div>
-    <div class="mx-auto px-4 max-w-7xl" on:click={closeAnalysisModal}></div>
+    <div class="mx-auto px-4 max-w-7xl" onclick={closeAnalysisModal}></div>
   </div>
 {/if}
 
@@ -1444,8 +1444,8 @@
       role="button"
       tabindex={0}
       aria-label="Close modal"
-      on:click={() => (showAdvancedUpload = false)}
-      on:keydown={(e) => e.key === "Escape" && (showAdvancedUpload = false)}
+      onclick={() => (showAdvancedUpload = false)}
+      onkeydown={(e) => e.key === "Escape" && (showAdvancedUpload = false)}
     ></div>
   </div>
 {/if}

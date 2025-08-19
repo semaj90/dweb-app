@@ -1,12 +1,13 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { 
+// Orphaned content: import type { RequestHandler
+import { URL } from "url";
+import {
 	queueDocumentProcessing, 
 	getJobStatus, 
 	getQueueStats,
 	type DocumentProcessingJobData 
-} from '$lib/services/queue-service';
+} from "$lib/services/queue-service";
 
 // Types for Go server integration (kept for compatibility)
 interface DocumentProcessRequest {
@@ -55,8 +56,8 @@ interface RiskAssessment {
 }
 
 // Configuration
-const GO_SERVER_URL = process.env.GO_SERVER_URL || 'http://localhost:8080';
-const USE_QUEUE = process.env.USE_QUEUE !== 'false'; // Enable by default
+const GO_SERVER_URL = import.meta.env.GO_SERVER_URL || 'http://localhost:8080';
+const USE_QUEUE = import.meta.env.USE_QUEUE !== 'false'; // Enable by default
 
 /**
  * Process document through BullMQ worker system

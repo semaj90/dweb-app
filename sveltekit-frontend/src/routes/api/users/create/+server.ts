@@ -1,9 +1,10 @@
+import type { NewUser } from "$lib/server/db/schema-postgres";
 // @ts-nocheck
-import { db } from '$lib/server/db';
-import { users } from '$lib/server/db/schema';
-import type { NewUser } from '$lib/server/db/schema-postgres';
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
+import { db } from "$lib/server/db";
+// Orphaned content: import {
+
+import type { RequestHandler }, {
+json } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {

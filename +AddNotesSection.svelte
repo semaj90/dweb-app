@@ -69,7 +69,7 @@
         {/each}
       </select>
     </div>
-    <button class="btn btn-primary" on:click={handleSubmit}>Save Notes</button>
+    <button class="btn btn-primary" onclick={handleSubmit}>Save Notes</button>
   </div>
 </div>
 

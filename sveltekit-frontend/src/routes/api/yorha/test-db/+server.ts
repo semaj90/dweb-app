@@ -1,9 +1,11 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { db } from "$lib/server/db/drizzle";
-import { legalDocuments } from "$lib/server/db/schema-postgres";
-import { sql  } from "drizzle-orm";
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/drizzle";
+// Orphaned content: import { legalDocuments
+import {
+sql  } from "drizzle-orm";
 
 // YoRHa Database Test API
 // Tests JSON/JSONB data flow and database connectivity

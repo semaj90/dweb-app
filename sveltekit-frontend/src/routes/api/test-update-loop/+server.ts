@@ -3,17 +3,20 @@
 // End-to-end testing of document changes, re-embedding, and re-ranking
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { documentUpdateLoop } from '$lib/services/documentUpdateLoop';
-import { db } from '$lib/server/database';
-import { 
-  documents, 
+// Orphaned content: import type { RequestHandler
+import {
+documentUpdateLoop } from "$lib/services/documentUpdateLoop";
+// Orphaned content: import { db
+import {
+documents, 
   documentVectors, 
   queryVectors,
   cases,
   users 
-} from '$lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
+} from "$lib/db/schema";
+// Orphaned content: import { eq, sql
+import {
+URL } from "url";
 
 // ============================================================================
 // TEST SCENARIOS

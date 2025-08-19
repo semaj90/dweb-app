@@ -1,5 +1,5 @@
-import type { RequestHandler } from '@sveltejs/kit';
-import { renderNlpMetrics } from '$lib/services/nlp-metrics';
+import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
 
 // Versioned NLP metrics endpoint aligning with FULL_STACK_INTEGRATION_COMPLETE.md docs
 export const GET: RequestHandler = async () => {

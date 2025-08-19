@@ -130,7 +130,7 @@
 }}}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="container mx-auto px-4">
   <div class="container mx-auto px-4">
@@ -197,7 +197,7 @@
                     "title",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi?.touchField("title")}
+                onblur={() => formApi?.touchField("title")}
               />
             </div>
 
@@ -217,12 +217,12 @@
                 class:border-red-300={errors.description}
                 class:border-green-300={values.description &&
                   !errors.description}
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "description",
                     (e.target as HTMLTextAreaElement)?.value
                   )}
-                on:blur={() => formApi.touchField("description")}
+                onblur={() => formApi.touchField("description")}
               ></textarea>
               {#if errors.description}
                 <p class="container mx-auto px-4">
@@ -242,12 +242,12 @@
                 id="case-priority"
                 class="container mx-auto px-4"
                 value={values.priority || "medium"}
-                on:change={(e) =>
+                onchange={(e) =>
                   formApi.setField(
                     "priority",
                     (e.target as HTMLSelectElement)?.value
                   )}
-                on:blur={() => formApi.touchField("priority")}
+                onblur={() => formApi.touchField("priority")}
               >
                 <option value="low">🟢 Low</option>
                 <option value="medium">🟡 Medium</option>
@@ -268,7 +268,7 @@
                     "dueDate",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("dueDate")}
+                onblur={() => formApi.touchField("dueDate")}
               />
             </div>
           </div>
@@ -295,7 +295,7 @@
                     "assignedTo",
                     (e.target as HTMLInputElement)?.value
                   )}
-                on:blur={() => formApi.touchField("assignedTo")}
+                onblur={() => formApi.touchField("assignedTo")}
               />
             </div>
 
@@ -314,7 +314,7 @@
                         "tags",
                         (e.target as HTMLInputElement)?.value
                       )}
-                    on:blur={() => formApi.touchField("tags")}
+                    onblur={() => formApi.touchField("tags")}
                   />
                 </div>
                 <Button

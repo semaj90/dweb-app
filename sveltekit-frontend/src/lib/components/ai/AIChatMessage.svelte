@@ -7,29 +7,34 @@
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
 
-  export let message: {
-    id: string;
-    role: "user" | "assistant" | "system";
-    content: string;
-    timestamp: Date;
-    sources?: Array<{
+  let {
+    message,
+    showSources = false,
+    showMetadata = false
+  }: {
+    message: {
       id: string;
-      title: string;
+      role: "user" | "assistant" | "system";
       content: string;
-      score: number;
-      type: string;
-    }>;
-    metadata?: {
-      provider: "local" | "cloud" | "hybrid";
-      model: string;
-      confidence: number;
-      executionTime: number;
-      fromCache: boolean;
+      timestamp: Date;
+      sources?: Array<{
+        id: string;
+        title: string;
+        content: string;
+        score: number;
+        type: string;
+      }>;
+      metadata?: {
+        provider: "local" | "cloud" | "hybrid";
+        model: string;
+        confidence: number;
+        executionTime: number;
+        fromCache: boolean;
+      };
     };
-  };
-
-  export let showSources = false;
-  export let showMetadata = false;
+    showSources?: boolean;
+    showMetadata?: boolean;
+  } = $props();
 
   let formattedTime = "";
   let isSourcesExpanded = false;
@@ -42,7 +47,7 @@
         hour: "2-digit",
         minute: "2-digit",
       });
-}
+    }
   });
 
   // Copy message content to clipboard
@@ -54,7 +59,8 @@
       // TODO: Show toast notification
     } catch (error) {
       console.error("Failed to copy:", error);
-}}
+    }
+  }
   // Format confidence as percentage
   function formatConfidence(confidence: number): string {
     return Math.round(confidence * 100) + "%";
@@ -63,7 +69,7 @@
   function formatExecutionTime(ms: number): string {
     if (ms < 1000) return `${ms}ms`;
     return `${(ms / 1000).toFixed(1)}s`;
-}
+  }
 </script>
 
 <div
@@ -124,7 +130,7 @@
       <button
         type="button"
         class="container mx-auto px-4"
-        on:click={() => copyToClipboard()}
+        onclick={() => copyToClipboard()}
         title="Copy message"
         aria-label="Copy message to clipboard"
       >
@@ -153,7 +159,7 @@
         <button
           type="button"
           class="container mx-auto px-4"
-          on:click={() => (isSourcesExpanded = !isSourcesExpanded)}
+          onclick={() => (isSourcesExpanded = !isSourcesExpanded)}
           aria-expanded={isSourcesExpanded}
         >
           <svg
@@ -196,7 +202,7 @@
         <button
           type="button"
           class="container mx-auto px-4"
-          on:click={() => (isMetadataExpanded = !isMetadataExpanded)}
+          onclick={() => (isMetadataExpanded = !isMetadataExpanded)}
           aria-expanded={isMetadataExpanded}
         >
           <svg
@@ -441,7 +447,7 @@
     .chat-message {
       background: var(--bg-primary, #1e293b);
       border-color: var(--border-color, #475569);
-}
+    }
     .chat-message.assistant {
       background: var(--bg-assistant, #0f172a);
       border-color: var(--border-assistant, #334155);
@@ -449,16 +455,18 @@
     .source-item,
     .metadata-item {
       background: var(--bg-secondary, #334155);
-}}
+    }
+  }
   /* Responsive design */
   @media (max-width: 768px) {
     .chat-message.user {
       margin-left: 10%;
-}
+    }
     .chat-message.assistant {
       margin-right: 10%;
-}
+    }
     .metadata-content {
       grid-template-columns: 1fr;
-}}
+    }
+  }
 </style>

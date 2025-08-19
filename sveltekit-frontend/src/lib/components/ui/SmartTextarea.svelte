@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Mixing old (on:change) and new syntaxes for event handling is not allowed. Use only the onchange syntax
-https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <script lang="ts">
   import CommandMenu from "./CommandMenu.svelte";
 
@@ -9,7 +7,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     rows?: number;
     disabled?: boolean;
     readonly?: boolean;
-    className?: string;
+    class?: string;
     triggerChar?: string;
     onCommandSelect?: (command: string) => void;
     onInput?: (data: { value: string; target: HTMLTextAreaElement }) => void;
@@ -25,7 +23,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     rows = 4,
     disabled = false,
     readonly = false,
-    className = "",
+    class = "",
     triggerChar = "#",
     onCommandSelect,
     onInput,
@@ -141,9 +139,6 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     onkeydown={handleKeydown}
     onblur={handleBlur}
     onfocus={handleFocus}
-    on:change
-    on:select
-    on:paste
   ></textarea>
 
   {#if showCommandMenu}

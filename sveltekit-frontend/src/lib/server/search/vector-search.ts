@@ -2,9 +2,11 @@
 // Complete Vector Search Service - Production Ready
 // Combines PostgreSQL pgvector + Qdrant + Local caching + Loki.js + Fuse.js
 import { browser } from "$app/environment";
-import { db, isPostgreSQL } from "$lib/server/db/index";
+// Orphaned content: import {
+db, isPostgreSQL
 import { ollamaService } from "$lib/server/services/OllamaService";
-import { and, eq, or, sql } from "drizzle-orm";
+// Orphaned content: import {
+and, eq, or, sql
 
 // Import dependencies with fallbacks
 let qdrant: any = null;
@@ -113,7 +115,7 @@ function arrayToPgVector(embedding: number[]): string {
 
 // Ensure embedding has expected dimension; default to DB schema (384) with env override
 const TARGET_DIM = (() => {
-  const v = parseInt(process.env.EMBEDDING_DIMENSIONS || "384", 10);
+  const v = parseInt(import.meta.env.EMBEDDING_DIMENSIONS || "384", 10);
   return Number.isFinite(v) && v > 0 ? v : 384;
 })();
 
@@ -130,16 +132,16 @@ export async function getQueryEmbeddingLegal(
   query: string
 ): Promise<number[] | null> {
   const modelListEnv =
-    process.env.EMBED_MODEL_LIST ||
-    process.env.EMBED_MODEL ||
+    import.meta.env.EMBED_MODEL_LIST ||
+    import.meta.env.EMBED_MODEL ||
     "nomic-embed-text,all-minilm";
   const candidates = modelListEnv
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
   const ragUrl =
-    process.env.RAG_URL ||
-    `http://localhost:${process.env.RAG_HTTP_PORT || "8093"}`;
+    import.meta.env.RAG_URL ||
+    `http://localhost:${import.meta.env.RAG_HTTP_PORT || "8093"}`;
 
   // 1) Try Ollama for each candidate model
   for (const model of candidates) {
@@ -182,7 +184,7 @@ export async function getQueryEmbeddingLegal(
 
   // 4) OpenAI fallback if configured
   try {
-    if (typeof generateEmbedding === "function" && process.env.OPENAI_API_KEY) {
+    if (typeof generateEmbedding === "function" && import.meta.env.OPENAI_API_KEY) {
       const arr = await generateEmbedding(query, { model: "openai" });
       if (Array.isArray(arr) && arr.length > 0)
         return adjustToDim(arr, TARGET_DIM);

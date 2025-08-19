@@ -27,12 +27,14 @@ https://svelte.dev/e/js_parse_error -->
   }
 
   // Update scroll when messages change
-  $effect(() => { if ($state.context.messages && chatContainer) {
-    // Wait for DOM update
-    setTimeout(() => {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
-    }, 10);
-  }
+  $effect(() => {
+    if ($state.context.messages && chatContainer) {
+      // Wait for DOM update
+      setTimeout(() => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }, 10);
+    }
+  });
 
   // Check service status on mount
   onMount(() => {
@@ -54,7 +56,7 @@ https://svelte.dev/e/js_parse_error -->
         {/if}
       </p>
     </div>
-    <Button variant="outline" size="sm" onclick={handleClear}>
+    <Button variant="outline" size="sm" on:click={handleClear}>
       Clear Chat
     </Button>
   </div>
@@ -84,7 +86,7 @@ https://svelte.dev/e/js_parse_error -->
 
   <!-- Input area -->
   <div class="border-t p-4">
-    <form on:submit|preventDefault={handleSubmit} class="flex space-x-2">
+    <form onsubmit|preventDefault={handleSubmit} class="flex space-x-2">
       <Input
         type="text"
         placeholder="Ask about your legal case..."

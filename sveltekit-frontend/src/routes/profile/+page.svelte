@@ -217,22 +217,7 @@
     color: var(--text-secondary, #6b7280);
     font-size: 16px;
 }
-  .profile-content {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-  .stats-grid {
-    gap: 16px;
-  }
-  .stat-card {
-    background: #f9fafb;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-}
-  .stat-value {
+.stat-value {
     font-size: 24px;
     font-weight: 700;
     color: var(--text-primary, #111827);
@@ -262,7 +247,5 @@
       flex-direction: column;
       text-align: center;
 }
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-}}
+}
 </style>

@@ -1,3 +1,5 @@
+import os from "os";
+import net from "net";
 /**
  * GPU-Optimized Production System with CUDA/TensorRT
  * Integrates Go microservices, Ollama, LangChain, NVIDIA toolkit
@@ -5,12 +7,14 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { WebSocketServer } from 'ws';
-import { spawn } from 'child_process';
-import { promises as fs } from 'fs';
-import path from 'path';
-import os from 'os';
+// Orphaned content: import type { RequestHandler
+import {
+WebSocketServer } from "ws";
+// Orphaned content: import { spawn
+import {
+promises as fs } from "fs";
+// Orphaned content: import path from 'path';
+import {
 
 // Dynamic port selection
 const PRIMARY_PORT = 5173;

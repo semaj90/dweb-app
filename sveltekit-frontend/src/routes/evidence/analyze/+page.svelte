@@ -298,7 +298,7 @@
           id="evidenceFile"
           type="file"
           accept=".txt,.pdf,.doc,.docx"
-          onchange={handleFileUpload}
+          on:change={handleFileUpload}
           disabled={analyzing}
           class="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary hover:file:bg-opacity-80" />
         {#if evidenceFile}

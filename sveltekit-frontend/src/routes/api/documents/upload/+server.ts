@@ -1,22 +1,26 @@
 // @ts-nocheck
 import { json, error } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { parseStringPromise } from "xml2js";
-import pdf from "pdf-parse";
-import { writeFile, mkdir } from 'fs/promises';
+// Orphaned content: import type { RequestHandler
+import {
+parseStringPromise } from "xml2js";
+// Orphaned content: import pdf from "pdf-parse";
+import {
+writeFile, mkdir
 import { randomUUID } from 'crypto';
-import path from 'path';
-import { db } from '$lib/server/db/index';
-import { enhancedEvidence } from '$lib/server/db/enhanced-legal-schema';
-import { qdrantService } from '$lib/services/qdrantService';
+// Orphaned content: import path from "path";
+import {
+
+import { enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";
+// Orphaned content: import {
+
 // @ts-ignore
 import xss from "xss"; // XSS protection
 
 // Ensure temp directory exists
 const TEMP_DIR = path.join(process.cwd(), 'temp-uploads');
 
-import { ollamaService } from '$lib/services/ollamaService';
-import { eq } from 'drizzle-orm';
+import { ollamaService } from "$lib/services/ollamaService";
+// Orphaned content: import {
 
 // XSS-safe text extraction from XML
 async function processXml(buffer: Buffer): Promise<string> {

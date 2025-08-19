@@ -1,3 +1,4 @@
+import fs from "fs/promises";
 // @ts-nocheck
 /**
  * Copilot Orchestration Wrapper
@@ -122,7 +123,7 @@ const agentRegistry: Record<
       const ollamaUrl =
         typeof window !== "undefined"
           ? "http://localhost:11434"
-          : process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+          : import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434";
 
       const response = await fetch(`${ollamaUrl}/api/generate`, {
         method: "POST",
@@ -156,7 +157,7 @@ const agentRegistry: Record<
       const ollamaUrl =
         typeof window !== "undefined"
           ? "http://localhost:11434"
-          : process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+          : import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434";
 
       const response = await fetch(`${ollamaUrl}/api/generate`, {
         method: "POST",
@@ -824,7 +825,6 @@ const crewAIService = {
 };
 
 // Production: Read error log from MCP and append to MCP_TODO_LOG.md
-import fs from "fs/promises";
 const MCP_TODO_LOG_PATH = "../../../../MCP_TODO_LOG.md";
 
 export async function mcpReadErrorLog() {

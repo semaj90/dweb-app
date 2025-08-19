@@ -1,7 +1,8 @@
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
+import stream from "stream";
+import type { RequestHandler }, {
+json } from "@sveltejs/kit";
 
-const OLLAMA_BASE = process.env.OLLAMA_HOST || "http://localhost:11434";
+const OLLAMA_BASE = import.meta.env.OLLAMA_HOST || "http://localhost:11434";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

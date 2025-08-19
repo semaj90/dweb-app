@@ -1,4 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax
+<!-- @migration-task Error while migrating Svelte code: Mixing old (onclick) and new syntaxes for event handling is not allowed. Use only the onclick syntax
 https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <!-- YoRHa Dialog Component - Lightweight Terminal Dialog -->
 <script lang="ts">
@@ -170,7 +170,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         {#if closable && !persistent}
           <button
             class="dialog-close"
-            on:click={handleClose}
+            onclick={handleClose}
             aria-label="Close dialog"
           >
             ✕
@@ -207,14 +207,14 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       <!-- Actions -->
       <div class="dialog-actions">
         {#if type === "confirm" || type === "prompt"}
-          <button class="dialog-button cancel" on:click={handleCancel}>
+          <button class="dialog-button cancel" onclick={handleCancel}>
             <span class="button-icon">✕</span>
             Cancel
           </button>
           <button
             class="dialog-button confirm"
             style="border-color: {config.color}; color: {config.color}"
-            on:click={handleConfirm}
+            onclick={handleConfirm}
           >
             <span class="button-icon">✓</span>
             {type === "prompt" ? "Submit" : "Confirm"}
@@ -223,7 +223,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           <button
             class="dialog-button acknowledge"
             style="border-color: {config.color}; color: {config.color}"
-            on:click={handleClose}
+            onclick={handleClose}
           >
             <span class="button-icon">■</span>
             OK

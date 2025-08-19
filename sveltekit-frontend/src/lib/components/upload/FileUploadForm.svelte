@@ -173,11 +173,11 @@
             class={`relative border-2 border-dashed rounded-lg p-6 transition-colors ` +
               `${dragActive ? 'border-primary bg-primary bg-opacity-5' : 'border-muted-foreground border-opacity-25'} ` +
               `${selectedFile ? 'bg-muted/30' : ''}`}
-            on:drop={handleDrop}
-            on:dragover={handleDragOver}
-            on:dragleave={handleDragLeave}
-            on:click={openFilePicker}
-            on:keydown={onDropzoneKeydown}
+            ondrop={handleDrop}
+            ondragover={handleDragOver}
+            ondragleave={handleDragLeave}
+            onclick={openFilePicker}
+            onkeydown={onDropzoneKeydown}
             role="button"
             tabindex="0"
             aria-label={selectedFile ? `Change file ${selectedFile.name}` : 'Upload a file by clicking or dragging'}>
@@ -195,10 +195,10 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <Button type="button" variant="secondary" size="sm" onclick={(e) => { e.stopPropagation(); openFilePicker(); }}>
+                    <Button type="button" variant="secondary" size="sm" on:click={(e) => { e.stopPropagation(); openFilePicker(); }}>
                       Change
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" onclick={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
+                    <Button type="button" variant="ghost" size="sm" on:click={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
                       <X class="h-4 w-4" />
                     </Button>
                   </div>
@@ -228,7 +228,7 @@
             bind:this={fileInputEl}
             type="file"
             class="hidden"
-            on:change={handleFileSelect}
+            onchange={handleFileSelect}
             accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mp3,.wav"
           />
           {#if $errors.file}

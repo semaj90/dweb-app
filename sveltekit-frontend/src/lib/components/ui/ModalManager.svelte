@@ -177,7 +177,7 @@
 							{#each builtInModal.actions as action}
 								<Button
 									variant={action.variant}
-									onclick={() => action.action()}
+									on:click={() => action.action()}
 								>
 									{action.label}
 								</Button>
@@ -188,8 +188,8 @@
 					<!-- Custom Svelte component -->
 					<modal.component
 						{...modal.props}
-						onclose={() => modals.close(modal.id)}
-						onconfirm={modal.onConfirm}
+						on:close={() => modals.close(modal.id)}
+						on:confirm={modal.onConfirm}
 					/>
 				{:else}
 					<!-- Default slot content -->

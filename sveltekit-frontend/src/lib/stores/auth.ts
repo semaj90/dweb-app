@@ -1,6 +1,7 @@
 // @ts-nocheck
 import type { User } from "$lib/types/user";
-import { writable, type Writable } from "svelte/store";
+// Orphaned content: import {
+writable, type Writable
 import { setContext, getContext } from "svelte";
 
 export interface AuthUser {

@@ -307,7 +307,7 @@
 
     <!-- Refresh Button -->
     <div class="text-center mt-8">
-      <Button variant="outline" onclick={checkSystemStatus} disabled={isLoading} class="gap-2">
+      <Button variant="outline" on:click={checkSystemStatus} disabled={isLoading} class="gap-2">
         {#if isLoading}
           <Loader2 class="h-4 w-4 animate-spin" />
         {:else}

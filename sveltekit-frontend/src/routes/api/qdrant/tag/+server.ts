@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
+import {
+URL } from "url";
 
 // Mock Qdrant client for development
 class MockQdrantClient {

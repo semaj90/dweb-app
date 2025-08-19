@@ -477,8 +477,8 @@
             fields={formFields}
             submitLabel="CREATE DOCUMENT"
             cancelLabel="ABORT"
-            onsubmit={createDocument}
-            oncancel={() => currentView = 'grid'}
+            on:submit={createDocument}
+            on:cancel={() => currentView = 'grid'}
           />
         </section>
       {/if}
@@ -507,8 +507,8 @@
         fields={formFields}
         submitLabel="CREATE"
         cancelLabel="CANCEL"
-        onsubmit={createDocument}
-        oncancel={() => modalOpen = false}
+        on:submit={createDocument}
+        on:cancel={() => modalOpen = false}
       />
     </YoRHaModal>
   {/if}

@@ -293,7 +293,7 @@
           <CardContent>
             <Button 
               class="w-full" 
-              onclick={() => activeTab = 'vector-demo'}
+              on:click={() => activeTab = 'vector-demo'}
             >
               <Search class="h-4 w-4 mr-2" />
               Launch Vector Demo
@@ -313,7 +313,7 @@
             <Button 
               variant="outline" 
               class="w-full"
-              onclick={() => activeTab = 'fabric-canvas'}
+              on:click={() => activeTab = 'fabric-canvas'}
             >
               <Canvas class="h-4 w-4 mr-2" />
               Open Canvas
@@ -343,9 +343,9 @@
             width={800} 
             height={600} 
             caseId="demo-case-001"
-            onsave={(e) => console.log('Canvas saved:', e.detail)}
-            ondelete={(e) => console.log('Object deleted:', e.detail)}
-            onselect={(e) => console.log('Object selected:', e.detail)}
+            on:save={(e) => console.log('Canvas saved:', e.detail)}
+            on:delete={(e) => console.log('Object deleted:', e.detail)}
+            on:select={(e) => console.log('Object selected:', e.detail)}
           />
         </CardContent>
       </Card>

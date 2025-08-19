@@ -254,7 +254,7 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
               <LegalDocumentEditor
                 documentType="motion"
                 title="Motion to Dismiss"
-                onsave={handleSave}
+                on:save={handleSave}
                 on:aiRequest={handleAIResponse}
               />
             </div>
@@ -274,7 +274,7 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
                 enableAI={true}
                 enableCitation={true}
                 height="400px"
-                onchange={(e) => console.log("Content changed:", e.detail)}
+                on:change={(e) => console.log("Content changed:", e.detail)}
               />
             </div>
           </div>
@@ -292,7 +292,7 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
                 placeholder="Ask about legal procedures, case law, or document drafting..."
                 showReferences={true}
                 enableVoiceInput={true}
-                onresponse={handleAIResponse}
+                on:response={handleAIResponse}
               />
             </div>
           </div>

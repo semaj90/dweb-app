@@ -1,0 +1,75 @@
+{
+  "sustainedP99Breaches": 0,
+  "lastP99Ok": 1755617903006,
+  "lastBaseline": {
+    "created": "2025-08-19T15:38:23.018Z",
+    "stages": [
+      {
+        "stage": "gpu",
+        "p50": 0,
+        "p90": 0,
+        "p99": 0,
+        "count": 0,
+        "anomalies": 0
+      },
+      {
+        "stage": "wasm",
+        "p50": 0,
+        "p90": 0,
+        "p99": 0,
+        "count": 0,
+        "anomalies": 0
+      },
+      {
+        "stage": "embedding",
+        "p50": 0,
+        "p90": 0,
+        "p99": 0,
+        "count": 0,
+        "anomalies": 0
+      },
+      {
+        "stage": "retrieval",
+        "p50": 0,
+        "p90": 0,
+        "p99": 0,
+        "count": 0,
+        "anomalies": 0
+      },
+      {
+        "stage": "llm",
+        "p50": 0,
+        "p90": 0,
+        "p99": 0,
+        "count": 0,
+        "anomalies": 0
+      },
+      {
+        "stage": "final",
+        "p50": 0,
+        "p90": 0,
+        "p99": 0,
+        "count": 0,
+        "anomalies": 0
+      }
+    ],
+    "quic": {
+      "total_connections": 0,
+      "total_streams": 0,
+      "total_errors": 0,
+      "avg_latency_ms": 0,
+      "timestamp": 1755617902966,
+      "latencies": [],
+      "errorsWindow": [],
+      "p50": 0,
+      "p90": 0,
+      "p99": 0,
+      "error_rate_1m": 0
+    }
+  },
+  "budgets": {
+    "quicP99BudgetBreaches": 0,
+    "pipelineAnomalySpikeBudget": 0
+  },
+  "savedAt": "2025-08-19T15:38:23.018Z"
+}

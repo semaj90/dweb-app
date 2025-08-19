@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { writable } from "svelte/store";
-import { Button } from "$lib/components/ui/button";
+// Orphaned content: import {
 
 export class AIAssistant {
   private isLoading = writable(false);

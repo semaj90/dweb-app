@@ -9,7 +9,7 @@
 
 <button
   class="w-250px focus:border-orange-800 {orange(300)} hover:bg-orange-400 color-orange-900 font-semibold rounded-xl p-4"
-  on:click={increment}
+  onclick={increment}
 >
   Clicks: {count}<br />
   <span class="text-sm"

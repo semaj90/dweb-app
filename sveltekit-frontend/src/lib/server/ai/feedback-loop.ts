@@ -3,15 +3,7 @@
 // Machine learning feedback loop for continuous improvement of AI synthesis
 
 import { logger } from "./logger";
-import { prisma } from "../database";
-
-interface FeedbackData {
-  requestId: string;
-  userId: string;
-  rating: number; // 1-5 stars
-  feedback?: string;
-  improvedResponse?: string;
-}
+import { prisma, , interface FeedbackData {,   requestId: string;,   userId: string;,   rating: number; // 1-5 stars,   feedback?: string;,   improvedResponse?: string; } from
 
 interface InteractionData {
   requestId: string;

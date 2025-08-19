@@ -3,15 +3,7 @@
 // Combines local Tauri/Rust embeddings with cloud fallbacks
 // Use process.env for server-side environment variables
 import { cacheEmbedding, getCachedEmbedding } from "$lib/server/cache/redis";
-import { aiService, type EmbeddingProvider } from "$lib/services/ai-service";
-
-interface EnhancedEmbeddingOptions {
-  provider?: "auto" | "openai" | "tauri-legal-bert" | "tauri-bert";
-  cache?: boolean;
-  maxTokens?: number;
-  legalDomain?: boolean;
-  batchSize?: number;
-}
+import { aiService, type EmbeddingProvider, , interface EnhancedEmbeddingOptions {,   provider?: "auto" | "openai" | "tauri-legal-bert" | "tauri-bert";,   cache?: boolean;,   maxTokens?: number;,   legalDomain?: boolean;,   batchSize?: number; } from
 export async function generateEnhancedEmbedding(
   text: string | string[],
   options: EnhancedEmbeddingOptions = {},
@@ -146,13 +138,13 @@ async function generateOpenAIEmbeddings(
   texts: string[],
   returnArray: boolean,
 ): Promise<number[] | number[][]> {
-  if (!process.env.OPENAI_API_KEY) {
+  if (!import.meta.env.OPENAI_API_KEY) {
     throw new Error("OpenAI API key not configured");
   }
   const response = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${import.meta.env.OPENAI_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

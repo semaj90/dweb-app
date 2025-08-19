@@ -1,5 +1,9 @@
 <!-- EnhancedRAG:Studio UI - Complete RAG Management Dashboard -->
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { onMount } from 'svelte';
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -322,7 +326,7 @@
                 bind:value={searchQuery}
                 placeholder="Enter your search query..."
                 class="flex-1"
-                onkeydown={(e) => e.key === 'Enter' && handleSearch()}
+                on:keydown={(e) => e.key === 'Enter' && handleSearch()}
               />
               <Button on:click={handleSearch} disabled={isLoading || !searchQuery.trim()}>
                 {#if isLoading}

@@ -1,15 +1,6 @@
 // @ts-nocheck
-import { writable, derived, get } from 'svelte/store';
-import { advancedCache } from './advanced-cache-manager';
-
-export interface RecommendationContext {
-  userQuery: string;
-  legalDomain: 'contract' | 'litigation' | 'compliance' | 'intellectual_property' | 'employment' | 'general';
-  userRole: 'prosecutor' | 'detective' | 'legal_analyst' | 'paralegal' | 'client';
-  caseType?: string;
-  jurisdiction?: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-}
+import { writable, derived, get } from "svelte/store";
+import { advancedCache, , export interface RecommendationContext {,   userQuery: string;,   legalDomain: 'contract' | 'litigation' | 'compliance' | 'intellectual_property' | 'employment' | 'general';,   userRole: 'prosecutor' | 'detective' | 'legal_analyst' | 'paralegal' | 'client';,   caseType?: string;,   jurisdiction?: string;,   priority: 'low' | 'medium' | 'high' | 'urgent'; } from
 
 export interface Recommendation {
   id: string;

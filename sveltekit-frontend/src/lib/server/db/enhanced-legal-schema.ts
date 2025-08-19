@@ -5,8 +5,8 @@
  */
 
 import { relations, sql } from "drizzle-orm";
-import {
-  boolean,
+// Orphaned content: import {
+boolean,
   decimal,
   integer,
   jsonb,
@@ -16,7 +16,6 @@ import {
   timestamp,
   uuid,
   varchar,
-} from "drizzle-orm/pg-core";
 import { vector } from "pgvector/drizzle-orm";
 
 // === ENHANCED LEGAL EVIDENCE WITH HYBRID VECTOR STORAGE ===

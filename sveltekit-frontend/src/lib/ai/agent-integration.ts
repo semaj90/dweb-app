@@ -1,9 +1,10 @@
+import type { AgentTrigger, SemanticAuditResult } from "./types";
+import { resolveLibraryId } from "./mcp-helpers";
 // @ts-nocheck
 // Phase 10: Context7 Agent Orchestration Integration (Stub)
 // This module stubs agent triggers for code review, fixes, and analysis.
 // TODO: After initial test, wire up real CrewAI/Autogen and Context7 agent orchestration using mcp_memory_create_relations and mcp_context7_resolve-library-id.
 
-import type { AgentTrigger, SemanticAuditResult } from "./types";
 
 // Mock: Trigger agent actions for audit TODOs/errors
 export async function triggerAgentActions(
@@ -27,7 +28,6 @@ export async function triggerAgentActions(
 // import { mcp_memory_create_relations, mcp_context7_resolve-library-id } from '#context7';
 // export async function wireUpContext7Agents(...) { ... }// Phase 10: Agent Integration (CrewAI/Autogen) - stub
 // TODO: Replace with real agent orchestration after test
-import { resolveLibraryId } from "./mcp-helpers";
 
 export async function triggerAgentAction(auditResult: any) {
   // Example: Use Context7 helpers to relate audit result to agent action

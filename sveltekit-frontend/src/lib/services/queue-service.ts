@@ -1,11 +1,11 @@
+import { Queue } from "bullmq";
+import Redis from "ioredis";
 // @ts-nocheck
-import { Queue } from 'bullmq';
-import Redis from 'ioredis';
 
 // Redis connection
 const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
+  host: import.meta.env.REDIS_HOST || 'localhost',
+  port: parseInt(import.meta.env.REDIS_PORT || '6379'),
   maxRetriesPerRequest: null,
   enableReadyCheck: false
 });

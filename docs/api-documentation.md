@@ -244,19 +244,19 @@ CREATE TABLE legal_documents (
 );
 
 -- Indexes for pgvector similarity search
-CREATE INDEX legal_documents_content_embedding_idx 
-ON legal_documents USING ivfflat (content_embedding vector_cosine_ops) 
+CREATE INDEX legal_documents_content_embedding_idx
+ON legal_documents USING ivfflat (content_embedding vector_cosine_ops)
 WITH (lists = 100);
 
-CREATE INDEX legal_documents_title_embedding_idx 
-ON legal_documents USING ivfflat (title_embedding vector_cosine_ops) 
+CREATE INDEX legal_documents_title_embedding_idx
+ON legal_documents USING ivfflat (title_embedding vector_cosine_ops)
 WITH (lists = 100);
 
 -- Full-text search indexes
-CREATE INDEX legal_documents_content_fts_idx 
+CREATE INDEX legal_documents_content_fts_idx
 ON legal_documents USING gin(to_tsvector('english', content));
 
-CREATE INDEX legal_documents_title_fts_idx 
+CREATE INDEX legal_documents_title_fts_idx
 ON legal_documents USING gin(to_tsvector('english', title));
 ```
 
@@ -304,16 +304,14 @@ const vectorStore = await PGVectorStore.initialize(embeddings, {
 
 ```bash
 # Install and run models
-ollama pull llama3.2:3b          # Main LLM for analysis
-ollama pull mistral:7b           # Alternative LLM
+ollama serve gemma3 legal-latest        # Main LLM for analysi
 ollama pull nomic-embed-text     # Embeddings model
-ollama pull codellama:7b         # For code analysis in contracts
 
 # List available models
 ollama list
 
 # Model info
-ollama show gemma3 legal-latest 
+ollama show gemma3 legal-latest
 ```
 
 ## Search Query Examples
@@ -321,11 +319,11 @@ ollama show gemma3 legal-latest
 ### Semantic Search with pgvector
 ```sql
 -- Find similar documents using cosine similarity
-SELECT 
-  id, 
-  title, 
+SELECT
+  id,
+  title,
   1 - (content_embedding <=> $1::vector) as similarity_score
-FROM legal_documents 
+FROM legal_documents
 WHERE 1 - (content_embedding <=> $1::vector) > 0.7
 ORDER BY content_embedding <=> $1::vector
 LIMIT 10;
@@ -335,18 +333,18 @@ LIMIT 10;
 ```sql
 -- Combine full-text and vector search
 WITH semantic_results AS (
-  SELECT id, title, content, 
+  SELECT id, title, content,
          1 - (content_embedding <=> $1::vector) as semantic_score
-  FROM legal_documents 
+  FROM legal_documents
   WHERE 1 - (content_embedding <=> $1::vector) > 0.6
 ),
 fulltext_results AS (
   SELECT id, title, content,
          ts_rank(to_tsvector('english', content), plainto_tsquery('english', $2)) as text_score
-  FROM legal_documents 
+  FROM legal_documents
   WHERE to_tsvector('english', content) @@ plainto_tsquery('english', $2)
 )
-SELECT DISTINCT 
+SELECT DISTINCT
   COALESCE(s.id, f.id) as id,
   COALESCE(s.title, f.title) as title,
   COALESCE(s.content, f.content) as content,
@@ -392,6 +390,7 @@ interface VectorError extends APIError {
 
 - **pgvector**: Use IVFFlat index for large datasets (>10k vectors)
 - **Ollama**: Keep models loaded in memory for faster inference
+**loki.js** for caching
 - **LangChain.js**: Implement response streaming for long generations
 - **Database**: Use connection pooling with Drizzle ORM
 - **Chunking**: Optimal chunk size 500-1000 tokens for legal documents

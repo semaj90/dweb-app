@@ -5,9 +5,12 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt.js";
-import type { CopilotSelfPromptOptions } from "$lib/utils/copilot-self-prompt.js";
+// Orphaned content: import type { RequestHandler
+import {
+copilotSelfPrompt } from "$lib/utils/copilot-self-prompt.js";
+// Orphaned content: import type { CopilotSelfPromptOptions
+import {
+URL } from "url";
 
 export const POST: RequestHandler = async ({ request, url }) => {
   try {

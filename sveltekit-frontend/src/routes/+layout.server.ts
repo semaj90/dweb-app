@@ -1,3 +1,4 @@
+import { URL } from "url";
 // @ts-nocheck
 
 // Expose session and user to all layouts/pages (SSR)

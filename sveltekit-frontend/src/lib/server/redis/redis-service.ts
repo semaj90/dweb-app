@@ -1,6 +1,6 @@
+import { createClient } from "redis";
 // @ts-nocheck
 // Redis pub/sub service for real-time updates
-import { createClient } from "redis";
 
 interface RedisConfig {
   url: string;
@@ -20,7 +20,7 @@ class RedisService {
   }
   private async initializeClients() {
     const config: RedisConfig = {
-      url: process.env.REDIS_URL || "redis://localhost:6379",
+      url: import.meta.env.REDIS_URL || "redis://localhost:6379",
       retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,
     };

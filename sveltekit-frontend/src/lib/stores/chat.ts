@@ -1,6 +1,6 @@
 // Simple chat store for Enhanced Legal AI Chat
 import { writable } from 'svelte/store';
-import type { ChatMessage, ChatSession, ChatState } from '$lib/types/chat';
+// Orphaned content: import type { ChatMessage, ChatSession, ChatState
 
 const initialState: ChatState = {
   messages: [],

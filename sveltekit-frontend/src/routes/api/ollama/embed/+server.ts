@@ -1,13 +1,13 @@
+import type { EmbeddingResponse } from "$lib/types/ollama";
 /**
  * Ollama Embeddings API Endpoint
  * Handles text embedding generation for legal documents
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import type { EmbeddingResponse } from '$lib/types/ollama';
+// Orphaned content: import type { RequestHandler
 
-const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_BASE_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

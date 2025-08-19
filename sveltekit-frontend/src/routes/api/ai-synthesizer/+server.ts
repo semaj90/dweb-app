@@ -3,11 +3,15 @@
 // TypeScript-safe with Drizzle ORM and MCP Context7 best practices
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { aiOrchestrator } from '$lib/server/ai/enhanced-ai-synthesis-orchestrator';
-import { logger } from '$lib/server/logger';
-import { monitoringService } from '$lib/server/ai/monitoring-service';
-import { cachingLayer } from '$lib/server/ai/caching-layer';
+// Orphaned content: import type { RequestHandler
+import {
+aiOrchestrator } from "$lib/server/ai/enhanced-ai-synthesis-orchestrator";
+// Orphaned content: import { logger
+import {
+monitoringService } from "$lib/server/ai/monitoring-service";
+// Orphaned content: import { cachingLayer
+stream from "stream";
+// Orphaned content: import {
 
 // SSE stream storage for real-time updates
 const activeStreams = new Map<string, any>();

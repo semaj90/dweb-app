@@ -3,7 +3,8 @@
 // This file manages local model downloads, setup, and integration
 
 import { dev } from "$app/environment";
-import { tauriLLM } from "$lib/services/tauri-llm";
+// Orphaned content: import {
+
 // Optional Tauri imports - fallback for web environments
 let createDir: any, writeTextFile: any, readTextFile: any, exists: any, join: any, appLocalDataDir: any;
 

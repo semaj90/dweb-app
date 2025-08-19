@@ -1,18 +1,14 @@
-// @ts-nocheck
 import { evidence } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { randomUUID } from "crypto";
-import { existsSync, createReadStream } from "fs";
-import { mkdir, writeFile, readFile } from "fs/promises";
-import path from "path";
-import { db } from "$lib/server/db/index";
-
-// Optional sharp import for image processing
-let sharp: any = null;
-try {
-  sharp = require("sharp");
-} catch (e) {
+import { URL } from "url";
+// @ts-nocheck
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { randomUUID
+import {
+existsSync, createReadStream } from "fs";
+// Orphaned content: import { mkdir, writeFile, readFile
+path from "path";
+import { db, , // Optional sharp import for image processing, let sharp: any = null;, try {,   sharp = require("sharp"); } from
   console.warn("Sharp not available - image processing disabled");
 }
 // Ensure upload directory exists

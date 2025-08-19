@@ -1,8 +1,9 @@
+import type { LegalDocument, Evidence, User } from "$lib/types/legal-types";
+import crypto from "crypto";
 // @ts-nocheck
 // SIMD-optimized JSON parser for legal document processing
 // Achieves 4-6 GB/s parsing speed for large legal documents
 
-import type { LegalDocument, Evidence, User } from '$lib/types/legal-types';
 
 /**
  * SIMD JSON Parser for Legal AI Applications

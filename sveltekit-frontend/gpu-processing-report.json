@@ -1,0 +1,54 @@
+{
+  "timestamp": "2025-08-19T20:16:27.266Z",
+  "pipeline": "Complete GPU Error Processing",
+  "capabilities": [
+    "GPU acceleration with FlashAttention2",
+    "Concurrent IndexedDB search (4 workers)",
+    "Native Windows service orchestration",
+    "Real-time performance monitoring"
+  ],
+  "processing": {
+    "totalErrors": 0,
+    "processedErrors": 0,
+    "successfulFixes": 0,
+    "successRate": "NaN%",
+    "processingTimeSeconds": "0.0",
+    "tokensPerSecond": "NaN"
+  },
+  "gpu": {
+    "device": "RTX 3060 Ti",
+    "model": "gemma3-legal:latest (GGUF)",
+    "embeddingModel": "nomic-embed-text:latest (GGUF)",
+    "utilization": "83.5%",
+    "memoryUsage": "5059MB",
+    "flashAttention2": "enabled"
+  },
+  "services": {
+    "postgresql": {
+      "status": "running",
+      "port": 5432
+    },
+    "redis": {
+      "status": "running",
+      "port": 6379
+    },
+    "ollama": {
+      "status": "running",
+      "port": 11434
+    },
+    "enhancedRag": {
+      "status": "ready",
+      "port": 8094
+    },
+    "uploadService": {
+      "status": "ready",
+      "port": 8093
+    }
+  },
+  "concurrentSearch": {
+    "workers": 4,
+    "indexedErrors": 0,
+    "searchEngine": "Fuse.js with semantic similarity",
+    "status": "operational"
+  }
+}

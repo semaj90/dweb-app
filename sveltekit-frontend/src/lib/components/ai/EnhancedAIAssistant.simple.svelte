@@ -106,14 +106,14 @@ Would you like me to elaborate on any of these aspects?`,
       <div class="container mx-auto px-4">
         <button
           class="container mx-auto px-4"
-          on:click={() => (showSettings = !showSettings)}
+          onclick={() => (showSettings = !showSettings)}
           title="Settings"
         >
           <Settings class="container mx-auto px-4" />
         </button>
         <button
           class="container mx-auto px-4"
-          on:click={() => clearMessages()}
+          onclick={() => clearMessages()}
           title="Clear conversation"
         >
           <Trash2 class="container mx-auto px-4" />
@@ -135,7 +135,7 @@ Would you like me to elaborate on any of these aspects?`,
               {#each message.references as reference}
                 <button
                   class="container mx-auto px-4"
-                  on:click={() => handleReferenceClick(reference)}
+                  onclick={() => handleReferenceClick(reference)}
                 >
                   <Quote class="container mx-auto px-4" />
                   <span class="container mx-auto px-4">{reference.title}</span>
@@ -158,7 +158,7 @@ Would you like me to elaborate on any of these aspects?`,
     </div>
 
     <!-- Input -->
-    <form class="container mx-auto px-4" on:submit|preventDefault={handleSubmit}>
+    <form class="container mx-auto px-4" onsubmit|preventDefault={handleSubmit}>
       <div class="container mx-auto px-4">
         <input
           type="text"
@@ -183,7 +183,7 @@ Would you like me to elaborate on any of these aspects?`,
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h4 class="container mx-auto px-4">AI Assistant Settings</h4>
-        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
+        <button class="container mx-auto px-4" onclick={() => (showSettings = false)}
           >×</button
         >
       </div>
@@ -242,8 +242,8 @@ Would you like me to elaborate on any of these aspects?`,
   {#if showCitationDialog}
     <div
       class="container mx-auto px-4"
-      on:click={() => (showCitationDialog = false)}
-      on:keydown={(e) => {
+      onclick={() => (showCitationDialog = false)}
+      onkeydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
         }
@@ -267,12 +267,12 @@ Would you like me to elaborate on any of these aspects?`,
           </div>
 
           <div class="container mx-auto px-4">
-            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
+            <button class="container mx-auto px-4" onclick={() => insertCitation()}>
               Insert Citation
             </button>
             <button
               class="container mx-auto px-4"
-              on:click={() => navigator.clipboard.writeText(selectedCitation)}
+              onclick={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy to Clipboard
             </button>
@@ -282,7 +282,7 @@ Would you like me to elaborate on any of these aspects?`,
         <div class="container mx-auto px-4">
           <button
             class="container mx-auto px-4"
-            on:click={() => (showCitationDialog = false)}
+            onclick={() => (showCitationDialog = false)}
           >
             Close
           </button>
@@ -301,12 +301,7 @@ Would you like me to elaborate on any of these aspects?`,
     background: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-  .chat-container {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-  .chat-header {
+.chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -489,16 +484,7 @@ Would you like me to elaborate on any of these aspects?`,
     justify-content: center;
     z-index: 1000;
 }
-  .dialog-content {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-  .dialog-header {
+.dialog-header {
     padding: 16px;
     border-bottom: 1px solid #e5e7eb;
 }

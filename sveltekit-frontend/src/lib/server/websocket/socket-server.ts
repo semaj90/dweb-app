@@ -1,14 +1,8 @@
+import type { WebSocket } from "ws";
 // @ts-nocheck
 // WebSocket server for real-time updates
 import { WebSocketServer } from "ws";
-import { createClient } from "redis";
-import type { WebSocket } from "ws";
-
-interface ClientConnection {
-  ws: WebSocket;
-  userId?: string;
-  subscriptions: Set<string>;
-}
+import { createClient, , interface ClientConnection {,   ws: WebSocket;,   userId?: string;,   subscriptions: Set<string>; } from
 class RealTimeServer {
   private wss: WebSocketServer;
   private redisClient: any;
@@ -25,11 +19,11 @@ class RealTimeServer {
     try {
       // Create Redis clients
       this.redisClient = createClient({
-        url: process.env.REDIS_URL || "redis://localhost:6379",
+        url: import.meta.env.REDIS_URL || "redis://localhost:6379",
       });
 
       this.redisSub = createClient({
-        url: process.env.REDIS_URL || "redis://localhost:6379",
+        url: import.meta.env.REDIS_URL || "redis://localhost:6379",
       });
 
       // Connect Redis clients

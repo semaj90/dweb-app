@@ -4,8 +4,10 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { productionServiceClient } from '$lib/services/productionServiceClient';
+// Orphaned content: import type { RequestHandler
+import {
+productionServiceClient } from "$lib/services/productionServiceClient";
+// Orphaned content: import { URL
 
 interface AIRequest {
   type: 'summary' | 'legal' | 'live' | 'analysis';

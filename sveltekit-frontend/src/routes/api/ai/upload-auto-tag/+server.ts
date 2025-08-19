@@ -6,13 +6,18 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { aiAutoTaggingService } from '$lib/services/aiAutoTagging';
-import { enhancedRAGPipeline } from '$lib/services/enhancedRAGPipeline';
-import { goMicroservice } from '$lib/services/goMicroservice';
-import { db } from '$lib/server/database';
-import { enhancedEvidence } from '$lib/server/db/enhanced-legal-schema';
-import { eq } from 'drizzle-orm';
+// Orphaned content: import type { RequestHandler
+import {
+aiAutoTaggingService } from "$lib/services/aiAutoTagging";
+// Orphaned content: import { enhancedRAGPipeline
+import {
+goMicroservice } from "$lib/services/goMicroservice";
+// Orphaned content: import { db
+import {
+enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";
+// Orphaned content: import { eq
+import {
+URL } from "url";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {

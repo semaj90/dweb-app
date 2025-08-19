@@ -2,8 +2,8 @@
  * Database Schema for PostgreSQL with pgvector
  */
 
-import { pgTable, text, uuid, timestamp, jsonb, vector, integer, boolean, decimal, varchar } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
+import { pgTable, text, uuid, timestamp, jsonb, vector, integer, boolean, decimal, varchar } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // Content embeddings table with pgvector
 export const contentEmbeddings = pgTable('content_embeddings', {

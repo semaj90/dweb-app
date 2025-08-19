@@ -25,7 +25,7 @@ https://svelte.dev/e/js_parse_error -->
     colStart?: number;
     rowStart?: number;
     responsive?: boolean;
-    className?: string;
+    class?: string;
 }
 </script>
 
@@ -45,9 +45,9 @@ https://svelte.dev/e/js_parse_error -->
 
   
   // Responsive breakpoints
-  let gridClass = $derived(responsive);
+  let gridClass = $derived(responsive
     ? `grid-cols-1 sm:grid-cols-2 md:grid-cols-${Math.min(columns, 6)} lg:grid-cols-${Math.min(columns, 8)} xl:grid-cols-${columns}`
-    : `grid-cols-${columns}`;
+    : `grid-cols-${columns}`);
 </script>
 
 <div

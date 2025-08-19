@@ -191,7 +191,7 @@
         <!-- System Controls -->
         <div class="flex items-center space-x-3">
           <button
-            on:click={toggleSystem}
+            onclick={toggleSystem}
             class="px-4 py-2 {isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition-colors flex items-center space-x-2"
           >
             {#if isRunning}
@@ -204,7 +204,7 @@
           </button>
           
           <button
-            on:click={resetSystem}
+            onclick={resetSystem}
             class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors flex items-center space-x-2"
           >
             <RotateCcw class="w-4 h-4" />
@@ -247,7 +247,7 @@
             { id: 'performance', label: 'Performance', icon: BarChart3, desc: 'System metrics' }
           ] as demo}
             <button
-              on:click={() => selectedDemo = demo.id}
+              onclick={() => selectedDemo = demo.id}
               class="w-full flex items-center space-x-3 p-3 rounded-lg transition-colors {
                 selectedDemo === demo.id
                   ? 'bg-blue-100 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
@@ -270,35 +270,35 @@
         
         <div class="space-y-3">
           <button
-            on:click={runAppDemo}
+            onclick={runAppDemo}
             class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             Run App Demo
           </button>
           
           <button
-            on:click={runChatDemo}
+            onclick={runChatDemo}
             class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
           >
             Run Chat Demo
           </button>
           
           <button
-            on:click={runSearchDemo}
+            onclick={runSearchDemo}
             class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
           >
             Run Search Demo
           </button>
           
           <button
-            on:click={runUploadDemo}
+            onclick={runUploadDemo}
             class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
           >
             Run Upload Demo
           </button>
           
           <button
-            on:click={runCombinedDemo}
+            onclick={runCombinedDemo}
             class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-colors"
           >
             Combined Demo

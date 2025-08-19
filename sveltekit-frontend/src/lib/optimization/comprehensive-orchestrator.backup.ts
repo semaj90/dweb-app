@@ -6,22 +6,13 @@
  */
 
 import { EventEmitter } from "events";
-import {
-  NeuralMemoryManager,
-  type MemoryPrediction,
-  type LODLevel,
-} from "./neural-memory-manager.js";
-import {
-  EnhancedVSCodeExtensionManager,
-  type CommandMetrics,
-} from "./enhanced-vscode-extension-manager.js";
-// Docker memory optimizer removed - using native memory optimization
+import { NeuralMemoryManager,,   type MemoryPrediction,,   type LODLevel,, {,   EnhancedVSCodeExtensionManager,,   type CommandMetrics, } from
+// Orphaned content: // Docker memory optimizer removed - using native memory optimization
 // type ContainerMetrics = Record<string, any>;
 // type ThroughputMetrics = Record<string, any>;
 import {
   UltraHighPerformanceJSONProcessor,
   type JSONPerformanceMetrics,
-} from "./ultra-json-processor.js";
 
 export interface OptimizationSystemConfig {
   maxMemoryGB: number;

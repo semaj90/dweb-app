@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
 
 const REPORT_TEMPLATES = {
   "case-summary": {

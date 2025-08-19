@@ -2,17 +2,8 @@
 // lib/server/ai/monitoring-service.ts
 // Comprehensive monitoring and observability for AI synthesis pipeline
 
-import { logger } from './logger';
-import { EventEmitter } from 'events';
-
-interface MetricData {
-  requestId: string;
-  processingTime: number;
-  confidence: number;
-  sourceCount: number;
-  strategies: string[];
-  qualityScore: number;
-}
+import { logger } from "./logger";
+import { EventEmitter, , interface MetricData {,   requestId: string;,   processingTime: number;,   confidence: number;,   sourceCount: number;,   strategies: string[];,   qualityScore: number; } from
 
 interface AlertRule {
   name: string;

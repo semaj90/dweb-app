@@ -2,14 +2,7 @@
 // for both the AI chat and evidence analysis features.
 
 import { writable } from "svelte/store";
-import { browser } from "$app/environment";
-
-// Check server connectivity
-const services = {
-  ollama: "http://localhost:11434/api/version",
-  postgres: null, // Will be checked via API
-  redis: null, // Will be checked via API
-};
+import { browser, , // Check server connectivity, const services = {,   ollama: "http://localhost:11434/api/version",,   postgres: null, // Will be checked via API,   redis: null, // Will be checked via API } from
 
 // Connection health store
 export const serviceStatus = writable({

@@ -1,20 +1,12 @@
 // @ts-nocheck
-import { OllamaService } from '$lib/services/ollamaService.js';
-import { db } from '../db/index.js';
-import { userAiQueries, autoTags, documentChunks, embeddingCache } from '../db/schema.js';
-import { eq, desc, sql } from 'drizzle-orm';
-import type { NewUserAiQuery, NewAutoTag, NewDocumentChunk } from '../db/schema.js';
-import { generateIdFromEntropySize } from 'lucia';
-import crypto from 'crypto';
+import { OllamaService } from "$lib/services/ollamaService.js";
+// Orphaned content: import {
 
-export interface AIAnalysisResult {
-  summary: string;
-  tags: string[];
-  confidence: number;
-  entities?: string[];
-  keywords?: string[];
-  recommendations?: string[];
-}
+import { userAiQueries, autoTags, documentChunks, embeddingCache } from "../db/schema.js";
+// Orphaned content: import {
+eq, desc, sql
+import type { NewUserAiQuery, NewAutoTag, NewDocumentChunk } from "../db/schema.js";
+import { generateIdFromEntropySize, import crypto from 'crypto';, , export interface AIAnalysisResult {,   summary: string;,   tags: string[];,   confidence: number;,   entities?: string[];,   keywords?: string[];,   recommendations?: string[]; } from
 
 export interface AIQueryOptions {
   model?: string;

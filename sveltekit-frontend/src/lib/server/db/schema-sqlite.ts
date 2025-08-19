@@ -7,7 +7,7 @@ import {
   real,
   blob,
 } from "drizzle-orm/sqlite-core";
-import { relations } from "drizzle-orm";
+// Orphaned content: import { relations
 
 // === AUTHENTICATION & USER MANAGEMENT ===
 

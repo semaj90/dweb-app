@@ -3,8 +3,8 @@
  * Handles conversation history, user preferences, and Enhanced RAG integration
  */
 
-import { writable, derived, get } from 'svelte/store';
-import { browser } from "$app/environment";
+import { writable, derived, get } from "svelte/store";
+// Orphaned content: import {
 
 // Types
 export interface ChatMessage {

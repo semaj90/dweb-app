@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { writable } from "svelte/store";
+// @ts-nocheck
 
 export interface Notification {
   id: string;

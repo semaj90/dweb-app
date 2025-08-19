@@ -1,9 +1,8 @@
 // @ts-nocheck
 import type { User } from "$lib/types/user";
-
-// IndexedDB service for client-side caching and offline RAG support
+// Orphaned content: // IndexedDB service for client-side caching and offline RAG support
 // Stores embeddings, search results, and user interactions locally
-import { browser } from "$app/environment";
+import { browser
 
 interface CachedDocument {
   id: string;

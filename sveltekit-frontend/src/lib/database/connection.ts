@@ -1,10 +1,11 @@
 // @ts-nocheck
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { drizzle } from "drizzle-orm/node-postgres";
+// Orphaned content: import {
+
 import { Pool } from 'pg';
-import * as schema from './schema';
-// import { env } from '$env/dynamic/private'; // Temporarily disabled for build
-const env = { DATABASE_URL: process.env.DATABASE_URL };
+// Orphaned content: import * as schema from './schema.js';
+// import { env // Temporarily disabled for build
+const env = { DATABASE_URL: import.meta.env.DATABASE_URL };
 
 // Create PostgreSQL connection pool
 const pool = new Pool({

@@ -148,7 +148,7 @@
         <h2 class="text-xl font-bold text-white">Live Demo</h2>
         <button 
           class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
-          on:click={() => showEventLog = !showEventLog}
+          onclick={() => showEventLog = !showEventLog}
         >
           {showEventLog ? 'Hide' : 'Show'} Event Log
         </button>

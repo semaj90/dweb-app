@@ -205,7 +205,7 @@
 				enableOCR={true}
 				enableEmbedding={true}
 				enableRAG={true}
-				className="mb-8"
+				class="mb-8"
 			/>
 
 			<!-- Upload Results -->

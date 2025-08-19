@@ -5,7 +5,7 @@
 // ======================================================================
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
 
 // Import AI services
 interface ProcessingPipeline {

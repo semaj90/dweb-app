@@ -1,18 +1,11 @@
+import { writable, derived, get } from "svelte/store";
 // @ts-nocheck
 /**
  * FIXED Evidence Unified Store - Phase 2 Integration
- * Addresses critical import and compatibility issues
+ * Addresses critical and compatibility issues
  */
 
-import { writable, derived, get } from "svelte/store";
-import { browser } from "$app/environment";
-
-// Safe import with fallback
-let selectedCase: any;
-try {
-  const casesModule = await import("./cases");
-  selectedCase = casesModule.selectedCase || writable(null);
-} catch (error) {
+import { browser, , // Safe import with fallback, let selectedCase: any;, try {,   const casesModule = await import("./cases");,   selectedCase = casesModule.selectedCase || writable(null); } from
   console.warn("Cases store not found, using fallback");
   selectedCase = writable(null);
 }
@@ -102,7 +95,7 @@ class UnifiedEvidenceStore {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const hostname = window.location.hostname;
     const port =
-      process.env.NODE_ENV === "production" ? window.location.port : "3030";
+      import.meta.env.NODE_ENV === "production" ? window.location.port : "3030";
     const wsUrl = `${protocol}//${hostname}:${port}`;
 
     try {

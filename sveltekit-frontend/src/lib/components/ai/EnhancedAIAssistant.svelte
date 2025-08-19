@@ -2,11 +2,19 @@
   import { Bot, Download, Loader2, MessageSquare, Quote, Search, Settings, User as UserIcon } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
-  export let caseId: string | undefined = undefined;
-  export const evidenceIds: string[] = [];
-  export let placeholder = "Ask AI about this case...";
-  export let maxHeight = "400px";
-  export let showReferences = true;
+  let { 
+    caseId = undefined,
+    evidenceIds = [],
+    placeholder = "Ask AI about this case...",
+    maxHeight = "400px",
+    showReferences = true
+  }: {
+    caseId?: string | undefined;
+    evidenceIds?: string[];
+    placeholder?: string;
+    maxHeight?: string;
+    showReferences?: boolean;
+  } = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -58,7 +66,7 @@
 
       if (!response.ok) {
         throw new Error("Failed to get AI response");
-}
+      }
       const data = await response.json();
 
       const assistantMessage = {
@@ -88,12 +96,14 @@
       messages = [...messages, errorMessage];
     } finally {
       isLoading = false;
-}}
+    }
+  }
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       handleSubmit();
-}}
+    }
+  }
   function showCitation(citation: string) {
     selectedCitation = citation;
     showCitationDialog = true;
@@ -133,18 +143,19 @@
       {#if caseId}
         <span class="container mx-auto px-4">Case: {caseId}</span>
       {/if}
-<!-- End main container -->
+    </div>
+
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        on:click={() => (showSettings = !showSettings)}
+        onclick={() => (showSettings = !showSettings)}
         title="Settings"
       >
         <Settings class="container mx-auto px-4" />
       </button>
       <button
         class="container mx-auto px-4"
-        on:click={() => downloadChat()}
+        onclick={() => downloadChat()}
         title="Download chat"
         disabled={messages.length === 0}
       >
@@ -152,7 +163,7 @@
       </button>
       <button
         class="container mx-auto px-4"
-        on:click={() => clearChat()}
+        onclick={() => clearChat()}
         title="Clear chat"
         disabled={messages.length === 0}
       >
@@ -237,7 +248,7 @@
                 <li>
                   <button
                     class="container mx-auto px-4"
-                    on:click={() => showCitation(ref.citation)}
+                    onclick={() => showCitation(ref.citation)}
                   >
                     {ref.title}
                   </button>
@@ -266,14 +277,14 @@
     <div class="container mx-auto px-4">
       <textarea
         bind:value={query}
-        on:keydown={handleKeyDown}
+        onkeydown={handleKeyDown}
         {placeholder}
         rows="4"
         disabled={isLoading}
       ></textarea>
       <button
         class="container mx-auto px-4"
-        on:click={() => handleSubmit()}
+        onclick={() => handleSubmit()}
         disabled={!query.trim() || isLoading}
       >
         {#if isLoading}
@@ -287,7 +298,7 @@
 
   <!-- Citation Dialog -->
   {#if showCitationDialog}
-    <div class="modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="citation-modal-title" on:keydown={(e) => { if (e.key === 'Escape') showCitationDialog = false; }}>
+    <div class="modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="citation-modal-title" onkeydown={(e) => { if (e.key === 'Escape') showCitationDialog = false; }}>
       <div class="modal" role="document">
         <div class="modal-header">
           <h2 id="citation-modal-title" class="visually-hidden">Legal Citation</h2>
@@ -299,16 +310,16 @@
             <p>{selectedCitation}</p>
           </div>
           <div class="modal-actions">
-            <button class="btn-primary" on:click={() => insertCitation()}>
+            <button class="btn-primary" onclick={() => insertCitation()}>
               Insert Citation
             </button>
-            <button class="btn-secondary" on:click={() => navigator.clipboard.writeText(selectedCitation)}>
+            <button class="btn-secondary" onclick={() => navigator.clipboard.writeText(selectedCitation)}>
               Copy
             </button>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-close" on:click={() => (showCitationDialog = false)}>
+          <button class="btn-close" onclick={() => (showCitationDialog = false)}>
             Close
           </button>
         </div>
@@ -600,4 +611,3 @@
     background: #e5e7eb;
 }
 </style>
-</div>

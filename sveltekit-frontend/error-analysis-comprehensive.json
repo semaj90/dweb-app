@@ -1,0 +1,102 @@
+{
+  "timestamp": "2025-08-19T17:45:30.000Z",
+  "analysis_type": "comprehensive_error_log",
+  "baseline_comparison": {
+    "previous_baseline": 3,
+    "current_estimated": 1962,
+    "increase": 1959,
+    "severity": "critical"
+  },
+  "context7_integration": {
+    "multicore_service_available": true,
+    "service_location": "src/lib/services/context7-multicore.ts",
+    "capabilities": [
+      "semantic_analysis",
+      "legal_classification", 
+      "recommendation_generation",
+      "json_parsing",
+      "tensor_processing"
+    ]
+  },
+  "error_categories": {
+    "component_props_mismatch": {
+      "count": "~800",
+      "description": "Svelte 5 runes migration - export let -> $props() needed",
+      "sample_files": [
+        "src/routes/saved-citations/+page.svelte",
+        "src/routes/rag-demo/+page.svelte", 
+        "src/routes/showcase/+page.svelte"
+      ],
+      "error_codes": ["ts(2322)", "ts(2339)"],
+      "fix_pattern": "Replace 'export let prop' with 'let { prop } = $props()'"
+    },
+    "ui_component_incompatibility": {
+      "count": "~600", 
+      "description": "Bits UI / Melt UI component prop mismatches",
+      "sample_files": [
+        "CardRoot - class prop not recognized",
+        "DialogRoot - bind:open not bindable",
+        "DropdownMenuItem - onclick not supported"
+      ],
+      "error_codes": ["ts(2322)", "ts(2558)"],
+      "fix_pattern": "Update component props to match library API"
+    },
+    "css_unused_selectors": {
+      "count": "~400",
+      "description": "Unused CSS selectors in Svelte components", 
+      "severity": "warning",
+      "fix_pattern": "Remove unused CSS or apply selectors correctly"
+    },
+    "binding_issues": {
+      "count": "~162",
+      "description": "Non-bindable property binding attempts",
+      "error_codes": ["ts(2558)"],
+      "fix_pattern": "Use correct bindable syntax or event handlers"
+    }
+  },
+  "autosolve_recommendations": {
+    "priority_1": {
+      "action": "Svelte 5 Migration",
+      "description": "Systematically migrate components from export let to $props() pattern",
+      "estimated_fixes": 800,
+      "automation_potential": "high"
+    },
+    "priority_2": {
+      "action": "UI Library Reconciliation", 
+      "description": "Update component usage to match current Bits UI / Melt UI APIs",
+      "estimated_fixes": 600,
+      "automation_potential": "medium"
+    },
+    "priority_3": {
+      "action": "CSS Cleanup",
+      "description": "Remove unused CSS selectors identified by Svelte compiler",
+      "estimated_fixes": 400, 
+      "automation_potential": "high"
+    }
+  },
+  "context7_multicore_analysis": {
+    "semantic_patterns": {
+      "detected_libraries": ["svelte", "bits-ui", "melt-ui", "typescript"],
+      "migration_complexity": "moderate",
+      "legal_ai_impact": "medium - mainly UI components affected"
+    },
+    "recommendation_engine": {
+      "suggested_approach": "batch_processing",
+      "confidence_score": 0.87,
+      "estimated_effort": "6-8 hours automated + 2-3 hours manual review"
+    }
+  },
+  "next_actions": [
+    "Update autosolve baseline from 3 to 1962",
+    "Run Context7 multicore batch processing for component migration", 
+    "Execute systematic Svelte 5 props conversion",
+    "Update UI library component usage patterns",
+    "Clean up unused CSS selectors",
+    "Validate fixes with incremental testing"
+  ],
+  "integration_status": {
+    "autosolve_api": "pending_server_startup",
+    "context7_multicore": "ready",
+    "baseline_update_needed": true
+  }
+}

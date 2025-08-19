@@ -1,7 +1,9 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { vectorSearch } from "$lib/server/search/vector-search";
+// Orphaned content: import type { RequestHandler
+import {
+vectorSearch } from "$lib/server/search/vector-search";
+// Orphaned content: import { URL
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

@@ -5,12 +5,11 @@
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-import type {
+// Orphaned content: import type {
   GoMicroserviceContext,
   GoMicroserviceEvents,
   GoServiceRequest,
   GoServiceResponse,
-} from "./types";
 
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
 const HEALTH_CHECK_INTERVAL = 60000; // 1 minute

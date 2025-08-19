@@ -5,7 +5,7 @@
  */
 
 import { writable, type Writable } from 'svelte/store';
-import type { LLMProvider } from '$lib/types/llm';
+// Orphaned content: import type { LLMProvider
 
 // AI Task Types
 export interface AITask {

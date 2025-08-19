@@ -114,7 +114,7 @@
   
   <div class="mb-6">
     <Button
-      onclick={startAnalysis}
+      on:click={startAnalysis}
       disabled={isAnalyzing}
       class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
     >

@@ -1,33 +1,17 @@
+import { URL } from "url";
 // @ts-nocheck
 // Enhanced document analysis API with GRPO-style thinking for legal AI
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import type { RequestHandler
 import {
+db } from "$lib/server/db/index";
+// Orphaned content: import {
   evidence,
   cases,
   aiReports,
   users,
-} from "$lib/server/db/schema-postgres";
 import { eq } from "drizzle-orm";
-import { createHash } from "crypto";
-
-interface AnalysisRequest {
-  documentId?: string;
-  evidenceId?: string;
-  caseId?: string;
-  text?: string;
-  documentType?: "evidence" | "case_file" | "legal_document" | "ocr_scan";
-  analysisType?:
-    | "classification"
-    | "extraction"
-    | "reasoning"
-    | "compliance"
-    | "chain_of_custody";
-  useThinkingStyle?: boolean;
-  contextDocuments?: string[];
-  userId?: string;
-}
+import { createHash, , interface AnalysisRequest {,   documentId?: string;,   evidenceId?: string;,   caseId?: string;,   text?: string;,   documentType?: "evidence" | "case_file" | "legal_document" | "ocr_scan";,   analysisType?:,     | "classification",     | "extraction",     | "reasoning",     | "compliance",     | "chain_of_custody";,   useThinkingStyle?: boolean;,   contextDocuments?: string[];,   userId?: string; } from
 
 interface ThinkingAnalysis {
   thinking: string;

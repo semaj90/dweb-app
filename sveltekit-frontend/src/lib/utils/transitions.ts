@@ -3,7 +3,7 @@
 // Compatible with Pico CSS + UnoCSS setup
 
 import { cubicOut } from "svelte/easing";
-import type { TransitionConfig } from "svelte/transition";
+// Orphaned content: import type { TransitionConfig
 
 export function flyAndScale(
   node: Element,

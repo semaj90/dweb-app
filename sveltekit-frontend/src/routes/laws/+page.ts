@@ -1,5 +1,5 @@
-import type { PageLoad } from './$types';
-import { error } from '@sveltejs/kit';
+import type { PageLoad } from "./$types";
+// Orphaned content: import {
 
 export const load: PageLoad = async ({ fetch, url, depends }) => {
   // Dependency tracking for cache invalidation

@@ -862,7 +862,7 @@
 					</div>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						on:click={() => addEvidenceMarker(item)}
+						onclick={() => addEvidenceMarker(item)}
 						disabled={readOnly}
 						title="Add evidence marker to canvas"
 					>
@@ -885,7 +885,7 @@
 					</div>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						on:click={() => addCitationMarker(citation)}
+						onclick={() => addCitationMarker(citation)}
 						disabled={readOnly}
 						title="Add citation marker to canvas"
 					>
@@ -925,18 +925,7 @@
 		border-bottom: 1px solid #e2e8f0;
 		background: #f8fafc;
 	}
-
-	.canvas-container {
-		flex: 1;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		background: #ffffff;
-		overflow: hidden;
-		position: relative;
-	}
-
-	.fabric-canvas {
+.fabric-canvas {
 		border: 1px solid #d1d5db;
 		border-radius: 4px;
 		background: white;

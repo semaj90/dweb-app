@@ -241,7 +241,7 @@
         type="file" 
         multiple 
         accept=".pdf,.doc,.docx,.txt" 
-        on:change={handleFileUpload}
+        onchange={handleFileUpload}
         class="upload-input"
       />
     </div>
@@ -316,13 +316,13 @@
           </div>
           
           <div class="document-actions">
-            <button class="action-btn" on:click={() => viewDocument(doc)} title="View">
+            <button class="action-btn" onclick={() => viewDocument(doc)} title="View">
               👁️
             </button>
-            <button class="action-btn" on:click={() => downloadDocument(doc)} title="Download">
+            <button class="action-btn" onclick={() => downloadDocument(doc)} title="Download">
               📥
             </button>
-            <button class="action-btn danger" on:click={() => deleteDocument(doc.id)} title="Delete">
+            <button class="action-btn danger" onclick={() => deleteDocument(doc.id)} title="Delete">
               🗑️
             </button>
           </div>

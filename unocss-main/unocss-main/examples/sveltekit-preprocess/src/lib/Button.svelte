@@ -4,7 +4,7 @@
 
 <button
   class="font-semibold {$$props.class}"
-  on:click={onclick}
+  onclick={onclick}
   type="button"
 >
   <span class="i-logos:svelte-icon" />

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { ollamaService } from "$lib/services/ollama-service";
-import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import type { RequestHandler
 
 // POST /api/ai/wwwh
 export const POST: RequestHandler = async ({ request }) => {

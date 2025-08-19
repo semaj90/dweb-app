@@ -1,10 +1,13 @@
 // @ts-nocheck
 import { canvasStates } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { randomUUID } from "crypto";
-import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { randomUUID
+import {
+eq } from "drizzle-orm";
+// Orphaned content: import { db
+import {
+URL } from "url";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

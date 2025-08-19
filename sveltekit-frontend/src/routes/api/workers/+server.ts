@@ -5,9 +5,12 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { z } from 'zod';
-import { createSpecializedWorkerSystem, type SpecializedJob } from '$lib/workers/specialized-worker-system.js';
+// Orphaned content: import type { RequestHandler
+import {
+z } from "zod";
+// Orphaned content: import { createSpecializedWorkerSystem, type SpecializedJob
+import {
+URL } from "url";
 
 // Job submission schemas
 const summarizationJobSchema = z.object({

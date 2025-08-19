@@ -1,7 +1,10 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { z } from "zod";
+// Orphaned content: import type { RequestHandler
+import {
+z } from "zod";
+// Orphaned content: import crypto from "crypto";
+import {
 
 // Validation schemas
 const evidenceNodeSchema = z.object({

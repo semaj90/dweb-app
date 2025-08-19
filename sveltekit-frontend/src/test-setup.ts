@@ -1,5 +1,5 @@
+import { beforeAll, vi }, { expect } from "vitest";
 // @ts-nocheck
-import { beforeAll, vi } from 'vitest';
 
 // Mock browser environment
 beforeAll(() => {
@@ -30,7 +30,6 @@ beforeAll(() => {
 });
 
 // Extend vitest matchers
-import { expect } from 'vitest';
 
 expect.extend({
   toBeOneOf(received, array) {

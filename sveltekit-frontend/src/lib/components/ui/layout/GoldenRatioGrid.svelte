@@ -43,8 +43,8 @@
     evidenceLayout = false,
     caseLayout = false,
     aiPanels = false,
-    gap = 'md',
-    class: className = '',
+  gap = 'md',
+  class: classNameVar = '',
     children,
     sidebar,
     header,
@@ -86,7 +86,7 @@
       'ai-analysis-grid': aiPanels,
       'min-h-screen': size === 'full'
     },
-    className
+  classNameVar
   ));
 
   // Calculate golden ratio proportions
@@ -105,7 +105,7 @@
   );
 </script>
 
-<div 
+<div
   class={gridClasses}
   style="
     --golden-ratio: {PHI};
@@ -152,7 +152,7 @@
 
 <style>
   /* @unocss-include */
-  
+
   /* Base Golden Ratio Grid */
   :global(.golden-ratio-grid) {
     display: grid;
@@ -284,7 +284,7 @@
 
   /* Evidence Analysis Layout */
   :global(.yorha-evidence-grid) {
-    background-image: 
+    background-image:
       linear-gradient(45deg, transparent 25%, rgba(0,0,0,0.02) 25%),
       linear-gradient(-45deg, transparent 25%, rgba(0,0,0,0.02) 25%),
       linear-gradient(45deg, rgba(0,0,0,0.02) 75%, transparent 75%),

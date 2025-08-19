@@ -307,13 +307,13 @@
       <div
         class="drop-zone"
         class:drag-active={dragActive}
-        on:drop={handleDrop}
-        on:dragover={handleDragOver}
-        on:dragleave={handleDragLeave}
+        ondrop={handleDrop}
+        ondragover={handleDragOver}
+        ondragleave={handleDragLeave}
         role="button"
         tabindex="0"
-        on:click={() => fileInput?.click()}
-        on:keydown={(e) => e.key === "Enter" && fileInput?.click()}
+        onclick={() => fileInput?.click()}
+        onkeydown={(e) => e.key === "Enter" && fileInput?.click()}
       >
         {#if selectedFile}
           <div class="selected-file">
@@ -328,7 +328,7 @@
             <Button
               variant="ghost"
               size="sm"
-              on:click|stopPropagation={removeFile}
+              onclick|stopPropagation={removeFile}
               disabled={$isSubmitting}
             >
               <X size={16} />
@@ -355,7 +355,7 @@
         bind:this={fileInput}
         type="file"
         accept=".pdf,.docx,.txt,.jpg,.jpeg,.png,.gif,.webp"
-        on:change={handleFileSelect}
+        onchange={handleFileSelect}
         class="sr-only"
         disabled={$isSubmitting}
       />
@@ -600,7 +600,7 @@
 
         <Button
           type="submit"
-          on:click|preventDefault={handleSubmit}
+          onclick|preventDefault={handleSubmit}
           disabled={!canSubmit}
         >
           {#if $isSubmitting}

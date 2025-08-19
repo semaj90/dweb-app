@@ -32,7 +32,7 @@
     name = undefined,
     onkeydown = undefined,
     oninput = undefined,
-    onchange = undefined,
+    onchange=undefined,
     onfocus = undefined,
     onblur = undefined
   }: Props = $props();
@@ -61,6 +61,6 @@
     resize === "horizontal" && "resize-x",
     resize === "vertical" && "resize-y",
     resize === "both" && "resize",
-    className
+    class
   )}
 ></textarea>

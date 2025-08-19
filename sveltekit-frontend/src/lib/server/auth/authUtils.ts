@@ -1,6 +1,6 @@
-// @ts-nocheck
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+// @ts-nocheck
 // Use process.env for server-side environment variables
 
 const JWT_SECRET_FALLBACK = "your-jwt-secret-change-in-production";
@@ -25,7 +25,7 @@ export async function verifyPassword(
  * Generate a JWT token for a user
  */
 export function generateToken(userId: string, email: string): string {
-  const secret = process.env.JWT_SECRET || JWT_SECRET_FALLBACK;
+  const secret = import.meta.env.JWT_SECRET || JWT_SECRET_FALLBACK;
   return jwt.sign(
     {
       userId,
@@ -43,7 +43,7 @@ export function verifyToken(
   token: string,
 ): { userId: string; email: string } | null {
   try {
-    const secret = process.env.JWT_SECRET || JWT_SECRET_FALLBACK;
+    const secret = import.meta.env.JWT_SECRET || JWT_SECRET_FALLBACK;
     const decoded = jwt.verify(token, secret) as any;
     return {
       userId: decoded.userId,

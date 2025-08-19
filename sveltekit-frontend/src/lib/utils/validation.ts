@@ -1,5 +1,5 @@
-// @ts-nocheck
 import type { Case } from "$lib/types";
+// @ts-nocheck
 
 /**
  * Comprehensive validation utilities for the Detective Mode app

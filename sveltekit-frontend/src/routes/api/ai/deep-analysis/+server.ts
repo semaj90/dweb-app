@@ -4,8 +4,9 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { analyzeLegalText } from '$lib/services/comprehensive-database-orchestrator';
+// Orphaned content: import type { RequestHandler
+import {
+analyzeLegalText } from "$lib/services/comprehensive-database-orchestrator";
 
 interface DeepAnalysisRequest {
   text: string;

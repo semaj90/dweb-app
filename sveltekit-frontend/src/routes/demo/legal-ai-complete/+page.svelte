@@ -93,7 +93,6 @@ KEY FINDINGS
 - Medium-risk areas: 7
 - Regulatory penalties exposure: $150,000 potential
 
-RECOMMENDATIONS
 
 1. Immediate Actions Required:
    - Update data retention policies by March 2024
@@ -105,7 +104,6 @@ RECOMMENDATIONS
    - Quarterly risk assessment reviews
    - Enhanced documentation procedures
 
-CONCLUSION
 
 While the company demonstrates strong commitment to compliance, several areas require immediate attention to reduce regulatory risk and ensure continued adherence to applicable laws and regulations.`,
       caseType: 'compliance',

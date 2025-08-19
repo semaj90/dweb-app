@@ -507,7 +507,7 @@
         <div class="flex items-center space-x-2">
           {#if showDemoAccess}
             <button
-              on:click={handleEnhancedMode}
+              onclick={handleEnhancedMode}
               class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
               aria-label="Open Enhanced 3D Mode"
               title="Launch High-Performance AI Assistant with 3D Visualization"
@@ -517,7 +517,7 @@
           {/if}
           
           <button
-            on:click={handleCollapse}
+            onclick={handleCollapse}
             class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             aria-label="Minimize chat"
           >
@@ -592,7 +592,7 @@
               {currentState.context.error}
             </p>
             <button
-              on:click={handleRetry}
+              onclick={handleRetry}
               class="mt-2 text-sm text-red-700 dark:text-red-300 hover:text-red-800 dark:hover:text-red-200 underline"
             >
               Retry Connection
@@ -606,7 +606,7 @@
         <div class="flex space-x-2">
           <textarea
             bind:value={currentInput}
-            on:keydown={handleKeyPress}
+            onkeydown={handleKeyPress}
             placeholder="Ask a legal question..."
             disabled={!currentState.context.isConnected || isProcessing}
             class="flex-1 resize-none rounded-lg border {theme === 'yorha' ? 'border-yorha-border bg-yorha-surface' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'} px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
@@ -614,7 +614,7 @@
           ></textarea>
           
           <button
-            on:click={handleSendMessage}
+            onclick={handleSendMessage}
             disabled={!currentInput.trim() || !currentState.context.isConnected || isProcessing}
             class="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center justify-center"
             aria-label="Send message"
@@ -637,7 +637,7 @@
           
           {#if showDemoAccess}
             <button
-              on:click={handleEnhancedMode}
+              onclick={handleEnhancedMode}
               class="flex items-center space-x-1 text-xs {theme === 'yorha' ? 'text-yorha-accent hover:text-yorha-text' : 'text-purple-600 hover:text-purple-800'} transition-colors"
               aria-label="Launch Enhanced 3D Mode"
             >
@@ -653,7 +653,7 @@
     <!-- Collapsed Button -->
     <div class="relative">
       <button
-        on:click={handleExpand}
+        onclick={handleExpand}
         on:dblclick={showDemoAccess ? handleEnhancedMode : undefined}
         class="w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
         transition:scale={{ duration: 300 }}
@@ -682,7 +682,7 @@
       {#if showDemoAccess}
         <!-- Enhanced Mode Quick Access -->
         <button
-          on:click={handleEnhancedMode}
+          onclick={handleEnhancedMode}
           class="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100"
           aria-label="Launch 3D Mode"
           title="High-Performance 3D AI Assistant"

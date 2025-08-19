@@ -1,18 +1,6 @@
 // @ts-nocheck
 import { writable, get } from "svelte/store";
-import { selectedCase } from "./cases";
-
-// 1. Evidence Interface
-export interface Evidence {
-  id: string;
-  caseId: string;
-  title: string;
-  type: "document" | "image" | "video" | "note";
-  content: string; // URL for files, text for notes
-  x: number; // Position on the canvas
-  y: number;
-  embedding?: number[];
-}
+import { selectedCase, , // 1. Evidence Interface, export interface Evidence {,   id: string;,   caseId: string;,   title: string;,   type: "document" | "image" | "video" | "note";,   content: string; // URL for files, text for notes,   x: number; // Position on the canvas,   y: number;,   embedding?: number[]; } from
 
 // Store State Interface
 interface EvidenceStoreState {

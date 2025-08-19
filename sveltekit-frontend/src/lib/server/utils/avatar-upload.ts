@@ -1,14 +1,7 @@
+import { createHash } from "crypto";
 // @ts-nocheck
 import { existsSync, mkdirSync, writeFileSync, unlinkSync } from "fs";
-import { join } from "path";
-import { createHash } from "crypto";
-
-export interface UploadConfig {
-  uploadDir: string;
-  maxFileSize: number;
-  allowedTypes: string[];
-  allowedExtensions: string[];
-}
+import { join, , export interface UploadConfig {,   uploadDir: string;,   maxFileSize: number;,   allowedTypes: string[];,   allowedExtensions: string[]; } from
 
 export interface ValidationResult {
   valid: boolean;

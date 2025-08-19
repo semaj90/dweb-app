@@ -1,47 +1,42 @@
 <script lang="ts">
   interface Props {
-    asChild?: any;
+    asChild?: boolean;
+    children?: any;
   }
-  let {
-    asChild = false
-  }: Props = $props();
-
-
+  let { asChild = false, children }: Props = $props();
 
   import { getContext } from 'svelte';
-  import type { Writable } from 'svelte/store'; children,
-  
+  import type { Writable } from 'svelte/store';
+
   interface BuilderAction {
-    action: (node: HTMLElement) => void;
-}
-    
+    action: (node: HTMLElement) => { destroy(): void } | void;
+  }
+
   const { open } = getContext<{
     isOpen: Writable<boolean>;
     position: Writable<{ x: number; y: number }>;
     open: (x: number, y: number) => void;
     close: () => void;
   }>('context-menu');
-  
+
   function handleContextMenu(event: MouseEvent) {
     event.preventDefault();
     open(event.clientX, event.clientY);
 }
-  const builder: BuilderAction = {
-    action: (node: HTMLElement) => {
-      node.addEventListener('contextmenu', handleContextMenu);
-      return {
-        destroy() {
-          node.removeEventListener('contextmenu', handleContextMenu);
-}
-      };
-}
-  };
+  function builderAction(node: HTMLElement) {
+    node.addEventListener('contextmenu', handleContextMenu);
+    return {
+      destroy() {
+        node.removeEventListener('contextmenu', handleContextMenu);
+      }
+    };
+  }
 </script>
 
 {#if asChild}
-  {@render children?.({ builder, })}
+  {@render children?.({ action: builderAction })}
 {:else}
-  <div use:builder.action>
+  <div use:builderAction>
     {@render children?.()}
   </div>
 {/if}

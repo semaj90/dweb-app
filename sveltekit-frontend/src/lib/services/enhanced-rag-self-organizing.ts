@@ -5,8 +5,9 @@
  * Features self-organizing clustering, real-time embeddings, and adaptive feedback
  */
 
-import { writable, derived, type Writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { writable, derived, type Writable } from "svelte/store";
+// Orphaned content: import {
+
 import type { LlamaCppOllamaService, LlamaInferenceRequest } from './llamacpp-ollama-integration';
 
 // Self-Organizing Map Configuration

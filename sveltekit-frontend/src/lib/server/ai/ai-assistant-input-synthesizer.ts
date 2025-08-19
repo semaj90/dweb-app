@@ -2,12 +2,15 @@
 // lib/server/ai/ai-assistant-input-synthesizer.ts
 // Comprehensive AI Assistant Input Synthesizer integrating all enhanced components
 
-import { logger } from './logger';
-import { legalBERT, type LegalAnalysisResult } from './legalbert-middleware';
-import { enhancedRAGPipeline } from './rag-pipeline-enhanced';
-import { enhancedLegalSearch } from './enhanced-legal-search';
-import { generateEmbedding } from './embeddings-simple';
-import { metrics, withRetry, withTimeout } from './config';
+import { logger } from "./logger";
+// Orphaned content: import {
+legalBERT, type LegalAnalysisResult
+import { enhancedRAGPipeline } from "./rag-pipeline-enhanced";
+// Orphaned content: import {
+
+import { generateEmbedding } from "./embeddings-simple";
+// Orphaned content: import {
+metrics, withRetry, withTimeout
 
 // Input types for the synthesizer
 interface SynthesizerInput {

@@ -1,10 +1,12 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { db } from "$lib/server/db/pg";
-import { legalDocuments } from "$lib/server/db/schema-postgres";
-import { sql } from "drizzle-orm";
-import { nomicEmbeddings } from "$lib/ai/nomic-embeddings";
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/pg";
+// Orphaned content: import { legalDocuments
+import {
+sql } from "drizzle-orm";
+// Orphaned content: import { nomicEmbeddings
 
 // Use Nomic embeddings with 768 dimensions (Nomic's default)
 const EMBEDDING_DIMENSION = 768;
@@ -14,9 +16,12 @@ import {
   type UserContext,
   type Neo4jPathContext,
 } from "$lib/ai/custom-reranker";
-import { accessMemoryMCP } from "$lib/utils/copilot-self-prompt";
-import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
-import { json as analyticsLog } from "$lib/server/analytics-logger";
+// Orphaned content: import { accessMemoryMCP
+import {
+mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
+// Orphaned content: import { json as analyticsLog
+import {
+URL } from "url";
 
 export const POST: RequestHandler = async ({ request }) => {
   const {

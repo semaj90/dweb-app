@@ -1,4 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax
+<!-- @migration-task Error while migrating Svelte code: Mixing old (onclick) and new syntaxes for event handling is not allowed. Use only the onclick syntax
 https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <!-- YoRHa Modal Component with Terminal Styling -->
 <script lang="ts">
@@ -9,7 +9,9 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   import type { Snippet } from "svelte";
 
   interface ModalProps {
+    // Accept both open and isOpen (external code may use isOpen); open is canonical internally
     open?: boolean;
+    isOpen?: boolean;
     title?: string;
     subtitle?: string;
     size?: "sm" | "md" | "lg" | "xl" | "fullscreen";
@@ -26,6 +28,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 
   let {
     open = false,
+    isOpen = undefined,
     title = "",
     subtitle = "",
     size = "md",
@@ -40,7 +43,14 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     footer,
   }: ModalProps = $props();
 
-  const dispatch = createEventDispatcher();
+  // Normalize prop alias (prefer explicit open if provided, else fallback to isOpen)
+  $effect(() => {
+    if (isOpen !== undefined && isOpen !== open) {
+      open = isOpen;
+    }
+  });
+
+  const dispatch = createEventDispatcher<{ close: void; cancel: void; confirm: void }>();
 
   let modalElement = $state<HTMLDivElement | null>(null);
   let focusedElementBeforeModal: HTMLElement | null = null;
@@ -152,7 +162,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           {#if closable && !persistent}
             <button
               class="modal-close"
-              on:click={handleClose}
+              onclick={handleClose}
               aria-label="Close modal"
             >
               <span class="close-icon">✕</span>
@@ -175,18 +185,18 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             {@render footer()}
           {:else if type === "confirm"}
             <div class="modal-actions">
-              <button class="modal-button cancel" on:click={handleCancel}>
+              <button class="modal-button cancel" onclick={handleCancel}>
                 <span class="button-icon">✕</span>
                 Cancel
               </button>
-              <button class="modal-button confirm" on:click={handleConfirm}>
+              <button class="modal-button confirm" onclick={handleConfirm}>
                 <span class="button-icon">✓</span>
                 Confirm
               </button>
             </div>
           {:else if type === "alert"}
             <div class="modal-actions">
-              <button class="modal-button acknowledge" on:click={handleClose}>
+              <button class="modal-button acknowledge" onclick={handleClose}>
                 <span class="button-icon">■</span>
                 Acknowledge
               </button>
@@ -527,3 +537,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     max-height: 100vh;
   }
 </style>
+
+<script context="module" lang="ts">
+  import Component from './YoRHaModal.svelte';
+  export default Component;
+</script>

@@ -3,7 +3,7 @@
 
 <button
   class="me-von84c {$$props.class}"
-  on:click={onclick}
+  onclick={onclick}
   type="button"
 >
   <span class="me-sqs49i" />

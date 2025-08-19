@@ -1,18 +1,18 @@
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 // Simplified database configuration for production
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
 
 // Environment variables with fallbacks
 const config = {
-  host: process.env.POSTGRES_HOST || 'localhost',
-  port: parseInt(process.env.POSTGRES_PORT || '5432'),
-  database: process.env.POSTGRES_DB || 'legal_ai',
-  user: process.env.POSTGRES_USER || 'postgres',
-  password: process.env.POSTGRES_PASSWORD || '123456'
+  host: import.meta.env.POSTGRES_HOST || 'localhost',
+  port: parseInt(import.meta.env.POSTGRES_PORT || '5432'),
+  database: import.meta.env.POSTGRES_DB || 'legal_ai',
+  user: import.meta.env.POSTGRES_USER || 'postgres',
+  password: import.meta.env.POSTGRES_PASSWORD || '123456'
 };
 
 // Connection string
-const connectionString = process.env.DATABASE_URL || 
+const connectionString = import.meta.env.DATABASE_URL || 
   `postgresql://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`;
 
 console.log(`[Database] Connecting to: postgresql://${config.user}:***@${config.host}:${config.port}/${config.database}`);

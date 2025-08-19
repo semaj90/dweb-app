@@ -2,7 +2,7 @@
 // Processes legal documents and stores them with embeddings
 
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { aiPipeline } from "$lib/services/ai-pipeline";
+// Orphaned content: import {
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

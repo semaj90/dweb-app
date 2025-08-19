@@ -251,7 +251,7 @@
     <div 
       class="resize-handle resize-bottom-right"
       onmousedown={(e) => handleResize('bottom-right', e)}
-      ontouchstart={(e) => handleResizeTouch('bottom-right', e)}
+      on:touchstart={(e) => handleResizeTouch('bottom-right', e)}
       onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -265,7 +265,7 @@
     <div 
       class="resize-handle resize-bottom"
       onmousedown={(e) => handleResize('bottom', e)}
-      ontouchstart={(e) => handleResizeTouch('bottom', e)}
+      on:touchstart={(e) => handleResizeTouch('bottom', e)}
       onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -279,7 +279,7 @@
     <div 
       class="resize-handle resize-right"
       onmousedown={(e) => handleResize('right', e)}
-      ontouchstart={(e) => handleResizeTouch('right', e)}
+      on:touchstart={(e) => handleResizeTouch('right', e)}
       onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -337,7 +337,7 @@
   .control-button:hover {
     background: #e2e8f0;
 }
-  .control-button:focus {
+  .control-buttonfocus {
     outline: 2px solid #3b82f6;
     outline-offset: 2px;
 }

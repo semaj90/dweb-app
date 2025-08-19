@@ -3,15 +3,20 @@ import {
   createUserSession, 
   setSessionCookie 
 } from "$lib/server/lucia";
-import { loginSchema } from "$lib/schemas/auth";
-import { db } from "$lib/server/db/index";
-import { users } from "$lib/server/db/schema-postgres";
-import { fail, redirect } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+// Orphaned content: import { loginSchema
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { users
+import {
+fail, redirect } from "@sveltejs/kit";
+// Orphaned content: import { eq
 import type { JSONSchema7 } from "json-schema";
-import { message, superValidate } from "sveltekit-superforms";
+// Orphaned content: import {
+message, superValidate
 import { zod } from "sveltekit-superforms/adapters";
-import type { Actions, PageServerLoad } from "./$types";
+// Orphaned content: import type { Actions, PageServerLoad
+import {
+URL } from "url";
 
 export const load: PageServerLoad = async ({ locals, url }) => {
   // If user is already logged in, redirect to dashboard

@@ -1,9 +1,10 @@
 // @ts-nocheck
 // SIMD JSON Processing API - SvelteKit Integration with Go Microservice
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { simdRedisClient } from '$lib/services/simd-redis-client';
-import { z } from 'zod';
+// Orphaned content: import type { RequestHandler
+import {
+simdRedisClient } from "$lib/services/simd-redis-client";
+// Orphaned content: import { z
 
 const SIMDProcessSchema = z.object({
   data: z.any(),

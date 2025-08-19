@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { runSplitterBenchmark } from '$text/benchmark-splitter';
+import { describe, it, expect } from "vitest";
+// Orphaned content: import {
 
-const MAX_MS_PER_DOC = parseFloat(process.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
+const MAX_MS_PER_DOC = parseFloat(import.meta.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
 
 describe('LegalSentenceSplitter Performance', () => {
   it('stays within performance budget', () => {

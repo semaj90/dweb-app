@@ -35,31 +35,31 @@ https://svelte.dev/e/js_parse_error -->
       priority: 'low' | 'medium' | 'high' | 'urgent';
       description: string;
       key_dates: Array<{ date: string; description: string }>;
-    };
+    }
     documents: {
       uploaded_files: File[];
       ocr_results: OCRResult[];
       processing_status: 'pending' | 'processing' | 'completed' | 'error';
-    };
+    }
     evidence: {
       extracted_entities: Array<{ type: string; value: string; confidence: number }>;
       key_facts: string[];
       legal_issues: string[];
       precedents: Array<{ case_name: string; relevance: number; summary: string }>;
-    };
+    }
     ai_analysis: {
       case_strength_score: number;
       predicted_outcome: string;
       risk_factors: string[];
       recommendations: string[];
       similar_cases: Array<{ id: string; title: string; similarity: number }>;
-    };
+    }
     review: {
       final_review: string;
       quality_score: number;
       completeness_check: boolean;
       ready_for_submission: boolean;
-    };
+    }
   }
 
   // Initialize form data
@@ -113,19 +113,21 @@ https://svelte.dev/e/js_parse_error -->
       3: $formData.evidence.key_facts.length > 0 && $formData.evidence.legal_issues.length > 0,
       4: $formData.ai_analysis.case_strength_score > 0,
       5: $formData.review.completeness_check && $formData.review.ready_for_submission
-    };
+    }
     return validations[$currentStep as keyof typeof validations] || false;
   });
 
   // Auto-save functionality
   let autoSaveTimeout: NodeJS.Timeout;
 
-  $effect(() => { if ($formData) {
-    clearTimeout(autoSaveTimeout);
-    autoSaveTimeout = setTimeout(() => {
-      saveFormData();
-    }, 2000);
-  }
+  $effect(() => {
+    if ($formData) {
+      clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        saveFormData();
+      }, 2000);
+    }
+  });
 
   async function saveFormData() {
     try {
@@ -358,6 +360,10 @@ https://svelte.dev/e/js_parse_error -->
 </script>
 
 <div class="legal-case-manager">
+  <!-- Component content placeholder -->
+</div>
+
+<div class="legal-case-manager">
   <!-- Progress Header -->
   <div class="progress-header">
     <h1 class="text-3xl font-bold text-gray-900 mb-4">
@@ -392,7 +398,7 @@ https://svelte.dev/e/js_parse_error -->
       <div transitionslide={{ duration: 300, easing: cubicOut }}>
         <CaseInfoForm
           bind:data={$formData.caseInfo}
-          onnext={nextStep}
+          on:next={nextStep}
           isValid={$stepValidation}
         />
       </div>
@@ -400,9 +406,9 @@ https://svelte.dev/e/js_parse_error -->
       <div transitionslide={{ duration: 300, easing: cubicOut }}>
         <DocumentUploadForm
           bind:data={$formData.documents}
-          onprocess={(e) => processDocuments(e.detail)}
-          onnext={nextStep}
-          onprev={prevStep}
+          on:process={(e) => processDocuments(e.detail)}
+          on:next={nextStep}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
@@ -411,9 +417,9 @@ https://svelte.dev/e/js_parse_error -->
         <EvidenceAnalysisForm
           bind:data={$formData.evidence}
           ocrResults={$formData.documents.ocr_results}
-          onextract={extractEvidence}
-          onnext={nextStep}
-          onprev={prevStep}
+          on:extract={extractEvidence}
+          on:next={nextStep}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
@@ -422,9 +428,9 @@ https://svelte.dev/e/js_parse_error -->
         <AIAnalysisForm
           bind:data={$formData.ai_analysis}
           caseData={$formData}
-          onanalyze={performAIAnalysis}
-          onnext={nextStep}
-          onprev={prevStep}
+          on:analyze={performAIAnalysis}
+          on:next={nextStep}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>
@@ -433,8 +439,8 @@ https://svelte.dev/e/js_parse_error -->
         <ReviewSubmitForm
           bind:data={$formData.review}
           fullCaseData={$formData}
-          onsubmit={submitForm}
-          onprev={prevStep}
+          on:submit={submitForm}
+          on:prev={prevStep}
           isValid={$stepValidation}
         />
       </div>

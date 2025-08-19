@@ -1,14 +1,7 @@
+import crypto from "crypto";
 // @ts-nocheck
 import { writable, type Writable } from "svelte/store";
-import { HistoryManager } from "./HistoryManager";
-
-// Simple content type for now - will expand when Slate is properly integrated
-export interface ContentNode {
-  type: string;
-  text?: string;
-  children?: ContentNode[];
-  [key: string]: any;
-}
+import { HistoryManager, , // Simple content type for now - will expand when Slate is properly integrated, export interface ContentNode {,   type: string;,   text?: string;,   children?: ContentNode[];,   [key: string]: any; } from
 /**
  * Report class representing a document in the interactive canvas
  * Manages content, position, state, and history for undo/redo functionality

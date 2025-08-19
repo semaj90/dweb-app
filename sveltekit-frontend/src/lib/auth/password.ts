@@ -1,6 +1,6 @@
+import bcrypt from "bcryptjs";
 // @ts-nocheck
 // Password hashing utilities using bcrypt
-import bcrypt from "bcryptjs";
 
 // Salt rounds for bcrypt (higher = more secure but slower)
 const SALT_ROUNDS = 12;

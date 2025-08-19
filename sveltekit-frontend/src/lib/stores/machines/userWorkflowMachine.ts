@@ -5,13 +5,12 @@
  */
 
 import { createMachine, assign, type ActorRefFrom } from 'xstate';
-import type { 
+// Orphaned content: import type { 
   User, 
   LegalCase, 
   Evidence, 
   WorkflowContext, 
-  WorkflowEvent 
-} from '$lib/types/unified-types';
+  WorkflowEvent
 
 export interface UserWorkflowContext extends WorkflowContext {
   user?: User;

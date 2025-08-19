@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { formatDistanceToNow } from "date-fns";
   import {
     Archive,

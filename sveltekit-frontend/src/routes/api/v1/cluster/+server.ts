@@ -4,8 +4,11 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { productionServiceClient } from '$lib/services/productionServiceClient';
+// Orphaned content: import type { RequestHandler
+import {
+productionServiceClient } from "$lib/services/productionServiceClient";
+// Orphaned content: import http from "http";
+import {
 
 export const GET: RequestHandler = async ({ url }) => {
   const endpoint = url.pathname.split('/').pop();

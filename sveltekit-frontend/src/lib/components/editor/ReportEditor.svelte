@@ -183,7 +183,7 @@ https://svelte.dev/e/js_parse_error -->
   };
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div
   class="report-editor {layoutClass}"
@@ -211,7 +211,7 @@ https://svelte.dev/e/js_parse_error -->
           <div>
             <h3>Evidence Library</h3>
             <button
-              on:click={() => handleAddNewEvidence()}
+              onclick={() => handleAddNewEvidence()}
               title="Add new evidence"
             >
               <Plus size={16} />
@@ -302,7 +302,7 @@ https://svelte.dev/e/js_parse_error -->
         <div>
           {#if !$reportUI.sidebarOpen}
             <button
-              on:click={() => toggleSidebar()}
+              onclick={() => toggleSidebar()}
               title="Show sidebar"
             >
               <PanelLeftOpen size={20} />
@@ -312,14 +312,14 @@ https://svelte.dev/e/js_parse_error -->
           <input
             type="text"
             value={$report.title}
-            on:input={(e) => reportActions.updateTitle(e.currentTarget.value)}
+            oninput={(e) => reportActions.updateTitle(e.currentTarget.value)}
             placeholder="Report title..."
           />
         </div>
 
         <div>
           <button
-            on:click={() => switchLayout()}
+            onclick={() => switchLayout()}
             title="Switch layout ({$report.settings.layout})"
           >
             {#if $report.settings.layout === "single"}
@@ -332,7 +332,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            on:click={() => toggleFullscreen()}
+            onclick={() => toggleFullscreen()}
             title="Toggle fullscreen"
           >
             {#if $reportUI.fullscreen}
@@ -343,7 +343,7 @@ https://svelte.dev/e/js_parse_error -->
           </button>
 
           <button
-            on:click={() => (showSettingsModal = true)}
+            onclick={() => (showSettingsModal = true)}
             title="Settings"
           >
             <Settings size={18} />
@@ -365,7 +365,7 @@ https://svelte.dev/e/js_parse_error -->
       >
         <div class="panel-header"></div>
           <h3>Evidence</h3>
-          <button class="add-evidence-btn" on:click={() => handleAddNewEvidence()}>
+          <button class="add-evidence-btn" onclick={() => handleAddNewEvidence()}>
             <Plus size={16} />
           </button>
         </div>

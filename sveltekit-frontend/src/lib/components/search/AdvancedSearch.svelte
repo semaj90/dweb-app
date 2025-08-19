@@ -148,7 +148,7 @@
       {#if searchValue}
         <button
           class="clear-button"
-          on:click={() => clearSearch()}
+          onclick={() => clearSearch()}
           title="Clear search"
         >
           <X size={16} />
@@ -168,7 +168,7 @@
             use:melt={$option({ value: item.id, label: item.title })}
             class="search-result-item"
             class:highlighted={$isSelected(item.id)}
-            on:click={() => handleSelect(item)}
+            onclick={() => handleSelect(item)}
           >
             <div class="result-icon">
               {#if item.type === 'document'}
@@ -234,7 +234,7 @@
             <button
               class="filter-chip"
               class:active={selectedTypes.includes(type)}
-              on:click={() => toggleType(type)}
+              onclick={() => toggleType(type)}
             >
               {type}
             </button>
@@ -254,7 +254,7 @@
               <button
                 class="filter-chip"
                 class:active={selectedTags.includes(tag)}
-                on:click={() => toggleTag(tag)}
+                onclick={() => toggleTag(tag)}
               >
                 {tag}
               </button>
@@ -296,7 +296,7 @@
       {#each selectedTypes as type}
         <span class="active-filter">
           {type}
-          <button on:click={() => toggleType(type)}>
+          <button onclick={() => toggleType(type)}>
             <X size={12} />
           </button>
         </span>
@@ -305,7 +305,7 @@
       {#each selectedTags as tag}
         <span class="active-filter">
           #{tag}
-          <button on:click={() => toggleTag(tag)}>
+          <button onclick={() => toggleTag(tag)}>
             <X size={12} />
           </button>
         </span>
@@ -314,13 +314,13 @@
       {#if dateRange.start || dateRange.end}
         <span class="active-filter">
           {dateRange.start?.toLocaleDateString() || '...'} - {dateRange.end?.toLocaleDateString() || '...'}
-          <button on:click={() => dateRange = {}}>
+          <button onclick={() => dateRange = {}}>
             <X size={12} />
           </button>
         </span>
       {/if}
 
-      <button class="clear-all-filters" on:click={() => clearSearch()}>
+      <button class="clear-all-filters" onclick={() => clearSearch()}>
         Clear all
       </button>
     </div>

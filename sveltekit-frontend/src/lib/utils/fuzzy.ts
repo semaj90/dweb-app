@@ -1,6 +1,6 @@
-// @ts-nocheck
 import Fuse from "fuse.js";
 import Loki from "lokijs";
+// @ts-nocheck
 
 // 1. Initialize LokiJS Database
 const db = new Loki("fuzzy.db");

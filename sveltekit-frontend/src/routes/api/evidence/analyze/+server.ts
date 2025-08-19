@@ -1,15 +1,12 @@
 // @ts-nocheck
 import { json, error } from "@sveltejs/kit";
-import { spawn } from "child_process";
-import { writeFile } from "fs/promises";
-import { join } from "path";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import {
 
-interface AnalyzeRequest {
-  caseId: string;
-  evidenceFile: string;
-  evidenceContent?: string;
-}
+import { writeFile } from "fs/promises";
+// Orphaned content: import {
+
+import type { RequestHandler } from "./$types.js";
+import { URL, , interface AnalyzeRequest {,   caseId: string;,   evidenceFile: string;,   evidenceContent?: string; } from
 
 interface AnalysisResult {
   sessionId: string;

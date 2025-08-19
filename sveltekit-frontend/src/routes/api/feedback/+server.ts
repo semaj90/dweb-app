@@ -3,7 +3,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const payload = await request.json();
-    const goUrl = process.env.GO_RAG_URL || 'http://localhost:8099/feedback';
+    const goUrl = import.meta.env.GO_RAG_URL || 'http://localhost:8099/feedback';
     const resp = await fetch(goUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

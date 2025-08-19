@@ -20,7 +20,7 @@
 <div
 	class={cn(
 		"relative h-2 w-full overflow-hidden rounded-full bg-secondary",
-		className
+		class
 	)}
 	role="progressbar"
 	aria-valuenow={value}

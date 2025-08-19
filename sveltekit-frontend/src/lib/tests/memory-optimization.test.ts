@@ -1,7 +1,7 @@
+import { cacheManager } from "$lib/services/cache-layer-manager";
 // @ts-nocheck
-import { describe, it, expect, beforeAll } from 'vitest';
-import { NeuralMemoryManager } from '$lib/optimization/neural-memory-manager';
-import { cacheManager } from '$lib/services/cache-layer-manager';
+import { describe, it, expect, beforeAll } from "vitest";
+// Orphaned content: import {
 
 describe('Memory Optimization System', () => {
   let neuralManager: NeuralMemoryManager;

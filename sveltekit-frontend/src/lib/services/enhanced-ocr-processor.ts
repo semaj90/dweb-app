@@ -1,3 +1,7 @@
+import sharp from "sharp";
+import fs from "fs/promises";
+import path from "path";
+import { EventEmitter } from "events";
 // @ts-nocheck
 /**
  * Production OCR Processor Service
@@ -5,12 +9,8 @@
  */
 
 import { createWorker } from "tesseract.js";
-import * as pdf2pic from "pdf2pic";
-import sharp from "sharp";
-import fs from "fs/promises";
-import path from "path";
-import { pipeline } from "stream/promises";
-import { EventEmitter } from "events";
+// Orphaned content: import * as pdf2pic from "pdf2pic";
+import {
 
 export interface OCRResult {
   text: string;

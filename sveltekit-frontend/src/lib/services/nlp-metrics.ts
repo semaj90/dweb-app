@@ -1,7 +1,8 @@
 // Prometheus-style metrics exposition for NLP embeddings.
 // Integrates with nlpMetrics from sentence-transformer service.
-import { nlpMetrics } from './sentence-transformer';
-import { getPipelineHistogram, getDedupeMetrics, getAutosolveMetrics, getQUICMetrics } from './pipeline-metrics';
+import { nlpMetrics } from "./sentence-transformer";
+// Orphaned content: import {
+getPipelineHistogram, getDedupeMetrics, getAutosolveMetrics, getQUICMetrics, getAggregateAnomaliesLast5m, getBudgetCounters
 import { getRedisMetrics } from './redis-metrics';
 
 export function renderNlpMetrics(): string {
@@ -94,6 +95,18 @@ export function renderNlpMetrics(): string {
   lines.push('# HELP quic_error_events_last_minute QUIC errors in last 60s');
   lines.push('# TYPE quic_error_events_last_minute gauge');
   lines.push(`quic_error_events_last_minute ${quic.error_rate_1m || 0}`);
+  // Aggregate anomalies
+  lines.push('# HELP pipeline_latency_anomalies_last5m Total pipeline latency anomalies detected over last 5 minutes');
+  lines.push('# TYPE pipeline_latency_anomalies_last5m gauge');
+  lines.push(`pipeline_latency_anomalies_last5m ${getAggregateAnomaliesLast5m()}`);
+  // Error budget counters
+  const budgets = getBudgetCounters();
+  lines.push('# HELP error_budget_quic_p99_breaches Total QUIC p99 latency budget breaches since start');
+  lines.push('# TYPE error_budget_quic_p99_breaches counter');
+  lines.push(`error_budget_quic_p99_breaches ${budgets.quicP99BudgetBreaches}`);
+  lines.push('# HELP error_budget_pipeline_anomaly_spikes Total pipeline anomaly spike events since start');
+  lines.push('# TYPE error_budget_pipeline_anomaly_spikes counter');
+  lines.push(`error_budget_pipeline_anomaly_spikes ${budgets.pipelineAnomalySpikeBudget}`);
 
   // Redis metrics
   const redis = getRedisMetrics();

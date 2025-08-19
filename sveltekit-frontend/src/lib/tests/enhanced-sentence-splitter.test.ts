@@ -3,12 +3,11 @@
  * Validates legal abbreviation handling, fragment merging, and streaming support
  */
 
-import { describe, it, expect } from 'vitest';
-import {
-  EnhancedSentenceSplitter,
+import { describe, it, expect } from "vitest";
+// Orphaned content: import {
+EnhancedSentenceSplitter,
   splitSentencesEnhanced,
   createStreamingSplitter,
-} from '$text/enhanced-sentence-splitter';
 
 describe('EnhancedSentenceSplitter', () => {
   describe('Legal Abbreviations', () => {

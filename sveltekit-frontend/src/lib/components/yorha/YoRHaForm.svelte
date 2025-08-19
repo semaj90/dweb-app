@@ -1,5 +1,6 @@
 <!-- YoRHa Form Component with Terminal Styling -->
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
 
   interface FormField {
     id: string;
@@ -44,6 +45,7 @@
     oncancel
   }: FormProps = $props();
 
+  const dispatch = createEventDispatcher<{ submit: Record<string, any>; cancel: void }>();
   let formData = $state<Record<string, any>>({});
   let errors = $state<Record<string, string>>({});
   let touched = $state<Record<string, boolean>>({});
@@ -64,16 +66,16 @@
 
     if (field.validation && value) {
       const { pattern, min, max, minLength, maxLength } = field.validation;
-      
+
       if (pattern && typeof value === 'string' && !new RegExp(pattern).test(value)) {
         return `${field.label} format is invalid`;
       }
-      
+
       if (typeof value === 'number') {
         if (min !== undefined && value < min) return `${field.label} must be at least ${min}`;
         if (max !== undefined && value > max) return `${field.label} must be at most ${max}`;
       }
-      
+
       if (typeof value === 'string') {
         if (minLength !== undefined && value.length < minLength) {
           return `${field.label} must be at least ${minLength} characters`;
@@ -119,15 +121,15 @@
 
     errors = newErrors;
 
-    if (!hasErrors && onsubmit) {
-      onsubmit(formData);
+    if (!hasErrors) {
+      onsubmit?.(formData);
+      dispatch('submit', formData);
     }
   }
 
   function handleCancel() {
-    if (oncancel) {
-      oncancel();
-    }
+    oncancel?.();
+    dispatch('cancel');
   }
 
   function handleKeyDown(event: KeyboardEvent) {
@@ -279,7 +281,7 @@
           {cancelLabel}
         </button>
       {/if}
-      
+
       <button
         type="submit"
         class="form-button submit"
@@ -294,7 +296,7 @@
         {submitLabel}
       </button>
     </div>
-    
+
     <div class="form-hints">
       <div class="hint">
         <span class="hint-key">Ctrl+Enter</span> to submit
@@ -418,7 +420,7 @@
   .field-select:focus {
     outline: none;
     border-color: var(--yorha-secondary, #ffd700);
-    box-shadow: 
+    box-shadow:
       0 0 0 1px var(--yorha-secondary, #ffd700),
       inset 0 0 10px rgba(255, 215, 0, 0.1);
   }
@@ -705,3 +707,4 @@
     }
   }
 </style>
+

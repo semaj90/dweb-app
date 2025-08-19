@@ -6,12 +6,15 @@ import {
     initializeDatabase,
     searchSessions,
 } from '$lib/server/database';
-import { error, json } from '@sveltejs/kit';
-import { sql } from 'drizzle-orm';
-import type { RequestHandler } from './$types';
+// Orphaned content: import { error, json
+import {
+sql } from "drizzle-orm";
+// Orphaned content: import type { RequestHandler
 
 // Redis client for caching search results
-import { createRedisConnection } from '$lib/utils/redis-helper';
+import { createRedisConnection } from "$lib/utils/redis-helper";
+// Orphaned content: import {
+
 // ... other imports ...
 
 const redis = createRedisConnection();

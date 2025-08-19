@@ -19,8 +19,6 @@
     enableCitation = true
   }: Props = $props();
 
-
-
   import { onMount, createEventDispatcher } from 'svelte';
   import { createDialog, melt } from '@melt-ui/svelte';
   import { writable } from 'svelte/store';
@@ -526,21 +524,7 @@
     background: rgba(0, 0, 0, 0.5);
     z-index: 40;
 }
-  .dialog-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    z-index: 50;
-    width: 100%;
-    max-width: 42rem;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-  .dialog-title {
+.dialog-title {
     font-size: 1.25rem;
     font-weight: 600;
     padding: 1.5rem;

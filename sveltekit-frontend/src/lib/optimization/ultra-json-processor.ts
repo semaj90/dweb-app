@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 // @ts-nocheck
 /**
  * Ultra-High Performance WebAssembly JSON Processor
@@ -5,7 +6,6 @@
  * Memory-efficient streaming parser with intelligent compression
  */
 
-import { EventEmitter } from "events";
 
 // WebAssembly interface types
 export interface WasmJSONParser {

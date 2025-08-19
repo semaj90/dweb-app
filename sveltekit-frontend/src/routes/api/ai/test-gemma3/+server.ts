@@ -1,8 +1,9 @@
 // @ts-nocheck
 // Test endpoint for Gemma3 local LLM integration
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "@sveltejs/kit";
-import { tauriLLM } from "$lib/services/tauri-llm";
+// Orphaned content: import type { RequestHandler
+import {
+tauriLLM } from "$lib/services/tauri-llm";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

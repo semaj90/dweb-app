@@ -12,9 +12,9 @@ https://svelte.dev/e/js_parse_error -->
   }
   let {
     disabled = false,
-    onReportGenerate = > void = () => {},
-    onSummarize = > void = () => {},
-    onAnalyze = > void = () => {},
+    onReportGenerate = () => {},
+    onSummarize = () => {},
+    onAnalyze = () => {},
     hasContent = false,
     isGenerating = false
   }: Props = $props();
@@ -37,13 +37,6 @@ https://svelte.dev/e/js_parse_error -->
   import { onMount } from "svelte";
   import { fly } from "svelte/transition";
 
-  // Props
-  let { disabled = $bindable() } = $props(); // false;
-  let { onReportGenerate = $bindable() } = $props(); // (reportType: string) => void = () => {};
-  let { onSummarize = $bindable() } = $props(); // () => void = () => {};
-  let { onAnalyze = $bindable() } = $props(); // () => void = () => {};
-  let { hasContent = $bindable() } = $props(); // false;
-  let { isGenerating = $bindable() } = $props(); // false;
 
   // Melt UI dropdown configuration
   const dropdownConfig: CreateDropdownMenuProps = {
@@ -216,7 +209,7 @@ https://svelte.dev/e/js_parse_error -->
           use:melt={$item}
           class="ai-menu__item"
           class:ai-menu__item--selected={selectedItem === reportType.id}
-          on:click={() => handleItemSelect(reportType.id)}
+          onclick={() => handleItemSelect(reportType.id)}
           disabled={disabled || isGenerating}
           data-value={reportType.id}
         >
@@ -254,7 +247,7 @@ https://svelte.dev/e/js_parse_error -->
           class="ai-menu__item"
           class:ai-menu__item--selected={selectedItem === tool.id}
           class:ai-menu__item--disabled={tool.requiresContent && !hasContent}
-          on:click={() => handleItemSelect(tool.id, tool.requiresContent)}
+          onclick={() => handleItemSelect(tool.id, tool.requiresContent)}
           disabled={disabled ||
             isGenerating ||
             (tool.requiresContent && !hasContent)}

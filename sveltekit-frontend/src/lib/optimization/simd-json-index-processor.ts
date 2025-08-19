@@ -4,8 +4,9 @@
  * Integrates with Enhanced RAG system and Context7 MCP for high-performance index parsing
  */
 
-import { createActor } from 'xstate';
-import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store';
+import { createActor } from "xstate";
+// Orphaned content: import {
+
 import type { RAGDocument, RAGSearchResult, TextChunk } from '$lib/types/rag';
 
 // SIMD JSON Parser using structured cloning for performance

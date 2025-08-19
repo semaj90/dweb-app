@@ -1,17 +1,11 @@
+import LRU from "lru-cache";
+import crypto from "crypto";
 // @ts-nocheck
 // lib/server/ai/caching-layer.ts
 // Advanced caching layer for AI synthesis results with Redis and LRU fallback
 
-import { logger } from "./logger";
-import { Redis } from 'ioredis';
-import LRU from 'lru-cache';
-import crypto from 'crypto';
-
-interface CacheOptions {
-  ttl?: number; // Time to live in seconds
-  tags?: string[]; // Tags for cache invalidation
-  priority?: number; // Cache priority (higher = more important)
-}
+import { logger } from "./logger.js";
+import { Redis, , interface CacheOptions {,   ttl?: number; // Time to live in seconds,   tags?: string[]; // Tags for cache invalidation,   priority?: number; // Cache priority (higher = more important) } from
 
 interface CacheStats {
   hits: number;
@@ -49,10 +43,10 @@ class CachingLayer {
     // Try to connect to Redis
     try {
       this.redis = new Redis({
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
-        password: process.env.REDIS_PASSWORD,
-        db: parseInt(process.env.REDIS_DB || '0'),
+        host: import.meta.env.REDIS_HOST || 'localhost',
+        port: parseInt(import.meta.env.REDIS_PORT || '6379'),
+        password: import.meta.env.REDIS_PASSWORD,
+        db: parseInt(import.meta.env.REDIS_DB || '0'),
         retryStrategy: (times) => {
           if (times > 3) {
             logger.warn('[CachingLayer] Redis connection failed, falling back to LRU cache');

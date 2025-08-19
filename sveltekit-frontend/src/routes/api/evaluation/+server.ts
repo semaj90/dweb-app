@@ -3,9 +3,12 @@
  * Evaluation & Metrics API Endpoints - Step 10 Integration
  */
 
-import type { RequestHandler } from "./$types";
-import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types.js";
+// Orphaned content: import {
+
 import { determinismEvaluationService } from "$lib/services/determinism-evaluation-service";
+// Orphaned content: import crypto from "crypto";
+import {
 
 // GET /api/evaluation - Get metrics and benchmarks
 export const GET: RequestHandler = async ({ url }) => {

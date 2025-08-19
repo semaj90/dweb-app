@@ -252,7 +252,7 @@
               <Button
                 variant="outline"
                 type="button"
-                onclick={() => (showAdvancedFilters = !showAdvancedFilters)}
+                on:click={() => (showAdvancedFilters = !showAdvancedFilters)}
               >
                 <Filter class="space-y-4" />
                 Filters
@@ -264,7 +264,7 @@
                 <Button
                   variant="outline"
                   type="button"
-                  onclick={() => clearFilters()}
+                  on:click={() => clearFilters()}
                 >
                   Clear Filters
                 </Button>

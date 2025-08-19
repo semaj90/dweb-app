@@ -222,7 +222,7 @@
             size="sm"
             class="text-left justify-start hover:bg-accent hover:text-accent-foreground transition-colors"
             disabled={$state.matches('loading')}
-            on:click={() => sendTestMessage(message)}
+            onclick={() => sendTestMessage(message)}
             aria-label="Send test message: {message}"
           >
             {message}
@@ -251,7 +251,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={handleClear}
+            onclick={handleClear}
             aria-label="Clear chat conversation"
             class="hover:bg-destructive hover:text-destructive-foreground transition-colors"
           >
@@ -311,7 +311,7 @@
               variant="outline"
               size="sm"
               class="mt-2 hover:bg-destructive hover:text-destructive-foreground"
-              on:click={() => chatActions.clearError()}
+              onclick={() => chatActions.clearError()}
               aria-label="Dismiss error message"
             >
               Dismiss
@@ -382,7 +382,7 @@
         variant="outline"
         size="sm"
         class="mt-4 hover:bg-accent hover:text-accent-foreground transition-colors"
-        on:click={performSystemChecks}
+        onclick={performSystemChecks}
         aria-label="Refresh system status checks"
       >
         Refresh System Status

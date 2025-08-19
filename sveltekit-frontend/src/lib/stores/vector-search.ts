@@ -4,8 +4,9 @@
  */
 
 import { writable, derived, readable } from 'svelte/store';
-import type { VectorSearchResult, RAGContext } from '../server/db/enhanced-vector-operations.js';
-import { productionServiceClient } from '../services/productionServiceClient.js';
+// Orphaned content: import type { VectorSearchResult, RAGContext
+import {
+productionServiceClient } from "../services/productionServiceClient.js";
 
 export interface VectorSearchState {
   // Search State

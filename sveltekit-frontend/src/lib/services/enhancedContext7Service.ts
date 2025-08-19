@@ -1,10 +1,10 @@
+import type { LegalEntities } from "./legalRAGEngine";
 // @ts-nocheck
 /**
  * Enhanced Context7 Service with Legal AI Integration
  * Connects to Context7 MCP Server and provides legal-specific functionality
  */
 
-import type { LegalEntities } from './legalRAGEngine';
 
 export interface LegalAnalysisResult {
   riskLevel: 'Low' | 'Medium' | 'High';

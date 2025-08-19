@@ -212,7 +212,7 @@
         {placeholder}
         value={searchQuery}
         on:input={handleSearchInput}
-        on:keydown={handleKeyDown}
+        onkeydown={handleKeyDown}
         disabled={isSearching}
         class="w-full pr-12"
       />
@@ -226,7 +226,7 @@
     </div>
 
     <Button.Root
-      on:click={performSearch}
+      onclick={performSearch}
       disabled={!searchQuery.trim() || isSearching}
       class="px-6"
     >
@@ -234,7 +234,7 @@
     </Button.Root>
 
     {#if searchQuery || searchResults.length > 0}
-      <Button.Root variant="outline" on:click={clearSearch} class="px-4">
+      <Button.Root variant="outline" onclick={clearSearch} class="px-4">
         Clear
       </Button.Root>
     {/if}
@@ -249,7 +249,7 @@
           <button
             type="button"
             class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
-            on:click={() => useHistoryItem(historyItem)}
+            onclick={() => useHistoryItem(historyItem)}
           >
             {historyItem}
           </button>
@@ -267,7 +267,7 @@
           <Button.Root
             variant="ghost"
             size="sm"
-            on:click={resetFilters}
+            onclick={resetFilters}
             class="text-sm"
           >
             Reset
@@ -347,7 +347,7 @@
               max="1"
               step="0.05"
               bind:value={filters.minSimilarity}
-              on:change={handleFilterChange}
+              onchange={handleFilterChange}
               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
             <div class="flex justify-between text-xs text-gray-500">
@@ -384,10 +384,10 @@
         <div
           transition:fly={{ y: 20, delay: index * 50 }}
           class="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
-          on:click={() => selectDocument(result)}
+          onclick={() => selectDocument(result)}
           role="button"
           tabindex="0"
-          on:keydown={(e) => e.key === "Enter" && selectDocument(result)}
+          onkeydown={(e) => e.key === "Enter" && selectDocument(result)}
         >
           <div class="p-6">
             <div class="flex items-start justify-between mb-3">
@@ -495,12 +495,12 @@
 {#if selectedDocument}
   <div
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-    on:click={() => (selectedDocument = null)}
+    onclick={() => (selectedDocument = null)}
     transition:fade
   >
     <div
       class="bg-white rounded-lg max-w-4xl max-h-[90vh] overflow-hidden"
-      on:click|stopPropagation
+      onclick|stopPropagation
     >
       <div class="p-6 border-b flex items-center justify-between">
         <h3 class="text-xl font-semibold text-gray-900">
@@ -509,7 +509,7 @@
         <button
           type="button"
           class="text-gray-400 hover:text-gray-600"
-          on:click={() => (selectedDocument = null)}
+          onclick={() => (selectedDocument = null)}
         >
           <X class="w-6 h-6" />
         </button>

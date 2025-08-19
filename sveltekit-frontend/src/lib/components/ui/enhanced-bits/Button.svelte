@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { Button as BitsButton } from 'bits-ui';
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import { cn } from '$lib/utils/cn';
@@ -29,7 +33,7 @@
     legal = false,
     fullWidth = false,
     priority,
-    class: className = '',
+    class: classNameVar = '',
     children,
     ...restProps
   }: ButtonProps = $props();
@@ -66,7 +70,7 @@
       'yorha-priority-medium shadow-yellow-200': priority === 'medium',
       'yorha-priority-low shadow-gray-200': priority === 'low'
     },
-    className
+  classNameVar
   ));
 </script>
 

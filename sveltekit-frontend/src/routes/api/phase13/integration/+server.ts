@@ -5,7 +5,9 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
+import {
+URL } from "url";
 
 // Temporary fallback for service health checking
 async function getSystemHealth() {

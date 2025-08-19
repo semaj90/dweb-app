@@ -159,8 +159,8 @@
             draggable={true}
             role="button"
             tabindex={0}
-            on:dragstart={(e) => handleDragStart(e, citation)}
-            on:keydown={(e) => {
+            ondragstart={(e) => handleDragStart(e, citation)}
+            onkeydown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 // For keyboard users, trigger a click event instead

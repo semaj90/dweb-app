@@ -1,14 +1,16 @@
 // @ts-nocheck
 import { building } from "$app/environment";
-import * as schema from "$lib/server/db/schema-postgres";
-import { initializeQdrantCollection } from "$lib/server/services/qdrant-client";
-import dotenv from "dotenv";
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
+// Orphaned content: import * as schema from "$lib/server/db/schema-postgres";
+import {
+
+dotenv from "dotenv";
+// Orphaned content: import {
+drizzle, type NodePgDatabase
 import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { Pool } from "pg";
+// Orphaned content: import {
 
 // Load environment-specific variables
-const envFile = `.env.${process.env.NODE_ENV || "development"}`;
+const envFile = `.env.${import.meta.env.NODE_ENV || "development"}`;
 dotenv.config({ path: envFile });
 
 let _db: NodePgDatabase<typeof schema> | null = null;
@@ -24,9 +26,9 @@ function initializeDatabase(): NodePgDatabase<typeof schema> | null {
 
   // Use PostgreSQL for all environments
   const databaseUrl =
-    process.env.DATABASE_URL ||
+    import.meta.env.DATABASE_URL ||
     "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
-  const nodeEnv = process.env.NODE_ENV || "development";
+  const nodeEnv = import.meta.env.NODE_ENV || "development";
 
   console.log("🔧 Database Configuration:");
   console.log("  NODE_ENV:", nodeEnv);

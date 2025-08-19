@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { Button, Dialog, Select, Input, Card } from './index.js';
   import type { SelectOption } from './index.js';
   import { cn } from '$lib/utils/cn';
@@ -284,15 +288,15 @@
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Button variant="yorha" legal onclick={() => dialogOpen = true}>
+          <Button variant="yorha" legal on:click={() => dialogOpen = true}>
             Case Management
           </Button>
           
-          <Button variant="primary" legal onclick={() => evidenceDialogOpen = true}>
+          <Button variant="primary" legal on:click={() => evidenceDialogOpen = true}>
             Evidence Upload
           </Button>
           
-          <Button variant="outline" legal onclick={runAIAnalysis} loading={aiAnalysisLoading}>
+          <Button variant="outline" legal on:click={runAIAnalysis} loading={aiAnalysisLoading}>
             {#if aiAnalysisLoading}
               Running AI Analysis...
             {:else}
@@ -357,7 +361,7 @@
               </div>
               
               <div class="bits-dialog-footer">
-                <Button variant="outline" onclick={() => dialogOpen = false}>
+                <Button variant="outline" on:click={() => dialogOpen = false}>
                   Cancel
                 </Button>
                 <Button variant="primary" legal>
@@ -414,10 +418,10 @@
               </div>
               
               <div class="bits-dialog-footer">
-                <Button variant="outline" onclick={() => evidenceDialogOpen = false}>
+                <Button variant="outline" on:click={() => evidenceDialogOpen = false}>
                   Cancel
                 </Button>
-                <Button variant="primary" legal onclick={uploadEvidence} disabled={evidenceUploadProgress > 0}>
+                <Button variant="primary" legal on:click={uploadEvidence} disabled={evidenceUploadProgress > 0}>
                   Upload Evidence
                 </Button>
               </div>
@@ -445,7 +449,7 @@
               priority={item.priority}
               confidence={item.confidence}
               selected={selectedEvidenceCard === item.id}
-              onclick={() => selectEvidenceCard(item.id)}
+              on:click={() => selectEvidenceCard(item.id)}
             >
               <div class="space-y-3">
                 <div class="flex items-start justify-between">

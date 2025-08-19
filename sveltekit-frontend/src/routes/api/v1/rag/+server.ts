@@ -4,8 +4,9 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { productionServiceClient, ServiceTier } from '$lib/services/productionServiceClient';
+// Orphaned content: import type { RequestHandler
+import {
+productionServiceClient, ServiceTier } from "$lib/services/productionServiceClient";
 
 interface RAGRequest {
   query: string;

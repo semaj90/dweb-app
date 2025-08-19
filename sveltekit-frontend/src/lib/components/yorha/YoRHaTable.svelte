@@ -22,7 +22,7 @@
     pagination?: boolean;
     pageSize?: number;
     totalItems?: number;
-    className?: string;
+    class?: string;
     dense?: boolean;
     hover?: boolean;
     striped?: boolean;
@@ -40,7 +40,7 @@
     pagination = false,
     pageSize = 10,
     totalItems = 0,
-    className = '',
+    class = '',
     dense = false,
     hover = true,
     striped = true,

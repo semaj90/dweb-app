@@ -1,3 +1,4 @@
+import { URL } from "url";
 // @ts-nocheck
 /**
  * Advanced Security Middleware
@@ -5,15 +6,10 @@
  */
 
 import { dev } from "$app/environment";
-import { error } from "@sveltejs/kit";
-import type { RequestEvent } from "@sveltejs/kit";
-import { logWarn, logError } from "./logger";
+// Orphaned content: import {
 
-interface RateLimitEntry {
-  count: number;
-  resetTime: number;
-  blocked: boolean;
-}
+import type { RequestEvent } from "@sveltejs/kit";
+import { logWarn, logError, , interface RateLimitEntry {,   count: number;,   resetTime: number;,   blocked: boolean; } from
 interface SecurityConfig {
   rateLimits: {
     general: { requests: number; windowMs: number };
@@ -205,7 +201,7 @@ class SecurityManager {
     // This is a placeholder - use your JWT library
     try {
       // const jwt = require('jsonwebtoken');
-      // return jwt.verify(token, process.env.JWT_SECRET);
+      // return jwt.verify(token, import.meta.env.JWT_SECRET);
       return null; // Placeholder
     } catch (error) {
       return null;
@@ -216,7 +212,7 @@ class SecurityManager {
     // This is a placeholder - use your JWT library
     try {
       // const jwt = require('jsonwebtoken');
-      // return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+      // return jwt.sign(payload, import.meta.env.JWT_SECRET, { expiresIn });
       return "placeholder-token"; // Placeholder
     } catch (error) {
       throw error;

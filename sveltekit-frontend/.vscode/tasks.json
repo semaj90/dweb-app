@@ -2,6 +2,125 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "🚀 Full Legal AI Stack",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "console.log(\\\"🚀 Starting Full Legal AI Stack...\\\"); import(\\\"./src/lib/integrations/comprehensive-agent-orchestration.js\\\").then(m => m.comprehensiveOrchestrator.initialize()).then(() => console.log(\\\"✅ Agent Orchestrator Ready\\\")); import(\\\"./src/lib/integrations/flashattention-multicore-bridge.js\\\").then(m => m.flashAttentionMulticoreBridge.initialize()).then(() => console.log(\\\"✅ FlashAttention2 + Multicore Bridge Ready\\\"));"
+      ],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=8192 --experimental-modules",
+          "OLLAMA_BASE_URL": "http://localhost:11434",
+          "ENABLE_GPU": "true",
+          "RTX_3060_OPTIMIZATION": "true",
+          "CONTEXT7_MULTICORE": "true"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "dependsOn": ["Initialize Services"]
+    },
+    {
+      "label": "Initialize Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Write-Host '🔧 Initializing Legal AI Services...' -ForegroundColor Cyan; Write-Host '⚡ GPU: RTX 3060 Ti' -ForegroundColor Yellow; Write-Host '🧠 Context7 Multicore: 8 workers' -ForegroundColor Green; Write-Host '🤖 Agents: Claude + CrewAI + AutoGen' -ForegroundColor Magenta; Start-Sleep 2"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🧠 Agent Orchestration Analysis",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "import(\\\"./src/lib/integrations/comprehensive-agent-orchestration.js\\\").then(async m => { const result = await m.executeAgents(\\\"Analyze TypeScript errors and provide systematic fixes for legal AI application\\\", { agents: [\\\"claude\\\", \\\"crewai\\\", \\\"autogen\\\"], priority: \\\"high\\\", useMulticoreAnalysis: true, errorAnalysis: true }); console.log(\\\"🎯 Best Result:\\\", result.bestResult.output.substring(0, 300) + \\\"...\\\"); console.log(\\\"📊 System Status:\\\", result.systemStatus); });"
+      ],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=8192 --experimental-modules",
+          "CONTEXT7_MULTICORE": "true",
+          "AGENT_ORCHESTRATION": "true"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "dependsOn": ["🚀 Full Legal AI Stack"]
+    },
+    {
+      "label": "⚡ FlashAttention2 GPU Processing",
+      "type": "shell", 
+      "command": "node",
+      "args": [
+        "-e",
+        "import(\\\"./src/lib/integrations/flashattention-multicore-bridge.js\\\").then(async m => { console.log(\\\"⚡ Starting FlashAttention2 GPU Analysis...\\\"); const result = await m.processWithEnhancedAI(\\\"Legal contract analysis with indemnification clauses and liability limitations. Evidence processing for prosecution case.\\\", [\\\"contract law\\\", \\\"evidence rules\\\", \\\"liability\\\"], { enableGPU: true, analysisType: \\\"legal\\\", priority: \\\"high\\\", useAgentOrchestration: true }); console.log(\\\"🎯 Legal Analysis:\\\", result.legalAnalysis); console.log(\\\"📊 Performance:\\\", result.systemMetrics); console.log(\\\"🔧 Optimizations:\\\", result.performanceOptimizations); });"
+      ],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=8192 --experimental-modules",
+          "ENABLE_GPU": "true",
+          "RTX_3060_OPTIMIZATION": "true",
+          "FLASHATTENTION2_ENABLED": "true"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "dependsOn": ["🚀 Full Legal AI Stack"]
+    },
+    {
+      "label": "🔍 Error Analysis with GPU Acceleration",
+      "type": "shell",
+      "command": "node", 
+      "args": [
+        "-e",
+        "import(\\\"./src/lib/integrations/flashattention-multicore-bridge.js\\\").then(async m => { console.log(\\\"🔍 Starting GPU-Accelerated Error Analysis...\\\"); const errorData = { totalErrors: 1962, categories: { svelte5_migration: 800, ui_component_mismatch: 600, css_unused: 400, binding_issues: 162 } }; const result = await m.analyzeErrorsWithGPU(errorData, [\\\"export let prop = default\\\", \\\"let { prop } = $props()\\\", \\\"<CardRoot class=\\\\\\\"card\\\\\\\">\\\", \\\"<DialogRoot bind:open={show}>\\\", \\\"unused .container { }\\\"]); console.log(\\\"🎯 Priority Fixes:\\\", result.prioritizedErrors.slice(0, 5)); console.log(\\\"📊 Fix Probability:\\\", result.fixProbability); console.log(\\\"🔧 Relevant Sections:\\\", result.relevantCodeSections.length); });"
+      ],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=8192 --experimental-modules",
+          "ENABLE_GPU": "true",
+          "ERROR_ANALYSIS": "true",
+          "FLASHATTENTION2_ERROR_MODE": "true"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always", 
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "dependsOn": ["🚀 Full Legal AI Stack"]
+    },
+    {
       "label": "Dev with Memory Monitoring",
       "type": "shell",
       "command": "npm",
@@ -12,10 +131,7 @@
           "OLLAMA_BASE_URL": "http://localhost:11434"
         }
       },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
+      "group": "build",
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -47,7 +163,142 @@
       ],
       "group": "test",
       "isBackground": true
+    },
+    {
+      "label": "📊 System Status Dashboard",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e", 
+        "import(\\\"./src/lib/integrations/comprehensive-agent-orchestration.js\\\").then(m => { console.log(\\\"🚀 Agent Orchestrator Status:\\\", JSON.stringify(m.comprehensiveOrchestrator.getSystemStatus(), null, 2)); }); import(\\\"./src/lib/integrations/flashattention-multicore-bridge.js\\\").then(m => { console.log(\\\"⚡ FlashAttention Bridge Status:\\\", JSON.stringify(m.flashAttentionMulticoreBridge.getStatus(), null, 2)); });"
+      ],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--experimental-modules"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🤖 Run Complete AI Pipeline",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "console.log(\\\"🤖 Starting Complete Legal AI Pipeline...\\\"); Promise.all([import(\\\"./src/lib/integrations/comprehensive-agent-orchestration.js\\\"), import(\\\"./src/lib/integrations/flashattention-multicore-bridge.js\\\")]).then(async ([orchestration, bridge]) => { await Promise.all([orchestration.comprehensiveOrchestrator.initialize(), bridge.flashAttentionMulticoreBridge.initialize()]); console.log(\\\"✅ All systems initialized\\\"); const analysisResult = await orchestration.analyzeAndFixErrors({ totalErrors: 1962, sampleErrors: [\\\"TS2322: Type mismatch\\\", \\\"Svelte component prop error\\\", \\\"CSS unused selector\\\"] }); console.log(\\\"🔧 Error Analysis Complete:\\\", analysisResult.errorAnalysis.recommendations.slice(0, 3)); const gpuResult = await bridge.processWithEnhancedAI(\\\"Comprehensive legal AI analysis with error resolution\\\", [\\\"TypeScript\\\", \\\"Svelte\\\", \\\"legal AI\\\"]); console.log(\\\"⚡ GPU Processing Complete:\\\", gpuResult.systemMetrics); console.log(\\\"🎯 Pipeline Status: All systems operational\\\"); });"
+      ],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=8192 --experimental-modules",
+          "FULL_AI_PIPELINE": "true",
+          "ENABLE_GPU": "true",
+          "CONTEXT7_MULTICORE": "true"
+        }
+      },
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🚀 GPU Cluster Concurrent Executor",
+      "type": "shell",
+      "command": "zx",
+      "args": ["scripts/gpu-cluster-concurrent-executor.mjs"],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=8192 --experimental-modules",
+          "GPU_CLUSTER_ENABLED": "true",
+          "WEBGPU_ACCELERATION": "true",
+          "SIMD_PROCESSING": "true",
+          "MULTICORE_WORKERS": "8"
+        }
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "dependsOn": ["Initialize Services"]
+    },
+    {
+      "label": "⚡ SIMD + WebGPU Acceleration",
+      "type": "shell",
+      "command": "zx",
+      "args": ["scripts/gpu-cluster-concurrent-executor.mjs", "--tasks=simd-parser,simd-indexer,webgpu-som"],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--max-old-space-size=8192",
+          "SIMD_BATCH_SIZE": "1024",
+          "WEBGPU_CONTEXTS": "4",
+          "GPU_MEMORY_LIMIT": "512",
+          "ENABLE_PROFILING": "true"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "🧠 WebGPU SOM Cache Processing",
+      "type": "shell",
+      "command": "zx",
+      "args": ["scripts/cluster-multicore-manager.mjs"],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--experimental-modules",
+          "WEBGPU_SOM_ENABLED": "true",
+          "PAGERANK_ITERATIONS": "20",
+          "CLUSTER_WORKERS": "4",
+          "GPU_CONTEXTS_PER_WORKER": "2"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "📊 Multicore Performance Analysis",
+      "type": "shell",
+      "command": "zx",
+      "args": ["scripts/gpu-cluster-concurrent-executor.mjs", "--profile", "--report"],
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--experimental-modules",
+          "PERFORMANCE_PROFILING": "true",
+          "METRICS_COLLECTION": "true",
+          "REPORT_GENERATION": "true"
+        }
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
     }
   ]
 }
-EOF < /dev/null

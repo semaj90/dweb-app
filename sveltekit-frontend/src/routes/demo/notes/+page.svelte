@@ -211,8 +211,8 @@ Priority: High
             <RichTextEditor
               content={currentNote.content}
               placeholder="Start writing your note..."
-              onsave={handleEditorSave}
-              onchange={handleEditorChange}
+              on:save={handleEditorSave}
+              on:change={handleEditorChange}
               autoSave={true}
               autoSaveDelay={3000}
             />
@@ -366,7 +366,7 @@ Priority: High
     caseId={selectedNote.caseId}
     createdAt={new Date(selectedNote.savedAt)}
     canEdit={true}
-    onsave={(event) => {
+    on:save={(event) => {
       console.log('Note updated:', event.detail);
       // Refresh the note in the list
       notesManager.saveNote(event.detail);

@@ -191,17 +191,7 @@
     justify-content: center;
     flex-shrink: 0;
   }
-
-  .loading-spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid transparent;
-    border-top: 2px solid currentColor;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
+@keyframes spin {
     0% {
       transform: rotate(0deg);
     }
@@ -352,12 +342,7 @@
     }
 
     .status-icon svg,
-    .loading-spinner {
-      width: 14px;
-      height: 14px;
-    }
-
-    .provider-info {
+.provider-info {
       font-size: 0.6875rem;
     }
 

@@ -120,8 +120,8 @@
         <div
           class="mx-auto px-4 max-w-7xl"
           transition:slide={{ duration: 300, easing: quintOut "
-          on:click={() => handleItemClick(item)}
-          on:keydown={(e) => e.key === "Enter" && handleItemClick(item)}
+          onclick={() => handleItemClick(item)}
+          onkeydown={(e) => e.key === "Enter" && handleItemClick(item)}
           role="option"
           tabindex={0}
           aria-label="{itemType} item"
@@ -320,15 +320,7 @@
     color: var(--pico-muted-color);
     gap: 0.5rem;
 }
-  .loading-spinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--pico-muted-border-color);
-    border-top: 2px solid var(--pico-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-  .end-indicator {
+.end-indicator {
     text-align: center;
     padding: 1rem;
     color: var(--pico-muted-color);

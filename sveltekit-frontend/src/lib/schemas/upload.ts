@@ -1,5 +1,5 @@
+import { z } from "zod";
 // @ts-nocheck
-import { z } from 'zod';
 
 // Allowed file types for evidence upload
 const ALLOWED_MIME_TYPES = [

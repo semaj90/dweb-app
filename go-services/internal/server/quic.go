@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
-	"net"
 	"sync"
 	"time"
 
@@ -17,7 +15,7 @@ import (
 
 // QUICCoordinator manages ultra-low latency communication
 type QUICCoordinator struct {
-	listener     quic.Listener
+	listener     *quic.Listener
 	connections  sync.Map // map[string]*QUICConnection
 	handlers     sync.Map // map[string]StreamHandler
 	logger       log.Logger
@@ -122,7 +120,7 @@ func (qc *QUICCoordinator) Start() error {
 	}
 
 	qc.listener = listener
-	qc.logger.Infof("QUIC coordinator started on %s", addr)
+	qc.logger.Log(log.LevelInfo, "msg", "QUIC coordinator started", "addr", addr)
 
 	// Start accepting connections
 	go qc.acceptConnections()
@@ -144,7 +142,7 @@ func (qc *QUICCoordinator) acceptConnections() {
 		default:
 			conn, err := qc.listener.Accept(context.Background())
 			if err != nil {
-				qc.logger.Errorf("Failed to accept connection: %v", err)
+				qc.logger.Log(log.LevelError, "msg", "Failed to accept connection", "error", err)
 				continue
 			}
 
@@ -166,7 +164,7 @@ func (qc *QUICCoordinator) handleConnection(conn quic.Connection) {
 	}
 
 	qc.connections.Store(clientID, qconn)
-	qc.logger.Infof("New QUIC connection: %s from %s", clientID, conn.RemoteAddr())
+	qc.logger.Log(log.LevelInfo, "msg", "New QUIC connection", "client_id", clientID, "remote_addr", conn.RemoteAddr())
 
 	// Handle streams for this connection
 	go qc.handleStreams(qconn)
@@ -175,7 +173,7 @@ func (qc *QUICCoordinator) handleConnection(conn quic.Connection) {
 	<-conn.Context().Done()
 	
 	qc.connections.Delete(clientID)
-	qc.logger.Infof("QUIC connection closed: %s", clientID)
+	qc.logger.Log(log.LevelInfo, "msg", "QUIC connection closed", "client_id", clientID)
 }
 
 // handleStreams processes streams for a connection
@@ -187,7 +185,7 @@ func (qc *QUICCoordinator) handleStreams(qconn *QUICConnection) {
 		default:
 			stream, err := qconn.conn.AcceptStream(context.Background())
 			if err != nil {
-				qc.logger.Errorf("Failed to accept stream: %v", err)
+				qc.logger.Log(log.LevelError, "msg", "Failed to accept stream", "error", err)
 				continue
 			}
 
@@ -207,7 +205,7 @@ func (qc *QUICCoordinator) handleStream(stream quic.Stream, qconn *QUICConnectio
 	// Read message type first
 	msgType, err := qc.readMessageType(stream)
 	if err != nil {
-		qc.logger.Errorf("Failed to read message type: %v", err)
+		qc.logger.Log(log.LevelError, "msg", "Failed to read message type", "error", err)
 		qconn.metrics.ErrorCount++
 		return
 	}
@@ -215,7 +213,7 @@ func (qc *QUICCoordinator) handleStream(stream quic.Stream, qconn *QUICConnectio
 	// Get handler for message type
 	handlerFunc, exists := qc.handlers.Load(msgType)
 	if !exists {
-		qc.logger.Warnf("No handler for message type: %s", msgType)
+		qc.logger.Log(log.LevelWarn, "msg", "No handler for message type", "message_type", msgType)
 		qc.sendError(stream, fmt.Sprintf("Unknown message type: %s", msgType))
 		return
 	}
@@ -228,7 +226,7 @@ func (qc *QUICCoordinator) handleStream(stream quic.Stream, qconn *QUICConnectio
 
 	err = handler(ctx, stream, qconn)
 	if err != nil {
-		qc.logger.Errorf("Stream handler error: %v", err)
+		qc.logger.Log(log.LevelError, "msg", "Stream handler error", "error", err)
 		qconn.metrics.ErrorCount++
 		qc.sendError(stream, err.Error())
 		return
@@ -266,7 +264,7 @@ func (qc *QUICCoordinator) setupDefaultHandlers() {
 // RegisterHandler registers a stream handler for a message type
 func (qc *QUICCoordinator) RegisterHandler(msgType string, handler StreamHandler) {
 	qc.handlers.Store(msgType, handler)
-	qc.logger.Infof("Registered QUIC handler: %s", msgType)
+	qc.logger.Log(log.LevelInfo, "msg", "Registered QUIC handler", "message_type", msgType)
 }
 
 // handleDocumentProcessing processes legal documents via QUIC
@@ -288,7 +286,7 @@ func (qc *QUICCoordinator) handleDocumentProcessing(ctx context.Context, stream 
 		return fmt.Errorf("failed to parse document request: %w", err)
 	}
 
-	qc.logger.Infof("Processing document %s via QUIC from %s", docRequest.DocumentID, conn.clientID)
+	qc.logger.Log(log.LevelInfo, "msg", "Processing document via QUIC", "document_id", docRequest.DocumentID, "client_id", conn.clientID)
 
 	// Simulate document processing (replace with actual legal AI processing)
 	result := map[string]interface{}{
@@ -326,7 +324,7 @@ func (qc *QUICCoordinator) handleVectorSearch(ctx context.Context, stream quic.S
 		return fmt.Errorf("failed to parse search request: %w", err)
 	}
 
-	qc.logger.Infof("Vector search via QUIC: %s", searchRequest.Query)
+	qc.logger.Log(log.LevelInfo, "msg", "Vector search via QUIC", "query", searchRequest.Query)
 
 	// Simulate vector search (replace with actual Qdrant/PGVector search)
 	results := map[string]interface{}{
@@ -370,7 +368,7 @@ func (qc *QUICCoordinator) handleRealtimeAnalysis(ctx context.Context, stream qu
 		return fmt.Errorf("failed to parse analysis request: %w", err)
 	}
 
-	qc.logger.Infof("Real-time analysis via QUIC: %s", analysisRequest.AnalysisType)
+	qc.logger.Log(log.LevelInfo, "msg", "Real-time analysis via QUIC", "analysis_type", analysisRequest.AnalysisType)
 
 	if analysisRequest.Streaming {
 		// Stream analysis results as they become available
@@ -447,7 +445,7 @@ func (qc *QUICCoordinator) handleBulkOperation(ctx context.Context, stream quic.
 		return fmt.Errorf("failed to parse bulk request: %w", err)
 	}
 
-	qc.logger.Infof("Bulk operation via QUIC: %s (%d items)", bulkRequest.Operation, len(bulkRequest.Items))
+	qc.logger.Log(log.LevelInfo, "msg", "Bulk operation via QUIC", "operation", bulkRequest.Operation, "item_count", len(bulkRequest.Items))
 
 	// Process items in batches
 	batchSize := bulkRequest.BatchSize
@@ -674,7 +672,7 @@ func (qc *QUICCoordinator) startMetricsCollection() {
 		select {
 		case <-ticker.C:
 			metrics := qc.collectMetrics()
-			qc.logger.Infof("QUIC Metrics: %+v", metrics)
+			qc.logger.Log(log.LevelInfo, "msg", "QUIC Metrics", "metrics", metrics)
 		case <-qc.shutdownChan:
 			return
 		}

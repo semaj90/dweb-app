@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { z } from "zod";
+// @ts-nocheck
 
 // Case creation form schema
 export const caseFormSchema = z.object({

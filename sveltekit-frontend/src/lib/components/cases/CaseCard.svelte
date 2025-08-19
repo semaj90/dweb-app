@@ -1,13 +1,18 @@
 
 
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import type { Props } from "$lib/types/global";
   import { createContextMenu, melt } from '@melt-ui/svelte'
   import { fly, scale } from 'svelte/transition'
 import {
     FileText,
     Users,
-    Calendar,
+      Database,
+      Api,   Calendar,
     MoreVertical,
     Eye,
     Edit,
@@ -152,7 +157,7 @@ import {
       </div>
 
       <div class="flex items-center gap-2">
-        <span class="{currentStatus.class}">
+        <span className="{currentStatus.className}">
           {#key currentStatus.icon}
             <currentStatus.icon class="w-3 h-3 mr-1" />
           {/key}

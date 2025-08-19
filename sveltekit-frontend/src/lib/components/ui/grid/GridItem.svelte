@@ -8,7 +8,7 @@ https://svelte.dev/e/js_parse_error -->
     colStart: number | undefined ;
     rowStart: number | undefined ;
     responsive: boolean ;
-    className: string ;
+    class: string ;
   }
   let {
     colSpan = 1,
@@ -16,7 +16,7 @@ https://svelte.dev/e/js_parse_error -->
     colStart = undefined,
     rowStart = undefined,
     responsive = true,
-    className = ''
+    class = ''
   }: Props = $props();
 
 
@@ -43,7 +43,7 @@ https://svelte.dev/e/js_parse_error -->
     rowSpanClass,
     colStartClass,
     rowStartClass,
-    className
+    class
   )}
 >
   <slot></slot>

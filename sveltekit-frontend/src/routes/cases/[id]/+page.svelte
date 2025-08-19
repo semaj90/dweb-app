@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import { writable } from "svelte/store";
   import CanvasEditor from '$lib/components/CanvasEditor.svelte';
   import EvidencePanel from '$lib/components/EvidencePanel.svelte';
 
@@ -9,17 +8,17 @@
   let evidence = caseDetails?.evidence || [];
   let canvasState: any = $state(null);
 
-  let showSidebar = writable(false);
+  let showSidebar = $state(false);
   let sidebarHovered = false;
 
   function handleSidebarMouseEnter() {
     sidebarHovered = true;
-    showSidebar.set(true);
+    showSidebar = true;
 }
   function handleSidebarMouseLeave() {
     sidebarHovered = false;
     setTimeout(() => {
-      if (!sidebarHovered) showSidebar.set(false);
+      if (!sidebarHovered) showSidebar = false;
     }, 300);
 }
   function handleEvidenceDrop(evd: any) {
@@ -29,10 +28,11 @@
 }
 </script>
 
-<section class="space-y-4">
-  <div class="space-y-4">
+<section class="flex h-screen bg-gray-50">
+  <!-- Sidebar Toggle -->
+  <div class="relative">
     <div
-      class="space-y-4"
+      class="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 sidebar-trigger"
       role="button"
       tabindex={0}
       onmouseenter={handleSidebarMouseEnter}
@@ -44,15 +44,14 @@
         }
       }}
     >
-      <div
-        class="space-y-4"
-      >
+      <div class="sidebar-tab bg-blue-600 text-white rounded-r px-2 py-4 shadow hover:bg-blue-700 transition cursor-pointer">
         &#9776;
       </div>
     </div>
-    {#if $showSidebar}
+    
+    {#if showSidebar}
       <div
-        class="space-y-4"
+        class="sidebar-panel bg-white shadow-lg w-64 h-full fixed left-0 top-0 z-30 flex flex-col"
         role="complementary"
         onmouseenter={handleSidebarMouseEnter}
         onmouseleave={handleSidebarMouseLeave}
@@ -66,31 +65,40 @@
       </div>
     {/if}
   </div>
-  <div class="space-y-4">
-    <div class="space-y-4">
+
+  <!-- Main Content Area -->
+  <div class="flex-1 p-4">
+    <div class="canvas-stretch-container relative w-full h-full min-h-500 flex flex-col bg-white rounded-lg shadow">
       <CanvasEditor
         bind:canvasState
         reportId={caseId}
         {evidence}
-        on:evidenceDrop={handleEvidenceDrop}
+        onevidencedrop={handleEvidenceDrop}
         width={undefined}
         height={undefined}
       />
-      <button class="space-y-4" aria-label="Ask AI">
-        <svg width="32" height="32" fill="currentColor" class="space-y-4"
-          ><circle
+      
+      <!-- AI FAB Button -->
+      <button 
+        class="ai-fab fixed right-8 bottom-8 bg-blue-600 text-white rounded-full shadow-lg p-3 hover:bg-blue-700 transition z-40 cursor-pointer flex items-center justify-center"
+        aria-label="Ask AI"
+      >
+        <svg width="32" height="32" fill="currentColor">
+          <circle
             cx="16"
             cy="16"
             r="16"
             fill="currentColor"
             opacity=".1"
-          /><path
+          />
+          <path
             d="M16 8a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12A6 6 0 0 0 16 10zm1 3v2h2v2h-2v2h-2v-2h-2v-2h2v-2h2z"
             fill="currentColor"
-          /></svg
-        >
+          />
+        </svg>
       </button>
-      <div class="space-y-4">
+      
+      <div class="infinite-scroll-list flex-1 overflow-y-auto mt-4">
         <!-- Infinite scroll logic: load more on scroll bottom, show evidence or canvas items -->
       </div>
     </div>

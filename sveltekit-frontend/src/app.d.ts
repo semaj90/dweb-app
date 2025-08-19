@@ -1,8 +1,8 @@
+import type { SessionUser } from "$lib/types/auth";
 /// <reference types="@sveltejs/kit" />
 /// <reference types="svelte" />
 /// <reference types="vite/client" />
 
-import type { SessionUser } from '$lib/types/auth';
 
 declare global {
   namespace App {

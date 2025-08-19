@@ -139,10 +139,10 @@ Based on the comprehensive analysis of the selected documents, this report provi
               <div 
                 class="document-item" 
                 class:selected={selectedDocuments.includes(doc.id)}
-                on:click={() => toggleDocument(doc.id)}
+                onclick={() => toggleDocument(doc.id)}
                 role="button"
                 tabindex="0"
-                on:keydown={(e) => e.key === 'Enter' && toggleDocument(doc.id)}
+                onkeydown={(e) => e.key === 'Enter' && toggleDocument(doc.id)}
               >
                 <div class="document-info">
                   <span class="document-name">{doc.name}</span>
@@ -164,7 +164,7 @@ Based on the comprehensive analysis of the selected documents, this report provi
       <div class="config-actions">
         <button 
           class="generate-btn" 
-          on:click={generateReport}
+          onclick={generateReport}
           disabled={isGenerating || selectedDocuments.length === 0}
         >
           {#if isGenerating}
@@ -203,7 +203,7 @@ Based on the comprehensive analysis of the selected documents, this report provi
         <div class="section-header">
           <h2>Generated Report</h2>
           <div class="report-actions">
-            <button class="action-btn" on:click={downloadReport}>
+            <button class="action-btn" onclick={downloadReport}>
               <span class="btn-icon">📥</span>
               Download
             </button>

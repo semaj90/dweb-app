@@ -1,9 +1,11 @@
 // @ts-nocheck
 import { canvasLayouts } from "$lib/server/db/schema-canvas";
-import type { RequestEvent } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { and, desc, eq, like, sql } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+type { RequestEvent }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { and, desc, eq, like, sql
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { URL
 
 export async function GET({ url, locals }: RequestEvent) {
   try {

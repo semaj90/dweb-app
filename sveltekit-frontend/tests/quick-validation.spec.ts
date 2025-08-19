@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test';
+import { URL } from "url";
 
 test.describe('Quick System Validation', () => {
   test('should verify all services are running and healthy', async ({ page }) => {

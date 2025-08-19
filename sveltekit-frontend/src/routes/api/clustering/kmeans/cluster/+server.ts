@@ -5,24 +5,29 @@
  */
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { LegalKMeansClusterer } from "$lib/services/kmeans-clustering";
-import { wasmClusteringService } from "$lib/wasm/clustering-wasm";
-import { Redis } from "ioredis";
-import { QdrantClient } from "@qdrant/js-client-rest";
-import { db } from "$lib/server/db";
-import { legalDocuments } from "$lib/server/db/schema-postgres";
-import { inArray } from "drizzle-orm";
+// Orphaned content: import type { RequestHandler
+import {
+LegalKMeansClusterer } from "$lib/services/kmeans-clustering";
+// Orphaned content: import { wasmClusteringService
+import {
+Redis } from "ioredis";
+// Orphaned content: import { QdrantClient
+import {
+db } from "$lib/server/db";
+// Orphaned content: import { legalDocuments
+import {
+inArray } from "drizzle-orm";
+// Orphaned content: import { URL
 // Optional amqp for message queue integration
 
 // Initialize connections
 const redis = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
+  host: import.meta.env.REDIS_HOST || "localhost",
+  port: parseInt(import.meta.env.REDIS_PORT || "6379"),
 });
 
 const qdrant = new QdrantClient({
-  url: process.env.QDRANT_URL || "http://localhost:6333",
+  url: import.meta.env.QDRANT_URL || "http://localhost:6333",
 });
 
 let rabbitConnection: any | null = null;
@@ -31,7 +36,7 @@ async function getRabbitConnection() {
     try {
       // const amqp = await import('amqplib').catch(() => null);
       // if (amqp) {
-      //   rabbitConnection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
+      //   rabbitConnection = await amqp.connect(import.meta.env.RABBITMQ_URL || 'amqp://localhost');
       // }
     } catch (error) {
       console.warn("RabbitMQ not available:", error);

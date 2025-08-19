@@ -3,9 +3,11 @@
  * Library Sync API Endpoints - Step 6 & 7 Integration
  */
 
-import type { RequestHandler } from "./$types";
-import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types.js";
+// Orphaned content: import {
+
 import { librarySyncService } from "$lib/services/library-sync-service";
+// Orphaned content: import {
 
 // GET /api/libraries - Search libraries
 export const GET: RequestHandler = async ({ url }) => {

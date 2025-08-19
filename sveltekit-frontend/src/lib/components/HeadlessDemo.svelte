@@ -6,8 +6,6 @@
     items = ['Active Cases', 'Pending Cases', 'Closed Cases']
   }: Props = $props();
 
-
-
   import { createDialog, createSelect } from '@melt-ui/svelte';
   import { fade } from 'svelte/transition';
   
@@ -134,17 +132,7 @@
     justify-content: center;
     padding: var(--spacing-lg);
 }
-  .dialog-content {
-    background-color: var(--color-background);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    padding: var(--spacing-xl);
-    max-width: 500px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-  .dialog-title {
+.dialog-title {
     font-size: var(--font-size-xl);
     font-weight: 600;
     margin-bottom: var(--spacing-md);

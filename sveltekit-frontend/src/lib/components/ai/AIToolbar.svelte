@@ -221,12 +221,12 @@
             <Input
               placeholder="Ask AI to find laws..."
               bind:value={aiSearchQuery}
-              onkeydown={handleAISearchKeydown}
+              on:keydown={handleAISearchKeydown}
               {disabled}
               class="pl-10" />
           </div>
           <Button
-            onclick={performAISearch}
+            on:click={performAISearch}
             disabled={disabled || isAISearching || !aiSearchQuery.trim()}
             size="sm">
             {#if isAISearching}
@@ -268,12 +268,12 @@
           <Textarea
             placeholder="Ask a legal question..."
             bind:value={aiChatMessage}
-            onkeydown={handleAIChatKeydown}
+            on:keydown={handleAIChatKeydown}
             {disabled}
             rows="2"
             class="resize-none" />
           <Button
-            onclick={performAIChat}
+            on:click={performAIChat}
             disabled={disabled || isAIChatting || !aiChatMessage.trim()}
             size="sm"
             class="w-full">
@@ -315,7 +315,7 @@
             rows="2"
             class="resize-none" />
           <Button
-            onclick={performAISummarization}
+            on:click={performAISummarization}
             disabled={disabled || isSummarizing || !summarizeText.trim()}
             size="sm"
             class="w-full">
@@ -343,7 +343,7 @@
   <!-- Clear Results Button -->
   {#if aiSearchResults.length > 0 || aiChatResponse || summaryResult}
     <div class="text-center">
-      <Button variant="outline" onclick={clearResults} size="sm">Clear All Results</Button>
+      <Button variant="outline" on:click={clearResults} size="sm">Clear All Results</Button>
     </div>
   {/if}
 
@@ -352,7 +352,7 @@
     <Button
       variant="outline"
       size="sm"
-      onclick={() => {
+      on:click={() => {
         aiSearchQuery = 'California murder laws';
         performAISearch();
       }}
@@ -363,7 +363,7 @@
     <Button
       variant="outline"
       size="sm"
-      onclick={() => {
+      on:click={() => {
         aiChatMessage = 'What are the elements of a valid contract?';
         performAIChat();
       }}
@@ -374,7 +374,7 @@
     <Button
       variant="outline"
       size="sm"
-      onclick={() => {
+      on:click={() => {
         aiSearchQuery = 'evidence admissibility rules';
         performAISearch();
       }}

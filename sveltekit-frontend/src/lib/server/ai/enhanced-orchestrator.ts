@@ -2,35 +2,32 @@
 // Enhanced AI Synthesis Orchestrator with Full Stack Integration
 // Connects Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama, and Go services
 
-import { logger } from './logger';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import {
-  pgTable,
-  text,
-  vector,
-  timestamp,
-  jsonb,
-  uuid,
-  integer,
-  boolean,
-} from 'drizzle-orm/pg-core';
-import { eq, sql } from 'drizzle-orm';
-import postgres from 'postgres';
-import { Redis } from 'ioredis';
-import { createMachine, interpret, State } from 'xstate';
-import { ChatOllama } from '@langchain/ollama';
-import { OllamaEmbeddings } from '@langchain/ollama';
-import { Neo4jVectorStore } from '@langchain/community/vectorstores/neo4j_vector';
-import { PGVectorStore } from '@langchain/community/vectorstores/pgvector';
-import { PoolConfig } from 'pg';
-import { Document } from '@langchain/core/documents';
+import { logger } from "./logger.js";
+import { drizzle, {,   pgTable,,   text,,   vector,,   timestamp,,   jsonb,,   uuid,,   integer,,   boolean, } from
+// Orphaned content: import { eq, sql
+postgres from "postgres";
+// Orphaned content: import {
 
-// Import existing components
-import { aiAssistantSynthesizer } from './ai-assistant-input-synthesizer';
-import { legalBERT } from './legalbert-middleware';
-import { cachingLayer } from './caching-layer';
-import { feedbackLoop } from './feedback-loop';
-import { monitoringService } from './monitoring-service';
+import { createMachine, interpret, State } from "xstate";
+// Orphaned content: import {
+
+import { OllamaEmbeddings } from "@langchain/ollama";
+// Orphaned content: import {
+
+import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
+// Orphaned content: import {
+
+import { Document } from '@langchain/core/documents';
+// Orphaned content: // Import existing components
+import { aiAssistantSynthesizer
+import {
+legalBERT } from "./legalbert-middleware.js";
+// Orphaned content: import { cachingLayer
+import {
+feedbackLoop } from "./feedback-loop.js";
+// Orphaned content: import { monitoringService
+import {
+EventEmitter } from "events";
 
 // ===== DATABASE SCHEMA (Drizzle ORM TypeScript Safe) =====
 
@@ -71,9 +68,9 @@ export const synthesisCache = pgTable('synthesis_cache', {
 const services = {
   // Core AI Services
   neo4j: {
-    uri: process.env.NEO4J_URI || 'bolt://localhost:7687',
-    user: process.env.NEO4J_USER || 'neo4j',
-    password: process.env.NEO4J_PASSWORD || 'password',
+    uri: import.meta.env.NEO4J_URI || 'bolt://localhost:7687',
+    user: import.meta.env.NEO4J_USER || 'neo4j',
+    password: import.meta.env.NEO4J_PASSWORD || 'password',
   },
 
   // Go Microservices
@@ -101,17 +98,17 @@ const services = {
 
   // Database
   postgres: {
-    host: process.env.POSTGRES_HOST || 'localhost',
-    port: parseInt(process.env.POSTGRES_PORT || '5432'),
-    database: process.env.POSTGRES_DB || 'legal_ai',
-    user: process.env.POSTGRES_USER || 'postgres',
-    password: process.env.POSTGRES_PASSWORD || 'postgres',
+    host: import.meta.env.POSTGRES_HOST || 'localhost',
+    port: parseInt(import.meta.env.POSTGRES_PORT || '5432'),
+    database: import.meta.env.POSTGRES_DB || 'legal_ai',
+    user: import.meta.env.POSTGRES_USER || 'postgres',
+    password: import.meta.env.POSTGRES_PASSWORD || 'postgres',
   },
 
   // Redis Configuration
   redis: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
+    host: import.meta.env.REDIS_HOST || 'localhost',
+    port: parseInt(import.meta.env.REDIS_PORT || '6379'),
     db: 0,
     keyPrefix: 'legal-ai:',
   },

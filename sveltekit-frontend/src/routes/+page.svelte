@@ -1,8 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax
-https://svelte.dev/e/mixed_event_handler_syntaxes -->
+<!-- Migration: Fixed Svelte 5 event handler syntax -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { writable, derived } from 'svelte/store';
   import { aiAgentStore, isAIConnected, currentConversation, systemHealth, isProcessing } from '$lib/stores/ai-agent';
   // import { Button } from '$lib/components/ui/button';
   import type { API, Database } from '$lib/types';
@@ -22,7 +20,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   }
 
   // Local state
-  let chatState = writable<ChatState>({
+  let chatState = $state<ChatState>({
     message: '',
     isLoading: false,
     error: null,
@@ -36,11 +34,11 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   let autoReconnectInterval: number | null = null;
 
   // Reactive values
-  let canSend = $derived($chatState.message.trim().length > 0 && $isAIConnected && !$chatState.isLoading);
+  let canSend = $derived(chatState.message.trim().length > 0 && $isAIConnected && !chatState.isLoading);
   let connectionStatus = $derived($isAIConnected ? 'Connected' :
-                      $chatState.connectionAttempts > 0 ? 'Reconnecting...' : 'Disconnected');
+                      chatState.connectionAttempts > 0 ? 'Reconnecting...' : 'Disconnected');
   let statusColor = $derived($isAIConnected ? 'text-green-600' :
-                   $chatState.connectionAttempts > 0 ? 'text-yellow-600' : 'text-red-600');
+                   chatState.connectionAttempts > 0 ? 'text-yellow-600' : 'text-red-600');
 
   // Sample queries for user guidance
   const sampleQueries = [
@@ -64,35 +62,30 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   });
 
   async function initializeSystem() {
-    chatState.update(s => ({ ...s, isLoading: true, error: null }));
+    chatState.isLoading = true;
+    chatState.error = null;
 
     try {
       console.log('🤖 Initializing AI Agent System...');
       await aiAgentStore.connect();
 
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        connectionAttempts: 0,
-        lastActivity: new Date()
-      }));
+      chatState.isLoading = false;
+      chatState.connectionAttempts = 0;
+      chatState.lastActivity = new Date();
 
       console.log('✅ AI Agent System initialized successfully');
 
     } catch (error) {
       console.error('❌ Failed to initialize AI system:', error);
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        error: `Failed to connect to AI service: ${(error as Error).message}`,
-        connectionAttempts: s.connectionAttempts + 1
-      }));
+      chatState.isLoading = false;
+      chatState.error = `Failed to connect to AI service: ${(error as Error).message}`;
+      chatState.connectionAttempts = chatState.connectionAttempts + 1;
     }
   }
 
   function setupAutoReconnect() {
     autoReconnectInterval = setInterval(async () => {
-      if (!$isAIConnected && $chatState.connectionAttempts < 5) {
+      if (!$isAIConnected && chatState.connectionAttempts < 5) {
         console.log('🔄 Attempting to reconnect...');
         await initializeSystem();
       }
@@ -102,8 +95,10 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   async function sendMessage() {
     if (!canSend) return;
 
-    const userMessage = $chatState.message.trim();
-    chatState.update(s => ({ ...s, message: '', isLoading: true, error: null }));
+    const userMessage = chatState.message.trim();
+    chatState.message = '';
+    chatState.isLoading = true;
+    chatState.error = null;
 
     try {
       console.log('📤 Sending message:', userMessage);
@@ -113,22 +108,16 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         userAgent: navigator.userAgent
       });
 
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        lastActivity: new Date()
-      }));
+      chatState.isLoading = false;
+      chatState.lastActivity = new Date();
 
       // Auto-scroll to bottom
       setTimeout(scrollToBottom, 100);
 
     } catch (error) {
       console.error('❌ Failed to send message:', error);
-      chatState.update(s => ({
-        ...s,
-        isLoading: false,
-        error: `Failed to send message: ${(error as Error).message}`
-      }));
+      chatState.isLoading = false;
+      chatState.error = `Failed to send message: ${(error as Error).message}`;
     }
   }
 
@@ -147,16 +136,17 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 
   function clearChat() {
     aiAgentStore.clearConversation();
-    chatState.update(s => ({ ...s, error: null }));
+    chatState.error = null;
   }
 
   function useSampleQuery(query: string) {
-    chatState.update(s => ({ ...s, message: query }));
+    chatState.message = query;
     messageInput?.focus();
   }
 
   function retryConnection() {
-    chatState.update(s => ({ ...s, error: null, connectionAttempts: 0 }));
+    chatState.error = null;
+    chatState.connectionAttempts = 0;
     initializeSystem();
   }
 
@@ -328,7 +318,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           {/each}
 
           <!-- Loading Indicator -->
-          {#if $chatState.isLoading}
+          {#if chatState.isLoading}
             <div class="flex justify-start">
               <div class="max-w-[80%] p-4 bg-gray-100 rounded-lg">
                 <div class="flex items-center space-x-2">
@@ -342,15 +332,15 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       </div>
 
       <!-- Error Display -->
-      {#if $chatState.error}
+      {#if chatState.error}
         <div class="mx-4 mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2">
               <span class="text-red-600">⚠️</span>
-              <span class="text-red-800 text-sm">{$chatState.error}</span>
+              <span class="text-red-800 text-sm">{chatState.error}</span>
             </div>
             <button
-              onclick={() => chatState.update(s => ({ ...s, error: null }))}
+              onclick={() => chatState.error = null}
               class="text-red-600 hover:text-red-800"
             >
               ✕
@@ -365,12 +355,12 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           <div class="flex-1">
             <textarea
               bind:this={messageInput}
-              bind:value={$chatState.message}
+              bind:value={chatState.message}
               onkeydown={handleKeyDown}
               placeholder="Ask me about legal matters, case analysis, evidence review..."
               class="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows="2"
-              disabled={$chatState.isLoading || !$isAIConnected}
+              disabled={chatState.isLoading || !$isAIConnected}
             ></textarea>
           </div>
 
@@ -380,16 +370,16 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
               disabled={!canSend}
               class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
-              {#if $chatState.isLoading}
+              {#if chatState.isLoading}
                 <div class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
               {:else}
                 Send
               {/if}
             </button>
 
-            {#if $chatState.message.trim().length > 0}
+            {#if chatState.message.trim().length > 0}
               <div class="text-xs text-gray-500 text-center">
-                {$chatState.message.trim().length} chars
+                {chatState.message.trim().length} chars
               </div>
             {/if}
           </div>
@@ -424,10 +414,10 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           <span class="text-sm text-gray-600">Messages:</span>
           <span class="text-sm font-medium">{$currentConversation.length}</span>
         </div>
-        {#if $chatState.lastActivity}
+        {#if chatState.lastActivity}
           <div class="flex justify-between">
             <span class="text-sm text-gray-600">Last Activity:</span>
-            <span class="text-sm font-medium">{formatTimestamp($chatState.lastActivity)}</span>
+            <span class="text-sm font-medium">{formatTimestamp(chatState.lastActivity)}</span>
           </div>
         {/if}
       </div>

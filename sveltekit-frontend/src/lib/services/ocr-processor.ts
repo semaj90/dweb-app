@@ -1,11 +1,11 @@
-// @ts-nocheck
-import PDFDocument from "pdfkit";
-import fs from "fs";
 import path from "path";
-import { Readable } from "stream";
 import Tesseract from "tesseract.js";
 import pdf2pic from "pdf2pic";
 import sharp from "sharp";
+// @ts-nocheck
+PDFDocument from "pdfkit";
+// Orphaned content: import fs from "fs";
+import {
 
 export interface OCRResult {
   text: string;

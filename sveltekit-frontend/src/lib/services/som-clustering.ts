@@ -10,7 +10,7 @@ import {
   type DocumentCluster,
   type ClusterResult,
 } from "$lib/api/enhanced-rest-architecture";
-import { Redis } from "ioredis";
+// Orphaned content: import { Redis
 
 export class LegalDocumentSOM extends SelfOrganizingMap {
   private neurons: number[][][]; // [x][y][dimensions]

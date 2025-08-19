@@ -2,8 +2,8 @@
 // Real-time Document Update Notifications
 // WebSocket-based notifications for document re-embedding and re-ranking progress
 
-import { writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { writable } from "svelte/store";
+// Orphaned content: import {
 
 // ============================================================================
 // TYPES

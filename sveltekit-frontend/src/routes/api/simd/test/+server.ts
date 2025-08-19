@@ -1,9 +1,11 @@
+import crypto from "crypto";
 // @ts-nocheck
 // SIMD + Redis Performance Testing API
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { simdRedisClient } from '$lib/services/simd-redis-client';
-import { comprehensiveCachingService } from '$lib/services/comprehensive-caching-service';
+// Orphaned content: import type { RequestHandler
+import {
+simdRedisClient } from "$lib/services/simd-redis-client";
+// Orphaned content: import { comprehensiveCachingService
 
 // Generate test data of various sizes
 function generateTestData(size: 'small' | 'medium' | 'large' | 'xlarge') {

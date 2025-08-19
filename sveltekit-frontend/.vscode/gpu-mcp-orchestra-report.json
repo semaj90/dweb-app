@@ -1,0 +1,271 @@
+{
+  "timestamp": "2025-08-19T19:13:22.974Z",
+  "deployment": {
+    "version": "2.0.0",
+    "status": "deployed",
+    "orchestratorConfigured": true,
+    "mcpConfigured": true,
+    "flashAttentionEnabled": true,
+    "modelEnforcement": "active"
+  },
+  "performance": {
+    "totalTimeSeconds": 0.27,
+    "workers": 16,
+    "filesProcessed": 20,
+    "successRate": "100.0"
+  },
+  "mcp": {
+    "helpersLoaded": 0,
+    "cachingEnabled": true,
+    "integrationStatus": "active",
+    "modelConstraints": "enforced",
+    "allowedModels": ["gemma3-legal", "nomic-embed-text"],
+    "blockedModels": ["gemma3:2b", "gemma3:8b", "gemma3:27b", "gemma2*", "gemma*"]
+  },
+  "gpu": {
+    "enabled": true,
+    "contexts": 16,
+    "rtx3060ti": "optimized",
+    "flashAttention2": "active",
+    "errorProcessing": "configured",
+    "memoryOptimization": "balanced"
+  },
+  "orchestration": {
+    "nodeJSOrchestrator": "configured",
+    "mcpIntegration": "active",
+    "gpuErrorProcessor": "active",
+    "services": {
+      "enhancedRAG": "running",
+      "uploadService": "configured",
+      "errorProcessor": "embedded"
+    }
+  },
+  "models": {
+    "primary": "gemma3-legal",
+    "embedding": "nomic-embed-text",
+    "validated": true,
+    "ggufOnly": true
+  },
+  "results": [
+    {
+      "file": "src/ambient.d.ts",
+      "workerId": 0,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/app.d.ts",
+      "workerId": 1,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/db/schema-postgres.ts",
+      "workerId": 1,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/global.d.ts",
+      "workerId": 2,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/hooks.client.ts",
+      "workerId": 2,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/hooks.server.ts",
+      "workerId": 3,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/actions/draggable.ts",
+      "workerId": 3,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/actors/embedding-actor.ts",
+      "workerId": 4,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 272,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/actors/xstate-actor-wrapper.ts",
+      "workerId": 4,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/agent-integration.ts",
+      "workerId": 5,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/autogen-legal-agents.ts",
+      "workerId": 5,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/crewai-legal-agents.ts",
+      "workerId": 6,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/crewai-legal-team.ts",
+      "workerId": 6,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/custom-reranker.ts",
+      "workerId": 7,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/enhanced-ingestion-pipeline.ts",
+      "workerId": 7,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/enhanced-neo4j-reranker.ts",
+      "workerId": 8,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/frontend-rag-pipeline.ts",
+      "workerId": 8,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/langchain-ollama-service.ts",
+      "workerId": 9,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 273,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/langchain-rag.ts",
+      "workerId": 9,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 274,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    },
+    {
+      "file": "src/lib/ai/mcp-helpers.ts",
+      "workerId": 10,
+      "status": "completed",
+      "fixes": {},
+      "performance": {
+        "processingTime": 274,
+        "cacheHit": false,
+        "agentCount": 0
+      }
+    }
+  ]
+}

@@ -285,7 +285,7 @@ https://svelte.dev/e/js_parse_error -->
               class="w-full"
             />
             <Button
-              onclick={() => addCustomEvidence()}
+              on:click={() => addCustomEvidence()}
               disabled={!evidenceText.trim() || processingActive}
               class="w-full"
             >
@@ -312,7 +312,7 @@ https://svelte.dev/e/js_parse_error -->
                 <Button
                   size="sm"
                   variant="outline"
-                  onclick={() => addDemoEvidence(demo)}
+                  on:click={() => addDemoEvidence(demo)}
                   disabled={processingActive}
                   class="w-full"
                 >
@@ -329,16 +329,16 @@ https://svelte.dev/e/js_parse_error -->
             <CardTitle>System Controls</CardTitle>
           </CardHeader>
           <CardContent class="space-y-3">
-            <Button variant="outline" onclick={() => checkSystemHealth()} class="w-full">
+            <Button variant="outline" on:click={() => checkSystemHealth()} class="w-full">
               Health Check
             </Button>
-            <Button variant="outline" onclick={() => syncCache()} class="w-full">
+            <Button variant="outline" on:click={() => syncCache()} class="w-full">
               Sync Cache
             </Button>
-            <Button variant="outline" onclick={() => clearErrors()} class="w-full">
+            <Button variant="outline" on:click={() => clearErrors()} class="w-full">
               Clear Errors
             </Button>
-            <Button variant="destructive" onclick={() => clearCache()} class="w-full">
+            <Button variant="destructive" on:click={() => clearCache()} class="w-full">
               Clear Cache
             </Button>
           </CardContent>

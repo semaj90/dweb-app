@@ -172,7 +172,7 @@ https://svelte.dev/e/global_reference_invalid -->
 </script>
 
 <svelte:window
-  on:click={() => closeContextMenu()}
+  onclick={() => closeContextMenu()}
   onkeydown={handleGlobalKeydown}
 />
 
@@ -285,13 +285,13 @@ https://svelte.dev/e/global_reference_invalid -->
                     borderRadius: "8px",
                   },
                 }}
-                onconsider={(e) => handleDndConsider(e, column.id)}
-                onfinalize={(e) => handleDndFinalize(e, column.id)}
+                on:consider={(e) => handleDndConsider(e, column.id)}
+                on:finalize={(e) => handleDndFinalize(e, column.id)}
               >
                 {#each column.items as item (item.id)}
                   <div
                     class="cursor-grab active:cursor-grabbing transition-transform hover:scale-105"
-                    oncontextmenu={(e) => handleRightClick(e, item)}
+                    on:contextmenu={(e) => handleRightClick(e, item)}
                     role="button"
                     tabindex="0"
                   >
@@ -413,26 +413,26 @@ https://svelte.dev/e/global_reference_invalid -->
         <p class="space-y-4">Save/Link</p>
       </div>
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("citation")}
-        on:mouseleave={hideMiniModal}
+        onmouseenter={() => showMiniModal("citation")}
+        onmouseleave={hideMiniModal}
         on:select={() => saveTo("savedcitations")}
         >Add to /savedcitations</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("aisummary")}
-        on:mouseleave={hideMiniModal}
+        onmouseenter={() => showMiniModal("aisummary")}
+        onmouseleave={hideMiniModal}
         on:select={() => saveTo("savedaisummaries")}
         >Add to /savedaisummaries</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("userreport")}
-        on:mouseleave={hideMiniModal}
+        onmouseenter={() => showMiniModal("userreport")}
+        onmouseleave={hideMiniModal}
         on:select={() => saveTo("saveduserreports")}
         >Add to /saveduserreports</ContextMenu.Item
       >
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("mcpcontext")}
-        on:mouseleave={hideMiniModal}
+        onmouseenter={() => showMiniModal("mcpcontext")}
+        onmouseleave={hideMiniModal}
         on:select={() => saveTo("mcpcontext")}
         >Add to MCP Context (LLM)</ContextMenu.Item
       >
@@ -447,8 +447,8 @@ https://svelte.dev/e/global_reference_invalid -->
       >
       <ContextMenu.Separator />
       <ContextMenu.Item
-        on:mouseenter={() => showMiniModal("find")}
-        on:mouseleave={hideMiniModal}
+        onmouseenter={() => showMiniModal("find")}
+        onmouseleave={hideMiniModal}
         on:select={findWithLLM}>Find (search/query with LLM)</ContextMenu.Item
       >
       {#if findModal.show}

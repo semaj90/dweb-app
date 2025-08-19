@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // @ts-nocheck
 /**
  * Vector Intelligence Service - Phase 4 Implementation
@@ -5,8 +6,9 @@
  */
 
 import type { AITask } from "$lib/types/ai-worker.js";
-import type { AIResponse } from "$lib/types/vector.js";
-import { aiWorkerManager } from "./ai-worker-manager.js";
+// Orphaned content: import type { AIResponse
+import {
+aiWorkerManager } from "./ai-worker-manager.js";
 
 export interface VectorSearchOptions {
   query: string;

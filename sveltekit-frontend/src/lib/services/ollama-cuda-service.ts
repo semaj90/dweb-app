@@ -1,3 +1,4 @@
+import stream from "stream";
 // @ts-nocheck
 /**
  * Ollama CUDA-Optimized Service
@@ -5,11 +6,11 @@
  * Integrates with LangChain for advanced AI workflows
  */
 
-import { Ollama } from '@langchain/ollama';
-import { ChatOllama } from '@langchain/ollama';
-import { OllamaEmbeddings } from '@langchain/ollama';
+{ Ollama }, {
+ChatOllama } from "@langchain/ollama";
+// Orphaned content: import { OllamaEmbeddings
 import type { BaseMessage } from '@langchain/core/messages';
-import type { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
+// Orphaned content: import type { CallbackManagerForLLMRun
 
 export interface CudaConfig {
   enabled: boolean;
@@ -71,7 +72,7 @@ class OllamaCudaService {
   private initialized = false;
 
   private constructor() {
-    this.baseUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
+    this.baseUrl = import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434';
     this.cudaConfig = this.initializeCudaConfig();
     this.initializeOllama();
   }
@@ -85,12 +86,12 @@ class OllamaCudaService {
 
   private initializeCudaConfig(): CudaConfig {
     return {
-      enabled: process.env.CUDA_ENABLED === 'true' || true,
-      deviceId: parseInt(process.env.CUDA_DEVICE_ID || '0'),
-      memoryFraction: parseFloat(process.env.CUDA_MEMORY_FRACTION || '0.8'),
-      enableTensorCores: process.env.CUDA_TENSOR_CORES === 'true' || true,
-      cudaVersion: process.env.CUDA_VERSION || '12.0',
-      computeCapability: process.env.CUDA_COMPUTE_CAPABILITY || '8.6'
+      enabled: import.meta.env.CUDA_ENABLED === 'true' || true,
+      deviceId: parseInt(import.meta.env.CUDA_DEVICE_ID || '0'),
+      memoryFraction: parseFloat(import.meta.env.CUDA_MEMORY_FRACTION || '0.8'),
+      enableTensorCores: import.meta.env.CUDA_TENSOR_CORES === 'true' || true,
+      cudaVersion: import.meta.env.CUDA_VERSION || '12.0',
+      computeCapability: import.meta.env.CUDA_COMPUTE_CAPABILITY || '8.6'
     };
   }
 

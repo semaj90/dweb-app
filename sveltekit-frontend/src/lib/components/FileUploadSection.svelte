@@ -290,7 +290,7 @@
     ondrop={handleDrop}
     role="button"
     tabindex={0}
-    on:click={triggerFileSelect}
+    onclick={triggerFileSelect}
     onkeydown={(e) => e.key === 'Enter' && triggerFileSelect()}>
     {#if uploads.length === 0}
       <div class="space-y-4">
@@ -309,7 +309,7 @@
         <button
           type="button"
           class="space-y-4"
-          on:click={(e) => {
+          onclick={(e) => {
             e.stopPropagation();
             triggerFileSelect();
           }}>
@@ -372,7 +372,7 @@
               <button
                 type="button"
                 class="space-y-4"
-                on:click={() => removeFile(upload.id)}
+                onclick={() => removeFile(upload.id)}
                 aria-label="Remove {upload.file.name}">
                 <X size={16} />
               </button>
@@ -386,7 +386,7 @@
                 {availableTags}
                 placeholder="Add tags for this file..."
                 maxTags={5}
-                onchange={(e) => updateFileTags(upload.id, e.detail)} />
+                on:change={(e) => updateFileTags(upload.id, e.detail)} />
             </div>
           {/if}
 
@@ -404,7 +404,7 @@
       <button
         type="button"
         class="space-y-4"
-        on:click={() => uploadFiles()}
+        onclick={() => uploadFiles()}
         disabled={uploads.every((u) => u.status !== 'pending')}>
         Upload Files
         {#if uploads.filter((u) => u.status === 'pending').length > 0}
@@ -413,7 +413,7 @@
       </button>
 
       {#if uploads.some((u) => u.status === 'success')}
-        <button type="button" class="space-y-4" on:click={() => clearCompleted()}>
+        <button type="button" class="space-y-4" onclick={() => clearCompleted()}>
           Clear Completed
         </button>
       {/if}

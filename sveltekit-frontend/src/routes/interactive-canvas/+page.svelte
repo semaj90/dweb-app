@@ -6,8 +6,6 @@
     data
   }: Props = $props();
 
-
-
 	import AIFabButton from "$lib/components/AIFabButton.svelte";
 	import CanvasEditor from "$lib/components/CanvasEditor.svelte";
 	import FileUploadSection from "$lib/components/FileUploadSection.svelte";
@@ -19,19 +17,25 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { PageData } from "./$types";
 
-
 	// Case ID - extract from data or generate
+	function resolveCaseId(d: any) {
+		return d?.reportData?.id
+			|| d?.reportId
+			|| d?.canvasState?.caseId
+			|| crypto.randomUUID?.()
+			|| 'demo-case-' + Date.now();
+	}
 	let caseId = (data as any)?.reportData?.id || (data as any)?.reportId || 'demo-case-' + Date.now();
 
 	// Canvas state
 	let canvasElement: HTMLCanvasElement;
-	let canvasWidth = 0;
-	let canvasHeight = 0;
-	let isFullscreen = false;
+	let canvasWidth = $state(0);
+	let canvasHeight = $state(0);
+	let isFullscreen = $state(false);
 
 	// Layout state
 	let mainContainer: HTMLElement;
-	let sidebarOpen = false;
+	let sidebarOpen = $state(false);
 
 	onMount(() => {
 		// Initialize canvas dimensions
@@ -294,15 +298,7 @@
 		overflow: hidden;
 		position: relative;
 }
-	.canvas-container {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		position: relative;
-		transition: margin-left 0.3s ease;
-		background: var(--bg-secondary);
-}
-	.canvas-container.sidebar-open {
+.canvas-container.sidebar-open {
 		margin-left: 320px;
 }
 	.toolbar-container {

@@ -5,7 +5,7 @@
 	}
 </script>
 
-<button on:click={increment}>
+<button onclick={increment}>
 	Clicks: {count}
 </button>
 
@@ -24,7 +24,7 @@
 		cursor: pointer;
 	}
 
-	button:focus {
+	buttonfocus {
 		border: 2px solid #ff3e00;
 	}
 

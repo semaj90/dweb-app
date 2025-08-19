@@ -61,6 +61,17 @@
     await Promise.all([loadCases(), loadEvidence()]);
     loading = false;
   });
+
+  // Lazy AlertsPanel dynamic import
+  let AlertsPanel: any = null;
+  let alertsVisible = $state(false);
+  async function loadAlertsPanel(){
+    if(!AlertsPanel){
+      const mod = await import('$lib/components/alerts/AlertsPanel.svelte');
+      AlertsPanel = mod.default;
+    }
+    alertsVisible = true;
+  }
 </script>
 
 <svelte:head>
@@ -241,6 +252,23 @@
         <div class="text-2xl font-mono font-bold text-purple-400">Ready</div>
         <div class="text-sm text-gray-400">System Status</div>
       </div>
+    </div>
+
+    <!-- Observability / Alerts -->
+    <div class="mt-10">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xl font-mono font-semibold text-white">Observability</h2>
+  <button class="yorha-btn yorha-btn-secondary px-4 py-2 text-sm" onclick={loadAlertsPanel} disabled={alertsVisible}>
+          {alertsVisible ? 'Alerts Loaded' : 'Load Alerts Panel'}
+        </button>
+      </div>
+      {#if alertsVisible}
+        {#if AlertsPanel}
+          <svelte:component this={AlertsPanel} />
+        {:else}
+          <div class="p-4 border rounded bg-gray-800 animate-pulse text-gray-400 text-sm">Loading alerts module...</div>
+        {/if}
+      {/if}
     </div>
   {/if}
 </div>

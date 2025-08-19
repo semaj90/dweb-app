@@ -127,7 +127,7 @@
     ratio="golden"
     collapsible={true}
     bind:collapsed={sidebarCollapsed}
-    ontoggle={(e) => console.log("Sidebar toggled:", e.detail.collapsed)}
+    on:toggle={(e) => console.log("Sidebar toggled:", e.detail.collapsed)}
   >
     <div class="space-y-4" >
       <section class="space-y-4">
@@ -161,7 +161,7 @@
           columns={1}
           expandedColumns={3}
           expandDuration="0.4s"
-          onexpand={handleGridExpand}
+          on:expand={handleGridExpand}
         >
           {#each sampleEvidence as evidence}
             <div class="space-y-4">
@@ -362,11 +362,7 @@
     color: #6b7280;
     font-size: 0.875rem;
 }
-  .sidebar-content {
-    height: 100%;
-    overflow-y: auto;
-}
-  .sidebar-content h3 {
+.sidebar-content h3 {
     margin: 0 0 1rem 0;
     color: #111827;
     font-size: 1.125rem;

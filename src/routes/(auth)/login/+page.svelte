@@ -117,7 +117,7 @@
             id="email"
             type="email"
             bind:value={email}
-            on:keydown={handleKeydown}
+            onkeydown={handleKeydown}
             placeholder="unit@yorha.net"
             disabled={isLoading}
             style="color: {colors.text}"
@@ -133,7 +133,7 @@
             id="password"
             type={showPassword ? 'text' : 'password'}
             bind:value={password}
-            on:keydown={handleKeydown}
+            onkeydown={handleKeydown}
             placeholder="••••••••"
             disabled={isLoading}
             style="color: {colors.text}"
@@ -141,7 +141,7 @@
           <button 
             type="button"
             class="toggle-password"
-            on:click={() => showPassword = !showPassword}
+            onclick={() => showPassword = !showPassword}
             style="color: {colors.text}"
           >
             {showPassword ? '👁️' : '👁️‍🗨️'}
@@ -161,7 +161,7 @@
       
       <button 
         class="login-button"
-        on:click={handleLogin}
+        onclick={handleLogin}
         disabled={isLoading}
         style="background-color: {colors.text}; color: {colors.bg}"
       >

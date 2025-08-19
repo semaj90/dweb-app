@@ -1,9 +1,10 @@
+import crypto from "crypto";
 import { lucia } from "$lib/server/auth";
 import type { Handle, HandleFetch, HandleServerError } from "@sveltejs/kit";
-import { sequence } from '@sveltejs/kit/hooks';
-import { db } from '$lib/server/db/index.js';
-import { vectorOps } from '$lib/server/db/enhanced-vector-operations.js';
-import { productionServiceClient } from '$lib/services/productionServiceClient.js';
+import { sequence } from "@sveltejs/kit/hooks";
+import { db } from "$lib/server/db";
+import { vectorOps } from "$lib/server/db/enhanced-vector-operations.js";
+import { productionServiceClient } from "$lib/services/productionServiceClient";
 
 // Enhanced API context for SSR
 interface APIContext {

@@ -3,10 +3,12 @@
 // Supports local Ollama models with Redis/memory caching for performance
 // Use process.env for server-side environment variables
 import { cases, evidence } from "$lib/server/db/schema-postgres";
-import { eq } from "drizzle-orm";
-import type { EmbeddingOptions } from "../../types/vector";
-import { cacheEmbedding, getCachedEmbedding } from "../cache/redis";
-import { db } from "../db/index";
+// Orphaned content: import {
+
+import type { EmbeddingOptions } from "../../types/vector.js";
+// Orphaned content: import {
+cacheEmbedding, getCachedEmbedding
+import { db } from '../db/index.js';
 
 export async function generateEmbedding(
   text: string,
@@ -46,7 +48,7 @@ export async function generateEmbedding(
 }
 // Local Ollama embedding generation
 async function generateLocalEmbedding(text: string, model: string = "nomic-embed-text"): Promise<number[]> {
-  const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+  const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
   
   try {
     const response = await fetch(`${ollamaUrl}/api/embeddings`, {

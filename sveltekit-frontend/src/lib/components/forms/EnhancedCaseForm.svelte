@@ -169,7 +169,7 @@
 }
 </script>
 
-<form on:submit|preventDefault={handleSubmit} class="container mx-auto px-4">
+<form onsubmit|preventDefault={handleSubmit} class="container mx-auto px-4">
   <div class="container mx-auto px-4">
     <!-- Basic Information -->
     <section class="container mx-auto px-4">
@@ -342,10 +342,10 @@
             id="new-member"
             type="text"
             placeholder="Add team member ID"
-            on:keydown={(e) =>
+            onkeydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTeamMember())}
           />
-          <button type="button" on:click={() => addTeamMember()}>Add</button>
+          <button type="button" onclick={() => addTeamMember()}>Add</button>
         </div>
 
         {#if formData.assignedTeam.length > 0}
@@ -353,7 +353,7 @@
             {#each formData.assignedTeam as member}
               <span class="container mx-auto px-4">
                 {member}
-                <button type="button" on:click={() => removeTeamMember(member)}
+                <button type="button" onclick={() => removeTeamMember(member)}
                   >×</button
                 >
               </span>
@@ -370,10 +370,10 @@
             id="new-tag"
             type="text"
             placeholder="Add tag"
-            on:keydown={(e) =>
+            onkeydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTag())}
           />
-          <button type="button" on:click={() => addTag()}>Add</button>
+          <button type="button" onclick={() => addTag()}>Add</button>
         </div>
 
         {#if formData.tags.length > 0}
@@ -381,7 +381,7 @@
             {#each formData.tags as tag}
               <span class="container mx-auto px-4">
                 {tag}
-                <button type="button" on:click={() => removeTag(tag)}>×</button>
+                <button type="button" onclick={() => removeTag(tag)}>×</button>
               </span>
             {/each}
           </div>
@@ -392,7 +392,7 @@
 
   <!-- Form Actions -->
   <div class="container mx-auto px-4">
-    <button type="button" on:click={() => dispatch("cancel")}> Cancel </button>
+    <button type="button" onclick={() => dispatch("cancel")}> Cancel </button>
     <button type="submit" disabled={loading} class="container mx-auto px-4">
       {#if loading}
         Saving...
@@ -417,12 +417,7 @@
     display: grid;
     gap: 2rem;
 }
-  .form-section {
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    padding: 1.5rem;
-}
-  .form-section h3 {
+.form-section h3 {
     margin: 0 0 1rem 0;
     color: #374151;
     font-size: 1.1rem;

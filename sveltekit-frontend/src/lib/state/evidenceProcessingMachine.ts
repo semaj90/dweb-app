@@ -5,15 +5,16 @@
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-import { ollamaService } from "../services/ollamaService";
+// Orphaned content: import {
+
 import { bullmqService } from "../services/bullmqService";
-import { multiLayerCache } from "../services/multiLayerCache";
+// Orphaned content: import {
+
 import { langChainService } from "../ai/langchain-ollama-service";
-import type {
+// Orphaned content: import type {
   DocumentProcessingJob,
   EmbeddingGenerationJob,
   AIAnalysisJob,
-} from "../services/bullmqService";
 
 // Types for the state machine
 export interface EvidenceProcessingContext {

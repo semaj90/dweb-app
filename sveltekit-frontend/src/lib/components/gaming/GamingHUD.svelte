@@ -77,7 +77,7 @@
 		
 		<!-- System Status -->
 		<div class="status-section">
-			<div class="status-indicator" class:online={isOnline} class:offline={!isOnline}>
+			<div class="status-indicator" class:on:line={isOnline} class:offline={!isOnline}>
 				<div class="status-dot"></div>
 				<span>{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
 			</div>

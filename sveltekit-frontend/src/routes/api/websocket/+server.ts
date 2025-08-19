@@ -1,26 +1,12 @@
+import { URL } from "url";
 // @ts-nocheck
 // ======================================================================
 // REAL-TIME WEBSOCKET HANDLER FOR ENHANCED LEGAL AI SYSTEM
 // Supporting streaming updates, live processing results, and system monitoring
 // ======================================================================
 
-import type { RequestHandler } from "./$types";
-import { WebSocketServer } from "ws";
-
-// Enhanced WebSocket message types
-interface WebSocketMessage {
-  type:
-    | "evidence_processing"
-    | "ai_result"
-    | "vector_match"
-    | "graph_update"
-    | "system_health"
-    | "cache_update";
-  data: any;
-  timestamp: Date;
-  clientId?: string;
-  priority?: number;
-}
+import type { RequestHandler } from "./$types.js";
+import { WebSocketServer, , // Enhanced WebSocket message types, interface WebSocketMessage {,   type:,     | "evidence_processing",     | "ai_result",     | "vector_match",     | "graph_update",     | "system_health",     | "cache_update";,   data: any;,   timestamp: Date;,   clientId?: string;,   priority?: number; } from
 
 interface ConnectedClient {
   id: string;

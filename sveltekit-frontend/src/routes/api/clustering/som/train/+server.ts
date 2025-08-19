@@ -5,19 +5,24 @@
  */
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { LegalDocumentSOM } from "$lib/services/som-clustering";
-import { wasmClusteringService } from "$lib/wasm/clustering-wasm";
-import { Redis } from "ioredis";
-import { db } from "$lib/server/db";
-import { legalDocuments } from "$lib/server/db/schema-postgres";
-import { inArray } from "drizzle-orm";
+// Orphaned content: import type { RequestHandler
+import {
+LegalDocumentSOM } from "$lib/services/som-clustering";
+// Orphaned content: import { wasmClusteringService
+import {
+Redis } from "ioredis";
+// Orphaned content: import { db
+import {
+legalDocuments } from "$lib/server/db/schema-postgres";
+// Orphaned content: import { inArray
+import {
+URL } from "url";
 // Optional amqp for message queue integration
 
 // Initialize Redis connection
 const redis = new Redis(
-  parseInt(process.env.REDIS_PORT || "6379"),
-  process.env.REDIS_HOST || "localhost"
+  parseInt(import.meta.env.REDIS_PORT || "6379"),
+  import.meta.env.REDIS_HOST || "localhost"
 );
 
 // RabbitMQ connection (optional)
@@ -27,7 +32,7 @@ async function getRabbitConnection() {
     try {
       // const amqp = await import('amqplib').catch(() => null);
       // if (amqp) {
-      //   rabbitConnection = await amqp.connect(process.env.RABBITMQ_URL || 'amqp://localhost');
+      //   rabbitConnection = await amqp.connect(import.meta.env.RABBITMQ_URL || 'amqp://localhost');
       // }
     } catch (error) {
       console.warn("RabbitMQ not available:", error);

@@ -1,6 +1,6 @@
+import { fetchOllama } from "$lib/utils/fetch-with-timeout";
 // @ts-nocheck
 // File: src/lib/server/qdrant.ts
-import { fetchOllama } from '$lib/utils/fetch-with-timeout';
 
 export async function fetchEmbedding(text: string): Promise<number[]> {
   try {

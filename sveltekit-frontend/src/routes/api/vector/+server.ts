@@ -1,9 +1,10 @@
 // @ts-nocheck
 // API endpoint for vector search operations
-import VectorService from "$lib/server/services/vector-service";
-import { json } from "@sveltejs/kit";
+VectorService from "$lib/server/services/vector-service";
+// Orphaned content: import {
+
 import { z } from "zod";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
 
 // Request validation schemas
 const searchSchema = z.object({
@@ -132,7 +133,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 export const GET: RequestHandler = async () => {
   // Health check endpoint
   try {
-    const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+    const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
     const response = await fetch(`${ollamaUrl}/api/tags`);
     const data = await response.json();
 
@@ -144,8 +145,8 @@ export const GET: RequestHandler = async () => {
         models: data.models?.map((m: any) => m.name) || [],
       },
       embedding: {
-        model: process.env.OLLAMA_EMBEDDING_MODEL || "nomic-embed-text",
-        dimension: parseInt(process.env.EMBEDDING_DIMENSION || "768"),
+        model: import.meta.env.OLLAMA_EMBEDDING_MODEL || "nomic-embed-text",
+        dimension: parseInt(import.meta.env.EMBEDDING_DIMENSION || "768"),
       },
     });
   } catch (error) {

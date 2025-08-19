@@ -291,7 +291,7 @@
             <Button
               variant="ghost"
               size="sm"
-              onclick={() => toggleAutoProgress()}
+              on:click={() => toggleAutoProgress()}
               class="w-4 h-4"
               aria-label={isPlaying
                 ? "Pause auto-progress"
@@ -308,7 +308,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => closeOnboarding()}
+            on:click={() => closeOnboarding()}
             aria-label="Close onboarding"
           >
             <X class="w-4 h-4" />
@@ -377,7 +377,7 @@
       <div class="w-4 h-4">
         <div class="w-4 h-4">
           {#if allowSkip}
-            <Button variant="ghost" size="sm" onclick={() => skipOnboarding()}>
+            <Button variant="ghost" size="sm" on:click={() => skipOnboarding()}>
               <SkipForward class="w-4 h-4" />
               Skip Tour
             </Button>
@@ -410,14 +410,14 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => previousStep()}
+            on:click={() => previousStep()}
             disabled={currentStep === 0}
           >
             <ArrowLeft class="w-4 h-4" />
             Back
           </Button>
 
-          <Button onclick={() => nextStep()} size="sm">
+          <Button on:click={() => nextStep()} size="sm">
             {#if currentStep === steps.length - 1}
               <Check class="w-4 h-4" />
               Complete

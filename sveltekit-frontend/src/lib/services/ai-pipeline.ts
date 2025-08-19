@@ -1,18 +1,23 @@
+import crypto from "crypto";
 // @ts-nocheck
 // Enhanced AI Pipeline Service - Real Integration
 // Connects Ollama models with PostgreSQL pgvector for semantic search
 // Production-ready legal document processing
 
 import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
-import { Ollama } from "@langchain/community/llms/ollama";
+// Orphaned content: import {
+
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-import { Pool } from "pg";
+// Orphaned content: import {
+
 import { drizzle } from "drizzle-orm/postgres-js";
-import { sql } from "drizzle-orm";
-import postgres from "postgres";
-import type { Document } from "@langchain/core/documents";
-import { userEmbeddings } from "../server/db/schema-postgres";
-import { OllamaService } from "./ollamaService";
+// Orphaned content: import {
+
+postgres from "postgres";
+// Orphaned content: import type { Document
+import {
+userEmbeddings } from "../server/db/schema-postgres.js";
+// Orphaned content: import { OllamaService
 
 export interface SemanticSearchOptions {
   limit?: number;
@@ -63,28 +68,28 @@ export class EnhancedAIPipeline {
   constructor() {
     // Initialize Ollama embeddings with nomic-embed-text
     this.embeddings = new OllamaEmbeddings({
-      baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
+      baseUrl: import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434",
       model: "nomic-embed-text", // 768-dimensional embeddings
     });
 
     // Initialize Ollama LLM
     this.llm = new Ollama({
-      baseUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
+      baseUrl: import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434",
       model: "gemma2:2b", // Fast model for legal analysis
     });
 
     // PostgreSQL connection
     this.pgPool = new Pool({
-      host: process.env.POSTGRES_HOST || "localhost",
-      port: parseInt(process.env.POSTGRES_PORT || "5432"),
-      database: process.env.POSTGRES_DB || "prosecutor_db",
-      user: process.env.POSTGRES_USER || "postgres",
-      password: process.env.POSTGRES_PASSWORD || "postgres",
+      host: import.meta.env.POSTGRES_HOST || "localhost",
+      port: parseInt(import.meta.env.POSTGRES_PORT || "5432"),
+      database: import.meta.env.POSTGRES_DB || "prosecutor_db",
+      user: import.meta.env.POSTGRES_USER || "postgres",
+      password: import.meta.env.POSTGRES_PASSWORD || "postgres",
     });
 
     // Initialize Drizzle
     const client = postgres(
-      process.env.DATABASE_URL ||
+      import.meta.env.DATABASE_URL ||
         "postgresql://postgres:postgres@localhost:5432/prosecutor_db"
     );
     this.db = drizzle(client);

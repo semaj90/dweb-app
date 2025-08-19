@@ -1,10 +1,14 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/server/db/drizzle';
-import { cases, evidence, reports } from '$lib/server/db/schema-postgres';
-import { eq, and, or, ilike, count, desc, asc } from 'drizzle-orm';
-import type { Case } from '$lib/server/db/schema-postgres';
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/drizzle";
+// Orphaned content: import { cases, evidence, reports
+import {
+eq, and, or, ilike, count, desc, asc } from "drizzle-orm";
+// Orphaned content: import type { Case
+import {
+URL } from "url";
 
 // Case with computed counts interface
 interface CaseWithCounts extends Case {

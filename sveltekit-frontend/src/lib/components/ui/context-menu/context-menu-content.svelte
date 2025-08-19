@@ -1,9 +1,9 @@
 <script lang="ts">
   interface Props {
-    className: string ;
+    class: string ;
   }
   let {
-    className = ''
+    class = ''
   }: Props = $props();
 
 

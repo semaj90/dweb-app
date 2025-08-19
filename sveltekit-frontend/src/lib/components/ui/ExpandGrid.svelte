@@ -69,8 +69,8 @@ https://svelte.dev/e/js_parse_error -->
   "
   onmouseenter={handleMouseEnter}
   onmouseleave={handleMouseLeave}
-  onfocusin={handleFocusIn}
-  onfocusout={handleFocusOut}
+  on:focusin={handleFocusIn}
+  on:focusout={handleFocusOut}
   role="grid"
   tabindex={0}
 >

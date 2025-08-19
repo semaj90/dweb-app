@@ -3,12 +3,85 @@
     "context7": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
+      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "env": {
+        "MODEL_ENFORCEMENT": "true",
+        "ALLOWED_MODELS": "gemma3-legal,nomic-embed-text",
+        "GGUF_ONLY": "true",
+        "DISABLE_OTHER_GEMMA": "true"
+      }
     },
     "memory": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {
+        "MEMORY_MODEL": "nomic-embed-text",
+        "MEMORY_EMBEDDING_ONLY": "true"
+      }
+    },
+    "legal-ai-orchestrator": {
+      "type": "http",
+      "url": "http://localhost:8094",
+      "enabled": true,
+      "env": {
+        "ORCHESTRATOR_MODE": "gpu-accelerated",
+        "MODEL_CONSTRAINTS": "gemma3-legal-gguf-only",
+        "EMBEDDING_MODEL": "nomic-embed-text",
+        "GPU_ENABLED": "true",
+        "RTX3060_OPTIMIZED": "true",
+        "FLASHATTENTION_ENABLED": "true"
+      },
+      "timeout": 30000,
+      "autoApprove": [
+        "legal-ai/analyze",
+        "legal-ai/process-document",
+        "legal-ai/vector-search"
+      ]
+    },
+    "gpu-error-processor": {
+      "type": "http", 
+      "url": "http://localhost:8095",
+      "enabled": true,
+      "env": {
+        "GPU_DEVICE": "RTX3060Ti",
+        "FLASHATTENTION_VERSION": "2",
+        "ERROR_PROCESSING_MODEL": "gemma3-legal",
+        "BATCH_SIZE": "8",
+        "MEMORY_LIMIT": "6GB"
+      },
+      "autoApprove": [
+        "gpu/process-errors",
+        "gpu/flashattention-analyze",
+        "gpu/performance-optimize"
+      ]
     }
+  },
+  "modelConstraints": {
+    "enforceModelList": true,
+    "allowedModels": [
+      "gemma3-legal",
+      "nomic-embed-text"
+    ],
+    "blockedModels": [
+      "gemma3:2b",
+      "gemma3:8b", 
+      "gemma3:27b",
+      "gemma2*",
+      "gemma*"
+    ],
+    "ggufOnly": true,
+    "validation": {
+      "checkModelExists": true,
+      "validateFormat": true,
+      "enforceNaming": true
+    }
+  },
+  "orchestration": {
+    "enabled": true,
+    "defaultMode": "gpu-accelerated",
+    "fallbackEnabled": false,
+    "monitoringEnabled": true,
+    "reportingPath": ".vscode/gpu-mcp-orchestra-report.json"
   }
 }

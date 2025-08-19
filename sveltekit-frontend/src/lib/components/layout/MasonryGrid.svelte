@@ -36,16 +36,15 @@ https://svelte.dev/e/js_parse_error -->
 
 
 
-  import { onMount, onDestroy } from 'svelte';
-  import { dndzone } from 'svelte-dnd-action';
-  import { fly } from 'svelte/transition';
-  import Masonry from 'masonry-layout';
-  
-                              
+    import { onMount, onDestroy } from 'svelte';
+    import { dndzone } from 'svelte-dnd-action';
+    import { fly } from 'svelte/transition';
+    import Masonry from 'masonry-layout';
+
   let container: HTMLElement;
   let masonry: any;
   let isInitialized = false;
-  
+
   // Masonry configuration
   let masonryOptions = $derived({
     itemSelector,
@@ -58,38 +57,36 @@ https://svelte.dev/e/js_parse_error -->
     initLayout,
     transitionDuration
   });
-  
+
   // Initialize Masonry
-  onMount(() => {
-    if (container && items.length > 0) {
-      setTimeout(() => {
-        masonry = new Masonry(container, masonryOptions);
-        isInitialized = true;
-      }, 100);
-}
-  });
-  
-  // Update layout when items change
-  $effect(() => { if (masonry && isInitialized) {
-    setTimeout(() => {
-      if (masonry) {
-        masonry.reloadItems();
-        masonry.layout();
-}
-    }, 50);
-}
-  // Cleanup
-  onDestroy(() => {
-    if (masonry) {
-      masonry.destroy();
-}
-  });
-  
+    onMount(() => {
+      if (container) {
+        setTimeout(() => {
+          masonry = new Masonry(container, masonryOptions);
+          isInitialized = true;
+        }, 100);
+      }
+    });
+
+    // Update layout when items change
+    $effect(() => {
+      if (masonry && isInitialized) {
+        setTimeout(() => {
+          masonry?.reloadItems();
+          masonry?.layout();
+        }, 50);
+      }
+    });
+
+    onDestroy(() => {
+      masonry?.destroy();
+    });
+
   // Handle drag and drop
   const handleDndConsider = (e: CustomEvent) => {
     items = e.detail.items;
   };
-  
+
   const handleDndFinalize = (e: CustomEvent) => {
     items = e.detail.items;
     // Trigger layout update after reordering
@@ -99,7 +96,7 @@ https://svelte.dev/e/js_parse_error -->
 }
     }, 100);
   };
-  
+
   // Responsive breakpoints
   const getResponsiveColumns = () => {
     if (typeof window === 'undefined') return 3;
@@ -109,12 +106,12 @@ https://svelte.dev/e/js_parse_error -->
     if (width < 1280) return 3;
     return 4;
   };
-  
+
   // Auto-resize functionality
   let resizeTimeout: NodeJS.Timeout;
   const handleResize = () => {
     if (!resize || !masonry) return;
-    
+
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       if (masonry) {
@@ -122,16 +119,16 @@ https://svelte.dev/e/js_parse_error -->
 }
     }, 150);
   };
-  
-  onMount(() => {
-    if (resize) {
-      window.addEventListener('resize', handleResize);
-}
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeTimeout) clearTimeout(resizeTimeout);
-    };
-  });
+
+    onMount(() => {
+      if (resize) {
+        window.addEventListener('resize', handleResize);
+      }
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        if (resizeTimeout) clearTimeout(resizeTimeout);
+      };
+    });
 </script>
 
 <div
@@ -143,14 +140,14 @@ https://svelte.dev/e/js_parse_error -->
     dropTargetStyle,
     dropFromOthersDisabled
   }}
-  onconsider={handleDndConsider}
-  onfinalize={handleDndFinalize}
+  on:consider={handleDndConsider}
+  on:finalize={handleDndFinalize}
   style="--column-width: {columnWidth}px; --gutter: {gutter}px;"
 >
   {#each items as item, index (item.id)}
-    <div 
+    <div
       class="space-y-4"
-      transitionfly={{ y: 20, duration: 300, delay: index * 50 }}
+      transition:fly={{ y: 20, duration: 300, delay: index * 50 }}
     >
       <slot {item} {index} />
     </div>

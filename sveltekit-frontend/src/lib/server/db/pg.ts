@@ -1,8 +1,8 @@
+import { Pool } from "pg";
 // @ts-nocheck
 import { building } from "$app/environment";
-import * as schema from "$lib/server/db/schema-postgres";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+// Orphaned content: import * as schema from "$lib/server/db/schema-postgres";
+import {
 
 let _db: ReturnType<typeof drizzle> | null = null;
 let _pool: Pool | null = null;
@@ -16,9 +16,9 @@ export function getPostgreSQLDatabase() {
   if (_db) return _db;
 
   const databaseUrl =
-    process.env.DATABASE_URL ||
+    import.meta.env.DATABASE_URL ||
     "postgresql://legal_admin:123456@localhost:5432/legal_ai_db";
-  const nodeEnv = process.env.NODE_ENV || "development";
+  const nodeEnv = import.meta.env.NODE_ENV || "development";
 
   console.log("🐘 Connecting to PostgreSQL database:", databaseUrl);
 

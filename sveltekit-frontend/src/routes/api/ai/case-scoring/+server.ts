@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { qdrantService } from '$lib/server/services/qdrant-service';
+// Orphaned content: import type { RequestHandler
+import {
+qdrantService } from "$lib/server/services/qdrant-service";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

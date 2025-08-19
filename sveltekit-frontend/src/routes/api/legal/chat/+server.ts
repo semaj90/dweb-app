@@ -1,14 +1,11 @@
 // @ts-nocheck
 // Legal AI Chat API - Context7 Enhanced with Gemma3 Legal
 import { db } from "$lib/server/db/index";
-import { type RequestHandler, json } from "@sveltejs/kit";
+import { type RequestHandler, json, {,   legalAnalysisSessions,,   legalDocuments,,   legalPrecedents, } from
+// Orphaned content: import { eq, desc, and, like
 import {
-  legalAnalysisSessions,
-  legalDocuments,
-  legalPrecedents,
-} from "$lib/server/db/schema-postgres";
-import { eq, desc, and, like } from "drizzle-orm";
-import { type InsertLegalAnalysisSession } from "$lib/server/db/types";
+type InsertLegalAnalysisSession } from "$lib/server/db/types";
+// Orphaned content: import { URL
 
 interface LegalChatRequest {
   prompt: string;

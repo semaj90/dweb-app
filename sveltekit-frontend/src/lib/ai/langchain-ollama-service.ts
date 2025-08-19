@@ -2,19 +2,24 @@
 // LangChain + Ollama Integration with CUDA Support
 // Production-ready AI service for legal document processing
 
-import { ChatOllama } from '@langchain/ollama';
-import { OllamaEmbeddings } from '@langchain/ollama';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { MemoryVectorStore } from 'langchain/vectorstores/memory';
-import { RetrievalQAChain } from 'langchain/chains';
-import { PromptTemplate } from '@langchain/core/prompts';
-import { Document as LangChainDocument } from '@langchain/core/documents';
-import { VectorStoreRetriever } from '@langchain/core/vectorstores';
-import { BaseRetriever } from '@langchain/core/retrievers';
-import { CallbackManagerForRetrieverRun } from '@langchain/core/callbacks/manager';
-import { db } from '$lib/server/database';
-import { documents, documentChunks, aiInteractions, embeddingJobs } from '$lib/database/enhanced-schema';
-import { eq, desc, and, sql } from 'drizzle-orm';
+{ ChatOllama }, {
+OllamaEmbeddings } from "@langchain/ollama";
+// Orphaned content: import { RecursiveCharacterTextSplitter
+import {
+MemoryVectorStore } from "langchain/vectorstores/memory";
+// Orphaned content: import { RetrievalQAChain
+import {
+PromptTemplate } from "@langchain/core/prompts";
+// Orphaned content: import { Document as LangChainDocument
+import {
+VectorStoreRetriever } from "@langchain/core/vectorstores";
+// Orphaned content: import { BaseRetriever
+import {
+CallbackManagerForRetrieverRun } from "@langchain/core/callbacks/manager";
+// Orphaned content: import { db
+import {
+documents, documentChunks, aiInteractions, embeddingJobs } from "$lib/database/enhanced-schema";
+// Orphaned content: import { eq, desc, and, sql
 import crypto from 'crypto';
 
 // ============================================================================
@@ -149,7 +154,7 @@ export class LangChainOllamaService {
 
   constructor(config: Partial<LangChainConfig> = {}) {
     this.config = {
-      ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      ollamaBaseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: 'llama3.2',
       embeddingModel: 'nomic-embed-text',
       temperature: 0.7,
@@ -635,10 +640,10 @@ export class LangChainOllamaService {
 // ============================================================================
 
 export const langChainService = new LangChainOllamaService({
-  useCuda: process.env.ENABLE_CUDA === 'true',
-  model: process.env.OLLAMA_MODEL || 'llama3.2',
-  embeddingModel: process.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text',
-  ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434'
+  useCuda: import.meta.env.ENABLE_CUDA === 'true',
+  model: import.meta.env.OLLAMA_MODEL || 'llama3.2',
+  embeddingModel: import.meta.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text',
+  ollamaBaseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434'
 });
 
 export default langChainService;

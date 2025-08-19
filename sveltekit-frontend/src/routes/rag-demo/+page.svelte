@@ -231,7 +231,7 @@
               showReferences={true}
               enableVoiceInput={true}
               maxHeight="500px"
-              onresponse={handleAIResponse}
+              on:response={handleAIResponse}
               on:referenceClicked={handleReferenceClick}
             />
           </div>

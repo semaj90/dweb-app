@@ -1,9 +1,10 @@
 // @ts-nocheck
 // Global case management store with real data integration
 import { writable, derived, get } from "svelte/store";
-import { browser } from "$app/environment";
+// Orphaned content: import {
+
 import { authStore } from "./authStore";
-import type { Case, Evidence, Report } from "$lib/server/db/schema-postgres";
+// Orphaned content: import type { Case, Evidence, Report
 
 // Extended case type with relations
 export interface CaseWithRelations extends Case {

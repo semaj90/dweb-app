@@ -1,12 +1,16 @@
 // @ts-nocheck
 import { users } from "$lib/server/db/index";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import {
+
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq
+import {
+db } from "$lib/server/db/index";
 
 export const GET: RequestHandler = async ({ locals }) => {
-  if (!locals.user) {
+  const authUser = locals.user;
+  if (!authUser?.id) {
     return json({ error: "Not authenticated" }, { status: 401 });
   }
   try {

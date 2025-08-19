@@ -1,6 +1,7 @@
+import crypto from "crypto";
 // Real-time RAG Store with Svelte 5 Runes + XState
 import { createMachine, assign } from "xstate";
-import { useMachine } from "@xstate/svelte";
+// Orphaned content: import {
 
 // RAG Query State Machine
 const ragQueryMachine = createMachine({

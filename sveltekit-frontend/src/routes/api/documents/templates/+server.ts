@@ -1,6 +1,7 @@
 // @ts-nocheck
-import type { RequestEvent } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
+type { RequestEvent }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { URL
 
 // Document templates with pre-filled content
 const documentTemplates = {

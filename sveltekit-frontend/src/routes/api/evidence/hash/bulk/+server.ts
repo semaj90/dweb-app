@@ -1,9 +1,10 @@
 // @ts-nocheck
 import { cases, evidence } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq, inArray } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq, inArray
+import {
+db } from "$lib/server/db/index";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const userId = locals.user?.id;

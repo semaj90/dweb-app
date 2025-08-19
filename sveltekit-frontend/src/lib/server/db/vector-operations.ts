@@ -1,7 +1,8 @@
 // @ts-nocheck
 // Vector operations helper for pgvector integration
-import { db } from './index.js';
-import { legalDocuments, userAiQueries, embeddingCache } from './schema-postgres.js';
+import { db } from "./index.js";
+// Orphaned content: import {
+legalDocuments, userAiQueries, embeddingCache
 import { sql } from 'drizzle-orm';
 
 // Interface for vector similarity search results

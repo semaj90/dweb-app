@@ -5,33 +5,8 @@
  * Optimized for RTX 3060 with legal AI applications
  */
 
-import { writable, derived, type Writable } from 'svelte/store';
-import { browser } from '$app/environment';
-
-// WebAssembly GPU Configuration
-export interface WasmGpuConfig {
-  // GPU settings
-  deviceType: 'discrete' | 'integrated' | 'auto';
-  powerPreference: 'low-power' | 'high-performance';
-  memoryLimit: number; // MB
-  
-  // WebAssembly settings
-  wasmMemoryPages: number; // 64KB pages
-  enableSimd: boolean;
-  enableThreads: boolean;
-  enableBulkMemory: boolean;
-  
-  // RTX 3060 specific
-  tensorCores: boolean;
-  cudaCores: number;
-  memoryBandwidth: number; // GB/s
-  computeCapability: string;
-  
-  // Legal AI optimizations
-  documentProcessingMode: boolean;
-  vectorSearchOptimization: boolean;
-  embeddingCacheSize: number; // MB
-}
+import { writable, derived, type Writable } from "svelte/store";
+import { browser, , // WebAssembly GPU Configuration, export interface WasmGpuConfig {,   // GPU settings,   deviceType: 'discrete' | 'integrated' | 'auto';,   powerPreference: 'low-power' | 'high-performance';,   memoryLimit: number; // MB,   ,   // WebAssembly settings,   wasmMemoryPages: number; // 64KB pages,   enableSimd: boolean;,   enableThreads: boolean;,   enableBulkMemory: boolean;,   ,   // RTX 3060 specific,   tensorCores: boolean;,   cudaCores: number;,   memoryBandwidth: number; // GB/s,   computeCapability: string;,   ,   // Legal AI optimizations,   documentProcessingMode: boolean;,   vectorSearchOptimization: boolean;,   embeddingCacheSize: number; // MB } from
 
 // GPU Device Information
 export interface GpuDeviceInfo {

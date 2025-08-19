@@ -34,13 +34,11 @@ import {
   OptimizedVSCodeExtension,
   vscodeExtension,
 } from "./memory-efficient-extension.js";
-
-import {
+// Orphaned content: import {
   RedisSOMapCache,
   createRedisSOMapCache,
   createDockerOptimizedCache,
   create70GBDevCache,
-} from "./redis-som-cache.js";
 
 // Docker resource optimizer imports removed
 
@@ -51,15 +49,13 @@ import {
   optimizeJSONForTransport,
   parseOptimizedTransport,
 } from "./json-wasm-optimizer.js";
-
-// === Advanced Memory Management Modules ===
+// Orphaned content: // === Advanced Memory Management Modules ===
 export {
   NeuralMemoryManager,
   type MemoryPool,
   type LODLevel,
   type MemoryPrediction,
   type ClusterMetrics,
-} from "./neural-memory-manager.js";
 
 export {
   EnhancedVSCodeExtensionManager,

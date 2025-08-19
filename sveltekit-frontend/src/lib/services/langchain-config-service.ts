@@ -1,3 +1,4 @@
+import { ollamaCudaService, type ModelMetrics } from "./ollama-cuda-service.js";
 // @ts-nocheck
 /**
  * LangChain Configuration Service
@@ -5,20 +6,22 @@
  * Supports multiple model providers, chains, and advanced workflows
  */
 
-import { ChatOllama } from '@langchain/ollama';
-import { OllamaEmbeddings } from '@langchain/ollama';
-import { ConversationChain } from 'langchain/chains';
-import { BufferMemory, ConversationSummaryMemory } from 'langchain/memory';
-import { PromptTemplate, ChatPromptTemplate, MessagesPlaceholder } from '@langchain/core/prompts';
-import { RunnableSequence, RunnablePassthrough } from '@langchain/core/runnables';
-import { StringOutputParser } from '@langchain/core/output_parsers';
-import { HumanMessage, AIMessage, SystemMessage } from '@langchain/core/messages';
-import type { BaseLanguageModel } from '@langchain/core/language_models/base';
+{ ChatOllama }, {
+OllamaEmbeddings } from "@langchain/ollama";
+// Orphaned content: import { ConversationChain
+import {
+BufferMemory, ConversationSummaryMemory } from "langchain/memory";
+// Orphaned content: import { PromptTemplate, ChatPromptTemplate, MessagesPlaceholder
+import {
+RunnableSequence, RunnablePassthrough } from "@langchain/core/runnables";
+// Orphaned content: import { StringOutputParser
+import {
+HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
+// Orphaned content: import type { BaseLanguageModel
 import type { BaseMemory } from 'langchain/memory';
-import type { BasePromptTemplate } from '@langchain/core/prompts';
+// Orphaned content: import type { BasePromptTemplate
 
 // Import our CUDA-optimized Ollama service
-import { ollamaCudaService, type ModelMetrics } from './ollama-cuda-service';
 
 export interface LangChainConfig {
   modelProvider: 'ollama' | 'openai' | 'anthropic' | 'local';
@@ -178,7 +181,7 @@ class LangChainConfigService {
   private async initializeModels(): Promise<void> {
     // Initialize primary Ollama model
     const ollamaModel = new ChatOllama({
-      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: this.config.modelName,
       temperature: this.config.temperature,
       streaming: this.config.streaming,
@@ -195,7 +198,7 @@ class LangChainConfigService {
 
     // Initialize specialized models for different tasks
     const legalModel = new ChatOllama({
-      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: 'gemma2:9b',
       temperature: 0.3, // More deterministic for legal analysis
       numCtx: 65536, // Large context for legal documents
@@ -206,7 +209,7 @@ class LangChainConfigService {
 
     // Initialize embedding model
     const embeddingModel = new OllamaEmbeddings({
-      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
       model: 'nomic-embed-text:latest',
       requestOptions: {
         numGpu: 1,

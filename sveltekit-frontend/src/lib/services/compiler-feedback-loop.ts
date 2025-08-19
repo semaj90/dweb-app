@@ -10,8 +10,10 @@
  */
 
 import { writable, type Writable } from 'svelte/store';
-import type { EnhancedRAGEngine } from './enhanced-rag-pagerank';
-import { copilotOrchestrator } from '$lib/utils/mcp-helpers';
+// Orphaned content: import type { EnhancedRAGEngine
+import {
+copilotOrchestrator } from "$lib/utils/mcp-helpers";
+// Orphaned content: import { EventEmitter
 
 // Core types for compiler feedback system
 export interface CompilerLog {

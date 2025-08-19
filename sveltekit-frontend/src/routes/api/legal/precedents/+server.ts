@@ -1,19 +1,11 @@
+import { URL } from "url";
 // @ts-nocheck
 // Legal Precedents API - Context7 Enhanced Legal Research
 import { db } from "$lib/server/db/index";
-import { type RequestHandler, json } from "@sveltejs/kit";
+// Orphaned content: import {
+type RequestHandler, json
 import { legalPrecedents } from "$lib/server/db/schema-postgres";
-import { eq, desc, and, like, or, sql } from "drizzle-orm";
-
-interface PrecedentSearchRequest {
-  query: string;
-  jurisdiction?: string;
-  court?: string;
-  yearFrom?: number;
-  yearTo?: number;
-  legalPrinciples?: string[];
-  limit?: number;
-}
+import { eq, desc, and, like, or, sql, , interface PrecedentSearchRequest {,   query: string;,   jurisdiction?: string;,   court?: string;,   yearFrom?: number;,   yearTo?: number;,   legalPrinciples?: string[];,   limit?: number; } from
 
 interface PrecedentSearchResponse {
   precedents: Array<{

@@ -252,7 +252,7 @@
                   type="button"
                   class="unit-type-btn"
                   class:selected={formData.unitType === type.value}
-                  on:click={() => formData.unitType = type.value}
+                  onclick={() => formData.unitType = type.value}
                   style="border-color: {colors.border};
                          background-color: {formData.unitType === type.value ? colors.text : colors.bg};
                          color: {formData.unitType === type.value ? colors.bg : colors.text}"
@@ -370,7 +370,7 @@
           {#if currentStep > 1}
             <button 
               class="back-button"
-              on:click={previousStep}
+              onclick={previousStep}
               disabled={isLoading}
               style="border-color: {colors.border}; color: {colors.text}"
             >
@@ -380,7 +380,7 @@
           
           <button 
             class="continue-button"
-            on:click={nextStep}
+            onclick={nextStep}
             disabled={isLoading}
             style="background-color: {colors.text}; color: {colors.bg}"
           >

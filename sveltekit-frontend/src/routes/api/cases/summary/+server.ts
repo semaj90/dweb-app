@@ -1,27 +1,21 @@
 // @ts-nocheck
 import type { Case } from "$lib/types";
-
-import {
-  caseEmbeddings,
+// Orphaned content: import {
+caseEmbeddings,
   chatEmbeddings,
   evidence as evidenceTable,
   evidenceVectors,
-} from "$lib/server/db/schema-postgres";
 import { json } from "@sveltejs/kit";
-import { count, desc, eq } from "drizzle-orm";
+// Orphaned content: import {
+count, desc, eq
 import { db } from "$lib/server/db/index";
-import { qdrantService } from "$lib/server/services/qdrant-service";
-import VectorService from "$lib/server/services/vector-service";
-import { ollamaService } from "$lib/services/ollama-service";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import {
 
-interface CaseSummaryRequest {
-  caseId: string;
-  includeEvidence?: boolean;
-  includeTimeline?: boolean;
-  analysisDepth?: "basic" | "comprehensive" | "detailed";
-  regenerate?: boolean;
-}
+VectorService from "$lib/server/services/vector-service";
+// Orphaned content: import {
+
+import type { RequestHandler } from "./$types.js";
+import { URL, , interface CaseSummaryRequest {,   caseId: string;,   includeEvidence?: boolean;,   includeTimeline?: boolean;,   analysisDepth?: "basic" | "comprehensive" | "detailed";,   regenerate?: boolean; } from
 interface CaseSummaryResponse {
   success: boolean;
   summary?: {

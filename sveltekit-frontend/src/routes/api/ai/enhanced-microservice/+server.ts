@@ -3,7 +3,9 @@
 // Supports local Gemma3-legal GGUF model with CUDA acceleration
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
+import {
+URL } from "url";
 
 interface GoMicroserviceConfig {
   baseUrl: string;
@@ -29,8 +31,8 @@ interface SearchRequest {
 }
 
 const config: GoMicroserviceConfig = {
-  baseUrl: process.env.GO_MICROSERVICE_URL || "http://localhost:8080",
-  timeout: parseInt(process.env.GO_MICROSERVICE_TIMEOUT || "30000"),
+  baseUrl: import.meta.env.GO_MICROSERVICE_URL || "http://localhost:8080",
+  timeout: parseInt(import.meta.env.GO_MICROSERVICE_TIMEOUT || "30000"),
   retries: 3,
   enableCache: true,
 };

@@ -1,9 +1,9 @@
+import { EventEmitter } from "events";
 /**
  * Context7 Multicore Service - Legal AI Integration
  * Production-ready multicore processing with Go-SIMD, Go-LLAMA, and MCP integration
  */
 
-import { EventEmitter } from 'events';
 
 export interface Context7MulticoreConfig {
   workerCount?: number;

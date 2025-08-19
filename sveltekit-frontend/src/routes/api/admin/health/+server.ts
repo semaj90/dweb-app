@@ -4,8 +4,9 @@
  */
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { rateLimitAPI } from "$lib/server/monitoring/security";
+// Orphaned content: import type { RequestHandler
+import {
+rateLimitAPI } from "$lib/server/monitoring/security";
 
 export const GET: RequestHandler = async ({ locals, request }) => {
   try {

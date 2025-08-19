@@ -556,7 +556,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (open = false)}
+            on:click={() => (open = false)}
             class="close-button"
             aria-label="Close command palette"
           >

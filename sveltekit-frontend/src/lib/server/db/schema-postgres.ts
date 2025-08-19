@@ -13,7 +13,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { vector } from "pgvector/drizzle-orm"; // Re-enabled - pgvector is now installed!
+import { vector } from "pgvector/drizzle-orm";
 
 // === AUTHENTICATION & USER MANAGEMENT ===
 

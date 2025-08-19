@@ -6,10 +6,11 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import pdf from 'pdf-parse';
-import crypto from 'crypto';
-import { v4 as uuidv4 } from 'uuid';
+// Orphaned content: import type { RequestHandler
+pdf from 'pdf-parse';
+// Orphaned content: import crypto from "crypto";
+import {
+v4 as uuidv4
 
 // Enhanced RAG processing pipeline
 interface LegalDocument {

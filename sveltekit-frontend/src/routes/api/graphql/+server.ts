@@ -1,11 +1,11 @@
+import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
 // @ts-nocheck
 // import { createYoga as createServer } from "graphql-yoga"; // TODO: Install graphql-yoga dependency
 // import { makeExecutableSchema } from "@graphql-tools/schema"; // TODO: Install @graphql-tools/schema dependency
 const createServer = null as any;
 const makeExecutableSchema = null as any;
 import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
-import { accessMemoryMCP } from "$lib/utils/copilot-self-prompt";
-import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
+// Orphaned content: import {
 
 const typeDefs = /* GraphQL */ `
   type Recommendation {

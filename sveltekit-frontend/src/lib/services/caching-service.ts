@@ -2,8 +2,8 @@
 // Enhanced Caching Service - Stub Implementation
 // Simple caching interface that can be extended later
 
-import type { Writable } from 'svelte/store';
-import { writable } from 'svelte/store';
+import type { Writable }, {
+writable } from "svelte/store";
 
 // ============================================================================
 // CACHE SERVICE INTERFACE

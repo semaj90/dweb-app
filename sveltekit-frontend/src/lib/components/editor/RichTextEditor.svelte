@@ -192,7 +192,7 @@ https://svelte.dev/e/js_parse_error -->
     {disabled}
     bind:value={$report.content}
     conf={editorConfig}
-    onchange={(e: any) => reportActions.updateContent(e.detail.level.content)}
+    on:change={(e: any) => reportActions.updateContent(e.detail.level.content)}
   />
 </div>
 

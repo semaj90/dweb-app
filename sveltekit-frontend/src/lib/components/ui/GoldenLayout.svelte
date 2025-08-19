@@ -1,18 +1,34 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
 
-  export let ratio: "golden" | "thirds" | "half" | "custom" = "golden";
-  export let mainFlex = 1.618;
-  export let sidebarFlex = 1;
-  export let sidebarPosition: "left" | "right" = "right";
-  export let collapsible = true;
-  export let collapsed = false;
-  export let minSidebarWidth = "200px";
-  export let maxSidebarWidth = "400px";
-  export let gap = "1rem";
+  
+  
+  
+  interface Props {
+    class?: string;
+    ratio?: "golden" | "thirds" | "half" | "custom";
+    mainFlex?: number;
+    sidebarFlex?: number;
+    sidebarPosition?: "left" | "right";
+    collapsible?: boolean;
+    collapsed?: boolean;
+    minSidebarWidth?: string;
+    maxSidebarWidth?: string;
+    gap?: string;
+  }
 
-  let className = "";
-  export { className as class };
+  let {
+    class: className = "",
+    ratio = "golden",
+    mainFlex = 1.618,
+    sidebarFlex = 1,
+    sidebarPosition = "right",
+    collapsible = true,
+    collapsed = false,
+    minSidebarWidth = "200px",
+    maxSidebarWidth = "400px",
+    gap = "1rem"
+  }: Props = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -50,7 +66,7 @@
 }}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div
   class="container mx-auto px-4"
@@ -62,10 +78,10 @@
       class="container mx-auto px-4"
       class:collapsed
       style="
-        flex: {collapsed ? '0' : calculatedSidebarFlex}; 
-        min-width: {collapsed ? '0' : minSidebarWidth};
-        max-width: {collapsed ? '0' : maxSidebarWidth};
-        margin-right: {collapsed ? '0' : gap};
+        flex: {collapsed ? '0' : calculatedSidebarFlex}
+        min-width: {collapsed ? '0' : minSidebarWidth}
+        max-width: {collapsed ? '0' : maxSidebarWidth}
+        margin-right: {collapsed ? '0' : gap}
       "
     >
       <div class="container mx-auto px-4" class:hidden={collapsed}>
@@ -75,7 +91,7 @@
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          on:click={() => toggleSidebar()}
+          onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -95,10 +111,10 @@
       class="container mx-auto px-4"
       class:collapsed
       style="
-        flex: {collapsed ? '0' : calculatedSidebarFlex}; 
-        min-width: {collapsed ? '0' : minSidebarWidth};
-        max-width: {collapsed ? '0' : maxSidebarWidth};
-        margin-left: {collapsed ? '0' : gap};
+        flex: {collapsed ? '0' : calculatedSidebarFlex}
+        min-width: {collapsed ? '0' : minSidebarWidth}
+        max-width: {collapsed ? '0' : maxSidebarWidth}
+        margin-left: {collapsed ? '0' : gap}
       "
     >
       <div class="container mx-auto px-4" class:hidden={collapsed}>
@@ -108,7 +124,7 @@
       {#if collapsible}
         <button
           class="container mx-auto px-4"
-          on:click={() => toggleSidebar()}
+          onclick={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -152,14 +168,7 @@
     border-width: 0;
     margin: 0 !important;
 }
-  .sidebar-content {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 1rem;
-    transition: opacity 0.3s ease;
-}
-  .sidebar-content.hidden {
+.sidebar-content.hidden {
     opacity: 0;
     pointer-events: none;
 }

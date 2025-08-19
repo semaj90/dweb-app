@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import type { HTMLInputAttributes } from 'svelte/elements';
   import { cn } from '$lib/utils/cn';
   import { Search, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-svelte';

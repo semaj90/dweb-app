@@ -1,9 +1,9 @@
+import * as vectorSchema from "../database/vector-schema-simple.js";
+import * as schema from "./unified-schema.js";
 // Database connection and schema exports
 import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-export { sql } from 'drizzle-orm';
-import * as vectorSchema from '../database/vector-schema-simple';
-import * as schema from './unified-schema';
+// Orphaned content: import postgres from 'postgres';
+export { sql
 
 // Database type helper - exported first to avoid temporal dead zone
 export const isPostgreSQL = true;
@@ -15,7 +15,7 @@ export const fullSchema = {
 };
 
 // Create the connection
-const connectionString = process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
+const connectionString = import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
 
 // For query purposes
 const queryClient = postgres(connectionString);
@@ -58,7 +58,7 @@ export async function testConnection() {
 }
 
 // Initialize pgvector on first run
-if (process.env.NODE_ENV !== 'production') {
+if (import.meta.env.NODE_ENV !== 'production') {
   testConnection().catch(console.error);
 }
 

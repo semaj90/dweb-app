@@ -107,7 +107,7 @@ https://svelte.dev/e/js_parse_error -->
 	</div>
 
 	<div class="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-		<form on:submit|preventDefault={handleSubmit} class="flex items-center space-x-2">
+		<form onsubmit|preventDefault={handleSubmit} class="flex items-center space-x-2">
 			<input
 				type="text"
 				bind:value={userInput}

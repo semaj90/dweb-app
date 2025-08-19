@@ -16,11 +16,10 @@ import type { Case } from '$lib/types';
   import { browser } from '$app/environment';
   import { enhance } from '$app/forms';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import CaseListItem from '$lib/components/cases/CaseListItem.svelte';
   import { casesStore } from "$lib/stores/casesStore";
   import { Filter, Plus, RefreshCw, Search, SortAsc, SortDesc } from 'lucide-svelte';
-  import { writable } from 'svelte/store';
   import type { LayoutData } from "./$types";
 
   
@@ -46,12 +45,12 @@ import type { Case } from '$lib/types';
   let selectedCase = $derived(data.userCases.find(c => c.id === activeCaseId));
 
   // Loading state for AJAX operations
-  const isLoading = writable(false);
-  const isFiltering = writable(false);
+  let isLoading = $state(false);
+  let isFiltering = $state(false);
 
   // Enhanced form submission with loading state and partial updates
   const handleFilterSubmit = () => {
-    isFiltering.set(true);
+    isFiltering = true;
     return async ({ result, update }) => {
       if (result.type === 'success' && result.data) {
         // Update only the cases data without full page reload
@@ -84,7 +83,7 @@ import type { Case } from '$lib/types';
       } else {
         await update();
 }
-      isFiltering.set(false);
+      isFiltering = false;
     };
   };
 
@@ -102,7 +101,7 @@ import type { Case } from '$lib/types';
 }
   // Quick case actions
   async function quickAction(caseId: string, action: string) {
-    isLoading.set(true);
+    isLoading = true;
     try {
       const response = await fetch(`/api/cases/${caseId}/${action}`, {
         method: 'POST',
@@ -116,12 +115,12 @@ import type { Case } from '$lib/types';
     } catch (error) {
       console.error('Action failed:', error);
     } finally {
-      isLoading.set(false);
-}
+      isLoading = false;
+    }
 }
   // Handle quick status update
   async function updateCaseStatus(caseId: string, status: string) {
-    isLoading.set(true);
+    isLoading = true;
     try {
       const formData = new FormData();
       formData.append('caseId', caseId);
@@ -144,8 +143,8 @@ import type { Case } from '$lib/types';
     } catch (error) {
       console.error('Status update failed:', error);
     } finally {
-      isLoading.set(false);
-}
+      isLoading = false;
+    }
 }
   // Handle keyboard shortcuts
   function handleKeydown(event: KeyboardEvent) {
@@ -157,51 +156,50 @@ import type { Case } from '$lib/types';
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="space-y-4">
-  <div class="space-y-4">
-
+<div class="flex min-h-screen bg-gray-50">
+  <div class="flex w-full max-w-7xl mx-auto gap-6 p-6">
 
     <!-- Left Column: CaseList & Filters -->
-    <aside class="space-y-4">
-      <div class="space-y-4">
-        <div class="space-y-4">
+    <aside class="w-80 flex-shrink-0 space-y-6">
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
           <div>
-            <h1 class="space-y-4">Cases</h1>
-            <p class="space-y-4">{data.userCases.length} cases</p>
+            <h1 class="text-2xl font-bold text-gray-900">Cases</h1>
+            <p class="text-sm text-gray-600">{data.userCases.length} cases</p>
           </div>
           <button
             onclick={() => goto('/cases/new')}
-            class="space-y-4"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <Plus class="space-y-4" />
+            <Plus class="w-4 h-4 mr-2" />
             New
           </button>
         </div>
       </div>
 
       <!-- Search & Filters -->
-      <div class="space-y-4">
+      <div class="bg-white rounded-lg shadow-sm p-6">
         <form
           method="POST"
           action="?/filter"
           use:enhance={handleFilterSubmit}
           class="space-y-4"
         >
-          <div class="space-y-4">
-            <Search class="space-y-4" />
+          <div class="relative">
+            <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="search"
               name="search"
               placeholder="Search cases..."
               value={data.searchQuery}
-              class="space-y-4"
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
-          <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
             <select
               name="status"
-              class="space-y-4"
+              class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all" selected={data.statusFilter === 'all'}>All Status</option>
               <option value="open" selected={data.statusFilter === 'open'}>Open</option>
@@ -212,7 +210,7 @@ import type { Case } from '$lib/types';
 
             <select
               name="priority"
-              class="space-y-4"
+              class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all" selected={data.priorityFilter === 'all'}>All Priority</option>
               <option value="low" selected={data.priorityFilter === 'low'}>Low</option>
@@ -222,10 +220,10 @@ import type { Case } from '$lib/types';
             </select>
           </div>
 
-          <div class="space-y-4">
+          <div class="flex gap-2">
             <select
               name="sort"
-              class="space-y-4"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="openedAt" selected={data.sortBy === 'openedAt'}>Date Opened</option>
               <option value="title" selected={data.sortBy === 'title'}>Title</option>
@@ -238,26 +236,26 @@ import type { Case } from '$lib/types';
               type="submit"
               name="order"
               value={data.sortOrder === 'asc' ? 'desc' : 'asc'}
-              class="space-y-4"
+              class="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               {#if data.sortOrder === 'asc'}
-                <SortAsc class="space-y-4" />
+                <SortAsc class="w-4 h-4" />
               {:else}
-                <SortDesc class="space-y-4" />
+                <SortDesc class="w-4 h-4" />
               {/if}
             </button>
           </div>
 
           <button
             type="submit"
-            disabled={$isFiltering}
-            class="space-y-4"
+            disabled={isFiltering}
+            class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
-            {#if $isFiltering}
-              <RefreshCw class="space-y-4" />
+            {#if isFiltering}
+              <RefreshCw class="inline w-4 h-4 mr-2 animate-spin" />
               Filtering...
             {:else}
-              <Filter class="space-y-4" />
+              <Filter class="inline w-4 h-4 mr-2" />
               Apply Filters
             {/if}
           </button>
@@ -265,65 +263,67 @@ import type { Case } from '$lib/types';
       </div>
 
       <!-- Case Stats -->
-      <div class="space-y-4">
-        <div class="space-y-4">
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Case Statistics</h3>
+        <div class="space-y-2">
           {#each data.caseStats as stat}
-            <div class="space-y-4">
-              <span class="space-y-4">{stat.status}</span>
-              <span class="space-y-4">{stat.count}</span>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+              <span class="text-sm font-medium text-gray-600 capitalize">{stat.status}</span>
+              <span class="text-sm font-bold text-gray-900">{stat.count}</span>
             </div>
           {/each}
         </div>
       </div>
 
       <!-- Cases List -->
-      <div class="space-y-4">
-        {#if $isFiltering}
-          <div class="space-y-4">
-            <RefreshCw class="space-y-4" />
-            Filtering cases...
+      <div class="bg-white rounded-lg shadow-sm">
+        {#if isFiltering}
+          <div class="flex items-center justify-center p-8">
+            <RefreshCw class="w-5 h-5 animate-spin mr-3" />
+            <span class="text-gray-600">Filtering cases...</span>
           </div>
         {:else if data.userCases.length === 0}
-          <div class="space-y-4">
-            <p>No cases found.</p>
+          <div class="text-center p-8">
+            <p class="text-gray-500 mb-4">No cases found.</p>
             <button
               onclick={() => goto('/cases/new')}
-              class="space-y-4"
+              class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Create your first case
             </button>
           </div>
         {:else}
-          {#each data.userCases as caseItem}
-            <CaseListItem
-              caseData={caseItem}
-              isActive={caseItem.id === activeCaseId}
-              onclick={() => openCase(caseItem.id)}
-              on:statusChange={(event) => updateCaseStatus(caseItem.id, event.detail)}
-              disabled={$isLoading}
-            />
-          {/each}
+          <div class="divide-y divide-gray-100">
+            {#each data.userCases as caseItem}
+              <CaseListItem
+                caseData={caseItem}
+                isActive={caseItem.id === activeCaseId}
+                on:click={() => openCase(caseItem.id)}
+                onstatuschange={(event) => updateCaseStatus(caseItem.id, event.detail)}
+                disabled={isLoading}
+              />
+            {/each}
+          </div>
         {/if}
       </div>
     </aside>
 
     <!-- Main Content Area -->
-    <main class="space-y-4">
+    <main class="flex-1 bg-white rounded-lg shadow-sm">
       {@render children?.()}
     </main>
 
-
     <!-- Right Column: CaseDetails/Properties (when case is selected) -->
     {#if selectedCase}
-      <aside class="space-y-4">
-        <div class="space-y-4">
-          <h2 class="space-y-4">Case Details</h2>
+      <aside class="w-80 flex-shrink-0 bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold text-gray-900">Case Details</h2>
           <button
             onclick={() => closeCase()}
-            class="space-y-4"
+            class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Close case details"
           >
-            <svg class="space-y-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
@@ -332,55 +332,49 @@ import type { Case } from '$lib/types';
         <div class="space-y-4">
           <div class="space-y-4">
             <div>
-              <h3 class="space-y-4">Case Number</h3>
-              <p class="space-y-4">{selectedCase?.caseNumber}</p>
+              <h3 class="text-sm font-medium text-gray-500">Case Number</h3>
+              <p class="text-sm font-semibold text-gray-900">{selectedCase?.caseNumber}</p>
             </div>
 
             <div>
-              <h3 class="space-y-4">Status</h3>
-              <span class="space-y-4">
+              <h3 class="text-sm font-medium text-gray-500">Status</h3>
+              <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 capitalize">
                 {selectedCase?.status}
               </span>
             </div>
 
             <div>
-              <h3 class="space-y-4">Priority</h3>
-              <span class="space-y-4">
+              <h3 class="text-sm font-medium text-gray-500">Priority</h3>
+              <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 capitalize">
                 {selectedCase?.priority}
               </span>
             </div>
 
             <div>
-              <h3 class="space-y-4">Opened</h3>
-              <p class="space-y-4">
+              <h3 class="text-sm font-medium text-gray-500">Opened</h3>
+              <p class="text-sm text-gray-900">
                 {selectedCase?.createdAt ? new Date(selectedCase.createdAt).toLocaleDateString() : ''}
               </p>
             </div>
 
             <div>
-              <!-- Jurisdiction property not found in Case type, remove or update if needed -->
-              <!-- <h3 class="space-y-4">Jurisdiction</h3> -->
-              <!-- <p class="space-y-4">{selectedCase?.jurisdiction}</p> -->
-            </div>
-
-            <div>
-              <h3 class="space-y-4">Description</h3>
-              <p class="space-y-4">{selectedCase?.description}</p>
+              <h3 class="text-sm font-medium text-gray-500">Description</h3>
+              <p class="text-sm text-gray-900">{selectedCase?.description}</p>
             </div>
           </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="space-y-4">
+        <div class="mt-6 pt-6 border-t border-gray-100">
+          <div class="flex gap-2">
             <a
               href={`/cases/${selectedCase?.id}/edit`}
-              class="space-y-4"
+              class="flex-1 px-3 py-2 text-center text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
             >
               Edit
             </a>
             <button
               onclick={() => quickAction(selectedCase?.id, 'archive')}
-              class="space-y-4"
+              class="flex-1 px-3 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Archive
             </button>

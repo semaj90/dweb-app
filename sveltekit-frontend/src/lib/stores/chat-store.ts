@@ -10,19 +10,8 @@
  * - Session management
  */
 
-import { writable, derived, readable, get } from 'svelte/store';
-import { browser } from '$app/environment';
-import type { 
-  ChatMessage, 
-  ChatSession, 
-  MessageAnalysis, 
-  RAGContext, 
-  Recommendation,
-  StreamingResponse,
-  UserActivity,
-  AttentionData,
-  ConnectionStatus
-} from '$lib/types/ai-chat';
+import { writable, derived, readable, get } from "svelte/store";
+import { browser, import type { ,   ChatMessage, ,   ChatSession, ,   MessageAnalysis, ,   RAGContext, ,   Recommendation,,   StreamingResponse,,   UserActivity,,   AttentionData,,   ConnectionStatus } from
 
 // Core chat state
 export const chatMessages = writable<ChatMessage[]>([]);

@@ -3,9 +3,12 @@
  * Multi-Agent Orchestrator API Endpoints - Step 9 Integration
  */
 
-import type { RequestHandler } from "./$types";
-import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types.js";
+// Orphaned content: import {
+
 import { multiAgentOrchestrator } from "$lib/services/multi-agent-orchestrator";
+// Orphaned content: import crypto from "crypto";
+import {
 
 // GET /api/orchestrator - Get workflow status or list workflows
 export const GET: RequestHandler = async ({ url }) => {

@@ -1,9 +1,9 @@
+import { eq } from "drizzle-orm";
 // Production Error Logging System
 // Comprehensive logging for PostgreSQL, Qdrant, OCR, AI services
 import { writeFile, appendFile, mkdir, readFile } from 'fs/promises';
-import path from 'path';
-import { db } from '$lib/server/db/index';
-import { eq } from 'drizzle-orm';
+// Orphaned content: import path from "path";
+import {
 
 export interface LogEntry {
   id: string;

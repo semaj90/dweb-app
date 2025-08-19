@@ -1,14 +1,14 @@
+import type { OllamaConfig, ModelConfig } from "./types.js";
 /**
  * Ollama Configuration for High-Performance AI Assistant
  * Using local gemma3:legal-latest model with legal-bert fallback
  */
 
-import type { OllamaConfig, ModelConfig } from './types';
 
 // Model configurations aligned with the blueprint architecture
 export const MODELS: Record<string, ModelConfig> = {
-  'gemma3:legal-latest': {
-    name: 'gemma3:legal-latest',
+  'gemma3-legal:latest': {
+    name: 'gemma3-legal:latest',
     type: 'local',
     capabilities: ['text-generation', 'embeddings', 'legal-analysis'],
     contextWindow: 8192,
@@ -25,25 +25,6 @@ export const MODELS: Record<string, ModelConfig> = {
       repeat_penalty: 1.1,
       seed: 42,
       stop: ['User:', 'Human:', '\n\n\n']
-    }
-  },
-  'legal-bert': {
-    name: 'legal-bert',
-    type: 'fallback',
-    capabilities: ['text-generation', 'legal-analysis', 'embeddings'],
-    contextWindow: 512, // BERT models have smaller context
-    embeddingDimension: 768,
-    temperature: 0.5, // Lower temperature for more precise legal analysis
-    topP: 0.85,
-    topK: 30,
-    systemPrompt: `You are Legal-BERT, a specialized language model trained on legal texts including legislation, court cases, and contracts.
-    You excel at understanding legal terminology, identifying legal concepts, and providing accurate analysis of legal documents.
-    Focus on precision and cite relevant legal principles when applicable.`,
-    options: {
-      num_gpu: 1,
-      num_thread: 4,
-      repeat_penalty: 1.05,
-      stop: ['\n\n', 'END', 'User:']
     }
   },
   'nomic-embed-text': {
@@ -65,27 +46,24 @@ export const MODELS: Record<string, ModelConfig> = {
 // Fallback chain configuration - llama3.2 removed
 export const FALLBACK_CHAIN = {
   'legal-analysis': [
-    'gemma3:legal-latest',  // Primary
-    'legal-bert'            // Legal-specific fallback only
+    'gemma3-legal:latest'   // Only gemma3-legal
   ],
   'text-generation': [
-    'gemma3:legal-latest',
-    'legal-bert'
+    'gemma3-legal:latest'   // Only gemma3-legal
   ],
   'embeddings': [
-    'nomic-embed-text',
-    'bge-large-en'
+    'nomic-embed-text:latest'  // Only nomic-embed
   ]
 };
 
 export const OLLAMA_CONFIG: OllamaConfig = {
-  baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
-  defaultModel: 'gemma3:legal-latest',
-  embeddingModel: 'nomic-embed-text',
-  fallbackModel: 'legal-bert',
+  baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+  defaultModel: 'gemma3-legal:latest',
+  embeddingModel: 'nomic-embed-text:latest',
+  fallbackModel: 'gemma3-legal:latest',
   fallbackModels: {
-    legal: 'legal-bert',
-    general: 'legal-bert' // Use legal-bert as general fallback too
+    legal: 'gemma3-legal:latest',
+    general: 'gemma3-legal:latest'
   },
   timeout: 60000, // 60 seconds for complex legal analysis
   maxRetries: 3,

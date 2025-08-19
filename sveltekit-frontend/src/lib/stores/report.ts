@@ -1,6 +1,7 @@
+import crypto from "crypto";
 // @ts-nocheck
 import { writable, derived, type Writable } from "svelte/store";
-import type { Writable as WritableType } from "svelte/store";
+// Orphaned content: import type { Writable as WritableType
 
 // Evidence types
 export interface Evidence {

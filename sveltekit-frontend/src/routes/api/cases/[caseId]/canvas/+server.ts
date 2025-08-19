@@ -1,9 +1,9 @@
+import { db } from "$lib/server/db/index";
 // @ts-nocheck
 // Case Canvas API - Save and load canvas data
-import { db } from "$lib/server/db/index";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq
 
 // Import with fallback for different schema files
 let schema: any = {};

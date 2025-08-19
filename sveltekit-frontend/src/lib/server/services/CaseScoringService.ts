@@ -3,15 +3,16 @@
 // Implements 0-100 scoring with multi-criteria analysis
 
 import { ollamaService } from "./OllamaService";
-import { db } from "../db";
+// Orphaned content: import {
+
 import { caseScores } from "../db/schema";
-import { logger } from "../logger";
+// Orphaned content: import {
+
 import { eq } from "drizzle-orm";
-import type {
+// Orphaned content: import type {
   CaseScoringRequest,
   CaseScoringResult,
   ScoringCriteria,
-} from "$lib/types";
 
 export class CaseScoringService {
   private readonly DEFAULT_TEMPERATURE = 0.7;

@@ -1,9 +1,10 @@
 // @ts-nocheck
 // src/lib/server/db/drizzle.ts
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import * as schema from "./schema-postgres";
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+// Orphaned content: import {
+
+* as schema from './schema-postgres.js';
+// Orphaned content: import type { NodePgDatabase
 
 // Create a mock pool for build time
 const createMockPool = () =>
@@ -17,13 +18,13 @@ const createMockPool = () =>
 
 // Database configuration
 const connectionString =
-  process.env.DATABASE_URL ||
+  import.meta.env.DATABASE_URL ||
   "postgresql://legal_admin:123456@localhost:5432/legal_ai_db";
 
 // Create pool - use mock during build or when DATABASE_URL indicates build environment
 const isBuilding =
-  process.env.NODE_ENV === "build" ||
-  process.env.DATABASE_URL?.includes("build");
+  import.meta.env.NODE_ENV === "build" ||
+  import.meta.env.DATABASE_URL?.includes("build");
 
 export const pool = isBuilding
   ? createMockPool()

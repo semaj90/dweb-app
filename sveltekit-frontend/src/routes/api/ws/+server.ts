@@ -1,6 +1,7 @@
 import { Server } from 'socket.io';
-import type { RequestHandler } from './$types';
-import { dev } from '$app/environment';
+// Orphaned content: import type { RequestHandler
+import {
+dev } from "$app/environment";
 import Redis from 'ioredis';
 
 // WebSocket server for real-time updates
@@ -22,9 +23,9 @@ function initializeWebSocket() {
 
   // Initialize Redis subscriber for job progress
   redis = new Redis({
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    password: process.env.REDIS_PASSWORD,
+    host: import.meta.env.REDIS_HOST || 'localhost',
+    port: parseInt(import.meta.env.REDIS_PORT || '6379'),
+    password: import.meta.env.REDIS_PASSWORD,
     lazyConnect: true,
   });
 

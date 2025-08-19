@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { writable, derived, type Writable } from "svelte/store";
+// @ts-nocheck
 
 export interface FormField {
   name: string;

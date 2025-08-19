@@ -31,7 +31,7 @@ export class Logger {
   }
 
   debug(message: string, meta?: any) {
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.NODE_ENV === "development") {
       console.debug(
         `[DEBUG] ${new Date().toISOString()} - ${message}`,
         meta || ""

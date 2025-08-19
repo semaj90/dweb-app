@@ -1,5 +1,5 @@
+import { Queue } from "bullmq";
 // @ts-nocheck
-import { Queue } from 'bullmq';
 
 export const logQueue = new Queue('logQueue', {
   connection: {

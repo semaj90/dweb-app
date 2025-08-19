@@ -1,7 +1,7 @@
-import type { RequestHandler } from "./$types";
+import type { RequestHandler } from './$types.js';
 
 const SUMMARIZER_BASE =
-  process.env.SUMMARIZER_BASE_URL || "http://localhost:8091";
+  import.meta.env.SUMMARIZER_BASE_URL || "http://localhost:8091";
 
 export const POST: RequestHandler = async ({ request }) => {
   let payload: unknown;

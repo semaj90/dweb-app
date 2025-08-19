@@ -78,23 +78,23 @@
   <div class="mx-auto px-4 max-w-7xl">
     <h3 class="mx-auto px-4 max-w-7xl">Melt-UI Notifications Demo</h3>
     <div class="mx-auto px-4 max-w-7xl">
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showSuccessNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" onclick={() => showSuccessNotification()}>
         Success Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showWarningNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" onclick={() => showWarningNotification()}>
         Warning Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showErrorNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" onclick={() => showErrorNotification()}>
         Error Notification
       </button>
-      <button class="mx-auto px-4 max-w-7xl" on:click={() => showInfoNotification()}>
+      <button class="mx-auto px-4 max-w-7xl" onclick={() => showInfoNotification()}>
         Info Notification
       </button>
     </div>
   </div>
   
   <!-- Bits UI Button -->
-  <Button.Root class="mx-auto px-4 max-w-7xl" onclick={showSuccessNotification}>
+  <Button.Root class="mx-auto px-4 max-w-7xl" on:click={showSuccessNotification}>
     Create New Case
   </Button.Root>
   
@@ -179,7 +179,7 @@
           <AlertDialog.Cancel class="mx-auto px-4 max-w-7xl">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" onclick={showErrorNotification}>
+          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" on:click={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>

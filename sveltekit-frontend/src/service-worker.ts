@@ -7,7 +7,8 @@
 
 /// <reference types="@webgpu/types" />
 
-import { build, files, version } from '$service-worker';
+import { build, files, version } from "$service-worker";
+// Orphaned content: import {
 
 // Cache configuration
 const CACHE = `legal-ai-cache-${version}`;

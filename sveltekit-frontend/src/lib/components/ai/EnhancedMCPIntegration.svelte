@@ -128,20 +128,18 @@
 		try {
 			wsConnection = new WebSocket('ws://localhost:40000');
 			
-			wsConnection.onopen = () => {
+			wsConnection.onopen=() => {
 				console.log('📡 WebSocket connected for real-time updates');
-			};
-			
+			}
 			wsConnection.onmessage = (event) => {
 				const data = JSON.parse(event.data);
 				handleRealtimeUpdate(data);
-			};
-			
-			wsConnection.onclose = () => {
+			}
+			wsConnection.onclose =() => {
 				console.log('📡 WebSocket disconnected');
 				// Attempt reconnection after 5 seconds
 				setTimeout(setupWebSocketConnection, 5000);
-			};
+			}
 		} catch (error) {
 			console.error('WebSocket connection failed:', error);
 		}
@@ -384,8 +382,7 @@
 			? { query: queryInput }
 			: selectedTool.includes('context7')
 			? { libraryName: queryInput }
-			: { prompt: queryInput, context: 'sveltekit_frontend' };
-			
+			: { prompt: queryInput, context: 'sveltekit_frontend' }
 		await executeMCPTool(selectedTool, args);
 		queryInput = '';
 	}

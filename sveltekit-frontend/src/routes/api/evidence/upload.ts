@@ -1,10 +1,11 @@
-// @ts-nocheck
 import { evidence, db } from "$lib/server/db";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { randomUUID } from "crypto";
-import { promises as fs } from "fs";
 import path from "path";
+// @ts-nocheck
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { randomUUID
+import {
+promises as fs } from "fs";
 
 export const POST: RequestHandler = async ({ request, locals, url }) => {
   const user = locals.user;

@@ -2,7 +2,7 @@
   export let onclick: () => any;
 </script>
 
-<button class="font-semibold" on:click={onclick} type="button">
+<button class="font-semibold" onclick={onclick} type="button">
   <span class="i-logos:svelte-icon" />
   <slot /></button
 >

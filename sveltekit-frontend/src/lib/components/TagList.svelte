@@ -148,7 +148,7 @@
   }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <div class="mx-auto px-4 max-w-7xl" class:readonly>
   <div class="mx-auto px-4 max-w-7xl">
@@ -160,7 +160,7 @@
           <button
             type="button"
             class="mx-auto px-4 max-w-7xl"
-            on:click={() => removeTag(tag)}
+            onclick={() => removeTag(tag)}
             aria-label="Remove {tag} tag"
           >
             <X size={12} />
@@ -174,9 +174,9 @@
         <input
           bind:this={inputElement}
           bind:value={inputValue}
-          on:input={handleInput}
-          on:keydown={handleKeyDown}
-          on:focus={handleFocus}
+          oninput={handleInput}
+          onkeydown={handleKeyDown}
+          onfocus={handleFocus}
           class="mx-auto px-4 max-w-7xl"
           type="text"
           {placeholder}
@@ -190,7 +190,7 @@
                 type="button"
                 class="mx-auto px-4 max-w-7xl"
                 class:active={index === activeIndex}
-                on:click={() => handleSuggestionClick(suggestion)}
+                onclick={() => handleSuggestionClick(suggestion)}
                 role="option"
                 aria-selected={index === activeIndex}
               >
@@ -207,7 +207,7 @@
       <button
         type="button"
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => addTag(inputValue)}
+        onclick={() => addTag(inputValue)}
         aria-label="Add custom tag: {inputValue}"
       >
         <Plus size={14} />
@@ -326,7 +326,7 @@
   }
 
   .suggestion:hover,
-  .suggestion:focus {
+  .suggestionfocus {
     background-color: #eff6ff;
     outline: none;
   }

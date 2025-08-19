@@ -1,16 +1,9 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import { db } from "$lib/server/db";
-import { evidence } from "$lib/server/db/schema";
-import { eq } from "drizzle-orm";
+// Orphaned content: import {
 
-// Example vector similarity function (replace with actual pgvector logic)
-async function vectorSearch(queryVector: number[], topK: number) {
-  // TODO: Use pgvector extension for similarity search
-  // This is a placeholder for demonstration
-  const results = await db.select().from(evidence).limit(topK);
-  return results;
-}
+import { evidence } from "$lib/server/db/schema";
+import { eq, , // Example vector similarity function (replace with actual pgvector logic), async function vectorSearch(queryVector: number[], topK: number) {,   // TODO: Use pgvector extension for similarity search,   // This is a placeholder for demonstration,   const results = await db.select().from(evidence).limit(topK);,   return results; } from
 
 export async function POST({ request, locals }) {
   if (!locals.user) {

@@ -5,17 +5,22 @@
   import { superValidate } from 'sveltekit-superforms/client';
   import { evidenceSchema } from '$lib/server/schemas';
   import { createMachine } from 'xstate';
-  // Explicit type for item
-  export let item: {
-    jsonData: {
-      title: string;
-      description: string;
-      tags?: string[];
-      tagsString?: string;
-      type?: string;
+  // Props
+  let {
+    item,
+    open = $bindable(false)
+  }: {
+    item: {
+      jsonData: {
+        title: string;
+        description: string;
+        tags?: string[];
+        tagsString?: string;
+        type?: string;
+      };
     };
-  };
-  export let open = false;
+    open?: boolean;
+  } = $props();
   let form: any = null;
   let title = '';
   let description = '';
@@ -84,7 +89,7 @@
         <Button on:click={handleEdit}>Edit</Button>
       </div>
     {:else}
-      <form class="flex flex-col gap-2" on:submit|preventDefault={handleSave}>
+      <form class="flex flex-col gap-2" onsubmit|preventDefault={handleSave}>
         <input name="jsonData.title" bind:value={title} placeholder="Title" class="input input-bordered" />
         <input name="jsonData.description" bind:value={description} placeholder="Description" class="input input-bordered" />
         <input name="jsonData.tags" bind:value={tagsString} placeholder="Tags (comma separated)" class="input input-bordered" />

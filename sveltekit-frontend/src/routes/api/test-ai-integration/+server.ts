@@ -5,15 +5,15 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { 
-  copilotOrchestrator,
+// Orphaned content: import type { RequestHandler
+import {
+copilotOrchestrator,
   generateMCPPrompt,
   commonMCPQueries,
   semanticSearch,
   mcpMemoryReadGraph,
   validateMCPRequest
-} from '$lib/utils/mcp-helpers';
+} from "$lib/utils/mcp-helpers";
 
 interface TestResult {
   name: string;

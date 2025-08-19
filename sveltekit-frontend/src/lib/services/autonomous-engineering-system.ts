@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // @ts-nocheck
 /**
  * Autonomous Engineering System
@@ -6,9 +7,10 @@
  */
 
 import { autoGenService } from "./autogen-service.js";
-import { crewAIService } from "./crewai-service.js";
+// Orphaned content: import {
+
 import { aiWorkerManager } from "./ai-worker-manager.js";
-import type { AITask, AIResponse } from "$lib/types/ai-worker.js";
+// Orphaned content: import type { AITask, AIResponse
 
 export interface EngineringProblem {
   id: string;

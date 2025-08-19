@@ -1,6 +1,7 @@
 // XState Machine for AI Agent Shell with Production Go Services Integration
 import { createMachine, assign } from "xstate";
-import { goServiceClient, type RAGResponse, type UploadResponse } from "../services/goServiceClient.js";
+// Orphaned content: import {
+goServiceClient, type RAGResponse, type UploadResponse
 import { productionServiceClient, services } from "../services/productionServiceClient.js";
 
 // Define context and event types

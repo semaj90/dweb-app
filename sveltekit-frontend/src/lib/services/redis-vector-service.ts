@@ -3,15 +3,8 @@
  * Redis Vector Service for caching and vector operations
  */
 
-import Redis from "ioredis";
-import { logger } from "../server/logger";
-
-export interface VectorSearchResult {
-  id: string;
-  score: number;
-  payload: any;
-  vector?: number[];
-}
+Redis from "ioredis";
+import { logger, , export interface VectorSearchResult {,   id: string;,   score: number;,   payload: any;,   vector?: number[]; } from
 
 export interface DocumentVector {
   id: string;
@@ -26,10 +19,10 @@ export class RedisVectorService {
 
   constructor() {
     const redisOptions = {
-      host: process.env.REDIS_HOST || "localhost",
-      port: parseInt(process.env.REDIS_PORT || "6379"),
-      password: process.env.REDIS_PASSWORD,
-      db: parseInt(process.env.REDIS_DB || "0"),
+      host: import.meta.env.REDIS_HOST || "localhost",
+      port: parseInt(import.meta.env.REDIS_PORT || "6379"),
+      password: import.meta.env.REDIS_PASSWORD,
+      db: parseInt(import.meta.env.REDIS_DB || "0"),
       retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,
     };

@@ -1,3 +1,5 @@
+import path from "path";
+import fs from "fs";
 /**
  * COMPREHENSIVE PHASE BACKUP & ERROR FIX SYSTEM
  * =============================================

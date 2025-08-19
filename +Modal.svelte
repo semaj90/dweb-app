@@ -13,12 +13,12 @@
 </script>
 
 {#if show}
-  <div class="modal-backdrop" on:click={close}></div>
+  <div class="modal-backdrop" onclick={close}></div>
   <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modal-title">{title}</h5>
-        <button type="button" class="btn-close" aria-label="Close" on:click={close}></button>
+        <button type="button" class="btn-close" aria-label="Close" onclick={close}></button>
       </div>
       <div class="modal-body">
         <slot></slot>
@@ -90,8 +90,8 @@
 <div
   role="button"
   tabindex="0"
-  on:click={close}
-  on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') close(); }}
+  onclick={close}
+  onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') close(); }}
   aria-label="Close modal"
 >
   <!-- Modal content here -->

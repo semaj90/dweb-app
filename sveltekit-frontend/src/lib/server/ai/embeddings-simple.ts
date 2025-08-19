@@ -1,12 +1,12 @@
+import { getCachedEmbedding, cacheEmbedding } from "$lib/server/cache/redis";
 // @ts-nocheck
 // Simplified AI embedding service - Production ready
 // Supports OpenAI embeddings with Redis/memory caching
 // Use process.env for server-side environment variables
-import { getCachedEmbedding, cacheEmbedding } from "$lib/server/cache/redis";
 
 // Target embedding dimension (match database schema). Defaults to 384.
 const TARGET_DIM: number = (() => {
-  const v = parseInt(process.env.EMBEDDING_DIMENSIONS || "384", 10);
+  const v = parseInt(import.meta.env.EMBEDDING_DIMENSIONS || "384", 10);
   return Number.isFinite(v) && v > 0 ? v : 384;
 })();
 
@@ -82,7 +82,7 @@ export async function generateEmbedding(
 }
 // OpenAI embedding generation
 async function generateOpenAIEmbedding(text: string): Promise<number[]> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = import.meta.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OpenAI API key not configured");
   }
@@ -112,7 +112,7 @@ async function generateOpenAIEmbedding(text: string): Promise<number[]> {
 
 // Nomic Embed via Ollama
 async function generateNomicEmbedding(text: string): Promise<number[]> {
-  const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+  const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
 
   try {
     const response = await fetch(`${ollamaUrl}/api/embeddings`, {
@@ -218,7 +218,7 @@ export async function generateBatchEmbeddings(
 async function generateOpenAIBatchEmbeddings(
   texts: string[]
 ): Promise<(number[] | null)[]> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = import.meta.env.OPENAI_API_KEY;
   if (!apiKey) {
     throw new Error("OpenAI API key not configured");
   }
@@ -245,7 +245,7 @@ async function generateOpenAIBatchEmbeddings(
 async function generateNomicBatchEmbeddings(
   texts: string[]
 ): Promise<(number[] | null)[]> {
-  const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+  const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
 
   // Note: Ollama doesn't support batch embeddings, so we process individually
   // but we can do them in parallel

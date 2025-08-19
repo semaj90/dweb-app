@@ -47,8 +47,6 @@ https://svelte.dev/e/js_parse_error -->
   let visualizationMode = $state<'list' | 'clusters' | 'neural' | 'performance'>('list');
   let autoOptimization = $state(true);
 
-  onMount(async () => {
-    // Initialize the RAG system
   onMount(() => {
     // Initialize the RAG system
     console.log('Enhanced RAG Interface initialized');
@@ -209,7 +207,7 @@ https://svelte.dev/e/js_parse_error -->
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               bind:value={searchQuery}
-              onkeydown={handleKeyPress}
+              on:keydown={handleKeyPress}
               placeholder="Ask anything about your legal documents..."
               class="pl-10 pr-4 py-3 text-lg"
               disabled={ragState.isLoading}
@@ -224,7 +222,7 @@ https://svelte.dev/e/js_parse_error -->
           </div>
 
           <Button
-            onclick={handleSearch}
+            on:click={handleSearch}
             disabled={!searchQuery.trim() || ragState.isLoading}
             class="px-6"
           >
@@ -233,7 +231,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <Button
             variant="outline"
-            onclick={() => showAdvancedOptions = !showAdvancedOptions}
+            on:click={() => showAdvancedOptions = !showAdvancedOptions}
           >
             <Settings class="h-4 w-4" />
           </Button>
@@ -261,7 +259,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => selectSuggestion(suggestion)}
+                on:click={() => selectSuggestion(suggestion)}
                 class="h-8 px-3 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border border-yellow-200"
               >
                 <Sparkles class="h-3 w-3 mr-1" />
@@ -324,7 +322,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant="outline"
                 size="sm"
-                onclick={handleOptimization}
+                on:click={handleOptimization}
                 class="mt-2 w-full"
               >
                 <Zap class="h-4 w-4 mr-1" />
@@ -360,14 +358,14 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={visualizationMode === 'list' ? 'default' : 'outline'}
                 size="sm"
-                onclick={() => visualizationMode = 'list'}
+                on:click={() => visualizationMode = 'list'}
               >
                 List
               </Button>
               <Button
                 variant={visualizationMode === 'clusters' ? 'default' : 'outline'}
                 size="sm"
-                onclick={() => visualizationMode = 'clusters'}
+                on:click={() => visualizationMode = 'clusters'}
               >
                 <Target class="h-4 w-4 mr-1" />
                 Clusters
@@ -375,7 +373,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={visualizationMode === 'performance' ? 'default' : 'outline'}
                 size="sm"
-                onclick={() => visualizationMode = 'performance'}
+                on:click={() => visualizationMode = 'performance'}
               >
                 <BarChart3 class="h-4 w-4 mr-1" />
                 Analytics
@@ -454,7 +452,7 @@ https://svelte.dev/e/js_parse_error -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {#each clusterVisualization as cluster}
             <Card class="cursor-pointer transition-all {cluster.isSelected ? 'ring-2 ring-blue-500' : ''}"
-                  onclick={() => handleClusterSelect(cluster.id)}>
+                  on:click={() => handleClusterSelect(cluster.id)}>
               <CardHeader>
                 <CardTitle class="flex items-center justify-between">
                   <span>Cluster {cluster.id}</span>

@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { Button, Select, Input, Card } from './index.js';
   import type { SelectOption } from './index.js';
   import type { VectorSearchResult, SemanticEntity } from '$lib/types/ai';
@@ -280,7 +284,7 @@
         variant="primary"
         legal
         loading={isSearching}
-        onclick={performVectorSearch}
+        on:click={performVectorSearch}
         disabled={!searchQuery.trim()}
       >
         {#if isSearching}
@@ -295,7 +299,7 @@
       {#if searchResults.length > 0}
         <Button
           variant="outline"
-          onclick={clearResults}
+          on:click={clearResults}
         >
           Clear
         </Button>
@@ -446,7 +450,7 @@
       <div class="flex justify-center gap-2">
         <Button
           variant="outline"
-          onclick={() => searchQuery = 'contract breach non-disclosure agreement'}
+          on:click={() => searchQuery = 'contract breach non-disclosure agreement'}
         >
           Try Sample Query
         </Button>

@@ -233,7 +233,7 @@
       <button 
         class="control-btn" 
         class:active={autoRefresh} 
-        on:click={toggleAutoRefresh}
+        onclick={toggleAutoRefresh}
       >
         {autoRefresh ? '⏸️' : '▶️'} Auto Refresh
       </button>

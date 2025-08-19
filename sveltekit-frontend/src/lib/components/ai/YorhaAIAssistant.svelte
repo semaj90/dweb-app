@@ -669,7 +669,7 @@
 	<!-- Trigger Button -->
 	<Button.Root
 		{...$trigger}
-		onclick={openDialog}
+		on:click={openDialog}
 		variant="default"
 		size="lg"
 		class={cn(
@@ -745,7 +745,7 @@
 							{...$close}
 							variant="ghost"
 							size="sm"
-							onclick={closeDialog}
+							on:click={closeDialog}
 							class="h-6 w-6 p-0"
 						>
 							<span class="sr-only">Close</span>
@@ -881,13 +881,13 @@
 							bind:value={currentMessage}
 							placeholder={streamingResponse ? "AI is responding..." : "Type your message..."}
 							disabled={!isConnected || streamingResponse}
-							onkeydown={handleKeydown}
+							on:keydown={handleKeydown}
 							data-yorha-input
 							class="flex-1"
 						/>
 						
 						<Button.Root
-							onclick={sendMessage}
+							on:click={sendMessage}
 							disabled={!canSendMessage}
 							variant="default"
 							size="sm"
@@ -912,7 +912,7 @@
 							<Button.Root
 								variant="ghost"
 								size="sm"
-								onclick={clearChat}
+								on:click={clearChat}
 								disabled={!hasMessages}
 								class="text-xs h-6 px-2"
 							>

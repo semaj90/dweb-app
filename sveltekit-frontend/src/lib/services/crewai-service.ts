@@ -4,6 +4,7 @@
  * Handles role-based agent crews for specialized legal workflows
  */
 
+import crypto from "crypto";
 import type {
   AgentDefinition,
   AgentWorkflow,

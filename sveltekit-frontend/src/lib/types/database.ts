@@ -1,9 +1,8 @@
 // @ts-nocheck
 import type { User } from "./user";
-import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-
+// Orphaned content: import type { InferInsertModel, InferSelectModel
 import {
-  cases,
+cases,
   criminals,
   evidence,
   users,

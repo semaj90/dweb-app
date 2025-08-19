@@ -1,5 +1,5 @@
-// @ts-nocheck
 import type { User } from "$lib/types/user";
+// @ts-nocheck
 
 // Evidence AI Analysis Type
 export interface EvidenceAIAnalysis {

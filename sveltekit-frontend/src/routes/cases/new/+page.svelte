@@ -63,11 +63,11 @@
   />
 </svelte:head>
 
-<div class="space-y-4">
+<div class="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
   <!-- Header -->
-  <div class="space-y-4">
-    <h1 class="space-y-4">Create New Case</h1>
-    <p class="space-y-4">
+  <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Create New Case</h1>
+    <p class="text-gray-600">
       Build a comprehensive case file with evidence and documentation
     </p>
   </div>
@@ -84,7 +84,7 @@
       createdAt: new Date(),
       updatedAt: new Date(),
     }}
-    onsubmit={handleSubmit}
+    on:submit={handleSubmit}
     oncancel={handleCancel}
   />
 </div>

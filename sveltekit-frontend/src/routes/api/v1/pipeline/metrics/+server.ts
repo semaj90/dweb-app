@@ -1,5 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit';
-import { getPipelineHistogram, getDedupeMetrics } from '$lib/services/pipeline-metrics';
+import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+getPipelineHistogram, getDedupeMetrics
 
 export const GET: RequestHandler = async () => {
   const hist = getPipelineHistogram();

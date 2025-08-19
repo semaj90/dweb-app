@@ -211,7 +211,7 @@ import Input from "$lib/components/ui/Input.svelte";
         class="container mx-auto px-4"
       />
       {#if searchQuery}
-        <Button onclick={clearSearch} variant="outline" size="sm">Clear</Button>
+        <Button on:click={clearSearch} variant="outline" size="sm">Clear</Button>
       {/if}
     </div>
 
@@ -249,7 +249,7 @@ import Input from "$lib/components/ui/Input.svelte";
         <div class="container mx-auto px-4">
           <h3 class="container mx-auto px-4">AI Analysis</h3>
           <Button
-            onclick={reprocessWithAI}
+            on:click={reprocessWithAI}
             disabled={isProcessing}
             variant="outline"
             size="sm"
@@ -300,7 +300,7 @@ import Input from "$lib/components/ui/Input.svelte";
       <div class="container mx-auto px-4">
         <div class="container mx-auto px-4">🤖</div>
         <div class="container mx-auto px-4">No AI analysis available</div>
-        <Button onclick={reprocessWithAI} disabled={isProcessing}>
+        <Button on:click={reprocessWithAI} disabled={isProcessing}>
           {isProcessing ? "Processing..." : "Analyze with AI"}
         </Button>
       </div>

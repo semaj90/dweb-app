@@ -1,12 +1,14 @@
+import crypto from "crypto";
 // @ts-nocheck
 /**
  * XState State Machine for Document Upload Workflow
  * Handles file upload, validation, processing, and search indexing
  */
 
-import { createMachine, assign, fromPromise } from 'xstate';
-import { evidenceProcessingMachine } from './evidenceProcessingMachine';
-import type { EvidenceProcessingContext } from './evidenceProcessingMachine';
+import { createMachine, assign, fromPromise } from "xstate";
+// Orphaned content: import {
+
+import type { EvidenceProcessingContext } from './evidenceProcessingMachine.js';
 
 // Types for document upload
 export interface DocumentUploadContext {

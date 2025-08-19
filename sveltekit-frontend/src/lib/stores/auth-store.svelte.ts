@@ -1,22 +1,14 @@
+import { page } from "$app/stores";
 /**
  * Global Authentication Store - SvelteKit 2 + Svelte 5 Best Practices
  * Uses modern reactive patterns with $state runes and XState integration
  */
 
-import type { SessionUser } from '$lib/types/auth';
-import { createMachine, assign, fromPromise  } from "xstate";
+import type { SessionUser } from "$lib/types/auth";
+// Orphaned content: import {
+createMachine, assign, fromPromise
 import { browser } from "$app/environment";
-import { goto } from "$app/navigation";
-import { page } from "$app/stores";
-
-// Authentication context
-interface AuthContext {
-  user: SessionUser | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-  redirectPath: string | null;
-}
+import { goto, , // Authentication context, interface AuthContext {,   user: SessionUser | null;,   isAuthenticated: boolean;,   isLoading: boolean;,   error: string | null;,   redirectPath: string | null; } from
 
 // Authentication events
 type AuthEvents =

@@ -2,17 +2,6 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- LLM Provider Selector with Bits UI v2 and Real-time Status -->
 <script lang="ts">
-  interface Props {
-    selectedProvider: LLMProvider | null ;
-    disabled?: any;
-  }
-  let {
-    selectedProvider = null,
-    disabled = false
-  }: Props = $props();
-
-
-
 	import { createSelect, melt } from '@melt-ui/svelte';
 	import { Badge } from 'bits-ui';
 	import { Card, CardContent } from 'bits-ui';
@@ -20,8 +9,15 @@ https://svelte.dev/e/js_parse_error -->
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 
-	let { selectedProvider = $bindable() } = $props(); // LLMProvider | null = null;
-	let { disabled = $bindable() } = $props(); // false;
+	interface Props {
+		selectedProvider?: LLMProvider | null;
+		disabled?: boolean;
+	}
+
+	let { 
+		selectedProvider = $bindable(null),
+		disabled = $bindable(false)
+	}: Props = $props();
 
 	const dispatch = createEventDispatcher<{
 		providerSelected: { provider: LLMProvider };

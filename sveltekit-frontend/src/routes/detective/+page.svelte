@@ -129,7 +129,7 @@
     if (typeof window !== 'undefined') {
       // Create a temporary notification
       const notification = document.createElement('div');
-      notification.className = 'fixed top-20 right-4 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+      notification.class = 'fixed top-20 right-4 bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
       notification.innerHTML = `
         <div class="space-y-4">
           <div class="space-y-4">
@@ -244,8 +244,8 @@
     {:else if currentView === 'create-case'}
       <div class="space-y-4">
         <CaseForm 
-          onsuccess={handleCaseFormSuccess}
-          oncancel={handleCaseFormCancel}
+          on:success={handleCaseFormSuccess}
+          on:cancel={handleCaseFormCancel}
         />
       </div>
     {:else if currentView === 'auth-demo'}

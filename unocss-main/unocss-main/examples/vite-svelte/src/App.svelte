@@ -30,8 +30,8 @@
 
   <br/>
 
-  <button class="bg-red-100" on:click={toggleLogo}>{button}</button>
-  <button on:click={toggleSpan}>Change BG Color: {span}</button>
+  <button class="bg-red-100" onclick={toggleLogo}>{button}</button>
+  <button onclick={toggleSpan}>Change BG Color: {span}</button>
 
   <br />
 

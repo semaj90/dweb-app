@@ -4,8 +4,8 @@
  * Proper fromPromise usage with typed context and error handling
  */
 
-import { fromPromise, createActor, type ActorRefFrom } from 'xstate';
-import { fetchWithTimeout } from '$lib/utils/fetch-with-timeout';
+import { fromPromise, createActor, type ActorRefFrom } from "xstate";
+import { fetchWithTimeout } from "$lib/utils";
 
 // ===== EMBEDDING ACTOR =====
 

@@ -1,10 +1,14 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import { exec } from "child_process";
+// Orphaned content: import {
+
 import { promisify } from "util";
-import { writeFile, readFile, mkdir } from "fs/promises";
+// Orphaned content: import {
+writeFile, readFile, mkdir
 import { existsSync } from "fs";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
+import {
+URL } from "url";
 
 const execAsync = promisify(exec);
 

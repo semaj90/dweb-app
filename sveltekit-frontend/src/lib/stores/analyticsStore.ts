@@ -1,6 +1,7 @@
 // @ts-nocheck
 // Svelte store for analytics events (frontend)
 import { writable } from "svelte/store";
+// Orphaned content: import {
 
 export const analyticsEvents = writable([]);
 

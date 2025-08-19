@@ -33,8 +33,9 @@
     sortable?: boolean;
     filterable?: boolean;
     resizable?: boolean;
-    className?: string;
+    class?: string;
     glitchEffect?: boolean;
+    actions?: ({ row, rowIndex }: { row: GridRow; rowIndex: number }) => any;
   }
 
   let { actions,
@@ -50,7 +51,7 @@
     sortable = true,
     filterable = true,
     resizable = true,
-    className = '',
+    class = '',
     glitchEffect = false
   }: DataGridProps = $props();
 
@@ -61,50 +62,50 @@
   let columnFilters = $state<Map<string, string>>(new Map());
   let resizingColumn = $state<string | null>(null);
   let scrollContainer: HTMLElement | null = $state(null);
-  
+
   const filteredData = $derived.by(() => {
     let filtered = data;
-    
+
     // Apply column filters
     for (const [column, filter] of columnFilters) {
       if (filter) {
-        filtered = filtered.filter(row => 
+        filtered = filtered.filter(row =>
           String(row[column]).toLowerCase().includes(filter.toLowerCase())
         );
       }
     }
-    
+
     // Apply sorting
     if (sortConfig) {
       filtered.sort((a, b) => {
         const aVal = a[sortConfig.column];
         const bVal = b[sortConfig.column];
-        
+
         if (typeof aVal === 'number' && typeof bVal === 'number') {
           return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
         }
-        
+
         const aStr = String(aVal).toLowerCase();
         const bStr = String(bVal).toLowerCase();
-        
-        return sortConfig.direction === 'asc' 
+
+        return sortConfig.direction === 'asc'
           ? aStr.localeCompare(bStr)
           : bStr.localeCompare(aStr);
       });
     }
-    
+
     return filtered;
   });
 
   const visibleRows = $derived.by(() => {
     const filtered = filteredData; // Access the derived value directly
     if (!virtualScroll) return filtered;
-    
+
     const containerHeight = maxHeight;
     const visibleCount = Math.ceil(containerHeight / rowHeight) + 5; // Buffer
     const startIndex = Math.floor((scrollContainer?.scrollTop || 0) / rowHeight);
     const endIndex = Math.min(startIndex + visibleCount, filtered.length);
-    
+
     return filtered.slice(startIndex, endIndex).map((row, index) => ({
       ...row,
       _originalIndex: startIndex + index
@@ -113,7 +114,7 @@
 
   function handleSort(column: GridColumn) {
     if (!column.sortable || !sortable) return;
-    
+
     if (sortConfig?.column === column.key) {
       sortConfig = {
         column: column.key,
@@ -168,7 +169,7 @@
 
   function handleColumnResize(column: string, event: MouseEvent) {
     if (!resizable) return;
-    
+
     resizingColumn = column;
     const startX = event.clientX;
     const startWidth = columnWidths.get(column) || 150;
@@ -240,8 +241,8 @@
   {/if}
 
   <!-- Main Grid Container -->
-  <div 
-    class="yorha-grid-container" 
+  <div
+    class="yorha-grid-container"
     style:max-height="{maxHeight}px"
     bind:this={scrollContainer}
   >
@@ -272,9 +273,9 @@
             />
           </div>
         {/if}
-        
+
         {#each columns as column}
-          <div 
+          <div
             class="yorha-grid-cell yorha-header-cell"
             class:yorha-sortable={column.sortable && sortable}
             class:yorha-sorted-asc={sortConfig?.column === column.key && sortConfig?.direction === 'asc'}
@@ -284,7 +285,7 @@
           >
             <div class="yorha-header-content">
               <span class="yorha-header-text">{column.title}</span>
-              
+
               {#if column.sortable && sortable}
                 <div class="yorha-sort-indicator">
                   {#if sortConfig?.column === column.key}
@@ -294,9 +295,9 @@
                   {/if}
                 </div>
               {/if}
-              
+
               {#if resizable}
-                <div 
+                <div
                   class="yorha-resize-handle"
                   onmousedown={(e) => handleColumnResize(column.key, e)}
                 ></div>
@@ -309,7 +310,7 @@
       <!-- Data Rows -->
       <div class="yorha-grid-body" style:height={virtualScroll ? `${filteredData.length * rowHeight}px` : 'auto'}>
         {#each visibleRows as row, rowIndex (row.id)}
-          <div 
+          <div
             class="yorha-grid-row"
             class:yorha-row-selected={selectedRows.has(row.id)}
             class:yorha-row-even={rowIndex % 2 === 0}
@@ -327,9 +328,9 @@
                 />
               </div>
             {/if}
-            
+
             {#each columns as column}
-              <div 
+              <div
                 class="yorha-grid-cell yorha-data-cell"
                 class:yorha-editable={column.editable && editable}
                 class:yorha-editing={editingCell?.row === rowIndex && editingCell?.col === column.key}
@@ -363,7 +364,7 @@
                       value={row[column.key]}
                       oninput={(e) => handleCellEdit(rowIndex, column.key, (e.target as HTMLInputElement).value)}
                       onblur={() => editingCell = null}
-                      onfocusin={(e) => (e.target as HTMLInputElement).select()}
+                      on:focusin={(e) => (e.target as HTMLInputElement).select()}
                     />
                   {/if}
                 {:else}
@@ -618,3 +619,9 @@
     to { transform: rotate(360deg); }
   }
 </style>
+
+<script context="module" lang="ts">
+  // Mark file as a module for TypeScript without self-import recursion
+  // (Previous self-import caused TS to still report 'is not a module')
+  export {};
+</script>

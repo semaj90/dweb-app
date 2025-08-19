@@ -331,7 +331,7 @@
 	}
 	
 	/* Focus styles for accessibility */
-	.gaming-button:focus-visible {
+	.gaming-buttonfocus-visible {
 		outline: 2px solid currentColor;
 		outline-offset: 2px;
 	}

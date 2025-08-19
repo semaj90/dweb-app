@@ -1,7 +1,8 @@
+import type { Actions, PageServerLoad } from "./$types";
 // @ts-nocheck
 import { redirect } from "@sveltejs/kit";
-import { invalidateSession, clearSessionCookie } from "$lib/server/lucia";
-import type { Actions, PageServerLoad } from "./$types";
+// Orphaned content: import {
+invalidateSession, clearSessionCookie
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
   if (!locals.user) throw redirect(302, "/login");

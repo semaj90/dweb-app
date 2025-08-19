@@ -1,9 +1,11 @@
 // @ts-nocheck
 import { citationPoints } from "$lib/server/db/unified-schema";
-import type { RequestEvent } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { and, desc, eq, like } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+type { RequestEvent }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { and, desc, eq, like
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { URL
 
 // Sample citations for when database is not available or for demo data
 const sampleCitations = [

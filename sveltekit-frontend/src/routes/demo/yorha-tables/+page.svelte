@@ -224,7 +224,7 @@
         striped={true}
         bordered={true}
         glitchEffect={glitchEffect}
-        className="demo-table"
+        class="demo-table"
       >
         {#snippet actions({ row })}
               
@@ -266,7 +266,7 @@
         hover={true}
         striped={true}
         bordered={false}
-        className="demo-compact-table"
+        class="demo-compact-table"
       >
         {#snippet actions({ row })}
               
@@ -297,7 +297,7 @@
         rowHeight={50}
         maxHeight={400}
         glitchEffect={glitchEffect}
-        className="demo-grid"
+        class="demo-grid"
       >
         {#snippet actions({ row })}
               

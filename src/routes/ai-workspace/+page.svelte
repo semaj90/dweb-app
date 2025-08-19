@@ -269,7 +269,7 @@
                           <Button.Root
                             size="sm"
                             variant="outline"
-                            on:click={() => loadDocumentForAnalysis(upload.documentId!)}
+                            onclick={() => loadDocumentForAnalysis(upload.documentId!)}
                           >
                             Analyze
                           
@@ -343,7 +343,7 @@
                     
                     <Button.Root
                       variant="outline"
-                      on:click={clearSelectedDocument}
+                      onclick={clearSelectedDocument}
                     >
                       Close Analysis
                     
@@ -375,14 +375,14 @@
               
               
                 <Button.Root
-                  on:click={() => activeTab = 'search'}
+                  onclick={() => activeTab = 'search'}
                   disabled={!hasDocuments}
                 >
                   Search Documents
                 
                 <Button.Root
                   variant="outline"
-                  on:click={() => activeTab = 'upload'}
+                  onclick={() => activeTab = 'upload'}
                 >
                   Upload New Document
                 
@@ -427,7 +427,7 @@
                             <Button.Root
                               size="sm"
                               variant="outline"
-                              on:click={() => loadDocumentForAnalysis(upload.documentId!)}
+                              onclick={() => loadDocumentForAnalysis(upload.documentId!)}
                             >
                               View
                             
@@ -460,7 +460,7 @@
                           <Button.Root
                             size="sm"
                             variant="outline"
-                            on:click={() => handleDocumentSelect({ detail: { document: result } })}
+                            onclick={() => handleDocumentSelect({ detail: { document: result } })}
                           >
                             Analyze
                           

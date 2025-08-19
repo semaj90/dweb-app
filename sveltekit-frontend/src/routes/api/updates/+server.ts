@@ -1,7 +1,9 @@
 // @ts-nocheck
 // Server-Sent Events API route for SSR-safe real-time updates
 import { createClient } from "redis";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
+import {
+URL } from "url";
 
 // SSE connection manager
 class SSEConnectionManager {
@@ -14,7 +16,7 @@ class SSEConnectionManager {
 
     try {
       this.redisSubscriber = createClient({
-        url: process.env.REDIS_URL || "redis://localhost:6379",
+        url: import.meta.env.REDIS_URL || "redis://localhost:6379",
       });
 
       await this.redisSubscriber.connect();

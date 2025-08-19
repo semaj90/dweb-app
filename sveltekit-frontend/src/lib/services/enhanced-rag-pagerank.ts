@@ -6,9 +6,10 @@
  */
 
 import { writable, derived, type Writable } from "svelte/store";
-import { browser } from "$app/environment";
+// Orphaned content: import {
+
 import { copilotOrchestrator, type OrchestrationOptions } from "$lib/utils/mcp-helpers";
-import type { StatelessAPICoordinator, TaskMessage } from "./stateless-api-coordinator";
+// Orphaned content: import type { StatelessAPICoordinator, TaskMessage
 
 // Enhanced RAG types with PageRank integration
 export interface RAGDocument {

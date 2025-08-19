@@ -1,9 +1,11 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
-import { accessMemoryMCP } from "$lib/utils/copilot-self-prompt";
-import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
+// Orphaned content: import type { RequestHandler
+import {
+enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
+// Orphaned content: import { accessMemoryMCP
+import {
+mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
 
 // Enhanced RAG endpoint with reranker, Neo4j, memory, and docs
 export const POST: RequestHandler = async ({ request }) => {

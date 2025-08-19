@@ -5,16 +5,18 @@
  * Features: CUDA acceleration, batch processing, caching, and semantic search
  */
 
-import { OllamaEmbeddings } from '@langchain/ollama';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { MemoryVectorStore } from 'langchain/vectorstores/memory';
-import { Document } from '@langchain/core/documents';
-import type { VectorStore } from '@langchain/core/vectorstores';
+import { OllamaEmbeddings } from "@langchain/ollama";
+// Orphaned content: import {
 
-// Import our database service for persistent storage
-import { db } from '$lib/database/connection';
-import { searchIndex, type NewSearchIndex } from '$lib/database/schema';
-import { eq, sql, desc, asc, and } from 'drizzle-orm';
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+// Orphaned content: import {
+
+import type { VectorStore } from '@langchain/core/vectorstores';
+// Orphaned content: // Import our database service for persistent storage
+import { db
+import {
+searchIndex, type NewSearchIndex } from "$lib/database/schema";
+// Orphaned content: import { eq, sql, desc, asc, and
 
 // Import sentence transformer for enhanced analysis
 import { legalNLP } from './sentence-transformer.js';
@@ -116,7 +118,7 @@ class NomicEmbeddingService {
     try {
       // Initialize Ollama embeddings with CUDA optimization
       this.embeddings = new OllamaEmbeddings({
-        baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+        baseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
         model: this.config.model,
         requestOptions: {
           numGpu: this.config.enableGpuAcceleration ? 1 : 0,

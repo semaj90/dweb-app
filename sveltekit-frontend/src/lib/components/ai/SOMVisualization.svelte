@@ -4,12 +4,12 @@
   import { createEnhancedIngestionPipeline, type IngestionStats } from '$lib/ai/enhanced-ingestion-pipeline';
 
   interface Props {
-    className?: string;
+    class?: string;
     width?: number;
     height?: number;
   }
 
-  let { className = '', width = 800, height = 600 }: Props = $props();
+  let { class = '', width = 800, height = 600 }: Props = $props();
 
   // SOM system components
   let somRAG: any;

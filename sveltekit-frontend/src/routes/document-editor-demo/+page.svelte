@@ -94,7 +94,7 @@
     documentType={selectedDocumentType}
     title={editorTitle}
     readonly={isReadonly}
-    onsave={handleSave}
+    on:save={handleSave}
     on:aiRequest={handleAIRequest}
     on:citationAdded={handleCitationAdded}
   />

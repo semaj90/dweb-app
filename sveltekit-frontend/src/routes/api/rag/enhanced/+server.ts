@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-import { getVectorStore } from '$lib/server/db';
-import { db, legalDocuments } from '$lib/server/db';
-import { eq  } from "drizzle-orm";
+import { json } from "@sveltejs/kit";
+import { db, legalDocuments } from "$lib/server/db";
+import { eq } from "drizzle-orm";
+import { getVectorStore } from "$lib/ai/langchain-rag";
 
 export async function POST({ request }) {
   try {

@@ -186,7 +186,7 @@
   const userActions = quickActions[currentUserRole];
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
   <!-- Header with System Status -->
@@ -209,7 +209,7 @@
               { id: "monitor", label: "Monitor", icon: "⚡" }
             ] as tab}
               <button
-                on:click={() => activeTab = tab.id}
+                onclick={() => activeTab = tab.id}
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                 class:bg-blue-600={activeTab === tab.id}
                 class:text-white={activeTab === tab.id}
@@ -241,7 +241,7 @@
 
           <!-- Quick Search Button -->
           <button
-            on:click={toggleFindModal}
+            onclick={toggleFindModal}
             class="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-300 text-sm transition-colors"
             title="Search (Ctrl+K)"
           >
@@ -276,7 +276,7 @@
               <div class="grid grid-cols-1 gap-3">
                 {#each userActions as action}
                   <button
-                    on:click={action.action}
+                    onclick={action.action}
                     class="flex items-center gap-3 w-full p-4 bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600 rounded-lg transition-all duration-200 text-left group"
                   >
                     <span class="text-2xl group-hover:scale-110 transition-transform">{action.icon}</span>

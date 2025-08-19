@@ -76,7 +76,7 @@
 			<div class="container mx-auto px-4">
 				<select
 					bind:value={selectedSort}
-					on:change={() => handleSortChange(selectedSort)}
+					onchange={() => handleSortChange(selectedSort)}
 					class="container mx-auto px-4"
 					aria-label="Sort by"
 				>
@@ -91,7 +91,7 @@
 			<button
 				class="container mx-auto px-4"
 				class:active={filtersOpen}
-				on:click={() => toggleFilters()}
+				onclick={() => toggleFilters()}
 				aria-label="Toggle filters"
 				title="Filters"
 			>
@@ -112,7 +112,7 @@
 						type="checkbox" 
 						value="image" 
 						checked={selectedFileTypes.includes('image')}
-						on:change={handleFileTypeChange}
+						onchange={handleFileTypeChange}
 					/>
 					Images
 				</label>
@@ -121,7 +121,7 @@
 						type="checkbox" 
 						value="document" 
 						checked={selectedFileTypes.includes('document')}
-						on:change={handleFileTypeChange}
+						onchange={handleFileTypeChange}
 					/>
 					Documents
 				</label>
@@ -130,7 +130,7 @@
 						type="checkbox" 
 						value="video" 
 						checked={selectedFileTypes.includes('video')}
-						on:change={handleFileTypeChange}
+						onchange={handleFileTypeChange}
 					/>
 					Videos
 				</label>
@@ -139,7 +139,7 @@
 						type="checkbox" 
 						value="audio" 
 						checked={selectedFileTypes.includes('audio')}
-						on:change={handleFileTypeChange}
+						onchange={handleFileTypeChange}
 					/>
 					Audio
 				</label>
@@ -154,7 +154,7 @@
 					class="container mx-auto px-4" 
 					aria-label="From date"
 					bind:value={dateRange.from}
-					on:change={handleDateChange}
+					onchange={handleDateChange}
 				/>
 				<span>to</span>
 				<input 
@@ -162,7 +162,7 @@
 					class="container mx-auto px-4" 
 					aria-label="To date"
 					bind:value={dateRange.to}
-					on:change={handleDateChange}
+					onchange={handleDateChange}
 				/>
 			</div>
 		</div>
@@ -171,7 +171,7 @@
 			<button 
 				type="button" 
 				class="container mx-auto px-4"
-				on:click={() => {
+				onclick={() => {
 					selectedFileTypes = [];
 					dateRange = { from: '', to: '' };
 					dispatchFilters();

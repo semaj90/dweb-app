@@ -1,7 +1,8 @@
+import * as pdfjsLib from "pdfjs-dist";
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { createWorker } from 'tesseract.js';
-import * as pdfjsLib from 'pdfjs-dist';
+// Orphaned content: import type { RequestHandler
+import {
+createWorker } from "tesseract.js";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

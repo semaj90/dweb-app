@@ -2,18 +2,8 @@
 // Enhanced Neo4j Path Context Reranker for Legal AI
 // Provides 95% accuracy search with boolean pattern matching and audit trails
 
-import { QdrantService } from "./qdrant-service";
-import { createSOMRAGSystem, type DocumentEmbedding } from "./som-rag-system";
-
-export interface Neo4jPathContext {
-  document_id: string;
-  case_id: string;
-  evidence_chain: string[];
-  legal_precedents: string[];
-  entity_relationships: EntityRelationship[];
-  confidence_scores: ConfidenceScores;
-  audit_trail: AuditEntry[];
-}
+import { QdrantService } from "./qdrant-service.js";
+import { createSOMRAGSystem, type DocumentEmbedding, , export interface Neo4jPathContext {,   document_id: string;,   case_id: string;,   evidence_chain: string[];,   legal_precedents: string[];,   entity_relationships: EntityRelationship[];,   confidence_scores: ConfidenceScores;,   audit_trail: AuditEntry[]; } from
 
 export interface EntityRelationship {
   source_entity: string;
@@ -64,10 +54,10 @@ export interface RerankingResult {
 
 export class EnhancedNeo4jReranker {
   private qdrantService = new QdrantService({
-    url: process.env.QDRANT_URL || "http://localhost:6333",
+    url: import.meta.env.QDRANT_URL || "http://localhost:6333",
     collectionName: "legal_documents",
     vectorSize: 768,
-    apiKey: process.env.QDRANT_API_KEY
+    apiKey: import.meta.env.QDRANT_API_KEY
   });
   private somRAG = createSOMRAGSystem();
   private config: EnhancedRerankerConfig;

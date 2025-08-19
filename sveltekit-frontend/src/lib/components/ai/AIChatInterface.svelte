@@ -23,16 +23,29 @@
 	}
 
 	// Props
-	export let visible = false;
-	export let minimized = false;
-	export let draggable = true;
-	export let width = 400;
-	export let height = 600;
-	export let apiEndpoint = 'http://localhost:11434/api/generate';
-	export let fallbackEndpoint = 'http://localhost:8000/v1/chat/completions';
-	export let modelName = 'gemma3-legal:latest';
-	export let title = 'YoRHa Legal AI';
-	export let subtitle = 'Powered by Gemma3';
+	let {
+		visible = $bindable(false),
+		minimized = $bindable(false),
+		draggable = true,
+		width = 400,
+		height = 600,
+		apiEndpoint = 'http://localhost:11434/api/generate',
+		fallbackEndpoint = 'http://localhost:8000/v1/chat/completions',
+		modelName = 'gemma3-legal:latest',
+		title = 'YoRHa Legal AI',
+		subtitle = 'Powered by Gemma3'
+	}: {
+		visible?: boolean;
+		minimized?: boolean;
+		draggable?: boolean;
+		width?: number;
+		height?: number;
+		apiEndpoint?: string;
+		fallbackEndpoint?: string;
+		modelName?: string;
+		title?: string;
+		subtitle?: string;
+	} = $props();
 
 	// State
 	let messages: Message[] = [];
@@ -377,7 +390,7 @@ How can I assist you with your legal needs today?`);
 		<!-- Header -->
 		<header
 			class="flex items-center justify-between p-4 bg-gradient-to-r from-yorha-bg-tertiary to-yorha-bg-secondary border-b border-yorha-border cursor-move select-none relative"
-			on:mousedown={startDrag}
+			onmousedown={startDrag}
 			role="banner"
 		>
 			<!-- Scan line effect -->
@@ -418,7 +431,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
-					on:click={toggleSettings}
+					onclick={toggleSettings}
 					aria-label="{settingsOpen ? 'Close settings' : 'Open settings'}"
 					aria-expanded={settingsOpen}
 				>
@@ -432,7 +445,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-yorha-primary hover:text-yorha-primary focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
-					on:click={minimizeWindow}
+					onclick={minimizeWindow}
 					aria-label={minimized ? 'Restore window' : 'Minimize window'}
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -448,7 +461,7 @@ How can I assist you with your legal needs today?`);
 				<button
 					type="button"
 					class="w-8 h-8 flex items-center justify-center border border-yorha-border text-yorha-text-secondary hover:border-red-500 hover:text-red-500 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-colors"
-					on:click={closeWindow}
+					onclick={closeWindow}
 					aria-label="Close chat window"
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -486,10 +499,10 @@ How can I assist you with your legal needs today?`);
 
 						<!-- Buttons -->
 						<div class="flex space-x-2">
-							<button type="button" on:click={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
+							<button type="button" onclick={updateSettings} class="flex-1 bg-yorha-primary text-yorha-bg-primary text-xs p-2 hover:bg-yorha-secondary transition-colors">
 								Apply
 							</button>
-							<button type="button" on:click={clearChat} class="flex-1 bg-yorha-error text-white text-xs p-2 hover:bg-red-600 transition-colors">
+							<button type="button" onclick={clearChat} class="flex-1 bg-yorha-error text-white text-xs p-2 hover:bg-red-600 transition-colors">
 								Clear
 							</button>
 						</div>
@@ -519,7 +532,7 @@ How can I assist you with your legal needs today?`);
 
 							{#if message.error}
 								<div class="mt-2 text-xs text-red-400" role="alert">
-									Failed to get response. <button on:click={sendMessage} class="underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-red-400/50" aria-label="Retry sending message">Retry</button>
+									Failed to get response. <button onclick={sendMessage} class="underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-red-400/50" aria-label="Retry sending message">Retry</button>
 								</div>
 							{/if}
 
@@ -549,12 +562,12 @@ How can I assist you with your legal needs today?`);
 
 			<!-- Input Area -->
 			<footer class="border-t border-yorha-border bg-yorha-bg-secondary p-4">
-				<form class="flex space-x-3" on:submit|preventDefault={sendMessage} role="search" aria-label="Send message to AI">
+				<form class="flex space-x-3" onsubmit|preventDefault={sendMessage} role="search" aria-label="Send message to AI">
 					<textarea
 						bind:this={inputElement}
 						bind:value={inputValue}
-						on:keydown={handleKeyDown}
-						on:input={autoResize}
+						onkeydown={handleKeyDown}
+						oninput={autoResize}
 						placeholder="Ask me about contracts, liability, compliance, or any legal question..."
 						class="flex-1 bg-yorha-bg-tertiary border border-yorha-border text-yorha-text-primary placeholder-yorha-text-muted p-3 text-sm resize-none focus:border-yorha-primary focus:outline-none focus:ring-2 focus:ring-yorha-primary/50 transition-colors"
 						rows="1"

@@ -13,8 +13,9 @@ import {
   uuid,
   real,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
-import { users, cases } from "./schema-postgres";
+// Orphaned content: import { relations
+import {
+users, cases } from "./schema-postgres";
 
 // === REPORTS & DOCUMENTS ===
 export const reports = pgTable("reports", {

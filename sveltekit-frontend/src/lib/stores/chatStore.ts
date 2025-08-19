@@ -5,12 +5,12 @@
  */
 
 import { writable, derived, readonly } from "svelte/store";
+// Orphaned content: crypto from "crypto";
 import type {
   ChatMessage,
   Conversation,
   ChatSettings,
   ServiceStatus,
-} from "./types";
 
 // === CHAT STATE INTERFACE ===
 export interface ChatContext {

@@ -5,8 +5,8 @@
  * Features: Connection pooling, request batching, memory management, GPU optimization
  */
 
-import { writable, type Writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { writable, type Writable } from "svelte/store";
+// Orphaned content: import {
 
 export interface PerformanceMetrics {
   memory: {

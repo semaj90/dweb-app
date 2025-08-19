@@ -1,13 +1,15 @@
+import crypto from "crypto";
 // ================================================================================
 // XSTATE INTEGRATION WITH SVELTE 5 & GPU WORKER
 // ================================================================================
 // State Machines • GPU Threading • WebSocket • Service Worker Integration
 // ================================================================================
 
-import { createMachine, assign, interpret, spawn } from 'xstate';
-import { useMachine } from '@xstate/svelte';
-import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
+import { createMachine, assign, interpret, spawn } from "xstate";
+// Orphaned content: import {
+
+import { writable, derived, get } from "svelte/store";
+// Orphaned content: import {
 
 // ============================================================================
 // GPU SERVICE WORKER INTEGRATION
@@ -881,8 +883,8 @@ function handleWebSocketMessage(message) {
 
 /*
 <script>
-    import { useLegalAI, createWebSocketService } from '$lib/stores/legal-ai-machine.js';
-    import { useMachine } from '@xstate/svelte';
+import { useLegalAI, createWebSocketService } from '$lib/stores/legal-ai-machine.js';
+// Orphaned content: import { useMachine
     
     // Initialize the main legal AI machine
     const {

@@ -4,12 +4,14 @@
  * Coordinates multiple AI agents with Context7 MCP integration and auto-fix capabilities
  */
 
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { claudeAgent } from '../../../../../agents/claude-agent.js';
-import { autoGenAgent } from '../../../../../agents/autogen-agent.js'; 
-import { crewAIAgent } from '../../../../../agents/crewai-agent.js';
-import { enhancedRAGService } from '../../../../../rag/enhanced-rag-service.js';
-import { context7Service } from '$lib/services/context7Service.js';
+import { json, type RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+
+import { autoGenAgent } from "../../../../../agents/autogen-agent.js";
+// Orphaned content: import {
+
+import { enhancedRAGService } from "../../../../../rag/enhanced-rag-service.js";
+// Orphaned content: import {
 
 export interface AgentOrchestrationRequest {
   prompt: string;

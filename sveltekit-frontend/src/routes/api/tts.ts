@@ -2,6 +2,7 @@
 // SvelteKit endpoint: /api/tts
 // Proxies text to a Coqui TTS HTTP server and returns audio (WAV)
 import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
 
 // Set this to your Coqui TTS server URL
 const COQUI_TTS_URL = "http://localhost:5002/api/tts";

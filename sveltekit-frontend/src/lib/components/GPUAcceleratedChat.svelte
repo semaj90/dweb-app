@@ -536,7 +536,7 @@ Type your legal question or upload a document to begin!`,
       </label>
       
       <label class="file-upload">
-        <input type="file" on:change={handleFileUpload} accept=".pdf,.txt,.doc,.docx" />
+        <input type="file" onchange={handleFileUpload} accept=".pdf,.txt,.doc,.docx" />
         <span>📎 Upload Document</span>
       </label>
       
@@ -650,7 +650,7 @@ Type your legal question or upload a document to begin!`,
   <div class="input-container">
     <textarea
       bind:value={inputMessage}
-      on:keypress={handleKeyPress}
+      onkeypress={handleKeyPress}
       placeholder={batchMode ? "Type message (Shift+Enter to add to batch)..." : "Type your legal question..."}
       class="message-input"
       rows="3"

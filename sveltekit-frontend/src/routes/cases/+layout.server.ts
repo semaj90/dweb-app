@@ -1,9 +1,12 @@
 // @ts-nocheck
 import { db } from "$lib/server/db/index";
-import { cases } from "$lib/server/db/unified-schema";
+// Orphaned content: import {
+
 import { redirect } from "@sveltejs/kit";
-import { and, count, desc, eq, like, or } from "drizzle-orm";
-import type { LayoutServerLoad } from "./$types";
+// Orphaned content: import {
+and, count, desc, eq, like, or
+import type { LayoutServerLoad } from "./$types.js";
+// Orphaned content: import {
 
 // This runs for /cases and all its sub-pages
 // Perfect for loading persistent 3-column layout data

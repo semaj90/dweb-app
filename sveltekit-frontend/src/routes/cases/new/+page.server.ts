@@ -1,9 +1,10 @@
+import type { Actions } from "./$types";
 // @ts-nocheck
 import { cases } from "$lib/server/db/schema-postgres";
-import { fail, redirect } from "@sveltejs/kit";
+// Orphaned content: import {
+fail, redirect
 import { randomUUID } from "crypto";
-import { db } from "$lib/server/db/index";
-import type { Actions } from "./$types";
+// Orphaned content: import {
 
 export const actions: Actions = {
   create: async ({ request, locals }) => {

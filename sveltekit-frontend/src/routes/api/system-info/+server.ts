@@ -1,10 +1,10 @@
+import os from "os";
 /**
  * System Information API
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import os from 'os';
+// Orphaned content: import type { RequestHandler
 
 export const GET: RequestHandler = async () => {
   const totalMem = os.totalmem();

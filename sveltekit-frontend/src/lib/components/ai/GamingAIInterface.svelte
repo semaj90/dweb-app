@@ -292,7 +292,7 @@ let isTyping = $state(false);
   bind:isVisible={isVisible}
   bind:aiMode={aiMode}
   {isConnected}
-  ontoggle={toggleInterface}
+  on:toggle={toggleInterface}
   on:settingsClick={() => terminalMode = !terminalMode}
 />
 

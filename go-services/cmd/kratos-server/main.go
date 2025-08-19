@@ -2,96 +2,73 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"legal-ai-services/internal/conf"
-	"legal-ai-services/internal/data"
-	"legal-ai-services/internal/biz"
-	"legal-ai-services/internal/service"
-	"legal-ai-services/internal/server"
-)
+	kratoslog "github.com/go-kratos/kratos/v2/log"
 
-// Version information
-var (
-	Name     = "legal-ai-kratos"
-	Version  = "v1.0.0-placeholder"
-	ID       = "legal-ai-001"
+	"legal-ai-services/internal/conf"
+	"legal-ai-services/internal/server"
+	"legal-ai-services/internal/service"
 )
 
 func main() {
-	fmt.Printf("[%s] Starting Legal AI Kratos Server %s\n", Name, Version)
+	// Initialize logger
+	logger := kratoslog.NewStdLogger(os.Stdout)
 	
-	// Load configuration
-	config, err := conf.LoadConfig()
-	if err != nil {
-		log.Fatalf("Failed to load configuration: %v", err)
+	log.Printf("Starting Legal AI Services...")
+	
+	// Initialize configuration with defaults
+	config := &conf.Server{
+		Grpc: &conf.GRPC{
+			Network: "tcp",
+			Addr:    "0.0.0.0:8080",
+			EnableTls: false,
+		},
 	}
-	
-	fmt.Printf("[%s] Configuration loaded for environment: %s\n", Name, config.Server.Environment)
-	
-	// Initialize data layer
-	dataLayer := data.NewDataLayer(
-		config.Database.PostgresURL,
-		config.Vector.QdrantURL,
-		config.Cache.RedisURL,
-	)
-	
-	if err := dataLayer.Initialize(); err != nil {
-		log.Fatalf("Failed to initialize data layer: %v", err)
-	}
-	
-	// Initialize repositories
-	docRepo := data.NewDocumentRepository(dataLayer)
-	vectorRepo := data.NewVectorRepository(dataLayer)
-	
-	// Initialize business logic
-	businessLogic := biz.NewBusinessLogic(docRepo, vectorRepo)
 	
 	// Initialize services
-	legalService := service.NewLegalAIService()
+	legalSvc := service.NewLegalService(logger)
+	vectorSvc := service.NewVectorService(logger)
 	
-	// Initialize server manager
-	serverManager := server.NewServerManager()
+	// Create gRPC server
+	grpcServer := server.NewGRPCServer(config, legalSvc, vectorSvc, logger)
 	
-	// Start servers (placeholder implementation)
-	if err := serverManager.Start(); err != nil {
-		log.Fatalf("Failed to start servers: %v", err)
+	// Start server
+	lis, err := net.Listen("tcp", config.Grpc.Addr)
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
 	}
 	
-	fmt.Printf("[%s] Server started successfully\n", Name)
-	fmt.Printf("[%s] HTTP server: http://%s:%d\n", Name, config.Server.Host, config.Server.HTTPPort)
-	fmt.Printf("[%s] gRPC server: %s:%d\n", Name, config.Server.Host, config.Server.GRPCPort)
-	fmt.Printf("[%s] QUIC server: %s:%d\n", Name, config.Server.Host, config.Server.QUICPort)
+	log.Printf("gRPC server starting on %s", config.Grpc.Addr)
+	
+	go func() {
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("Failed to serve gRPC: %v", err)
+		}
+	}()
 	
 	// Wait for shutdown signal
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	
-	select {
-	case sig := <-c:
-		fmt.Printf("[%s] Received signal: %v\n", Name, sig)
-	case <-time.After(1 * time.Hour):
-		fmt.Printf("[%s] Placeholder timeout reached\n", Name)
-	}
+	<-c
+	log.Printf("Shutting down gracefully...")
 	
 	// Graceful shutdown
-	fmt.Printf("[%s] Shutting down gracefully...\n", Name)
-	
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	
-	if err := serverManager.Stop(); err != nil {
-		log.Printf("Error during shutdown: %v", err)
+	grpcServer.GracefulStop()
+	
+	select {
+	case <-ctx.Done():
+		log.Printf("Shutdown timeout exceeded")
+	default:
+		log.Printf("Server stopped")
 	}
-	
-	// Use the business logic to show it's wired (placeholder)
-	_, _ = businessLogic.AnalyzeDocument(ctx, "placeholder document")
-	_, _ = legalService.GetHealth(ctx)
-	
-	fmt.Printf("[%s] Server stopped\n", Name)
 }

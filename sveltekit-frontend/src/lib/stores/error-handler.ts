@@ -1,17 +1,6 @@
 // @ts-nocheck
 import type { User } from "$lib/types/user";
-
-import { writable } from "svelte/store";
-
-export interface ErrorDetails {
-  code?: string;
-  message: string;
-  details?: string;
-  timestamp: Date;
-  context?: Record<string, any>;
-  stack?: string;
-  retry?: () => Promise<void>;
-}
+import { writable, , export interface ErrorDetails {,   code?: string;,   message: string;,   details?: string;,   timestamp: Date;,   context?: Record<string, any>;,   stack?: string;,   retry?: () => Promise<void>; } from
 export interface UserFriendlyError {
   title: string;
   message: string;

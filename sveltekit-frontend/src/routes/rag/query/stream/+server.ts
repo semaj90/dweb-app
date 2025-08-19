@@ -1,3 +1,4 @@
+import stream from "stream";
 // SSE streaming endpoint with streamId + interrupt + optional summary
 import {
   createStream,

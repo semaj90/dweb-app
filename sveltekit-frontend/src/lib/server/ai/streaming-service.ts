@@ -1,15 +1,10 @@
+import { EventEmitter } from "events";
 // @ts-nocheck
 // lib/server/ai/streaming-service.ts
 // Real-time streaming service for AI synthesis with progressive updates
 
 import { logger } from "./logger";
-import { aiAssistantSynthesizer } from './ai-assistant-input-synthesizer';
-import { EventEmitter } from 'events';
-
-interface StreamEvent {
-  type: 'status' | 'progress' | 'stage' | 'source' | 'complete' | 'error' | 'heartbeat';
-  data: any;
-}
+import { aiAssistantSynthesizer, , interface StreamEvent {,   type: 'status' | 'progress' | 'stage' | 'source' | 'complete' | 'error' | 'heartbeat';,   data: any; } from
 
 interface StreamSubscriber {
   callback: (event: StreamEvent) => void;

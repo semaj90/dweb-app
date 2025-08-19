@@ -11,8 +11,8 @@
  */
 
 // Note: nats.ws types - using generic types for compatibility
-// import { connect, StringCodec, JSONCodec } from 'nats.ws';
-// import type { NatsConnection, Subscription, Msg } from 'nats.ws';
+// { connect, StringCodec, JSONCodec } from 'nats.ws';
+// Orphaned content: // import type { NatsConnection, Subscription, Msg
 
 export interface LegalAIMessage {
   type: 'case.created' | 'document.uploaded' | 'ai.analysis.completed' | 'search.query' | 'chat.message' | 'system.health';

@@ -4,8 +4,10 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { unifiedDocumentProcessor, type DocumentProcessingConfig } from '$lib/services/unified-document-processor.js';
+// Orphaned content: import type { RequestHandler
+import {
+unifiedDocumentProcessor, type DocumentProcessingConfig } from "$lib/services/unified-document-processor.js";
+// Orphaned content: import { URL
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

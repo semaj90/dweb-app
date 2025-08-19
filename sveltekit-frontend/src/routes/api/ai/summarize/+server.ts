@@ -1,9 +1,9 @@
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
 
 // AI Summarization endpoint using local Ollama
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
-const DEFAULT_MODEL = process.env.OLLAMA_MODEL || "gemma2:2b";
+const OLLAMA_BASE_URL = import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434";
+const DEFAULT_MODEL = import.meta.env.OLLAMA_MODEL || "gemma2:2b";
 
 export const GET: RequestHandler = async () => {
   try {
@@ -110,7 +110,7 @@ Summary:`;
     return json({
       success: false,
       error: "AI summarization service temporarily unavailable",
-      details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+      details: import.meta.env.NODE_ENV === 'development' ? String(error) : undefined,
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }

@@ -173,7 +173,7 @@
           type="file" 
           multiple 
           accept=".pdf"
-          on:change={handleFileUpload}
+          onchange={handleFileUpload}
           class="block w-full text-sm text-gray-300
                  file:mr-4 file:py-2 file:px-4
                  file:rounded-full file:border-0
@@ -193,7 +193,7 @@
         
         <div class="flex gap-2">
           <Button 
-            on:click={startProcessing} 
+            onclick={startProcessing} 
             disabled={!files || files.length === 0 || isProcessing}
             class="bg-blue-500 hover:bg-blue-600"
           >
@@ -205,7 +205,7 @@
           </Button>
           
           <Button 
-            on:click={reset} 
+            onclick={reset} 
             variant="outline"
             class="border-gray-600 text-gray-300 hover:bg-gray-800"
           >
@@ -214,7 +214,7 @@
           
           {#if evidenceProcessingSelectors.canRetry(state)}
             <Button 
-              on:click={retry}
+              onclick={retry}
               variant="outline" 
               class="border-yellow-600 text-yellow-300 hover:bg-yellow-800"
             >

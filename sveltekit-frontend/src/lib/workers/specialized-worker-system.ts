@@ -5,8 +5,9 @@
  * Jobs: SUMMARIZE_DOCUMENT, GET_CASE_LAW, GENERATE_EMBEDDING
  */
 
-import amqp from 'amqplib';
-import { EventEmitter } from 'events';
+amqp from "amqplib";
+// Orphaned content: import {
+
 import type { RAGDocument } from '$lib/types/rag.js';
 
 export interface SpecializedJob {

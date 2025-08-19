@@ -4,10 +4,12 @@ import {
   canvasStates,
   reports,
 } from "$lib/server/db/schema-postgres";
-import type { RequestEvent } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+type { RequestEvent }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { and, desc, eq, like, or, sql
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { URL
 
 export async function GET({ url, locals }: RequestEvent) {
   try {

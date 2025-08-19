@@ -1,26 +1,15 @@
+import { eq, sql, desc, and, or  } from "drizzle-orm";
 // Comprehensive Integration API - Full System Integration
 // Combines database orchestrator, Context7 MCP, event loops, and fetch operations
 
-import { json, type RequestHandler } from '@sveltejs/kit';
-import {
-  databaseOrchestrator,
+import { json, type RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+databaseOrchestrator,
   synthesizeEvidence,
   performLegalResearch,
   optimizeSystem,
-} from '$lib/services/comprehensive-database-orchestrator';
-import { db } from '$lib/server/db/drizzle';
-import { cases, evidence, legalDocuments, personsOfInterest } from '$lib/server/db/schema-postgres';
-import { eq, sql, desc, and, or  } from "drizzle-orm";
-
-// Full system integration endpoints
-const INTEGRATION_ENDPOINTS = {
-  ollama: 'http://localhost:11434',
-  enhanced_rag: 'http://localhost:8094',
-  upload_service: 'http://localhost:8093',
-  recommendation_service: 'http://localhost:8096',
-  mcp_wrapper: 'http://localhost:4000',
-  mcp_legal: 'http://localhost:4001',
-};
+import { db } from "$lib/server/db/drizzle";
+import { cases, evidence, legalDocuments, personsOfInterest, , // Full system integration endpoints, const INTEGRATION_ENDPOINTS = {,   ollama: 'http://localhost:11434',,   enhanced_rag: 'http://localhost:8094',,   upload_service: 'http://localhost:8093',,   recommendation_service: 'http://localhost:8096',,   mcp_wrapper: 'http://localhost:4000',,   mcp_legal: 'http://localhost:4001', } from
 
 // GET /api/comprehensive-integration - System overview
 export const GET: RequestHandler = async () => {

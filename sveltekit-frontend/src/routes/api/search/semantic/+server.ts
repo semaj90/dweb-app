@@ -5,24 +5,28 @@
  */
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { LegalDocumentSOM } from "$lib/services/som-clustering";
-import { LegalKMeansClusterer } from "$lib/services/kmeans-clustering";
-import { Redis } from "ioredis";
-import { QdrantClient } from "@qdrant/js-client-rest";
-import { db } from "$lib/server/db";
-import { legalDocuments as documents } from "$lib/server/db/schema-postgres";
-import { sql, desc, and, eq } from "drizzle-orm";
-import type { DocumentCluster } from "$lib/api/enhanced-rest-architecture";
+// Orphaned content: import type { RequestHandler
+import {
+LegalDocumentSOM } from "$lib/services/som-clustering";
+// Orphaned content: import { LegalKMeansClusterer
+import {
+Redis } from "ioredis";
+// Orphaned content: import { QdrantClient
+import {
+db } from "$lib/server/db";
+// Orphaned content: import { legalDocuments as documents
+import {
+sql, desc, and, eq } from "drizzle-orm";
+// Orphaned content: import type { DocumentCluster
 
 // Initialize connections
 const redis = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
+  host: import.meta.env.REDIS_HOST || "localhost",
+  port: parseInt(import.meta.env.REDIS_PORT || "6379"),
 });
 
 const qdrant = new QdrantClient({
-  url: process.env.QDRANT_URL || "http://localhost:6333",
+  url: import.meta.env.QDRANT_URL || "http://localhost:6333",
 });
 
 // Gemma3 embedding service

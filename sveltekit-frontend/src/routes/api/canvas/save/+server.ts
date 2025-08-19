@@ -1,7 +1,9 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { loki } from "$lib/stores/lokiStore";
+// Orphaned content: import type { RequestHandler
+import {
+loki } from "$lib/stores/lokiStore";
+// Orphaned content: import { URL
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {

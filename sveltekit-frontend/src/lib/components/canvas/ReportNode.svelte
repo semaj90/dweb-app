@@ -94,12 +94,12 @@ let dragStartY = 0;
   <ContextMenu.Content menu={true}>
     <ContextMenu.Item
     <ContextMenu.Item
-      onselect={() => saveCitation(window.getSelection()?.toString() || "")}
+      on:select={() => saveCitation(window.getSelection()?.toString() || "")}
     >
       <Link class="space-y-4" />
       Save as Citation
     </ContextMenu.Item>
-    <ContextMenu.Item onselect={summarizeReport}>
+    <ContextMenu.Item on:select={summarizeReport}>
       <Sparkles class="space-y-4" />
       AI Summary
     </ContextMenu.Item>

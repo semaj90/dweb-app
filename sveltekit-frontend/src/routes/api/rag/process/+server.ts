@@ -1,17 +1,20 @@
+import pdf from "pdf-parse";
 /**
  * RAG Process API - Native Windows file processing pipeline
  * Integrates with local file storage, PostgreSQL vectors, Qdrant, and OCR
  */
-import { db, documents, embeddings } from '$lib/server/database';
-import { json } from '@sveltejs/kit';
-import { v4 as uuidv4 } from 'uuid';
-import { writeFile, mkdir } from 'fs/promises';
+import { db, documents, embeddings } from "$lib/server/database";
+// Orphaned content: import {
+
+import { v4 as uuidv4 } from "uuid";
+// Orphaned content: import {
+writeFile, mkdir
 import { existsSync } from 'fs';
-import path from 'path';
-import pdf from 'pdf-parse';
-import { ollamaService } from '$lib/services/ollamaService';
+// Orphaned content: import path from 'path';
+import {
+
 import { qdrantService } from '$lib/services/qdrantService';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
 
 // Local file storage setup
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads', 'documents');
@@ -45,7 +48,7 @@ async function ocrWithTesseract(filePath: string): Promise<string> {
     // createWorker may return a Promise or a worker directly depending on version
     const worker: any = await createWorker({
       logger: (m: any) => {
-        if (process.env.MCP_DEBUG === 'true') console.log('TESSERACT:', m);
+        if (import.meta.env.MCP_DEBUG === 'true') console.log('TESSERACT:', m);
       }
     });
 
@@ -143,8 +146,8 @@ async function generateEmbeddings(content: string, documentId: string): Promise<
     const result = await response.json();
     let embeddingArray: number[] = result.embedding || result.embeddings;
     if (!Array.isArray(embeddingArray)) throw new Error('Embedding response malformed');
-    const TARGET_DB_DIM = parseInt(process.env.EMBEDDING_DIM || '768', 10);
-    const TARGET_QDRANT_DIM = parseInt(process.env.VECTOR_DIM || process.env.EMBEDDING_DIM || '768', 10);
+    const TARGET_DB_DIM = parseInt(import.meta.env.EMBEDDING_DIM || '768', 10);
+    const TARGET_QDRANT_DIM = parseInt(import.meta.env.VECTOR_DIM || import.meta.env.EMBEDDING_DIM || '768', 10);
     if (embeddingArray.length !== TARGET_DB_DIM) {
       if (embeddingArray.length > TARGET_DB_DIM) embeddingArray = embeddingArray.slice(0, TARGET_DB_DIM);
       else if (embeddingArray.length < TARGET_DB_DIM) embeddingArray = embeddingArray.concat(Array(TARGET_DB_DIM - embeddingArray.length).fill(0));

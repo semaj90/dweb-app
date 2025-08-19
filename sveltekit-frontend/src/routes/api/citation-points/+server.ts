@@ -1,11 +1,14 @@
+import { URL } from "url";
 // @ts-nocheck
 import { reports } from "$lib/server/db/schema";
-import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { db } from "$lib/server/db/index";
-// TODO: Implement citationPoints table in schema
-// import { citationPoints } from "$lib/server/db/schema";
+// Orphaned content: // TODO: Implement citationPoints table in schema
+// import { citationPoints
 import type { RequestHandler } from "@sveltejs/kit";
-import { and, eq } from "drizzle-orm";
+// Orphaned content: import {
+and, eq
 
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test';
+import { URL } from "url";
 
 test.describe('Service Worker Functionality', () => {
   test('should register service worker successfully', async ({ page }) => {

@@ -1170,7 +1170,7 @@
       "args": [
       "-NoProfile",
       "-Command",
-      "cd go-services; go mod tidy; go build -o ./bin/kratos-server.exe ./cmd/kratos-server; Start-Process -NoNewWindow -FilePath './bin/kratos-server.exe'"
+      "cd go-services; go mod tidy; go build -o ./bin/kratos-server.exe ./cmd/kratos-server; Start-Process -NoNewWindow -FilePath '.\\bin\\kratos-server.exe'"
       ],
       "group": "build",
       "presentation": { "reveal": "always", "panel": "new" },

@@ -1,11 +1,13 @@
 // @ts-nocheck
 import { users } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
-import { join } from "path";
-import { db } from "$lib/server/db/index";
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq
+import {
+existsSync, mkdirSync, writeFileSync } from "fs";
+// Orphaned content: import { join
+import {
+db } from "$lib/server/db/index";
 
 const UPLOAD_DIR = "static/uploads/avatars";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

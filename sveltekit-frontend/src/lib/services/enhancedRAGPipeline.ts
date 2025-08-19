@@ -6,10 +6,12 @@
  */
 
 import { ollamaService } from "./ollamaService";
-import { aiAutoTaggingService } from "./aiAutoTagging";
+// Orphaned content: import {
+
 import { createMachine, assign } from "xstate";
-import Fuse from "fuse.js";
-import { writable, derived } from "svelte/store";
+// Orphaned content: import Fuse from "fuse.js";
+import {
+writable, derived
 
 export interface RAGQueryResult {
   answer: string;

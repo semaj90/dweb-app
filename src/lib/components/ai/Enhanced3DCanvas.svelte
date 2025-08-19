@@ -614,14 +614,14 @@
   <div class="absolute top-4 right-4 flex gap-2">
     <button
       class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
-      on:click={() => canvas3DActor.send({ type: 'RESET_VIEW' })}
+      onclick={() => canvas3DActor.send({ type: 'RESET_VIEW' })}
     >
       Reset View
     </button>
 
     <button
       class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
-      on:click={() => canvas3DActor.send({ type: 'TOGGLE_SOM_OVERLAY' })}
+      onclick={() => canvas3DActor.send({ type: 'TOGGLE_SOM_OVERLAY' })}
     >
       Toggle SOM
     </button>
@@ -719,14 +719,14 @@
   <div class="absolute top-4 right-4 flex gap-2">
     <button
       class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
-      on:click={() => canvas3DActor.send({ type: 'RESET_VIEW' })}
+      onclick={() => canvas3DActor.send({ type: 'RESET_VIEW' })}
     >
       Reset View
     </button>
 
     <button
       class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
-      on:click={() => canvas3DActor.send({ type: 'TOGGLE_SOM_OVERLAY' })}
+      onclick={() => canvas3DActor.send({ type: 'TOGGLE_SOM_OVERLAY' })}
     >
       Toggle SOM
     </button>

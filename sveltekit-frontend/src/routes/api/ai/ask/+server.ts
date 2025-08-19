@@ -1,24 +1,12 @@
 // @ts-nocheck
 // SvelteKit API endpoint for AI RAG system with Gemma3 Local LLM Support
 // Handles "Ask AI" requests with vector search and hybrid LLM integration
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
+import type { RequestHandler }, {
+json } from "@sveltejs/kit";
 // Environment variables fallback
 const env = process.env || {};
 import { ollamaService } from "$lib/services/ollama-service";
-
-// Fallback imports with error handling
-let vectorSearch: any = null;
-let aiService: any = null;
-let cache: any = null;
-let tauriLLM: any = null;
-
-try {
-  const vectorSearchModule = await import(
-    "../../../../lib/server/search/vector-search.js"
-  );
-  vectorSearch = vectorSearchModule.vectorSearch;
-} catch (error) {
+import { URL, , // Fallback imports with error handling, let vectorSearch: any = null;, let aiService: any = null;, let cache: any = null;, let tauriLLM: any = null;, , try {,   const vectorSearchModule = await import(,     "../../../../lib/server/search/vector-search.js",   );,   vectorSearch = vectorSearchModule.vectorSearch; } from
   console.warn("Vector search not available:", error);
   vectorSearch = { search: async () => ({ results: [] }) };
 }

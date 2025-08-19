@@ -388,7 +388,7 @@
       <div class="mx-auto px-4 max-w-7xl">
         <button
           class="mx-auto px-4 max-w-7xl"
-          on:click={() => (error = null)}
+          onclick={() => (error = null)}
         >
           <span class="mx-auto px-4 max-w-7xl">Dismiss</span>
           ✕
@@ -548,7 +548,7 @@
                 <input
                   type="checkbox"
                   checked={selectedEvidence.has(item.id)}
-                  on:change={() => toggleSelection(item.id)}
+                  onchange={() => toggleSelection(item.id)}
                   class="mx-auto px-4 max-w-7xl"
                 />
                 <svelte:component
@@ -669,7 +669,7 @@
               >
                 <input
                   type="checkbox"
-                  on:change={(e) =>
+                  onchange={(e) =>
                     (e.target as HTMLInputElement).checked
                       ? selectAll()
                       : clearSelection()}
@@ -706,7 +706,7 @@
                   <input
                     type="checkbox"
                     checked={selectedEvidence.has(item.id)}
-                    on:change={() => toggleSelection(item.id)}
+                    onchange={() => toggleSelection(item.id)}
                     class="mx-auto px-4 max-w-7xl"
                   />
                 </td>
@@ -802,7 +802,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage >= totalPages - 1}
-            on:click={() => currentPage++}
+            onclick={() => currentPage++}
           >
             Next
           </Button>

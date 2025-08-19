@@ -3,7 +3,7 @@
  * Generates contextual suggestions based on case data and workflow
  */
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

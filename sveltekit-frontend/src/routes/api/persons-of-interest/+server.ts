@@ -1,8 +1,10 @@
+import { URL } from "url";
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db/drizzle';
-import { personsOfInterest } from '$lib/server/db/schema-postgres';
-import { eq  } from "drizzle-orm";
+import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
+import { personsOfInterest } from "$lib/server/db/schema-postgres";
+// Orphaned content: import {
 
 export async function GET({ url }) {
   try {

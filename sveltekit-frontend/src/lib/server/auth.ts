@@ -1,8 +1,9 @@
-import { dev } from "$app/environment";
-import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
-import { Lucia } from "lucia";
-import { db } from "./db/index";
 import { sessions, users } from "./db/schema-postgres";
+import { dev } from "$app/environment";
+// Orphaned content: import {
+
+import { Lucia } from "lucia";
+// Orphaned content: import {
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 

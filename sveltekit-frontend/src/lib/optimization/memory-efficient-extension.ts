@@ -4,19 +4,8 @@
  * Optimized for 70GB dev environment with advanced caching and resource management
  */
 
-import { EventEmitter } from 'events';
-import { performance } from 'perf_hooks';
-
-// === Memory-Efficient Cache with Self-Organizing Map ===
-interface CacheNode<T> {
-  key: string;
-  value: T;
-  timestamp: number;
-  accessCount: number;
-  size: number;
-  priority: number;
-  som_cluster?: number; // Self-organizing map cluster ID
-}
+import { EventEmitter } from "events";
+import { performance, , // === Memory-Efficient Cache with Self-Organizing Map ===, interface CacheNode<T> {,   key: string;,   value: T;,   timestamp: number;,   accessCount: number;,   size: number;,   priority: number;,   som_cluster?: number; // Self-organizing map cluster ID } from
 
 class SelfOrganizingCache<T> extends EventEmitter {
   private cache = new Map<string, CacheNode<T>>();

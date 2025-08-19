@@ -4,13 +4,23 @@
   import { createEventDispatcher, onMount } from "svelte";
 
   // Props
-  export let placeholder = "Type your message...";
-  export let disabled = false;
-  export let autoFocus = false;
-  export let value = "";
-  export let maxLength = 2000;
-  export let rows = 1;
-  export let maxRows = 6;
+  let { 
+    placeholder = "Type your message...",
+    disabled = false,
+    autoFocus = false,
+    value = $bindable(""),
+    maxLength = 2000,
+    rows = 1,
+    maxRows = 6
+  }: {
+    placeholder?: string;
+    disabled?: boolean;
+    autoFocus?: boolean;
+    value?: string;
+    maxLength?: number;
+    rows?: number;
+    maxRows?: number;
+  } = $props();
 
   // Event dispatcher
   const dispatch = createEventDispatcher();
@@ -114,10 +124,10 @@
       class:near-limit={isNearLimit}
       class:at-limit={isAtLimit}
       rows={rows}
-      on:input={handleInput}
-      on:keydown={handleKeydown}
-      on:focus={handleFocus}
-      on:blur={handleBlur}
+      oninput={handleInput}
+      onkeydown={handleKeydown}
+      onfocus={handleFocus}
+      onblur={handleBlur}
       aria-label="Chat message input"
       spellcheck="true"
     ></textarea>
@@ -138,7 +148,7 @@
         class="send-button"
         disabled={disabled}
         class:has-content={value.trim().length > 0}
-        on:click={() => handleSend()}
+        onclick={() => handleSend()}
         title="Send message (Enter)"
         aria-label="Send message"
       >
@@ -300,28 +310,29 @@
     .input-container {
       background: var(--bg-primary, #0f172a);
       border-color: var(--border-color, #334155);
-}
+    }
     .chat-input {
       color: var(--text-primary, #f8fafc);
-}
+    }
     .send-button {
       background: var(--bg-muted, #334155);
       color: var(--text-muted, #94a3b8);
-}
+    }
     .send-button:hover:not(:disabled) {
       background: var(--bg-hover, #475569);
       color: var(--text-primary, #f8fafc);
-}
+    }
     .hint-text kbd {
       background: var(--bg-secondary, #1e293b);
       border-color: var(--border-color, #475569);
       color: var(--text-secondary, #94a3b8);
-}}
+    }
+  }
   /* Responsive design */
   @media (max-width: 768px) {
     .input-container {
       padding: 8px;
-}
+    }
     .send-button {
       width: 32px;
       height: 32px;
@@ -329,5 +340,6 @@
     .send-button svg {
       width: 16px;
       height: 16px;
-}}
+    }
+  }
 </style>

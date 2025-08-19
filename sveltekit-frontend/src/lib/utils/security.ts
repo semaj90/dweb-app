@@ -1,22 +1,13 @@
 // @ts-nocheck
 import type { User } from "$lib/types/user";
-
-/**
+// Orphaned content: /**
  * Security utilities for the Detective Mode app
  * Provides authentication, authorization, data protection, and security monitoring
  */
 
-import { browser } from "$app/environment";
-
-// Security configuration
-export interface SecurityConfig {
-  maxFileSize: number;
-  allowedFileTypes: string[];
-  sessionTimeout: number;
-  maxLoginAttempts: number;
-  passwordMinLength: number;
-  requireMFA: boolean;
-}
+import { browser
+crypto from "crypto";
+import { EventEmitter, , // Security configuration, export interface SecurityConfig {,   maxFileSize: number;,   allowedFileTypes: string[];,   sessionTimeout: number;,   maxLoginAttempts: number;,   passwordMinLength: number;,   requireMFA: boolean; } from
 export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
   maxFileSize: 50 * 1024 * 1024, // 50MB
   allowedFileTypes: [

@@ -5,10 +5,10 @@
     value: string;
     class?: string;
   }
-  
+
   let {
     value,
-    class: className = '',
+    class: classNameVar = '',
     children
   }: Props & { children?: any } = $props();
 
@@ -16,7 +16,7 @@
 </script>
 
 {#if $activeTab === value}
-  <div class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 {className}">
+  <div class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 {classNameVar}">
     {#if children}
       {@render children()}
     {/if}

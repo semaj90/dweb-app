@@ -383,13 +383,13 @@
       <div class="container mx-auto px-4">
         <button
           class="container mx-auto px-4"
-          on:click={() => (showAiPanel = !showAiPanel)}
+          onclick={() => (showAiPanel = !showAiPanel)}
         >
           AI Assist
         </button>
         <button
           class="container mx-auto px-4"
-          on:click={() => saveReport()}
+          onclick={() => saveReport()}
           disabled={!isDirty || isLoading}
         >
           Save
@@ -405,21 +405,21 @@
       <div class="container mx-auto px-4">
         <button
           type="button"
-          on:click={() => formatText("bold")}
+          onclick={() => formatText("bold")}
           title="Bold (Ctrl+B)"
         >
           <strong>B</strong>
         </button>
         <button
           type="button"
-          on:click={() => formatText("italic")}
+          onclick={() => formatText("italic")}
           title="Italic (Ctrl+I)"
         >
           <em>I</em>
         </button>
         <button
           type="button"
-          on:click={() => formatText("underline")}
+          onclick={() => formatText("underline")}
           title="Underline (Ctrl+U)"
         >
           <u>U</u>
@@ -427,7 +427,7 @@
         <div class="container mx-auto px-4"></div>
         <button
           type="button"
-          on:click={() => insertCitationPrompt()}
+          onclick={() => insertCitationPrompt()}
           title="Insert Citation (Ctrl+K)"
         >
           📎 Citation
@@ -439,7 +439,7 @@
     <div
       bind:this={editorElement}
       class="container mx-auto px-4"
-      class:read-only={readOnly}
+      class:read-on:ly={readOnly}
       role="textbox"
       aria-multiline="true"
       aria-label="Report content editor"
@@ -456,7 +456,7 @@
       <h3>Citations</h3>
       <button
         class="container mx-auto px-4"
-        on:click={() => (citationSidebar.style.display = "none")}>×</button
+        onclick={() => (citationSidebar.style.display = "none")}>×</button
       >
     </div>
 
@@ -472,7 +472,7 @@
             <div class="container mx-auto px-4">{citation.source}</div>
             <button
               class="container mx-auto px-4"
-              on:click={() => insertCitation(citation)}
+              onclick={() => insertCitation(citation)}
             >
               Add
             </button>
@@ -487,7 +487,7 @@
     <div class="container mx-auto px-4">
       <div class="container mx-auto px-4">
         <h3>AI Suggestions</h3>
-        <button class="container mx-auto px-4" on:click={() => (showAiPanel = false)}
+        <button class="container mx-auto px-4" onclick={() => (showAiPanel = false)}
           >×</button
         >
       </div>
@@ -501,7 +501,7 @@
               <p>{suggestion}</p>
               <button
                 class="container mx-auto px-4"
-                on:click={() => insertAiSuggestion(suggestion)}
+                onclick={() => insertAiSuggestion(suggestion)}
               >
                 Use This
               </button>
@@ -523,7 +523,7 @@
           <span class="container mx-auto px-4">[{citation.source}]</span>
           <button
             class="container mx-auto px-4"
-            on:click={() => removeCitation(citation.id)}>×</button
+            onclick={() => removeCitation(citation.id)}>×</button
           >
         </div>
       {/each}
@@ -700,12 +700,7 @@
     cursor: pointer;
     color: #6b7280;
 }
-  .sidebar-content {
-    padding: 16px;
-    height: calc(100% - 60px);
-    overflow-y: auto;
-}
-  .citation-search input {
+.citation-search input {
     width: 100%;
     padding: 8px 12px;
     border: 1px solid #d1d5db;

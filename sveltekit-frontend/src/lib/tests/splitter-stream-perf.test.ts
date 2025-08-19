@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { EnhancedSentenceSplitter } from '$text/enhanced-sentence-splitter';
+import { describe, it, expect } from "vitest";
+// Orphaned content: import {
 
-const MAX_MS_STREAM_TOTAL = parseFloat(process.env.SPLITTER_MAX_MS_STREAM_TOTAL || '30');
+const MAX_MS_STREAM_TOTAL = parseFloat(import.meta.env.SPLITTER_MAX_MS_STREAM_TOTAL || '30');
 
 function simulateStream(full: string, chunkSize = 48) {
   const splitter = new EnhancedSentenceSplitter();

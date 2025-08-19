@@ -3,12 +3,15 @@
 // Orchestrates legal document analysis with multiple AI agents
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { crewAIOrchestrator, LEGAL_AGENTS, type DocumentReviewTask } from '$lib/ai/crewai-legal-agents';
-import { db } from '$lib/server/database';
-import { documents, cases } from '$lib/db/schema';
-import { eq } from 'drizzle-orm';
-import crypto from 'crypto';
+// Orphaned content: import type { RequestHandler
+import {
+crewAIOrchestrator, LEGAL_AGENTS, type DocumentReviewTask } from "$lib/ai/crewai-legal-agents";
+// Orphaned content: import { db
+import {
+documents, cases } from "$lib/db/schema";
+// Orphaned content: import { eq
+crypto from "crypto";
+// Orphaned content: import {
 
 // ============================================================================
 // REVIEW ORCHESTRATION

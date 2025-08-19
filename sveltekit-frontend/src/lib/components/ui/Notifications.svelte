@@ -85,7 +85,7 @@
                 <Button
                   size="sm"
                   variant={action.variant || "secondary"}
-                  onclick={() => handleAction(notification, action)}
+                  on:click={() => handleAction(notification, action)}
                 >
                   {action.label}
                 </Button>

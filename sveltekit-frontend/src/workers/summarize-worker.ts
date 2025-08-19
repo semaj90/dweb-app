@@ -1,11 +1,11 @@
 // Minimal RabbitMQ worker that calls the Go SIMD summarize endpoint and writes to Loki cache
 import { connect } from "amqplib";
-import fetch from "node-fetch";
-import { setCache } from "../lib/server/utils/server-cache";
+// Orphaned content: import fetch from "node-fetch";
+import {
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
+const RABBITMQ_URL = import.meta.env.RABBITMQ_URL || "amqp://localhost";
 const QUEUE_NAME = "summarization_tasks";
-const SIMD_URL = process.env.SIMD_URL || "http://localhost:8081";
+const SIMD_URL = import.meta.env.SIMD_URL || "http://localhost:8081";
 
 async function processTask(msg: { content: Buffer } | null) {
   if (!msg) return;

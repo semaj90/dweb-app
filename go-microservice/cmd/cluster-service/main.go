@@ -67,16 +67,20 @@ func main() {
 	// metrics state
 	m := &metrics{StartTime: time.Now().Unix()}
 
-	// available algorithms (CPU by default; GPU stub path logs and uses CPU until enabled)
+	// Detect GPU mode early (actual GPU implementation can be plugged via clustering package later)
+	useGPU := os.Getenv("CLUSTER_MODE") == "gpu"
+	if useGPU {
+		log.Println("[cluster] GPU mode requested — using CPU implementation until GPU backend is available")
+	}
 	algos := map[string]clustering.Algorithm{
 		"kmeans": clustering.KMeansCPU{},
 	}
 
-	if os.Getenv("CLUSTER_MODE") == "gpu" {
-		// No downloads or extra deps here — just acknowledge and keep the same implementation
-		// Swap-in GPU implementation later behind the same interface
-		log.Println("[cluster] GPU mode requested; using CPU implementation until GPU module is enabled")
+	// Already evaluated CLUSTER_MODE; avoid duplicate env checks here.
+	if useGPU {
+		log.Println("[cluster] GPU acceleration placeholder — using CPU implementations for all algorithms")
 	}
+	log.Printf("[cluster] registered algorithms: %v", []string{"kmeans"})
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

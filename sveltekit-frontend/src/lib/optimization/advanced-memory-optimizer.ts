@@ -7,6 +7,7 @@
 import { Worker } from "worker_threads";
 import { SelfOrganizingMapRAG } from "../ai/som-rag-system.js";
 // Docker dependency removed - using native memory optimization
+import crypto from "crypto";
 import {
   SIMDJSONParser,
   type ParsedLegalDocument,

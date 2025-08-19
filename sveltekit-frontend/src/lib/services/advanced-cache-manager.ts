@@ -1,17 +1,6 @@
 // @ts-nocheck
-import { writable, derived, get } from 'svelte/store';
-import { browser } from '$app/environment';
-
-export interface CacheItem<T = any> {
-  data: T;
-  timestamp: number;
-  ttl: number;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  access_count: number;
-  last_accessed: number;
-  tags: string[];
-  size: number;
-}
+import { writable, derived, get } from "svelte/store";
+import { browser, , export interface CacheItem<T = any> {,   data: T;,   timestamp: number;,   ttl: number;,   priority: 'low' | 'medium' | 'high' | 'critical';,   access_count: number;,   last_accessed: number;,   tags: string[];,   size: number; } from
 
 export interface LazyLoadConfig {
   threshold: number;

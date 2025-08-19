@@ -57,7 +57,7 @@
     {#each notificationGroup as notification (notification.id)}
       <YoRHaNotification
         {...notification}
-        onclose={() => removeNotification(notification.id)}
+        on:close={() => removeNotification(notification.id)}
       />
     {/each}
   </div>

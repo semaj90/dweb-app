@@ -125,10 +125,10 @@
           bind:value={searchQuery}
           placeholder="Enter your legal research question..."
           class="flex-1"
-          onkeydown={(e) => e.key === 'Enter' && performSearch()}
+          on:keydown={(e) => e.key === 'Enter' && performSearch()}
         />
         <Button
-          onclick={performSearch}
+          on:click={performSearch}
           disabled={$isAnalyzing || !searchQuery.trim()}
           class="px-6"
         >
@@ -150,7 +150,7 @@
             <Badge
               variant={selectedFilters.includes(filter) ? 'default' : 'outline'}
               class="cursor-pointer hover:bg-blue-100 transition-colors"
-              onclick={() => toggleFilter(filter)}
+              on:click={() => toggleFilter(filter)}
             >
               {filter}
             </Badge>
@@ -167,7 +167,7 @@
               variant="outline"
               size="sm"
               class="text-xs"
-              onclick={() => useSampleQuery(query)}
+              on:click={() => useSampleQuery(query)}
             >
               {query}
             </Button>
@@ -280,7 +280,7 @@
           <CardHeader>
             <div class="flex items-center justify-between">
               <CardTitle class="text-lg">Recent Searches</CardTitle>
-              <Button variant="ghost" size="sm" onclick={clearHistory}>
+              <Button variant="ghost" size="sm" on:click={clearHistory}>
                 Clear
               </Button>
             </div>

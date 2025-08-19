@@ -1,11 +1,12 @@
+import { browser } from "$app/environment";
 // @ts-nocheck
 /**
- * Advanced data export/import utilities for the Detective Mode app
+ * Advanced data export/utilities for the Detective Mode app
  * Provides secure, comprehensive data management with multiple formats
  */
 
-import { browser } from "$app/environment";
-import { logSecurityEvent, secureDataExport } from "./security";
+// Orphaned content: import {
+logSecurityEvent, secureDataExport
 
 // Export/Import types
 export interface ExportOptions {

@@ -18,8 +18,7 @@
   import ThinkingStyleToggle from "./ThinkingStyleToggle.svelte";
   import { ThinkingProcessor } from "$lib/ai/thinking-processor";
 
-  export let height = "500px";
-  export let caseId: string | undefined = undefined;
+  let { height = "500px", caseId = undefined }: { height?: string; caseId?: string | undefined } = $props();
 
   let messageInput = "";
   let messagesContainer: HTMLElement;
@@ -374,7 +373,7 @@
           loading={$isLoading}
           premium={true}
           size="sm"
-          on:toggle={handleThinkingToggle}
+          ontoggle={handleThinkingToggle}
         />
         
         {#if caseId}
@@ -478,8 +477,8 @@
   {#if $showProactivePrompt}
     <div class="mx-auto px-4 max-w-7xl">
       <ProactivePrompt
-        on:accept={handleProactiveResponse}
-        on:dismiss={() => showProactivePrompt.set(false)}
+        onaccept={handleProactiveResponse}
+        ondismiss={() => showProactivePrompt.set(false)}
       />
     </div>
   {/if}

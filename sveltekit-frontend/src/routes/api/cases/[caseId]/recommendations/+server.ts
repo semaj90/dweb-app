@@ -7,11 +7,12 @@ import {
   evidence,
   statutes,
 } from "$lib/server/db/index";
-import { QdrantClient } from "@qdrant/js-client-rest";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq, ilike, sql } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import { QdrantClient
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq, ilike, sql
+import {
+db } from "$lib/server/db/index";
 
 const qdrantClient = new QdrantClient({
   url: env.QDRANT_URL || "http://localhost:6333",

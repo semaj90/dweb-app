@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { caseService } from "$lib/services/caseService";
-import type { PageServerLoad } from "./$types";
+// Orphaned content: import type { PageServerLoad
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user) {

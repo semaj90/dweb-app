@@ -1,15 +1,14 @@
 // @ts-nocheck
 // Embeddings API Endpoint
 // Handles embedding generation and bulk embedding operations
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import {
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import {
   generateBatchEmbeddings,
   generateEmbedding,
-} from "$lib/server/ai/embeddings-simple";
 import { fetchEmbedding } from "$lib/server/qdrant";
-// TODO: Implement syncDocumentEmbeddings function
-// import { syncDocumentEmbeddings } from '$lib/server/ai/embeddings';
+// Orphaned content: // TODO: Implement syncDocumentEmbeddings function
+// import { syncDocumentEmbeddings
 
 // Temporary fallback function
 async function syncDocumentEmbeddings(

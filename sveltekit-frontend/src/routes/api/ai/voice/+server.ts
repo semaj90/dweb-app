@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { SpeechService } from "$lib/services/speech-service";
-import { json } from "@sveltejs/kit";
+// Orphaned content: import {
 
 export async function POST({ request }) {
   const { audio } = await request.json();

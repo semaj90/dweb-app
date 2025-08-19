@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Redis } from "ioredis";
-import type { OCRResult } from "./ocr-processor";
+// Orphaned content: import type { OCRResult
 
 export interface EmbeddingVector {
   id: string;
@@ -55,9 +55,9 @@ export class EnhancedVectorEmbeddingService {
 
   constructor() {
     this.redis = new Redis({
-      host: process.env.REDIS_HOST || "localhost",
-      port: parseInt(process.env.REDIS_PORT || "6379"),
-      password: process.env.REDIS_PASSWORD || undefined,
+      host: import.meta.env.REDIS_HOST || "localhost",
+      port: parseInt(import.meta.env.REDIS_PORT || "6379"),
+      password: import.meta.env.REDIS_PASSWORD || undefined,
       db: 0,
       retryDelayOnFailover: 100,
       maxRetriesPerRequest: 3,

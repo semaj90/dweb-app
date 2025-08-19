@@ -1,3 +1,4 @@
+import stream from "stream";
 import type { RequestHandler } from "@sveltejs/kit";
 
 // Minimal SSE endpoint: emits keepalive and relays posted messages to connected clients

@@ -378,7 +378,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => loadEvidenceFiles()}
+          onclick={() => loadEvidenceFiles()}
           disabled={loading}
           aria-label="Refresh evidence files"
         >
@@ -388,7 +388,7 @@
 
       <Tooltip content="Upload files">
         <Button
-          on:click={() => (showUploadModal = true)}
+          onclick={() => (showUploadModal = true)}
           class="mx-auto px-4 max-w-7xl"
           disabled={!caseId}
         >
@@ -432,7 +432,7 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+          onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
           aria-label="Toggle view mode"
         >
           {#if viewMode === "grid"}
@@ -485,7 +485,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => {
+            onclick={() => {
               selectedFiles.clear();
               selectedFiles = selectedFiles;
               showBulkActions = false;
@@ -511,7 +511,7 @@
         <h3 class="mx-auto px-4 max-w-7xl">Error Loading Files</h3>
         <div class="mx-auto px-4 max-w-7xl">{error}</div>
       </div>
-      <Button variant="outline" size="sm" on:click={() => loadEvidenceFiles()}>
+      <Button variant="outline" size="sm" onclick={() => loadEvidenceFiles()}>
         <RefreshCw class="mx-auto px-4 max-w-7xl" />
         Retry
       </Button>
@@ -546,7 +546,7 @@
           multiple
           class="mx-auto px-4 max-w-7xl"
           id="file-upload"
-          on:change={handleFileSelect}
+          onchange={handleFileSelect}
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
         />
         <label for="file-upload">
@@ -567,7 +567,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => selectAllFiles()}
+        onclick={() => selectAllFiles()}
         class="mx-auto px-4 max-w-7xl"
       >
         {#if selectedFiles.size === filteredFiles.length}
@@ -593,7 +593,7 @@
                   type="checkbox"
                   class="mx-auto px-4 max-w-7xl"
                   checked={selectedFiles.has(file.id)}
-                  on:change={() => toggleFileSelection(file.id)}
+                  onchange={() => toggleFileSelection(file.id)}
                   aria-label="Select file {file.title || file.fileName}"
                 />
 
@@ -681,7 +681,7 @@
                 type="checkbox"
                 class="mx-auto px-4 max-w-7xl"
                 checked={selectedFiles.has(file.id)}
-                on:change={() => toggleFileSelection(file.id)}
+                onchange={() => toggleFileSelection(file.id)}
                 aria-label="Select file {file.title || file.fileName}"
               />
 
@@ -796,7 +796,7 @@
       <div class="mx-auto px-4 max-w-7xl">
         <Button
           variant="outline"
-          on:click={() => {
+          onclick={() => {
             showUploadModal = false;
             uploadFiles = null;
             uploadDescription = "";
@@ -807,7 +807,7 @@
           Cancel
         </Button>
         <Button
-          on:click={() => uploadSingleFile()}
+          onclick={() => uploadSingleFile()}
           disabled={uploading || !uploadFiles}
           class="mx-auto px-4 max-w-7xl"
         >
@@ -830,6 +830,6 @@
   multiple
   class="mx-auto px-4 max-w-7xl"
   id="bulk-upload"
-  on:change={handleFileSelect}
+  onchange={handleFileSelect}
   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.zip,.rar"
 />

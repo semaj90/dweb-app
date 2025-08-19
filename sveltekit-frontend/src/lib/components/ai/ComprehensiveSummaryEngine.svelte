@@ -435,7 +435,7 @@
       <button
         class="btn-advanced"
         class:active={showAdvancedOptions}
-        on:click={() => showAdvancedOptions = !showAdvancedOptions}
+        onclick={() => showAdvancedOptions = !showAdvancedOptions}
       >
         <Settings size="16" />
         Advanced
@@ -498,16 +498,16 @@
 
       <div class="processing-controls">
         {#if !isProcessing}
-          <button class="btn-primary" on:click={startComprehensiveSummary}>
+          <button class="btn-primary" onclick={startComprehensiveSummary}>
             <Play size="16" />
             Start Analysis
           </button>
         {:else}
-          <button class="btn-secondary" on:click={pauseProcessing}>
+          <button class="btn-secondary" onclick={pauseProcessing}>
             <Pause size="16" />
             Pause
           </button>
-          <button class="btn-danger" on:click={stopProcessing}>
+          <button class="btn-danger" onclick={stopProcessing}>
             <Square size="16" />
             Stop
           </button>
@@ -576,7 +576,7 @@
             <option value="json">JSON</option>
             <option value="txt">Text</option>
           </select>
-          <button class="btn-export" on:click={exportSummary} disabled={!canExport}>
+          <button class="btn-export" onclick={exportSummary} disabled={!canExport}>
             <Download size="16" />
             Export
           </button>

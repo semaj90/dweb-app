@@ -1,15 +1,8 @@
 // Context7 MCP Integration API
 // Full Context7 MCP server integration with fetch and real-time processing
 
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { databaseOrchestrator } from "$lib/../lib/services/comprehensive-database-orchestrator";
-
-// Context7 MCP Server endpoints
-const MCP_ENDPOINTS = {
-  wrapper: 'http://localhost:4000', // mcp-context7-wrapper.js
-  legal: 'http://localhost:4001', // mcp-legal-server.mjs
-  extension: 'http://localhost:4002', // VS Code extension MCP
-};
+import { json, type RequestHandler } from "@sveltejs/kit";
+import { databaseOrchestrator, , // Context7 MCP Server endpoints, const MCP_ENDPOINTS = {,   wrapper: 'http://localhost:4000', // mcp-context7-wrapper.js,   legal: 'http://localhost:4001', // mcp-legal-server.mjs,   extension: 'http://localhost:4002', // VS Code extension MCP } from
 
 // GET /api/context7 - Get Context7 system status
 export const GET: RequestHandler = async () => {

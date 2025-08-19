@@ -183,7 +183,7 @@
               <button
                 type="button"
                 class="container mx-auto px-4"
-                on:click={() => startEdit()}
+                onclick={() => startEdit()}
                 title="Edit Note"
               >
                 <Edit3 class="container mx-auto px-4" />
@@ -192,7 +192,7 @@
               <button
                 type="button"
                 class="container mx-auto px-4"
-                on:click={() => cancelEdit()}
+                onclick={() => cancelEdit()}
               >
                 Cancel
               </button>
@@ -202,7 +202,7 @@
           <button
             type="button"
             class="container mx-auto px-4"
-            on:click={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
+            onclick={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
             title={isSaved ? "Remove from saved" : "Save for later"}
           >
             {#if isSaved}
@@ -235,7 +235,7 @@
                 {tag}
                 <button
                   type="button"
-                  on:click={() => removeTag(tag)}
+                  onclick={() => removeTag(tag)}
                   class="container mx-auto px-4"
                 >
                   <X class="container mx-auto px-4" />
@@ -245,7 +245,7 @@
 
             <input
               bind:value={newTag}
-              on:keydown={(e) => e.key === "Enter" && addTag()}
+              onkeydown={(e) => e.key === "Enter" && addTag()}
               class="container mx-auto px-4"
               placeholder="Add tag..."
             />

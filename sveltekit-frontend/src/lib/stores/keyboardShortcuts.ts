@@ -1,17 +1,7 @@
+import { aiRecommendationEngine } from "$lib/services/ai-recommendation-engine";
 // @ts-nocheck
 import { writable } from "svelte/store";
-import { advancedCache } from "$lib/services/advanced-cache-manager";
-import { aiRecommendationEngine } from "$lib/services/ai-recommendation-engine";
-
-export interface Shortcut {
-  key: string;
-  description: string;
-  action: () => void;
-  global?: boolean;
-  category?: string;
-  aiScore?: number; // For high-score/AI ranking
-  aiSummary?: string | null; // For AI summary/metadata
-}
+import { advancedCache, , export interface Shortcut {,   key: string;,   description: string;,   action: () => void;,   global?: boolean;,   category?: string;,   aiScore?: number; // For high-score/AI ranking,   aiSummary?: string | null; // For AI summary/metadata } from
 
 // Static essential shortcuts (always present)
 const staticShortcuts: Shortcut[] = [

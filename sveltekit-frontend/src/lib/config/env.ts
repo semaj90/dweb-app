@@ -1,11 +1,11 @@
 // @ts-nocheck
 // Production environment configuration
 export const ENV_CONFIG = {
-  OLLAMA_URL: process.env.OLLAMA_URL || 'http://localhost:11434',
-  OLLAMA_MODEL: process.env.OLLAMA_MODEL || 'llama2',
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
-  DATABASE_URL: process.env.DATABASE_URL || '',
-  PUBLIC_APP_URL: process.env.PUBLIC_APP_URL || 'http://localhost:5173'
+  OLLAMA_URL: import.meta.env.OLLAMA_URL || 'http://localhost:11434',
+  OLLAMA_MODEL: import.meta.env.OLLAMA_MODEL || 'llama2',
+  OPENAI_API_KEY: import.meta.env.OPENAI_API_KEY || '',
+  DATABASE_URL: import.meta.env.DATABASE_URL || '',
+  PUBLIC_APP_URL: import.meta.env.PUBLIC_APP_URL || 'http://localhost:5173'
 } as const;
 
 // Client-safe environment access

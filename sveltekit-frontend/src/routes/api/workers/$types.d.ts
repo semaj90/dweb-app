@@ -1,4 +1,4 @@
+import type { RequestHandler } from "@sveltejs/kit";
 // @ts-nocheck
-import type { RequestHandler } from '@sveltejs/kit';
 
 export type { RequestHandler };

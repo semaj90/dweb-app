@@ -84,7 +84,7 @@
               <div class="stats">LVL {user.level} • {user.xp} XP</div>
             </div>
             <button 
-              on:click={handleLogout}
+              onclick={handleLogout}
               class="logout-btn"
               style="border-color: {colors.border}"
             >

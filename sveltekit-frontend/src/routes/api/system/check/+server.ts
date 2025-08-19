@@ -1,9 +1,10 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { healthCheck } from '$lib/server/db/index.js';
+// Orphaned content: import type { RequestHandler
+import {
+healthCheck } from "$lib/server/db/index.js";
 
 // Environment variables for Ollama configuration
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 const OLLAMA_TIMEOUT = 5000; // 5 seconds
 
 export const GET: RequestHandler = async () => {

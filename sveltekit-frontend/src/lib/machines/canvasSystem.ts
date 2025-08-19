@@ -1,10 +1,9 @@
 // @ts-nocheck
 import { setup, createActor, assign, fromPromise } from "xstate";
-import type {
+// Orphaned content: import type {
   CanvasNode,
   CanvasConnection,
   CanvasState,
-} from "$lib/types/canvas";
 
 interface CanvasContext {
   nodes: CanvasNode[];

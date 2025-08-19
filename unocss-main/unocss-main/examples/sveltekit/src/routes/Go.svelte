@@ -14,7 +14,7 @@
 	}
 </script>
 
-<form on:submit|preventDefault={go}>
+<form onsubmit|preventDefault={go}>
 	<input bind:this={input} bind:value={name} type="text" aria-label="What's your name?" placeholder="What's your name?" />
 	<button type="submit">
 		GO
@@ -39,7 +39,7 @@
 		cursor: pointer;
 		padding-top: 1rem;
 	}
-	button:focus {
+	buttonfocus {
 		border: 2px solid #ff3e00;
 	}
 	button:active {

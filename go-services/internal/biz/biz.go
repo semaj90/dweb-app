@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	"fmt"
 )
 
 // BusinessLogic contains the core business logic for legal AI operations

@@ -2,44 +2,11 @@
 // Self-Prompting & Auto-Save System
 // Intelligent user intent detection with contextual recommendations
 
-import { writable } from 'svelte/store';
-import { ChatOllama } from '@langchain/ollama';
-import { crewAIOrchestrator } from '$lib/ai/crewai-legal-agents';
-import { documentUpdateLoop } from '$lib/services/documentUpdateLoop';
+import { writable } from "svelte/store";
+// Orphaned content: import {
 
-// ============================================================================
-// TYPES & INTERFACES
-// ============================================================================
-
-export interface UserContext {
-  // Document context
-  documentId: string;
-  documentType: 'contract' | 'brief' | 'memo' | 'agreement' | 'other';
-  currentContent: string;
-  contentLength: number;
-  
-  // User behavior
-  lastActivity: Date;
-  activityPattern: 'writing' | 'editing' | 'reviewing' | 'idle' | 'researching';
-  keystrokes: number;
-  idleDuration: number; // milliseconds
-  
-  // Session context
-  sessionStart: Date;
-  totalEdits: number;
-  lastSaveTime: Date | null;
-  unsavedChanges: boolean;
-  
-  // AI interaction history
-  lastAIInteraction: Date | null;
-  acceptedSuggestions: number;
-  rejectedSuggestions: number;
-  
-  // Focus and intent
-  currentFocus: 'content_creation' | 'legal_review' | 'formatting' | 'research';
-  userGoal: string; // Inferred or explicitly set
-  confidenceLevel: number; // How confident we are about user intent
-}
+import { crewAIOrchestrator } from "$lib/ai/crewai-legal-agents";
+import { documentUpdateLoop, , // ============================================================================, // TYPES & INTERFACES, // ============================================================================, , export interface UserContext {,   // Document context,   documentId: string;,   documentType: 'contract' | 'brief' | 'memo' | 'agreement' | 'other';,   currentContent: string;,   contentLength: number;,   ,   // User behavior,   lastActivity: Date;,   activityPattern: 'writing' | 'editing' | 'reviewing' | 'idle' | 'researching';,   keystrokes: number;,   idleDuration: number; // milliseconds,   ,   // Session context,   sessionStart: Date;,   totalEdits: number;,   lastSaveTime: Date | null;,   unsavedChanges: boolean;,   ,   // AI interaction history,   lastAIInteraction: Date | null;,   acceptedSuggestions: number;,   rejectedSuggestions: number;,   ,   // Focus and intent,   currentFocus: 'content_creation' | 'legal_review' | 'formatting' | 'research';,   userGoal: string; // Inferred or explicitly set,   confidenceLevel: number; // How confident we are about user intent } from
 
 export interface SelfPrompt {
   id: string;

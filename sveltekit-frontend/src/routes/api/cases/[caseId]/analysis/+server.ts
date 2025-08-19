@@ -2,11 +2,13 @@
 // Environment variables fallback
 const env = process.env || {};
 import { caseActivities, cases } from "$lib/server/db/schema-postgres";
-import { QdrantClient } from "@qdrant/js-client-rest";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import {
+
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq
+import {
+db } from "$lib/server/db/index";
 
 const QDRANT_URL = env.QDRANT_URL || "http://localhost:6333";
 const NLP_SERVICE_URL = env.LLM_SERVICE_URL || "http://localhost:8000";

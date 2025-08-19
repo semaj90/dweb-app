@@ -1,10 +1,8 @@
+import { EventEmitter } from "events";
 // Context7 Autosolve Integration - Complete TypeScript Error Fixing with AI
 // Integrates Context7 best practices with automatic error resolution
 
-import orchestrator, {
-  databaseOrchestrator,
-  type DatabaseOrchestratorConfig,
-} from './comprehensive-database-orchestrator';
+import { orchestrator, databaseOrchestrator, type DatabaseOrchestratorConfig } from "../utils/comprehensive-orchestrator.js";
 // Define minimal EventLoopCondition interface locally (placeholder) since orchestrator is a stub
 interface EventLoopCondition {
   id: string;

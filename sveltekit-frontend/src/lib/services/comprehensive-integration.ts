@@ -9,9 +9,10 @@ import {
   type RAGQuery,
   type RAGResponse,
 } from './enhanced-rag-semantic-analyzer';
-import { webGPUAccelerator, type WebGPUCapabilities } from './webgpu-accelerator';
-import { realtimeComm, type RealtimeMessage } from './realtime-communication';
-import { writable, type Writable } from 'svelte/store';
+// Orphaned content: import { webGPUAccelerator, type WebGPUCapabilities
+import {
+realtimeComm, type RealtimeMessage } from "./realtime-communication";
+// Orphaned content: import { writable, type Writable
 
 export interface SystemStatus {
   enhancedRAG: {

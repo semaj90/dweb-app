@@ -12,7 +12,7 @@ import {
   boolean,
   decimal,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+// Orphaned content: import { relations
 
 // Users table
 export const users = pgTable("users", {

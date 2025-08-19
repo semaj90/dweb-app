@@ -1,55 +1,59 @@
+import Redis from "ioredis";
+import crypto from "crypto";
 // @ts-nocheck
 // lib/server/ai/rag-pipeline-enhanced.ts
 // Enhanced RAG Pipeline integrating best practices while maintaining compatibility
 
-import { Ollama } from '@langchain/community/llms/ollama';
-import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { Document } from '@langchain/core/documents';
-import { PromptTemplate } from '@langchain/core/prompts';
-import { RunnableSequence, RunnablePassthrough } from '@langchain/core/runnables';
+import { Ollama } from "@langchain/community/llms/ollama";
+// Orphaned content: import {
+
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+// Orphaned content: import {
+
+import { PromptTemplate } from "@langchain/core/prompts";
+// Orphaned content: import {
+RunnableSequence, RunnablePassthrough
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
+// Orphaned content: import postgres from "postgres";
+import {
+
 import { eq, sql as drizzleSql, and, gte, desc  } from "drizzle-orm";
-import * as schema from "./db/schema-postgres";
-import Redis from 'ioredis';
-import crypto from 'crypto';
-import { logger } from "./logger";
+// Orphaned content: import * as schema from './db/schema-postgres.js';
+import {
 
 // === CONFIGURATION ===
-const EMBEDDING_MODEL = process.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text:latest';
+const EMBEDDING_MODEL = import.meta.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text:latest';
 const EMBEDDING_DIMENSIONS = 768;
-const LLM_MODEL = process.env.OLLAMA_LLM_MODEL || 'gemma3-legal:latest';
-const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const LLM_MODEL = import.meta.env.OLLAMA_LLM_MODEL || 'gemma3-legal:latest';
+const OLLAMA_BASE_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 
 // Enhanced configuration with error handling
 const config = {
   database: {
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: parseInt(process.env.DATABASE_PORT || '5432'),
-    database: process.env.DATABASE_NAME || 'legal_ai_db',
-    username: process.env.DATABASE_USER || 'legal_admin',
-    password: process.env.DATABASE_PASSWORD || '123456',
-    max: parseInt(process.env.DATABASE_MAX_CONNECTIONS || '20'),
-    idle_timeout: parseInt(process.env.DATABASE_IDLE_TIMEOUT || '20'),
-    ssl: process.env.NODE_ENV === 'production' ? 'require' : false
+    host: import.meta.env.DATABASE_HOST || 'localhost',
+    port: parseInt(import.meta.env.DATABASE_PORT || '5432'),
+    database: import.meta.env.DATABASE_NAME || 'legal_ai_db',
+    username: import.meta.env.DATABASE_USER || 'legal_admin',
+    password: import.meta.env.DATABASE_PASSWORD || '123456',
+    max: parseInt(import.meta.env.DATABASE_MAX_CONNECTIONS || '20'),
+    idle_timeout: parseInt(import.meta.env.DATABASE_IDLE_TIMEOUT || '20'),
+    ssl: import.meta.env.NODE_ENV === 'production' ? 'require' : false
   },
   redis: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    db: parseInt(process.env.REDIS_DB || '0'),
-    maxRetriesPerRequest: parseInt(process.env.REDIS_MAX_RETRIES || '3'),
-    cacheTtl: parseInt(process.env.RAG_CACHE_TTL || '86400') // 24 hours
+    host: import.meta.env.REDIS_HOST || 'localhost',
+    port: parseInt(import.meta.env.REDIS_PORT || '6379'),
+    db: parseInt(import.meta.env.REDIS_DB || '0'),
+    maxRetriesPerRequest: parseInt(import.meta.env.REDIS_MAX_RETRIES || '3'),
+    cacheTtl: parseInt(import.meta.env.RAG_CACHE_TTL || '86400') // 24 hours
   },
   rag: {
-    chunkSize: parseInt(process.env.RAG_CHUNK_SIZE || '1500'),
-    chunkOverlap: parseInt(process.env.RAG_CHUNK_OVERLAP || '300'),
-    maxSources: parseInt(process.env.RAG_MAX_SOURCES || '10'),
-    similarityThreshold: parseFloat(process.env.RAG_SIMILARITY_THRESHOLD || '0.5'),
-    timeoutMs: parseInt(process.env.RAG_TIMEOUT_MS || '30000'),
-    enableMetrics: process.env.RAG_ENABLE_METRICS !== 'false',
-    enableAutoTagging: process.env.RAG_ENABLE_AUTO_TAGGING !== 'false'
+    chunkSize: parseInt(import.meta.env.RAG_CHUNK_SIZE || '1500'),
+    chunkOverlap: parseInt(import.meta.env.RAG_CHUNK_OVERLAP || '300'),
+    maxSources: parseInt(import.meta.env.RAG_MAX_SOURCES || '10'),
+    similarityThreshold: parseFloat(import.meta.env.RAG_SIMILARITY_THRESHOLD || '0.5'),
+    timeoutMs: parseInt(import.meta.env.RAG_TIMEOUT_MS || '30000'),
+    enableMetrics: import.meta.env.RAG_ENABLE_METRICS !== 'false',
+    enableAutoTagging: import.meta.env.RAG_ENABLE_AUTO_TAGGING !== 'false'
   }
 };
 
@@ -106,7 +110,7 @@ function isValidUUID(uuid: string): boolean {
 class RateLimiter {
   private requests = new Map<string, number[]>();
   private windowMs = 60 * 1000; // 1 minute
-  private maxRequests = parseInt(process.env.RAG_RATE_LIMIT_PER_MINUTE || '60');
+  private maxRequests = parseInt(import.meta.env.RAG_RATE_LIMIT_PER_MINUTE || '60');
 
   isAllowed(identifier: string): boolean {
     const now = Date.now();

@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Production database query utilities with type safety
 import { eq, and, or, like, desc, asc, sql, SQL, count } from "drizzle-orm";
-import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
+// Orphaned content: import type { PgColumn, PgTable
 
 export interface QueryFilters {
   search?: string;

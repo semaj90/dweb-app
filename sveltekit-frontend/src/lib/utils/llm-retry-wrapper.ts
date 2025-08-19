@@ -4,17 +4,8 @@
  * Handles Ollama GPU throttling, token limits, and failure logging
  */
 
-import { getLocalOllamaUrl, LOCAL_LLM_CONFIG } from '$lib/constants/local-llm-config';
-import { todoAutogen, retryLLMCall } from './todo-autogen';
-
-export interface LLMCallOptions {
-  model?: string;
-  temperature?: number;
-  maxTokens?: number;
-  timeout?: number;
-  retries?: number;
-  useGPU?: boolean;
-}
+import { getLocalOllamaUrl, LOCAL_LLM_CONFIG } from "$lib/constants/local-llm-config";
+import { todoAutogen, retryLLMCall, , export interface LLMCallOptions {,   model?: string;,   temperature?: number;,   maxTokens?: number;,   timeout?: number;,   retries?: number;,   useGPU?: boolean; } from
 
 export interface LLMResponse {
   response: string;
@@ -220,7 +211,7 @@ export class OllamaRetryWrapper {
       timeSinceLastSuccess: Date.now() - this.lastSuccessTime,
       baseUrl: this.baseUrl,
       memoryConfig: {
-        maxOldSpaceSize: process.env.NODE_OPTIONS?.includes('max-old-space-size'),
+        maxOldSpaceSize: import.meta.env.NODE_OPTIONS?.includes('max-old-space-size'),
         gpuMemoryFraction: LOCAL_LLM_CONFIG.GPU_MEMORY_FRACTION
       }
     };

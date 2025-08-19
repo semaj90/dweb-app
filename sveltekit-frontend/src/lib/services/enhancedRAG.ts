@@ -5,11 +5,10 @@
  */
 
 import { writable, type Writable } from "svelte/store";
-import {
-  qdrantService,
+// Orphaned content: import {
+qdrantService,
   type SearchResult,
   type DocumentVector,
-} from "./qdrantService";
 import type { LLMProvider } from "$lib/types/llm";
 
 // Enhanced RAG Types

@@ -3,8 +3,9 @@
 // Fixed: 384-dimensional vectors for nomic-embed-text
 
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { env } from "../../env/dynamic/private";
-import { logger } from "../logger";
+import { env } from '../../env/dynamic/private.js';
+import { logger } from '../logger.js';
+import crypto from "crypto";
 import type {
   VectorSearchResult,
   DocumentVector,

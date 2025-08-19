@@ -24,7 +24,7 @@ test.describe('RAG (Retrieval-Augmented Generation) System', () => {
     
     // Upload a test document
     const fileInput = page.locator('input[type="file"]');
-    const testFile = path.join(__dirname, 'fixtures', 'test-legal-document.pdf');
+    const testFile = path.join(import.meta.url, 'fixtures', 'test-legal-document.pdf');
     
     // Create a test file if it doesn't exist
     await page.evaluate(() => {

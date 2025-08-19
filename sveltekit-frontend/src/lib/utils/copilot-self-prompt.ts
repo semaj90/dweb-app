@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // @ts-nocheck
 /**
  * Enhanced Copilot Self-Prompt Wrapper Utility
@@ -6,13 +7,17 @@
  */
 
 import { autonomousEngineeringSystem } from "../services/autonomous-engineering-system.js";
-import { autoGenService } from "../services/autogen-service.js";
+// Orphaned content: import {
+
 import { analyzeLegalCaseWithCrew } from "../services/crewai-service.js";
-import { aiWorkerManager } from "../services/ai-worker-manager.js";
+// Orphaned content: import {
+
 import type { AITask } from "$lib/types/ai-worker.js";
-import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
+// Orphaned content: import {
+
 import { OpenAIEmbeddings } from "@langchain/openai";
-import { createClient } from "redis";
+// Orphaned content: import {
+
 import { pool } from "$lib/server/db"; // Use your actual DB config
 
 // Singleton Redis client for connection reuse
@@ -20,7 +25,7 @@ let redisClient: ReturnType<typeof createClient> | null = null;
 async function getRedisClient() {
   if (!redisClient) {
     redisClient = createClient({
-      url: process.env.REDIS_URL || "redis://localhost:6379",
+      url: import.meta.env.REDIS_URL || "redis://localhost:6379",
     });
     redisClient.on("error", (err) => console.error("Redis Client Error", err));
     await redisClient.connect();

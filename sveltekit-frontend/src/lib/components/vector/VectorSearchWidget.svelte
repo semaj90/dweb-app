@@ -1,4 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax
+<!-- @migration-task Error while migrating Svelte code: Mixing old (onclick) and new syntaxes for event handling is not allowed. Use only the onclick syntax
 https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <!--
 Vector Search Widget
@@ -155,7 +155,7 @@ Compact searchable component for embedding in other interfaces
       <button
         type="button"
         class="absolute inset-y-0 right-0 pr-3 flex items-center"
-        on:click={clearSearch}
+        onclick={clearSearch}
       >
         <X class="h-4 w-4 text-muted-foreground hover:text-foreground" />
       </button>
@@ -175,7 +175,7 @@ Compact searchable component for embedding in other interfaces
             <button
               type="button"
               class="w-full text-left p-3 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-              on:click={() => selectResult(result)}
+              onclick={() => selectResult(result)}
             >
               <div class="flex items-start justify-between mb-2">
                 <div class="flex items-center gap-2">

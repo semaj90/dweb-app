@@ -1,6 +1,6 @@
-import { setCache } from "../utils/server-cache";
+import { setCache } from '../utils/server-cache.js';
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || "amqp://localhost";
+const RABBITMQ_URL = import.meta.env.RABBITMQ_URL || "amqp://localhost";
 const QUEUE_NAME = "summarization_tasks";
 
 export async function summarizeWithQueue(content: string, documentId: string) {

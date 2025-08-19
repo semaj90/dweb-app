@@ -3,8 +3,8 @@
  * Integrates with NVIDIA go-llama and multi-core Ollama cluster
  */
 
-import { writable, derived, readable } from 'svelte/store';
-import { productionServiceClient } from '../services/productionServiceClient.js';
+import { writable, derived, readable } from "svelte/store";
+// Orphaned content: import {
 
 export interface Recommendation {
   id: string;

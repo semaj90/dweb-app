@@ -1,13 +1,14 @@
+import { logger } from "./logger.js";
+import crypto from "crypto";
 // @ts-nocheck
 // lib/server/ai/legalbert-middleware.ts
 // LegalBERT middleware for specialized legal embeddings and analysis
 
-import { logger } from './logger';
 // Lightweight re-exports of key result interfaces for external type-only imports
 export type { LegalAnalysisResult, LegalEmbeddingResult };
-import { generateEmbedding } from './embeddings-simple';
-import { withRetry, withTimeout, metrics } from './config';
-import crypto from 'crypto';
+import { generateEmbedding } from "./embeddings-simple.js";
+// Orphaned content: import {
+withRetry, withTimeout, metrics
 
 // LegalBERT model configurations
 const LEGALBERT_MODELS = {
@@ -15,19 +16,19 @@ const LEGALBERT_MODELS = {
   local: {
     embedding: 'nomic-embed-text:latest',
     analysis: 'gemma3-legal:latest',
-    baseUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
+    baseUrl: import.meta.env.OLLAMA_URL || 'http://localhost:11434',
   },
   // Remote API endpoints
   huggingface: {
     embedding: 'nlpaueb/legal-bert-base-uncased',
     analysis: 'nlpaueb/legal-bert-small-uncased',
-    apiKey: process.env.HUGGINGFACE_API_KEY,
+    apiKey: import.meta.env.HUGGINGFACE_API_KEY,
     baseUrl: 'https://api-inference.huggingface.co/models',
   },
   openai: {
     embedding: 'text-embedding-3-small',
     analysis: 'gpt-4',
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: import.meta.env.OPENAI_API_KEY,
     baseUrl: 'https://api.openai.com/v1',
   },
 };

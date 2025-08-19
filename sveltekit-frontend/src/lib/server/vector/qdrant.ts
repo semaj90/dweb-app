@@ -26,21 +26,22 @@ export async function deleteCollection(name: string) {
 // Qdrant vector search service
 // High-performance vector search with memory optimization
 import { QdrantClient } from "@qdrant/js-client-rest";
-// Use process.env instead of SvelteKit env for server-side code
-// import { env } from "$env/dynamic/private";
-import { generateEmbedding } from "../ai/embeddings-simple";
+// Orphaned content: // Use process.env instead of SvelteKit env for server-side code
+// import { env
+import {
+generateEmbedding } from "../ai/embeddings-simple.js";
 
 let qdrantClient: QdrantClient | null = null;
 
 // Initialize Qdrant client
 function getQdrantClient(): QdrantClient | null {
-  if (!process.env.QDRANT_URL) {
+  if (!import.meta.env.QDRANT_URL) {
     return null;
   }
   if (!qdrantClient) {
     qdrantClient = new QdrantClient({
-      url: process.env.QDRANT_URL,
-      apiKey: process.env.QDRANT_API_KEY || undefined,
+      url: import.meta.env.QDRANT_URL,
+      apiKey: import.meta.env.QDRANT_API_KEY || undefined,
     });
   }
   return qdrantClient;

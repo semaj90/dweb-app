@@ -5,8 +5,8 @@
  */
 
 import { fromPromise, createActor } from 'xstate';
-import type { EmbeddingResponse } from '$lib/types/unified-types';
-import { ollamaService } from '$lib/services/ollamaService';
+import type { EmbeddingResponse } from "$lib/types/api";
+import { ollamaService } from "$lib/services/ollamaService";
 
 export interface EmbeddingInput {
   text: string;

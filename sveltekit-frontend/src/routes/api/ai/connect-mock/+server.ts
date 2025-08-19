@@ -1,6 +1,6 @@
 // @ts-nocheck
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
+import type { RequestHandler }, {
+json } from "@sveltejs/kit";
 
 // Mock AI connection endpoint for development/testing
 export const POST: RequestHandler = async ({ request }) => {

@@ -1,13 +1,16 @@
 // Production Vector Search Testing API
 // Tests vector ranking, reranking, and RAG pipeline integration
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/server/db/index';
-import { qdrantService } from '$lib/services/qdrantService';
-import { vectorRankingService } from '$lib/services/vectorRankingService';
-import { legalRAG } from '$lib/ai/langchain-rag';
-import { enhancedRAGPipeline } from '$lib/services/enhancedRAGPipeline';
-import { legalBERT } from '$lib/server/ai/legalbert-middleware';
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { qdrantService
+import {
+vectorRankingService } from "$lib/services/vectorRankingService";
+// Orphaned content: import { legalRAG
+import {
+enhancedRAGPipeline } from "$lib/services/enhancedRAGPipeline";
+// Orphaned content: import { legalBERT
 
 // Logging
 const logger = {

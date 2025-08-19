@@ -3,10 +3,12 @@
  * Vector Search and Ranking Service with Nomic-Embed Integration
  * Advanced semantic search with multi-modal ranking and relevance scoring
  */
-import { ollamaCudaService } from './ollama-cuda-service';
-import { db } from '$lib/server/db';
-import { evidence, cases, embeddingCache, vectorMetadata } from '$lib/server/db/schema-postgres-enhanced';
-import { eq, sql, and, or, desc, asc, isNotNull, ilike, inArray } from 'drizzle-orm';
+import { ollamaCudaService } from "./ollama-cuda-service";
+// Orphaned content: import {
+
+import { evidence, cases, embeddingCache, vectorMetadata } from "$lib/server/db/schema-postgres-enhanced";
+// Orphaned content: import {
+eq, sql, and, or, desc, asc, isNotNull, ilike, inArray
 import { createHash } from 'crypto';
 import Fuse from 'fuse.js';
 

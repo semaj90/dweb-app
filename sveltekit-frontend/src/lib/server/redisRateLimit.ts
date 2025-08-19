@@ -11,7 +11,7 @@ const singleton = { client: null as Redis | null };
 
 function getClient(): Redis {
   if (singleton.client) return singleton.client;
-  const url = process.env.REDIS_URL || 'redis://localhost:6379';
+  const url = import.meta.env.REDIS_URL || 'redis://localhost:6379';
   singleton.client = new Redis(url, { lazyConnect: true });
   singleton.client.on('error', (e) => console.error('[redisRateLimit] error', e));
   return singleton.client;
@@ -45,7 +45,7 @@ if not allowed then
     local diff = (oldest + window) - now
     if diff > 0 then retryAfter = math.floor(diff / 1000) end
   end
-end
+
 return { allowed and 1 or 0, count, retryAfter }
 `;
 

@@ -1,22 +1,10 @@
 // @ts-nocheck
 // Production PostgreSQL schema with pgvector for vector search
 import { createId } from "@paralleldrive/cuid2";
-import { relations } from "drizzle-orm";
+import { relations, {,   boolean,,   decimal,,   index,,   integer,,   jsonb,,   pgTable,,   serial,,   text,,   timestamp,,   uuid,,   varchar, } from
+// Orphaned content: import { vector
 import {
-  boolean,
-  decimal,
-  index,
-  integer,
-  jsonb,
-  pgTable,
-  serial,
-  text,
-  timestamp,
-  uuid,
-  varchar,
-} from "drizzle-orm/pg-core";
-import { vector } from "pgvector/drizzle-orm";
-import { z } from "zod";
+z } from "zod";
 
 // Zod schemas for type-safe JSON fields
 export const UserSettingsExtSchema = z.object({

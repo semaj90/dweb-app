@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // @ts-nocheck
 // ======================================================================
 // ENHANCED STATE MACHINES FOR LEGAL AI SYSTEM - FIXED VERSION
@@ -10,9 +11,10 @@ import {
   fromPromise,
   createActor,
 } from "xstate";
-import { writable, derived } from "svelte/store";
-import { browser } from "$app/environment";
-import type { Database, Evidence } from "$lib/types";
+// Orphaned content: import { writable, derived
+import {
+browser } from "$app/environment";
+// Orphaned content: import type { Database, Evidence
 
 // ======================================================================
 // ENHANCED TYPES

@@ -1,5 +1,6 @@
-import { json } from '@sveltejs/kit';
-import { putObject } from '$lib/server/minio/client';
+import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { randomUUID } from 'crypto';
 
 // A light wrapper that accepts multipart form uploads and stores the file in MinIO under 'evidence' bucket.

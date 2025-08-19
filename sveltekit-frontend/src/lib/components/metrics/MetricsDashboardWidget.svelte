@@ -5,9 +5,9 @@
   interface NATSMetricSnapshot { connection:{ status:string; since:number|null; reconnectAttempts:number }; messaging:{ published:number; received:number; subjects: Record<string,string[]> } }
   interface PipelineHistogram { stage:string; buckets:number[]; counts:number[]; inf:number; sum:number; count:number; recentSamples?: number[] }
   interface AutosolveMetrics { count:number; sum:number; p50:number; p90:number; p99:number }
-  interface QUICMetrics { total_connections:number; total_streams:number; total_errors:number; avg_latency_ms:number }
+  interface QUICMetrics { total_connections:number; total_streams:number; total_errors:number; avg_latency_ms:number; p50?:number; p90?:number; p99?:number; error_rate_1m?:number }
   interface RedisMetrics { up:number; last_ping_ms:number; last_ok_ts?:number|null; last_error_ts?:number|null }
-  let loading = true; let error: string | null = null; let nlp: NLPStats | null = null; let nats: NATSMetricSnapshot | null = null; let pipeline: PipelineHistogram[] = []; let autosolve: AutosolveMetrics | null = null; let quic: QUICMetrics | null = null; let redis: RedisMetrics | null = null; let lastRefreshed: Date | null = null;
+  let loading = true; let error: string | null = null; let nlp: NLPStats | null = null; let nats: NATSMetricSnapshot | null = null; let pipeline: PipelineHistogram[] = []; let autosolve: AutosolveMetrics | null = null; let quic: QUICMetrics | null = null; let redis: RedisMetrics | null = null; let lastRefreshed: Date | null = null; let autoRefresh = true;
   async function fetchNLP(){
     // Prometheus text parsing from /api/v1/nlp/metrics
     const res = await fetch('/api/v1/nlp/metrics');
@@ -79,13 +79,14 @@
       quic = parsed.quic || quic;
       redis = parsed.redis || redis;
       lastRefreshed = parsed.lastRefreshed ? new Date(parsed.lastRefreshed) : lastRefreshed;
+      autoRefresh = parsed.autoRefresh ?? autoRefresh;
     } catch {}
   }
 
   function persist(){
     if (typeof localStorage === 'undefined') return;
     try {
-      localStorage.setItem('metricsDashboardCache', JSON.stringify({ nlp, nats, pipeline, autosolve, quic, redis, lastRefreshed }));
+      localStorage.setItem('metricsDashboardCache', JSON.stringify({ nlp, nats, pipeline, autosolve, quic, redis, lastRefreshed, autoRefresh }));
     } catch {}
   }
 
@@ -107,16 +108,34 @@
 
   let interval: any;
   onMount(()=>{ loadPersisted(); refresh(); interval = setInterval(()=>{
+    if(!autoRefresh) return; // paused
     // If QUIC metrics stale (>30s) trigger only QUIC refresh more frequently
     if (quic && Date.now() - (lastRefreshed?.getTime()||0) > 30000) { fetchQUIC().catch(()=>{}); }
     refresh();
   }, 10000); return ()=> clearInterval(interval); });
+
+  function toggleAutoRefresh(){ autoRefresh = !autoRefresh; persist(); if(autoRefresh) refresh(); }
+
+  function sparklinePoints(vals: number[]): string {
+    if(!vals.length) return '';
+    const max = Math.max(...vals);
+    if(max===0) return vals.map((_,i)=> `${(i/(vals.length-1))*50},12`).join(' ');
+    return vals.map((v,i)=>{
+      const x = (i/(vals.length-1))*50;
+      const y = 12 - (v/max)*12;
+      return `${x},${y}`;
+    }).join(' ');
+  }
 </script>
 
 <div class="metrics-widget border rounded-lg p-4 bg-slate-900 text-slate-100 text-sm space-y-4">
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between gap-2 flex-wrap">
     <h2 class="text-base font-semibold">AI Metrics Dashboard</h2>
-  <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" onclick={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
+    <div class="flex items-center gap-2">
+      <button class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" onclick={refresh} disabled={loading}>{loading ? 'Refreshing…' : 'Refresh'}</button>
+      <button class="px-2 py-1 text-xs rounded {autoRefresh ? 'bg-green-700 hover:bg-green-600':'bg-slate-700 hover:bg-slate-600'}" onclick={toggleAutoRefresh}>{autoRefresh? 'Pause Auto':'Resume Auto'}</button>
+      <a href="/api/v1/pipeline/recent-samples.csv" class="px-2 py-1 text-xs rounded bg-slate-700 hover:bg-slate-600" download>CSV</a>
+    </div>
   </div>
   {#if error}
     <div class="text-red-400">{error}</div>
@@ -159,20 +178,21 @@
       <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
         {#if pipeline.length}
           {#each pipeline as row}
-            <span class="opacity-70">{row.stage} avg</span>
-            <span class="flex items-center gap-1">
-              {row.count? (row.sum/row.count).toFixed(1):'0'} ms ({row.count})
-              {#if row.recentSamples?.length > 3}
-                {#key row.stage}
-                  <svg viewBox="0 0 50 12" class="h-3 w-10 text-slate-400">
-                    {#let vals = row.recentSamples}
-                    {#let max = Math.max(...vals)}
-                    {#let scaled = vals.map((v,i)=> ({x: (i/(vals.length-1))*50, y: max? (12 - (v/max)*12):12 }))}
-                    <polyline fill="none" stroke="currentColor" stroke-width="1" points={scaled.map(p=>`${p.x},${p.y}`).join(' ')} />
-                  </svg>
-                {/key}
+            {#let anomalyRate = ((row as any).anomalies && row.count ? ((row as any).anomalies / row.count) : 0)}
+            <span class="opacity-70 flex items-center gap-1" class:!text-red-400={anomalyRate>0.2}>{row.stage} avg
+              {#if (row as any).anomalies > 0}
+                <span class="ml-1 inline-block px-1 rounded bg-red-700 text-[10px]" title={`Latency anomalies detected (rate ${(anomalyRate*100).toFixed(1)}%)`}>A:{(row as any).anomalies}</span>
               {/if}
             </span>
+            <span class="flex items-center gap-1" class:!text-red-400={anomalyRate>0.2}>
+              {row.count? (row.sum/row.count).toFixed(1):'0'} ms ({row.count})
+              {#if row.recentSamples && row.recentSamples.length > 3}
+                <svg viewBox="0 0 50 12" class="h-3 w-10 text-slate-400">
+                  <polyline fill="none" stroke="currentColor" stroke-width="1" points={sparklinePoints(row.recentSamples)} />
+                </svg>
+              {/if}
+            </span>
+            {/let}
           {/each}
         {:else}<span class="col-span-2 opacity-70">No pipeline data</span>{/if}
         {#if autosolve}
@@ -184,7 +204,11 @@
           <span class="opacity-70">QUIC Conns</span><span>{quic.total_connections}</span>
           <span class="opacity-70">QUIC Streams</span><span>{quic.total_streams}</span>
           <span class="opacity-70">QUIC Avg Lat</span><span>{quic.avg_latency_ms} ms</span>
-          <span class="opacity-70">QUIC Errors</span><span>{quic.total_errors}</span>
+          <span class="opacity-70">QUIC p50</span><span>{(quic.p50||0).toFixed(1)} ms</span>
+          <span class="opacity-70">QUIC p90</span><span>{(quic.p90||0).toFixed(1)} ms</span>
+          <span class="opacity-70">QUIC p99</span><span>{(quic.p99||0).toFixed(1)} ms</span>
+          <span class="opacity-70">Errors Total</span><span>{quic.total_errors}</span>
+          <span class="opacity-70">Errors 1m</span><span class={quic.error_rate_1m && quic.error_rate_1m>0 ? 'text-red-400':'text-slate-100'}>{quic.error_rate_1m||0}</span>
         {/if}
       </div>
     </section>

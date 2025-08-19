@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import type { RequestHandler
 
 const GO_MICROSERVICE_URL = "http://localhost:8080";
 

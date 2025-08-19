@@ -3,11 +3,13 @@
  * XState Svelte Store Integration
  * Provides reactive Svelte stores for XState machines with persistence and devtools
  */
-import { readable, writable, derived, type Readable, type Writable } from 'svelte/store';
-import { createActor, type ActorRef, type StateMachine, type AnyActorLogic } from 'xstate';
-import { browser } from '$app/environment';
-import { appMachine, appSelectors, type AppContext, type AppEvents } from './app-machine';
-import { legalCaseMachine, legalCaseSelectors } from './legal-case-machine';
+import { readable, writable, derived, type Readable, type Writable } from "svelte/store";
+// Orphaned content: import {
+createActor, type ActorRef, type StateMachine, type AnyActorLogic
+import { browser } from "$app/environment";
+// Orphaned content: import {
+appMachine, appSelectors, type AppContext, type AppEvents
+import { legalCaseMachine, legalCaseSelectors } from './legal-case-machine.js';
 
 // Store persistence interface
 interface StoreState {
@@ -47,8 +49,8 @@ class XStateStoreManager {
     this.config = {
       persist: true,
       persistKey: 'legal-ai-state',
-      devtools: browser && process.env.NODE_ENV === 'development',
-      logTransitions: browser && process.env.NODE_ENV === 'development',
+      devtools: browser && import.meta.env.NODE_ENV === 'development',
+      logTransitions: browser && import.meta.env.NODE_ENV === 'development',
       syncAcrossTabs: true,
       ...config
     };

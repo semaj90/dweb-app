@@ -75,7 +75,7 @@
     <div class="flex items-center gap-2">
       <Checkbox id="autoProcessCheckbox" bind:checked={enableAutoProcessing} label="Enable Auto-Processing" />
     </div>
-    <button class="btn btn-primary w-full mt-4" on:click={handleSubmit}>
+    <button class="btn btn-primary w-full mt-4" onclick={handleSubmit}>
       Save Automation
     </button>
   </div>

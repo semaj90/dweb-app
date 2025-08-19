@@ -1,3 +1,4 @@
+import stream from "stream";
 // @ts-nocheck
 /**
  * Browser Cache Manager for Neural Sprite JSON States

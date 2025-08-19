@@ -1,10 +1,12 @@
 // lib/server/ai/config.ts
 // Configuration and utility functions for the RAG pipeline
 
-import { z } from 'zod';
-import { logger } from "./logger";
-import type { RAGConfiguration } from './types';
-import crypto from 'crypto';
+import { z } from "zod";
+// Orphaned content: import {
+
+import type { RAGConfiguration } from './types.js';
+// Orphaned content: import crypto from "crypto";
+import {
 
 // === ENVIRONMENT VALIDATION ===
 

@@ -4,7 +4,7 @@
 
   interface Props {
     markdown?: string;
-    className?: string;
+    class?: string;
     unsafe?: boolean; // Allow raw HTML in markdown
     baseUrl?: string;
     breaks?: boolean; // Convert \n to <br>
@@ -12,7 +12,7 @@
 
   let {
     markdown = "",
-    className = "",
+    class = "",
     unsafe = false,
     baseUrl = "",
     breaks = true
@@ -96,9 +96,9 @@
 
 <div
   class="space-y-4"
-  class:prose-sm={className.includes("prose-sm")}
-  class:prose-lg={className.includes("prose-lg")}
-  class:prose-xl={className.includes("prose-xl")}
+  class:prose-sm={class.includes("prose-sm")}
+  class:prose-lg={class.includes("prose-lg")}
+  class:prose-xl={class.includes("prose-xl")}
 >
   {#if renderedHtml}
     {@html renderedHtml}

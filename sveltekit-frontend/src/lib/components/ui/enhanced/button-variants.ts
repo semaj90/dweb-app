@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { type VariantProps, tv } from "tailwind-variants";
+// @ts-nocheck
 
 export const buttonVariants = tv({
   base: [

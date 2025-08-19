@@ -136,7 +136,7 @@ https://svelte.dev/e/js_parse_error -->
             {...builder}
             variant="ghost"
             size="sm"
-            onclick={() => closeModal()}
+            on:click={() => closeModal()}
           >
             ×
           </Button>
@@ -210,7 +210,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={validationChoice === "approve" ? "default" : "outline"}
                 class="space-y-4"
-                onclick={() => handleValidationChoice("approve")}
+                on:click={() => handleValidationChoice("approve")}
               >
                 <CheckCircle class="space-y-4" />
                 Yes, it's accurate
@@ -219,7 +219,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={validationChoice === "reject" ? "danger" : "outline"}
                 class="space-y-4"
-                onclick={() => handleValidationChoice("reject")}
+                on:click={() => handleValidationChoice("reject")}
               >
                 <XCircle class="space-y-4" />
                 No, needs correction
@@ -334,7 +334,7 @@ https://svelte.dev/e/js_parse_error -->
                     type="button"
                     variant="secondary"
                     size="sm"
-                    onclick={() => addTag()}
+                    on:click={() => addTag()}
                   >
                     <Tag class="space-y-4" />
                   </Button>
@@ -348,14 +348,14 @@ https://svelte.dev/e/js_parse_error -->
         <div class="space-y-4">
           <Button
             variant="ghost"
-            onclick={() => closeModal()}
+            on:click={() => closeModal()}
             disabled={isSubmitting}
           >
             Cancel
           </Button>
 
           <Button
-            onclick={() => submitValidation()}
+            on:click={() => submitValidation()}
             disabled={!validationChoice || isSubmitting}
             class="space-y-4"
           >

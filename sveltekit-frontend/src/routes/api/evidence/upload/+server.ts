@@ -9,29 +9,39 @@
  *  - Optional AI summarization with selectable summaryType
  *  - Return consistent JSON envelope (data, meta, error)
  */
-import { json, error } from '@sveltejs/kit';
-import { checkRateLimit } from '$lib/server/rateLimit';
-import { authorize } from '$lib/server/authPolicy';
-import { redisRateLimit } from '$lib/server/redisRateLimit';
-import { logger } from '$lib/server/logger';
-import Busboy from 'busboy';
-import { Readable } from 'node:stream';
-import type { RequestHandler } from './$types';
-import { fileUploadSchema, type FileUpload, type AiAnalysisResult } from '$lib/schemas/file-upload';
-import { db } from '$lib/server/db';
-import { evidence, embeddingCache } from '$lib/server/db/schema-postgres-enhanced';
-import { ollamaCudaService } from '$lib/services/ollama-cuda-service';
-import { createHash } from 'crypto';
-import { mkdir } from 'fs/promises';
-import { createWriteStream } from 'fs';
-import { join } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import sharp from 'sharp';
-import { SystemMessage, HumanMessage } from '@langchain/core/messages';
-import { eq  } from "drizzle-orm";
+import { json, error } from "@sveltejs/kit";
+// Orphaned content: import {
 
-// MinIO client for object storage
-import { Client as MinioClient } from 'minio';
+import { authorize } from "$lib/server/authPolicy";
+// Orphaned content: import {
+
+import { logger } from '$lib/server/logger';
+// Orphaned content: import Busboy from "busboy";
+import {
+
+import type { RequestHandler } from "./$types.js";
+// Orphaned content: import {
+fileUploadSchema, type FileUpload, type AiAnalysisResult
+import { db } from "$lib/server/db";
+// Orphaned content: import {
+evidence, embeddingCache
+import { ollamaCudaService } from "$lib/services/ollama-cuda-service";
+// Orphaned content: import {
+
+import { mkdir } from "fs/promises";
+// Orphaned content: import {
+
+import { join } from "path";
+// Orphaned content: import {
+v4 as uuidv4
+sharp from "sharp";
+// Orphaned content: import {
+SystemMessage, HumanMessage
+import { eq  } from "drizzle-orm";
+// Orphaned content: // MinIO client for object storage
+import { Client as MinioClient
+import {
+URL } from "url";
 const minioClient = new MinioClient({
   endPoint: 'localhost',
   port: 9000,
@@ -144,10 +154,10 @@ interface UploadResult {
 const UPLOAD_DIR = 'uploads/evidence';
 const THUMBNAIL_DIR = 'uploads/thumbnails';
 function getMaxFileSize() {
-  const val = Number(process.env.EVIDENCE_MAX_FILE_SIZE || '0');
+  const val = Number(import.meta.env.EVIDENCE_MAX_FILE_SIZE || '0');
   return val > 0 ? val : 100 * 1024 * 1024;
 }
-const STREAM_ANALYSIS_INLINE_LIMIT = Number(process.env.EVIDENCE_MAX_INLINE || 5 * 1024 * 1024); // default 5MB
+const STREAM_ANALYSIS_INLINE_LIMIT = Number(import.meta.env.EVIDENCE_MAX_INLINE || 5 * 1024 * 1024); // default 5MB
 const SUMMARY_TYPES = ['key_points', 'narrative', 'prosecutorial'] as const;
 type SummaryType = typeof SUMMARY_TYPES[number];
 

@@ -11,8 +11,9 @@ import {
   jsonb,
   index,
 } from "drizzle-orm/pg-core";
-import { vector } from "pgvector/drizzle-orm";
-import { relations  } from "drizzle-orm";
+// Orphaned content: import { vector
+import {
+relations  } from "drizzle-orm";
 
 // Enable vector extension
 // CREATE EXTENSION IF NOT EXISTS vector;

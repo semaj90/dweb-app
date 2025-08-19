@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { enhancedAiPipeline } from "$lib/services/enhanced-ai-pipeline";
-import type {
+// Orphaned content: import type { RequestHandler
+import {
+enhancedAiPipeline } from "$lib/services/enhanced-ai-pipeline";
+// Orphaned content: import type {
   EnhancedSearchOptions,
   SearchRequest,
   SearchResponse,
-} from "$lib/types/ai-types";
 
 // Enhanced POST endpoint using Go microservice or local fallback
 export const POST: RequestHandler = async ({ request }) => {

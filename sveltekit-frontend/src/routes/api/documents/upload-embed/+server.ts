@@ -3,36 +3,20 @@
 // Integrates with your existing LangChain+Ollama+pgvector infrastructure
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/server/database';
-import { documents, evidence, documentVectors } from '$lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { OllamaEmbeddings } from '@langchain/ollama';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import crypto from 'crypto';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
-
-// ============================================================================
-// CONFIGURATION
-// ============================================================================
-
-const config = {
-  ollamaBaseUrl: 'http://localhost:11434',
-  embeddingModel: 'nomic-embed-text', // 384 dimensions
-  chunkSize: 1000,
-  chunkOverlap: 200,
-  uploadDir: './uploads/documents',
-  maxFileSize: 10 * 1024 * 1024, // 10MB
-  allowedTypes: [
-    'application/pdf',
-    'text/plain',
-    'text/markdown',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-  ]
-};
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/database";
+// Orphaned content: import { documents, evidence, documentVectors
+import {
+eq } from "drizzle-orm";
+// Orphaned content: import { OllamaEmbeddings
+import {
+RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+// Orphaned content: import crypto from "crypto";
+import {
+writeFile, mkdir
+import { join } from "path";
+import { existsSync, , // ============================================================================, // CONFIGURATION, // ============================================================================, , const config = {,   ollamaBaseUrl: 'http://localhost:11434',,   embeddingModel: 'nomic-embed-text', // 384 dimensions,   chunkSize: 1000,,   chunkOverlap: 200,,   uploadDir: './uploads/documents',,   maxFileSize: 10 * 1024 * 1024, // 10MB,   allowedTypes: [,     'application/pdf',,     'text/plain',,     'text/markdown',,     'application/msword',,     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',   ] } from
 
 // ============================================================================
 // EMBEDDING SERVICE

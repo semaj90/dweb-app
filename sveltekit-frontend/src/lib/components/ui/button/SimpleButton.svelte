@@ -12,7 +12,7 @@
   let {
     variant = 'primary',
     size = 'md',
-    class: className = '',
+    class: classNameVar = '',
     children,
     ...rest
   }: Props = $props();
@@ -42,7 +42,7 @@
     size === 'sm' && 'h-8 px-3 text-sm',
     size === 'md' && 'h-10 px-4 text-sm',
     size === 'lg' && 'h-12 px-6 text-base',
-    className
+  classNameVar
   ].filter(Boolean).join(' '));
  </script>
 

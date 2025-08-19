@@ -348,7 +348,7 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
               <Button
                 size="sm"
                 variant="outline"
-                onclick={() => executeExample(example)}
+                on:click={() => executeExample(example)}
                 disabled={isProcessing}
               >
                 Run
@@ -443,7 +443,7 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
 
       <div class="flex gap-2">
         <Button
-          onclick={executePrompt}
+          on:click={executePrompt}
           disabled={isProcessing || !userPrompt.trim()}
           class="flex-1"
         >
@@ -458,17 +458,17 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
 
         <Button
           variant="outline"
-          onclick={executeViaAPI}
+          on:click={executeViaAPI}
           disabled={isProcessing || !userPrompt.trim()}
         >
           Via API
         </Button>
 
         {#if currentResult}
-          <Button variant="outline" onclick={downloadResult}>
+          <Button variant="outline" on:click={downloadResult}>
             <Download class="h-4 w-4" />
           </Button>
-          <Button variant="outline" onclick={clearResults}>
+          <Button variant="outline" on:click={clearResults}>
             <RefreshCw class="h-4 w-4" />
           </Button>
         {/if}

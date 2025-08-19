@@ -5,7 +5,7 @@
 // Integrates vector search, semantic analysis, and local LLM processing
 // ======================================================================
 
-import type { Database, API } from "./types/index";
+import type { Database, API } from './types/index.js';
 
 interface RAGConfig {
   vectorStoreUrl: string;
@@ -68,8 +68,8 @@ class EnhancedRAGService {
 
     try {
       // Check development flags
-      const skipRag = process.env.SKIP_RAG_INITIALIZATION === "true";
-      const usePostgresOnly = process.env.USE_POSTGRESQL_ONLY === "true";
+      const skipRag = import.meta.env.SKIP_RAG_INITIALIZATION === "true";
+      const usePostgresOnly = import.meta.env.USE_POSTGRESQL_ONLY === "true";
 
       if (skipRag || usePostgresOnly) {
         console.log(
@@ -100,7 +100,7 @@ class EnhancedRAGService {
   private async initializeVectorStore(): Promise<void> {
     try {
       // Skip Qdrant health check in development
-      if (process.env.SKIP_QDRANT_HEALTH_CHECK === "true") {
+      if (import.meta.env.SKIP_QDRANT_HEALTH_CHECK === "true") {
         console.log("🔧 Skipping Qdrant health check - development mode");
         this.vectorClient = new InMemoryVectorStore();
         return;

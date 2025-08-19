@@ -1,10 +1,13 @@
+import { URL } from "url";
 // src/routes/api/evidence/process/+server.ts
-import type { RequestHandler } from '@sveltejs/kit';
-import { v4 as uuidv4 } from 'uuid';
-import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
+import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+v4 as uuidv4
+import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { publishToQueue } from '$lib/server/rabbitmq';
-import type { EvidenceProcessRequest } from '$lib/types/progress';
+// Orphaned content: import type { EvidenceProcessRequest
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
@@ -144,5 +147,6 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 };
 
 // Schema imports (you'll need to define these in your schema)
-import { evidenceProcessTable } from '$lib/server/schema';
-import { eq, desc } from 'drizzle-orm';
+import { evidenceProcessTable } from "$lib/server/schema";
+// Orphaned content: import {
+eq, desc

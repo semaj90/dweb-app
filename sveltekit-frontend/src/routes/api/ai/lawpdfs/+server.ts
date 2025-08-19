@@ -4,7 +4,7 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
 
 interface LawPdfRequest {
   content: string;

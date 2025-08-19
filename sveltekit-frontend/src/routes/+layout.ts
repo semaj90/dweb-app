@@ -1,5 +1,6 @@
 // @ts-nocheck
-import type { LayoutLoad } from "./$types";
+import type { LayoutLoad } from "./$types.js";
+// Orphaned content: import {
 
 export const load: LayoutLoad = async ({ url, fetch }) => {
   // Initialize default user state

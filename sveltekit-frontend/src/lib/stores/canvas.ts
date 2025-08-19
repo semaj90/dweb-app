@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { writable } from "svelte/store";
-import type { Evidence } from "../data/types";
+// Orphaned content: import type { Evidence
 
 // Sidebar state
 export const sidebarStore = writable({

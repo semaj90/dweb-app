@@ -3,15 +3,8 @@
  * Integrates graph relationships with vector search for contextual AI
  */
 
-import { writable, derived } from 'svelte/store';
-import { productionServiceClient } from './productionServiceClient.js';
-
-export interface GraphNode {
-  id: string;
-  labels: string[];
-  properties: Record<string, any>;
-  embedding?: number[];
-}
+import { writable, derived } from "svelte/store";
+import { productionServiceClient, , export interface GraphNode {,   id: string;,   labels: string[];,   properties: Record<string, any>;,   embedding?: number[]; } from
 
 export interface GraphRelationship {
   id: string;

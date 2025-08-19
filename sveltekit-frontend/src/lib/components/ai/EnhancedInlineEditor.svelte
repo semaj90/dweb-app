@@ -20,7 +20,7 @@
     minCharactersForSuggestion = 10,
     suggestionDelay = 800,
     maxSuggestions = 3,
-    className = ''
+    class = ''
   } = $props();
 
   // State management

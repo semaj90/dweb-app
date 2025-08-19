@@ -133,7 +133,7 @@
       <SearchInput
         placeholder="Search cases, evidence, notes..."
         value={searchQuery}
-        onsearch={handleSearch}
+        on:search={handleSearch}
       />
     </div>
 

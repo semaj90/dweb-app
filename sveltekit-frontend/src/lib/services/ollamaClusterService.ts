@@ -1,9 +1,9 @@
+import { writable, derived } from "svelte/store";
 /**
  * Multi-Core Ollama Cluster Service
  * Handles load balancing and distribution across Ollama instances
  */
 
-import { writable, derived } from 'svelte/store';
 
 export interface OllamaInstance {
   id: string;

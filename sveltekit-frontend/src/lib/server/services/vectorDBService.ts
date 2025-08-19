@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { db } from '$lib/server/db/drizzle';
-import { errorLogs } from '$lib/db/schema/aiHistory'; // A new table you'll need to create
+import { db } from "$lib/server/db/drizzle";
+// Orphaned content: import {
+errorLogs // A new table you'll need to create
 
 // This function stores the log and its embedding in PostgreSQL
 export async function storeLogInVectorDB(data: { log: any; embedding: number[] }) {

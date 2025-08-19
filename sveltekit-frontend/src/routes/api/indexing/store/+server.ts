@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db/drizzle'; // Your Drizzle ORM client
+import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+db // Your Drizzle ORM client
 import { indexedFiles } from '$lib/db/schema/aiHistory'; // The new schema for indexed files
 
 export async function POST({ request }) {

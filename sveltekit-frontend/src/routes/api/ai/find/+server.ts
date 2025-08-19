@@ -5,14 +5,14 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { 
-  copilotOrchestrator, 
+// Orphaned content: import type { RequestHandler
+import {
+copilotOrchestrator, 
   generateMCPPrompt,
   commonMCPQueries,
   semanticSearch,
   mcpMemoryReadGraph
-} from '$lib/utils/mcp-helpers';
+} from "$lib/utils/mcp-helpers";
 
 // Define the types locally since they're not exported from mcp-helpers
 interface MCPContextAnalysis {
@@ -39,9 +39,11 @@ interface AutoMCPSuggestion {
   [key: string]: any; // Allow additional properties
 }
 // Mock database imports for testing without DB connection
-// import { db } from '$lib/server/db';
-// import { cases, evidence, legalDocuments } from '$lib/server/db/schema-postgres';
-import { or, like, desc, sql, and, gte } from 'drizzle-orm';
+// { db } from '$lib/server/db';
+// Orphaned content: // import { cases, evidence, legalDocuments
+import {
+or, like, desc, sql, and, gte } from "drizzle-orm";
+// Orphaned content: import { URL
 // Mock Redis for testing without Redis connection
 // import { Redis } from 'ioredis';
 

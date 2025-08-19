@@ -228,7 +228,7 @@
       <div class="flex flex-wrap gap-3">
         {#if !isProcessing}
           <Button.Root
-            on:click={processBatch}
+            onclick={processBatch}
             disabled={documents.length === 0}
             class="bg-blue-600 hover:bg-blue-700"
           >
@@ -236,18 +236,18 @@
           </Button.Root>
         {:else}
           {#if !isPaused}
-            <Button.Root on:click={pauseProcessing} class="bg-yellow-600 hover:bg-yellow-700">
+            <Button.Root onclick={pauseProcessing} class="bg-yellow-600 hover:bg-yellow-700">
               ⏸️ Pause
             </Button.Root>
           {:else}
-            <Button.Root on:click={resumeProcessing} class="bg-green-600 hover:bg-green-700">
+            <Button.Root onclick={resumeProcessing} class="bg-green-600 hover:bg-green-700">
               ▶️ Resume
             </Button.Root>
           {/if}
         {/if}
         
         <Button.Root
-          on:click={clearQueue}
+          onclick={clearQueue}
           variant="outline"
           class="border-red-300 text-red-700 hover:bg-red-50"
         >
@@ -255,14 +255,14 @@
         </Button.Root>
         
         <Button.Root
-          on:click={() => gpuActor.send({ type: 'SERVICE_HEALTH_CHECK' })}
+          onclick={() => gpuActor.send({ type: 'SERVICE_HEALTH_CHECK' })}
           variant="outline"
         >
           🔍 Health Check
         </Button.Root>
         
         <Button.Root
-          on:click={() => showDetails = !showDetails}
+          onclick={() => showDetails = !showDetails}
           variant="outline"
         >
           {showDetails ? '👁️ Hide Details' : '📊 Show Details'}
@@ -318,7 +318,7 @@
       </div>
       
       <Button.Root
-        on:click={addDocument}
+        onclick={addDocument}
         disabled={!newDocumentContent.trim()}
         class="bg-green-600 hover:bg-green-700"
       >
@@ -382,7 +382,7 @@
                     <Button.Root
                       size="sm"
                       variant="outline"
-                      on:click={() => cancelDocument(queuedDoc.document.documentId)}
+                      onclick={() => cancelDocument(queuedDoc.document.documentId)}
                     >
                       Cancel
                     </Button.Root>
@@ -426,7 +426,7 @@
                     <Button.Root
                       size="sm"
                       variant="outline"
-                      on:click={() => cancelDocument(activeDoc.document.documentId)}
+                      onclick={() => cancelDocument(activeDoc.document.documentId)}
                     >
                       Cancel
                     </Button.Root>
@@ -495,7 +495,7 @@
                   <div class="flex gap-2">
                     <Button.Root
                       size="sm"
-                      on:click={() => retryDocument(docId)}
+                      onclick={() => retryDocument(docId)}
                       class="bg-blue-600 hover:bg-blue-700"
                     >
                       🔄 Retry

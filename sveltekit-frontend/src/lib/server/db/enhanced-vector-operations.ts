@@ -3,18 +3,11 @@
  * Integrates PostgreSQL vector search with AI services
  */
 
-import { db } from './index.js';
-import { cases, evidence, criminals } from './schema-postgres-enhanced.js';
-import { and, desc, sql, gt, lt } from 'drizzle-orm';
-import { productionServiceClient } from '../../services/productionServiceClient.js';
-
-export interface VectorSearchResult {
-  id: string;
-  content: string;
-  similarity: number;
-  metadata: any;
-  embedding?: number[];
-}
+import { db } from "./index.js";
+// Orphaned content: import {
+cases, evidence, criminals
+import { and, desc, sql, gt, lt } from "drizzle-orm";
+import { productionServiceClient, , export interface VectorSearchResult {,   id: string;,   content: string;,   similarity: number;,   metadata: any;,   embedding?: number[]; } from
 
 export interface RAGContext {
   query: string;

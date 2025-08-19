@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // @ts-nocheck
 // ======================================================================
 // ENHANCED LOKI.JS STORE WITH ADVANCED CACHING & REAL-TIME SYNC
@@ -5,8 +6,9 @@
 // ======================================================================
 
 import { writable, derived } from "svelte/store";
-import { browser } from "$app/environment";
-import type { Evidence } from "../data/types";
+// Orphaned content: import {
+
+import type { Evidence } from '../data/types.js';
 
 // Enhanced types for the data pipeline
 interface CacheConfig {

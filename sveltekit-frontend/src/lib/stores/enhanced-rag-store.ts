@@ -6,17 +6,17 @@
  */
 
 import { writable, derived } from "svelte/store";
-import type {
+// Orphaned content: import type {
   RAGDocument,
   SearchResult,
   RAGSystemStatus,
   MLCachingMetrics,
-} from "$lib/types/rag";
 import type { EmbeddingResponse } from "$lib/types/unified-types";
-import { createActor } from "xstate";
+// Orphaned content: import {
+
 import { ragStateMachine } from "$lib/machines/rag-machine";
-import SOMRAGSystem from "$lib/ai/som-rag-system";
-import { NeuralMemoryManager } from "$lib/optimization/neural-memory-manager";
+// Orphaned content: import SOMRAGSystem from "$lib/ai/som-rag-system";
+import {
 
 export interface RAGStoreState {
   documents: RAGDocument[];

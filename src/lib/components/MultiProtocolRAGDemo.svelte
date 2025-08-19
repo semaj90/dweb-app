@@ -196,7 +196,7 @@
                     ? 'bg-blue-600 text-white'
                     : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
                 }"
-                on:click={() => selectedProtocol = protocol}
+                onclick={() => selectedProtocol = protocol}
               >
                 {protocol.toUpperCase()}
               </button>
@@ -213,7 +213,7 @@
               disabled={isProcessing}
               class="flex-1 resize-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
               rows="3"
-              on:keydown={(e) => {
+              onkeydown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   handleQuery();
@@ -222,7 +222,7 @@
             ></textarea>
             
             <button
-              on:click={handleQuery}
+              onclick={handleQuery}
               disabled={!query.trim() || isProcessing}
               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center justify-center min-w-24"
             >
@@ -242,7 +242,7 @@
             {#each sampleQueries as sampleQuery}
               <button
                 class="px-3 py-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                on:click={() => selectSampleQuery(sampleQuery)}
+                onclick={() => selectSampleQuery(sampleQuery)}
               >
                 {sampleQuery}
               </button>

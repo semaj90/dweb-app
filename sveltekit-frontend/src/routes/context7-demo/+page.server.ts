@@ -1,9 +1,11 @@
-// @ts-nocheck
-import type { PageServerLoad } from "./$types";
-import { resolveLibraryId, getLibraryDocs } from "$lib/ai/mcp-helpers";
-import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt";
-import fs from "fs/promises";
 import path from "path";
+// @ts-nocheck
+import type { PageServerLoad } from "./$types.js";
+// Orphaned content: import {
+resolveLibraryId, getLibraryDocs
+import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt";
+// Orphaned content: import fs from "fs/promises";
+import {
 
 // Load Copilot architecture context for enhanced prompting
 async function loadCopilotContext(): Promise<Record<string, string | null>> {

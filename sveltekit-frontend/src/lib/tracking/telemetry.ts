@@ -1,14 +1,5 @@
 import { browser } from "$app/environment";
-import { realtimeComm } from '$lib/services/realtime-communication';
-
-type TelemetryPayload = {
-  session_id: string;
-  user_id?: string;
-  is_typing?: boolean;
-  visible?: boolean;
-  long_tasks?: number;
-  hints?: string[];
-};
+import { realtimeComm, , type TelemetryPayload = {,   session_id: string;,   user_id?: string;,   is_typing?: boolean;,   visible?: boolean;,   long_tasks?: number;,   hints?: string[]; } from
 
 let typingTimer: ReturnType<typeof setTimeout> | null = null;
 const TYPING_IDLE_MS = 800;

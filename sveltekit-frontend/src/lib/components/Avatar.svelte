@@ -84,16 +84,16 @@
 	<div 
 		class="mx-auto px-4 max-w-7xl" 
 		style="width: {avatarSize}; height: {avatarSize};"
-		on:click={() => handleAvatarClick()}
-		on:keydown={(e) => {
+		onclick={() => handleAvatarClick()}
+		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
 				handleAvatarClick();
 			}
 		}}
-		on:drop={handleDrop}
-		on:dragover={handleDragOver}
-		on:dragleave={handleDragLeave}
+		ondrop={handleDrop}
+		ondragover={handleDragOver}
+		ondragleave={handleDragLeave}
 		role="button"
 		tabindex={clickable ? 0 : -1}
 		aria-label="Upload or change avatar"
@@ -127,7 +127,7 @@
 			<button 
 				type="button" 
 				class="mx-auto px-4 max-w-7xl"
-				on:click={() => fileInput?.click()}
+				onclick={() => fileInput?.click()}
 				disabled={$avatarStore.isUploading}
 			>
 				{$avatarStore.isUploading ? 'Uploading...' : 'Change Avatar'}
@@ -137,7 +137,7 @@
 				<button 
 					type="button" 
 					class="mx-auto px-4 max-w-7xl"
-					on:click={() => handleRemoveAvatar()}
+					onclick={() => handleRemoveAvatar()}
 				>
 					Remove
 				</button>
@@ -148,7 +148,7 @@
 	{#if $avatarStore.error}
 		<div class="mx-auto px-4 max-w-7xl">
 			{$avatarStore.error}
-			<button type="button" on:click={() => avatarStore.clearError()} class="mx-auto px-4 max-w-7xl">×</button>
+			<button type="button" onclick={() => avatarStore.clearError()} class="mx-auto px-4 max-w-7xl">×</button>
 		</div>
 	{/if}
 </div>
@@ -157,7 +157,7 @@
 	bind:this={fileInput}
 	type="file" 
 	accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
-	on:change={handleFileSelect}
+	onchange={handleFileSelect}
 	style="display: none;"
 />
 
@@ -193,17 +193,7 @@
 		object-fit: cover;
 		transition: opacity 0.2s ease;
 	}
-
-	.loading-spinner {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: 100%;
-		background: #f9fafb;
-	}
-
-	.spinner {
+.spinner {
 		width: 24px;
 		height: 24px;
 		border: 2px solid #e5e7eb;
@@ -275,26 +265,7 @@
 	.remove-btn:hover {
 		background: #dc2626;
 	}
-
-	.error-message {
-		position: absolute;
-		top: 100%;
-		left: 0;
-		right: 0;
-		margin-top: 8px;
-		padding: 8px 12px;
-		background: #fef2f2;
-		border: 1px solid #fecaca;
-		border-radius: 6px;
-		color: #dc2626;
-		font-size: 14px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		z-index: 10;
-	}
-
-	.close-error {
+.close-error {
 		background: none;
 		border: none;
 		color: #dc2626;

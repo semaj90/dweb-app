@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { Dialog as BitsDialog } from 'bits-ui';
   import { fade, fly } from 'svelte/transition';
   import { cn } from '$lib/utils/cn';

@@ -2,25 +2,12 @@
 // Superforms + XState Integration for Legal AI Forms
 // Advanced form management with state machines and validation
 
-import { superForm, type SuperValidated, type Infer } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-import { writable, derived, type Writable, type Readable } from 'svelte/store';
-import { createActor, type ActorRefFrom } from 'xstate';
-import {
-  DocumentUploadSchema,
-  CaseCreationSchema,
-  SearchQuerySchema,
-  AIAnalysisSchema,
-  documentUploadMachine,
-  caseCreationMachine,
-  searchMachine,
-  aiAnalysisMachine,
-  type DocumentUploadActor,
-  type CaseCreationActor,
-  type SearchActor,
-  type AIAnalysisActor
-} from '$lib/state/legal-form-machines';
-import type { z } from 'zod';
+import { superForm, type SuperValidated, type Infer } from "sveltekit-superforms";
+// Orphaned content: import {
+
+import { writable, derived, type Writable, type Readable } from "svelte/store";
+import { createActor, type ActorRefFrom, {,   DocumentUploadSchema,,   CaseCreationSchema,,   SearchQuerySchema,,   AIAnalysisSchema,,   documentUploadMachine,,   caseCreationMachine,,   searchMachine,,   aiAnalysisMachine,,   type DocumentUploadActor,,   type CaseCreationActor,,   type SearchActor,,   type AIAnalysisActor } from
+// Orphaned content: import type { z
 
 // ============================================================================
 // FORM STATE INTEGRATION TYPES

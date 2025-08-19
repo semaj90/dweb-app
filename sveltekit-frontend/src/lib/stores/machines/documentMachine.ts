@@ -5,7 +5,7 @@
  */
 
 import { createMachine, assign, type ActorRefFrom } from 'xstate';
-import type { LegalDocument, Evidence, AIAnalysisResponse } from '$lib/types/unified-types';
+// Orphaned content: import type { LegalDocument, Evidence, AIAnalysisResponse
 
 export interface DocumentContext {
   documentId?: string;

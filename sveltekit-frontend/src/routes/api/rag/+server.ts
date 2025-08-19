@@ -11,12 +11,15 @@
  */
 
 import { summarizeWithQueue } from "$lib/server/pgai";
-import { librarySyncService } from "$lib/services/library-sync-service";
+// Orphaned content: import {
+
 import { error, json } from "@sveltejs/kit";
-import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import type { RequestHandler
+crypto from "crypto";
+// Orphaned content: import {
 
 // Enhanced RAG Backend Configuration
-const RAG_BACKEND_URL = process.env.RAG_BACKEND_URL || "http://localhost:8000";
+const RAG_BACKEND_URL = import.meta.env.RAG_BACKEND_URL || "http://localhost:8000";
 const RAG_TIMEOUT = 30000;
 
 /**

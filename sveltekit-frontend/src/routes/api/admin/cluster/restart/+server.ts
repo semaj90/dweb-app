@@ -5,9 +5,9 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import cluster from 'node:cluster';
-import type { Worker } from 'node:cluster';
+// Orphaned content: import type { RequestHandler
+cluster from 'node:cluster';
+// Orphaned content: import type { Worker
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

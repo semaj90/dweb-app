@@ -1,8 +1,9 @@
 // @ts-nocheck
 import { cases, criminals } from "$lib/server/db/schema-postgres";
-import { redirect } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { db } from "$lib/server/db";
-import type { PageServerLoad } from "./$types";
+// Orphaned content: import type { PageServerLoad
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.session || !locals.user) {

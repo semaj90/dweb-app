@@ -1,10 +1,12 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { db } from "$lib/server/db/index";
-import { cases, reports, evidence } from "$lib/server/db/schema-postgres";
-import { eq, and } from "drizzle-orm";
-import { randomUUID } from "crypto";
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { cases, reports, evidence
+import {
+eq, and } from "drizzle-orm";
+// Orphaned content: import { randomUUID
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
   if (!locals.user) {

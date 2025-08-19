@@ -15,7 +15,7 @@
     enableOCR?: boolean;
     enableEmbedding?: boolean;
     enableRAG?: boolean;
-    className?: string;
+    class?: string;
   }
 
   // Svelte 5 props with defaults
@@ -26,7 +26,7 @@
     enableOCR = true,
     enableEmbedding = true,
     enableRAG = true,
-    className = '',
+    class = '',
   }: Props = $props();
 
   // State variables
@@ -50,7 +50,7 @@
     try {
       const wsUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/rag/ws/uploads`;
       statusSocket = new WebSocket(wsUrl);
-      statusSocket.onopen = () => console.debug('[UploadWS] connected');
+      statusSocket.onopen=() => console.debug('[UploadWS] connected');
       statusSocket.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data || '{}');
@@ -72,19 +72,19 @@
         } catch (e) {
           console.warn('[UploadWS] parse failed', e);
         }
-      };
+      }
       statusSocket.onerror = (e) => console.warn('[UploadWS] error', e);
       statusSocket.onclose = () => {
         console.debug('[UploadWS] closed – retrying in 5s');
         setTimeout(() => connectStatusSocket(), 5000);
-      };
+      }
     } catch (e) {
       console.warn('[UploadWS] init failed', e);
     }
   }
 
   async function checkSystemStatus() {
-    const status = { ocr: false, embeddings: false, search: false, storage: false };
+    const status = { ocr: false, embeddings: false, search: false, storage: false }
     try {
       const aggregate = await fetch(MCP_ENDPOINTS.status).catch(() => null);
       if (aggregate?.ok) {

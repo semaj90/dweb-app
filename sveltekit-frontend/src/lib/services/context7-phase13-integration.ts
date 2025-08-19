@@ -6,20 +6,10 @@
  */
 
 import { writable, derived, type Writable } from "svelte/store";
-import { browser } from "$app/environment";
-import { 
-  copilotOrchestrator, 
-  mcpMemoryReadGraph,
-  semanticSearch,
-  generateMCPPrompt,
-  validateMCPRequest,
-  commonMCPQueries,
-  type OrchestrationOptions,
-  type MCPToolRequest
-} from "$lib/utils/mcp-helpers";
-import type { EnhancedRAGEngine } from "./enhanced-rag-pagerank";
+import { browser, { ,   copilotOrchestrator, ,   mcpMemoryReadGraph,,   semanticSearch,,   generateMCPPrompt,,   validateMCPRequest,,   commonMCPQueries,,   type OrchestrationOptions,,   type MCPToolRequest } from
+// Orphaned content: import type { EnhancedRAGEngine
 import type { StatelessAPICoordinator } from "./stateless-api-coordinator";
-import { phase13Stores } from "$lib/state/phase13StateMachine";
+// Orphaned content: import {
 
 // Context7 MCP integration types
 export interface MCPSemanticResult {

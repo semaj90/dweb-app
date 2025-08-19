@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Props } from "$lib/types/global";
-  import { createEventDispatcher } from 'svelte';
   import { cn } from '$lib/utils/cn';
   import { ChevronDown, ChevronUp, MoreHorizontal, Search, Filter } from 'lucide-svelte';
 
-
-
+  interface DataGridProps extends Props {
+    onSelectionChange?: (event: { selectedRows: Array<string | number> }) => void;
+  }
 
   let {
     columns,
@@ -15,12 +15,11 @@
     multiSelect = false,
     sortable = true,
     filterable = true,
-    className = '',
+    class = '',
     emptyMessage = 'No data available',
-    children
-  }: Props = $props();
-
-  const dispatch = createEventDispatcher();
+    children,
+    onSelectionChange
+  }: DataGridProps = $props();
   
   let selectedRows = $state<Set<string | number>>(new Set());
   let sortConfig = $state<{column: string, direction: 'asc' | 'desc'} | null>(null);
@@ -94,7 +93,7 @@
       selectedRows = new Set([rowId]);
     }
     
-    dispatch('selectionChange', { selectedRows: Array.from(selectedRows) });
+    onSelectionChange?.({ selectedRows: Array.from(selectedRows) });
   }
 
   function handleSelectAll() {
@@ -106,7 +105,7 @@
       selectedRows = new Set(sortedData.map(row => row.id));
     }
     
-    dispatch('selectionChange', { selectedRows: Array.from(selectedRows) });
+    onSelectionChange?.({ selectedRows: Array.from(selectedRows) });
   }
 
   function handleColumnFilter(column: string, value: string) {

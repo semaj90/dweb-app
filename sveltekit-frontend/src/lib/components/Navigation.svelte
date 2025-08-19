@@ -38,7 +38,7 @@
 						<Button
 							variant={currentPath === item.href ? 'default' : 'ghost'}
 							size="sm"
-							onclick={() => handleNavigation(item.href)}
+							on:click={() => handleNavigation(item.href)}
 							class={cn(
 								"justify-start gap-2 cursor-pointer transition-all duration-100",
 								currentPath === item.href && "bg-muted"
@@ -59,7 +59,7 @@
 				<Button
 					variant="outline"
 					size="sm"
-					onclick={() => {
+					on:click={() => {
 						// Trigger global FindModal via Ctrl+K event
 						window.dispatchEvent(new KeyboardEvent('keydown', {
 							key: 'k',

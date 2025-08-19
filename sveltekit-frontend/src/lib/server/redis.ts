@@ -1,20 +1,12 @@
 // @ts-nocheck
 import { createClient } from "redis";
-import { Redis } from 'ioredis';
-
-let redisClient: any = null;
-
-// IORedis connection for high-performance operations
-export const REDIS_CONNECTION = new Redis({
-  host: '127.0.0.1',
-  port: 6379
-});
+import { Redis, , let redisClient: any = null;, , // IORedis connection for high-performance operations, export const REDIS_CONNECTION = new Redis({,   host: '127.0.0.1',,   port: 6379 } from
 
 export async function createRedisClient() {
   if (redisClient) {
     return redisClient;
   }
-  const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+  const redisUrl = import.meta.env.REDIS_URL || "redis://localhost:6379";
 
   redisClient = createClient({
     url: redisUrl,

@@ -1,10 +1,11 @@
 /**
  * RAG Search API - Semantic search across processed documents
  */
-import { db, documents, embeddings, searchSessions } from '$lib/server/database';
-import { json } from '@sveltejs/kit';
+import { db, documents, embeddings, searchSessions } from "$lib/server/database";
+// Orphaned content: import {
+
 import { desc, eq, sql } from 'drizzle-orm';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
 
 // Generate embedding for search query
 async function generateQueryEmbedding(query: string) {

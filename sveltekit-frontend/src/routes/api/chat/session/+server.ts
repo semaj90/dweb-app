@@ -1,8 +1,11 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/db/connection';
-import { chatSessions } from '$lib/db/schema';
-import { eq, desc } from 'drizzle-orm';
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/db/connection";
+// Orphaned content: import { chatSessions
+import {
+eq, desc } from "drizzle-orm";
+// Orphaned content: import { URL
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {

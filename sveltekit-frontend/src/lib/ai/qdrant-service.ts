@@ -1,3 +1,4 @@
+import { QdrantClient } from "@qdrant/js-client-rest";
 // @ts-nocheck
 // TODO: Integrate QdrantService with Context7 audit/agent pipeline
 // - Use this service for vector search in semantic_search-driven audit
@@ -34,7 +35,6 @@ export async function findSimilarForAudit(
 
 // TODO: After initial test, connect this to /api/audit/semantic and agent integration for live pipeline validation
 // Qdrant Service for Legal Document Vector Operations
-import { QdrantClient } from "@qdrant/js-client-rest";
 
 export interface LegalDocumentMetadata {
   documentId: string;
@@ -159,8 +159,8 @@ export class QdrantService {
 
 // Export singleton instance
 export const qdrantService = new QdrantService({
-  url: process.env.QDRANT_URL || "http://localhost:6333",
+  url: import.meta.env.QDRANT_URL || "http://localhost:6333",
   collectionName: "legal_documents",
   vectorSize: 768,
-  apiKey: process.env.QDRANT_API_KEY,
+  apiKey: import.meta.env.QDRANT_API_KEY,
 });

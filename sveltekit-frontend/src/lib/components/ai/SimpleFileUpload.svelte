@@ -12,7 +12,7 @@
     enableOCR?: boolean;
     enableEmbedding?: boolean;
     enableRAG?: boolean;
-    className?: string;
+    class?: string; // note: renamed locally to avoid reserved identifier usage
   }
 
   // Svelte 5 props with defaults
@@ -23,7 +23,7 @@
     enableOCR = true,
     enableEmbedding = true,
     enableRAG = true,
-    className = '',
+    class: classNameVar = '',
   }: Props = $props();
 
   // State variables
@@ -162,7 +162,7 @@
   }
 </script>
 
-<div class={`space-y-4 ${className}`}>
+<div class={`space-y-4 ${classNameVar}`}>
   <!-- System Status -->
   {#if systemStatus.services}
     <div class="mb-4 p-3 bg-gray-50 rounded-lg">
@@ -180,13 +180,13 @@
   <!-- Upload Zone -->
   <div
     class="border-2 border-dashed rounded-lg p-8 text-center transition-colors {isDragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}"
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex="0"
-    on:click={() => fileInput?.click()}
-    on:keydown={(e) => e.key === 'Enter' && fileInput?.click()}
+    onclick={() => fileInput?.click()}
+    onkeydown={(e) => e.key === 'Enter' && fileInput?.click()}
   >
     <Upload class="w-12 h-12 text-gray-400 mx-auto mb-4" />
     <p class="text-lg font-medium text-gray-600 mb-2">
@@ -202,7 +202,7 @@
       multiple
       {accept}
       class="hidden"
-      on:change={handleFileInput}
+      onchange={handleFileInput}
     />
   </div>
 
@@ -265,3 +265,9 @@
     word-break: break-all;
   }
 </style>
+
+<!-- Provide a default export to satisfy default import usage -->
+<script context="module" lang="ts">
+  import Component from './SimpleFileUpload.svelte';
+  export default Component;
+</script>

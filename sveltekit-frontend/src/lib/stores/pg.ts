@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 
-const pool = new Pool({ connectionString: process.env.PG_CONN });
+const pool = new Pool({ connectionString: import.meta.env.PG_CONN });
 
 function tempToPgRadius(temp = 0.3) {
   const minRadius = 0.1; // tight

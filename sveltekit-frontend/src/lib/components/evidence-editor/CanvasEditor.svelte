@@ -755,13 +755,13 @@
   <canvas
     bind:this={canvas}
     class="container mx-auto px-4"
-    on:drop={handleDrop}
-    on:dragover={handleDragOver}
-    on:click={handleCanvasClick}
-    on:mousedown={handleMouseDown}
-    on:mousemove={handleMouseMove}
-    on:mouseup={handleMouseUp}
-    on:mouseleave={handleMouseUp}
+    ondrop={handleDrop}
+    ondragover={handleDragOver}
+    onclick={handleCanvasClick}
+    onmousedown={handleMouseDown}
+    onmousemove={handleMouseMove}
+    onmouseup={handleMouseUp}
+    onmouseleave={handleMouseUp}
     on:wheel={handleWheel}
     on:contextmenu|preventDefault
   ></canvas>

@@ -4,7 +4,7 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
 
 // Import orchestrator and services
 import {
@@ -14,9 +14,8 @@ import {
   processRAGPipeline,
   rerankSearchResults,
 } from '$lib/services/comprehensive-database-orchestrator';
-
-// Import Ollama service for local model processing
-import { ollamaService } from '$lib/services/ollamaService';
+// Orphaned content: // Import Ollama service for local model processing
+import { ollamaService
 
 // Enhanced request interface
 interface EnhancedChatRequest {

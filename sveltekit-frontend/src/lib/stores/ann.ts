@@ -5,7 +5,7 @@ export async function queryQdrant(vec: number[], limit = 200, temperature = 0.3)
   const score_threshold = minScore - (minScore - maxScore) * t;
 
   const body = { vector: vec, limit, with_payload: true, with_vector: true, score_threshold };
-  const r = await fetch(`${process.env.QDRANT}/collections/chunks/points/search`, {
+  const r = await fetch(`${import.meta.env.QDRANT}/collections/chunks/points/search`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

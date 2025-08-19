@@ -4,12 +4,12 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
 import {
-  synthesizeAIInput,
+synthesizeAIInput,
   processAIAssistantQuery,
-} from '$lib/services/comprehensive-database-orchestrator';
-import { ollamaService } from '$lib/services/ollamaService';
+} from "$lib/services/comprehensive-database-orchestrator";
+// Orphaned content: import { ollamaService
 
 interface DocumentDraftingRequest {
   documentType: string;

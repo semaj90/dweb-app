@@ -1,10 +1,11 @@
-import { json } from '@sveltejs/kit';
-import { db, documents, embeddings } from '$lib/server/database';
+import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+db, documents, embeddings
 import { sql } from 'drizzle-orm';
 
 export const GET = async () => {
   try {
-    const TARGET_DIM = parseInt(process.env.EMBEDDING_DIM || process.env.VECTOR_DIM || '768', 10);
+    const TARGET_DIM = parseInt(import.meta.env.EMBEDDING_DIM || import.meta.env.VECTOR_DIM || '768', 10);
 
     // Counts
   const docsCountRes = await db.execute(sql`SELECT COUNT(*) AS count FROM documents`) as any;

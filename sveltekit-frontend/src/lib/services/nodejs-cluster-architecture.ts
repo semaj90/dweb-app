@@ -4,14 +4,16 @@
  * Provides horizontal scaling with intelligent load balancing and health monitoring
  */
 
-import cluster from 'node:cluster';
-import type { Worker } from 'node:cluster';
-import { cpus } from 'node:os';
-import { EventEmitter } from 'node:events';
-import { createServer } from 'node:http';
-// Handler will be imported dynamically when build is available
+cluster from 'node:cluster';
+// Orphaned content: import type { Worker
+import {
+cpus } from "node:os";
+// Orphaned content: import { EventEmitter
+import {
+createServer } from "node:http";
+// Orphaned content: // Handler will be imported dynamically when build is available
 let handler: any;
-import { writable, type Writable } from 'svelte/store';
+import { writable, type Writable
 
 // Cluster configuration interfaces
 export interface ClusterConfig {
@@ -379,7 +381,7 @@ export class SvelteKitClusterManager extends EventEmitter {
         // Send health metrics back to primary
         process.send!({
           type: 'health-response',
-          workerId: process.env.CLUSTER_WORKER_ID,
+          workerId: import.meta.env.CLUSTER_WORKER_ID,
           metrics: {
             memoryUsage: process.memoryUsage(),
             cpuUsage: process.cpuUsage(),
@@ -623,7 +625,7 @@ export function createClusterSessionMiddleware(redisUrl?: string) {
   return (req: any, res: any, next: any) => {
     // Add cluster-aware session handling
     // This would integrate with Redis for shared session storage
-    req.clusterId = process.env.CLUSTER_WORKER_ID;
+    req.clusterId = import.meta.env.CLUSTER_WORKER_ID;
     next();
   };
 }

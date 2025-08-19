@@ -5,10 +5,13 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { db } from "$lib/server/db/drizzle";
-// Note: Using generic documents table instead of legalDocuments
-import { eq, sql } from "drizzle-orm";
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/drizzle";
+// Orphaned content: // Note: Using generic documents table instead of legalDocuments
+import { eq, sql
+import {
+URL } from "url";
 
 // Embedding models configuration
 interface EmbeddingModel {
@@ -57,13 +60,13 @@ const VECTOR_BACKENDS: Record<string, VectorBackend> = {
   pgvector: {
     id: "pgvector",
     name: "PostgreSQL pgvector",
-    endpoint: process.env.DATABASE_URL || "",
+    endpoint: import.meta.env.DATABASE_URL || "",
     supported: true,
   },
   qdrant: {
     id: "qdrant",
     name: "Qdrant Vector DB",
-    endpoint: process.env.QDRANT_URL || "http://localhost:6333",
+    endpoint: import.meta.env.QDRANT_URL || "http://localhost:6333",
     supported: false, // Will be checked at runtime
   },
 };

@@ -1,8 +1,8 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
 	// Using standard button element instead of melt-ui Button
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils/cn';
+	import { createButton } from '@melt-ui/svelte';
 	
 	const buttonVariants = cva(
 		'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
@@ -45,6 +45,18 @@
 		onclick?: (e: MouseEvent) => void;
 		'data-testid'?: string;
 	};
+
+	interface $$RestProps {
+		[key: string]: any;
+	}
+
+	let $$restProps: $$RestProps = {};
+	$: $$restProps = Object.fromEntries(
+		Object.entries($$props).filter(([key]) => ![
+			'variant', 'size', 'disabled', 'type', 'href', 'target', 
+			'loading', 'loadingText', 'onclick', 'class'
+		].includes(key))
+	);
 	
 	export let variant: $$Props['variant'] = 'default';
 	export let size: $$Props['size'] = 'default';
@@ -60,6 +72,16 @@
 	
 	$: isDisabled = disabled || loading;
 	$: buttonClass = cn(buttonVariants({ variant, size }), className);
+
+	// Create melt-ui button
+	const {
+		elements: { root: MeltButton },
+		options: { disabled: disabledStore }
+	} = createButton({
+		disabled: isDisabled
+	});
+
+	$: disabledStore.set(isDisabled);
 </script>
 
 {#if href}
@@ -70,9 +92,9 @@
 		role="button"
 		tabindex="0"
 		aria-disabled={isDisabled}
-		data-testid={$$props['data-testid']}
-		on:click
-		on:keydown={(e) => {
+		data-testid={$$restProps['data-testid']}
+		onclick
+		onkeydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
 				e.currentTarget.click();
@@ -107,12 +129,13 @@
 		{/if}
 	</a>
 {:else}
-	<MeltButton
+	<button
+		use:MeltButton
 		{type}
 		disabled={isDisabled}
 		class={buttonClass}
-		data-testid={$$props['data-testid']}
-		on:click
+		data-testid={$$restProps['data-testid']}
+		onclick
 	>
 		{#if loading}
 			<svg 
@@ -140,5 +163,5 @@
 		{:else}
 			<slot />
 		{/if}
-	</MeltButton>
+	</button>
 {/if}

@@ -237,7 +237,7 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
   };
 </script>
 
-<svelte:window on:mouseover={handleElementHover as any} />
+<svelte:window onmouseover={handleElementHover as any} />
 
 <div class="flex flex-col h-full max-w-4xl mx-auto">
   <!-- Chat Header -->
@@ -289,7 +289,7 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
             <Button 
               variant="outline" 
               size="sm"
-              onclick={() => useSelfPrompt(suggestion)}
+              on:click={() => useSelfPrompt(suggestion)}
               disabled={isTyping}
             >
               {suggestion}
@@ -397,12 +397,12 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
           <Input
             bind:value={currentMessage}
             placeholder="Ask about evidence, legal precedents, case strategy..."
-            onkeydown={handleKeyDown}
+            on:keydown={handleKeyDown}
             disabled={isTyping}
           />
         </div>
         <Button 
-          onclick={sendMessage}
+          on:click={sendMessage}
           disabled={isTyping || !currentMessage.trim()}
         >
           <Send class="w-4 h-4" />

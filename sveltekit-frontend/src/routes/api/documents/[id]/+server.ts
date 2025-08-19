@@ -1,9 +1,10 @@
-// @ts-nocheck
 import { legalDocuments } from "$lib/server/db/unified-schema";
-import type { RequestEvent } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+// @ts-nocheck
+type { RequestEvent }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq
+import {
+db } from "$lib/server/db/index";
 
 // Sample documents for fallback
 const sampleDocuments = [

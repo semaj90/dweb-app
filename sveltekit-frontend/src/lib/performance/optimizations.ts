@@ -3,7 +3,8 @@
 // #get-library-docs sveltekit2 #memory #create_entities
 
 import { db } from "$lib/server/db";
-import { sql } from "drizzle-orm";
+// Orphaned content: import {
+
 import Redis from "ioredis";
 
 // 1. Database Query Optimization
@@ -57,7 +58,7 @@ export class CacheService {
   private redis: Redis;
 
   constructor() {
-    this.redis = new Redis(process.env.REDIS_URL || "redis://localhost:6379");
+    this.redis = new Redis(import.meta.env.REDIS_URL || "redis://localhost:6379");
   }
 
   async cacheCase(caseId: string, caseData: any, ttl = 3600) {

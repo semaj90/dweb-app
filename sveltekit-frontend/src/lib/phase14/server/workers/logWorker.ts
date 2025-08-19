@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Worker } from 'bullmq';
-// import { logQueue } from '$lib/server/queues/logQueue'; // Missing module
+// Orphaned content: // import { logQueue // Missing module
 import { getEmbedding } from '$lib/server/services/embeddingService'; // You'll create this
 import { storeLogInVectorDB } from '$lib/server/services/vectorDBService'; // You'll create this
 

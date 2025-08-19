@@ -1,12 +1,14 @@
 // @ts-nocheck
 // Login API endpoint using Lucia v3 and bcrypt
 import { users } from "$lib/server/db/schema-postgres";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import { hashPassword, verifyPassword } from "$lib/auth/password";
-import { lucia } from "$lib/server/auth";
-import { db } from "$lib/server/db";
+type { RequestHandler }, {
+json } from "@sveltejs/kit";
+// Orphaned content: import { eq
+import {
+hashPassword, verifyPassword } from "$lib/auth/password";
+// Orphaned content: import { lucia
+import {
+db } from "$lib/server/db";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {

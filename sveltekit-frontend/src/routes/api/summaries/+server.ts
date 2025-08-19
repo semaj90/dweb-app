@@ -4,31 +4,23 @@
 // Supports: Chunking, Streaming, Async Processing, Nomadic Embeddings
 
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { ollamaService } from "$lib/services/ollama-service";
+// Orphaned content: import {
+
 import { qdrantService } from "$lib/server/services/qdrant-service";
-import VectorService from "$lib/server/services/vector-service";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import VectorService from "$lib/server/services/vector-service";
+import {
+
 import {
   evidence,
   cases,
   legalDocuments,
 } from "$lib/server/db/schema-postgres";
-import { eq, and, inArray } from "drizzle-orm";
-import Fuse from "fuse.js";
-import { interpret } from "xstate";
-import { aiSummaryMachine } from "$lib/machines/aiSummaryMachine";
+// Orphaned content: import { eq, and, inArray
+Fuse from "fuse.js";
+// Orphaned content: import {
 
-// Types for AI Mix Functions
-interface SummaryRequest {
-  type: "case" | "evidence" | "legal_document" | "cross_analysis";
-  targetId: string;
-  depth: "quick" | "comprehensive" | "forensic";
-  includeRAG: boolean;
-  includeUserActivity: boolean;
-  enableStreaming: boolean;
-  chunkSize?: number;
-  userId?: string;
-}
+import { aiSummaryMachine } from "$lib/machines/aiSummaryMachine";
+import { URL, , // Types for AI Mix Functions, interface SummaryRequest {,   type: "case" | "evidence" | "legal_document" | "cross_analysis";,   targetId: string;,   depth: "quick" | "comprehensive" | "forensic";,   includeRAG: boolean;,   includeUserActivity: boolean;,   enableStreaming: boolean;,   chunkSize?: number;,   userId?: string; } from
 
 interface AILLMOutput {
   content: string;

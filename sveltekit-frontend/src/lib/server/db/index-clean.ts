@@ -1,8 +1,9 @@
+import { Pool } from "pg";
 // @ts-nocheck
 import { building } from "$app/environment";
-import * as schema from "$lib/server/db/schema-postgres";
-import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+// Orphaned content: import * as schema from "$lib/server/db/schema-postgres";
+import {
+drizzle, type NodePgDatabase
 
 let _db: NodePgDatabase<typeof schema> | null = null;
 let _pool: Pool | null = null;
@@ -15,7 +16,7 @@ function initializeDatabase(): NodePgDatabase<typeof schema> | null {
   if (_db) return _db;
 
   const databaseUrl =
-    process.env.DATABASE_URL ||
+    import.meta.env.DATABASE_URL ||
     "postgresql://postgres:postgres@localhost:5432/prosecutor_db";
 
   console.log("🐘 Connecting to PostgreSQL database");

@@ -1,10 +1,11 @@
+import crypto from "crypto";
 // @ts-nocheck
 // Loki.js based local memory and sync service for enhanced performance
 // Browser environment check
 const browser = typeof window !== "undefined";
-import Loki from "lokijs";
-import type { Collection } from "lokijs";
-import type { Evidence } from "../stores/evidenceStore";
+Loki from "lokijs";
+// Orphaned content: import type { Collection
+import type { Evidence } from '../stores/evidenceStore.js';
 
 interface LokiEvidence extends Evidence {
   $loki?: number;

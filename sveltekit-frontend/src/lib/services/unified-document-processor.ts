@@ -4,23 +4,14 @@
  * Uses gemma3-legal:latest for document processing
  */
 
-import type { RequestHandler } from '@sveltejs/kit';
-import { nomicEmbeddingService } from './nomic-embedding-service.js';
-import { legalNLP } from './sentence-transformer.js';
-import { goMicroserviceMachine, goMicroserviceServices } from '$lib/stores/machines/goMicroserviceMachine.js';
-import { createActor } from 'xstate';
-import { aiSummaryMachine } from '$lib/machines/aiSummaryMachine.js';
+import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
 
-export interface DocumentProcessingConfig {
-  enableOCR: boolean;
-  enableLegalBERT: boolean;
-  enableEmbeddings: boolean;
-  enableSummarization: boolean;
-  enableMinIOStorage: boolean;
-  model: 'gemma3-legal:latest' | 'nomic-embed-text:latest';
-  chunkSize: number;
-  confidence: number;
-}
+import { legalNLP } from "./sentence-transformer.js";
+// Orphaned content: import {
+goMicroserviceMachine, goMicroserviceServices
+import { createActor } from "xstate";
+import { aiSummaryMachine, , export interface DocumentProcessingConfig {,   enableOCR: boolean;,   enableLegalBERT: boolean;,   enableEmbeddings: boolean;,   enableSummarization: boolean;,   enableMinIOStorage: boolean;,   model: 'gemma3-legal:latest' | 'nomic-embed-text:latest';,   chunkSize: number;,   confidence: number; } from
 
 export interface ProcessingResult {
   success: boolean;

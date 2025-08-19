@@ -1,17 +1,21 @@
 // @ts-nocheck
-import { fail, redirect } from '@sveltejs/kit';
-import { superValidate, message } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-import { fileUploadSchema } from '$lib/schemas/upload';
-import { db } from '$lib/server/database';
-import { evidence } from '$lib/server/database';
-import { documentVectors } from '$lib/db/schema/vectors';
-import { eq } from 'drizzle-orm';
-import { ollamaService } from '$lib/services/ollamaService';
-import crypto from 'crypto';
-import { writeFile, mkdir } from 'fs/promises';
+import { fail, redirect } from "@sveltejs/kit";
+// Orphaned content: import {
+superValidate, message
+import { zod } from "sveltekit-superforms/adapters";
+// Orphaned content: import {
+
+{ db }, {
+evidence } from "$lib/server/database";
+// Orphaned content: import { documentVectors
+import {
+eq } from "drizzle-orm";
+// Orphaned content: import { ollamaService
+crypto from "crypto";
+// Orphaned content: import {
+writeFile, mkdir
 import { join } from 'path';
-import type { PageServerLoad, Actions } from './$types';
+// Orphaned content: import type { PageServerLoad, Actions
 
 const UPLOAD_DIR = 'uploads';
 

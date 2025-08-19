@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { WebSocketServer } from "ws";
-import type { IncomingMessage } from "http";
+// Orphaned content: import type { IncomingMessage
 import type { Socket } from "net";
+// Orphaned content: import {
 
 // Store active connections per case
 const caseConnections = new Map<string, Set<any>>();

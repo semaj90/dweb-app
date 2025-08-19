@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // @ts-nocheck
 /**
  * XState State Machine for Evidence Chain of Custody Workflow
@@ -6,13 +7,13 @@
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-import type { Evidence, NewEvidence } from "$lib/db/schema";
-import { db } from "$lib/db";
+// Orphaned content: import type { Evidence, NewEvidence
 import {
+db } from "$lib/db";
+// Orphaned content: import {
   evidence,
   evidenceVectors,
   collaborationSessions,
-} from "$lib/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 
 // Types for the custody workflow state machine

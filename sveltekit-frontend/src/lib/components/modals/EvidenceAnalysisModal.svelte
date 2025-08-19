@@ -153,7 +153,7 @@ https://svelte.dev/e/js_parse_error -->
           <Button 
             variant="primary" 
             size="sm" 
-            onclick={() => analyzeEvidence()}
+            on:click={() => analyzeEvidence()}
             disabled={isAnalyzing}
           >
             {#if isAnalyzing}
@@ -287,7 +287,7 @@ https://svelte.dev/e/js_parse_error -->
                 placeholder="Add tags (comma-separated)"
                 class="space-y-4"
               />
-              <Button size="sm" onclick={() => updateTags()} disabled={!newTags.trim()}>
+              <Button size="sm" on:click={() => updateTags()} disabled={!newTags.trim()}>
                 Add
               </Button>
             </div>
@@ -315,10 +315,10 @@ https://svelte.dev/e/js_parse_error -->
   {/if}
 
   <svelte:fragment slot="footer" let:close>
-    <Button variant="secondary" onclick={() => close()}>
+    <Button variant="secondary" on:click={() => close()}>
       Close
     </Button>
-    <Button variant="primary" onclick={() => onsaveAnalysis?.()}>
+    <Button variant="primary" on:click={() => onsaveAnalysis?.()}>
       Save Analysis
     </Button>
   </svelte:fragment>

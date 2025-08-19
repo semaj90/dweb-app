@@ -1,26 +1,21 @@
+import { URL } from "url";
 // @ts-nocheck
 // Evidence Synthesis API - Context7 Best Practices Implementation
 // File: src/routes/api/evidence/synthesize/+server.ts
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { db } from "$lib/server/db/index";
-import { evidence, cases } from "$lib/server/db/schema-postgres";
-import { eq, and, inArray } from "drizzle-orm";
-import { enhancedRAGService } from "$lib/services/enhanced-rag-service";
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { evidence, cases
+import {
+eq, and, inArray } from "drizzle-orm";
+// Orphaned content: import { enhancedRAGService
 import type { RAGResponse } from "$lib/types/rag";
-import { aiService } from "$lib/services/ai-service";
-import { createClient } from "redis";
-import { randomUUID } from "crypto";
+// Orphaned content: import {
 
-interface SynthesisRequest {
-  evidenceIds: string[];
-  synthesisType: "merge" | "compare" | "timeline" | "correlation";
-  prompt?: string;
-  caseId: string;
-  title: string;
-  description?: string;
-}
+import { createClient } from "redis";
+import { randomUUID, , interface SynthesisRequest {,   evidenceIds: string[];,   synthesisType: "merge" | "compare" | "timeline" | "correlation";,   prompt?: string;,   caseId: string;,   title: string;,   description?: string; } from
 
 interface SynthesisResult {
   synthesizedEvidence: any;
@@ -37,7 +32,7 @@ async function initRedis() {
   if (!redisClient) {
     try {
       redisClient = createClient({
-        url: process.env.REDIS_URL || "redis://localhost:6379",
+        url: import.meta.env.REDIS_URL || "redis://localhost:6379",
       });
       await redisClient.connect();
     } catch (error) {

@@ -1,27 +1,18 @@
 // @ts-nocheck
 import { evidence } from "$lib/server/db/schema-postgres";
-import { error, fail } from "@sveltejs/kit";
+// Orphaned content: import {
+error, fail
 import { eq, and } from "drizzle-orm";
-import { superValidate } from "sveltekit-superforms";
-import { zod } from "sveltekit-superforms/adapters";
-import { z } from "zod";
-import { db } from "$lib/server/db/index";
-import { createRedisClient } from "$lib/server/redis";
-import type { PageServerLoad } from "./$types";
+// Orphaned content: import {
 
-// Schema for validating evidence form data
-const evidenceSchema = z.object({
-  id: z.string().optional(),
-  caseId: z.string().uuid(),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  type: z.enum(["document", "image", "video", "audio", "other"]),
-  url: z.string().url("Must be a valid URL").optional(),
-  fileSize: z.number().optional(),
-  mimeType: z.string().optional(),
-  tags: z.array(z.string()).default([]),
-  metadata: z.record(z.unknown()).optional(),
-});
+import { zod } from "sveltekit-superforms/adapters";
+// Orphaned content: import {
+
+import { db } from "$lib/server/db/index";
+// Orphaned content: import {
+
+import type { PageServerLoad } from "./$types.js";
+import { URL, , // Schema for validating evidence form data, const evidenceSchema = z.object({,   id: z.string().optional(),,   caseId: z.string().uuid(),,   title: z.string().min(1, "Title is required"),,   description: z.string().optional(),,   type: z.enum(["document", "image", "video", "audio", "other"]),,   url: z.string().url("Must be a valid URL").optional(),,   fileSize: z.number().optional(),,   mimeType: z.string().optional(),,   tags: z.array(z.string()).default([]),,   metadata: z.record(z.unknown()).optional(), } from
 
 export const load: PageServerLoad = async ({ url, locals }) => {
   const user = locals.user;

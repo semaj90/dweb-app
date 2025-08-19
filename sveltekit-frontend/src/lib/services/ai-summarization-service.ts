@@ -4,15 +4,11 @@
  * Comprehensive document processing and analysis pipeline
  */
 import { ollamaCudaService } from "./ollama-cuda-service";
-import { db } from "$lib/server/db";
-import {
-  evidence,
-  embeddingCache,
-  cases,
-} from "$lib/server/db/schema-postgres-enhanced";
-import { eq, sql, and, desc, isNotNull } from "drizzle-orm";
+import { db, {,   evidence,,   embeddingCache,,   cases, } from
+// Orphaned content: import { eq, sql, and, desc, isNotNull
 import type { AiAnalysisResult } from "$lib/schemas/file-upload";
-import { createHash } from "crypto";
+// Orphaned content: import {
+
 import { SystemMessage, HumanMessage } from "@langchain/core/messages";
 
 export interface SummarizationOptions {

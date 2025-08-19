@@ -1,7 +1,9 @@
+import crypto from "crypto";
 // @ts-nocheck
 import { writable } from "svelte/store";
-import { browser } from "$app/environment";
-import type { Evidence } from "../data/types";
+// Orphaned content: import {
+
+import type { Evidence } from '../data/types.js';
 
 let lokiDb: any = null;
 let db: any = null;

@@ -39,11 +39,26 @@
       "Bash(where redis-server)",
       "Bash(./rag-kratos.exe)",
       "Bash(install-nats-server.bat)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(zx:*)",
+      "Bash(npm run:*)",
+      "Bash(npm run auto:solve:*)",
+      "Bash(timeout 10 zx:*)",
+      "Bash(npm run:*)",
+      "Bash(./bin/upload-service.exe)",
+      "Bash(timeout 15 zx:*)",
+      "Bash(timeout:*)",
+      "Bash(./upload-service.exe)",
+      "Bash(zx:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "additionalDirectories": [
-      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app",
+      "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice",
+      "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-services"
     ]
   }
 }

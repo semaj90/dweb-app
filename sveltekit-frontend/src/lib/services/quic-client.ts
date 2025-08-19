@@ -1,9 +1,11 @@
+import path from "path";
+import stream from "stream";
 // QUIC/HTTP3 Client Service for SvelteKit 2
 // Eliminates head-of-line blocking for streaming LLM responses
 // Integrates with WebGPU processing and real-time tensor operations
 
 import { writable, derived, get, type Writable } from 'svelte/store';
-import type { TensorOperation, StreamingResponse, QUICMetrics } from '../types/quic-types';
+// Orphaned content: import type { TensorOperation, StreamingResponse, QUICMetrics
 
 // QUIC Connection State
 interface QUICConnectionState {

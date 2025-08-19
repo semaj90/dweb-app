@@ -585,14 +585,14 @@
         title="{modalType === 'create' ? 'Create New' : 'Edit'} {activeTab.toUpperCase().slice(0, -1)}"
         fields={currentFormFields}
         submitLabel={modalType === 'create' ? 'Create' : 'Update'}
-        onsubmit={(data) => {
+        on:submit={(data) => {
           if (modalType === 'create') {
             createItem(activeTab, data);
           } else {
             updateItem(activeTab, modalData?.id, data);
           }
         }}
-        oncancel={closeModal}
+        on:cancel={closeModal}
       />
     </YoRHaModal>
   {/if}
@@ -603,7 +603,7 @@
       <YoRHaNotification
         type={notification.type}
         message={notification.message}
-        onclose={() => notifications = notifications.filter(n => n.id !== notification.id)}
+        on:close={() => notifications = notifications.filter(n => n.id !== notification.id)}
       />
     {/each}
   </div>

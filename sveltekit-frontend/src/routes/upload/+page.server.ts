@@ -1,10 +1,12 @@
-import { fail } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-import { fileUploadSchema } from '$lib/schemas/upload';
-import type { Actions, PageServerLoad } from './$types';
+import { fail } from "@sveltejs/kit";
+// Orphaned content: import {
 
-const UPLOAD_SERVICE_URL = process.env.UPLOAD_SERVICE_URL || 'http://localhost:8093';
+import { zod } from "sveltekit-superforms/adapters";
+// Orphaned content: import {
+
+import type { Actions, PageServerLoad } from './$types.js';
+
+const UPLOAD_SERVICE_URL = import.meta.env.UPLOAD_SERVICE_URL || 'http://localhost:8093';
 
 export const load: PageServerLoad = async () => {
   // Initialize the form

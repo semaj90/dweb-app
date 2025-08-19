@@ -13,9 +13,10 @@ const normalizeEmbedding = (embedding: number[] | number[][]): number[] => {
 // Combines cloud (OpenAI/Ollama) and local (Tauri/Rust) LLM capabilities
 // Supports PostgreSQL with pgvector, Qdrant, Redis, RabbitMQ, and Neo4j
 import { browser } from "$app/environment";
-import { CLIENT_ENV } from '$lib/config/env';
+// Orphaned content: import {
+
 import { tauriLLM } from "./tauri-llm";
-import { getHealthyLlmEndpoint } from "./llm-endpoint";
+// Orphaned content: import {
 
 // Endpoint cache for LLM backend switching
 let cachedLlmEndpoint: string | null = null;

@@ -1,11 +1,13 @@
+import { eq, sql, desc  } from "drizzle-orm";
 // Database Orchestrator API - Complete Integration with Event Loops and Context7
 // Provides REST API for database orchestrator management and real-time operations
 
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { databaseOrchestrator } from '$lib/services/comprehensive-database-orchestrator'; // alias exported in orchestrator stub
-import { db } from '$lib/server/db/drizzle';
-import { cases, evidence, legalDocuments, personsOfInterest } from '$lib/server/db/schema-postgres';
-import { eq, sql, desc  } from "drizzle-orm";
+import { json, type RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+databaseOrchestrator // alias exported in orchestrator stub
+import { db } from "$lib/server/db/drizzle";
+// Orphaned content: import {
+cases, evidence, legalDocuments, personsOfInterest
 
 // GET /api/database-orchestrator - Get orchestrator status
 export const GET: RequestHandler = async () => {

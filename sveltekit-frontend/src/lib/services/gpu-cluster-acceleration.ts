@@ -5,13 +5,15 @@
  * Enables GPU utilization across Node.js worker processes
  */
 
-import { EventEmitter } from 'node:events';
-import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
+import { EventEmitter } from "node:events";
+// Orphaned content: import {
+Worker, isMainThread, parentPort, workerData
 // Canvas types - will be dynamically imported when needed
 type Canvas = any;
 import { JSDOM } from 'jsdom';
-import cluster from 'node:cluster';
-import { writable, type Writable } from 'svelte/store';
+// Orphaned content: import cluster from "node:cluster";
+import {
+writable, type Writable
 
 // GPU context and shader interfaces
 export interface GPUContext {
@@ -135,7 +137,7 @@ export class GPUClusterManager extends EventEmitter {
    * Create a GPU worker thread
    */
   private async createGPUWorker(workerId: number): Promise<void> {
-    const worker = new Worker(__filename, {
+    const worker = new Worker(import.meta.url, {
       workerData: {
         type: 'gpu-worker',
         workerId,

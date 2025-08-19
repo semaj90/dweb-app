@@ -66,7 +66,7 @@
   on:dragleave={handleDragLeave}
   on:dragover|preventDefault
   on:drop={handleDrop}
-  on:keydown={(e) =>
+  onkeydown={(e) =>
     (e.key === "Enter" || e.key === " ") &&
     (e.preventDefault(),
     (
@@ -90,7 +90,7 @@
     <input
       type="file"
       multiple
-      on:change={(e) => {
+      onchange={(e) => {
         files = e.currentTarget.files;
         handleUpload();
       }}

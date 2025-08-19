@@ -2,11 +2,12 @@
 // Vite VS Code Error Logger Plugin
 // Integrates Vite errors directly into VS Code for enhanced development workflow
 
-import { type Plugin, type ViteDevServer } from 'vite';
-import { type ErrorPayload } from 'vite';
-import { resolve, dirname, relative } from 'path';
-import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
+{ type Plugin, type ViteDevServer }, {
+type ErrorPayload } from "vite";
+// Orphaned content: import { resolve, dirname, relative
+import {
+writeFileSync, existsSync, mkdirSync, readFileSync } from "fs";
+// Orphaned content: import { fileURLToPath
 
 interface ErrorLogEntry {
   timestamp: string;

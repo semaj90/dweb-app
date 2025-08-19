@@ -3,11 +3,13 @@
 // Tests: Document Upload → Embedding → Search → Results
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/server/database';
-import { documents, documentVectors, cases, users } from '$lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
-import { OllamaEmbeddings } from '@langchain/ollama';
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/database";
+// Orphaned content: import { documents, documentVectors, cases, users
+import {
+eq, sql } from "drizzle-orm";
+// Orphaned content: import { OllamaEmbeddings
 
 // ============================================================================
 // TEST CONFIGURATION

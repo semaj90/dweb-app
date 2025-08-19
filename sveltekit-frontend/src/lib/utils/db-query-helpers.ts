@@ -1,7 +1,7 @@
 // @ts-nocheck
 // Fixed database query utilities with proper field mappings
 import { SQL, eq, and, or, like, desc, asc } from 'drizzle-orm';
-import type { PgColumn } from 'drizzle-orm/pg-core';
+// Orphaned content: import type { PgColumn
 
 // Database field mapping utilities
 export const fieldMap = {

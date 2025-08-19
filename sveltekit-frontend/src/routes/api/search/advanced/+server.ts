@@ -5,20 +5,14 @@
  */
 
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { advancedSearch } from "$lib/server/services/advanced-search";
+// Orphaned content: import type { RequestHandler
 import {
+advancedSearch } from "$lib/server/services/advanced-search";
+// Orphaned content: import {
   rateLimitAPI,
   addSecurityHeaders,
-} from "$lib/server/monitoring/security";
 import { logUserAction, logInfo } from "$lib/server/monitoring/logger";
-
-export const GET: RequestHandler = async ({
-  url,
-  locals,
-  request,
-  getClientAddress,
-}) => {
+import { URL, , export const GET: RequestHandler = async ({,   url,,   locals,,   request,,   getClientAddress, } from
   try {
     // Apply security measures
     addSecurityHeaders()({

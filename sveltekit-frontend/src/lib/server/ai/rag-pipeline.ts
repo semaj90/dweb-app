@@ -1,47 +1,51 @@
+import { eq, sql as drizzleSql, and, gte, desc } from "drizzle-orm";
+import * as schema from "$lib/server/db/schema-postgres";
+import Redis from "ioredis";
+import crypto from "crypto";
 // RAG Pipeline with PostgreSQL + pgvector + LangChain + Ollama
 // (Header line previously corrupted; cleaned.)
 
-import { Ollama } from '@langchain/community/llms/ollama';
-import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { Document } from '@langchain/core/documents';
-import { PromptTemplate } from '@langchain/core/prompts';
-import { RunnableSequence, RunnablePassthrough } from '@langchain/core/runnables';
+import { Ollama } from "@langchain/community/llms/ollama";
+// Orphaned content: import {
+
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+// Orphaned content: import {
+
+import { PromptTemplate } from "@langchain/core/prompts";
+// Orphaned content: import {
+RunnableSequence, RunnablePassthrough
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { eq, sql as drizzleSql, and, gte, desc } from 'drizzle-orm';
+// Orphaned content: import postgres from "postgres";
+import {
+
 // Import schema directly (same path used across project). If it fails at runtime we degrade gracefully.
-import * as schema from '$lib/server/db/schema-postgres';
-import Redis from 'ioredis';
-import crypto from 'crypto';
 
 // Configuration
 const EMBEDDING_MODEL = 'nomic-embed-text:latest';
 const EMBEDDING_DIMENSIONS = 768;
 const LLM_MODEL = 'gemma3-legal:latest';
-const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_BASE_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 
 // Initialize PostgreSQL connection
 const sql = postgres({
-  host: process.env.DATABASE_HOST || 'localhost',
-  port: parseInt(process.env.DATABASE_PORT || '5432'),
-  database: process.env.DATABASE_NAME || 'legal_ai_db',
-  username: process.env.DATABASE_USER || 'legal_admin',
-  password: process.env.DATABASE_PASSWORD || '123456',
+  host: import.meta.env.DATABASE_HOST || 'localhost',
+  port: parseInt(import.meta.env.DATABASE_PORT || '5432'),
+  database: import.meta.env.DATABASE_NAME || 'legal_ai_db',
+  username: import.meta.env.DATABASE_USER || 'legal_admin',
+  password: import.meta.env.DATABASE_PASSWORD || '123456',
   max: 20,
   idle_timeout: 20,
   prepare: true,
-  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
+  ssl: import.meta.env.NODE_ENV === 'production' ? 'require' : false,
 });
 
 const db = drizzle(sql, { schema });
 
 // Initialize Redis for caching
 const redis = new Redis({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  db: parseInt(process.env.REDIS_DB || '0'),
+  host: import.meta.env.REDIS_HOST || 'localhost',
+  port: parseInt(import.meta.env.REDIS_PORT || '6379'),
+  db: parseInt(import.meta.env.REDIS_DB || '0'),
   maxRetriesPerRequest: 3,
   enableReadyCheck: true,
   lazyConnect: false,

@@ -1,11 +1,11 @@
+import type { EvidenceItem } from "$lib/types/api";
+import crypto from "crypto";
 // @ts-nocheck
 import type { Case } from "$lib/types";
-
-// AI Summarization Service for Case Management
+// Orphaned content: // AI Summarization Service for Case Management
 // Integrates with local LLM to generate comprehensive case reports
 
-import { dev } from "$app/environment";
-import type { EvidenceItem } from "$lib/types/api";
+import { dev
 
 interface CaseData {
   id: string;
@@ -62,7 +62,7 @@ class AISummarizationService {
   constructor() {
     this.baseUrl = dev
       ? "http://localhost:11434"
-      : process.env.OLLAMA_URL || "http://localhost:11434";
+      : import.meta.env.OLLAMA_URL || "http://localhost:11434";
     this.modelName = "gemma3-legal";
   }
   /**

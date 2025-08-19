@@ -147,13 +147,13 @@
     class="mx-auto px-4 max-w-7xl"
     class:drag-active={dragActive}
     class:uploading
-    on:dragover={handleDragOver}
-    on:dragleave={handleDragLeave}
-    on:drop={handleDrop}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
     role="button"
     tabindex={0}
-    on:click={() => document.getElementById('file-input')?.click()}
-    on:keydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
+    onclick={() => document.getElementById('file-input')?.click()}
+    onkeydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
   >
     <input
       id="file-input"
@@ -161,7 +161,7 @@
       multiple
       accept={allAllowedTypes.join(',')}
       style="display: none;"
-      on:change={handleFileSelect}
+      onchange={handleFileSelect}
     />
 
     {#if uploading}

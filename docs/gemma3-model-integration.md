@@ -80,12 +80,6 @@ docker cp "C:\Users\james\Desktop\deeds-web\deeds-web-app\gemma3Q4_K_M\mo16.gguf
 
 After successful loading, `ollama list` should show:
 
-```
-NAME                    ID              SIZE      MODIFIED
-gemma3-legal:latest     abc123...       3.0 GB    X minutes ago
-llama3.2:1b            def456...       1.3 GB    X hours ago
-```
-
 ## API Testing
 
 Test the loaded model:

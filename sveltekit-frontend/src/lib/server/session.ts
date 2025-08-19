@@ -1,16 +1,7 @@
+import { getUserById } from "./db/queries.js";
 // @ts-nocheck
 import type { RequestEvent } from "@sveltejs/kit";
-import { signJWT, verifyJWT } from "./authUtils";
-import { getUserById } from "./db/queries";
-
-// In-memory session store (for development)
-const sessions = new Map<string, Session>();
-
-export interface Session {
-  id: string;
-  userId: string;
-  expiresAt: Date;
-}
+import { signJWT, verifyJWT, , // In-memory session store (for development), const sessions = new Map<string, Session>();, , export interface Session {,   id: string;,   userId: string;,   expiresAt: Date; } from
 export interface User {
   id: string;
   email: string;
@@ -58,7 +49,7 @@ export function setSessionTokenCookie(
     path: "/",
     expires: expiresAt,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: import.meta.env.NODE_ENV === "production",
     sameSite: "lax",
   });
 }
@@ -66,7 +57,7 @@ export function deleteSessionTokenCookie(event: RequestEvent): void {
   event.cookies.delete("session", {
     path: "/",
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: import.meta.env.NODE_ENV === "production",
     sameSite: "lax",
   });
 }

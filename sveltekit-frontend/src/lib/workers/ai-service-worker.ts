@@ -6,6 +6,7 @@
 
 /// <reference lib="webworker" />
 
+crypto from "crypto";
 import type {
   LLMModel,
   AITask,

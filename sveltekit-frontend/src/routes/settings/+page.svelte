@@ -427,7 +427,7 @@
                     <Button
                       variant="outline"
                       size="sm"
-                      onclick={() =>
+                      on:click={() =>
                         document.getElementById("avatar")?.click()}
                     >
                       <Upload class="space-y-4" />
@@ -437,7 +437,7 @@
                       <Button
                         variant="outline"
                         size="sm"
-                        onclick={() => clearAvatar()}
+                        on:click={() => clearAvatar()}
                       >
                         <Trash2 class="space-y-4" />
                         Remove
@@ -905,7 +905,7 @@
                     </select>
                   </div>
 
-                  <Button onclick={() => exportUserData()}>
+                  <Button on:click={() => exportUserData()}>
                     <Download class="space-y-4" />
                     Export My Data
                   </Button>
@@ -966,7 +966,7 @@
                     </p>
                     <Button
                       variant="outline"
-                      onclick={() => resetToDefaults()}
+                      on:click={() => resetToDefaults()}
                     >
                       <RefreshCw class="space-y-4" />
                       Reset to Defaults
@@ -985,11 +985,11 @@
               Changes are saved automatically when you update settings
             </div>
             <div class="space-y-4">
-              <Button variant="outline" onclick={() => loadSettings()}>
+              <Button variant="outline" on:click={() => loadSettings()}>
                 <RefreshCw class="space-y-4" />
                 Reset Changes
               </Button>
-              <Button onclick={() => saveSettings()} disabled={isSaving}>
+              <Button on:click={() => saveSettings()} disabled={isSaving}>
                 {#if isSaving}
                   <RefreshCw class="space-y-4" />
                   Saving...

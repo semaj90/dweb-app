@@ -268,7 +268,7 @@
     {multiple}
     {disabled}
     class="hidden"
-    on:change={handleFileInput}
+    onchange={handleFileInput}
   />
 
 
@@ -281,12 +281,12 @@
     on:dragover={handleDragOver}
     on:dragleave={handleDragLeave}
     on:drop={handleDrop}
-    on:click={openFileDialog}
+    onclick={openFileDialog}
   role="button"
   tabindex={disabled ? -1 : 0}
   aria-disabled={disabled}
   aria-label="Document upload area. Press Enter or Space to choose files, or drag and drop."
-  on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && openFileDialog()}
+  onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && openFileDialog()}
   >
     {#if isDragOver}
 
@@ -333,7 +333,7 @@
           <button
             type="button"
             class="text-red-400 hover:text-red-600"
-            on:click={() => dismissError(index)}
+            onclick={() => dismissError(index)}
           >
 
 
@@ -397,7 +397,7 @@
               <Button.Root
                 variant="ghost"
                 size="sm"
-                on:click={() => removeFile(file)}
+                onclick={() => removeFile(file)}
                 class="text-gray-400 hover:text-red-600"
               >
 

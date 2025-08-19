@@ -3,7 +3,7 @@
  * Provides legal context for any UI element when hovered
  */
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+// Orphaned content: import type { RequestHandler
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

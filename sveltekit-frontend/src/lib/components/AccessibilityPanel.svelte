@@ -476,15 +476,15 @@
 {#if showPanel}
   <div
     class="mx-auto px-4 max-w-7xl"
-    on:click={() => (showPanel = false)}
-    on:keydown={(e) => e.key === 'Escape' && (showPanel = false)}
+    onclick={() => (showPanel = false)}
+    onkeydown={(e) => e.key === 'Escape' && (showPanel = false)}
     role="dialog"
     aria-modal="true"
     aria-labelledby="accessibility-panel-title"
   >
     <div
       class="mx-auto px-4 max-w-7xl"
-      on:click|stopPropagation
+      onclick|stopPropagation
       role="document"
     >
       <div class="mx-auto px-4 max-w-7xl">
@@ -510,7 +510,7 @@
                 type="checkbox"
                 class="mx-auto px-4 max-w-7xl"
                 bind:checked={highContrast}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>High Contrast</span>
             </label>
@@ -520,7 +520,7 @@
                 type="checkbox"
                 class="mx-auto px-4 max-w-7xl"
                 bind:checked={reducedMotion}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Reduced Motion</span>
             </label>
@@ -530,7 +530,7 @@
                 type="checkbox"
                 class="mx-auto px-4 max-w-7xl"
                 bind:checked={largeText}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Large Text</span>
             </label>
@@ -540,7 +540,7 @@
                 type="checkbox"
                 class="mx-auto px-4 max-w-7xl"
                 bind:checked={keyboardNavigation}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Enhanced Keyboard Navigation</span>
             </label>
@@ -550,7 +550,7 @@
                 type="checkbox"
                 class="mx-auto px-4 max-w-7xl"
                 bind:checked={screenReaderMode}
-                on:change={applyAccessibilitySettings}
+                onchange={applyAccessibilitySettings}
               />
               <span>Screen Reader Optimizations</span>
             </label>

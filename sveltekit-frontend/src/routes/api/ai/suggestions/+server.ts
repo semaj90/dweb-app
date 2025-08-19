@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestEvent } from "@sveltejs/kit";
+// Orphaned content: import type { RequestEvent
 
 export async function POST({ request }: RequestEvent) {
   try {

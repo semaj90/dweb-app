@@ -11,7 +11,7 @@
   Demo text using clsx classes and <code>`class:`</code> directive
 </p>
 
-<Button on:click={() => (underline = !underline)}>toggle underline</Button>
-<Button on:click={() => (bold = !bold)}>toggle bold</Button>
-<Button on:click={() => (italic = !italic)}>toggle italic</Button>
-<Button on:click={() => (red = !red)}>toggle red</Button>
+<Button onclick={() => (underline = !underline)}>toggle underline</Button>
+<Button onclick={() => (bold = !bold)}>toggle bold</Button>
+<Button onclick={() => (italic = !italic)}>toggle italic</Button>
+<Button onclick={() => (red = !red)}>toggle red</Button>

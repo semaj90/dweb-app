@@ -1,9 +1,10 @@
+import crypto from "crypto";
 // @ts-nocheck
 // XState Legal Form Machine for AI-Aware Browser States
 // Integrates with Phase 8 Matrix UI System and Context7 MCP
 
 import { setup, assign, type StateValue, fromPromise } from "xstate";
-import { semanticSearch } from "$lib/ai/mcp-helpers";
+// Orphaned content: import {
 
 export interface LegalFormContext {
   evidenceFiles: File[];

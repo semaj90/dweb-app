@@ -231,7 +231,7 @@
   <div class="space-y-4">
     {#each filteredCitations as citation (citation.id)}
       <CardRoot class="citation-card">
-        <CardHeader className="citation-header">
+        <CardHeader class="citation-header">
           <div class="space-y-4">
             <h3 class="space-y-4">{citation.title}</h3>
 
@@ -280,7 +280,7 @@
           </div>
         </CardHeader>
 
-        <CardContent className="citation-content">
+        <CardContent class="citation-content">
           <p class="space-y-4">{citation.content}</p>
           <p class="space-y-4">Source: {citation.source}</p>
 
@@ -349,7 +349,7 @@
 
 <!-- Add Citation Dialog -->
 <DialogRoot bind:open={showAddDialog}>
-  <DialogContent className="sm:max-w-[425px]" overlay={{}} content={{}} openState={showAddDialog}>
+  <DialogContent class="sm:max-w-[425px]" overlay={{}} content={{}} openState={showAddDialog}>
     <DialogHeader>
       <DialogTitle title="Add New Citation" />
       <DialogDescription description="Create a new citation to save for future reference." />
@@ -413,7 +413,7 @@
 <!-- Edit Citation Dialog -->
 {#if editingCitation}
   <DialogRoot open={true} onOpenChange={() => (editingCitation = null)}>
-    <DialogContent className="sm:max-w-[425px]" overlay={{}} content={{}} openState={true}>
+    <DialogContent class="sm:max-w-[425px]" overlay={{}} content={{}} openState={true}>
       <DialogHeader>
         <DialogTitle title="Edit Citation" />
       </DialogHeader>

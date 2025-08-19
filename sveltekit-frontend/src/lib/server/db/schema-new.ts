@@ -11,7 +11,7 @@ import {
   serial,
   uuid,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+// Orphaned content: import { relations
 
 // === AUTHENTICATION & USER MANAGEMENT ===
 

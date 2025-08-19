@@ -377,26 +377,26 @@
 
         <!-- Add Annotation -->
         {#if !readOnly}
-          <Button variant="outline" onclick={addAnnotation}>
+          <Button variant="outline" on:click={addAnnotation}>
             <FileText class="h-4 w-4 mr-2" />
             Add Note
           </Button>
         {/if}
 
         <!-- Zoom Controls -->
-        <Button variant="outline" onclick={zoomIn}>
+        <Button variant="outline" on:click={zoomIn}>
           <ZoomIn class="h-4 w-4" />
         </Button>
-        <Button variant="outline" onclick={zoomOut}>
+        <Button variant="outline" on:click={zoomOut}>
           <ZoomOut class="h-4 w-4" />
         </Button>
-        <Button variant="outline" onclick={resetZoom}>
+        <Button variant="outline" on:click={resetZoom}>
           <RotateCcw class="h-4 w-4" />
         </Button>
 
         <!-- Object Controls -->
         {#if selectedObject && !readOnly}
-          <Button variant="destructive" onclick={deleteSelected}>
+          <Button variant="destructive" on:click={deleteSelected}>
             <Trash2 class="h-4 w-4 mr-2" />
             Delete
           </Button>
@@ -404,13 +404,13 @@
 
         <!-- Save & Export -->
         {#if !readOnly}
-          <Button variant="default" onclick={saveCanvas}>
+          <Button variant="default" on:click={saveCanvas}>
             <Save class="h-4 w-4 mr-2" />
             Save
           </Button>
         {/if}
         
-        <Button variant="outline" onclick={exportCanvas}>
+        <Button variant="outline" on:click={exportCanvas}>
           <Download class="h-4 w-4 mr-2" />
           Export
         </Button>

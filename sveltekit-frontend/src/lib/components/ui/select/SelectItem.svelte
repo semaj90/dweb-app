@@ -1,22 +1,17 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    value: any;;
-    class_: string ;
-  }
-  let {
-    value,
-    class_ = ""
-  }: Props = $props();
-
-
-
   import { getContext } from "svelte";
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
 
-    let { class_ = $bindable() } = $props(); // string = "";
+  interface Props {
+    value: any;
+    class_?: string;
+  }
+  
+  let {
+    value,
+    class_ = ""
+  }: Props = $props();
 
   const context =
     getContext<SelectContext>("select") ||
@@ -33,11 +28,11 @@ https://svelte.dev/e/js_parse_error -->
   function handleClick() {
     onSelect(value);
     open.set(false);
-}
+  }
 </script>
 
 <div
-  class="space-y-4"
+  class="space-y-4 {class_}"
   role="option"
   aria-selected={isSelected ? "true" : "false"}
   onclick={() => handleClick()}
@@ -56,12 +51,12 @@ https://svelte.dev/e/js_parse_error -->
     color: #374151;
     display: flex;
     align-items: center;
-}
+  }
   .select-item:hover {
     background-color: #f3f4f6;
-}
+  }
   .select-item:focus {
     outline: none;
     background-color: #e5e7eb;
-}
+  }
 </style>

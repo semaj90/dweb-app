@@ -3,10 +3,12 @@
 // SvelteKit 2.0 + Svelte 5 + Direct Ollama integration
 
 import { json, error } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { ollamaService } from "$lib/server/services/OllamaService";
-import { logger } from "$lib/server/logger";
-import { dev } from "$app/environment";
+// Orphaned content: import type { RequestHandler
+import {
+ollamaService } from "$lib/server/services/OllamaService";
+// Orphaned content: import { logger
+import {
+dev } from "$app/environment";
 
 export interface ChatRequest {
   message: string;

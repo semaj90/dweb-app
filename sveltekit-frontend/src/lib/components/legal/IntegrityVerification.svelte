@@ -7,11 +7,12 @@ Displays detailed integrity verification results with AI analysis
 <script lang="ts">
   interface Props {
     integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';
-    verificationResults: {;
+    verificationResults: {
     originalHash: string;
     currentHash: string | undefined;
-    aiAnalysis: {;
-    showDetails: boolean ;
+    aiAnalysis: any;
+    };
+    showDetails: boolean;
   }
   let {
     integrityStatus,

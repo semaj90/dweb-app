@@ -3,9 +3,10 @@
 // Server-Sent Events endpoint for streaming AI synthesis updates
 
 import { error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { streamingService } from '$lib/server/ai/streaming-service';
-import { logger } from '$lib/server/logger';
+// Orphaned content: import type { RequestHandler
+import {
+streamingService } from "$lib/server/ai/streaming-service";
+// Orphaned content: import { logger
 
 export const GET: RequestHandler = async ({ params, request }) => {
   const { streamId } = params;

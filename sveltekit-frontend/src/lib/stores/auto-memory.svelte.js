@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // Advanced Auto-Memory Store with 4D Search and Predictive Analytics
 import { createMachine, assign } from "xstate";
 import Fuse from "fuse.js";

@@ -1,20 +1,20 @@
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import type { RequestHandler
 // Prefer the unified server-side vector search which uses pgvector and/or Qdrant, with caching and fallbacks
-import type { VectorSearchResult as ServerVectorSearchResult } from "$lib/server/search/vector-search";
-import {
-  vectorSearch,
+type { VectorSearchResult as ServerVectorSearchResult }, {
+vectorSearch,
   getQueryEmbeddingLegal,
   searchLegalDocumentsText,
 } from "$lib/server/search/vector-search";
-// Health checks
-import { ollamaService } from "$lib/server/services/OllamaService";
-import { isQdrantHealthy } from "$lib/server/vector/qdrant";
+// Orphaned content: // Health checks
+import { ollamaService
+import {
+isQdrantHealthy } from "$lib/server/vector/qdrant";
 // Keep enhanced pipeline as a secondary fallback when available
-import type { EnhancedSemanticSearchOptions } from "$lib/services/enhanced-ai-pipeline";
-import { enhancedAIPipeline } from "$lib/services/enhanced-ai-pipeline";
-// Direct DB/vector access for legal_documents
-import { db, sql } from "$lib/server/db/index";
+type { EnhancedSemanticSearchOptions }, {
+enhancedAIPipeline } from "$lib/services/enhanced-ai-pipeline";
+// Orphaned content: // Direct DB/vector access for legal_documents
+import { db, sql
 
 // Enhanced POST endpoint using Go microservice or local fallback
 export const POST: RequestHandler = async ({ request }) => {
@@ -63,9 +63,9 @@ export const POST: RequestHandler = async ({ request }) => {
       );
     }
 
-    const GPU_GO_BASE = process.env.GO_GPU_API_URL || "http://localhost:8084";
+    const GPU_GO_BASE = import.meta.env.GO_GPU_API_URL || "http://localhost:8084";
     const SUMM_BASE =
-      process.env.SUMMARIZER_BASE_URL || "http://localhost:8091";
+      import.meta.env.SUMMARIZER_BASE_URL || "http://localhost:8091";
 
     // Check if Go GPU API is available (8084), else try summarizer (8091)
     let goServiceAvailable = false;

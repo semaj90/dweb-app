@@ -3,14 +3,7 @@
 // Ollama integration for local LLM inference with legal models
 
 import { logger } from "./logger";
-import { streamingService } from './streaming-service';
-
-interface OllamaModel {
-  name: string;
-  size: string;
-  digest: string;
-  modified: string;
-}
+import { streamingService, , interface OllamaModel {,   name: string;,   size: string;,   digest: string;,   modified: string; } from
 
 interface OllamaGenerateOptions {
   model: string;

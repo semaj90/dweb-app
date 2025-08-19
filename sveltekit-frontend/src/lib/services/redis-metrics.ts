@@ -17,14 +17,14 @@ async function ensureClient() {
   try {
     const mod = await import('ioredis');
     // @ts-ignore
-    redis = new mod.default(process.env.REDIS_URL || 'redis://localhost:6379');
+    redis = new mod.default(import.meta.env.REDIS_URL || 'redis://localhost:6379');
     impl = 'ioredis';
   } catch {
     try {
       // @ts-ignore
       const mod2 = await import('redis');
       // @ts-ignore
-      redis = mod2.createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
+      redis = mod2.createClient({ url: import.meta.env.REDIS_URL || 'redis://localhost:6379' });
       await redis.connect();
       impl = 'redis';
     } catch {

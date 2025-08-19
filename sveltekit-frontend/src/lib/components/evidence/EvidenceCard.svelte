@@ -1,4 +1,8 @@
 <script lang="ts">
+  interface Props {
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
   import { createTooltip, melt } from "@melt-ui/svelte";
   import {
     Download,
@@ -23,15 +27,27 @@
     updatedAt?: Date | string;
   };
 
-  export let evidence: ExtendedEvidence;
-  export let onView: (evidence: Evidence) => void = () => {};
-  export let onEdit: (evidence: Evidence) => void = () => {};
-  export let onDelete: (evidence: Evidence) => void = () => {};
-  export let onDownload: (evidence: Evidence) => void = () => {};
-  export let draggable = true;
-  export let compact = false;
-  export let expandOnHover = false;
-  export const showPreview = true;
+  let {
+    evidence,
+    onView = () => {},
+    onEdit = () => {},
+    onDelete = () => {},
+    onDownload = () => {},
+    draggable = true,
+    compact = false,
+    expandOnHover = false,
+    showPreview = true
+  }: {
+    evidence: ExtendedEvidence;
+    onView?: (evidence: Evidence) => void;
+    onEdit?: (evidence: Evidence) => void;
+    onDelete?: (evidence: Evidence) => void;
+    onDownload?: (evidence: Evidence) => void;
+    draggable?: boolean;
+    compact?: boolean;
+    expandOnHover?: boolean;
+    showPreview?: boolean;
+  } = $props();
 
   const {
     elements: { trigger: tooltipTrigger, content: tooltipContent },
@@ -95,8 +111,8 @@
     {draggable ? 'cursor-grab active:cursor-grabbing' : ''}
     {isHovered ? 'scale-105 z-10 shadow-2xl' : ''}"
   transition:scale={{ duration: 200, easing: quintOut }}
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
+  onmouseenter={handleMouseEnter}
+  onmouseleave={handleMouseLeave}
   role="article"
 >
   <!-- Header -->
@@ -126,7 +142,7 @@
     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-blue-600"
-        on:click={() => onView(evidence as Evidence)}
+        onclick={() => onView(evidence as Evidence)}
         title="View evidence"
       >
         <Eye size={14} />
@@ -135,7 +151,7 @@
       {#if evidence.url || evidence.file}
         <button
           class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-indigo-600"
-          on:click={() => onDownload(evidence as Evidence)}
+          onclick={() => onDownload(evidence as Evidence)}
           title="Download"
         >
           <Download size={14} />
@@ -144,7 +160,7 @@
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-green-600"
-        on:click={() => onEdit(evidence as Evidence)}
+        onclick={() => onEdit(evidence as Evidence)}
         title="Edit evidence"
       >
         <PenLine size={14} />
@@ -152,7 +168,7 @@
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-red-600"
-        on:click={() => onDelete(evidence as Evidence)}
+        onclick={() => onDelete(evidence as Evidence)}
         title="Delete evidence"
       >
         <Trash2 size={14} />
@@ -170,7 +186,7 @@
           alt={evidence.title}
           loading="lazy"
           class="w-full h-auto max-h-48 object-cover"
-          on:error={(e) => {
+          onerror={(e) => {
             const target = e.currentTarget as HTMLImageElement;
             target.style.display = "none";
           }}

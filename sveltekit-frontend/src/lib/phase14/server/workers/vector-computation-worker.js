@@ -35,7 +35,7 @@ class VectorComputationPool {
 
     try {
       for (let i = 0; i < this.poolSize; i++) {
-        const worker = new Worker(__filename, {
+        const worker = new Worker(import.meta.url, {
           workerData: { workerId: i, type: 'vector-computation' }
         });
 
@@ -238,7 +238,7 @@ class LegalLLMWorkerPool {
 
     try {
       for (let i = 0; i < this.poolSize; i++) {
-        const worker = new Worker(__filename, {
+        const worker = new Worker(import.meta.url, {
           workerData: { workerId: i, type: 'legal-llm' }
         });
 

@@ -1,7 +1,6 @@
 // @ts-nocheck
 import type { Case } from "$lib/types";
-
-import { writable } from "svelte/store";
+// Orphaned content: import {
 
 export interface CaseStoreData {
   cases: any[];

@@ -1,8 +1,8 @@
 import { ollamaService } from "$lib/server/services/OllamaService";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
+import type { RequestHandler }, {
+json } from "@sveltejs/kit";
 
-const GO_BASE = process.env.GO_SERVICE_URL || "http://localhost:8084";
+const GO_BASE = import.meta.env.GO_SERVICE_URL || "http://localhost:8084";
 
 async function fetchWithTimeout(path: string, timeoutMs = 2500) {
   const controller = new AbortController();

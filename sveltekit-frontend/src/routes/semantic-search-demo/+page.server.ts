@@ -1,6 +1,7 @@
+import { URL } from "url";
 // @ts-nocheck
-import type { PageServerLoad } from "./$types";
-import { semanticSearch } from "$lib/ai/mcp-helpers";
+import type { PageServerLoad } from "./$types.js";
+// Orphaned content: import {
 
 export const load: PageServerLoad = async ({ url }) => {
   const initialQuery = url.searchParams.get("q") || "";

@@ -10,7 +10,7 @@ import {
   index,
   customType
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+// Orphaned content: import { sql
 
 // Custom pgvector type for Drizzle
 const vector = customType<{ data: number[]; driverData: string }>({

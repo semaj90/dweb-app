@@ -1,7 +1,7 @@
+import { QdrantClient } from "@qdrant/js-client-rest";
+import VectorService from "./vector-service.js";
 // @ts-nocheck
 // Production Qdrant Service - Fixed vector dimensions and stub implementations
-import { QdrantClient } from "@qdrant/js-client-rest";
-import VectorService from "./vector-service";
 
 interface QdrantPoint {
   id: string;
@@ -32,9 +32,9 @@ class QdrantService {
 
   constructor() {
     this.client = new QdrantClient({
-      host: process.env.QDRANT_HOST || "localhost",
-      port: parseInt(process.env.QDRANT_PORT || "6333"),
-      apiKey: process.env.QDRANT_API_KEY,
+      host: import.meta.env.QDRANT_HOST || "localhost",
+      port: parseInt(import.meta.env.QDRANT_PORT || "6333"),
+      apiKey: import.meta.env.QDRANT_API_KEY,
     });
   }
 

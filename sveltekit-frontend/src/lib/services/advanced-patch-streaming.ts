@@ -1,3 +1,4 @@
+import stream from "stream";
 /**
  * Advanced JSON Patch Streaming Service
  * Real-time streaming with JSON Patch operations for live updates

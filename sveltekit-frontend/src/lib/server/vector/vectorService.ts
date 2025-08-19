@@ -1,8 +1,9 @@
 // @ts-nocheck
 // src/lib/server/vector/vectorService.ts (continued)
 import { QdrantClient } from "@qdrant/js-client-rest";
-import Redis from "ioredis";
-import { db } from "../db/index.js";
+// Orphaned content: import Redis from "ioredis";
+import {
+
 import {
   embeddingCache,
   vectorMetadata,
@@ -10,7 +11,7 @@ import {
   evidence,
   criminals,
 } from "../db/schema-postgres.js";
-import { eq, and, sql, or, ilike } from "drizzle-orm";
+// Orphaned content: import { eq, and, sql, or, ilike
 import cuid2 from "@paralleldrive/cuid2";
 
 export interface VectorSearchOptions {
@@ -34,19 +35,19 @@ export class VectorService {
 
   constructor() {
     this.qdrant = new QdrantClient({
-      url: process.env.QDRANT_URL || "http://localhost:6333",
-      apiKey: process.env.QDRANT_API_KEY,
+      url: import.meta.env.QDRANT_URL || "http://localhost:6333",
+      apiKey: import.meta.env.QDRANT_API_KEY,
     });
 
     this.redis = new Redis({
-      host: process.env.REDIS_HOST || "localhost",
-      port: parseInt(process.env.REDIS_PORT || "6379"),
-      password: process.env.REDIS_PASSWORD,
-      db: parseInt(process.env.REDIS_DB || "0"),
+      host: import.meta.env.REDIS_HOST || "localhost",
+      port: parseInt(import.meta.env.REDIS_PORT || "6379"),
+      password: import.meta.env.REDIS_PASSWORD,
+      db: parseInt(import.meta.env.REDIS_DB || "0"),
       maxRetriesPerRequest: 3,
     });
 
-    this.collectionName = process.env.QDRANT_COLLECTION || "legal_documents";
+    this.collectionName = import.meta.env.QDRANT_COLLECTION || "legal_documents";
   }
 
   // Initialize vector collection with proper schema

@@ -1,9 +1,11 @@
 // Context7 Autosolve API - Complete TypeScript Error Fixing Integration
 // REST API for managing the autosolve system with Context7 best practices
 
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { context7AutosolveIntegration } from '$lib/services/context7-autosolve-integration';
-import { databaseOrchestrator } from '$lib/services/comprehensive-database-orchestrator';
+import { json, type RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+
+import { databaseOrchestrator } from "$lib/services/comprehensive-database-orchestrator";
+// Orphaned content: import {
 
 // GET /api/context7-autosolve - Get autosolve system status
 export const GET: RequestHandler = async ({ url }) => {
@@ -524,7 +526,7 @@ async function analyzeCurrentErrors() {
               utilization_percent: Number(util),
             }));
         } else if (process?.env?.NVIDIA_VISIBLE_DEVICES) {
-          gpuInfo = { visible_devices: process.env.NVIDIA_VISIBLE_DEVICES };
+          gpuInfo = { visible_devices: import.meta.env.NVIDIA_VISIBLE_DEVICES };
         }
 
         if (gpuInfo) runtime.gpu = gpuInfo;

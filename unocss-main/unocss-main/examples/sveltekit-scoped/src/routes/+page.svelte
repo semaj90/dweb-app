@@ -31,7 +31,7 @@
       class="text-white p-3 rounded mb-3">
       My BG Color should change
     </div>
-    <Button on:click={() => (red = !red)}>Change BG Color: {red ? "Gray" : "Red"}</Button>
+    <Button onclick={() => (red = !red)}>Change BG Color: {red ? "Gray" : "Red"}</Button>
   </div>
 
   <div
@@ -41,7 +41,7 @@
     <RightToLeftDependent />
   </div>
   <div class="mb-10">
-    <Button on:click={() => (rtl = !rtl)}>Toggle direction: {rtl ? "Right-to-left" : "Left-to-right"}</Button>
+    <Button onclick={() => (rtl = !rtl)}>Toggle direction: {rtl ? "Right-to-left" : "Left-to-right"}</Button>
   </div>
 
   <Counter />

@@ -1,10 +1,10 @@
+import { EventEmitter } from "events";
 // @ts-nocheck
 /**
  * Redis-Compatible Self-Organizing Map Cache System
  * Advanced memory management with machine learning clustering
  */
 
-import { EventEmitter } from 'events';
 
 // === Neural Network Self-Organizing Map for Cache Intelligence ===
 interface SOMNode {

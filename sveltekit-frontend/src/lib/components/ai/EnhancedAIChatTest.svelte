@@ -383,11 +383,11 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={downloadConversation}
+            on:click={downloadConversation}
             disabled={messages.length <= 1}>
             <Download class="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="sm" onclick={clearMessages} disabled={messages.length <= 1}>
+          <Button variant="ghost" size="sm" on:click={clearMessages} disabled={messages.length <= 1}>
             <Trash2 class="h-4 w-4" />
           </Button>
           <Dialog.Close>
@@ -463,7 +463,7 @@
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             onkeydown={handleKeydown} />
           <Button
-            onclick={sendMessage}
+            on:click={sendMessage}
             disabled={!currentMessage.trim() || !isConnected || isLoading}
             class="px-4">
             {#if isLoading}

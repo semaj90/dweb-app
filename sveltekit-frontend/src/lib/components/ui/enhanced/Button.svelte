@@ -24,7 +24,7 @@
 </script>
 
 <button
-	class="yorha-button {buttonVariants({ variant, size })} {className || ''}"
+	class="yorha-button {buttonVariants({ variant, size })} {className || ""}"
 	disabled={isDisabled}
 	{...props}
 >

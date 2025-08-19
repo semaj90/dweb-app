@@ -27,7 +27,7 @@
 <button
 	class="mx-auto px-4 max-w-7xl"
 	class:generating={isGenerating}
-	on:click={() => toggleDialog()}
+	onclick={() => toggleDialog()}
 	aria-label="Open AI Assistant"
 	title="AI Assistant"
 >
@@ -110,17 +110,7 @@
 	.ai-fab-button:hover .fab-glow {
 		opacity: 1;
 	}
-
-	.loading-spinner {
-		width: 24px;
-		height: 24px;
-		border: 2px solid rgba(255, 255, 255, 0.3);
-		border-top: 2px solid white;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
+@keyframes spin {
 		0% { transform: rotate(0deg); }
 		100% { transform: rotate(360deg); }
 	}
@@ -149,10 +139,5 @@
 			width: 20px;
 			height: 20px;
 		}
-
-		.loading-spinner {
-			width: 20px;
-			height: 20px;
-		}
-	}
+}
 </style>

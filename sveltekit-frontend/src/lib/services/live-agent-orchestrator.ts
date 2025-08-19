@@ -3,7 +3,7 @@
 // WebSocket/SSE for real-time communication, gRPC/HTTP context switching
 
 import { writable, derived } from 'svelte/store';
-import type { Writable } from 'svelte/store';
+// Orphaned content: import type { Writable
 
 // Types
 export interface LiveAgentConfig {

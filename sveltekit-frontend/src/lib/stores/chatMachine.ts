@@ -1,3 +1,4 @@
+import crypto from "crypto";
 // @ts-nocheck
 /**
  * XState Chat Machine for Svelte 5 + Gemma3 Integration
@@ -5,7 +6,7 @@
  */
 
 import { setup, assign, fromPromise } from "xstate";
-import type { ChatMessage, Conversation, ChatSettings } from "./types";
+// Orphaned content: import type { ChatMessage, Conversation, ChatSettings
 
 export interface ChatContext {
   messages: ChatMessage[];

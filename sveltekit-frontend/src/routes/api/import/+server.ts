@@ -1,8 +1,10 @@
 // @ts-nocheck
 import { db } from "$lib/server/db/index";
-import { cases, criminals, evidence } from "$lib/server/db/schema-postgres";
+// Orphaned content: import {
+cases, criminals, evidence
 import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+// Orphaned content: import {
+
 import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ request }) => {

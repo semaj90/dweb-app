@@ -197,7 +197,7 @@
 			<button
 				type="button"
 				class="space-y-4"
-				onclick={() => handleClear()}
+				onclick={handleClear}
 				tabindex={-1}
 				aria-label="Clear input"
 			>

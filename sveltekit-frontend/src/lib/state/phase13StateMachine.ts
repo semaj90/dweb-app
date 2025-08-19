@@ -6,9 +6,10 @@
  */
 
 import { setup, assign, fromPromise, fromCallback, createActor, type StateValue } from "xstate";
-import { writable, derived, type Writable } from "svelte/store";
+// Orphaned content: import {
+writable, derived, type Writable
 import { NeuralSpriteEngine } from "$lib/engines/neural-sprite-engine";
-import { copilotOrchestrator } from "$lib/utils/mcp-helpers";
+// Orphaned content: import {
 
 // Enhanced context for Phase 13 with WebGL vertex streaming
 export interface Phase13Context {

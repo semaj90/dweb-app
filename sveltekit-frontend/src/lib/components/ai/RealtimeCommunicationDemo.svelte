@@ -299,11 +299,11 @@
       <CardTitle class="flex items-center justify-between">
         <span>Connection Status</span>
         {#if !isInitialized}
-          <Button onclick={initializeConnection} disabled={isInitializing} class="px-4 py-2">
+          <Button on:click={initializeConnection} disabled={isInitializing} class="px-4 py-2">
             {isInitializing ? 'Initializing...' : 'Connect'}
           </Button>
         {:else}
-          <Button onclick={disconnect} class="px-4 py-2 bg-red-600 hover:bg-red-700">
+          <Button on:click={disconnect} class="px-4 py-2 bg-red-600 hover:bg-red-700">
             Disconnect
           </Button>
         {/if}
@@ -414,7 +414,7 @@
               </div>
             </div>
 
-            <Button onclick={sendTestMessage} class="w-full">Send Message</Button>
+            <Button on:click={sendTestMessage} class="w-full">Send Message</Button>
           </div>
         </CardContent>
       </Card>
@@ -449,7 +449,7 @@
               </select>
             </div>
 
-            <Button onclick={startStreamingRequest} class="w-full">Start Stream</Button>
+            <Button on:click={startStreamingRequest} class="w-full">Start Stream</Button>
           </div>
         </CardContent>
       </Card>
@@ -460,7 +460,7 @@
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           <span>Performance Metrics</span>
-          <Button onclick={testPerformance} class="text-sm px-3 py-1">Run Performance Test</Button>
+          <Button on:click={testPerformance} class="text-sm px-3 py-1">Run Performance Test</Button>
         </CardTitle>
       </CardHeader>
       <CardContent>

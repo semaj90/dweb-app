@@ -4,20 +4,11 @@
  * Orchestrates AI-powered suggestions using XState machines and Go microservice
  */
 
-import { createActor } from 'xstate';
-import { aiProcessingMachine, goMicroserviceMachine, createAITask, aiTaskCreators } from '$lib/stores/machines';
-import { enhancedRAGStore } from '$lib/stores';
-import { debounce } from 'lodash-es';
-
-export interface SuggestionContext {
-  text: string;
-  cursorPosition: number;
-  contextBefore: string;
-  contextAfter: string;
-  documentType?: 'legal' | 'evidence' | 'notes' | 'general';
-  caseId?: string;
-  userId?: string;
-}
+import { createActor } from "xstate";
+// Orphaned content: import {
+aiProcessingMachine, goMicroserviceMachine, createAITask, aiTaskCreators
+import { enhancedRAGStore } from "$lib/stores";
+import { debounce, , export interface SuggestionContext {,   text: string;,   cursorPosition: number;,   contextBefore: string;,   contextAfter: string;,   documentType?: 'legal' | 'evidence' | 'notes' | 'general';,   caseId?: string;,   userId?: string; } from
 
 export interface InlineSuggestion {
   id: string;

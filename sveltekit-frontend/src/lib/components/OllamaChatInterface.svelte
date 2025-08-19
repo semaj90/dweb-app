@@ -30,14 +30,14 @@
     caseId?: string;
     model?: string;
     useRAG?: boolean;
-    className?: string;
+    class?: string;
   }
 
   let {
     caseId = undefined,
     model = "gemma3-legal",
     useRAG = true,
-    className = "",
+    class = "",
   }: Props = $props();
 
   // Reactive state using Svelte 5 runes
@@ -381,7 +381,7 @@
   <TokenUsageManager
     bind:this={tokenManager}
     currentModel={model}
-    className="mb-4"
+    class="mb-4"
     data-testid="token-usage-manager"
   />
 

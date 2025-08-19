@@ -1,10 +1,10 @@
 <script lang="ts">
   interface Props {
-    className?: string;
+    class?: string;
   }
   
   let {
-    className = '',
+    class: className = '',
     children
   }: Props & { children?: any } = $props();
 

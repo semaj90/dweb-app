@@ -2,9 +2,12 @@
 // Vector Search API Endpoint
 // Provides fast vector similarity search using pgvector + Qdrant
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "@sveltejs/kit";
-import { vectorSearch } from "$lib/server/search/vector-search";
-import { cache } from "$lib/server/cache/redis";
+// Orphaned content: import type { RequestHandler
+import {
+vectorSearch } from "$lib/server/search/vector-search";
+// Orphaned content: import { cache
+import {
+URL } from "url";
 
 // Vector search request interface
 interface VectorSearchRequest {

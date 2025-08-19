@@ -101,7 +101,7 @@
   function createNewEvidence(x: number, y: number) {
     const input = document.createElement("input");
     input.type = "file";
-    input.onchange = async (e) => {
+    input.onchange=async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
         const coords = getCanvasCoordinates(x, y);
@@ -194,10 +194,10 @@
         role="application"
         aria-label="Case evidence canvas"
         on:contextmenu={handleCanvasContextMenu}
-        on:drop={handleCanvasDrop}
-        on:dragover={handleCanvasDragOver}
-        on:dragenter={handleCanvasDragEnter}
-        on:dragleave={handleCanvasDragLeave}
+        ondrop={handleCanvasDrop}
+        ondragover={handleCanvasDragOver}
+        ondragenter={handleCanvasDragEnter}
+        ondragleave={handleCanvasDragLeave}
       >
         <!-- Grid Background -->
         <div class="container mx-auto px-4" aria-hidden="true"></div>
@@ -391,13 +391,7 @@
 
 <style>
   /* @unocss-include */
-  .canvas-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-  .canvas-background {
+.canvas-background {
     position: relative;
     width: 100%;
     height: 100%;
@@ -509,16 +503,7 @@
     justify-content: center;
     z-index: 200;
 }
-  .loading-spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 3px solid #e2e8f0;
-    border-top: 3px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-}
-  .drop-zone-help {
+.drop-zone-help {
     position: absolute;
     bottom: 3rem;
     left: 50%;

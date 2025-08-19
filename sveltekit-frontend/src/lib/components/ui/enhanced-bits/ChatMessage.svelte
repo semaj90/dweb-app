@@ -1,24 +1,21 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
-<!-- Chat Message: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
   interface Props {
-    message: { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string };;
+    message: { role: 'user' | 'assistant' | 'error', content: string, timestamp?: string }
+    analyticsLog?: (event: any) => void;
+  }
+  
   let {
     message,
-    analyticsLog = > void = () => {}
+    analyticsLog = () => {}
   }: Props = $props();
 
-    analyticsLog: (event: any) ;
-  }
-
-
   import { User, Bot, AlertTriangle } from 'lucide-svelte';
-    let { analyticsLog = $bindable() } = $props(); // (event: any) => void = () => {};
 
-  $effect(() => { if (message && message.content) {
-    analyticsLog({ event: 'chat_message_rendered', role: message.role, timestamp: Date.now() });
-  }
+  $effect(() => { 
+    if (message && message.content) {
+      analyticsLog({ event: 'chat_message_rendered', role: message.role, timestamp: Date.now() });
+    }
+  });
 </script>
 
 <div class="flex items-start gap-2 py-2 px-3 rounded-lg mb-2"

@@ -1,15 +1,15 @@
 // @ts-nocheck
-import { db } from '$lib/server/db';
-import { 
-  evidence, 
+import { db } from "$lib/server/db";
+// Orphaned content: import {
+evidence, 
   documentVectors, 
   evidenceVectors, 
   caseSummaryVectors,
   knowledgeNodes,
   knowledgeEdges
-} from '$lib/db/schema';
-import { ollamaService } from './ollamaService';
-import { eq, sql } from 'drizzle-orm';
+import { ollamaService } from "./ollamaService";
+// Orphaned content: import {
+eq, sql
 import type { DocumentProcessingOptions } from '$lib/schemas/upload';
 
 export interface PipelineResult {

@@ -3,7 +3,8 @@
 // Handles local LLM inference with proper error handling and streaming support
 
 import { browser } from "$app/environment";
-import { LOCAL_LLM_PATHS, checkLocalInstallations } from "../config/local-llm";
+// Orphaned content: import {
+LOCAL_LLM_PATHS, checkLocalInstallations
 
 export interface OllamaModelInfo {
   name: string;

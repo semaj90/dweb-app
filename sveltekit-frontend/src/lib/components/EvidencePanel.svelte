@@ -65,7 +65,7 @@ https://svelte.dev/e/js_parse_error -->
       <input
         type="file"
         accept="*"
-        on:change={handleUpload}
+        onchange={handleUpload}
         style="display:none"
       />
       Upload Evidence
@@ -79,7 +79,7 @@ https://svelte.dev/e/js_parse_error -->
       <div
         class="space-y-4"
         draggable={true}
-        on:dragstart={(e) => handleDragStart(e, evd)}
+        ondragstart={(e) => handleDragStart(e, evd)}
         role="button"
         tabindex={0}
         aria-label="Drag evidence item"

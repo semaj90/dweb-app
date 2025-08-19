@@ -8,12 +8,14 @@
  * Enhanced with Self-Organizing Maps (SOM) and multi-core worker orchestration
  */
 
-import Loki, { type Collection } from "lokijs";
-import { writable, derived, type Readable } from "svelte/store";
-import * as fabric from "fabric";
-import { ShaderCache } from "./webgl-shader-cache";
+Loki, { type Collection } from "lokijs";
+// Orphaned content: import {
+writable, derived, type Readable
+* as fabric from "fabric";
+// Orphaned content: import {
+
 import { BrowserCacheManager } from "./browser-cache-manager";
-import { MatrixTransformLib } from "./matrix-transform-lib";
+// Orphaned content: import {
 
 // Types for our "sprite sheet" system
 export interface CanvasSprite {

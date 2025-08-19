@@ -4,10 +4,11 @@
  * Optimized for LangChain-Ollama workflows with nomic-embed-text
  */
 
-import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar, real, index } from 'drizzle-orm/pg-core';
-import { vector } from 'pgvector/drizzle-orm';
-import { sql } from 'drizzle-orm';
-import { relations } from 'drizzle-orm';
+import { pgTable, text, timestamp, integer, boolean, json, uuid, varchar, real, index } from "drizzle-orm/pg-core";
+// Orphaned content: import {
+
+import { sql }, {
+relations } from "drizzle-orm";
 
 // Core tables (existing)
 export const users = pgTable('users', {

@@ -2,9 +2,12 @@
 // Provides advanced semantic search with multiple strategies and intelligent ranking
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { enhancedLegalSearch, type LegalSearchResult } from '$lib/server/ai/enhanced-legal-search';
-import { rateLimit } from '$lib/server/utils/rate-limit';
+// Orphaned content: import type { RequestHandler
+import {
+enhancedLegalSearch, type LegalSearchResult } from "$lib/server/ai/enhanced-legal-search";
+// Orphaned content: import { rateLimit
+import {
+URL } from "url";
 
 // Rate limiting configuration
 const rateLimiter = rateLimit({
@@ -80,7 +83,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress }) => {
     return json({
       success: false,
       error: 'Search service temporarily unavailable',
-      details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+      details: import.meta.env.NODE_ENV === 'development' ? String(error) : undefined,
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }
@@ -166,7 +169,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
     return json({
       success: false,
       error: 'Search service temporarily unavailable',
-      details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+      details: import.meta.env.NODE_ENV === 'development' ? String(error) : undefined,
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }

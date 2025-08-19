@@ -1,11 +1,14 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { aiService } from '$lib/server/services/ai-service.js';
-import { db } from '$lib/server/db/index.js';
-import { evidence } from '$lib/server/db/schema.js';
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
+// Orphaned content: import type { RequestHandler
+import {
+aiService } from "$lib/server/services/ai-service.js";
+// Orphaned content: import { db
+import {
+evidence } from "$lib/server/db/schema.js";
+// Orphaned content: import { eq
+import {
+z } from "zod";
 
 const analysisSchema = z.object({
   evidenceId: z.string().uuid(),

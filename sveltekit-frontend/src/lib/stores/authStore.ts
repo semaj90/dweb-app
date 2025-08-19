@@ -1,9 +1,11 @@
+import crypto from "crypto";
 // @ts-nocheck
 // Global authentication store with AI assistant integration
 import { writable, derived, get } from "svelte/store";
-import { browser } from "$app/environment";
+// Orphaned content: import {
+
 import { goto } from "$app/navigation";
-import type { User } from "$lib/server/db/schema-postgres";
+// Orphaned content: import type { User
 
 export interface AuthUser {
   id: string;

@@ -1,6 +1,8 @@
+import { URL } from "url";
 // @ts-nocheck
 import { ContextService } from "$lib/services/context-service";
-import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
 // Environment variables fallback
 const env = process.env || {};
 

@@ -1,3 +1,4 @@
+import type { ComponentType } from "svelte";
 // @ts-nocheck
 /**
  * Performance Optimizations for Enhanced Bits UI Components
@@ -6,7 +7,6 @@
  * and other performance optimizations for legal AI applications.
  */
 
-import type { ComponentType } from "svelte";
 
 // Tree-shaking utilities
 export interface ComponentModule {

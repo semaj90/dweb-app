@@ -1,8 +1,9 @@
 // Database Orchestrator Conditions API
 // Manages event loop conditions and real-time triggers
 
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { databaseOrchestrator } from '$lib/services/comprehensive-database-orchestrator'; // alias
+import { json, type RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+databaseOrchestrator // alias
 
 // GET /api/database-orchestrator/conditions - List all conditions
 export const GET: RequestHandler = async () => {

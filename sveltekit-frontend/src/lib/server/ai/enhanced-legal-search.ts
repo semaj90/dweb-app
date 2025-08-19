@@ -3,14 +3,17 @@
 // Implements RAG pattern with vector similarity search and semantic enhancement
 
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { PGVectorStore, DistanceStrategy } from "@langchain/community/vectorstores/pgvector";
+// Orphaned content: import {
+PGVectorStore, DistanceStrategy
 import { Document } from "@langchain/core/documents";
-import { Embeddings } from "@langchain/core/embeddings";
-import { generateEmbedding } from "./embeddings-simple";
-// import { db } from "$lib/database/schema";
-// import { cases, evidence, documents } from "$lib/database/schema";
-// import { eq, sql, and, or, desc, asc } from "drizzle-orm";
-import { legalDocuments } from "$lib/data/legal-documents";
+// Orphaned content: import {
+
+import { generateEmbedding } from './embeddings-simple.js';
+// Orphaned content: // import { db
+// { cases, evidence, documents } from "$lib/database/schema";
+// Orphaned content: // import { eq, sql, and, or, desc, asc
+import {
+legalDocuments } from "$lib/data/legal-documents";
 
 // Custom embeddings class for Nomic Embed integration
 export class NomicEmbeddings extends Embeddings {
@@ -139,10 +142,10 @@ export class EnhancedLegalSearchService {
   private async initializePgVectorStore() {
     try {
       // Only attempt if database is available
-      if (process.env.DATABASE_URL) {
+      if (import.meta.env.DATABASE_URL) {
         const pgConfig = {
           postgresConnectionOptions: {
-            connectionString: process.env.DATABASE_URL,
+            connectionString: import.meta.env.DATABASE_URL,
           },
           tableName: "search_index",
           columns: {

@@ -6,8 +6,9 @@
  * Legal domain specialization with efficient memory management
  */
 
-import { writable, derived, type Writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { writable, derived, type Writable } from "svelte/store";
+// Orphaned content: import {
+
 import type { LlamaCppOllamaService } from './llamacpp-ollama-integration';
 
 // Unsloth Configuration for RTX 3060

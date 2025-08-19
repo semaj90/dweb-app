@@ -2,12 +2,16 @@
 // Evidence search API endpoint with advanced vector capabilities
 // Supports document content search, image analysis, and multi-modal search
 import { evidence } from "$lib/server/db/schema-postgres";
-import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { and, desc, ilike, or, sql } from "drizzle-orm";
-import { generateEmbedding } from "$lib/server/ai/embeddings";
+// Orphaned content: import {
+
 import { db } from "$lib/server/db/index";
-import { searchEvidence } from "$lib/server/vector/qdrant";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import {
+
+import type { RequestHandler } from "./$types.js";
+// Orphaned content: import {
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

@@ -4,14 +4,15 @@
  * Integrates SvelteKit with Go Legal AI Server
  */
 
-import { Worker, type Job } from 'bullmq';
-import { db } from '$lib/server/db';
-import { evidence } from '$lib/server/db/schema-postgres';
-import { eq } from 'drizzle-orm';
+import { Worker, type Job } from "bullmq";
+// Orphaned content: import {
+
+import { evidence } from "$lib/server/db/schema-postgres";
+// Orphaned content: import {
 
 // Configuration
-const GO_SERVER_URL = process.env.GO_SERVER_URL || 'http://localhost:8080';
-const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+const GO_SERVER_URL = import.meta.env.GO_SERVER_URL || 'http://localhost:8080';
+const REDIS_URL = import.meta.env.REDIS_URL || 'redis://localhost:6379';
 
 // Job data interfaces
 interface LegalAIJobData {

@@ -1,8 +1,8 @@
 // @ts-nocheck
 // Enhanced Drizzle schema with pgvector support
 import { sql } from "drizzle-orm";
-import {
-  index,
+// Orphaned content: import {
+index,
   jsonb,
   pgTable,
   text,
@@ -10,7 +10,6 @@ import {
   uuid,
   varchar,
   customType,
-} from "drizzle-orm/pg-core";
 
 // Custom pgvector column type for Drizzle
 const vector = (name: string, dimensions: number) =>

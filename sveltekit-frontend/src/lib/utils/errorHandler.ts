@@ -66,7 +66,7 @@ class ErrorHandler {
     this.notifyListeners(error);
 
     // Console logging for development
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.NODE_ENV === "development") {
       console.error(
         `[${error.type.toUpperCase()}] ${error.message}`,
         error.details,

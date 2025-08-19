@@ -1,19 +1,14 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- AI Chat Message: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
   interface Props {
-    message: { role: string; content: string; timestamp?: string; references?: any[] };;
+    message: { role: string; content: string; timestamp?: string; references?: any[] };
+    showReferences?: boolean;
+  }
+
   let {
     message,
     showReferences = false
   }: Props = $props();
-
-    showReferences?: any;
-  }
-
-
-    let { showReferences = $bindable() } = $props(); // false;
 
   let isUser = message.role === 'user';
 </script>

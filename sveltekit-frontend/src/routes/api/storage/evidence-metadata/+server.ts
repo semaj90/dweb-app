@@ -1,8 +1,9 @@
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-import { db } from '$lib/server/db/drizzle';
-import { evidence } from '$lib/server/db/schema-postgres';
-import { eq  } from "drizzle-orm";
+import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
+import { evidence } from "$lib/server/db/schema-postgres";
+// Orphaned content: import {
 
 export async function POST({ request }) {
   try {

@@ -1,10 +1,12 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
-import { db } from "$lib/server/db/drizzle";
-import { legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
-import { sql, like, or  } from "drizzle-orm";
+// Orphaned content: import type { RequestHandler
+import {
+enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
+// Orphaned content: import { db
+import {
+legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
+// Orphaned content: import { sql, like, or
 
 // YoRHa Enhanced RAG API
 // Integrated AI-powered legal analysis for YoRHa interface

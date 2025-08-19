@@ -1,8 +1,11 @@
 // Database Orchestrator Events API
 // Real-time event monitoring and WebSocket integration
 
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { databaseOrchestrator } from '$lib/services/comprehensive-database-orchestrator'; // alias
+import { json, type RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+databaseOrchestrator // alias
+import { EventEmitter } from "events";
+// Orphaned content: import {
 
 // GET /api/database-orchestrator/events - Get recent events
 export const GET: RequestHandler = async ({ url }) => {

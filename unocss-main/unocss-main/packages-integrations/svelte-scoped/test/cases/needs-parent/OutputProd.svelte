@@ -2,7 +2,7 @@
   export let onclick: () => any;
 </script>
 
-<button class="usp-n69tx1" on:click={onclick} type="button">
+<button class="usp-n69tx1" onclick={onclick} type="button">
   <span class="usp-g9gauz" />
   <slot /></button
 >

@@ -404,7 +404,7 @@
           </div>
           
           <button
-            on:click={testIntegration}
+            onclick={testIntegration}
             class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center space-x-2"
           >
             <Play class="w-4 h-4" />
@@ -431,7 +431,7 @@
             { id: 'integration', label: 'System Integration', icon: Brain, desc: 'Full system integration' }
           ] as demo}
             <button
-              on:click={() => selectedDemo = demo.id}
+              onclick={() => selectedDemo = demo.id}
               class="w-full flex items-center space-x-3 p-3 rounded-lg transition-colors {
                 selectedDemo === demo.id
                   ? 'bg-blue-100 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
@@ -537,7 +537,7 @@
             </div>
             
             <button
-              on:click={publishMessage}
+              onclick={publishMessage}
               disabled={isPublishing || !status.connected}
               class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center space-x-2"
             >
@@ -559,7 +559,7 @@
                 class="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-slate-100"
               />
               <button
-                on:click={subscribeToSubject}
+                onclick={subscribeToSubject}
                 disabled={!status.connected}
                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded-lg transition-colors"
               >
@@ -582,7 +582,7 @@
                       <p class="text-xs text-slate-600 dark:text-slate-400">{subscription.messageCount} messages</p>
                     </div>
                     <button
-                      on:click={() => unsubscribeFromSubject(subscription.id)}
+                      onclick={() => unsubscribeFromSubject(subscription.id)}
                       class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm"
                     >
                       Unsubscribe
@@ -601,7 +601,7 @@
               <div class="bg-slate-50 dark:bg-slate-700 px-4 py-2 border-b border-slate-200 dark:border-slate-600 flex justify-between items-center">
                 <h4 class="font-medium text-slate-900 dark:text-slate-100">Received Messages</h4>
                 <button
-                  on:click={clearReceivedMessages}
+                  onclick={clearReceivedMessages}
                   class="text-sm text-blue-600 hover:text-blue-700"
                 >
                   Clear
@@ -658,7 +658,7 @@
                 bind:value={chatMessage}
                 placeholder="Ask a legal question..."
                 class="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-slate-100"
-                on:keydown={(e) => {
+                onkeydown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendChatMessage();
@@ -666,14 +666,14 @@
                 }}
               />
               <button
-                on:click={sendChatMessage}
+                onclick={sendChatMessage}
                 disabled={!chatMessage.trim() || !status.connected}
                 class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded-lg transition-colors"
               >
                 <Send class="w-4 h-4" />
               </button>
               <button
-                on:click={clearChatHistory}
+                onclick={clearChatHistory}
                 class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
               >
                 <RotateCcw class="w-4 h-4" />

@@ -4,6 +4,7 @@
  * Handles conversational AI agents with role-based interactions
  */
 
+import crypto from "crypto";
 import type {
   AgentDefinition,
   AgentWorkflow,

@@ -101,10 +101,10 @@ https://svelte.dev/e/js_parse_error -->
 {#if open}
   <div
     class="fixed inset-0 z-40 bg-black/50 lg:hidden"
-    on:click={closeSidebar}
+    onclick={closeSidebar}
     role="button"
     tabindex="0"
-    on:keydown={(e) => e.key === "Enter" && closeSidebar()}
+    onkeydown={(e) => e.key === "Enter" && closeSidebar()}
   ></div>
 {/if}
 
@@ -163,7 +163,7 @@ https://svelte.dev/e/js_parse_error -->
                   ? "bg-harvard-crimson text-white shadow-nier-glow"
                   : "text-muted-foreground hover:text-foreground hover:bg-nier-surface-light"
               )}
-              on:click={closeSidebar}
+              onclick={closeSidebar}
             >
               <div class="flex items-center">
                 {@const Icon = item.icon}
@@ -215,7 +215,7 @@ https://svelte.dev/e/js_parse_error -->
                     ? "bg-harvard-crimson text-white shadow-nier-glow"
                     : "text-muted-foreground hover:text-foreground hover:bg-nier-surface-light"
                 )}
-                on:click={closeSidebar}
+                onclick={closeSidebar}
               >
                 {@const Icon = item.icon}
                 <Icon
@@ -249,7 +249,7 @@ https://svelte.dev/e/js_parse_error -->
                     ? "bg-harvard-crimson text-white shadow-nier-glow"
                     : "text-muted-foreground hover:text-foreground hover:bg-nier-surface-light"
                 )}
-                on:click={closeSidebar}
+                onclick={closeSidebar}
               >
                 {@const Icon = item.icon}
                 <Icon

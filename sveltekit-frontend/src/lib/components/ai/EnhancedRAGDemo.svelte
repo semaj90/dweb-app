@@ -208,7 +208,7 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
                 )} words
               </div>
               <Button
-                onclick={analyzeDocument}
+                on:click={analyzeDocument}
                 disabled={isAnalyzing || !sampleLegalText.trim()}
                 class="px-6">
                 {isAnalyzing ? 'Analyzing...' : 'Analyze Document'}
@@ -409,7 +409,7 @@ IN WITNESS WHEREOF, the parties have executed this MOU as of the date first writ
 
             <div class="flex justify-end">
               <Button
-                onclick={performRAGQuery}
+                on:click={performRAGQuery}
                 disabled={isAnalyzing || !queryText.trim()}
                 class="px-6">
                 {isAnalyzing ? 'Querying...' : 'Execute RAG Query'}

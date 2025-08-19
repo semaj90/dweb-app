@@ -6,8 +6,9 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { v4 as uuidv4 } from 'uuid';
+// Orphaned content: import type { RequestHandler
+import {
+v4 as uuidv4 } from "uuid";
 
 interface RAGQueryRequest {
     query: string;

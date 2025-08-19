@@ -1,5 +1,6 @@
 // Svelte store for real-time AI pipeline updates via WebSocket fan-out
-import { writable, derived } from 'svelte/store';
+import { writable, derived } from "svelte/store";
+// Orphaned content: import {
 
 export interface PipelineEventBase { type: string; ts: number; raw: any }
 export interface EvidenceUploadEvent extends PipelineEventBase { type: 'evidence.upload' }

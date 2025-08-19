@@ -2,13 +2,13 @@ import {
   ollamaService,
   type OllamaModel,
 } from "$lib/server/services/OllamaService";
-import type { RequestHandler } from "@sveltejs/kit";
-import { json } from "@sveltejs/kit";
+import type { RequestHandler }, {
+json } from "@sveltejs/kit";
 
 const GO_BASE =
-  process.env.GO_SERVICE_URL ||
-  process.env.GO_SERVER_URL ||
-  process.env.GO_MICROSERVICE_URL ||
+  import.meta.env.GO_SERVICE_URL ||
+  import.meta.env.GO_SERVER_URL ||
+  import.meta.env.GO_MICROSERVICE_URL ||
   "http://localhost:8084";
 
 // Tiny retry wrapper to smooth transient failures
@@ -90,8 +90,8 @@ export const GET: RequestHandler = async () => {
 
   // If Ollama is healthy, fetch models and check for required model
   const requiredModel =
-    process.env.PRIMARY_MODEL ||
-    process.env.MODEL_NAME ||
+    import.meta.env.PRIMARY_MODEL ||
+    import.meta.env.MODEL_NAME ||
     "gemma3-legal:latest";
   let models: OllamaModel[] = [];
   if (ollama_ok) {

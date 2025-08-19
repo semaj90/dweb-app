@@ -1,13 +1,5 @@
 import type { ChatMessage, RAGContext } from "$lib/types/ai-chat";
-import { normalize, SOMGrid, type IntentPoint } from "./som-intent";
-
-export interface RankedChunk {
-  id: string;
-  text: string;
-  score: number;
-  documentId?: string;
-  sectionId?: string;
-}
+import { normalize, SOMGrid, type IntentPoint, , export interface RankedChunk {,   id: string;,   text: string;,   score: number;,   documentId?: string;,   sectionId?: string; } from
 
 export interface RAGInputs {
   context: RAGContext | undefined | null;

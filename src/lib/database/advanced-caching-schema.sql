@@ -1,9 +1,9 @@
 /**
  * Advanced Multi-Layer Caching Database Schema with JSONB
- * 
+ *
  * Production-ready schema for storing advanced caching data using JSONB
  * for flexible metadata and configuration storage.
- * 
+ *
  * Features:
  * - Cache entry storage with compression and metadata
  * - Layer-specific cache management
@@ -28,50 +28,50 @@ CREATE TABLE IF NOT EXISTS cache_entries (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     cache_key VARCHAR(500) NOT NULL,
     cache_layer VARCHAR(100) NOT NULL,
-    
+
     -- Cache value storage
     cache_value JSONB NOT NULL,
     value_type VARCHAR(100) DEFAULT 'unknown',
     value_size INTEGER DEFAULT 0,
-    
+
     -- Compression and encoding
     is_compressed BOOLEAN DEFAULT false,
     compression_type VARCHAR(50),
     compression_ratio DECIMAL(5,4),
     original_size INTEGER,
-    
+
     -- Cache metadata
     cache_metadata JSONB NOT NULL DEFAULT '{}',
-    
+
     -- TTL and expiration
     ttl_seconds INTEGER DEFAULT 3600,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    
+
     -- Access tracking
     access_count INTEGER DEFAULT 0,
     last_accessed TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     first_accessed TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Version and coherence
     version INTEGER DEFAULT 1,
     coherence_hash VARCHAR(64),
-    
+
     -- Performance tracking
     access_pattern JSONB DEFAULT '{}',
     performance_metrics JSONB DEFAULT '{}',
-    
+
     -- Storage optimization
     storage_tier VARCHAR(50) DEFAULT 'standard',
     optimization_score DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Tagging and categorization
     tags JSONB DEFAULT '[]',
     data_classification VARCHAR(100),
-    
+
     UNIQUE(cache_key, cache_layer)
 );
 
@@ -84,39 +84,39 @@ CREATE TABLE IF NOT EXISTS cache_layers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     layer_name VARCHAR(100) UNIQUE NOT NULL,
     layer_type VARCHAR(100) NOT NULL,
-    
+
     -- Layer configuration
     configuration JSONB NOT NULL DEFAULT '{}',
-    
+
     -- Capacity and limits
     max_capacity INTEGER DEFAULT 10000,
     current_size INTEGER DEFAULT 0,
     max_memory_bytes BIGINT,
     current_memory_bytes BIGINT DEFAULT 0,
-    
+
     -- Performance settings
     default_ttl INTEGER DEFAULT 3600,
     priority INTEGER DEFAULT 5,
-    
+
     -- Layer status
     status VARCHAR(50) DEFAULT 'active',
     is_enabled BOOLEAN DEFAULT true,
-    
+
     -- Health and monitoring
     health_status JSONB DEFAULT '{}',
     last_health_check TIMESTAMP WITH TIME ZONE,
-    
+
     -- Performance metrics
     performance_stats JSONB DEFAULT '{}',
-    
+
     -- Layer policies
     eviction_policy VARCHAR(100) DEFAULT 'lru',
     policy_configuration JSONB DEFAULT '{}',
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Versioning
     version INTEGER DEFAULT 1,
     change_log JSONB DEFAULT '[]'
@@ -130,44 +130,44 @@ CREATE TABLE IF NOT EXISTS cache_layers (
 CREATE TABLE IF NOT EXISTS cache_access_patterns (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     cache_key VARCHAR(500) NOT NULL,
-    
+
     -- Access statistics
     total_accesses INTEGER DEFAULT 0,
     recent_accesses INTEGER DEFAULT 0,
     access_frequency VARCHAR(50) DEFAULT 'low',
-    
+
     -- Temporal patterns
     access_times JSONB DEFAULT '[]',
     hourly_distribution JSONB DEFAULT '{}',
     daily_distribution JSONB DEFAULT '{}',
     weekly_distribution JSONB DEFAULT '{}',
-    
+
     -- Performance metrics
     average_response_time DECIMAL(10,4) DEFAULT 0.0,
     hit_rate DECIMAL(5,4) DEFAULT 0.0,
     miss_rate DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Access characteristics
     access_source_distribution JSONB DEFAULT '{}',
     layer_hit_distribution JSONB DEFAULT '{}',
-    
+
     -- Predictive data
     prediction_accuracy DECIMAL(5,4) DEFAULT 0.0,
     next_access_prediction TIMESTAMP WITH TIME ZONE,
     access_likelihood DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Pattern metadata
     pattern_metadata JSONB DEFAULT '{}',
     anomalies JSONB DEFAULT '[]',
-    
+
     -- Analysis period
     analysis_start TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     analysis_end TIMESTAMP WITH TIME ZONE,
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     UNIQUE(cache_key)
 );
 
@@ -178,59 +178,59 @@ CREATE TABLE IF NOT EXISTS cache_access_patterns (
 -- System-wide cache performance metrics
 CREATE TABLE IF NOT EXISTS cache_performance_metrics (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    
+
     -- Time window for metrics
     metric_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
     time_window_start TIMESTAMP WITH TIME ZONE NOT NULL,
     time_window_end TIMESTAMP WITH TIME ZONE NOT NULL,
     aggregation_level VARCHAR(50) DEFAULT 'system', -- system, layer, key
-    
+
     -- Performance metrics
     total_operations INTEGER DEFAULT 0,
     get_operations INTEGER DEFAULT 0,
     set_operations INTEGER DEFAULT 0,
     delete_operations INTEGER DEFAULT 0,
-    
+
     -- Hit/Miss statistics
     cache_hits INTEGER DEFAULT 0,
     cache_misses INTEGER DEFAULT 0,
     hit_rate DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Response time metrics
     average_response_time DECIMAL(10,4) DEFAULT 0.0,
     median_response_time DECIMAL(10,4) DEFAULT 0.0,
     p95_response_time DECIMAL(10,4) DEFAULT 0.0,
     p99_response_time DECIMAL(10,4) DEFAULT 0.0,
-    
+
     -- Throughput metrics
     operations_per_second DECIMAL(10,4) DEFAULT 0.0,
     bytes_per_second BIGINT DEFAULT 0,
-    
+
     -- Error metrics
     error_count INTEGER DEFAULT 0,
     error_rate DECIMAL(5,4) DEFAULT 0.0,
     timeout_count INTEGER DEFAULT 0,
-    
+
     -- Layer-specific metrics
     layer_metrics JSONB DEFAULT '{}',
-    
+
     -- Resource utilization
     memory_usage_bytes BIGINT DEFAULT 0,
     memory_utilization DECIMAL(5,4) DEFAULT 0.0,
     cpu_utilization DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Compression and efficiency
     compression_savings_bytes BIGINT DEFAULT 0,
     compression_ratio DECIMAL(5,4) DEFAULT 0.0,
     storage_efficiency DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Predictive metrics
     predictive_hits INTEGER DEFAULT 0,
     prediction_accuracy DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Additional metrics
     custom_metrics JSONB DEFAULT '{}',
-    
+
     -- Data source
     metric_source VARCHAR(100) DEFAULT 'cache-manager',
     collection_method VARCHAR(100) DEFAULT 'automatic'
@@ -246,38 +246,38 @@ CREATE TABLE IF NOT EXISTS cache_strategies (
     strategy_id VARCHAR(255) UNIQUE NOT NULL,
     strategy_name VARCHAR(255) NOT NULL,
     strategy_type VARCHAR(100) NOT NULL,
-    
+
     -- Strategy configuration
     strategy_config JSONB NOT NULL DEFAULT '{}',
-    
+
     -- Read/Write strategies
     read_strategy VARCHAR(100) DEFAULT 'l1-first',
     write_strategy VARCHAR(100) DEFAULT 'write-through',
     consistency_level VARCHAR(100) DEFAULT 'eventual',
-    
+
     -- Performance parameters
     performance_targets JSONB DEFAULT '{}',
     optimization_parameters JSONB DEFAULT '{}',
-    
+
     -- Strategy status
     is_active BOOLEAN DEFAULT false,
     is_default BOOLEAN DEFAULT false,
-    
+
     -- Usage tracking
     usage_count INTEGER DEFAULT 0,
     success_rate DECIMAL(5,4) DEFAULT 0.0,
     performance_score DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Strategy metadata
     description TEXT,
     use_cases JSONB DEFAULT '[]',
     prerequisites JSONB DEFAULT '[]',
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     activated_at TIMESTAMP WITH TIME ZONE,
-    
+
     -- Versioning
     version INTEGER DEFAULT 1
 );
@@ -288,37 +288,37 @@ CREATE TABLE IF NOT EXISTS cache_policies (
     policy_id VARCHAR(255) UNIQUE NOT NULL,
     policy_name VARCHAR(255) NOT NULL,
     policy_type VARCHAR(100) NOT NULL,
-    
+
     -- Policy configuration
     policy_config JSONB NOT NULL DEFAULT '{}',
-    
+
     -- Eviction settings
     eviction_strategy VARCHAR(100) DEFAULT 'lru',
     max_age_seconds INTEGER DEFAULT 3600,
     max_size INTEGER DEFAULT 10000,
     max_memory_bytes BIGINT,
-    
+
     -- Scoring and prioritization
     scoring_function TEXT,
     priority_weights JSONB DEFAULT '{}',
-    
+
     -- Policy rules
     inclusion_rules JSONB DEFAULT '[]',
     exclusion_rules JSONB DEFAULT '[]',
     ttl_rules JSONB DEFAULT '[]',
-    
+
     -- Performance tracking
     eviction_count INTEGER DEFAULT 0,
     efficiency_score DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Policy status
     is_enabled BOOLEAN DEFAULT true,
     applies_to_layers JSONB DEFAULT '[]',
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Versioning
     version INTEGER DEFAULT 1
 );
@@ -331,45 +331,45 @@ CREATE TABLE IF NOT EXISTS cache_policies (
 CREATE TABLE IF NOT EXISTS cache_optimization_recommendations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     recommendation_id VARCHAR(255) UNIQUE NOT NULL,
-    
+
     -- Recommendation details
     recommendation_type VARCHAR(100) NOT NULL,
     priority VARCHAR(50) DEFAULT 'medium',
     title VARCHAR(500) NOT NULL,
     description TEXT,
-    
+
     -- Analysis data
     analysis_data JSONB NOT NULL DEFAULT '{}',
     supporting_metrics JSONB DEFAULT '{}',
-    
+
     -- Impact estimation
     estimated_impact JSONB DEFAULT '{}',
     confidence_score DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Implementation details
     implementation_steps JSONB DEFAULT '[]',
     implementation_difficulty VARCHAR(50) DEFAULT 'medium',
     estimated_effort_hours INTEGER,
-    
+
     -- Status and tracking
     status VARCHAR(50) DEFAULT 'pending',
     is_implemented BOOLEAN DEFAULT false,
     implementation_date TIMESTAMP WITH TIME ZONE,
-    
+
     -- Results tracking
     actual_impact JSONB DEFAULT '{}',
     effectiveness_score DECIMAL(5,4),
-    
+
     -- Recommendation metadata
     generated_by VARCHAR(100) DEFAULT 'system',
     recommendation_source VARCHAR(100),
     tags JSONB DEFAULT '[]',
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     expires_at TIMESTAMP WITH TIME ZONE,
-    
+
     -- Approval workflow
     approval_status VARCHAR(50) DEFAULT 'auto-approved',
     approved_by VARCHAR(255),
@@ -384,35 +384,35 @@ CREATE TABLE IF NOT EXISTS cache_optimization_recommendations (
 CREATE TABLE IF NOT EXISTS cache_coherence_log (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     cache_key VARCHAR(500) NOT NULL,
-    
+
     -- Operation details
     operation_type VARCHAR(50) NOT NULL, -- set, delete, invalidate, sync
     operation_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Coherence data
     affected_layers JSONB NOT NULL DEFAULT '[]',
     version_before INTEGER,
     version_after INTEGER,
     coherence_hash_before VARCHAR(64),
     coherence_hash_after VARCHAR(64),
-    
+
     -- Synchronization data
     sync_status VARCHAR(50) DEFAULT 'pending',
     sync_results JSONB DEFAULT '{}',
-    
+
     -- Consistency checking
     consistency_check_results JSONB DEFAULT '{}',
     inconsistencies_detected JSONB DEFAULT '[]',
-    
+
     -- Resolution data
     resolution_strategy VARCHAR(100),
     resolution_timestamp TIMESTAMP WITH TIME ZONE,
     resolution_successful BOOLEAN,
-    
+
     -- Operation metadata
     operation_source VARCHAR(100),
     operation_metadata JSONB DEFAULT '{}',
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -427,39 +427,39 @@ CREATE TABLE IF NOT EXISTS cache_predictive_models (
     model_id VARCHAR(255) UNIQUE NOT NULL,
     model_name VARCHAR(255) NOT NULL,
     model_type VARCHAR(100) NOT NULL,
-    
+
     -- Model configuration
     model_config JSONB NOT NULL DEFAULT '{}',
     training_parameters JSONB DEFAULT '{}',
-    
+
     -- Model performance
     accuracy_score DECIMAL(5,4) DEFAULT 0.0,
     precision_score DECIMAL(5,4) DEFAULT 0.0,
     recall_score DECIMAL(5,4) DEFAULT 0.0,
     f1_score DECIMAL(5,4) DEFAULT 0.0,
-    
+
     -- Training data
     training_data_size INTEGER DEFAULT 0,
     training_start_date TIMESTAMP WITH TIME ZONE,
     training_end_date TIMESTAMP WITH TIME ZONE,
     last_training_date TIMESTAMP WITH TIME ZONE,
-    
+
     -- Model status
     status VARCHAR(50) DEFAULT 'training',
     is_active BOOLEAN DEFAULT false,
-    
+
     -- Model artifacts
     model_artifacts JSONB DEFAULT '{}',
     feature_importance JSONB DEFAULT '{}',
-    
+
     -- Usage tracking
     prediction_count INTEGER DEFAULT 0,
     successful_predictions INTEGER DEFAULT 0,
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Versioning
     version INTEGER DEFAULT 1
 );
@@ -469,25 +469,25 @@ CREATE TABLE IF NOT EXISTS cache_predictive_recommendations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     model_id VARCHAR(255) REFERENCES cache_predictive_models(model_id),
     cache_key VARCHAR(500) NOT NULL,
-    
+
     -- Prediction details
     prediction_type VARCHAR(100) NOT NULL, -- preload, evict, promote, demote
     confidence_score DECIMAL(5,4) NOT NULL,
     predicted_access_time TIMESTAMP WITH TIME ZONE,
-    
+
     -- Recommendation data
     recommended_action JSONB NOT NULL DEFAULT '{}',
     expected_benefit JSONB DEFAULT '{}',
-    
+
     -- Execution tracking
     is_executed BOOLEAN DEFAULT false,
     execution_timestamp TIMESTAMP WITH TIME ZONE,
     execution_result JSONB DEFAULT '{}',
-    
+
     -- Validation
     actual_outcome JSONB DEFAULT '{}',
     prediction_accuracy DECIMAL(5,4),
-    
+
     -- Timestamps
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     validated_at TIMESTAMP WITH TIME ZONE,
@@ -589,7 +589,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         ce.cache_layer,
         COUNT(*)::INTEGER as total_entries,
         SUM(ce.value_size)::BIGINT as total_size_bytes,
@@ -599,7 +599,7 @@ BEGIN
     FROM cache_entries ce
     LEFT JOIN cache_access_patterns ap ON ce.cache_key = ap.cache_key
     LEFT JOIN cache_layers cl ON ce.cache_layer = cl.layer_name
-    WHERE 
+    WHERE
         ce.expires_at > NOW()
         AND (p_layer_name IS NULL OR ce.cache_layer = p_layer_name)
     GROUP BY ce.cache_layer, cl.max_memory_bytes
@@ -619,7 +619,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         ap.cache_key,
         ap.total_accesses,
         ap.access_frequency,
@@ -628,7 +628,7 @@ BEGIN
         jsonb_agg(DISTINCT ce.cache_layer) as layers_present
     FROM cache_access_patterns ap
     JOIN cache_entries ce ON ap.cache_key = ce.cache_key
-    WHERE 
+    WHERE
         ce.expires_at > NOW()
         AND ap.access_frequency IN ('high', 'medium')
     GROUP BY ap.cache_key, ap.total_accesses, ap.access_frequency, ce.last_accessed, ap.hit_rate
@@ -647,7 +647,7 @@ DECLARE
     start_time TIMESTAMP WITH TIME ZONE;
 BEGIN
     start_time := NOW() - (p_time_window_hours || ' hours')::INTERVAL;
-    
+
     SELECT jsonb_build_object(
         'time_window_hours', p_time_window_hours,
         'analysis_period', jsonb_build_object(
@@ -678,7 +678,7 @@ BEGIN
     ) INTO result
     FROM cache_performance_metrics
     WHERE metric_timestamp >= start_time;
-    
+
     RETURN result;
 END;
 $$ LANGUAGE plpgsql;
@@ -696,27 +696,27 @@ DECLARE
     freed_bytes BIGINT;
 BEGIN
     cutoff_date := NOW() - (p_retention_hours || ' hours')::INTERVAL;
-    
+
     -- Calculate space that will be freed
     SELECT COALESCE(SUM(value_size), 0) INTO freed_bytes
-    FROM cache_entries 
+    FROM cache_entries
     WHERE expires_at < NOW();
-    
+
     -- Delete expired cache entries
-    DELETE FROM cache_entries 
+    DELETE FROM cache_entries
     WHERE expires_at < NOW();
     GET DIAGNOSTICS deleted_entries = ROW_COUNT;
-    
+
     -- Delete old access patterns (older than retention period)
-    DELETE FROM cache_access_patterns 
+    DELETE FROM cache_access_patterns
     WHERE updated_at < cutoff_date;
     GET DIAGNOSTICS deleted_patterns = ROW_COUNT;
-    
+
     -- Delete old coherence log entries
-    DELETE FROM cache_coherence_log 
+    DELETE FROM cache_coherence_log
     WHERE operation_timestamp < cutoff_date;
     GET DIAGNOSTICS deleted_coherence = ROW_COUNT;
-    
+
     RETURN jsonb_build_object(
         'cleanup_date', cutoff_date,
         'deleted_records', jsonb_build_object(
@@ -745,23 +745,23 @@ BEGIN
     SELECT COUNT(*) INTO hot_keys_count
     FROM cache_access_patterns
     WHERE access_frequency = 'high' AND hit_rate < 0.9;
-    
+
     -- Count cold keys that could be evicted
     SELECT COUNT(*) INTO cold_keys_count
     FROM cache_access_patterns ap
     JOIN cache_entries ce ON ap.cache_key = ce.cache_key
     WHERE ap.total_accesses < 5 AND ce.last_accessed < NOW() - INTERVAL '1 hour';
-    
+
     -- Count keys with low hit rates
     SELECT COUNT(*) INTO low_hit_rate_keys_count
     FROM cache_access_patterns
     WHERE hit_rate < 0.5 AND total_accesses > 10;
-    
+
     -- Count oversized keys that could benefit from compression
     SELECT COUNT(*) INTO oversized_keys_count
     FROM cache_entries
     WHERE value_size > 10240 AND NOT is_compressed;
-    
+
     SELECT jsonb_build_object(
         'optimization_opportunities', jsonb_build_object(
             'hot_keys_for_promotion', hot_keys_count,
@@ -770,7 +770,7 @@ BEGIN
             'oversized_uncompressed_keys', oversized_keys_count
         ),
         'recommendations', jsonb_build_array(
-            CASE WHEN hot_keys_count > 0 THEN 
+            CASE WHEN hot_keys_count > 0 THEN
                 jsonb_build_object(
                     'type', 'promote_hot_keys',
                     'priority', 'high',
@@ -778,7 +778,7 @@ BEGIN
                     'description', 'Promote hot keys to higher cache layers'
                 )
             END,
-            CASE WHEN cold_keys_count > 0 THEN 
+            CASE WHEN cold_keys_count > 0 THEN
                 jsonb_build_object(
                     'type', 'evict_cold_keys',
                     'priority', 'medium',
@@ -786,7 +786,7 @@ BEGIN
                     'description', 'Evict cold keys to free up cache space'
                 )
             END,
-            CASE WHEN oversized_keys_count > 0 THEN 
+            CASE WHEN oversized_keys_count > 0 THEN
                 jsonb_build_object(
                     'type', 'compress_large_objects',
                     'priority', 'medium',
@@ -797,7 +797,7 @@ BEGIN
         ),
         'analysis_timestamp', NOW()
     ) INTO result;
-    
+
     RETURN result;
 END;
 $$ LANGUAGE plpgsql;
@@ -850,7 +850,13 @@ CREATE TRIGGER update_predictive_models_updated_at
 -- Insert default cache layers
 INSERT INTO cache_layers (
     layer_name, layer_type, configuration, max_capacity, default_ttl, priority
-) VALUES 
+) VALUES
+(
+    'memory-lfu',
+    'in-memory',
+    '{"type": "memory", "eviction_policy": "lfu", "compression": false}',
+    10000, 300, 1
+),
 (
     'memory',
     'in-memory',
@@ -886,7 +892,7 @@ ON CONFLICT (layer_name) DO NOTHING;
 -- Insert default cache strategies
 INSERT INTO cache_strategies (
     strategy_id, strategy_name, strategy_type, strategy_config, read_strategy, write_strategy, consistency_level, is_default
-) VALUES 
+) VALUES
 (
     'adaptive-intelligence',
     'Adaptive Intelligence Strategy',
@@ -920,7 +926,7 @@ ON CONFLICT (strategy_id) DO NOTHING;
 -- Insert default cache policies
 INSERT INTO cache_policies (
     policy_id, policy_name, policy_type, policy_config, eviction_strategy, max_age_seconds, max_size
-) VALUES 
+) VALUES
 (
     'intelligent-lru',
     'Intelligent LRU Policy',
@@ -954,7 +960,7 @@ ON CONFLICT (policy_id) DO NOTHING;
 -- Insert sample predictive models
 INSERT INTO cache_predictive_models (
     model_id, model_name, model_type, model_config, accuracy_score, status
-) VALUES 
+) VALUES
 (
     'access-pattern-predictor',
     'Access Pattern Predictor',

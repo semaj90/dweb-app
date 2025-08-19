@@ -333,7 +333,7 @@
         disabled={$connectionStatus === 'disconnected'}
       ></textarea>
       <button 
-        on:click={sendMessage} 
+        onclick={sendMessage} 
         disabled={!messageInput.trim() || $isLoading || $connectionStatus === 'disconnected'}
         class="send-button"
       >

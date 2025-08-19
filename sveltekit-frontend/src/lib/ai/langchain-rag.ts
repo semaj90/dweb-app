@@ -1,23 +1,26 @@
 // @ts-nocheck
 // LangChain.js RAG Implementation for Legal AI Platform
 // Advanced RAG with Ollama integration and legal domain specialization
-// import { LLMChainExtractor } from "@langchain/community/document_compressors";
-// import { ContextualCompressionRetriever } from "@langchain/community/retrievers/contextual_compression";
-// import { MultiQueryRetriever } from "@langchain/community/retrievers/multi_query";
-import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
+// { LLMChainExtractor } from "@langchain/community/document_compressors";
+// Orphaned content: // import { ContextualCompressionRetriever
+// { MultiQueryRetriever } from "@langchain/community/retrievers/multi_query";
+// Orphaned content: import {
+
 import type { Document } from "@langchain/core/documents";
-import { StringOutputParser } from "@langchain/core/output_parsers";
+// Orphaned content: import {
+
 import { ChatPromptTemplate, PromptTemplate } from "@langchain/core/prompts";
-import {
-  RunnableMap,
+// Orphaned content: import {
+RunnableMap,
   RunnablePassthrough,
   RunnableSequence,
-} from "@langchain/core/runnables";
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
-import { QdrantClient } from "@qdrant/js-client-rest";
+// Orphaned content: import {
+
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { formatDocumentsAsString } from "langchain/util/document";
-import type { LegalDocumentMetadata } from "./qdrant-service";
+// Orphaned content: import {
+
+import type { LegalDocumentMetadata } from './qdrant-service.js';
 
 export interface LegalRAGConfig {
   qdrantUrl: string;
@@ -624,12 +627,12 @@ Only return the queries, one per line.`),
 
 // Export singleton instance with environment configuration
 export const legalRAG = new LegalRAGService({
-  qdrantUrl: process.env.QDRANT_URL || "http://localhost:6333",
+  qdrantUrl: import.meta.env.QDRANT_URL || "http://localhost:6333",
   ollamaGenerationUrl:
-    process.env.OLLAMA_GENERATION_URL || "http://localhost:11434/v1",
+    import.meta.env.OLLAMA_GENERATION_URL || "http://localhost:11434/v1",
   ollamaEmbeddingUrl:
-    process.env.OLLAMA_EMBEDDING_URL || "http://localhost:11434/v1",
-  apiKey: process.env.OLLAMA_API_KEY || "EMPTY",
+    import.meta.env.OLLAMA_EMBEDDING_URL || "http://localhost:11434/v1",
+  apiKey: import.meta.env.OLLAMA_API_KEY || "EMPTY",
   collectionName: "legal_documents",
   embeddingDimensions: 768,
 });

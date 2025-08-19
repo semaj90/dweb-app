@@ -1,11 +1,13 @@
+import crypto from "crypto";
 // Archived non-essential handlers preserved for reference/reuse
 // Moved out of +server.ts to keep the active endpoint lean and focused.
 
 import { librarySyncService } from "$lib/services/library-sync-service";
-import { error, json } from "@sveltejs/kit";
+// Orphaned content: import {
+error, json
 
 // Local copy of backend config and forwarder to keep this module self-contained
-const RAG_BACKEND_URL = process.env.RAG_BACKEND_URL || "http://localhost:8000";
+const RAG_BACKEND_URL = import.meta.env.RAG_BACKEND_URL || "http://localhost:8000";
 const RAG_TIMEOUT = 30000;
 
 // Safe error message extractor to avoid using "any"
@@ -238,7 +240,7 @@ export async function handlePgaiProcess(request: Request) {
       throw error(400, "Document ID is required");
     }
 
-    const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+    const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: "POST",
@@ -306,7 +308,7 @@ export async function handlePgaiCustomAnalysis(request: Request) {
       throw error(400, "Content and prompt are required");
     }
 
-    const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+    const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: "POST",
@@ -345,7 +347,7 @@ export async function handlePgaiComparison(request: Request) {
       throw error(400, "Both documents are required for comparison");
     }
 
-    const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+    const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: "POST",
@@ -394,7 +396,7 @@ export async function handlePgaiExtraction(request: Request) {
       throw error(400, "Content and extraction prompt are required");
     }
 
-    const ollamaUrl = process.env.OLLAMA_URL || "http://localhost:11434";
+    const ollamaUrl = import.meta.env.OLLAMA_URL || "http://localhost:11434";
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: "POST",

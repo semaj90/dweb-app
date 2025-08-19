@@ -1,9 +1,9 @@
+import { writable } from "svelte/store";
 /**
  * AI Command Machine for Phase 2
  * XState v5 compatible implementation
  */
 
-import { writable } from "svelte/store";
 
 // Simple state machine implementation
 export const aiCommandMachine = {

@@ -103,7 +103,8 @@
   {/if}
 
   <!-- Simple File Upload Component (UnoCSS attributify) -->
-  <div mb-8 border="~ gray-200" rounded-lg p-4>
+  <!-- Converted UnoCSS attributify props to class to satisfy TS HTMLProps -->
+  <div class="mb-8 border border-gray-200 rounded-lg p-4">
     <SimpleFileUpload on:uploadComplete={handleUploadComplete} />
   </div>
 

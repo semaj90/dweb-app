@@ -1,8 +1,9 @@
+import crypto from "crypto";
 // @ts-nocheck
 // Context menu state and store
-import type { Writable } from "svelte/store";
-import { writable, derived } from "svelte/store";
-import { browser } from "$app/environment";
+type { Writable }, {
+writable, derived } from "svelte/store";
+// Orphaned content: import { browser
 
 export interface ContextMenuState {
   show: boolean;

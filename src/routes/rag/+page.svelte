@@ -227,7 +227,7 @@
 								? 'border-blue-500 text-blue-600 dark:text-blue-400'
 								: 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 hover:border-slate-300'
 						}"
-						on:click={() => activeTab = tab.id}
+						onclick={() => activeTab = tab.id}
 					>
 						<tab.icon class="w-4 h-4" />
 						<span>{tab.label}</span>
@@ -329,7 +329,7 @@
 						<div class="space-y-3">
 							<button
 								class="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-								on:click={() => activeTab = 'upload'}
+								onclick={() => activeTab = 'upload'}
 							>
 								<span class="flex items-center space-x-2">
 									<Upload class="w-4 h-4" />
@@ -339,7 +339,7 @@
 							</button>
 							<button
 								class="w-full flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
-								on:click={() => activeTab = 'chat'}
+								onclick={() => activeTab = 'chat'}
 							>
 								<span class="flex items-center space-x-2">
 									<MessageSquare class="w-4 h-4" />
@@ -349,7 +349,7 @@
 							</button>
 							<button
 								class="w-full flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-								on:click={() => activeTab = 'search'}
+								onclick={() => activeTab = 'search'}
 							>
 								<span class="flex items-center space-x-2">
 									<Search class="w-4 h-4" />
@@ -378,7 +378,7 @@
 						<input
 							type="file"
 							bind:this={fileInput}
-							on:change={handleFileUpload}
+							onchange={handleFileUpload}
 							multiple
 							accept=".pdf,.txt,.docx,.doc"
 							disabled={isProcessing}
@@ -387,7 +387,7 @@
 						<button
 							class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded-lg font-medium transition-colors"
 							disabled={isProcessing}
-							on:click={() => fileInput?.click()}
+							onclick={() => fileInput?.click()}
 						>
 							{#if isProcessing}
 								<div class="flex items-center space-x-2">
@@ -486,7 +486,7 @@
 									type="text"
 									placeholder="Enter your legal question or search query..."
 									class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-									on:keydown={(e) => {
+									onkeydown={(e) => {
 										if (e.key === 'Enter') {
 											performSemanticSearch(e.currentTarget.value);
 										}
@@ -495,7 +495,7 @@
 							</div>
 							<button
 								class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
-								on:click={(e) => {
+								onclick={(e) => {
 									const input = e.currentTarget.parentElement?.querySelector('input');
 									if (input) performSemanticSearch(input.value);
 								}}

@@ -1,3 +1,4 @@
+import path from "path";
 /**
  * RAG Streaming Client Helper (SSE)
  * ---------------------------------
@@ -52,7 +53,7 @@ export interface RagStreamOptions {
 }
 
 import { writable, get } from 'svelte/store';
-import type { Readable } from 'svelte/store';
+// Orphaned content: import type { Readable
 
 interface InternalSSEState {
   currentEvent?: string;

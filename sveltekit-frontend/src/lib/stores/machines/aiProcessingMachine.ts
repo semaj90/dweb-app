@@ -5,12 +5,11 @@
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-import type {
+// Orphaned content: import type {
   AIProcessingContext,
   AIProcessingEvents,
   AITask,
   AITaskResult,
-} from "./types";
 import { goMicroserviceServices } from "./goMicroserviceMachine";
 
 export const aiProcessingMachine = createMachine(

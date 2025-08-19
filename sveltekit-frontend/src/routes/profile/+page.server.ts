@@ -1,8 +1,10 @@
 // @ts-nocheck
 import { cases, criminals, evidence } from "$lib/server/db/schema-postgres";
-import { redirect } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { count, eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
+// Orphaned content: import {
+
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {

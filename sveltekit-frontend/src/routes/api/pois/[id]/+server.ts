@@ -1,9 +1,10 @@
+import type { RequestHandler } from "./$types";
 // @ts-nocheck
 import { personsOfInterest } from "$lib/server/db/schema-postgres";
-import { json } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
-import type { RequestHandler } from "./$types";
+// Orphaned content: import {
 
 export const GET: RequestHandler = async ({ params }) => {
   try {

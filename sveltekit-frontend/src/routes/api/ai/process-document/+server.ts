@@ -3,14 +3,20 @@
 // Production-ready endpoint with LangChain + Ollama integration
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { z } from 'zod';
-import { db } from '$lib/server/database';
-import { documents, aiProcessingJobs } from '$lib/database/enhanced-schema';
-import { eq, and, sql } from 'drizzle-orm';
-import { langChainService } from '$lib/ai/langchain-ollama-service';
-import { RateLimiter } from '$lib/utils/rate-limit';
-import { authenticateUser } from '$lib/server/auth';
+// Orphaned content: import type { RequestHandler
+import {
+z } from "zod";
+// Orphaned content: import { db
+import {
+documents, aiProcessingJobs } from "$lib/database/enhanced-schema";
+// Orphaned content: import { eq, and, sql
+import {
+langChainService } from "$lib/ai/langchain-ollama-service";
+// Orphaned content: import { RateLimiter
+import {
+authenticateUser } from "$lib/server/auth";
+// Orphaned content: import crypto from "crypto";
+import {
 
 // ============================================================================
 // RATE LIMITERS

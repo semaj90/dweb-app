@@ -115,7 +115,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                onclick={() => startNewChat()}
+                on:click={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New
@@ -182,7 +182,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => showHistoryPanel()}
+                  on:click={() => showHistoryPanel()}
                 >
                   <Clock class="space-y-4" />
                   History
@@ -206,7 +206,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  onclick={() => chatActions.saveToStorage()}
+                  on:click={() => chatActions.saveToStorage()}
                 >
                   <Save class="space-y-4" />
                   Save
@@ -216,7 +216,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                onclick={() => startNewChat()}
+                on:click={() => startNewChat()}
               >
                 <Plus class="space-y-4" />
                 New Chat
@@ -246,7 +246,7 @@
                 <Button
                   variant="outline"
                   class="space-y-4"
-                  onclick={() => {
+                  on:click={() => {
                     if (!$chatStore.currentConversation)
                       chatActions.newConversation();
                     // Add the prompt to the conversation

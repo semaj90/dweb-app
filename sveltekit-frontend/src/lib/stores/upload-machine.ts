@@ -1,5 +1,5 @@
-import { createMachine, assign, createActor, type StateFrom, fromPromise } from 'xstate';
-import { writable } from 'svelte/store';
+import { createMachine, assign, createActor, type StateFrom, fromPromise } from "xstate";
+// Orphaned content: import {
 
 // Context interfaces
 interface UploadContext {

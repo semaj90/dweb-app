@@ -1,18 +1,6 @@
-import { error, json } from "@sveltejs/kit";
-import { Pool, type PoolClient } from "pg";
 import type { RequestHandler } from "./$types";
-
-// PostgreSQL connection pool
-const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  user: "postgres",
-  password: "postgres",
-  database: "postgres",
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+import { error, json } from "@sveltejs/kit";
+import { Pool, type PoolClient, , // PostgreSQL connection pool, const pool = new Pool({,   host: "localhost",,   port: 5432,,   user: "postgres",,   password: "postgres",,   database: "postgres",,   max: 10,,   idleTimeoutMillis: 30000,,   connectionTimeoutMillis: 2000, } from
 
 export const POST: RequestHandler = async ({ request }) => {
   // Server-side gating: ensure GPU/Ollama/model are ready before attempting summarize

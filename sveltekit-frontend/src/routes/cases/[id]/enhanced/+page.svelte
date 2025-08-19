@@ -337,7 +337,7 @@
     <div class="container mx-auto px-4">
       <button
         class="container mx-auto px-4"
-        on:click={() => sidebarOpen.update((open) => !open)}
+        onclick={() => sidebarOpen.update((open) => !open)}
       >
         {$sidebarOpen ? "◀" : "▶"}
         {$sidebarOpen ? "Hide" : "Show"} Sidebar
@@ -345,7 +345,7 @@
 
       <button
         class="container mx-auto px-4"
-        on:click={() => generateCaseSummary()}
+        onclick={() => generateCaseSummary()}
         disabled={aiGenerating}
       >
         {#if aiGenerating}
@@ -358,7 +358,7 @@
 
       <button
         class="container mx-auto px-4"
-        on:click={() => generateProsecutionStrategy()}
+        onclick={() => generateProsecutionStrategy()}
         disabled={aiGenerating}
       >
         📋 Prosecution Strategy
@@ -389,7 +389,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "evidence"}
-          on:click={() => activeTab.set("evidence")}
+          onclick={() => activeTab.set("evidence")}
           title="Evidence List (Ctrl/Cmd + 3)"
         >
           📁 Evidence
@@ -397,7 +397,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "reports"}
-          on:click={() => activeTab.set("reports")}
+          onclick={() => activeTab.set("reports")}
           title="AI Reports (Ctrl/Cmd + 4)"
         >
           📊 AI Reports
@@ -454,7 +454,7 @@
                   </div>
                   <button
                     class="container mx-auto px-4"
-                    on:click={() => canvasEditor?.addEvidenceToCanvas(evidence)}
+                    onclick={() => canvasEditor?.addEvidenceToCanvas(evidence)}
                   >
                     ➕
                   </button>
@@ -483,7 +483,7 @@
                 </div>
                 <button
                   class="container mx-auto px-4"
-                  on:click={() =>
+                  onclick={() =>
                     reportEditor?.setContent(report.richTextContent)}
                 >
                   Load into Editor
@@ -508,7 +508,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "canvas"}
-          on:click={() => activeTab.set("canvas")}
+          onclick={() => activeTab.set("canvas")}
           title="Interactive Canvas (Ctrl/Cmd + 1)"
         >
           🎨 Interactive Canvas
@@ -516,7 +516,7 @@
         <button
           class="container mx-auto px-4"
           class:active={$activeTab === "editor"}
-          on:click={() => activeTab.set("editor")}
+          onclick={() => activeTab.set("editor")}
           title="Report Editor (Ctrl/Cmd + 2)"
         >
           📝 Report Editor
@@ -666,9 +666,7 @@
   .btn-toggle:hover {
     background: var(--background-alt, #f8f9fa);
     border-color: var(--primary, #007bff);}
-  .loading-spinner {
-    animation: spin 1s linear infinite;}
-  @keyframes spin {
+@keyframes spin {
     from {
       transform: rotate(0deg);}
     to {
@@ -700,11 +698,7 @@
   .tab-btn.active {
     background: var(--primary, #007bff);
     color: white;}
-  .sidebar-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1rem;}
-  .evidence-item {
+.evidence-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;

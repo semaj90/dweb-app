@@ -288,9 +288,9 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
     <!-- File Upload Area -->
     <div 
       class="border-2 border-dashed rounded-lg p-8 text-center transition-colors {dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}"
-      on:dragover={handleDragOver as any}
-      on:dragleave={handleDragLeave as any}
-      on:drop={handleDrop as any}
+      ondragover={handleDragOver as any}
+      ondragleave={handleDragLeave as any}
+      ondrop={handleDrop as any}
     >
       {#if selectedFiles.length === 0}
         <Upload class="mx-auto w-12 h-12 text-gray-400 mb-4" />
@@ -308,7 +308,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
           class="hidden"
           id="file-input"
         />
-        <Button variant="outline" onclick={() => document.getElementById('file-input')?.click()}>
+        <Button variant="outline" on:click={() => document.getElementById('file-input')?.click()}>
           Select Files
         </Button>
       {:else}
@@ -337,7 +337,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  onclick={() => removeFile(index)}
+                  on:click={() => removeFile(index)}
                 >
                   <X class="w-4 h-4" />
                 </Button>
@@ -356,12 +356,12 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
             />
             <Button 
               variant="outline" 
-              onclick={() => document.getElementById('add-more-files')?.click()}
+              on:click={() => document.getElementById('add-more-files')?.click()}
               disabled={selectedFiles.length >= maxFiles}
             >
               Add More Files
             </Button>
-            <Button onclick={uploadEvidence} disabled={uploading || !evidenceTitle.trim()}>
+            <Button on:click={uploadEvidence} disabled={uploading || !evidenceTitle.trim()}>
               {#if uploading}
                 Processing...
               {:else}
@@ -434,7 +434,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
         <div class="flex justify-center mt-4">
           <Button 
             variant="outline" 
-            onclick={() => {
+            on:click={() => {
               uploadResults = [];
               selectedFiles = [];
             }}

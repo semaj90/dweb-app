@@ -1,20 +1,21 @@
 // @ts-nocheck
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { Pool } from "pg";
+"dotenv/config";
+// Orphaned content: import { drizzle
+import {
+migrate } from "drizzle-orm/node-postgres/migrator";
+// Orphaned content: import { Pool
 
 async function runMigrations() {
-  if (!process.env.DATABASE_URL) {
+  if (!import.meta.env.DATABASE_URL) {
     throw new Error("DATABASE_URL environment variable is not set.");
   }
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({ connectionString: import.meta.env.DATABASE_URL });
   const db = drizzle(pool);
 
   console.log("⏳ Running database migrations...");
   console.log(
     "📍 Database URL:",
-    process.env.DATABASE_URL.replace(/\/\/[^:]+:[^@]+@/, "//***:***@"),
+    import.meta.env.DATABASE_URL.replace(/\/\/[^:]+:[^@]+@/, "//***:***@"),
   );
 
   try {

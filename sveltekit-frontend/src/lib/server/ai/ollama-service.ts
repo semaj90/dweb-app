@@ -1,10 +1,11 @@
+import { EventEmitter } from "events";
 /**
  * Ollama Service - Main integration with local LLM models
  * Implements intelligent fallback: gemma3:legal-latest -> legal-bert
  */
 
 import { OLLAMA_CONFIG, getModelConfig, getOptimalModel, selectBestAvailableModel, isLegalTask } from './ollama-config';
-import type {
+// Orphaned content: import type {
   OllamaGenerateRequest,
   OllamaResponse,
   OllamaEmbeddingRequest,
@@ -13,8 +14,6 @@ import type {
   LegalDocument,
   AnalysisResult,
   UserQuery
-} from './types';
-import { EventEmitter } from 'events';
 
 class OllamaService extends EventEmitter {
   private baseUrl: string;

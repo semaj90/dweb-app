@@ -6,10 +6,10 @@
   import { PredictivePrefetcher } from '$lib/workers/predictive-prefetch';
 
   interface Props {
-    className?: string;
+    class?: string;
   }
 
-  let { className = '' }: Props = $props();
+  let { class = '' }: Props = $props();
   
   // Phase 8 system components
   let matrixCompiler: MatrixUICompiler;

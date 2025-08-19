@@ -381,7 +381,7 @@
           </div>
           
           <button
-            on:click={resetDemo}
+            onclick={resetDemo}
             class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors flex items-center space-x-2"
           >
             <RotateCcw class="w-4 h-4" />
@@ -407,7 +407,7 @@
             { id: 'performance', label: 'Performance', icon: TrendingUp, desc: 'Benchmarks & metrics' }
           ] as demo}
             <button
-              on:click={() => selectedDemo = demo.id}
+              onclick={() => selectedDemo = demo.id}
               class="w-full flex items-center space-x-3 p-3 rounded-lg transition-colors {
                 selectedDemo === demo.id
                   ? 'bg-blue-100 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
@@ -430,7 +430,7 @@
         
         <div class="space-y-3">
           <button
-            on:click={runVectorDemo}
+            onclick={runVectorDemo}
             disabled={isRunning || !capabilities.isSupported}
             class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center justify-center space-x-2"
           >
@@ -443,7 +443,7 @@
           </button>
           
           <button
-            on:click={runRAGDemo}
+            onclick={runRAGDemo}
             disabled={isRunning || !capabilities.isSupported}
             class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center justify-center space-x-2"
           >
@@ -456,7 +456,7 @@
           </button>
           
           <button
-            on:click={runBenchmark}
+            onclick={runBenchmark}
             disabled={isRunning || !capabilities.isSupported}
             class="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center justify-center space-x-2"
           >

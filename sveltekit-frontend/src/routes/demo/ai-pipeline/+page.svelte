@@ -9,13 +9,13 @@ https://svelte.dev/e/js_parse_error -->
 	import { goMicroservice } from '$lib/services/goMicroservice';
 	
 	// Reactive state
-	let demoText = `This is a sample legal document about employment contracts. 
+	let demoText = $state(`This is a sample legal document about employment contracts. 
 It contains provisions for salary, benefits, termination clauses, and confidentiality agreements. 
 The contract specifies a base salary of $75,000 per year with annual reviews. 
-Termination requires 30 days notice from either party.`;
+Termination requires 30 days notice from either party.`);
 	
 	let autoTagResult = writable(null);
-	let isProcessing = false;
+	let isProcessing = $state(false);
 	let systemHealth = writable({});
 	let benchmarkResults = writable({});
 	
@@ -177,8 +177,9 @@ Termination requires 30 days notice from either party.`;
 			
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				<div>
-					<label class="block text-sm font-medium mb-2">Sample Document Text:</label>
+					<label for="demo-text" class="block text-sm font-medium mb-2">Sample Document Text:</label>
 					<textarea 
+						id="demo-text"
 						bind:value={demoText}
 						class="w-full h-32 p-3 bg-gray-700 border border-gray-600 rounded resize-none focus:ring-2 focus:ring-blue-500 focus:outline-none"
 						placeholder="Paste your legal document text here..."
@@ -296,8 +297,9 @@ Termination requires 30 days notice from either party.`;
 			
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				<div>
-					<label class="block text-sm font-medium mb-2">RAG Query:</label>
+					<label for="rag-query" class="block text-sm font-medium mb-2">RAG Query:</label>
 					<input 
+						id="rag-query"
 						bind:value={$ragQuery}
 						class="w-full p-3 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
 						placeholder="Ask about legal documents..."

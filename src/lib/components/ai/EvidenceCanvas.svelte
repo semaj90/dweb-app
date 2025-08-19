@@ -126,10 +126,10 @@
           bind:value={userPrompt}
           placeholder="Ask the AI to analyze this canvas..."
           class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          on:keydown={(e) => e.key === 'Enter' && analyzeCanvas()}
+          onkeydown={(e) => e.key === 'Enter' && analyzeCanvas()}
         />
         <button
-          on:click={analyzeCanvas}
+          onclick={analyzeCanvas}
           class="px-4 py-2 bg-indigo-600 text-white rounded"
           disabled={analyzing}
           aria-busy={analyzing}
@@ -137,7 +137,7 @@
           {analyzing ? 'Analyzing...' : 'Analyze'}
         </button>
         <button
-          on:click={downloadPDF}
+          onclick={downloadPDF}
           class="px-4 py-2 bg-blue-600 text-white rounded"
           disabled={pdfLoading}
           aria-busy={pdfLoading}

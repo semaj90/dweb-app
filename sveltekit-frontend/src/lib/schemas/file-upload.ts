@@ -1,9 +1,9 @@
+import { z } from "zod";
 // @ts-nocheck
 /**
  * File Upload Schemas with Zod Validation
  * Comprehensive validation for legal document and evidence upload
  */
-import { z } from 'zod';
 
 // File type enumeration
 export const fileTypeEnum = z.enum([

@@ -1,10 +1,10 @@
+import * as fabric from "fabric";
 // @ts-nocheck
 /**
  * Neural Sprite Effects Library
  * Advanced visual effects for the NES-inspired sprite engine
  */
 
-import * as fabric from "fabric";
 
 export interface SpriteEffect {
   id: string;

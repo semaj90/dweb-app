@@ -411,7 +411,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
           </div>
           
           <button
-            on:click={resetDemo}
+            onclick={resetDemo}
             class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors flex items-center space-x-2"
           >
             <RotateCcw class="w-4 h-4" />
@@ -438,7 +438,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
             { id: 'metrics', label: 'Performance Metrics', icon: BarChart3, desc: 'System analytics' }
           ] as demo}
             <button
-              on:click={() => selectedDemo = demo.id}
+              onclick={() => selectedDemo = demo.id}
               class="w-full flex items-center space-x-3 p-3 rounded-lg transition-colors {
                 selectedDemo === demo.id
                   ? 'bg-blue-100 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
@@ -461,7 +461,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Sessions</h3>
             <button
-              on:click={createNewSession}
+              onclick={createNewSession}
               class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
             >
               New Session
@@ -471,7 +471,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
           <div class="space-y-2 max-h-64 overflow-y-auto">
             {#each sessions as session}
               <button
-                on:click={() => selectSession(session)}
+                onclick={() => selectSession(session)}
                 class="w-full p-3 text-left rounded-lg transition-colors {
                   currentSession?.id === session.id
                     ? 'bg-blue-100 dark:bg-blue-900/20'
@@ -495,7 +495,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
           
           <div class="space-y-3">
             <button
-              on:click={exportSession}
+              onclick={exportSession}
               class="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2"
             >
               <Download class="w-4 h-4" />
@@ -582,7 +582,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
                 disabled={isProcessing || isStreaming}
                 class="flex-1 resize-none rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 rows="2"
-                on:keydown={(e) => {
+                onkeydown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
@@ -592,7 +592,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
               
               <div class="flex flex-col space-y-2">
                 <button
-                  on:click={sendMessage}
+                  onclick={sendMessage}
                   disabled={!messageInput.trim() || isProcessing || isStreaming}
                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center justify-center"
                 >
@@ -604,7 +604,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
                 </button>
                 
                 <button
-                  on:click={isStreaming ? cancelStreaming : sendStreamingMessage}
+                  onclick={isStreaming ? cancelStreaming : sendStreamingMessage}
                   disabled={!messageInput.trim() && !isStreaming || isProcessing}
                   class="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center justify-center"
                 >
@@ -649,7 +649,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
             </div>
             
             <button
-              on:click={executeTool}
+              onclick={executeTool}
               disabled={isProcessing || !toolInput.trim()}
               class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center space-x-2"
             >
@@ -719,7 +719,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
                 </select>
                 
                 <button
-                  on:click={analyzeDocument}
+                  onclick={analyzeDocument}
                   disabled={isProcessing || !analysisText.trim()}
                   class="w-full mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-400 text-white rounded-lg transition-colors flex items-center justify-center space-x-2"
                 >

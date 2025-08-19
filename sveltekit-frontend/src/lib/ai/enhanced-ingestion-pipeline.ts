@@ -4,11 +4,10 @@
 // Production Stack: PostgreSQL + pgvector, LangChain, Qdrant, GraphQL, Neo4j, Redis, RabbitMQ
 
 import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
-import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { QdrantClient } from "@qdrant/js-client-rest";
-import { Pool } from "pg";
 import { createClient } from "redis";
-import { connect } from "amqplib";
+// Orphaned content: import {
+
 // import neo4j from "neo4j-driver"; // TODO: Install neo4j-driver dependency
 const neo4j = null as any;
 // import { errorHandler } from "$lib/utils/errorHandler";
@@ -18,15 +17,16 @@ const errorHandler = {
   analysis: (message: string, data?: any) => console.error(`[ANALYSIS] ${message}`, data),
 };
 import type { Document } from "@langchain/core/documents";
-import { resolveLibraryId, getLibraryDocs } from "./mcp-helpers";
+import { resolveLibraryId, getLibraryDocs } from '$lib/mcp-context72-get-library-docs';
 // import { copilotOrchestrator } from "$lib/utils/mcp-helpers";
 // Mock copilot orchestrator function
 const copilotOrchestrator = async (prompt: string, options: any) => ({
   selfPrompt: "Mock copilot analysis completed",
 });
-import type { DocumentEmbedding } from "./som-rag-system";
-import { SelfOrganizingMapRAG } from "./som-rag-system";
-import { QdrantService } from "./qdrant-service";
+import type { DocumentEmbedding } from "./som-rag-system.js";
+import { SelfOrganizingMapRAG } from "./som-rag-system.js";
+import { QdrantService } from '$lib/server/services/qdrant-service';
+import { Pool } from 'pg';
 
 // Multimodal Evidence Processing
 interface MultimodalEvidence {
@@ -190,7 +190,7 @@ export class EnhancedIngestionPipeline {
       url: config.qdrantUrl || "http://localhost:6333",
     });
     this.pgPool = new Pool({
-      connectionString: config.pgConnectionString || process.env.DATABASE_URL,
+      connectionString: config.pgConnectionString || import.meta.env.DATABASE_URL,
     });
     this.redisClient = createClient({
       url: config.redisUrl || "redis://localhost:6379",

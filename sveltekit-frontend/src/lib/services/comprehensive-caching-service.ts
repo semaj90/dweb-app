@@ -5,33 +5,18 @@
  * Layers: Browser Cache, IndexedDB, LokiJS, Redis, PostgreSQL, Vector Cache
  */
 
-import Loki from "lokijs";
-import {
-  set as idbSet,
+Loki from "lokijs";
+// Orphaned content: import {
+set as idbSet,
   get as idbGet,
   del as idbDel,
   clear as idbClear,
   keys as idbKeys,
-} from "idb-keyval";
 import type { Redis } from "ioredis";
-import { writable, type Writable, get } from "svelte/store";
+// Orphaned content: import {
+writable, type Writable, get
 import { browser } from "$app/environment";
-import { simdRedisClient } from "./simd-redis-client";
-
-export interface CacheConfig {
-  enableBrowserCache: boolean;
-  enableIndexedDB: boolean;
-  enableLokiJS: boolean;
-  enableRedis: boolean;
-  enablePostgreSQL: boolean;
-  enableSIMD: boolean;
-  enableVectorCache: boolean;
-  defaultTTL: number;
-  maxMemoryUsage: number;
-  evictionPolicy: "lru" | "lfu" | "fifo" | "ttl";
-  compressionEnabled: boolean;
-  encryptionEnabled: boolean;
-}
+import { simdRedisClient, , export interface CacheConfig {,   enableBrowserCache: boolean;,   enableIndexedDB: boolean;,   enableLokiJS: boolean;,   enableRedis: boolean;,   enablePostgreSQL: boolean;,   enableSIMD: boolean;,   enableVectorCache: boolean;,   defaultTTL: number;,   maxMemoryUsage: number;,   evictionPolicy: "lru" | "lfu" | "fifo" | "ttl";,   compressionEnabled: boolean;,   encryptionEnabled: boolean; } from
 
 export interface CacheEntry<T = any> {
   key: string;

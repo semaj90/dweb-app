@@ -3,20 +3,10 @@
 // Integrates MCP tools with AI-aware matrix UI and XState machines
 
 import { type StateValue } from "xstate";
-import { type LegalFormContext } from "$lib/state/legalFormMachine";
+// Orphaned content: import {
+type LegalFormContext
 import { type MatrixUINode } from "$lib/ui/matrix-compiler";
-import { type UserContext, type RerankResult } from "$lib/ai/custom-reranker";
-
-export interface Context7Phase8Query {
-  component: string;
-  context: "legal-ai" | "gaming-ui" | "performance";
-  area?: "performance" | "security" | "ui-ux";
-  feature?: string;
-  requirements?: string;
-  xstateContext?: LegalFormContext;
-  currentState?: StateValue;
-  matrixNodes?: MatrixUINode[];
-}
+import { type UserContext, type RerankResult, , export interface Context7Phase8Query {,   component: string;,   context: "legal-ai" | "gaming-ui" | "performance";,   area?: "performance" | "security" | "ui-ux";,   feature?: string;,   requirements?: string;,   xstateContext?: LegalFormContext;,   currentState?: StateValue;,   matrixNodes?: MatrixUINode[]; } from
 
 export interface Phase8Recommendation {
   id: string;

@@ -252,10 +252,10 @@
   <div class="dashboard-header">
     <h1 class="page-title">AI Memory Dashboard</h1>
     <div class="dashboard-controls">
-      <button class="control-btn" class:active={autoRefresh} on:click={() => autoRefresh = !autoRefresh}>
+      <button class="control-btn" class:active={autoRefresh} onclick={() => autoRefresh = !autoRefresh}>
         🔄 Auto Refresh
       </button>
-      <button class="control-btn optimize" on:click={optimizeMemory}>
+      <button class="control-btn optimize" onclick={optimizeMemory}>
         ⚡ Optimize Memory
       </button>
     </div>
@@ -444,7 +444,7 @@
           </div>
           
           <div class="context-actions">
-            <button class="context-btn" on:click={() => clearContext(context.id)}>
+            <button class="context-btn" onclick={() => clearContext(context.id)}>
               🗑️ Clear
             </button>
           </div>
@@ -506,7 +506,7 @@
           </div>
           
           <div class="model-actions">
-            <button class="model-btn" on:click={() => restartModel(model.id)}>
+            <button class="model-btn" onclick={() => restartModel(model.id)}>
               🔄 Restart
             </button>
           </div>

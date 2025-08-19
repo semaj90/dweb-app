@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { randomUUID } from 'crypto';
-import { createHash } from 'crypto';
+// Orphaned content: import type { RequestHandler
+import {
+randomUUID } from "crypto";
+// Orphaned content: import { createHash
 
 // Types for upload handling
 interface PresignRequest {
@@ -30,13 +31,13 @@ function generatePresignedUrl(bucket: string, key: string, expires: number = 360
   const timestamp = Math.floor(Date.now() / 1000);
   const expiration = timestamp + expires;
   
-  const baseUrl = process.env.MINIO_ENDPOINT || 'http://localhost:9000';
-  const accessKey = process.env.MINIO_ACCESS_KEY || 'minioadmin';
+  const baseUrl = import.meta.env.MINIO_ENDPOINT || 'http://localhost:9000';
+  const accessKey = import.meta.env.MINIO_ACCESS_KEY || 'minioadmin';
   
   // Create signature for presigned URL
   const stringToSign = `PUT\n\n${bucket}/${key}\n${expiration}`;
   const signature = createHash('sha256')
-    .update(stringToSign + process.env.MINIO_SECRET_KEY)
+    .update(stringToSign + import.meta.env.MINIO_SECRET_KEY)
     .digest('hex');
   
   return `${baseUrl}/${bucket}/${key}?AWSAccessKeyId=${accessKey}&Expires=${expiration}&Signature=${signature}`;

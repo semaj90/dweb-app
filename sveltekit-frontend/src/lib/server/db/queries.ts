@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { users } from "$lib/server/db/schema-postgres";
-import { eq } from "drizzle-orm";
+// Orphaned content: import {
+
 import { db } from "./index";
 
 export interface User {

@@ -1,8 +1,9 @@
 // @ts-nocheck
 import { error, json } from "@sveltejs/kit";
-import { mkdir, rename } from "fs/promises";
+// Orphaned content: import {
+mkdir, rename
 import { tmpdir } from "os";
-import { join } from "path";
+// Orphaned content: import {
 
 const UPLOAD_DIR = join(tmpdir(), "chunked-uploads");
 

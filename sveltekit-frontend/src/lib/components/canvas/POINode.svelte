@@ -315,11 +315,11 @@ import Input from "$lib/components/ui/Input.svelte";
         </div>
         <div class="nier-footer flex justify-between items-center mt-4 gap-2">
           {#if isEditing}
-            <button class="nier-btn nier-btn-accent" on:click={() => saveChanges()}><Save class="w-4 h-4" /> Save</button>
-            <button class="nier-btn nier-btn-secondary" on:click={() => cancelEditing()}><X class="w-4 h-4" /> Cancel</button>
+            <button class="nier-btn nier-btn-accent" onclick={() => saveChanges()}><Save class="w-4 h-4" /> Save</button>
+            <button class="nier-btn nier-btn-secondary" onclick={() => cancelEditing()}><X class="w-4 h-4" /> Cancel</button>
           {:else}
-            <button class="nier-btn nier-btn-secondary" on:click={() => startEditing()}><Edit class="w-4 h-4" /> Edit</button>
-            <button class="nier-btn nier-btn-secondary" on:click={() => summarizePOI()}><Sparkles class="w-4 h-4" /> Summarize</button>
+            <button class="nier-btn nier-btn-secondary" onclick={() => startEditing()}><Edit class="w-4 h-4" /> Edit</button>
+            <button class="nier-btn nier-btn-secondary" onclick={() => summarizePOI()}><Sparkles class="w-4 h-4" /> Summarize</button>
           {/if}
         </div>
       </div>

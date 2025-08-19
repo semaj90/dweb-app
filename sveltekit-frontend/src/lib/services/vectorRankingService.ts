@@ -1,16 +1,16 @@
 // @ts-nocheck
-import { db } from '$lib/db';
-import { 
-  documentVectors, 
+import { db } from "$lib/db";
+// Orphaned content: import {
+documentVectors, 
   caseSummaryVectors, 
   evidenceVectors,
   queryVectors,
   knowledgeNodes,
   knowledgeEdges,
   recommendationCache
-} from '$lib/db/schema';
-import { ollamaService } from './ollamaService';
-import { sql, eq, and, desc } from 'drizzle-orm';
+import { ollamaService } from "./ollamaService";
+// Orphaned content: import {
+sql, eq, and, desc
 
 export interface RankedSearchResult {
   id: string;

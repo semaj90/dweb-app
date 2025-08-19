@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { test, expect } from '@playwright/test';
+import { URL } from "url";
 
 test.describe('User Authentication and Session Management', () => {
   const testEmail = `test-user-${Date.now()}@example.com`;

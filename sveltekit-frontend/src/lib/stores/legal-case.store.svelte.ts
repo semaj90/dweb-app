@@ -6,7 +6,7 @@ import type {
   AIInsights,
   AuditLogEntry,
 } from "$lib/types/legal";
-import { LegalAuditService } from "$lib/services/legal-document.service";
+// Orphaned content: import { LegalAuditService
 
 interface User {
   id: string;

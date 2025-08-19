@@ -238,19 +238,19 @@
         {/snippet}
 
         <div class="space-y-4">
-          <Button variant="secondary" class="space-y-4" onclick={() => showSuccessNotification()}>
+          <Button variant="secondary" class="space-y-4" on:click={() => showSuccessNotification()}>
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Success
           </Button>
-          <Button variant="danger" class="space-y-4" onclick={() => showErrorNotification()}>
+          <Button variant="danger" class="space-y-4" on:click={() => showErrorNotification()}>
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Error
           </Button>
-          <Button variant="danger" class="space-y-4" onclick={() => showWarningNotification()}>
+          <Button variant="danger" class="space-y-4" on:click={() => showWarningNotification()}>
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Warning
           </Button>
-          <Button variant="secondary" class="space-y-4" onclick={() => showInfoNotification()}>
+          <Button variant="secondary" class="space-y-4" on:click={() => showInfoNotification()}>
             <iconify-icon data-icon="${1}" class="space-y-4"></iconify-icon>
             Show Info
           </Button>
@@ -308,7 +308,7 @@
             variant="outlined"
             interactive
             selected={interactiveCardSelected}
-            onclick={() => (interactiveCardSelected = !interactiveCardSelected)}
+            on:click={() => (interactiveCardSelected = !interactiveCardSelected)}
             padding="md">
             <div class="space-y-4">
               <div>
@@ -358,7 +358,7 @@
 
           <Form
             options={demoFormOptions}
-            onsubmit={handleDemoFormSubmit}
+            on:submit={handleDemoFormSubmit}
             submitText="Create Account"
             showResetButton={true}
             resetText="Clear Form"
@@ -376,7 +376,7 @@
                   data-icon="${1}"
                   value={values.name || ''}
                   error={errors.name}
-                  oninput={(e) => formApi.setField('name', (e.target as HTMLInputElement)?.value)}
+                  on:input={(e) => formApi.setField('name', (e.target as HTMLInputElement)?.value)}
                   onblur={() => formApi.touchField('name')} />
 
                 <Input
@@ -388,7 +388,7 @@
                   value={values.email || ''}
                   error={errors.email}
                   success={values.email && !errors.email}
-                  oninput={(e) => formApi.setField('email', (e.target as HTMLInputElement)?.value)}
+                  on:input={(e) => formApi.setField('email', (e.target as HTMLInputElement)?.value)}
                   onblur={() => formApi.touchField('email')} />
 
                 <Input
@@ -400,7 +400,7 @@
                   value={values.password || ''}
                   error={errors.password}
                   hint="Must be at least 8 characters long"
-                  oninput={(e) =>
+                  on:input={(e) =>
                     formApi.setField('password', (e.target as HTMLInputElement)?.value)}
                   onblur={() => formApi.touchField('password')} />
 
@@ -412,7 +412,7 @@
                   data-icon="${1}"
                   value={values.confirmPassword || ''}
                   error={errors.confirmPassword}
-                  oninput={(e) =>
+                  on:input={(e) =>
                     formApi.setField('confirmPassword', (e.target as HTMLInputElement)?.value)}
                   onblur={() => formApi.touchField('confirmPassword')} />
 

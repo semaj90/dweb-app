@@ -323,7 +323,7 @@
       </div>
 
       {#if chatResponse}
-        <div class="mt-4 p-4 bg-gray-50 rounded-lg" transitionfly={{ y: 20 }}>
+  <div class="mt-4 p-4 bg-gray-50 rounded-lg" transition:fly={{ y: 20 }}>
           <h4 class="font-semibold text-gray-900 mb-2">AI Response:</h4>
           <div class="text-gray-700 whitespace-pre-wrap">{chatResponse}</div>
         </div>

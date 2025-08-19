@@ -1,9 +1,10 @@
+import type { PageServerLoad } from "./$types";
 // @ts-nocheck
 import { cases, evidence } from "$lib/server/db/schema-postgres";
-import { error } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db/index";
-import type { PageServerLoad } from "./$types";
+// Orphaned content: import {
 
 export const load: PageServerLoad = async ({ params }) => {
   const caseId = params.id;

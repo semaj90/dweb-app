@@ -1,8 +1,11 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { aiService } from '$lib/server/services/ai-service.js';
-import { z } from 'zod';
+// Orphaned content: import type { RequestHandler
+import {
+aiService } from "$lib/server/services/ai-service.js";
+// Orphaned content: import { z
+import {
+URL } from "url";
 
 const searchSchema = z.object({
   query: z.string().min(1).max(1000),

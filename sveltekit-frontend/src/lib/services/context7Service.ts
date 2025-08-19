@@ -5,13 +5,7 @@
  */
 
 import { writable } from "svelte/store";
-import { runAutoFix } from "../../../js_tests/sveltekit-best-practices-fix.mjs";
-
-export interface Context7Tool {
-  name: string;
-  description: string;
-  schema: any;
-}
+import { runAutoFix, , export interface Context7Tool {,   name: string;,   description: string;,   schema: any; } from
 
 export interface Context7Analysis {
   component: string;

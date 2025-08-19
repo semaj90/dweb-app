@@ -52,7 +52,7 @@ test.describe('Complete Legal AI User Flow', () => {
     
     // Create a test file
     const testContent = 'This is a test document for legal analysis. It contains important evidence about the case.';
-    const testFilePath = path.join(__dirname, 'test-evidence.txt');
+    const testFilePath = path.join(import.meta.url, 'test-evidence.txt');
     
     // Use the file input
     const fileInput = page.locator('input[type="file"]');

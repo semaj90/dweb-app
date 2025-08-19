@@ -179,8 +179,8 @@
 	<div 
 		class="mx-auto px-4 max-w-7xl"
 		transition:fade={{ duration: 200  "
-		on:click={() => handleBackdropClick()}
-		on:keydown={handleKeydown}
+		onclick={() => handleBackdropClick()}
+		onkeydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="dialog-title"
@@ -196,7 +196,7 @@
 				<h2 id="dialog-title" class="mx-auto px-4 max-w-7xl">{title}</h2>
 				<button
 					class="mx-auto px-4 max-w-7xl"
-					on:click={() => handleClose()}
+					onclick={() => handleClose()}
 					aria-label="Close dialog"
 				>
 					<X size={20} />
@@ -211,7 +211,7 @@
 						<button
 							class="mx-auto px-4 max-w-7xl"
 							class:active={selectedVibe === vibe.id}
-							on:click={() => handleVibeChange(vibe.id)}
+							onclick={() => handleVibeChange(vibe.id)}
 							title={vibe.description}
 						>
 							{vibe.label}
@@ -291,7 +291,7 @@
 						placeholder="Ask the AI assistant anything about your case..."
 						rows="4"
 						disabled={isGenerating}
-						on:keydown={(e) => {
+						onkeydown={(e) => {
 							if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
 								e.preventDefault();
 								handleSubmit();
@@ -300,7 +300,7 @@
 					></textarea>
 					<button
 						class="mx-auto px-4 max-w-7xl"
-						on:click={() => handleSubmit()}
+						onclick={() => handleSubmit()}
 						disabled={!currentPrompt.trim() || isGenerating}
 						aria-label="Send message"
 					>
@@ -310,7 +310,7 @@
 				<div class="mx-auto px-4 max-w-7xl">
 					<span>Press Ctrl+Enter to send</span>
 					{#if history.length > 0}
-						<button class="mx-auto px-4 max-w-7xl" on:click={() => clearHistory()}>
+						<button class="mx-auto px-4 max-w-7xl" onclick={() => clearHistory()}>
 							Clear History
 						</button>
 					{/if}

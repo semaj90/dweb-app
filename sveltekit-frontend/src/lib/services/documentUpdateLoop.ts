@@ -2,16 +2,16 @@
 // Document Update Loop Service
 // Auto re-embed and re-rank on document changes with intelligent diff detection
 
-import { db } from '$lib/server/database';
-import { 
-  documents, 
+import { db } from "$lib/server/database";
+// Orphaned content: import {
+documents, 
   documentVectors, 
   caseSummaryVectors,
   evidenceVectors,
-  queryVectors 
-} from '$lib/db/schema';
-import { eq, sql, and, desc } from 'drizzle-orm';
-import { OllamaEmbeddings } from '@langchain/ollama';
+  queryVectors
+import { eq, sql, and, desc } from "drizzle-orm";
+// Orphaned content: import {
+
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import crypto from 'crypto';
 

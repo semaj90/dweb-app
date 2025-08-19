@@ -1,9 +1,9 @@
+import type { StateValue, AnyEventObject } from "xstate";
 // @ts-nocheck
 /**
  * XState Types for Go Microservice Integration
  */
 
-import type { StateValue, AnyEventObject } from 'xstate';
 
 // Base machine context
 export interface BaseMachineContext {

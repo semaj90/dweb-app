@@ -390,8 +390,8 @@
   <div
     class="mx-auto px-4 max-w-7xl"
     transition:fade={{ duration: 200  "
-    on:click|self={closeChat}
-    on:keydown={(e) => e.key === "Escape" && closeChat()}
+    onclick|self={closeChat}
+    onkeydown={(e) => e.key === "Escape" && closeChat()}
     role="dialog"
     aria-modal="true"
     aria-labelledby="chat-title"
@@ -417,7 +417,7 @@
             <button
               class="mx-auto px-4 max-w-7xl"
               class:active={showModeSelector}
-              on:click={() => (showModeSelector = !showModeSelector)}
+              onclick={() => (showModeSelector = !showModeSelector)}
               title="Select AI mode"
             >
               {#each aiModes as mode}
@@ -437,7 +437,7 @@
                   <button
                     class="mx-auto px-4 max-w-7xl"
                     class:selected={mode.id === selectedMode}
-                    on:click={() => {
+                    onclick={() => {
                       selectedMode = mode.id;
                       showModeSelector = false;
                     "
@@ -458,7 +458,7 @@
         <div class="mx-auto px-4 max-w-7xl">
           <button
             class="mx-auto px-4 max-w-7xl"
-            on:click={() => clearConversation()}
+            onclick={() => clearConversation()}
             title="Clear conversation"
             disabled={isGenerating}
           >
@@ -466,7 +466,7 @@
           </button>
           <button
             class="mx-auto px-4 max-w-7xl"
-            on:click={() => closeChat()}
+            onclick={() => closeChat()}
             title="Close chat"
           >
             <X size={16} />
@@ -526,7 +526,7 @@
                     {#each message.actions as action}
                       <button
                         class="mx-auto px-4 max-w-7xl"
-                        on:click={() => handleActionClick(action)}
+                        onclick={() => handleActionClick(action)}
                         title={action.text}
                       >
                         {action.text}
@@ -562,7 +562,7 @@
             {#each quickActions as action}
               <button
                 class="mx-auto px-4 max-w-7xl"
-                on:click={() => handleQuickAction(action.text)}
+                onclick={() => handleQuickAction(action.text)}
                 disabled={isGenerating}
               >
                 <svelte:component this={action.icon} size={20} />
@@ -581,7 +581,7 @@
             bind:value={currentMessage}
             placeholder="Ask about your case, evidence, or legal strategy..."
             disabled={isGenerating}
-            on:keydown={handleKeydown}
+            onkeydown={handleKeydown}
             rows="4"
             class="mx-auto px-4 max-w-7xl"
           ></textarea>
@@ -590,7 +590,7 @@
             class="mx-auto px-4 max-w-7xl"
             class:sending={isGenerating}
             disabled={!currentMessage.trim() || isGenerating}
-            on:click={() => sendMessage()}
+            onclick={() => sendMessage()}
             title="Send message"
           >
             {#if isGenerating}
@@ -620,21 +620,7 @@
     z-index: 1000;
     padding: 1rem;
   }
-
-  .chat-container {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    max-width: 800px;
-    height: 80vh;
-    max-height: 600px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .chat-header {
+.chat-header {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid #e5e7eb;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1051,17 +1037,7 @@
     background: #9ca3af;
     cursor: not-allowed;
   }
-
-  .loading-spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes typing {
+@keyframes typing {
     0%,
     60%,
     100% {
@@ -1086,13 +1062,7 @@
     .chat-overlay {
       padding: 0.5rem;
     }
-
-    .chat-container {
-      height: 90vh;
-      max-height: none;
-    }
-
-    .chat-header {
+.chat-header {
       padding: 1rem;
     }
 

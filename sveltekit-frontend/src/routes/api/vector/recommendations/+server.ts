@@ -5,9 +5,12 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
-import { vectorIntelligenceService } from "$lib/services/vector-intelligence-service.js";
-import type { RecommendationRequest } from "$lib/services/vector-intelligence-service.js";
+// Orphaned content: import type { RequestHandler
+import {
+vectorIntelligenceService } from "$lib/services/vector-intelligence-service.js";
+// Orphaned content: import type { RecommendationRequest
+import {
+URL } from "url";
 
 export const POST: RequestHandler = async ({ request, url }) => {
   try {

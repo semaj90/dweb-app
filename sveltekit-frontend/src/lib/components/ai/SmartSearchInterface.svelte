@@ -206,7 +206,7 @@
 			disabled={isSearching}
 		/>
 		<Button 
-			onclick={performSearch}
+			on:click={performSearch}
 			disabled={isSearching || !query.trim()}
 			class="px-6"
 		>

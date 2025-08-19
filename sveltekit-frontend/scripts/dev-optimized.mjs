@@ -310,9 +310,43 @@ class OptimizedDevEnvironment {
 
     const env = {
       NODE_ENV: 'development',
+      // Legacy API
       VITE_LEGAL_AI_API: 'http://localhost:8084',
+      
+      // Full-Stack Integration Complete API URLs
+      // Enhanced RAG & AI
+      VITE_RAG_API: 'http://localhost:8094/api/rag',
+      VITE_AI_API: 'http://localhost:8094/api/ai',
+      VITE_UPLOAD_API: 'http://localhost:8093/upload',
+      
+      // NATS messaging integration
+      VITE_NATS_PUBLISH: 'http://localhost:5173/api/v1/nats/publish',
+      VITE_NATS_STATUS: 'http://localhost:5173/api/v1/nats/status',
+      VITE_NATS_SUBSCRIBE: 'http://localhost:5173/api/v1/nats/subscribe',
+      VITE_NATS_METRICS: 'http://localhost:5173/api/v1/nats/metrics',
+      
+      // Cluster & orchestration
+      VITE_CLUSTER_HEALTH: 'http://localhost:8213/api/v1/cluster/health',
+      VITE_CLUSTER_API: 'http://localhost:8213/api/v1/cluster',
+      VITE_XSTATE_API: 'http://localhost:8212/api/v1/xstate',
+      
+      // Vector & graph operations
+      VITE_VECTOR_SEARCH: 'http://localhost:5173/api/v1/vector/search',
+      VITE_GRAPH_QUERY: 'http://localhost:7474/api/v1/graph/query',
+      
+      // Core services
       VITE_OLLAMA_URL: 'http://localhost:11434',
-      VITE_REDIS_URL: 'redis://localhost:6379'
+      VITE_NVIDIA_LLAMA: 'http://localhost:8222',
+      VITE_NEO4J_API: 'http://localhost:7474',
+      VITE_REDIS_URL: 'redis://localhost:6379',
+      
+      // NLP & Sentence Transformer
+      VITE_NLP_METRICS: 'http://localhost:5173/api/v1/nlp/metrics',
+      
+      // AutoSolve endpoints
+      VITE_AUTOSOLVE_STATUS: 'http://localhost:5173/api/context7-autosolve?action=status',
+      VITE_AUTOSOLVE_HEALTH: 'http://localhost:5173/api/context7-autosolve?action=health',
+      VITE_AUTOSOLVE_HISTORY: 'http://localhost:5173/api/context7-autosolve?action=history'
     };
 
     return await this.startServiceSafe('SvelteKit', 'npm', ['run', 'dev'], {

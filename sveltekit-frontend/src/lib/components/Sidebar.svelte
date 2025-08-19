@@ -88,8 +88,8 @@
   bind:this={sidebarElement}
   role="complementary"
   aria-label="Content sidebar"
-  on:mouseenter={handleMouseEnter}
-  on:mouseleave={handleMouseLeave}
+  onmouseenter={handleMouseEnter}
+  onmouseleave={handleMouseLeave}
 >
   <!-- Hover trigger area when closed -->
   {#if !sidebarOpen}
@@ -108,7 +108,7 @@
         <div class="container mx-auto px-4">
           <button
             class={`pin-button ${isPinned ? "pinned" : ""}`}
-            on:click={() => togglePin()}
+            onclick={() => togglePin()}
             aria-label={isPinned ? "Unpin sidebar" : "Pin sidebar"}
           >
             <Tag size={16} />
@@ -117,7 +117,7 @@
           {#if !isPinned}
             <button
               class="container mx-auto px-4"
-              on:click={() => (isHovered = false)}
+              onclick={() => (isHovered = false)}
               aria-label="Close sidebar"
             >
               <X size={16} />
@@ -141,7 +141,7 @@
           <button
             class="container mx-auto px-4"
             class:active={activeTab === "evidence"}
-            on:click={() => handleTabChange("evidence")}
+            onclick={() => handleTabChange("evidence")}
           >
             <Folder size={16} />
             Evidence
@@ -149,7 +149,7 @@
           <button
             class="container mx-auto px-4"
             class:active={activeTab === "notes"}
-            on:click={() => handleTabChange("notes")}
+            onclick={() => handleTabChange("notes")}
           >
             <FileText size={16} />
             Notes
@@ -157,7 +157,7 @@
           <button
             class="container mx-auto px-4"
             class:active={activeTab === "canvas"}
-            on:click={() => handleTabChange("canvas")}
+            onclick={() => handleTabChange("canvas")}
           >
             <Tag size={16} />
             Canvas
@@ -236,17 +236,7 @@
     pointer-events: all;
     z-index: 1;
 }
-  .sidebar-content {
-    width: 100%;
-    height: 100%;
-    background: var(--bg-secondary);
-    border-right: 1px solid var(--border-light);
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-  .sidebar-header {
+.sidebar-header {
     padding: 1rem;
     border-bottom: 1px solid var(--border-light);
     display: flex;

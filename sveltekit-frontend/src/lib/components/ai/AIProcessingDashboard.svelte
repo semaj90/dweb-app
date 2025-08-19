@@ -307,7 +307,7 @@ https://svelte.dev/e/js_parse_error -->
 					<Button
 						variant="outline"
 						disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-						onclick={() => processTask(task)}
+						on:click={() => processTask(task)}
 						class="h-auto p-3 flex flex-col items-start space-y-1"
 					>
 						<div class="flex items-center space-x-2">
@@ -323,7 +323,7 @@ https://svelte.dev/e/js_parse_error -->
 			<div class="flex items-center justify-center pt-4 border-t border-yorha-border">
 				<Button
 					disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-					onclick={processParallelTasks}
+					on:click={processParallelTasks}
 					class="bg-yorha-primary hover:bg-yorha-primary/80"
 				>
 					{#if isProcessing}

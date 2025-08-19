@@ -3,14 +3,18 @@
 // Integration test and demo endpoint for AI synthesis system
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { aiAssistantSynthesizer } from '$lib/server/ai/ai-assistant-input-synthesizer';
-import { cachingLayer } from '$lib/server/ai/caching-layer';
-import { feedbackLoop } from '$lib/server/ai/feedback-loop';
-import { monitoringService } from '$lib/server/ai/monitoring-service';
-import { streamingService } from '$lib/server/ai/streaming-service';
-import { ollamaLLM } from '$lib/server/ai/ollama-local-llm';
-import { logger } from '$lib/server/logger';
+// Orphaned content: import type { RequestHandler
+import {
+aiAssistantSynthesizer } from "$lib/server/ai/ai-assistant-input-synthesizer";
+// Orphaned content: import { cachingLayer
+import {
+feedbackLoop } from "$lib/server/ai/feedback-loop";
+// Orphaned content: import { monitoringService
+import {
+streamingService } from "$lib/server/ai/streaming-service";
+// Orphaned content: import { ollamaLLM
+import {
+logger } from "$lib/server/logger";
 
 export const GET: RequestHandler = async () => {
   logger.info('[Test] Running AI Synthesizer integration test...');

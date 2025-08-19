@@ -60,12 +60,12 @@ Collection Date: ${report.evidence.dateCollected}
 Collection Location: ${report.evidence.location}
 Chain of Custody: ${report.evidence.chainOfCustody.join(" → ")}
 
-METHODOLOGY
+
 Procedures: ${report.methodology.procedures.join(", ")}
 Tools Used: ${report.methodology.tools.join(", ")}
 Standards Applied: ${report.methodology.standards.join(", ")}
 
-FINDINGS
+
 ${report.findings.summary}
 
 Key Points:
@@ -81,7 +81,7 @@ Potential Charges: ${report.legalImplications.charges.join(", ")}
 Relevant Precedents: ${report.legalImplications.precedents.join(", ")}
 Challenge Points: ${report.legalImplications.challengePoints.join(", ")}
 
-ATTACHMENTS
+
 ${report.attachments.map((att) => `• ${att.name} (${att.type})`).join("\n")}
     `.trim();
   }

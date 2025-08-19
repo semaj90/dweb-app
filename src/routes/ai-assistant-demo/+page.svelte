@@ -313,7 +313,7 @@
         
         <button 
           class="px-3 py-1 bg-purple-600 hover:bg-purple-700 rounded text-sm"
-          on:click={() => showDebugInfo = !showDebugInfo}
+          onclick={() => showDebugInfo = !showDebugInfo}
         >
           {showDebugInfo ? 'Hide' : 'Show'} Debug
         </button>
@@ -347,12 +347,12 @@
             bind:value={userQuery}
             placeholder="Ask about your legal documents..."
             class="flex-1 px-3 py-2 bg-slate-800 border border-slate-600 rounded text-white placeholder-slate-400"
-            on:keydown={(e) => e.key === 'Enter' && processUserQuery()}
+            onkeydown={(e) => e.key === 'Enter' && processUserQuery()}
           />
           <button
             class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white disabled:opacity-50"
             disabled={isProcessing}
-            on:click={processUserQuery}
+            onclick={processUserQuery}
           >
             {isProcessing ? '...' : 'Ask'}
           </button>
@@ -426,7 +426,7 @@
             <input 
               type="checkbox" 
               bind:checked={enableGPU}
-              on:change={toggleGPUAcceleration}
+              onchange={toggleGPUAcceleration}
               class="rounded"
             />
             GPU Acceleration
@@ -436,7 +436,7 @@
             <input 
               type="checkbox" 
               bind:checked={enableTracking}
-              on:change={toggleInteractionTracking}
+              onchange={toggleInteractionTracking}
               class="rounded"
             />
             Interaction Tracking
@@ -445,13 +445,13 @@
           <div class="flex gap-2">
             <button
               class="flex-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs"
-              on:click={regenerateSOM}
+              onclick={regenerateSOM}
             >
               Regenerate SOM
             </button>
             <button
               class="flex-1 px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-xs"
-              on:click={clearCache}
+              onclick={clearCache}
             >
               Clear Cache
             </button>

@@ -1,3 +1,4 @@
+import cluster from "node:cluster";
 // @ts-nocheck
 /**
  * Cluster Status API Endpoint
@@ -5,8 +6,7 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import cluster from 'node:cluster';
+// Orphaned content: import type { RequestHandler
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

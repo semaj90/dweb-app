@@ -5,9 +5,9 @@
  */
 
 import { performance } from 'perf_hooks';
-import type { OptimizationSuite, PerformanceMetrics } from './index.js';
-import { createOptimizationSuite, optimizeForDevelopment } from './index.js';
-import { createContext7MCPIntegration } from './context7-mcp-integration.js';
+type { OptimizationSuite, PerformanceMetrics }, {
+createOptimizationSuite, optimizeForDevelopment } from "./index.js";
+// Orphaned content: import { createContext7MCPIntegration
 
 // === Test Result Types ===
 interface TestResult {

@@ -1,5 +1,5 @@
-// @ts-nocheck
 import type { Writable } from "svelte/store";
+// @ts-nocheck
 
 export interface SelectContext {
   selected: Writable<any>;

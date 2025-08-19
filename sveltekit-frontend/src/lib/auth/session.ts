@@ -1,9 +1,11 @@
 // @ts-nocheck
 // Lucia v3 Authentication with PostgreSQL and bcrypt
 import { dev } from "$app/environment";
-import { sessions, users } from "$lib/server/db/schema-postgres";
+// Orphaned content: import {
+sessions, users
 import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
-import { Lucia } from "lucia";
+// Orphaned content: import {
+
 import { db } from "../server/db/pg";
 
 // Create the Lucia adapter for PostgreSQL

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-import { ollamaService } from "$lib/services/ollama-service";
+// Orphaned content: import {
 
 export const GET = async () => {
   try {
@@ -33,7 +33,7 @@ export const GET = async () => {
       },
       sveltekit: {
         version: "5.x",
-        mode: process.env.NODE_ENV || "development",
+        mode: import.meta.env.NODE_ENV || "development",
         apiBase: "/api/ai",
       },
       integration: {

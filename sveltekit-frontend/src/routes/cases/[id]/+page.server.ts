@@ -1,8 +1,9 @@
 // @ts-nocheck
 import { db, cases } from "$lib/server/db/index";
-import { redirect } from "@sveltejs/kit";
+// Orphaned content: import {
+
 import { eq } from "drizzle-orm";
-import type { Actions, PageServerLoad } from "./$types";
+// Orphaned content: import type { Actions, PageServerLoad
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const user = locals.user;

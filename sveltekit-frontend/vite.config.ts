@@ -3,7 +3,7 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
-import { vscodeErrorLogger } from "./src/lib/vite/vscode-error-logger";
+import { vscodeErrorLogger } from './src/lib/vite/vscode-error-logger.js';
 
 // Smart port discovery utility
 async function findAvailablePort(startPort: number, maxAttempts: number = 10): Promise<number> {
@@ -288,7 +288,7 @@ export default defineConfig(async ({ mode }) => {
   define: {
     __DEV__: mode === 'development',
     __PROD__: mode === 'production',
-    __VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
+    __VERSION__: JSON.stringify(import.meta.env.npm_package_version || '1.0.0'),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     __VITE_PORT__: availablePort,
     __MCP_SERVER_PORT__: 4100,

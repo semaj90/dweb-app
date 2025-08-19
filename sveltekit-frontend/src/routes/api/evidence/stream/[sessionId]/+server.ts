@@ -1,7 +1,9 @@
 // src/routes/api/evidence/stream/[sessionId]/+server.ts
-import type { RequestHandler } from '@sveltejs/kit';
-import { registerWsConnection, getMissedMessages } from '$lib/server/wsBroker';
-import WebSocket from 'ws';
+import type { RequestHandler } from "@sveltejs/kit";
+// Orphaned content: import {
+registerWsConnection, getMissedMessages
+WebSocket from "ws";
+// Orphaned content: import {
 
 export const GET: RequestHandler = async ({ request, params, url }) => {
   const { sessionId } = params;

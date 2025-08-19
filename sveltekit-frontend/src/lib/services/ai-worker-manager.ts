@@ -4,6 +4,7 @@
  * Handles task distribution, load balancing, and worker lifecycle management
  */
 
+import crypto from "crypto";
 import type {
   AITask,
   AIResponse,
@@ -13,6 +14,7 @@ import type {
   AIServiceWorkerManager,
   TaskResult,
   ProcessingMetrics,
+} from "$lib/types";
   WorkerConfiguration,
 } from "$lib/types/ai-worker.js";
 

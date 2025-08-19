@@ -1,13 +1,17 @@
 // @ts-nocheck
-import { Queue, Worker, Job, QueueEvents } from 'bullmq';
-import { Redis } from 'ioredis';
-// import { aiPipeline } from './aiPipeline'; // Missing module
-// import { ollamaService } from './ollamaService'; // Missing module
-// import { multiLayerCache } from './multiLayerCache'; // Missing module
-import { db } from '$lib/server/db';
-import { evidence, documentVectors } from '$lib/db/schema';
+import { Queue, Worker, Job, QueueEvents } from "bullmq";
+// Orphaned content: import {
+
+// import { aiPipeline } from './aiPipeline.js'; // Missing module
+// import { ollamaService } from './ollamaService.js'; // Missing module
+// import { multiLayerCache } from './multiLayerCache.js'; // Missing module
+import { db } from "$lib/server/db";
+// Orphaned content: import {
+evidence, documentVectors
 import { eq } from 'drizzle-orm';
-import type { DocumentProcessingOptions } from '$lib/schemas/upload';
+// Orphaned content: import type { DocumentProcessingOptions
+import {
+EventEmitter } from "events";
 
 // Job types
 export interface DocumentProcessingJob {

@@ -1,14 +1,8 @@
 import { useActor } from "@xstate/svelte";
-import { chatMachine } from "$lib/machines/chatMachine.js";
-import { serviceStatus } from "$lib/services/connectivity.js";
-import { createActor } from "xstate";
+// Orphaned content: import {
 
-// Chat settings that can be adjusted through UI
-const settings = {
-  model: "gemma3-legal",
-  temperature: 0.3,
-  maxTokens: 500,
-};
+import { serviceStatus } from "$lib/services/connectivity.js";
+import { createActor, , // Chat settings that can be adjusted through UI, const settings = {,   model: "gemma3-legal",,   temperature: 0.3,,   maxTokens: 500, } from
 
 // Create the actor instance (one per application)
 const chatActor = createActor(chatMachine, {

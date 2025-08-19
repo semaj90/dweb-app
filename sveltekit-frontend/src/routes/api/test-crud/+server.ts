@@ -1,7 +1,7 @@
+import type { RequestHandler } from "./$types";
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-import { cacheManager } from '$lib/services/cache-layer-manager';
-import type { RequestHandler } from './$types';
+import { json } from "@sveltejs/kit";
+// Orphaned content: import {
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

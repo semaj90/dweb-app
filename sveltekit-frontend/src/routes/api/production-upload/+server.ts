@@ -1,21 +1,26 @@
 // Production-Quality Document Upload API
 // Integrates PostgreSQL, Qdrant, OCR, Gemma3, XState, RabbitMQ, Neo4j
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { db } from '$lib/server/db/index';
-import { legalDocuments, cases } from '$lib/server/db/schema-postgres';
-import { enhancedEvidence } from '$lib/server/db/enhanced-legal-schema';
-import { eq, and } from 'drizzle-orm';
-import { randomUUID } from 'crypto';
-import { writeFile, mkdir, readFile } from 'fs/promises';
-import path from 'path';
-import pdf from 'pdf-parse';
-import { createWorker } from 'tesseract.js';
-import { qdrantService } from '$lib/services/qdrantService';
-import { ollamaService } from '$lib/services/ollamaService';
+// Orphaned content: import type { RequestHandler
+import {
+db } from "$lib/server/db/index";
+// Orphaned content: import { legalDocuments, cases
+import {
+enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";
+// Orphaned content: import { eq, and
+import {
+randomUUID } from "crypto";
+// Orphaned content: import { writeFile, mkdir, readFile
+path from 'path';
+// Orphaned content: import pdf from "pdf-parse";
+import {
+
+import { qdrantService } from "$lib/services/qdrantService";
+// Orphaned content: import {
+
 import { legalBERT } from '$lib/server/ai/legalbert-middleware';
-// XState integration commented out for now to fix compilation
-// import { interpret } from 'xstate';
+// Orphaned content: // XState integration commented out for now to fix compilation
+// import { interpret
 // import { documentUploadMachine } from '$lib/state/documentUploadMachine';
 
 // Production logging
@@ -153,7 +158,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
       const embeddingResult = await legalBERT.generateLegalEmbedding(extractedText);
       embeddings = embeddingResult.embedding;
       // Normalize embeddings dimension (pad/truncate) to environment expectation
-      const TARGET_DIM = parseInt(process.env.EMBEDDING_DIM || process.env.VECTOR_DIM || '768', 10);
+      const TARGET_DIM = parseInt(import.meta.env.EMBEDDING_DIM || import.meta.env.VECTOR_DIM || '768', 10);
       if (Array.isArray(embeddings)) {
         if (embeddings.length > TARGET_DIM) embeddings = embeddings.slice(0, TARGET_DIM);
         else if (embeddings.length < TARGET_DIM) embeddings = embeddings.concat(Array(TARGET_DIM - embeddings.length).fill(0));

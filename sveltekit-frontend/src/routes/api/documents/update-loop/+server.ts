@@ -3,11 +3,15 @@
 // Handles document changes with automatic re-embedding and re-ranking
 
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { documentUpdateLoop } from '$lib/services/documentUpdateLoop';
-import { db } from '$lib/server/database';
-import { documents } from '$lib/db/schema';
-import { eq } from 'drizzle-orm';
+// Orphaned content: import type { RequestHandler
+import {
+documentUpdateLoop } from "$lib/services/documentUpdateLoop";
+// Orphaned content: import { db
+import {
+documents } from "$lib/db/schema";
+// Orphaned content: import { eq
+import {
+URL } from "url";
 
 // ============================================================================
 // UPDATE DOCUMENT WITH AUTO RE-EMBEDDING

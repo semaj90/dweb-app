@@ -1,8 +1,10 @@
+import crypto from "crypto";
 // @ts-nocheck
-import Loki from 'lokijs';
-import Fuse from 'fuse.js';
-import { browser } from '$app/environment';
-import type { SearchResult } from './aiPipeline';
+Loki from 'lokijs';
+// Orphaned content: import Fuse from "fuse.js";
+import {
+
+import type { SearchResult } from './aiPipeline.js';
 
 export interface CacheEntry {
   id: string;

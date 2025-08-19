@@ -2,7 +2,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 // Database configuration - using environment variables or defaults
-const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
+const DATABASE_URL = import.meta.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
 
 // Create postgres client
 const client = postgres(DATABASE_URL, {
@@ -14,7 +14,7 @@ const client = postgres(DATABASE_URL, {
 
 // Create Drizzle instance
 export const db = drizzle(client, {
-  logger: process.env.NODE_ENV === 'development'
+  logger: import.meta.env.NODE_ENV === 'development'
 });
 
 // Export client for raw SQL queries if needed

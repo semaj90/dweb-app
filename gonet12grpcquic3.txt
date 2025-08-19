@@ -1,0 +1,83 @@
+# Full API Route/Service Map: Go, gRPC, QUIC, HTTP, ProtoBuf
+
+---
+## ProtoBuf gRPC Services & RPCs
+
+### proto/embed.proto
+- service Embedder
+  - rpc Embed(EmbedRequest) returns (EmbedResponse)
+  - rpc BatchEmbed(BatchEmbedRequest) returns (BatchEmbedResponse)
+
+### microservices/evidence-processor/proto/evidence.proto
+- service EvidenceProcessor
+  - rpc ProcessEvidence(ProcessRequest) returns (ProcessResponse)
+  - rpc GetJobStatus(StatusRequest) returns (StatusResponse)
+  - rpc HealthCheck(HealthRequest) returns (HealthResponse)
+
+### proto/gpu_service.proto, proto/tensor.proto, proto/events.proto, proto/ingest.proto, proto/ingest_new.proto
+- (messages, service definitions, telemetry, batch ingest, tensor ops, etc.)
+
+---
+## Go HTTP/QUIC/gRPC Endpoints
+
+### go-microservice/cmd/cluster-service/main.go
+- GET /health
+- GET /metrics
+- POST /cluster
+
+### enhanced-semantic-architecture.go
+- http.HandleFunc /api/intelligent-todos
+- http.HandleFunc /api/semantic-analysis
+- http.HandleFunc /api/cache-stats
+
+### go-log-processor/main.go
+- SvelteKit API endpoint: http://localhost:5173/api/log
+
+---
+## SvelteKit/Node/TypeScript API Endpoints (from FULL_STACK_INTEGRATION_COMPLETE.md)
+
+### RESTful API (HTTP)
+- POST /api/v1/rag              → Vector search + AI generation
+- POST /api/v1/ai               → Multi-model AI processing
+- POST /api/v1/upload           → File processing with metadata
+- POST /api/v1/nats/publish     → Publish to NATS subjects
+- GET  /api/v1/nats/status      → NATS server health
+- POST /api/v1/nats/subscribe   → WebSocket subscription setup
+- GET  /api/v1/nats/metrics     → Messaging metrics
+- GET  /api/v1/cluster/health   → Service health monitoring
+- POST /api/v1/cluster          → Service management
+- POST /api/v1/xstate           → State machine events
+- POST /api/v1/vector/search    → PostgreSQL pgvector search
+- POST /api/v1/graph/query      → Neo4j graph traversal
+
+### Demo/Monitoring
+- GET  /demos/nats-messaging    → Interactive NATS demo
+- /api/context7-autosolve?action=status|health|history (GET/POST)
+
+---
+## Vite Proxy/Rewrite Endpoints (from vite.config.ts)
+- /api/go/enhanced-rag → http://localhost:8094
+- /api/neo4j → http://localhost:7474
+- /api/go/upload → (Upload Service)
+- /api/go/cluster → (Cluster Manager)
+- /api/go/xstate → (XState Manager)
+- /api/nvidia-llama → (NVIDIA go-llama)
+- /api/qdrant → (Qdrant Vector DB)
+- /api/llm → (LLM Service)
+
+---
+## Messaging/Realtime (NATS, WebSocket)
+- ws://localhost:4222, ws://localhost:4223 (NATS WebSocket)
+- /api/v1/nats/subscribe (WebSocket subscription)
+
+---
+## ProtoBuf Message Types (partial)
+- EmbedRequest, EmbedResponse, BatchEmbedRequest, BatchEmbedResponse
+- GPUInfo, ProcessRequest, ProcessResponse, StatusRequest, StatusResponse, HealthRequest, HealthResponse
+- Telemetry, PrefetchPlan, TensorOps, IngestBatch, etc.
+
+---
+## Notes
+- QUIC endpoints are routed via Cluster Manager and Go microservices (see productionServiceClient, port mapping).
+- All gRPC/QUIC/HTTP endpoints are orchestrated for multi-protocol support.
+- For full proto message/service details, see each .proto file.

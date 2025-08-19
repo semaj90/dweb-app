@@ -5,7 +5,7 @@
  */
 
 import { writable, type Writable } from 'svelte/store';
-import type { ComprehensiveCachingArchitecture } from '$lib/services/comprehensive-caching-architecture';
+// Orphaned content: import type { ComprehensiveCachingArchitecture
 
 // Shader definitions for legal AI visualizations
 export const LEGAL_AI_SHADERS = {

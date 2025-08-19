@@ -6,7 +6,7 @@
  */
 
 import { writable, derived, type Writable } from "svelte/store";
-import { browser } from "$app/environment";
+// Orphaned content: import {
 
 // Task coordination types
 export interface TaskMessage {

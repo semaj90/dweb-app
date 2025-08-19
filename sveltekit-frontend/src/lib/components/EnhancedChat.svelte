@@ -273,7 +273,7 @@
 			<select 
 				id="model-select"
 				bind:value={$state.context.model}
-				on:change={(e) => send({ type: 'SET_MODEL', model: e.target.value })}
+				onchange={(e) => send({ type: 'SET_MODEL', model: e.target.value })}
 				class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 			>
 				{#each models as model}
@@ -384,7 +384,7 @@
 			<div class="flex-1">
 				<textarea
 					bind:value={messageInput}
-					on:keydown={handleKeyPress}
+					onkeydown={handleKeyPress}
 					placeholder="Ask me about legal documents, contracts, or any legal questions..."
 					disabled={$state.matches('sending')}
 					class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"

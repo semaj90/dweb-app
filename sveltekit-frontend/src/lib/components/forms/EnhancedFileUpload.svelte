@@ -75,24 +75,19 @@ https://svelte.dev/e/js_parse_error -->
   }>();
 
   // Props
-  let { caseId = $bindable() } = $props(); // string | undefined = undefined;
-  let { multiple = $bindable() } = $props(); // false;
-  let { compact = $bindable() } = $props(); // false;
-  let { initialData = $bindable() } = $props(); // Partial<FileUpload> | undefined = undefined;
-  let { disabled = $bindable() } = $props(); // false;
-  let { maxFiles = $bindable() } = $props(); // multiple ? 10 : 1;
-  let { maxSizeMB = $bindable() } = $props(); // 100;
-      "image/*",
-    "video/*",
-    "audio/*",
-    ".pdf",
-    ".doc",
-    ".docx",
-    ".txt",
-    ".csv",
-    ".zip",
-    ".rar",
-  ];
+  // NOTE: Removed duplicated $bindable prop declarations introduced by migration.
+  // The initial typed destructuring above already defines the runtime props.
+  // If future two‑way binding is required, selectively reintroduce $bindable on needed fields only.
+  let {
+    caseId = undefined,
+    multiple = false,
+    compact = false,
+    initialData = undefined,
+    disabled = false,
+    maxFiles = multiple ? 10 : 1,
+    maxSizeMB = 100,
+    acceptedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt', 'image/*', 'video/*', 'audio/*', '.csv', '.zip', '.rar'],
+  }: Props = $props();
 
   // State
   let fileInput: HTMLInputElement;
@@ -353,7 +348,7 @@ https://svelte.dev/e/js_parse_error -->
   type="file"
   {multiple}
   accept={acceptedTypes.join(",")}
-  on:change={handleFileSelect}
+  onchange={handleFileSelect}
   class="hidden"
 />
 
@@ -373,11 +368,11 @@ https://svelte.dev/e/js_parse_error -->
         ? 'border-primary bg-primary bg-opacity-5'
         : 'border-muted-foreground border-opacity-25 hover:border-primary hover:border-opacity-50'}
              {disabled ? 'opacity-50 cursor-not-allowed' : ''}"
-      on:dragover={handleDragOver}
-      on:dragleave={handleDragLeave}
-      on:drop={handleDrop}
-      on:click={openFileDialog}
-  on:keydown={(e: KeyboardEvent) => e.key === "Enter" && openFileDialog()}
+      ondragover={handleDragOver}
+      ondragleave={handleDragLeave}
+      ondrop={handleDrop}
+      onclick={openFileDialog}
+  onkeydown={(e: KeyboardEvent) => e.key === "Enter" && openFileDialog()}
       role="button"
       tabindex="0"
       aria-label="File upload area"

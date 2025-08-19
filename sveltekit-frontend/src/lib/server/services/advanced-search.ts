@@ -5,9 +5,10 @@
  */
 
 import { db } from "$lib/server/db/index";
-import { cases, evidence } from "$lib/server/db/schema-postgres";
-import type { SQL } from "drizzle-orm";
-import { and, gte, like, lte, or, sql } from "drizzle-orm";
+// Orphaned content: import {
+cases, evidence
+import type { SQL }, {
+and, gte, like, lte, or, sql } from "drizzle-orm";
 
 export interface SearchFilters {
   query?: string;

@@ -4,8 +4,9 @@
  * Handles document OCR, field extraction, and form auto-population
  */
 
-import { writable, type Writable } from 'svelte/store';
-import { createWorker, type Worker, PSM } from 'tesseract.js';
+import { writable, type Writable } from "svelte/store";
+// Orphaned content: import {
+createWorker, type Worker, PSM
 import { z } from 'zod';
 
 // OCR Types
