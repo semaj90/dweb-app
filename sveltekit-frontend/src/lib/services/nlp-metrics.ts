@@ -52,11 +52,14 @@ export function renderNlpMetrics(): string {
   lines.push('# HELP pipeline_stage_latency_ms Pipeline stage latency histogram (ms)');
   lines.push('# TYPE pipeline_stage_latency_ms histogram');
   for (const h of hists) {
-    const { stage, buckets, counts, inf, sum: hsum, count } = h;
+    const { stage, buckets, counts, inf, sum: hsum, count, anomalies } = h as any;
     buckets.forEach((b, i) => lines.push(`pipeline_stage_latency_ms_bucket{stage="${stage}",le="${b}"} ${counts[i]}`));
     lines.push(`pipeline_stage_latency_ms_bucket{stage="${stage}",le="+Inf"} ${inf}`);
     lines.push(`pipeline_stage_latency_ms_sum{stage="${stage}"} ${hsum.toFixed(2)}`);
     lines.push(`pipeline_stage_latency_ms_count{stage="${stage}"} ${count}`);
+    lines.push(`# HELP pipeline_stage_latency_anomalies_total Detected latency anomalies (negative or extreme outliers)`);
+    lines.push(`# TYPE pipeline_stage_latency_anomalies_total counter`);
+    lines.push(`pipeline_stage_latency_anomalies_total{stage="${stage}"} ${anomalies || 0}`);
   }
 
   // Autosolve summary
@@ -83,6 +86,14 @@ export function renderNlpMetrics(): string {
   lines.push('# HELP quic_avg_latency_ms Average QUIC stream latency (ms)');
   lines.push('# TYPE quic_avg_latency_ms gauge');
   lines.push(`quic_avg_latency_ms ${quic.avg_latency_ms}`);
+  lines.push('# HELP quic_latency_ms QUIC latency quantiles');
+  lines.push('# TYPE quic_latency_ms summary');
+  lines.push(`quic_latency_ms{quantile="0.5"} ${quic.p50 || 0}`);
+  lines.push(`quic_latency_ms{quantile="0.9"} ${quic.p90 || 0}`);
+  lines.push(`quic_latency_ms{quantile="0.99"} ${quic.p99 || 0}`);
+  lines.push('# HELP quic_error_events_last_minute QUIC errors in last 60s');
+  lines.push('# TYPE quic_error_events_last_minute gauge');
+  lines.push(`quic_error_events_last_minute ${quic.error_rate_1m || 0}`);
 
   // Redis metrics
   const redis = getRedisMetrics();

@@ -159,7 +159,20 @@
       <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
         {#if pipeline.length}
           {#each pipeline as row}
-            <span class="opacity-70">{row.stage} avg</span><span>{row.count? (row.sum/row.count).toFixed(1):'0'} ms ({row.count})</span>
+            <span class="opacity-70">{row.stage} avg</span>
+            <span class="flex items-center gap-1">
+              {row.count? (row.sum/row.count).toFixed(1):'0'} ms ({row.count})
+              {#if row.recentSamples?.length > 3}
+                {#key row.stage}
+                  <svg viewBox="0 0 50 12" class="h-3 w-10 text-slate-400">
+                    {#let vals = row.recentSamples}
+                    {#let max = Math.max(...vals)}
+                    {#let scaled = vals.map((v,i)=> ({x: (i/(vals.length-1))*50, y: max? (12 - (v/max)*12):12 }))}
+                    <polyline fill="none" stroke="currentColor" stroke-width="1" points={scaled.map(p=>`${p.x},${p.y}`).join(' ')} />
+                  </svg>
+                {/key}
+              {/if}
+            </span>
           {/each}
         {:else}<span class="col-span-2 opacity-70">No pipeline data</span>{/if}
         {#if autosolve}
