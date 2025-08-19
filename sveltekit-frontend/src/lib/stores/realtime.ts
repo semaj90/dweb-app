@@ -1,5 +1,6 @@
 // Lightweight realtime pipeline store subscribing to ws-fanout events
 import { writable, derived } from 'svelte/store';
+import { recordStageLatency, type PipelineStage } from '$lib/services/pipeline-metrics';
 
 // ---- Types ----
 export interface StageStatus {
@@ -12,6 +13,7 @@ export interface StageStatus {
 	final?: boolean;
 	receivedAt?: number;
 	completedAt?: number;
+	stageTimestamps?: Partial<Record<PipelineStage, number>>; // per-stage arrival timestamps
 	// Allow additional dynamic stage flags without TS complaints
 	[key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
@@ -66,7 +68,34 @@ function handleEvent(wrapper){
 		stages.update(map => {
 				const next: Record<string, StageStatus> = { ...map };
 				const curr: StageStatus = next[id] || { id };
-				if (stage) (curr as any)[stage] = true; // dynamic stage name
+			const now = Date.now();
+			if (!curr.stageTimestamps) curr.stageTimestamps = {};
+			if (stage) {
+				// Only record first time we see this stage to avoid double counting
+				if (!curr.stageTimestamps[stage as PipelineStage]) {
+					// Determine previous reference time (either receivedAt or last completed stage timestamp)
+					const order: PipelineStage[] = ['gpu', 'wasm', 'embedding', 'retrieval', 'llm', 'final'];
+					const idx = order.indexOf(stage as PipelineStage);
+					let refTime = curr.receivedAt || now;
+					if (idx > 0) {
+						// find most recent earlier stage timestamp
+						for (let i = idx - 1; i >= 0; i--) {
+							const prevStage = order[i];
+							const ts = curr.stageTimestamps[prevStage];
+							if (ts) { refTime = ts; break; }
+						}
+					}
+					(curr as any)[stage] = true;
+					curr.stageTimestamps[stage as PipelineStage] = now;
+					if (refTime !== now) {
+						const delta = now - refTime;
+						try { recordStageLatency(stage as PipelineStage, delta); } catch { }
+					}
+				} else {
+					// Already recorded; just ensure boolean flag remains true
+					(curr as any)[stage] = true;
+				}
+			}
 				if (final) { curr.final = true; curr.completedAt = Date.now(); }
 				next[id] = curr; return next;
 			});
