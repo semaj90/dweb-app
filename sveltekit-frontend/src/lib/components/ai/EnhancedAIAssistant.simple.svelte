@@ -1,19 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: Mixing old (on:submit) and new syntaxes for event handling is not allowed. Use only the onsubmit syntax
-https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <!-- Simplified Enhanced AI Assistant -->
 <script lang="ts">
-  interface Props {
-
-  }
-  let {
-    caseId = undefined,
-    placeholder = "Ask AI about this case...",
-    maxHeight = "400px",
-    showReferences = true
-  }: Props = $props();
-
-
-
   import {
     Brain,
     Loader2,
@@ -22,11 +8,17 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     Settings,
     Trash2,
   } from "lucide-svelte";
-  
-    export const evidenceIds: string[] = [];
-        export const enableVoiceInput = false;
+  import { createEventDispatcher } from "svelte";
 
-  
+  export let caseId: string | undefined = undefined;
+  export const evidenceIds: string[] = [];
+  export let placeholder = "Ask AI about this case...";
+  export let maxHeight = "400px";
+  export let showReferences = true;
+  export const enableVoiceInput = false;
+
+  const dispatch = createEventDispatcher();
+
   // State
   let query = "";
   let isLoading = false;
@@ -97,57 +89,57 @@ Would you like me to elaborate on any of these aspects?`,
 }
 </script>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
   <!-- Main Chat Interface -->
-  <div class="space-y-4" style="max-height: {maxHeight}">
+  <div class="container mx-auto px-4" style="max-height: {maxHeight}">
     <!-- Header -->
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <Brain class="space-y-4" />
-        <h3 class="space-y-4">Legal AI Assistant</h3>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <Brain class="container mx-auto px-4" />
+        <h3 class="container mx-auto px-4">Legal AI Assistant</h3>
         {#if caseId}
-          <span class="space-y-4"
+          <span class="container mx-auto px-4"
             >Case: {caseId}</span
           >
         {/if}
       </div>
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <button
-          class="space-y-4"
-          onclick={() => (showSettings = !showSettings)}
+          class="container mx-auto px-4"
+          on:click={() => (showSettings = !showSettings)}
           title="Settings"
         >
-          <Settings class="space-y-4" />
+          <Settings class="container mx-auto px-4" />
         </button>
         <button
-          class="space-y-4"
-          onclick={() => clearMessages()}
+          class="container mx-auto px-4"
+          on:click={() => clearMessages()}
           title="Clear conversation"
         >
-          <Trash2 class="space-y-4" />
+          <Trash2 class="container mx-auto px-4" />
         </button>
       </div>
     </div>
 
     <!-- Messages -->
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       {#each messages as message}
-        <div class="space-y-4">
-          <div class="space-y-4">
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
             {message.content}
           </div>
 
           {#if message.references && showReferences}
-            <div class="space-y-4">
-              <h4 class="space-y-4">References:</h4>
+            <div class="container mx-auto px-4">
+              <h4 class="container mx-auto px-4">References:</h4>
               {#each message.references as reference}
                 <button
-                  class="space-y-4"
-                  onclick={() => handleReferenceClick(reference)}
+                  class="container mx-auto px-4"
+                  on:click={() => handleReferenceClick(reference)}
                 >
-                  <Quote class="space-y-4" />
-                  <span class="space-y-4">{reference.title}</span>
-                  <span class="space-y-4">{reference.citation}</span>
+                  <Quote class="container mx-auto px-4" />
+                  <span class="container mx-auto px-4">{reference.title}</span>
+                  <span class="container mx-auto px-4">{reference.citation}</span>
                 </button>
               {/each}
             </div>
@@ -156,9 +148,9 @@ Would you like me to elaborate on any of these aspects?`,
       {/each}
 
       {#if isLoading}
-        <div class="space-y-4">
-          <div class="space-y-4">
-            <Loader2 class="space-y-4" />
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
+            <Loader2 class="container mx-auto px-4" />
             Analyzing your query...
           </div>
         </div>
@@ -166,21 +158,21 @@ Would you like me to elaborate on any of these aspects?`,
     </div>
 
     <!-- Input -->
-    <form class="space-y-4" on:submit|preventDefault={handleSubmit}>
-      <div class="space-y-4">
+    <form class="container mx-auto px-4" on:submit|preventDefault={handleSubmit}>
+      <div class="container mx-auto px-4">
         <input
           type="text"
           bind:value={query}
           {placeholder}
           disabled={isLoading}
-          class="space-y-4"
+          class="container mx-auto px-4"
         />
         <button
           type="submit"
           disabled={!query.trim() || isLoading}
-          class="space-y-4"
+          class="container mx-auto px-4"
         >
-          <Search class="space-y-4" />
+          <Search class="container mx-auto px-4" />
         </button>
       </div>
     </form>
@@ -188,16 +180,16 @@ Would you like me to elaborate on any of these aspects?`,
 
   <!-- Settings Panel -->
   {#if showSettings}
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <h4 class="space-y-4">AI Assistant Settings</h4>
-        <button class="space-y-4" onclick={() => (showSettings = false)}
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <h4 class="container mx-auto px-4">AI Assistant Settings</h4>
+        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
           >×</button
         >
       </div>
 
-      <div class="space-y-4">
-        <div class="space-y-4">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <label for="model-select">Model:</label>
           <select id="model-select" bind:value={selectedModel}>
             <option value="gpt-4">GPT-4</option>
@@ -206,7 +198,7 @@ Would you like me to elaborate on any of these aspects?`,
           </select>
         </div>
 
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <label for="temperature-range">Temperature: {temperature}</label>
           <input
             id="temperature-range"
@@ -218,7 +210,7 @@ Would you like me to elaborate on any of these aspects?`,
           />
         </div>
 
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <label for="threshold-range"
             >Search Threshold: {searchThreshold}</label
           >
@@ -232,7 +224,7 @@ Would you like me to elaborate on any of these aspects?`,
           />
         </div>
 
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <label for="max-results">Max Results:</label>
           <input
             id="max-results"
@@ -249,9 +241,9 @@ Would you like me to elaborate on any of these aspects?`,
   <!-- Citation Dialog -->
   {#if showCitationDialog}
     <div
-      class="space-y-4"
-      onclick={() => (showCitationDialog = false)}
-      onkeydown={(e) => {
+      class="container mx-auto px-4"
+      on:click={() => (showCitationDialog = false)}
+      on:keydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
         }
@@ -261,36 +253,36 @@ Would you like me to elaborate on any of these aspects?`,
       aria-labelledby="citation-dialog-title"
       tabindex={-1}
     >
-      <div class="space-y-4" role="document">
-        <div class="space-y-4">
-          <h4 class="space-y-4" id="citation-dialog-title">
-            <Quote class="space-y-4" />
+      <div class="container mx-auto px-4" role="document">
+        <div class="container mx-auto px-4">
+          <h4 class="container mx-auto px-4" id="citation-dialog-title">
+            <Quote class="container mx-auto px-4" />
             Legal Citation
           </h4>
         </div>
 
-        <div class="space-y-4">
-          <div class="space-y-4">
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
             <p>{selectedCitation}</p>
           </div>
 
-          <div class="space-y-4">
-            <button class="space-y-4" onclick={() => insertCitation()}>
+          <div class="container mx-auto px-4">
+            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
               Insert Citation
             </button>
             <button
-              class="space-y-4"
-              onclick={() => navigator.clipboard.writeText(selectedCitation)}
+              class="container mx-auto px-4"
+              on:click={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy to Clipboard
             </button>
           </div>
         </div>
 
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <button
-            class="space-y-4"
-            onclick={() => (showCitationDialog = false)}
+            class="container mx-auto px-4"
+            on:click={() => (showCitationDialog = false)}
           >
             Close
           </button>

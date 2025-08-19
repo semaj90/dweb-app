@@ -40,7 +40,7 @@ https://svelte.dev/e/js_parse_error -->
       const data = await res.json();
       onauditResults?.();
     } catch (error) {
-      onauditError?.().message, evidence: item });
+      onauditError?.({ message: error.message, evidence: item });
     }
     closeMenu();
   }

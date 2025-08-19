@@ -16,6 +16,9 @@ import { db } from '$lib/database/connection';
 import { searchIndex, type NewSearchIndex } from '$lib/database/schema';
 import { eq, sql, desc, asc, and } from 'drizzle-orm';
 
+// Import sentence transformer for enhanced analysis
+import { legalNLP } from './sentence-transformer.js';
+
 export interface EmbeddingConfig {
   model: string;
   dimensions: number;
@@ -326,7 +329,7 @@ class NomicEmbeddingService {
   }
 
   /**
-   * Process and embed a document with automatic chunking
+   * Process and embed a document with automatic chunking and legal analysis
    */
   public async processDocument(
     content: string,
@@ -341,16 +344,32 @@ class NomicEmbeddingService {
     chunks: DocumentChunk[];
     embeddings: EmbeddingResult[];
     indexedCount: number;
+    analysis?: any;
   }> {
     try {
       if (!this.initialized) {
         await this.initializeServices();
       }
 
-      // Split document into chunks
-      const textChunks = await this.textSplitter.splitText(content);
+      // Perform legal analysis on full document first
+      let documentAnalysis;
+      try {
+        documentAnalysis = await legalNLP.analyzeLegalDocument(content);
+        console.log(`📊 Legal analysis completed: ${documentAnalysis.legalDomain.join(', ')} domains detected`);
+      } catch (error) {
+        console.warn('Legal analysis failed, continuing without it:', error);
+      }
+
+      // Use legal-aware chunking if available
+      let textChunks;
+      try {
+        textChunks = legalNLP.chunkText(content, this.config.chunkSize, this.config.chunkOverlap);
+      } catch (error) {
+        console.warn('Legal chunking failed, using default chunking:', error);
+        textChunks = await this.textSplitter.splitText(content);
+      }
       
-      // Create document chunks with metadata
+      // Create document chunks with enhanced metadata
       const chunks: DocumentChunk[] = textChunks.map((chunk, index) => ({
         id: this.generateId(),
         content: chunk,
@@ -359,7 +378,13 @@ class NomicEmbeddingService {
           chunkIndex: index,
           totalChunks: textChunks.length,
           startIndex: content.indexOf(chunk),
-          endIndex: content.indexOf(chunk) + chunk.length
+          endIndex: content.indexOf(chunk) + chunk.length,
+          // Add legal analysis metadata if available
+          ...(documentAnalysis && {
+            legalDomain: documentAnalysis.legalDomain,
+            complexity: documentAnalysis.complexity,
+            keywords: documentAnalysis.keywords
+          })
         }
       }));
 
@@ -387,7 +412,8 @@ class NomicEmbeddingService {
       return {
         chunks,
         embeddings: embeddingResult.results,
-        indexedCount
+        indexedCount,
+        analysis: documentAnalysis
       };
     } catch (error) {
       console.error('Failed to process document:', error);

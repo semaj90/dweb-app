@@ -2,24 +2,18 @@
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
-    size: 'sm' | 'md' | 'lg' ;
-    message: string ;
-    showMessage: boolean ;
-    color: 'blue' | 'green' | 'purple' | 'gray' ;
+    size?: 'sm' | 'md' | 'lg';
+    message?: string;
+    showMessage?: boolean;
+    color?: 'blue' | 'green' | 'purple' | 'gray';
   }
+
   let {
     size = 'md',
     message = 'Loading...',
     showMessage = true,
     color = 'blue'
   }: Props = $props();
-
-
-
-  let { size = $bindable() } = $props(); // 'sm' | 'md' | 'lg' = 'md';
-  let { message = $bindable() } = $props(); // string = 'Loading...';
-  let { showMessage = $bindable() } = $props(); // boolean = true;
-  let { color = $bindable() } = $props(); // 'blue' | 'green' | 'purple' | 'gray' = 'blue';
 
   function getSpinnerSize(size: string): string {
     switch (size) {

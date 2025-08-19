@@ -54,7 +54,7 @@ https://svelte.dev/e/js_parse_error -->
       isExpanded = false;
       onexpand?.();
 }}
-  let currentColumns = $derived(isExpanded ? expandedColumns : columns;);
+  let currentColumns = $derived(isExpanded ? expandedColumns : columns);
 </script>
 
 <div

@@ -83,7 +83,7 @@
 </script>
 
 <div
-  class="mx-auto px-4 max-w-7xl"
+  class="container mx-auto px-4"
   class:open={sidebarOpen}
   bind:this={sidebarElement}
   role="complementary"
@@ -93,19 +93,19 @@
 >
   <!-- Hover trigger area when closed -->
   {#if !sidebarOpen}
-    <div class="mx-auto px-4 max-w-7xl" aria-hidden="true"></div>
+    <div class="container mx-auto px-4" aria-hidden="true"></div>
   {/if}
 
   <!-- Sidebar content -->
   {#if sidebarOpen}
     <div
-      class="mx-auto px-4 max-w-7xl"
-      transition:slide={{ duration: 300, easing: quintOut, axis: "x"  "
+      class="container mx-auto px-4"
+      transition:slide={{ duration: 300, easing: quintOut, axis: "x" }}
     >
       <!-- Header -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <h3>Content Library</h3>
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <button
             class={`pin-button ${isPinned ? "pinned" : ""}`}
             on:click={() => togglePin()}
@@ -116,7 +116,7 @@
 
           {#if !isPinned}
             <button
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
               on:click={() => (isHovered = false)}
               aria-label="Close sidebar"
             >
@@ -127,7 +127,7 @@
       </div>
 
       <!-- Search -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <SearchBar
           placeholder="Search {activeTab}..."
           value={searchQuery}
@@ -136,10 +136,10 @@
       </div>
 
       <!-- Tabs -->
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             class:active={activeTab === "evidence"}
             on:click={() => handleTabChange("evidence")}
           >
@@ -147,7 +147,7 @@
             Evidence
           </button>
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             class:active={activeTab === "notes"}
             on:click={() => handleTabChange("notes")}
           >
@@ -155,7 +155,7 @@
             Notes
           </button>
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             class:active={activeTab === "canvas"}
             on:click={() => handleTabChange("canvas")}
           >
@@ -166,7 +166,7 @@
 
         <!-- Evidence Tab -->
         {#if activeTab === "evidence"}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             <InfiniteScrollList
               items={searchResults}
               itemType="evidence"
@@ -178,7 +178,7 @@
 
         <!-- Notes Tab -->
         {#if activeTab === "notes"}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             <InfiniteScrollList
               items={searchResults}
               itemType="notes"
@@ -190,7 +190,7 @@
 
         <!-- Canvas States Tab -->
         {#if activeTab === "canvas"}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             <InfiniteScrollList
               items={canvasStates}
               itemType="canvas"
@@ -202,7 +202,7 @@
       </div>
 
       <!-- Tags -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <TagList />
       </div>
     </div>
@@ -210,6 +210,7 @@
 </div>
 
 <style>
+  /* @unocss-include */
   .sidebar-container {
     position: fixed;
     top: 60px; /* Header height */
@@ -238,8 +239,8 @@
   .sidebar-content {
     width: 100%;
     height: 100%;
-    background: var(--pico-card-background-color);
-    border-right: 1px solid var(--pico-muted-border-color);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-light);
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
@@ -247,25 +248,25 @@
 }
   .sidebar-header {
     padding: 1rem;
-    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-bottom: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--pico-background-color);
+    background: var(--bg-primary);
 }
   .sidebar-header h3 {
     margin: 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--pico-color);
+    color: var(--text-primary);
 }
   .header-actions {
     display: flex;
     gap: 0.5rem;
 }
   .pin-button.pinned {
-    background: var(--pico-primary-background);
-    color: var(--pico-primary-inverse);
+    background: var(--bg-secondary);
+    color: var(--text-inverse);
 }
   .pin-button,
   .close-button {
@@ -277,20 +278,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--pico-color);
+    color: var(--text-primary);
 }
   .pin-button:hover,
   .close-button:hover {
-    background: var(--pico-secondary-background);
+    background: var(--bg-tertiary);
 }
   .search-section {
     padding: 1rem;
-    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-bottom: 1px solid var(--border-light);
 }
   .tab-list {
     display: flex;
-    border-bottom: 1px solid var(--pico-muted-border-color);
-    background: var(--pico-background-color);
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-primary);
 }
   .tab-trigger {
     flex: 1;
@@ -300,18 +301,18 @@
     padding: 0.75rem 1rem;
     background: transparent;
     border: none;
-    color: var(--pico-muted-color);
+    color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s ease;
 }
   .tab-trigger:hover {
-    background: var(--pico-secondary-background);
-    color: var(--pico-color);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
 }
   .tab-trigger.active {
-    background: var(--pico-primary-background);
-    color: var(--pico-primary-inverse);
-    border-bottom: 2px solid var(--pico-primary);
+    background: var(--bg-secondary);
+    color: var(--text-inverse);
+    border-bottom: 2px solid var(--harvard-crimson);
 }
   .tab-content {
     flex: 1;
@@ -327,8 +328,8 @@
 }
   .tags-section {
     padding: 1rem;
-    border-top: 1px solid var(--pico-muted-border-color);
-    background: var(--pico-background-color);
+    border-top: 1px solid var(--border-light);
+    background: var(--bg-primary);
 }
   /* Responsive */
   @media (max-width: 768px) {

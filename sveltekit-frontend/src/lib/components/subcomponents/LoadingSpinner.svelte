@@ -17,26 +17,21 @@ https://svelte.dev/e/js_parse_error -->
 
 
 
-    let { size = $bindable() } = $props(); // 'sm' | 'md' | 'lg' | 'xl' = 'md';
-    let { color = $bindable() } = $props(); // 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white' = 'blue';
-    let { label = $bindable() } = $props(); // string = 'Loading...';
-    let { inline = $bindable() } = $props(); // boolean = false;
+  let sizeClasses = $derived({
+    sm: 'w-4 h-4',
+    md: 'w-6 h-6', 
+    lg: 'w-8 h-8',
+    xl: 'w-12 h-12'
+  });
 
-    let sizeClasses = $derived({);
-        sm: 'w-4 h-4',
-        md: 'w-6 h-6',
-        lg: 'w-8 h-8',
-        xl: 'w-12 h-12'
-    };
-
-    let colorClasses = $derived({);
-        blue: 'text-blue-600',
-        green: 'text-green-600',
-        red: 'text-red-600',
-        yellow: 'text-yellow-600',
-        gray: 'text-gray-600',
-        white: 'text-white'
-    };
+  let colorClasses = $derived({
+    blue: 'text-blue-600',
+    green: 'text-green-600',
+    red: 'text-red-600',
+    yellow: 'text-yellow-600',
+    gray: 'text-gray-600',
+    white: 'text-white'
+  });
 </script>
 
 <div class="loading-spinner {inline ? 'inline-flex' : 'flex'} items-center justify-center">

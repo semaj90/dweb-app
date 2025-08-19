@@ -1,23 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    documentId: string | null ;
-    caseId: string | null ;
-    initialContent: string ;
-    documentType: | "evidence";
-    compact: boolean ;
-  }
-  let {
-    documentId = null,
-    caseId = null,
-    initialContent = "",
-    documentType,
-    compact = false
-  }: Props = $props();
-
-
-
   import {
     aiSummaryMachine,
     type SummarySection,
@@ -37,24 +18,31 @@ https://svelte.dev/e/js_parse_error -->
   import { onMount } from "svelte";
   import { fade, fly } from "svelte/transition";
 
-            | "report"
+  export let documentId: string | null = null;
+  export let caseId: string | null = null;
+  export let initialContent: string = "";
+  export let documentType:
+    | "evidence"
+    | "report"
     | "contract"
     | "case_law"
     | "general" = "evidence";
+  export let compact: boolean = false;
 
   const { state, send } = useMachine(aiSummaryMachine);
 
   // Reactive state helpers
-  let isLoading = $derived($state.matches("loading") ||);
+  $: isLoading =
+    $state.matches("loading") ||
     $state.matches("generating") ||
     $state.matches("analyzing") ||
     $state.matches("synthesizing");
-  let isReady = $derived($state.matches("ready"););
-  let isReading = $derived($state.matches("ready.reading"););
-  let isPlaying = $derived($state.context.isPlaying;);
-  let currentSection = $derived($state.context.sections[$state.context.currentSection];);
-  let progress = $derived($state.context.progress;);
-  let error = $derived($state.context.error;);
+  $: isReady = $state.matches("ready");
+  $: isReading = $state.matches("ready.reading");
+  $: isPlaying = $state.context.isPlaying;
+  $: currentSection = $state.context.sections[$state.context.currentSection];
+  $: progress = $state.context.progress;
+  $: error = $state.context.error;
 
   // Voice synthesis
   let speechSynthesis: SpeechSynthesis | null = null;

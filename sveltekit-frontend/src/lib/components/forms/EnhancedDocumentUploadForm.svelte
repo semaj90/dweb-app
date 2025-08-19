@@ -1,26 +1,7 @@
-<!-- @migration-task Error while migrating Svelte code: `<script>` was left open
-https://svelte.dev/e/element_unclosed -->
 <!-- Enhanced Document Upload Form with XState + Superforms + Zod -->
 <!-- Production-ready form with state management, validation, and progress tracking -->
 
 <script lang="ts">
-  interface Props {
-    data: SuperValidated<Infer<typeof DocumentUploadSchema>>;;
-    onSuccess: ((result: any) ;
-    onError: ((error: string) ;
-    caseId: string | undefined ;
-    autoSave?: any;
-  }
-  let {
-    data,
-    onSuccess = > void) | undefined = undefined,
-    onError = > void) | undefined = undefined,
-    caseId = undefined,
-    autoSave = true
-  }: Props = $props();
-
-
-
   import {
     createDocumentUploadForm,
     FORM_STORAGE_KEYS,
@@ -61,6 +42,11 @@ https://svelte.dev/e/element_unclosed -->
   import type { Infer, SuperValidated } from "sveltekit-superforms";
 
   // Props
+  export let data: SuperValidated<Infer<typeof DocumentUploadSchema>>;
+  export let onSuccess: ((result: any) => void) | undefined = undefined;
+  export let onError: ((error: string) => void) | undefined = undefined;
+  export let caseId: string | undefined = undefined;
+  export let autoSave = true;
 
   // Form state management
   const formIntegration = createDocumentUploadForm(data, {
@@ -206,12 +192,13 @@ https://svelte.dev/e/element_unclosed -->
   // REACTIVE STATEMENTS
   // ============================================================================
 
-  let stateValue = $derived($state;);
-  let contextValue = $derived($context;);
-  let canSubmit = $derived($isValid && selectedFile && !$isSubmitting;);
-  let showProgress = $derived($progress > 0 && $progress < 100;);
-  let isCompleted = $derived(stateValue === "completed";);
-  let isError = $derived(stateValue === "uploadError" ||);
+  $: stateValue = $state;
+  $: contextValue = $context;
+  $: canSubmit = $isValid && selectedFile && !$isSubmitting;
+  $: showProgress = $progress > 0 && $progress < 100;
+  $: isCompleted = stateValue === "completed";
+  $: isError =
+    stateValue === "uploadError" ||
     stateValue === "processingError" ||
     stateValue === "failed";
 

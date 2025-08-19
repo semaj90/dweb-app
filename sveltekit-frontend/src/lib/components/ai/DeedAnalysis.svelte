@@ -1,39 +1,17 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'selectedDocument' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    selectedDocument: Document | null ;
-    searchQuery: string ;
-  }
-  let {
-    selectedDocument = null,
-    searchQuery = ''
-  }: Props = $props();
-
-
-
   import { onMount } from 'svelte';
+  import type { Document } from "$lib/types/global";
 
-  interface Document {
-    id: string;
-    title: string;
-    documentType: string;
-    content: string;
-    caseId?: string;
-  }
-
-  interface SimilarityResult {
-    id: string;
-    title: string;
-    documentType: string;
-    content: string;
+  // Types
+  interface SimilarityResult extends Document {
     similarity: number;
-    caseId?: string;
   }
 
-  let { selectedDocument = $bindable() } = $props(); // Document | null = null;
-  let { searchQuery = $bindable() } = $props(); // string = '';
+  // Props
+  let { selectedDocument = $bindable(null) }: { selectedDocument: Document | null } = $props();
+  let { searchQuery = $bindable('') }: { searchQuery: string } = $props();
 
+  // State
   let similarDocuments: SimilarityResult[] = [];
   let isLoading: boolean = false;
   let error: string | null = null;
@@ -77,9 +55,11 @@ https://svelte.dev/e/js_parse_error -->
   }
 
   // Reactive search when query changes
-  $effect(() => { if (searchQuery) {
-    performSemanticSearch(searchQuery);
-  }
+  $effect(() => {
+    if (searchQuery) {
+      performSemanticSearch(searchQuery);
+    }
+  });
 
   onMount(() => {
     if (searchQuery) {
@@ -218,3 +198,4 @@ https://svelte.dev/e/js_parse_error -->
     </div>
   {/if}
 </div>
+

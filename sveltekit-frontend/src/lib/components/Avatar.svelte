@@ -1,27 +1,15 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    size: 'small' | 'medium' | 'large' ;
-    clickable?: any;
-    showUploadButton?: any;
-  }
-  let {
-    size = 'medium',
-    clickable = false,
-    showUploadButton = false
-  }: Props = $props();
-
-
-
 	import { onMount } from 'svelte';
 	import { avatarStore } from "../stores/avatarStore";
 	
-				
+	export let size: 'small' | 'medium' | 'large' = 'medium';
+	export let clickable = false;
+	export let showUploadButton = false;
+	
 	let fileInput: HTMLInputElement;
 	let dragOver = false;
 	
-	let avatarSize = $derived({);
+	$: avatarSize = {
 		small: '32px',
 		medium: '48px', 
 		large: '80px'
@@ -36,7 +24,7 @@ https://svelte.dev/e/js_parse_error -->
 			fileInput.click();
 		}
 	}
-	
+
 	function handleFileSelect(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const file = target.files?.[0];
@@ -44,7 +32,7 @@ https://svelte.dev/e/js_parse_error -->
 			uploadFile(file);
 		}
 	}
-	
+
 	function handleDrop(event: DragEvent) {
 		event.preventDefault();
 		dragOver = false;
@@ -54,17 +42,17 @@ https://svelte.dev/e/js_parse_error -->
 			uploadFile(files[0]);
 		}
 	}
-	
+
 	function handleDragOver(event: DragEvent) {
 		event.preventDefault();
 		dragOver = true;
 	}
-	
+
 	function handleDragLeave(event: DragEvent) {
 		event.preventDefault();
 		dragOver = false;
 	}
-	
+
 	async function uploadFile(file: File) {
 		// Validate file type
 		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp'];
@@ -72,19 +60,19 @@ https://svelte.dev/e/js_parse_error -->
 			alert('Please select a valid image file (JPEG, PNG, GIF, SVG, WebP)');
 			return;
 		}
-		
+
 		// Validate file size (5MB)
 		if (file.size > 5 * 1024 * 1024) {
 			alert('File too large. Maximum size: 5MB');
 			return;
 		}
-		
+
 		const result = await avatarStore.uploadAvatar(file);
 		if (!result.success) {
 			alert(result.error || 'Upload failed');
 		}
 	}
-	
+
 	function handleRemoveAvatar() {
 		if (confirm('Remove your avatar?')) {
 			avatarStore.removeAvatar();
@@ -92,39 +80,39 @@ https://svelte.dev/e/js_parse_error -->
 	}
 </script>
 
-<div class="avatar-container" class:clickable class:drag-over={dragOver}>
+<div class="mx-auto px-4 max-w-7xl" class:clickable class:drag-over={dragOver}>
 	<div 
-		class="avatar" 
+		class="mx-auto px-4 max-w-7xl" 
 		style="width: {avatarSize}; height: {avatarSize};"
-		onclick={() => handleAvatarClick()}
-		onkeydown={(e) => {
+		on:click={() => handleAvatarClick()}
+		on:keydown={(e) => {
 			if (e.key === 'Enter' || e.key === ' ') {
 				e.preventDefault();
 				handleAvatarClick();
 			}
 		}}
-		ondrop={handleDrop}
-		ondragover={handleDragOver}
-		ondragleave={handleDragLeave}
+		on:drop={handleDrop}
+		on:dragover={handleDragOver}
+		on:dragleave={handleDragLeave}
 		role="button"
 		tabindex={clickable ? 0 : -1}
 		aria-label="Upload or change avatar"
 	>
 		{#if $avatarStore.isUploading}
-			<div class="loading-spinner">
-				<div class="spinner"></div>
+			<div class="mx-auto px-4 max-w-7xl">
+				<div class="mx-auto px-4 max-w-7xl"></div>
 			</div>
 		{:else}
 			<img 
 				src={$avatarStore.url || '/images/default-avatar.svg'} 
 				alt="User Avatar"
-				class="avatar-image"
+				class="mx-auto px-4 max-w-7xl"
 				loading="lazy"
 			/>
 		{/if}
 		
 		{#if clickable}
-			<div class="upload-overlay">
+			<div class="mx-auto px-4 max-w-7xl">
 				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
 					<polyline points="7,10 12,15 17,10"/>
@@ -135,11 +123,11 @@ https://svelte.dev/e/js_parse_error -->
 	</div>
 	
 	{#if showUploadButton}
-		<div class="upload-controls">
+		<div class="mx-auto px-4 max-w-7xl">
 			<button 
 				type="button" 
-				class="upload-btn"
-				onclick={() => fileInput?.click()}
+				class="mx-auto px-4 max-w-7xl"
+				on:click={() => fileInput?.click()}
 				disabled={$avatarStore.isUploading}
 			>
 				{$avatarStore.isUploading ? 'Uploading...' : 'Change Avatar'}
@@ -148,8 +136,8 @@ https://svelte.dev/e/js_parse_error -->
 			{#if $avatarStore.url && $avatarStore.url !== '/images/default-avatar.svg'}
 				<button 
 					type="button" 
-					class="remove-btn"
-					onclick={() => handleRemoveAvatar()}
+					class="mx-auto px-4 max-w-7xl"
+					on:click={() => handleRemoveAvatar()}
 				>
 					Remove
 				</button>
@@ -158,9 +146,9 @@ https://svelte.dev/e/js_parse_error -->
 	{/if}
 	
 	{#if $avatarStore.error}
-		<div class="error-message">
+		<div class="mx-auto px-4 max-w-7xl">
 			{$avatarStore.error}
-			<button type="button" onclick={() => avatarStore.clearError()} class="close-error">×</button>
+			<button type="button" on:click={() => avatarStore.clearError()} class="mx-auto px-4 max-w-7xl">×</button>
 		</div>
 	{/if}
 </div>
@@ -169,17 +157,16 @@ https://svelte.dev/e/js_parse_error -->
 	bind:this={fileInput}
 	type="file" 
 	accept="image/jpeg,image/png,image/gif,image/svg+xml,image/webp"
-	onchange={handleFileSelect}
+	on:change={handleFileSelect}
 	style="display: none;"
 />
 
 <style>
-  /* @unocss-include */
 	.avatar-container {
 		position: relative;
 		display: inline-block;
 	}
-	
+
 	.avatar {
 		position: relative;
 		border-radius: 50%;
@@ -188,25 +175,25 @@ https://svelte.dev/e/js_parse_error -->
 		transition: all 0.2s ease;
 		background: #f9fafb;
 	}
-	
+
 	.clickable .avatar:hover {
 		border-color: #3b82f6;
 		cursor: pointer;
 		transform: scale(1.05);
 	}
-	
+
 	.drag-over .avatar {
 		border-color: #10b981;
 		background: #ecfdf5;
 	}
-	
+
 	.avatar-image {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		transition: opacity 0.2s ease;
 	}
-	
+
 	.loading-spinner {
 		display: flex;
 		align-items: center;
@@ -215,7 +202,7 @@ https://svelte.dev/e/js_parse_error -->
 		height: 100%;
 		background: #f9fafb;
 	}
-	
+
 	.spinner {
 		width: 24px;
 		height: 24px;
@@ -224,12 +211,12 @@ https://svelte.dev/e/js_parse_error -->
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
-	
+
 	@keyframes spin {
 		0% { transform: rotate(0deg); }
 		100% { transform: rotate(360deg); }
 	}
-	
+
 	.upload-overlay {
 		position: absolute;
 		top: 0;
@@ -244,18 +231,18 @@ https://svelte.dev/e/js_parse_error -->
 		transition: opacity 0.2s ease;
 		color: white;
 	}
-	
+
 	.clickable:hover .upload-overlay {
 		opacity: 1;
 	}
-	
+
 	.upload-controls {
 		margin-top: 12px;
 		display: flex;
 		gap: 8px;
 		flex-wrap: wrap;
 	}
-	
+
 	.upload-btn, .remove-btn {
 		padding: 8px 16px;
 		border: none;
@@ -265,30 +252,30 @@ https://svelte.dev/e/js_parse_error -->
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
-	
+
 	.upload-btn {
 		background: #3b82f6;
 		color: white;
 	}
-	
+
 	.upload-btn:hover:not(:disabled) {
 		background: #2563eb;
 	}
-	
+
 	.upload-btn:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
-	
+
 	.remove-btn {
 		background: #ef4444;
 		color: white;
 	}
-	
+
 	.remove-btn:hover {
 		background: #dc2626;
 	}
-	
+
 	.error-message {
 		position: absolute;
 		top: 100%;
@@ -306,7 +293,7 @@ https://svelte.dev/e/js_parse_error -->
 		justify-content: space-between;
 		z-index: 10;
 	}
-	
+
 	.close-error {
 		background: none;
 		border: none;

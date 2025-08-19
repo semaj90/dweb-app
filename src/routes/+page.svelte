@@ -3,11 +3,13 @@
   import { browser } from '$app/environment';
   import { page } from '$app/stores';
 
-  // Import all advanced AI components
+  // Import ENHANCED AI components (Phase 14 Production Ready)
   import DocumentAnalysis from "$lib/components/DocumentAnalysis.svelte";
-  import LegalChat from "$lib/components/LegalChat.svelte";
+  import EnhancedLegalAIChat from "$lib/components/ai/EnhancedLegalAIChat.svelte";
   import AISummarization from "$lib/components/AISummarization.svelte";
   import FindModal from "$lib/components/ai/FindModal.svelte";
+  import EvidenceProcessor from "$lib/components/evidence/EvidenceProcessor.svelte";
+  import EnhancedFileUpload from "$lib/components/upload/EnhancedFileUpload.svelte";
 
   // Import system integration components
   import SystemHealthDashboard from "$lib/components/dashboard/SystemHealthDashboard.svelte";
@@ -15,12 +17,13 @@
   import AIRecommendations from "$lib/components/ai/AIRecommendations.svelte";
   import RealTimeMetrics from "$lib/components/dashboard/RealTimeMetrics.svelte";
 
-  // Import the comprehensive AI system
+  // Import the ENHANCED AI system stores
   import { createAISystemStore } from '$lib/stores/ai-system-store';
   import { createWebSocketStore } from '$lib/stores/websocket-store';
+  import { aiChatStore } from '$lib/stores/ai-chat-store-enhanced';
 
-  // State management with Svelte 5 runes
-  let activeTab = $state<"dashboard" | "chat" | "analysis" | "search" | "monitor">("dashboard");
+  // State management with Svelte 5 runes (Enhanced for Evidence Processing)
+  let activeTab = $state<"dashboard" | "chat" | "analysis" | "search" | "monitor" | "evidence">("dashboard");
   let systemHealth = $state<any>({});
   let performanceMetrics = $state<any>({});
   let aiRecommendations = $state<any[]>([]);
@@ -202,6 +205,7 @@
               { id: "chat", label: "AI Chat", icon: "🤖" },
               { id: "analysis", label: "Analysis", icon: "📄" },
               { id: "search", label: "Search", icon: "🔍" },
+              { id: "evidence", label: "Evidence", icon: "📋" },
               { id: "monitor", label: "Monitor", icon: "⚡" }
             ] as tab}
               <button
@@ -309,17 +313,20 @@
 
       {:else if activeTab === "chat"}
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <!-- Main Chat Interface -->
+          <!-- ENHANCED AI Chat Interface with Evidence Context -->
           <div class="lg:col-span-3">
             <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl overflow-hidden">
               <div class="border-b border-slate-700 p-4">
-                <h2 class="text-lg font-semibold text-white">🤖 AI Legal Assistant</h2>
-                <p class="text-sm text-slate-400">Enhanced with multi-model reasoning and context awareness</p>
+                <h2 class="text-lg font-semibold text-white">🤖 Enhanced Legal AI Assistant</h2>
+                <p class="text-sm text-slate-400">Phase 14: Evidence-aware conversations with streaming responses & confidence scoring</p>
               </div>
               <div class="h-96">
-                <LegalChat
-                  systemPrompt="You are an expert legal AI assistant with access to comprehensive legal databases, precedent analysis, and multi-model reasoning capabilities. Provide accurate, professional legal guidance."
+                <EnhancedLegalAIChat
+                  caseId="CASE-2025-001"
+                  systemPrompt="You are an expert legal AI assistant with Phase 14 Evidence Processing capabilities. You have access to comprehensive legal databases, precedent analysis, evidence context, and multi-model reasoning. Provide accurate, professional legal guidance with confidence scoring."
                   on:message={handleChatMessage}
+                  showEvidenceContext={true}
+                  enableStreaming={true}
                 />
               </div>
             </div>
@@ -441,6 +448,44 @@
                   </div>
                 </div>
               {/each}
+            </div>
+          </div>
+        </div>
+
+      {:else if activeTab === "evidence"}
+        <div class="max-w-6xl mx-auto">
+          <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl overflow-hidden">
+            <div class="border-b border-slate-700 p-6">
+              <h2 class="text-2xl font-semibold text-white mb-2">📋 Evidence Processing Center</h2>
+              <p class="text-slate-400">Phase 14 Evidence Processing with chain of custody, metadata extraction, and AI analysis</p>
+            </div>
+            
+            <div class="p-6">
+              <!-- Enhanced File Upload Section -->
+              <div class="mb-8">
+                <h3 class="text-lg font-medium text-white mb-4">📤 Upload Evidence</h3>
+                <EnhancedFileUpload
+                  caseId="CASE-2025-001"
+                  acceptedTypes={['.pdf', '.doc', '.docx', '.txt', '.jpg', '.png', '.tiff']}
+                  maxFileSize={104857600}
+                  on:upload={(event) => console.log('Evidence uploaded:', event.detail)}
+                  on:error={(event) => console.error('Upload error:', event.detail)}
+                  enableMetadataExtraction={true}
+                  enableOCR={true}
+                />
+              </div>
+              
+              <!-- Evidence Processor -->
+              <div class="border-t border-slate-700 pt-6">
+                <h3 class="text-lg font-medium text-white mb-4">⚖️ Evidence Analysis & Processing</h3>
+                <EvidenceProcessor
+                  caseId="CASE-2025-001"
+                  on:evidenceProcessed={(event) => console.log('Evidence processed:', event.detail)}
+                  on:chainOfCustodyUpdated={(event) => console.log('Chain of custody updated:', event.detail)}
+                  enableAIAnalysis={true}
+                  enableSemanticSearch={true}
+                />
+              </div>
             </div>
           </div>
         </div>

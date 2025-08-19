@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { user } from "$lib/stores/user";
   import { Button } from "$lib/components/ui/button";
   import Modal from "$lib/components/ui/Modal.svelte";
@@ -10,10 +10,10 @@
 
   let showModal = false;
 
-  function selectCase(caseId) {
+  function selectCase(caseId: string) {
     user.selectCase(caseId);
     showModal = false;
-  }
+}
 </script>
 
 <Button on:click={() => showModal = true}>Select Case</Button>
@@ -22,8 +22,8 @@
   <div slot="description">
     Choose a case to view its details and evidence.
   </div>
-  
-  <div class="mx-auto px-4 max-w-7xl">
+
+  <div class="container mx-auto px-4">
     {#each cases as caseItem}
       <Button on:click={() => selectCase(caseItem.id)} variant="secondary">
         {caseItem.name}

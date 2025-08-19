@@ -25,13 +25,15 @@ https://svelte.dev/e/js_parse_error -->
 
             
   // Build grid classes dynamically
-  let spanClasses = $derived(responsive );
+  let spanClasses = $derived(
+    responsive
     ? `col-span-1 sm:col-span-${Math.min(colSpan, 2)} md:col-span-${Math.min(colSpan, 4)} lg:col-span-${Math.min(colSpan, 6)} xl:col-span-${colSpan}`
-    : `col-span-${colSpan}`;
+    : `col-span-${colSpan}`
+  );
 
-  let rowSpanClass = $derived(rowSpan > 1 ? `row-span-${rowSpan}` : '';);
-  let colStartClass = $derived(colStart ? `col-start-${colStart}` : '';);
-  let rowStartClass = $derived(rowStart ? `row-start-${rowStart}` : '';);
+  let rowSpanClass = $derived(rowSpan > 1 ? `row-span-${rowSpan}` : '');
+  let colStartClass = $derived(colStart ? `col-start-${colStart}` : '');
+  let rowStartClass = $derived(rowStart ? `row-start-${rowStart}` : '');
 </script>
 
 <div

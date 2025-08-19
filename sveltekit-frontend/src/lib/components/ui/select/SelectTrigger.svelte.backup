@@ -5,11 +5,12 @@
   export let selectedLabel: any;
 </script>
 
-<button use:melt={trigger} class="mx-auto px-4 max-w-7xl">
+<button use:melt={trigger} class="container mx-auto px-4">
   <slot {selectedLabel} />
 </button>
 
 <style>
+  /* @unocss-include */
   .select-trigger {
     display: flex;
     align-items: center;
@@ -19,5 +20,5 @@
     border-radius: 0.375rem;
     background: white;
     min-width: 8rem;
-  }
+}
 </style>

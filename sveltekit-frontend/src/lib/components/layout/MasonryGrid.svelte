@@ -47,7 +47,7 @@ https://svelte.dev/e/js_parse_error -->
   let isInitialized = false;
   
   // Masonry configuration
-  let masonryOptions = $derived({);
+  let masonryOptions = $derived({
     itemSelector,
     columnWidth,
     gutter,
@@ -57,7 +57,7 @@ https://svelte.dev/e/js_parse_error -->
     resize,
     initLayout,
     transitionDuration
-  };
+  });
   
   // Initialize Masonry
   onMount(() => {

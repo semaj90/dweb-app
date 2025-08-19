@@ -3,14 +3,15 @@
   import { createEventDispatcher } from "svelte";
   import { superForm } from "sveltekit-superforms";
 // Corrected UI component import paths
-  import { Textarea } from "$lib/components/ui";
-  import { Button } from "$lib/components/ui/button";
+  import Textarea from "$lib/components/ui/Textarea.svelte";
+  import Button from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import type { Evidence } from "$lib/types/api";
   import { createSelect, melt } from "@melt-ui/svelte";
   
   export let evidence: Evidence | null = null;
+  export let data: any = null;
 
   const dispatch = createEventDispatcher();
 
@@ -29,25 +30,25 @@
         if (form.valid) {
           await invalidateAll();
           dispatch("success");
-        }
+}
       },
-    }
+}
   );
 </script>
 
-<form method="POST" use:enhance class="mx-auto px-4 max-w-7xl">
+<form method="POST" use:enhance class="container mx-auto px-4">
   {#if evidence}
     <input type="hidden" name="id" bind:value={$form.id} />
   {/if}
 
   {#if data?.form?.message}
-    <div class="mx-auto px-4 max-w-7xl">{data.form.message}</div>
+    <div class="container mx-auto px-4">{data.form.message}</div>
   {/if}
 
   <div>
     <Label for_="title">Title</Label>
     <Input id="title" name="title" bind:value={$form.title} required />
-    {#if $errors.title}<span class="mx-auto px-4 max-w-7xl">{$errors.title}</span
+    {#if $errors.title}<span class="container mx-auto px-4">{$errors.title}</span
       >{/if}
   </div>
 
@@ -61,11 +62,11 @@
     <button
       use:melt={$trigger}
       aria-label="Select evidence type"
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
     >
       <span>{$selectedLabel || "Select a type"}</span>
     </button>
-    <div use:melt={$menu} class="mx-auto px-4 max-w-7xl">
+    <div use:melt={$menu} class="container mx-auto px-4">
       <div use:melt={$option({ value: "document", label: "Document" })}>
         Document
       </div>
@@ -75,7 +76,7 @@
       <div use:melt={$option({ value: "other", label: "Other" })}>Other</div>
     </div>
     <input type="hidden" name="type" bind:value={$form.type} />
-    {#if $errors.type}<span class="mx-auto px-4 max-w-7xl">{$errors.type}</span
+    {#if $errors.type}<span class="container mx-auto px-4">{$errors.type}</span
       >{/if}
   </div>
 
@@ -87,17 +88,17 @@
       bind:value={$form.url}
       placeholder="https://example.com/evidence"
     />
-    {#if $errors.url}<span class="mx-auto px-4 max-w-7xl">{$errors.url}</span>{/if}
+    {#if $errors.url}<span class="container mx-auto px-4">{$errors.url}</span>{/if}
   </div>
 
   <div>
     <Label for_="tags">Tags (comma-separated)</Label>
     <Input id="tags" name="tags" bind:value={$form.tags} placeholder="tag1, tag2, tag3" />
-    {#if $errors.tags}<span class="mx-auto px-4 max-w-7xl">{$errors.tags}</span
+    {#if $errors.tags}<span class="container mx-auto px-4">{$errors.tags}</span
       >{/if}
   </div>
 
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <Button type="button" variant="ghost" on:click={() => dispatch("cancel")}
       >Cancel</Button
     >
@@ -112,10 +113,11 @@
 </form>
 
 <style>
+  /* @unocss-include */
   form {
     max-width: 500px;
     margin: 0 auto;
-  }
+}
   .select-trigger {
     display: inline-flex;
     align-items: center;
@@ -127,11 +129,11 @@
     font-size: 1rem;
     min-width: 160px;
     transition: box-shadow 0.2s;
-  }
+}
   .select-trigger:focus {
     outline: none;
     box-shadow: 0 0 0 2px #6366f1;
-  }
+}
   .select-menu {
     position: absolute;
     z-index: 50;
@@ -142,13 +144,13 @@
     margin-top: 0.5rem;
     min-width: 160px;
     padding: 0.5rem 0;
-  }
+}
   .select-menu > div {
     padding: 0.5rem 1rem;
     cursor: pointer;
     transition: background 0.2s;
-  }
+}
   .select-menu > div:hover {
     background: #f3f4f6;
-  }
+}
 </style>

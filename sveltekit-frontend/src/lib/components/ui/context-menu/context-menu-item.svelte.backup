@@ -4,7 +4,6 @@
   interface ContextMenuContext {
     close: () => void;
   }
-  
   export let disabled = false;
   
   const dispatch = createEventDispatcher();
@@ -19,7 +18,7 @@
 </script>
 
 <button
-  class="mx-auto px-4 max-w-7xl"
+  class="container mx-auto px-4"
   class:disabled
   role="menuitem"
   tabindex={disabled ? -1 : 0}
@@ -30,6 +29,7 @@
 </button>
 
 <style>
+  /* @unocss-include */
   .context-menu-item {
     display: flex;
     align-items: center;
@@ -42,19 +42,16 @@
     cursor: pointer;
     transition: background-color 0.15s;
     text-align: left;
-  }
-  
+}
   .context-menu-item:hover:not(.disabled) {
     background-color: #f3f4f6;
-  }
-  
+}
   .context-menu-item:focus {
     outline: 2px solid #3b82f6;
     outline-offset: -2px;
-  }
-  
+}
   .context-menu-item.disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
+}
 </style>

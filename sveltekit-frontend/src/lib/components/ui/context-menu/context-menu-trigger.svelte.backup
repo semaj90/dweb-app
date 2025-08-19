@@ -4,8 +4,7 @@
   
   interface BuilderAction {
     action: (node: HTMLElement) => void;
-  }
-  
+}
   export let asChild = false;
   
   const { open } = getContext<{
@@ -18,17 +17,16 @@
   function handleContextMenu(event: MouseEvent) {
     event.preventDefault();
     open(event.clientX, event.clientY);
-  }
-  
+}
   const builder: BuilderAction = {
     action: (node: HTMLElement) => {
       node.addEventListener('contextmenu', handleContextMenu);
       return {
         destroy() {
           node.removeEventListener('contextmenu', handleContextMenu);
-        }
+}
       };
-    }
+}
   };
 </script>
 

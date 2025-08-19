@@ -4,7 +4,7 @@
   import { createEventDispatcher } from "svelte";
   import { quadOut } from "svelte/easing";
   import { fade, fly } from "svelte/transition";
-  import { cn } from "../../../../lib/utils";
+  import { cn } from '$lib/utils';
 
   const dispatch = createEventDispatcher();
 
@@ -44,8 +44,8 @@
 <!-- Overlay -->
 {#if open}
   <div
-    class="mx-auto px-4 max-w-7xl"
-    transition:fade={{ duration: 200, easing: quadOut "
+    class="container mx-auto px-4"
+    transition:fade={{ duration: 200, easing: quadOut }}
     on:click={handleOutsideClick}
     on:keydown={handleKeydown}
     role="dialog"
@@ -61,7 +61,7 @@
       "fixed left-1/2 top-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 border border-slate-200 bg-white p-6 shadow-lg duration-200 dark:border-slate-800 dark:bg-slate-950 sm:rounded-lg",
       sizeClasses[size]
     )}
-    transition:fly={{ y: -20, duration: 200, easing: quadOut "
+    transition:fly={{ y: -20, duration: 200, easing: quadOut }}
     role="dialog"
     tabindex={0}
     aria-modal="true"
@@ -69,11 +69,11 @@
     aria-describedby={description ? "dialog-description" : undefined}
   >
     <!-- Header -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       {#if title}
         <h2
           id="dialog-title"
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         >
           {title}
         </h2>
@@ -82,7 +82,7 @@
       {#if description}
         <p
           id="dialog-description"
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         >
           {description}
         </p>
@@ -92,22 +92,22 @@
     <!-- Close button -->
     {#if showClose}
       <button
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
         on:click={() => handleClose()}
         aria-label="Close dialog"
       >
-        <X class="mx-auto px-4 max-w-7xl" />
-        <span class="mx-auto px-4 max-w-7xl">Close</span>
+        <X class="container mx-auto px-4" />
+        <span class="container mx-auto px-4">Close</span>
       </button>
     {/if}
 
     <!-- Content slot -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <slot />
     </div>
 
     <!-- Footer slot -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <slot name="footer" {close} />
     </div>
   </div>

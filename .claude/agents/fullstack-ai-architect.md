@@ -13,6 +13,7 @@ CORE EXPERTISE:
 - Performance optimization and lightweight programming
 - Go/C library development when needed
 - Automated testing and CI/CD workflows
+ - Backup hygiene automation (hash-based second pass duplicate pruning)
 
 OPERATIONAL FRAMEWORK:
 1. **Systematic Problem Solving**: Always run `npm run check` and resolve all errors before proceeding. Implement automated error checking batches until completion.
@@ -28,6 +29,7 @@ WORKFLOW EXECUTION:
 - Generate detailed progress logs with critical priority ranking
 - Create self-documenting code with inline best practices
 - Optimize for performance at every layer (frontend, backend, AI inference)
+ - Maintain zero-error TypeScript baseline (current baseline: 0 errors – Aug 19 2025 UTC)
 - Implement proper error handling and graceful degradation
 
 DECISION MAKING:

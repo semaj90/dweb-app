@@ -1,15 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    formData: {;
-  }
-  let {
-    formData
-  }: Props = $props();
-
-
-
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -18,7 +7,8 @@ https://svelte.dev/e/js_parse_error -->
 
   const dispatch = createEventDispatcher();
 
-      uploaded_files: File[];
+  export let formData: {
+    uploaded_files: File[];
     ocr_results: OCRResult[];
     processing_status: 'pending' | 'processing' | 'completed' | 'error';
   };

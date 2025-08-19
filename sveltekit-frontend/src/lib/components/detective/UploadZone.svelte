@@ -3,16 +3,12 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     onupload?: (event?: any) => void;
+    minimal?: boolean;
   }
   let {
-    minimal = false
+    minimal = false,
+    onupload
   }: Props = $props();
-
-
-
-    
-    
-  let { minimal = $bindable() } = $props(); // false; // New prop for minimal canvas mode
   
   let isDragOver = false;
   let isUploading = false;

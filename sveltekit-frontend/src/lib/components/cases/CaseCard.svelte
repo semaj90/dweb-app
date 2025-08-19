@@ -1,6 +1,7 @@
 
 
 <script lang="ts">
+  import type { Props } from "$lib/types/global";
   import { createContextMenu, melt } from '@melt-ui/svelte'
   import { fly, scale } from 'svelte/transition'
 import {
@@ -17,40 +18,14 @@ import {
     CheckCircle
   } from 'lucide-svelte'
 
-
-
-
-
-
-
   interface CaseData {
-    id: string
-    title: string
-    description?: string
-    status: 'active' | 'pending' | 'closed' | 'archived'
-    priority: 'critical' | 'high' | 'medium' | 'low'
-    created: Date | string
-    updated?: Date | string
-    assignee?: {
-      name: string
-      avatar?: string
-    }
-    stats: {
-      evidence: number
-      witnesses: number
-      documents: number
-    }
-    tags?: string[]
-    progress?: number
+    id: string;
+    status: keyof typeof statusConfig;
+    priority: keyof typeof priorityConfig;
+    title?: string;
+    updatedAt?: string | Date;
   }
 
-  interface Props {
-    case: CaseData
-    onView?: (id: string) => void
-    onEdit?: (id: string) => void
-    onArchive?: (id: string) => void
-    onDelete?: (id: string) => void
-  }
 
   let {
     case: caseData,
@@ -374,3 +349,4 @@ import {
     overflow: hidden;
   }
 </style>
+

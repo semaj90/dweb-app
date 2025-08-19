@@ -38,8 +38,7 @@
   let evidenceItems: Array<any> = [];
   function setWorkflowMode(mode: string) {
     if (canvasService) canvasService.send(mode.toUpperCase());
-  }
-
+}
   onMount(async () => {
     if (!browser) return;
     try {
@@ -83,9 +82,9 @@
       if (evidenceItems && evidenceItems.length) {
         for (const item of evidenceItems) {
           await addEvidenceToCanvas(item);
-        }
+}
         fabricCanvas.renderAll();
-      }
+}
       // Save initial state
       saveCanvasState();
     } catch (error) {
@@ -96,7 +95,7 @@
         message:
           "Failed to initialize canvas or workflow state. Some features may not work.",
       });
-    }
+}
   });
 
   onDestroy(() => {
@@ -139,7 +138,7 @@
             selectable: !readonly,
             evented: !readonly,
           });
-        }
+}
       } else {
         // Add as text/document representation
         const text = `${getTypeIcon(item.type)} ${item.title}`;
@@ -157,8 +156,7 @@
           selectable: !readonly,
           evented: !readonly,
         });
-      }
-
+}
       // Add metadata
       fabricObject.set({
         evidenceId: item.id,
@@ -169,9 +167,7 @@
       fabricCanvas.add(fabricObject);
     } catch (error) {
       console.error("Error adding evidence to canvas:", error);
-    }
-  }
-
+}}
   function getTypeIcon(type: string): string {
     switch (type) {
       case "image":
@@ -184,9 +180,7 @@
         return "🎵";
       default:
         return "📎";
-    }
-  }
-
+}}
   function selectTool(tool: string) {
     selectedTool = tool;
 
@@ -206,9 +200,7 @@
         fabricCanvas.selection = true;
         addTextBox();
         break;
-    }
-  }
-
+}}
   async function addShape(shape: "rectangle" | "circle") {
     if (!fabricCanvas) return;
 
@@ -237,8 +229,7 @@
           stroke: "#10b981",
           strokeWidth: 2,
         });
-      }
-
+}
       fabricObject.set({
         customType: "shape",
       });
@@ -248,9 +239,7 @@
       saveCanvasState();
     } catch (error) {
       console.error("Error adding shape:", error);
-    }
-  }
-
+}}
   async function addTextBox() {
     if (!fabricCanvas) return;
 
@@ -278,23 +267,18 @@
       saveCanvasState();
     } catch (error) {
       console.error("Error adding text:", error);
-    }
-  }
-
+}}
   let currentPath: any = null;
 
   function startDrawing(pointer: { x: number; y: number }) {
     // Drawing implementation
-  }
-
+}
   function continueDrawing(pointer: { x: number; y: number }) {
     // Continue drawing implementation
-  }
-
+}
   function finishDrawing() {
     saveCanvasState();
-  }
-
+}
   function saveCanvasState() {
     if (!fabricCanvas) return;
 
@@ -305,8 +289,7 @@
     // Manage history
     if (historyIndex < canvasHistory.length - 1) {
       canvasHistory = canvasHistory.slice(0, historyIndex + 1);
-    }
-
+}
     canvasHistory.push(state);
     historyIndex++;
 
@@ -314,23 +297,17 @@
     if (canvasHistory.length > 50) {
       canvasHistory = canvasHistory.slice(1);
       historyIndex--;
-    }
-  }
-
+}}
   function undo() {
     if (historyIndex > 0) {
       historyIndex--;
       loadCanvasState(canvasHistory[historyIndex]);
-    }
-  }
-
+}}
   function redo() {
     if (historyIndex < canvasHistory.length - 1) {
       historyIndex++;
       loadCanvasState(canvasHistory[historyIndex]);
-    }
-  }
-
+}}
   async function loadCanvasState(state: string) {
     if (!fabricCanvas) return;
 
@@ -341,9 +318,7 @@
       });
     } catch (error) {
       console.error("Error loading canvas state:", error);
-    }
-  }
-
+}}
   function updateEvidencePositions() {
     if (!fabricCanvas) return;
 
@@ -355,29 +330,25 @@
           evidenceId: obj.evidenceId,
           position: { x: obj.left, y: obj.top },
         });
-      }
+}
     });
-  }
-
+}
   function zoomIn() {
     if (!fabricCanvas) return;
     zoom = Math.min(zoom * 1.2, 3);
     fabricCanvas.setZoom(zoom);
-  }
-
+}
   function zoomOut() {
     if (!fabricCanvas) return;
     zoom = Math.max(zoom / 1.2, 0.1);
     fabricCanvas.setZoom(zoom);
-  }
-
+}
   function resetZoom() {
     if (!fabricCanvas) return;
     zoom = 1;
     fabricCanvas.setZoom(1);
     fabricCanvas.viewportTransform = [1, 0, 0, 1, 0, 0];
-  }
-
+}
   function deleteSelected() {
     if (!fabricCanvas || readonly) return;
 
@@ -388,9 +359,7 @@
       });
       fabricCanvas.discardActiveObject();
       saveCanvasState();
-    }
-  }
-
+}}
   async function saveCanvas() {
     if (!fabricCanvas) return;
 
@@ -423,7 +392,7 @@
       });
       if (!response.ok) {
         throw new Error("Failed to save canvas");
-      }
+}
       notifications.add({
         type: "success",
         title: "Canvas Saved",
@@ -435,10 +404,9 @@
         title: "Save Failed",
         message: "Failed to save evidence board.",
       });
-    }
+}
     dispatch("save", { canvasData, positions });
-  }
-
+}
   async function exportCanvas() {
     if (!fabricCanvas) return;
 
@@ -467,9 +435,7 @@
         title: "Export Failed",
         message: "Failed to export evidence board.",
       });
-    }
-  }
-
+}}
   function clearCanvas() {
     if (!fabricCanvas || readonly) return;
 
@@ -477,19 +443,18 @@
       fabricCanvas.clear();
       fabricCanvas.backgroundColor = "#f8fafc";
       saveCanvasState();
-    }
-  }
+}}
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
   <!-- Toolbar -->
   <div
-    class="mx-auto px-4 max-w-7xl"
+    class="container mx-auto px-4"
   >
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <!-- Tool Selection -->
       <div
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
       >
         <Button
           variant={selectedTool === "select" ? "primary" : "outline"}
@@ -497,7 +462,7 @@
           on:click={() => selectTool("select")}
           disabled={readonly}
         >
-          <Move class="mx-auto px-4 max-w-7xl" />
+          <Move class="container mx-auto px-4" />
         </Button>
         <Button
           variant={selectedTool === "draw" ? "primary" : "outline"}
@@ -513,35 +478,35 @@
           on:click={() => selectTool("text")}
           disabled={readonly}
         >
-          <Type class="mx-auto px-4 max-w-7xl" />
+          <Type class="container mx-auto px-4" />
         </Button>
       </div>
 
       <!-- Shapes -->
       {#if !readonly}
         <div
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         >
           <Button
             variant="outline"
             size="sm"
             on:click={() => addShape("rectangle")}
           >
-            <Square class="mx-auto px-4 max-w-7xl" />
+            <Square class="container mx-auto px-4" />
           </Button>
           <Button
             variant="outline"
             size="sm"
             on:click={() => addShape("circle")}
           >
-            <Circle class="mx-auto px-4 max-w-7xl" />
+            <Circle class="container mx-auto px-4" />
           </Button>
         </div>
       {/if}
 
       <!-- History -->
       <div
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
       >
         <Button
           variant="outline"
@@ -549,7 +514,7 @@
           on:click={() => undo()}
           disabled={readonly || historyIndex <= 0}
         >
-          <Undo class="mx-auto px-4 max-w-7xl" />
+          <Undo class="container mx-auto px-4" />
         </Button>
         <Button
           variant="outline"
@@ -557,20 +522,20 @@
           on:click={() => redo()}
           disabled={readonly || historyIndex >= canvasHistory.length - 1}
         >
-          <Redo class="mx-auto px-4 max-w-7xl" />
+          <Redo class="container mx-auto px-4" />
         </Button>
       </div>
 
       <!-- Zoom -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <Button variant="outline" size="sm" on:click={() => zoomOut()}>
-          <ZoomOut class="mx-auto px-4 max-w-7xl" />
+          <ZoomOut class="container mx-auto px-4" />
         </Button>
-        <span class="mx-auto px-4 max-w-7xl"
+        <span class="container mx-auto px-4"
           >{Math.round(zoom * 100)}%</span
         >
         <Button variant="outline" size="sm" on:click={() => zoomIn()}>
-          <ZoomIn class="mx-auto px-4 max-w-7xl" />
+          <ZoomIn class="container mx-auto px-4" />
         </Button>
         <Button variant="outline" size="sm" on:click={() => resetZoom()}
           >Reset</Button
@@ -579,39 +544,39 @@
     </div>
 
     <!-- Actions -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       {#if !readonly}
         <Button variant="outline" size="sm" on:click={() => deleteSelected()}>
-          <Trash2 class="mx-auto px-4 max-w-7xl" />
+          <Trash2 class="container mx-auto px-4" />
         </Button>
         <Button variant="outline" size="sm" on:click={() => saveCanvas()}>
-          <Save class="mx-auto px-4 max-w-7xl" />
+          <Save class="container mx-auto px-4" />
           Save
         </Button>
       {/if}
       <Button variant="outline" size="sm" on:click={() => exportCanvas()}>
-        <Download class="mx-auto px-4 max-w-7xl" />
+        <Download class="container mx-auto px-4" />
         Export
       </Button>
     </div>
   </div>
 
   <!-- Canvas Container -->
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <div
       bind:this={canvasContainer}
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
     ></div>
 
     {#if !fabricLoaded}
       <div
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
       >
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <div
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           ></div>
-          <p class="mx-auto px-4 max-w-7xl">Loading canvas...</p>
+          <p class="container mx-auto px-4">Loading canvas...</p>
         </div>
       </div>
     {/if}
@@ -620,11 +585,11 @@
   <!-- Instructions -->
   {#if fabricLoaded && evidenceItems.length === 0}
     <div
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
     >
-      <Image class="mx-auto px-4 max-w-7xl" />
-      <p class="mx-auto px-4 max-w-7xl">Evidence Board</p>
-      <p class="mx-auto px-4 max-w-7xl">
+      <Image class="container mx-auto px-4" />
+      <p class="container mx-auto px-4">Evidence Board</p>
+      <p class="container mx-auto px-4">
         Add evidence items to start building your case visualization
       </p>
     </div>
@@ -632,17 +597,5 @@
 </div>
 
 <style>
-  .evidence-canvas-container {
-    position: relative;
-    user-select: none;
-  }
-
-  .toolbar {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  }
-
-  .canvas-area {
-    background: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
+  /* @unocss-include */
 </style>

@@ -1,13 +1,26 @@
 <script lang="ts">
+  import type { User } from '$lib/types';
   import { onMount, createEventDispatcher } from 'svelte';
-  import { Search, File, Briefcase, User, Settings, Command } from 'lucide-svelte';
+  import { Search, File, Briefcase, User as UserIcon, Settings, Command } from "lucide-svelte";
   import { cn } from '$lib/utils';
   
   export let open = false;
   
+  // Define the command item type
+  interface CommandItem {
+    id: string;
+    title: string;
+    description: string;
+    icon: any;
+    category: string;
+    href?: string;
+    shortcut?: string[];
+    action?: () => void;
+  }
+  
   const dispatch = createEventDispatcher<{
     close: void;
-    select: { item: any };
+    select: { item: CommandItem };
   }>();
   
   let searchInput: HTMLInputElement;
@@ -21,7 +34,7 @@
       )
     : allItems;
   
-  const allItems = [
+  const allItems: CommandItem[] = [
     // Navigation
     {
       id: 'nav-dashboard',
@@ -76,7 +89,7 @@
       id: 'settings-profile',
       title: 'Profile Settings',
       description: 'Manage your user profile',
-      icon: User,
+      icon: UserIcon,
       category: 'Settings',
       href: '/profile'
     },
@@ -87,19 +100,18 @@
       icon: Settings,
       category: 'Settings',
       href: '/settings'
-    }
+}
   ];
   
   onMount(() => {
     if (open && searchInput) {
       searchInput.focus();
-    }
+}
   });
   
   $: if (open && searchInput) {
     searchInput.focus();
-  }
-  
+}
   function handleKeydown(e: KeyboardEvent) {
     if (!open) return;
     
@@ -120,11 +132,10 @@
         e.preventDefault();
         if (filteredItems[selectedIndex]) {
           selectItem(filteredItems[selectedIndex]);
-        }
+}
         break;
-    }
-  }
-  
+}
+}
   function selectItem(item: any) {
     dispatch('select', { item });
     
@@ -132,19 +143,16 @@
       window.location.href = item.href;
     } else if (item.action) {
       item.action();
-    }
-    
+}
     close();
-  }
-  
+}
   function close() {
     open = false;
     dispatch('close');
-  }
-  
+}
   $: if (filteredItems.length > 0 && selectedIndex >= filteredItems.length) {
     selectedIndex = 0;
-  }
+}
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -190,12 +198,13 @@
         <div class="max-h-96 overflow-y-auto">
           {#if filteredItems.length > 0}
             {#each Object.entries(
-              filteredItems.reduce((acc, item) => {
+              filteredItems.reduce((acc: Record<string, CommandItem[]>, item) => {
                 if (!acc[item.category]) acc[item.category] = [];
                 acc[item.category].push(item);
                 return acc;
               }, {})
-            ) as [category, items], categoryIndex}
+            ) as entry, categoryIndex}
+              {@const [category, items] = entry as [string, CommandItem[]]}
               
               <div class="px-2 py-2">
                 <h3 class="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
@@ -291,11 +300,11 @@
 {/if}
 
 <style>
+  /* @unocss-include */
   .nier-border-glow {
     position: relative;
     box-shadow: 0 0 30px rgba(165, 28, 48, 0.3);
-  }
-  
+}
   .nier-border-glow::before {
     content: '';
     position: absolute;
@@ -306,5 +315,5 @@
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
     opacity: 0.4;
-  }
+}
 </style>

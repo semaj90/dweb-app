@@ -1,0 +1,109 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Docs: Open MQ placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "message-queue/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open Windows Service placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "windows-service/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open WebGPU placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "webgpu/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open XState placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "xstate/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open MCP Context7 Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "MCP_CONTEXT7_BEST_PRACTICES.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open Context7 Integration Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "best-practices/context7-integration-best-practices.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open MCP Extension README",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        ".vscode/extensions/mcp-context7-assistant/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "📊 Generate Context7 Best Practices",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"Write-Host '📊 Generating Context7 best practices from complete documentation...' -ForegroundColor Cyan; Write-Host '🎯 Sources: MCP servers, context7-docs, copilot.md' -ForegroundColor Green\"",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Generate Context7 best practices using complete MCP and documentation ecosystem"
+    }
+  ]
+}

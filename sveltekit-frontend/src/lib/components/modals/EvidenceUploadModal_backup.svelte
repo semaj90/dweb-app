@@ -3,7 +3,7 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { uploadActions, uploadModal } from "$lib/stores/evidence-store";
 
-  let isOpen = $derived($uploadModal.isOpen;);
+  let isOpen = $derived($uploadModal.isOpen);
 
   function closeModal() {
     uploadActions.closeModal();

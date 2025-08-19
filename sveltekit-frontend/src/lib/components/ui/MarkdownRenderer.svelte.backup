@@ -2,11 +2,21 @@
   import { marked } from "marked";
   import { onMount } from "svelte";
 
-  export let markdown: string = "";
-  export let className: string = "";
-  export let unsafe: boolean = false; // Allow raw HTML in markdown
-  export let baseUrl: string = "";
-  export let breaks: boolean = true; // Convert \n to <br>
+  interface Props {
+    markdown?: string;
+    className?: string;
+    unsafe?: boolean; // Allow raw HTML in markdown
+    baseUrl?: string;
+    breaks?: boolean; // Convert \n to <br>
+  }
+
+  let {
+    markdown = "",
+    className = "",
+    unsafe = false,
+    baseUrl = "",
+    breaks = true
+  }: Props = $props();
 
   let renderedHtml: string = "";
   let isClient = false;
@@ -32,8 +42,7 @@
     if (!markdown) {
       renderedHtml = "";
       return;
-    }
-
+}
     try {
       // Configure marked with our options
       marked.setOptions(markedOptions);
@@ -42,7 +51,7 @@
       const renderer = new marked.Renderer();
 
       // Customize link rendering for security
-      renderer.link = ({ href, title, tokens }) => {
+      renderer.link = ({ href, title, tokens }: { href: string; title?: string; tokens?: any[] }) => {
         const titleAttr = title ? ` title="${title}"` : "";
         const target = href.startsWith("http")
           ? ' target="_blank" rel="noopener noreferrer"'
@@ -61,12 +70,12 @@
       renderer.image = ({ href, title, text }) => {
         const titleAttr = title ? ` title="${title}"` : "";
         const altAttr = text ? ` alt="${text}"` : "";
-        return `<img src="${href}"${titleAttr}${altAttr} class="mx-auto px-4 max-w-7xl" loading="lazy" />`;
+        return `<img src="${href}"${titleAttr}${altAttr} class="container mx-auto px-4" loading="lazy" />`;
       };
 
       // Customize code block rendering
       renderer.code = ({ text, lang }) => {
-        const langClass = lang ? ` class="mx-auto px-4 max-w-7xl"` : "";
+        const langClass = lang ? ` class="container mx-auto px-4"` : "";
         return `<pre><code${langClass}>${text}</code></pre>`;
       };
 
@@ -75,18 +84,18 @@
       renderedHtml = await marked.parse(markdown);
     } catch (error) {
       console.error("Error rendering markdown:", error);
-      renderedHtml = `<p class="mx-auto px-4 max-w-7xl">Error rendering markdown: ${error instanceof Error ? error.message : "Unknown error"}</p>`;
+      renderedHtml = `<p class="container mx-auto px-4">Error rendering markdown: ${error instanceof Error ? error.message : "Unknown error"}</p>`;
+}}
+  // Re-render when markdown changes using $effect
+  $effect(() => {
+    if (isClient && markdown) {
+      renderMarkdown();
     }
-  }
-
-  // Re-render when markdown changes
-  $: if (isClient && markdown) {
-    renderMarkdown();
-  }
+  });
 </script>
 
 <div
-  class="mx-auto px-4 max-w-7xl"
+  class="container mx-auto px-4"
   class:prose-sm={className.includes("prose-sm")}
   class:prose-lg={className.includes("prose-lg")}
   class:prose-xl={className.includes("prose-xl")}
@@ -95,25 +104,24 @@
     {@html renderedHtml}
   {:else if markdown}
     <!-- Fallback for SSR or if rendering fails -->
-    <div class="mx-auto px-4 max-w-7xl">{markdown}</div>
+    <div class="container mx-auto px-4">{markdown}</div>
   {:else}
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       No content to display
     </div>
   {/if}
 </div>
 
 <style>
+  /* @unocss-include */
   /* Enhanced prose styles for legal documents */
   :global(.prose) {
     color: #111827;
     max-width: none;
-  }
-
+}
   :global(.dark .prose) {
     color: #f3f4f6;
-  }
-
+}
   /* Headings */
   :global(.prose h1) {
     color: #111827;
@@ -122,12 +130,10 @@
     line-height: 1.2;
     margin-top: 0;
     margin-bottom: 1rem;
-  }
-
+}
   :global(.dark .prose h1) {
     color: #f3f4f6;
-  }
-
+}
   :global(.prose h2) {
     color: #111827;
     font-weight: 600;
@@ -135,12 +141,10 @@
     line-height: 1.3;
     margin-top: 2rem;
     margin-bottom: 1rem;
-  }
-
+}
   :global(.dark .prose h2) {
     color: #f3f4f6;
-  }
-
+}
   :global(.prose h3) {
     color: #111827;
     font-weight: 600;
@@ -148,34 +152,28 @@
     line-height: 1.4;
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
-  }
-
+}
   :global(.dark .prose h3) {
     color: #f3f4f6;
-  }
-
+}
   /* Paragraphs */
   :global(.prose p) {
     margin-top: 0;
     margin-bottom: 1rem;
     line-height: 1.6;
-  }
-
+}
   /* Lists */
   :global(.prose ul, .prose ol) {
     margin-top: 0;
     margin-bottom: 1rem;
     padding-left: 1.5rem;
-  }
-
+}
   :global(.prose li) {
     margin: 0.25rem 0;
-  }
-
+}
   :global(.prose li > p) {
     margin: 0;
-  }
-
+}
   /* Code */
   :global(.prose code) {
     color: #db2777;
@@ -183,57 +181,47 @@
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
     font-size: 0.875em;
-  }
-
+}
   :global(.dark .prose code) {
     color: #f472b6;
     background-color: #1f2937;
-  }
-
+}
   :global(.prose pre) {
     background-color: #f3f4f6;
     border-radius: 0.5rem;
     padding: 1rem;
     overflow-x: auto;
     margin: 1rem 0;
-  }
-
+}
   :global(.dark .prose pre) {
     background-color: #1f2937;
-  }
-
+}
   :global(.prose pre code) {
     background-color: transparent;
     padding: 0;
     color: inherit;
-  }
-
+}
   /* Tables */
   :global(.prose table) {
     width: 100%;
     border-collapse: collapse;
     margin: 1rem 0;
-  }
-
+}
   :global(.prose th, .prose td) {
     border: 1px solid #d1d5db;
     padding: 0.5rem;
     text-align: left;
-  }
-
+}
   :global(.dark .prose th, .dark .prose td) {
     border-color: #4b5563;
-  }
-
+}
   :global(.prose th) {
     background-color: #f3f4f6;
     font-weight: 600;
-  }
-
+}
   :global(.dark .prose th) {
     background-color: #1f2937;
-  }
-
+}
   /* Blockquotes */
   :global(.prose blockquote) {
     border-left: 4px solid #3b82f6;
@@ -241,45 +229,37 @@
     margin: 1rem 0;
     font-style: italic;
     color: #4b5563;
-  }
-
+}
   :global(.dark .prose blockquote) {
     border-left-color: #60a5fa;
     color: #9ca3af;
-  }
-
+}
   /* Links */
   :global(.prose a) {
     color: #2563eb;
     text-decoration: underline;
-  }
-
+}
   :global(.prose a:hover) {
     color: #1d4ed8;
-  }
-
+}
   :global(.dark .prose a) {
     color: #60a5fa;
-  }
-
+}
   :global(.dark .prose a:hover) {
     color: #93c5fd;
-  }
-
+}
   /* Images */
   :global(.prose img) {
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  }
-
+}
   /* Horizontal rules */
   :global(.prose hr) {
     border: none;
     border-top: 1px solid #d1d5db;
     margin: 2rem 0;
-  }
-
+}
   :global(.dark .prose hr) {
     border-top-color: #4b5563;
-  }
+}
 </style>

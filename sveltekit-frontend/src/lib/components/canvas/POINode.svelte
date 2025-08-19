@@ -1,22 +1,10 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    onupdate?: (event?: any) => void;
-    onupdatePosition?: (event?: any) => void;
-    ondelete?: (event?: any) => void;
-  }
-  let {
-    poi
-  }: Props = $props();
-
-
-
-    import { draggable } from '$lib/actions/draggable';
+  import { createEventDispatcher } from "svelte";
+  import { draggable } from '$lib/actions/draggable';
   import { aiService } from '$lib/services/aiService';
 // UI Components
   import Badge from "$lib/components/ui/Badge.svelte";
-import { Card } from "$lib/components/ui/card";
+import Card from "$lib/components/ui/Card.svelte";
 import CardContent from "$lib/components/ui/CardContent.svelte";
 import CardFooter from "$lib/components/ui/CardFooter.svelte";
 import CardHeader from "$lib/components/ui/CardHeader.svelte";
@@ -28,6 +16,7 @@ import Input from "$lib/components/ui/Input.svelte";
   // Icons
   import { Edit, Save, Sparkles, Tag, User as UserIcon, X } from "lucide-svelte";
 
+  const dispatch = createEventDispatcher();
 
   // Simple POI interface for the component
   interface POIData {
@@ -50,6 +39,7 @@ import Input from "$lib/components/ui/Input.svelte";
     tags?: string[];
     createdBy?: string;
 }
+  export let poi: POIData;
 
   let nodeElement: HTMLElement;
   let isEditing = false;
@@ -69,7 +59,7 @@ import Input from "$lib/components/ui/Input.svelte";
   let tags: string[] = poi.tags || [];
 
   // Update component state when poi changes
-  $effect(() => { {
+  $: {
     name = poi.name || "";
     aliases = poi.aliases || [];
     profileData = poi.profileData || { who: "", what: "", why: "", how: "" };
@@ -132,7 +122,7 @@ import Input from "$lib/components/ui/Input.svelte";
     profileData = updatedPoi.profileData;
 
     // Dispatch update event
-    onupdate?.();
+    dispatch("update", updatedPoi);
 
     isEditing = false;
 }
@@ -189,7 +179,7 @@ import Input from "$lib/components/ui/Input.svelte";
     posY = event.detail.y;
 
     // Dispatch position update event
-    onupdatePosition?.();
+    dispatch("updatePosition", { id: poi.id, x: posX, y: posY });
 }
 </script>
 
@@ -197,19 +187,20 @@ import Input from "$lib/components/ui/Input.svelte";
   <ContextMenu.Trigger asChild={false}>
     <div
       bind:this={nodeElement}
-      class="space-y-4"
+      class="container mx-auto px-4"
       style="left: {posX}px; top: {posY}px; z-index: 10;"
       use:draggable={{
         onDrag: (x, y) => {
           posX = x;
           posY = y;
-          onupdatePosition?.();
-        },
+          dispatch("updatePosition", { id: poi.id, x: posX, y: posY });
+        }
       }}
-      oncontextmenu={handleContextMenu}
+      on:contextmenu={handleContextMenu}
       role="menu"
       tabindex={0}
-      aria-label="POI context menu">
+      aria-label="POI context menu"
+    >
       <!-- Card usage fix: replace Card.Root, Card.Header, etc. with Card, CardHeader, CardContent, CardFooter -->
       <div class="nier-card nier-shadow nier-border nier-bg p-4 rounded-xl max-w-md min-w-[320px]">
         <div class="nier-header flex items-center gap-2 mb-2">
@@ -218,7 +209,8 @@ import Input from "$lib/components/ui/Input.svelte";
             <input
               class="nier-input text-lg font-bold bg-transparent border-b border-gray-400 focus:border-nier-accent outline-none w-full"
               bind:value={formData.name}
-              placeholder="Person name" />
+              placeholder="Person name"
+            />
           {:else}
             <h3 class="nier-title text-lg font-bold">{name}</h3>
           {/if}
@@ -228,7 +220,7 @@ import Input from "$lib/components/ui/Input.svelte";
           <span class="nier-badge nier-badge-secondary">{status.toUpperCase()}</span>
         </div>
         {#if aliases.length > 0 && !isEditing}
-          <div class="nier-alias text-xs text-gray-400 mb-1">AKA: {aliases.join(', ')}</div>
+          <div class="nier-alias text-xs text-gray-400 mb-1">AKA: {aliases.join(", ")}</div>
         {/if}
         {#if relationship && !isEditing}
           <span class="nier-badge nier-badge-secondary">{relationship}</span>
@@ -242,14 +234,12 @@ import Input from "$lib/components/ui/Input.svelte";
                   id="aliases"
                   class="nier-input w-full"
                   bind:value={formData.aliases}
-                  placeholder="Comma-separated aliases" />
+                  placeholder="Comma-separated aliases"
+                />
               </div>
               <div>
                 <label for="relationship" class="nier-label">Relationship</label>
-                <select
-                  id="relationship"
-                  class="nier-input w-full"
-                  bind:value={formData.relationship}>
+                <select id="relationship" class="nier-input w-full" bind:value={formData.relationship}>
                   <option value="">Select relationship</option>
                   <option value="suspect">Suspect</option>
                   <option value="witness">Witness</option>
@@ -262,10 +252,7 @@ import Input from "$lib/components/ui/Input.svelte";
               <div class="flex gap-2">
                 <div class="flex-1">
                   <label for="threatLevel" class="nier-label">Threat Level</label>
-                  <select
-                    id="threatLevel"
-                    class="nier-input w-full"
-                    bind:value={formData.threatLevel}>
+                  <select id="threatLevel" class="nier-input w-full" bind:value={formData.threatLevel}>
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
@@ -283,47 +270,23 @@ import Input from "$lib/components/ui/Input.svelte";
               </div>
               <div>
                 <label for="who" class="nier-label">Who?</label>
-                <textarea
-                  id="who"
-                  class="nier-input w-full"
-                  rows="2"
-                  bind:value={formData.profileData.who}
-                  placeholder="Background, identity, biography..."></textarea>
+                <textarea id="who" class="nier-input w-full" rows="2" bind:value={formData.profileData.who} placeholder="Background, identity, biography..."></textarea>
               </div>
               <div>
                 <label for="what" class="nier-label">What?</label>
-                <textarea
-                  id="what"
-                  class="nier-input w-full"
-                  rows="2"
-                  bind:value={formData.profileData.what}
-                  placeholder="Known actions, involvement, evidence..."></textarea>
+                <textarea id="what" class="nier-input w-full" rows="2" bind:value={formData.profileData.what} placeholder="Known actions, involvement, evidence..."></textarea>
               </div>
               <div>
                 <label for="why" class="nier-label">Why?</label>
-                <textarea
-                  id="why"
-                  class="nier-input w-full"
-                  rows="2"
-                  bind:value={formData.profileData.why}
-                  placeholder="Motivations, connections, reasons..."></textarea>
+                <textarea id="why" class="nier-input w-full" rows="2" bind:value={formData.profileData.why} placeholder="Motivations, connections, reasons..."></textarea>
               </div>
               <div>
                 <label for="how" class="nier-label">How?</label>
-                <textarea
-                  id="how"
-                  class="nier-input w-full"
-                  rows="2"
-                  bind:value={formData.profileData.how}
-                  placeholder="Methods, capabilities, resources..."></textarea>
+                <textarea id="how" class="nier-input w-full" rows="2" bind:value={formData.profileData.how} placeholder="Methods, capabilities, resources..."></textarea>
               </div>
               <div>
                 <label for="tags" class="nier-label">Tags</label>
-                <input
-                  id="tags"
-                  class="nier-input w-full"
-                  bind:value={formData.tags}
-                  placeholder="Comma-separated tags" />
+                <input id="tags" class="nier-input w-full" bind:value={formData.tags} placeholder="Comma-separated tags" />
               </div>
             </div>
           {:else}
@@ -343,8 +306,7 @@ import Input from "$lib/components/ui/Input.svelte";
               {#if tags.length > 0}
                 <div class="flex flex-wrap gap-1 mt-2">
                   {#each tags as tag}
-                    <span class="nier-badge nier-badge-secondary flex items-center gap-1"
-                      ><Tag class="w-3 h-3" /> {tag}</span>
+                    <span class="nier-badge nier-badge-secondary flex items-center gap-1"><Tag class="w-3 h-3" /> {tag}</span>
                   {/each}
                 </div>
               {/if}
@@ -353,157 +315,157 @@ import Input from "$lib/components/ui/Input.svelte";
         </div>
         <div class="nier-footer flex justify-between items-center mt-4 gap-2">
           {#if isEditing}
-            <button class="nier-btn nier-btn-accent" onclick={() => saveChanges()}
-              ><Save class="w-4 h-4" /> Save</button>
-            <button class="nier-btn nier-btn-secondary" onclick={() => cancelEditing()}
-              ><X class="w-4 h-4" /> Cancel</button>
+            <button class="nier-btn nier-btn-accent" on:click={() => saveChanges()}><Save class="w-4 h-4" /> Save</button>
+            <button class="nier-btn nier-btn-secondary" on:click={() => cancelEditing()}><X class="w-4 h-4" /> Cancel</button>
           {:else}
-            <button class="nier-btn nier-btn-secondary" onclick={() => startEditing()}
-              ><Edit class="w-4 h-4" /> Edit</button>
-            <button class="nier-btn nier-btn-secondary" onclick={() => summarizePOI()}
-              ><Sparkles class="w-4 h-4" /> Summarize</button>
+            <button class="nier-btn nier-btn-secondary" on:click={() => startEditing()}><Edit class="w-4 h-4" /> Edit</button>
+            <button class="nier-btn nier-btn-secondary" on:click={() => summarizePOI()}><Sparkles class="w-4 h-4" /> Summarize</button>
           {/if}
         </div>
       </div>
     </div>
   </ContextMenu.Trigger>
-  <ContextMenu.Content menu={showContextMenu} class="space-y-4">
-    <ContextMenu.Item onselect={startEditing}>
-      <Edit class="space-y-4" />
+  <ContextMenu.Content menu={showContextMenu} class="container mx-auto px-4">
+    <ContextMenu.Item on:select={startEditing}>
+      <Edit class="container mx-auto px-4" />
       Edit Profile
     </ContextMenu.Item>
 
-    <ContextMenu.Item onselect={summarizePOI}>
-      <Sparkles class="space-y-4" />
+    <ContextMenu.Item on:select={summarizePOI}>
+      <Sparkles class="container mx-auto px-4" />
       AI Summary
     </ContextMenu.Item>
 
     <ContextMenu.Separator />
 
     <ContextMenu.Item
-      onselect={() => {
-        threatLevel = 'low';
-        onupdate?.();
-      }}>
-      <Badge variant="secondary" class="space-y-4">Low</Badge>
+      on:select={() => {
+        threatLevel = "low";
+        dispatch("update", { ...poi, threatLevel: "low" });
+      }}
+    >
+      <Badge variant="secondary" class="container mx-auto px-4">
+        Low
+      </Badge>
       Low
     </ContextMenu.Item>
     <ContextMenu.Item
-      onselect={() => {
-        threatLevel = 'medium';
-        onupdate?.();
-      }}>
-      <Badge variant="secondary" class="space-y-4">Medium</Badge>
+      on:select={() => {
+        threatLevel = "medium";
+        dispatch("update", { ...poi, threatLevel: "medium" });
+      }}
+    >
+      <Badge variant="secondary" class="container mx-auto px-4">
+        Medium
+      </Badge>
       Medium
     </ContextMenu.Item>
     <ContextMenu.Item
-      onselect={() => {
-        threatLevel = 'high';
-        onupdate?.();
-      }}>
-      <Badge variant="secondary" class="space-y-4">High</Badge>
+      on:select={() => {
+        threatLevel = "high";
+        dispatch("update", { ...poi, threatLevel: "high" });
+      }}
+    >
+      <Badge variant="secondary" class="container mx-auto px-4">
+        High
+      </Badge>
       High
     </ContextMenu.Item>
 
     <ContextMenu.Separator />
 
-    <ContextMenu.Item onselect={() => ondelete?.()}>
-      <X class="space-y-4" />
+    <ContextMenu.Item on:select={() => dispatch("delete", poi.id)}>
+      <X class="container mx-auto px-4" />
       Delete POI
     </ContextMenu.Item>
   </ContextMenu.Content>
 </ContextMenu.Root>
 
 <style>
-  /* Nier-inspired UI styles */
-  .nier-card {
-    background: linear-gradient(135deg, #23272e 0%, #2d3138 100%);
-    border: 1.5px solid #bcbcbc;
-    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.18);
-  }
-  .nier-header {
-    border-bottom: 1px solid #bcbcbc;
-    padding-bottom: 0.5rem;
-  }
-  .nier-title {
-    color: #e5e5e5;
-  }
-  .nier-icon {
-    color: #bcbcbc;
-  }
-  .nier-badge {
-    display: inline-block;
-    padding: 0.15em 0.7em;
-    border-radius: 9999px;
-    font-size: 0.85em;
-    font-weight: 600;
-    background: #23272e;
-    color: #bcbcbc;
-    border: 1px solid #bcbcbc;
-  }
-  .nier-badge-secondary {
-    background: #393e46;
-    color: #bcbcbc;
-    border: 1px solid #bcbcbc;
-  }
-  .nier-label {
-    font-size: 0.9em;
-    color: #bcbcbc;
-    font-weight: 500;
-  }
-  .nier-input {
-    background: #23272e;
-    color: #e5e5e5;
-    border: 1px solid #bcbcbc;
-    border-radius: 0.5em;
-    padding: 0.4em 0.7em;
-    font-size: 1em;
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-    transition: border 0.2s;
-  }
-  .nier-input:focus {
-    border-color: #a3e7fc;
-    outline: none;
-  }
-  .nier-btn {
-    background: #23272e;
-    color: #bcbcbc;
-    border: 1.5px solid #bcbcbc;
-    border-radius: 0.5em;
-    padding: 0.3em 1.1em;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition:
-      background 0.2s,
-      color 0.2s,
-      border 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4em;
-  }
-  .nier-btn-accent {
-    background: #a3e7fc;
-    color: #23272e;
-    border-color: #a3e7fc;
-  }
-  .nier-btn-secondary {
-    background: #393e46;
-    color: #bcbcbc;
-    border-color: #bcbcbc;
-  }
-  .nier-btn:hover,
-  .nier-btn-accent:hover,
-  .nier-btn-secondary:hover {
-    background: #bcbcbc;
-    color: #23272e;
-  }
-  .nier-footer {
-    border-top: 1px solid #bcbcbc;
-    padding-top: 0.7em;
-  }
-  .nier-alias {
-    font-style: italic;
-  }
+/* Nier-inspired UI styles */
+.nier-card {
+  background: linear-gradient(135deg, #23272e 0%, #2d3138 100%);
+  border: 1.5px solid #bcbcbc;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+}
+.nier-header {
+  border-bottom: 1px solid #bcbcbc;
+  padding-bottom: 0.5rem;
+}
+.nier-title {
+  color: #e5e5e5;
+}
+.nier-icon {
+  color: #bcbcbc;
+}
+.nier-badge {
+  display: inline-block;
+  padding: 0.15em 0.7em;
+  border-radius: 9999px;
+  font-size: 0.85em;
+  font-weight: 600;
+  background: #23272e;
+  color: #bcbcbc;
+  border: 1px solid #bcbcbc;
+}
+.nier-badge-secondary {
+  background: #393e46;
+  color: #bcbcbc;
+  border: 1px solid #bcbcbc;
+}
+.nier-label {
+  font-size: 0.9em;
+  color: #bcbcbc;
+  font-weight: 500;
+}
+.nier-input {
+  background: #23272e;
+  color: #e5e5e5;
+  border: 1px solid #bcbcbc;
+  border-radius: 0.5em;
+  padding: 0.4em 0.7em;
+  font-size: 1em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  transition: border 0.2s;
+}
+.nier-input:focus {
+  border-color: #a3e7fc;
+  outline: none;
+}
+.nier-btn {
+  background: #23272e;
+  color: #bcbcbc;
+  border: 1.5px solid #bcbcbc;
+  border-radius: 0.5em;
+  padding: 0.3em 1.1em;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+.nier-btn-accent {
+  background: #a3e7fc;
+  color: #23272e;
+  border-color: #a3e7fc;
+}
+.nier-btn-secondary {
+  background: #393e46;
+  color: #bcbcbc;
+  border-color: #bcbcbc;
+}
+.nier-btn:hover, .nier-btn-accent:hover, .nier-btn-secondary:hover {
+  background: #bcbcbc;
+  color: #23272e;
+}
+.nier-footer {
+  border-top: 1px solid #bcbcbc;
+  padding-top: 0.7em;
+}
+.nier-alias {
+  font-style: italic;
+}
 </style>

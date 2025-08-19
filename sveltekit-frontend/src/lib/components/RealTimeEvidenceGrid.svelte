@@ -1,23 +1,7 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'evidence' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <!-- Real-time Evidence Grid with WebSocket and local sync -->
 <script lang="ts">
-  interface Props {
-    caseId: string | undefined ;
-    searchQuery: string ;
-    selectedTypes: string[] ;
-  }
-  let {
-    caseId = undefined,
-    searchQuery = "",
-    selectedTypes = []
-  }: Props = $props();
-
-
-
-  import type { Evidence } from '$lib/types';
-  import Button from "$lib/components/ui/button";
-  import { evidenceStore } from "$lib/stores/evidenceStore";
+  import { Button } from "$lib/components/ui/button/index.js";
+  import { evidenceStore, type Evidence } from "$lib/stores/evidenceStore";
   import { lokiEvidenceService } from "$lib/utils/loki-evidence";
   import {
     Archive,
@@ -44,7 +28,10 @@ https://svelte.dev/e/js_parse_error -->
   import { onMount } from "svelte";
 
   // Props
-        export const showAdvancedFilters: boolean = false;
+  export let caseId: string | undefined = undefined;
+  export let searchQuery: string = "";
+  export let selectedTypes: string[] = [];
+  export const showAdvancedFilters: boolean = false;
 
   // Store subscriptions
   let evidence: Evidence[] = [];
@@ -72,13 +59,13 @@ https://svelte.dev/e/js_parse_error -->
   let totalPages = 0;
 
   // Subscribe to store values
-  let evidence = $derived($evidenceStore.evidence || [];);
-  let isLoading = $derived($evidenceStore.isLoading || false;);
-  let isConnected = $derived($evidenceStore.isConnected || false;);
-  let error = $derived($evidenceStore.error || null;);
+  $: evidence = $evidenceStore.evidence || [];
+  $: isLoading = $evidenceStore.isLoading || false;
+  $: isConnected = $evidenceStore.isConnected || false;
+  $: error = $evidenceStore.error || null;
 
   // Reactive filtering and sorting
-  $effect(() => { {
+  $: {
     filteredEvidence = evidence
       .filter((item) => {
         if (caseId && item.caseId !== caseId) return false;
@@ -95,10 +82,12 @@ https://svelte.dev/e/js_parse_error -->
             .toLowerCase();
 
           if (!searchableText.includes(query)) return false;
-}
+        }
+
         if (selectedTypes.length > 0 && !selectedTypes.includes(item.type)) {
           return false;
-}
+        }
+
         return true;
       })
       .sort((a, b) => {
@@ -123,7 +112,8 @@ https://svelte.dev/e/js_parse_error -->
             break;
           default:
             return 0;
-}
+        }
+
         const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
         return sortOrder === "asc" ? comparison : -comparison;
       });
@@ -133,7 +123,8 @@ https://svelte.dev/e/js_parse_error -->
       currentPage * pageSize,
       (currentPage + 1) * pageSize
     );
-}
+  }
+
   // Initialize on mount
   onMount(() => {
     const init = async () => {
@@ -146,7 +137,7 @@ https://svelte.dev/e/js_parse_error -->
       connectionStatus = connected ? "connected" : "disconnected";
       if (connected) {
         lastUpdateTime = new Date().toISOString();
-}
+      }
     });
 
     // Monitor sync status
@@ -169,16 +160,18 @@ https://svelte.dev/e/js_parse_error -->
         setTimeout(() => {
           if (lokiEvidenceService.isReady()) {
             loadFromLocal();
-}
+          }
         }, 1000);
-}
+      }
+
       // Then sync with server
       await syncWithServer();
     } catch (err) {
       console.error("Failed to initialize real-time evidence:", err);
       error = err instanceof Error ? err.message : "Initialization failed";
-}
-}
+    }
+  }
+
   function loadFromLocal() {
     try {
       const localEvidence = caseId
@@ -188,8 +181,9 @@ https://svelte.dev/e/js_parse_error -->
       evidenceStore.evidence.set(localEvidence);
     } catch (err) {
       console.error("Failed to load from local:", err);
-}
-}
+    }
+  }
+
   async function syncWithServer() {
     try {
       evidenceStore.isLoading.set(true);
@@ -204,19 +198,21 @@ https://svelte.dev/e/js_parse_error -->
         await lokiEvidenceService.syncWithServer(serverEvidence);
         evidenceStore.evidence.set(serverEvidence);
         lastUpdateTime = new Date().toISOString();
-}
+      }
     } catch (err) {
       console.error("Sync failed:", err);
       error = "Failed to sync with server";
     } finally {
       evidenceStore.isLoading.set(false);
-}
-}
+    }
+  }
+
   function updateSyncStatus() {
     if (lokiEvidenceService.isReady()) {
       syncStatus = lokiEvidenceService.getSyncStatus();
-}
-}
+    }
+  }
+
   // Evidence operations
   async function createEvidence() {
     try {
@@ -233,8 +229,9 @@ https://svelte.dev/e/js_parse_error -->
     } catch (err) {
       console.error("Failed to create evidence:", err);
       error = err instanceof Error ? err.message : "Failed to create evidence";
-}
-}
+    }
+  }
+
   async function updateEvidence(
     evidenceId: string,
     changes: Partial<Evidence>
@@ -245,8 +242,9 @@ https://svelte.dev/e/js_parse_error -->
     } catch (err) {
       console.error("Failed to update evidence:", err);
       error = err instanceof Error ? err.message : "Failed to update evidence";
-}
-}
+    }
+  }
+
   async function deleteEvidence(evidenceId: string) {
     if (!confirm("Are you sure you want to delete this evidence?")) return;
 
@@ -257,24 +255,28 @@ https://svelte.dev/e/js_parse_error -->
     } catch (err) {
       console.error("Failed to delete evidence:", err);
       error = err instanceof Error ? err.message : "Failed to delete evidence";
-}
-}
+    }
+  }
+
   // UI interactions
   function toggleSelection(evidenceId: string) {
     if (selectedEvidence.has(evidenceId)) {
       selectedEvidence.delete(evidenceId);
     } else {
       selectedEvidence.add(evidenceId);
-}
+    }
     selectedEvidence = selectedEvidence;
-}
+  }
+
   function selectAll() {
     selectedEvidence = new Set(paginatedEvidence.map((e) => e.id));
-}
+  }
+
   function clearSelection() {
     selectedEvidence.clear();
     selectedEvidence = selectedEvidence;
-}
+  }
+
   function getTypeIcon(type: string) {
     switch (type) {
       case "document":
@@ -287,106 +289,108 @@ https://svelte.dev/e/js_parse_error -->
         return Music;
       default:
         return File;
-}
-}
+    }
+  }
+
   function formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString();
-}
+  }
+
   function getRelevanceColor(relevance: number): string {
     if (relevance >= 0.8) return "text-green-600";
     if (relevance >= 0.6) return "text-yellow-600";
     if (relevance >= 0.4) return "text-orange-600";
     return "text-red-600";
-}
+  }
 </script>
 
 <!-- Connection Status Bar -->
 <div
-  class="space-y-4"
+  class="mx-auto px-4 max-w-7xl"
 >
-  <div class="space-y-4">
+  <div class="mx-auto px-4 max-w-7xl">
     <!-- Connection Status -->
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       {#if connectionStatus === "connected"}
-        <Wifi class="space-y-4" />
-        <span class="space-y-4">Connected</span>
+        <Wifi class="mx-auto px-4 max-w-7xl" />
+        <span class="mx-auto px-4 max-w-7xl">Connected</span>
       {:else}
-        <WifiOff class="space-y-4" />
-        <span class="space-y-4">Offline</span>
+        <WifiOff class="mx-auto px-4 max-w-7xl" />
+        <span class="mx-auto px-4 max-w-7xl">Offline</span>
       {/if}
     </div>
 
     <!-- Sync Status -->
     {#if syncStatus.pending > 0}
-      <div class="space-y-4">
-        <RefreshCw class="space-y-4" />
+      <div class="mx-auto px-4 max-w-7xl">
+        <RefreshCw class="mx-auto px-4 max-w-7xl" />
         <span>Syncing ({syncStatus.pending} pending)</span>
       </div>
     {/if}
 
     {#if syncStatus.failed > 0}
-      <span class="space-y-4">{syncStatus.failed} failed</span>
+      <span class="mx-auto px-4 max-w-7xl">{syncStatus.failed} failed</span>
     {/if}
 
     <!-- Stats -->
-    <span class="space-y-4">Total: {filteredEvidence.length}</span>
+    <span class="mx-auto px-4 max-w-7xl">Total: {filteredEvidence.length}</span>
 
     {#if selectedEvidence.size > 0}
-      <span class="space-y-4">Selected: {selectedEvidence.size}</span>
+      <span class="mx-auto px-4 max-w-7xl">Selected: {selectedEvidence.size}</span>
     {/if}
 
     {#if lastUpdateTime}
-      <span class="space-y-4">Updated: {formatDate(lastUpdateTime)}</span>
+      <span class="mx-auto px-4 max-w-7xl">Updated: {formatDate(lastUpdateTime)}</span>
     {/if}
   </div>
 
   <!-- Action Buttons -->
-  <div class="space-y-4">
+  <div class="mx-auto px-4 max-w-7xl">
     <Button
       variant="ghost"
       size="sm"
-      onclick={() => evidenceStore.undo()}
+      on:click={() => evidenceStore.undo()}
       disabled={!evidenceStore.canUndo()}
       title="Undo (Ctrl+Z)"
     >
-      <Undo2 class="space-y-4" />
+      <Undo2 class="mx-auto px-4 max-w-7xl" />
     </Button>
 
     <Button
       variant="ghost"
       size="sm"
-      onclick={() => evidenceStore.redo()}
+      on:click={() => evidenceStore.redo()}
       disabled={!evidenceStore.canRedo()}
       title="Redo (Ctrl+Y)"
     >
-      <Redo2 class="space-y-4" />
+      <Redo2 class="mx-auto px-4 max-w-7xl" />
     </Button>
 
     <Button
       variant="ghost"
       size="sm"
-      onclick={() => syncWithServer()}
+      on:click={() => syncWithServer()}
       disabled={isLoading}
       title="Sync with server"
     >
-      <RefreshCw class="space-y-4" />
+      <RefreshCw class="mx-auto px-4 max-w-7xl" />
     </Button>
   </div>
 </div>
 
 <!-- Error Banner -->
 {#if error}
-  <div class="space-y-4">
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <p class="space-y-4">{error}</p>
+  <div class="mx-auto px-4 max-w-7xl">
+    <div class="mx-auto px-4 max-w-7xl">
+      <div class="mx-auto px-4 max-w-7xl">
+        <p class="mx-auto px-4 max-w-7xl">{error}</p>
       </div>
-      <div class="space-y-4">
+      <div class="mx-auto px-4 max-w-7xl">
         <button
-          class="space-y-4"
-          onclick={() => (error = null)}
+          class="mx-auto px-4 max-w-7xl"
+          on:click={() => (error = null)}
         >
-          <span class="space-y-4">Dismiss</span>
+          <span class="mx-auto px-4 max-w-7xl">Dismiss</span>
           ✕
         </button>
       </div>
@@ -395,20 +399,20 @@ https://svelte.dev/e/js_parse_error -->
 {/if}
 
 <!-- Toolbar -->
-<div class="space-y-4">
-  <div class="space-y-4">
+<div class="mx-auto px-4 max-w-7xl">
+  <div class="mx-auto px-4 max-w-7xl">
     <!-- Left: Search and Filters -->
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       <!-- Search -->
-      <div class="space-y-4">
+      <div class="mx-auto px-4 max-w-7xl">
         <Search
-          class="space-y-4"
+          class="mx-auto px-4 max-w-7xl"
         />
         <input
           type="text"
           placeholder="Search evidence..."
           bind:value={searchQuery}
-          class="space-y-4"
+          class="mx-auto px-4 max-w-7xl"
         />
       </div>
 
@@ -416,7 +420,7 @@ https://svelte.dev/e/js_parse_error -->
       <select
         multiple
         bind:value={selectedTypes}
-        class="space-y-4"
+        class="mx-auto px-4 max-w-7xl"
       >
         <option value="">All Types</option>
         <option value="document">Documents</option>
@@ -429,10 +433,10 @@ https://svelte.dev/e/js_parse_error -->
       </select>
 
       <!-- Sort -->
-      <div class="space-y-4">
+      <div class="mx-auto px-4 max-w-7xl">
         <select
           bind:value={sortBy}
-          class="space-y-4"
+          class="mx-auto px-4 max-w-7xl"
         >
           <option value="date">Date</option>
           <option value="title">Title</option>
@@ -443,59 +447,59 @@ https://svelte.dev/e/js_parse_error -->
         <Button
           variant="ghost"
           size="sm"
-          onclick={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
         >
           {#if sortOrder === "asc"}
-            <SortAsc class="space-y-4" />
+            <SortAsc class="mx-auto px-4 max-w-7xl" />
           {:else}
-            <SortDesc class="space-y-4" />
+            <SortDesc class="mx-auto px-4 max-w-7xl" />
           {/if}
         </Button>
       </div>
     </div>
 
     <!-- Right: View and Actions -->
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       <!-- View Mode Toggle -->
       <Button
         variant="ghost"
         size="sm"
-        onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+        on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
       >
         {#if viewMode === "grid"}
-          <List class="space-y-4" />
+          <List class="mx-auto px-4 max-w-7xl" />
         {:else}
-          <Grid class="space-y-4" />
+          <Grid class="mx-auto px-4 max-w-7xl" />
         {/if}
       </Button>
 
       <!-- Selection Actions -->
       {#if selectedEvidence.size > 0}
-        <Button variant="outline" size="sm" onclick={() => clearSelection()}>
+        <Button variant="outline" size="sm" on:click={() => clearSelection()}>
           Clear ({selectedEvidence.size})
         </Button>
 
         <Button
           variant="danger"
           size="sm"
-          onclick={() => {
+          on:click={() => {
             if (confirm(`Delete ${selectedEvidence.size} selected items?`)) {
               selectedEvidence.forEach((id) => deleteEvidence(id));
             }
-          }
+          "
         >
-          <Trash2 class="space-y-4" />
+          <Trash2 class="mx-auto px-4 max-w-7xl" />
           Delete
         </Button>
       {:else}
-        <Button variant="ghost" size="sm" onclick={() => selectAll()}>
+        <Button variant="ghost" size="sm" on:click={() => selectAll()}>
           Select All
         </Button>
       {/if}
 
       <!-- Add Evidence -->
-      <Button onclick={() => createEvidence()}>
-        <span class="space-y-4">+</span>
+      <Button on:click={() => createEvidence()}>
+        <span class="mx-auto px-4 max-w-7xl">+</span>
         Add Evidence
       </Button>
     </div>
@@ -503,60 +507,60 @@ https://svelte.dev/e/js_parse_error -->
 </div>
 
 <!-- Content Area -->
-<div class="space-y-4">
+<div class="mx-auto px-4 max-w-7xl">
   {#if isLoading && evidence.length === 0}
     <!-- Loading State -->
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <RefreshCw class="space-y-4" />
-        <p class="space-y-4">Loading evidence...</p>
+    <div class="mx-auto px-4 max-w-7xl">
+      <div class="mx-auto px-4 max-w-7xl">
+        <RefreshCw class="mx-auto px-4 max-w-7xl" />
+        <p class="mx-auto px-4 max-w-7xl">Loading evidence...</p>
       </div>
     </div>
   {:else if paginatedEvidence.length === 0}
     <!-- Empty State -->
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <Archive class="space-y-4" />
-        <h3 class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
+      <div class="mx-auto px-4 max-w-7xl">
+        <Archive class="mx-auto px-4 max-w-7xl" />
+        <h3 class="mx-auto px-4 max-w-7xl">
           No Evidence Found
         </h3>
-        <p class="space-y-4">
+        <p class="mx-auto px-4 max-w-7xl">
           {filteredEvidence.length === 0 && evidence.length > 0
             ? "No evidence matches your current filters."
             : "No evidence has been added yet."}
         </p>
-        <Button onclick={() => createEvidence()}>Add First Evidence</Button>
+        <Button on:click={() => createEvidence()}>Add First Evidence</Button>
       </div>
     </div>
   {:else}
     <!-- Evidence Grid/List -->
     {#if viewMode === "grid"}
       <div
-        class="space-y-4"
+        class="mx-auto px-4 max-w-7xl"
       >
         {#each paginatedEvidence as item (item.id)}
           <div
-            class="space-y-4"
+            class="mx-auto px-4 max-w-7xl"
           >
             <!-- Header -->
-            <div class="space-y-4">
-              <div class="space-y-4">
+            <div class="mx-auto px-4 max-w-7xl">
+              <div class="mx-auto px-4 max-w-7xl">
                 <input
                   type="checkbox"
                   checked={selectedEvidence.has(item.id)}
-                  onchange={() => toggleSelection(item.id)}
-                  class="space-y-4"
+                  on:change={() => toggleSelection(item.id)}
+                  class="mx-auto px-4 max-w-7xl"
                 />
                 <svelte:component
                   this={getTypeIcon(item.type)}
-                  class="space-y-4"
+                  class="mx-auto px-4 max-w-7xl"
                 />
               </div>
 
-              <div class="space-y-4">
+              <div class="mx-auto px-4 max-w-7xl">
                 {#if item.classification?.relevance !== undefined}
                   <span
-                    class="space-y-4"
+                    class="mx-auto px-4 max-w-7xl"
                   >
                     {Math.round(item.classification.relevance * 100)}%
                   </span>
@@ -565,39 +569,39 @@ https://svelte.dev/e/js_parse_error -->
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => (editingEvidence = item.id)}
+                  on:click={() => (editingEvidence = item.id)}
                 >
-                  <Eye class="space-y-4" />
+                  <Eye class="mx-auto px-4 max-w-7xl" />
                 </Button>
 
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => deleteEvidence(item.id)}
+                  on:click={() => deleteEvidence(item.id)}
                 >
-                  <Trash2 class="space-y-4" />
+                  <Trash2 class="mx-auto px-4 max-w-7xl" />
                 </Button>
               </div>
             </div>
 
             <!-- Content -->
             {#if editingEvidence === item.id}
-              <div class="space-y-4">
+              <div class="mx-auto px-4 max-w-7xl">
                 <input
                   type="text"
                   bind:value={item.title}
-                  class="space-y-4"
+                  class="mx-auto px-4 max-w-7xl"
                   placeholder="Evidence title"
                 />
                 <textarea
                   bind:value={item.description}
-                  class="space-y-4"
+                  class="mx-auto px-4 max-w-7xl"
                   placeholder="Description"
                 ></textarea>
-                <div class="space-y-4">
+                <div class="mx-auto px-4 max-w-7xl">
                   <Button
                     size="sm"
-                    onclick={() =>
+                    on:click={() =>
                       updateEvidence(item.id, {
                         title: item.title,
                         description: item.description,
@@ -608,32 +612,32 @@ https://svelte.dev/e/js_parse_error -->
                   <Button
                     variant="ghost"
                     size="sm"
-                    onclick={() => (editingEvidence = null)}
+                    on:click={() => (editingEvidence = null)}
                   >
                     Cancel
                   </Button>
                 </div>
               </div>
             {:else}
-              <h3 class="space-y-4">
+              <h3 class="mx-auto px-4 max-w-7xl">
                 {item.title}
               </h3>
 
               {#if item.description}
-                <p class="space-y-4">
+                <p class="mx-auto px-4 max-w-7xl">
                   {item.description}
                 </p>
               {/if}
 
               <!-- Metadata -->
-              <div class="space-y-4">
-                <div class="space-y-4">
-                  <Tag class="space-y-4" />
+              <div class="mx-auto px-4 max-w-7xl">
+                <div class="mx-auto px-4 max-w-7xl">
+                  <Tag class="mx-auto px-4 max-w-7xl" />
                   <span>{item.type}</span>
                 </div>
                 {#if item.timeline?.createdAt}
-                  <div class="space-y-4">
-                    <Calendar class="space-y-4" />
+                  <div class="mx-auto px-4 max-w-7xl">
+                    <Calendar class="mx-auto px-4 max-w-7xl" />
                     <span>{formatDate(item.timeline.createdAt)}</span>
                   </div>
                 {/if}
@@ -641,10 +645,10 @@ https://svelte.dev/e/js_parse_error -->
 
               <!-- Tags -->
               {#if item.tags?.length}
-                <div class="space-y-4">
+                <div class="mx-auto px-4 max-w-7xl">
                   {#each item.tags as tag}
                     <span
-                      class="space-y-4"
+                      class="mx-auto px-4 max-w-7xl"
                       >{tag}</span
                     >
                   {/each}
@@ -656,110 +660,110 @@ https://svelte.dev/e/js_parse_error -->
       </div>
     {:else}
       <!-- List View -->
-      <div class="space-y-4">
-        <table class="space-y-4">
-          <thead class="space-y-4">
+      <div class="mx-auto px-4 max-w-7xl">
+        <table class="mx-auto px-4 max-w-7xl">
+          <thead class="mx-auto px-4 max-w-7xl">
             <tr>
               <th
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
               >
                 <input
                   type="checkbox"
-                  onchange={(e) =>
+                  on:change={(e) =>
                     (e.target as HTMLInputElement).checked
                       ? selectAll()
                       : clearSelection()}
-                  class="space-y-4"
+                  class="mx-auto px-4 max-w-7xl"
                 />
               </th>
               <th
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 >Evidence</th
               >
               <th
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 >Type</th
               >
               <th
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 >Date</th
               >
               <th
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 >Relevance</th
               >
-              <th class="space-y-4"
-                ><span class="space-y-4">Actions</span></th
+              <th class="mx-auto px-4 max-w-7xl"
+                ><span class="mx-auto px-4 max-w-7xl">Actions</span></th
               >
             </tr>
           </thead>
-          <tbody class="space-y-4">
+          <tbody class="mx-auto px-4 max-w-7xl">
             {#each paginatedEvidence as item (item.id)}
               <tr
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
               >
-                <td class="space-y-4">
+                <td class="mx-auto px-4 max-w-7xl">
                   <input
                     type="checkbox"
                     checked={selectedEvidence.has(item.id)}
-                    onchange={() => toggleSelection(item.id)}
-                    class="space-y-4"
+                    on:change={() => toggleSelection(item.id)}
+                    class="mx-auto px-4 max-w-7xl"
                   />
                 </td>
-                <td class="space-y-4">
-                  <div class="space-y-4">
+                <td class="mx-auto px-4 max-w-7xl">
+                  <div class="mx-auto px-4 max-w-7xl">
                     <svelte:component
                       this={getTypeIcon(item.type)}
-                      class="space-y-4"
+                      class="mx-auto px-4 max-w-7xl"
                     />
                     <div>
-                      <div class="space-y-4">
+                      <div class="mx-auto px-4 max-w-7xl">
                         {item.title}
                       </div>
                       {#if item.description}
-                        <div class="space-y-4">
+                        <div class="mx-auto px-4 max-w-7xl">
                           {item.description}
                         </div>
                       {/if}
                     </div>
                   </div>
                 </td>
-                <td class="space-y-4"
+                <td class="mx-auto px-4 max-w-7xl"
                   >{item.type}</td
                 >
-                <td class="space-y-4">
+                <td class="mx-auto px-4 max-w-7xl">
                   {item.timeline?.createdAt
                     ? formatDate(item.timeline.createdAt)
                     : "-"}
                 </td>
-                <td class="space-y-4">
+                <td class="mx-auto px-4 max-w-7xl">
                   {#if item.classification?.relevance !== undefined}
                     <span
-                      class="space-y-4"
+                      class="mx-auto px-4 max-w-7xl"
                     >
                       {Math.round(item.classification.relevance * 100)}%
                     </span>
                   {:else}
-                    <span class="space-y-4">-</span>
+                    <span class="mx-auto px-4 max-w-7xl">-</span>
                   {/if}
                 </td>
                 <td
-                  class="space-y-4"
+                  class="mx-auto px-4 max-w-7xl"
                 >
-                  <div class="space-y-4">
+                  <div class="mx-auto px-4 max-w-7xl">
                     <Button
                       variant="ghost"
                       size="sm"
-                      onclick={() => (editingEvidence = item.id)}
+                      on:click={() => (editingEvidence = item.id)}
                     >
-                      <Eye class="space-y-4" />
+                      <Eye class="mx-auto px-4 max-w-7xl" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onclick={() => deleteEvidence(item.id)}
+                      on:click={() => deleteEvidence(item.id)}
                     >
-                      <Trash2 class="space-y-4" />
+                      <Trash2 class="mx-auto px-4 max-w-7xl" />
                     </Button>
                   </div>
                 </td>
@@ -772,25 +776,25 @@ https://svelte.dev/e/js_parse_error -->
 
     <!-- Pagination -->
     {#if totalPages > 1}
-      <div class="space-y-4">
-        <div class="space-y-4">
+      <div class="mx-auto px-4 max-w-7xl">
+        <div class="mx-auto px-4 max-w-7xl">
           Showing {currentPage * pageSize + 1} to {Math.min(
             (currentPage + 1) * pageSize,
             filteredEvidence.length
           )} of {filteredEvidence.length} results
         </div>
 
-        <div class="space-y-4">
+        <div class="mx-auto px-4 max-w-7xl">
           <Button
             variant="outline"
             size="sm"
             disabled={currentPage === 0}
-            onclick={() => currentPage--}
+            on:click={() => currentPage--}
           >
             Previous
           </Button>
 
-          <span class="space-y-4">
+          <span class="mx-auto px-4 max-w-7xl">
             Page {currentPage + 1} of {totalPages}
           </span>
 
@@ -798,7 +802,7 @@ https://svelte.dev/e/js_parse_error -->
             variant="outline"
             size="sm"
             disabled={currentPage >= totalPages - 1}
-            onclick={() => currentPage++}
+            on:click={() => currentPage++}
           >
             Next
           </Button>
@@ -809,19 +813,19 @@ https://svelte.dev/e/js_parse_error -->
 </div>
 
 <style>
-  /* @unocss-include */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
+  }
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
+  }
 </style>

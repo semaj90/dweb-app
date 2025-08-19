@@ -223,6 +223,21 @@ export class OllamaService {
   }
 
   /**
+   * Check if Ollama service is healthy
+   */
+  async isHealthy(): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/tags`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
    * Check if Ollama is running and models are available
    */
   async checkHealth(): Promise<{
@@ -232,7 +247,16 @@ export class OllamaService {
     models: string[];
   }> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/tags`);
+      let response: Response;
+        try {
+          response = await fetch(`${this.baseUrl}/api/tags`);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Fetch failed:', error);
+          throw error;
+        }
       if (!response.ok) {
         return {
           status: "unhealthy",
@@ -259,6 +283,13 @@ export class OllamaService {
         models: [],
       };
     }
+  }
+
+  /**
+   * Compatibility wrapper for older call sites that expect `healthCheck()`
+   */
+  async healthCheck() {
+    return this.checkHealth();
   }
 
   /**

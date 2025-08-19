@@ -1,13 +1,7 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- Enhanced ThinkingStyleToggle with Nier Automata + Harvard Crimson Theme -->
 <script lang="ts">
-  interface Props {
-    enabled?: any;
-    loading?: any;
-    premium?: any;
-    size: 'sm' | 'md' | 'lg' ;
-  }
+  import type { Props } from "$lib/types/global";
+
   let {
     enabled = false,
     loading = false,
@@ -22,14 +16,13 @@ https://svelte.dev/e/js_parse_error -->
   import { Brain, Zap, Settings, Crown, Info } from 'lucide-svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import { cn } from '$lib/utils';
-  
-          
+
+
   const dispatch = createEventDispatcher<{
     toggle: { enabled: boolean };
     configure: void;
-    upgrade: void;
   }>();
-  
+
   let showTooltip = false;
   let showConfig = false;
   let thinkingDepth = 'detailed';
@@ -39,16 +32,16 @@ https://svelte.dev/e/js_parse_error -->
     compliance: true,
     alternatives: false
   };
-  
-  let iconSize = $derived(size === 'sm' ? 16 : size === 'md' ? 20 : 24;);
-  let buttonClass = $derived(cn();
-    "thinking-toggle",
+
+  let iconSize = $derived(size === 'sm' ? 16 : size === 'md' ? 20 : 24);
+  let buttonClass = $derived(cn(
+    'thinking-toggle',
     size,
     enabled ? 'enabled' : 'disabled',
     loading ? 'loading' : '',
     !premium ? 'premium-required' : ''
-  );
-  
+  ));
+
   function handleToggle() {
     if (!premium) {
       dispatch('upgrade');
@@ -69,9 +62,9 @@ https://svelte.dev/e/js_parse_error -->
 
 <div class="thinking-style-control">
   <!-- Main Toggle Button -->
-  <div 
-    class="toggle-container" 
-    onmouseenter={() => showTooltip = true} 
+  <div
+    class="toggle-container"
+    onmouseenter={() => showTooltip = true}
     onmouseleave={() => showTooltip = false}
     role="button"
     tabindex="0"
@@ -96,7 +89,7 @@ https://svelte.dev/e/js_parse_error -->
           <Zap size={iconSize} class="text-current" />
         {/if}
       </div>
-      
+
       <span class="toggle-text ml-2">
         {#if loading}
           Analyzing...
@@ -106,12 +99,12 @@ https://svelte.dev/e/js_parse_error -->
           Quick Mode
         {/if}
       </span>
-      
+
       {#if premium && enabled}
         <Crown size={12} class="ml-2 text-harvard-gold opacity-80" />
       {/if}
     </Button>
-    
+
     <!-- Configuration Button -->
     {#if premium}
       <Button
@@ -124,7 +117,7 @@ https://svelte.dev/e/js_parse_error -->
         <Settings size={14} />
       </Button>
     {/if}
-    
+
     <!-- Info Button for non-premium users -->
     {#if !premium}
       <Button
@@ -136,12 +129,12 @@ https://svelte.dev/e/js_parse_error -->
         <Info size={14} class="text-harvard-gold" />
       </Button>
     {/if}
-    
+
     <!-- Tooltip -->
     {#if showTooltip}
-      <div 
+      <div
         class="tooltip"
-        transitionfade={{ duration: 200 }}
+        transition:fade={{ duration: 200 }}
       >
         {#if !premium}
           <div class="tooltip-content premium-required">
@@ -183,10 +176,10 @@ https://svelte.dev/e/js_parse_error -->
       </div>
     {/if}
   </div>
-  
+
   <!-- Configuration Panel -->
   {#if showConfig && premium}
-    <div 
+    <div
       class="config-panel nier-border-glow"
       transitionslide={{ duration: 300 }}
     >
@@ -194,15 +187,15 @@ https://svelte.dev/e/js_parse_error -->
         <h4 class="text-foreground font-semibold">Thinking Style Configuration</h4>
         <p class="text-muted-foreground text-sm">Customize AI reasoning parameters</p>
       </div>
-      
+
       <div class="config-content space-y-4">
         <!-- Reasoning Depth -->
         <div class="setting-group">
           <label for="thinking-depth" class="setting-label">
             Reasoning Depth
           </label>
-          <select 
-            id="thinking-depth" 
+          <select
+            id="thinking-depth"
             bind:value={thinkingDepth}
             class="setting-select"
           >
@@ -211,38 +204,38 @@ https://svelte.dev/e/js_parse_error -->
             <option value="comprehensive">Comprehensive (10+ steps)</option>
           </select>
         </div>
-        
+
         <!-- Focus Areas -->
         <div class="setting-group">
           <label class="setting-label">Focus Areas</label>
           <div class="checkbox-group space-y-2">
             <label class="checkbox-label">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 bind:checked={focusAreas.precedents}
                 class="checkbox-input"
               />
               <span>Legal precedents & case law</span>
             </label>
             <label class="checkbox-label">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 bind:checked={focusAreas.evidence}
                 class="checkbox-input"
               />
               <span>Evidence quality assessment</span>
             </label>
             <label class="checkbox-label">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 bind:checked={focusAreas.compliance}
                 class="checkbox-input"
               />
               <span>Procedural compliance</span>
             </label>
             <label class="checkbox-label">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 bind:checked={focusAreas.alternatives}
                 class="checkbox-input"
               />
@@ -251,7 +244,7 @@ https://svelte.dev/e/js_parse_error -->
           </div>
         </div>
       </div>
-      
+
       <div class="config-actions">
         <Button variant="ghost" size="sm" onclick={() => showConfig = false}>
           Cancel
@@ -262,10 +255,10 @@ https://svelte.dev/e/js_parse_error -->
       </div>
     </div>
   {/if}
-  
+
   <!-- Premium Upgrade Banner -->
   {#if !premium}
-    <div 
+    <div
       class="premium-banner"
       transitionslide={{ duration: 300 }}
     >
@@ -467,3 +460,4 @@ https://svelte.dev/e/js_parse_error -->
     opacity: 0.6;
 }
 </style>
+

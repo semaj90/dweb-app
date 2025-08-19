@@ -1,10 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'evidence' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    evidence: Evidence | null ;
-    data: any ;
-  }
+  import type { Props } from "$lib/types/global";
+
   let {
     evidence = null,
     data = null
@@ -22,9 +18,8 @@ https://svelte.dev/e/js_parse_error -->
   import { Label } from "$lib/components/ui/label";
   import type { Evidence } from "$lib/types/api";
   import { createSelect, melt } from "@melt-ui/svelte";
-  
-  let { evidence = $bindable() } = $props(); // Evidence | null = null;
-  let { data = $bindable() } = $props(); // any = null;
+
+  // Bindable props already defined above; redundant redeclarations removed
 
   const dispatch = createEventDispatcher();
 
@@ -167,3 +162,4 @@ https://svelte.dev/e/js_parse_error -->
     background: #f3f4f6;
 }
 </style>
+

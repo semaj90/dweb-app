@@ -21,11 +21,11 @@
   function handleClick() {
     onSelect(value);
     open.set(false);
-  }
+}
 </script>
 
 <div
-  class="mx-auto px-4 max-w-7xl"
+  class="container mx-auto px-4"
   role="option"
   aria-selected={isSelected ? "true" : "false"}
   on:click={() => handleClick()}
@@ -36,6 +36,7 @@
 </div>
 
 <style>
+  /* @unocss-include */
   .select-item {
     padding: 8px 12px;
     cursor: pointer;
@@ -43,14 +44,12 @@
     color: #374151;
     display: flex;
     align-items: center;
-  }
-
+}
   .select-item:hover {
     background-color: #f3f4f6;
-  }
-
+}
   .select-item:focus {
     outline: none;
     background-color: #e5e7eb;
-  }
+}
 </style>

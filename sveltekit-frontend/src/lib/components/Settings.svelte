@@ -3,27 +3,24 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     isOpen: boolean;
-    settings: {;
+    settings: {
+      theme: string;
+      language: string;
+      ttsEngine: string;
+      voiceLanguage: string;
+      enableSuggestions: boolean;
+      enableMasking: boolean;
+      enableAutoSave: boolean;
+      maxHistoryItems: number;
+      enableNotifications: boolean;
+      fontFamily: string;
+      fontSize: string;
+    };
   }
   let {
     isOpen,
     settings
   }: Props = $props();
-
-
-
-        theme: string;
-    language: string;
-    ttsEngine: string;
-    voiceLanguage: string;
-    enableSuggestions: boolean;
-    enableMasking: boolean;
-    enableAutoSave: boolean;
-    maxHistoryItems: number;
-    enableNotifications: boolean;
-    fontFamily: string;
-    fontSize: string;
-  };
 </script>
 
 {#if isOpen}

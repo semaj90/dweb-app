@@ -423,8 +423,8 @@ https://svelte.dev/e/js_parse_error -->
   }
   
   // Reactive statements
-  let selectedScenario = $derived(demoScenarios.find(s => s.id === selectedDemo););
-  let predictionList = $derived($predictedNextStates;);
+  let selectedScenario = $derived(demoScenarios.find(s => s.id === selectedDemo));
+  let predictionList = $derived($predictedNextStates);
 </script>
 
 <svelte:head>

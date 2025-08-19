@@ -1,19 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    ontoolSelected?: (event?: any) => void;
-    onformatToggled?: (event?: any) => void;
-    onalignmentChanged?: (event?: any) => void;
-    oncolorChanged?: (event?: any) => void;
-    onfontSizeChanged?: (event?: any) => void;
-    onstrokeWidthChanged?: (event?: any) => void;
-    onaction?: (event?: any) => void;
-    onzoomChanged?: (event?: any) => void;
-  }
-
-
-		import { toolbarStore } from "../stores/canvas";
+	import { createEventDispatcher } from 'svelte';
+	import { toolbarStore } from "../stores/canvas";
 	
 	import { 
 		Bold, 
@@ -36,7 +23,8 @@ https://svelte.dev/e/js_parse_error -->
 		ZoomOut 
 	} from 'lucide-svelte';
 
-	
+	const dispatch = createEventDispatcher();
+
 	// Tool categories
 	const tools = [
 		{ id: 'select', icon: MousePointer2, label: 'Select', category: 'selection' },
@@ -61,19 +49,19 @@ https://svelte.dev/e/js_parse_error -->
 	];
 
 	// Reactive toolbar state
-	let selectedTool = $derived($toolbarStore.selectedTool;);
-	let formatting = $derived($toolbarStore.formatting;);
-	let drawing = $derived($toolbarStore.drawing;);
-	let canUndo = $derived($toolbarStore.canUndo;);
-	let canRedo = $derived($toolbarStore.canRedo;);
-	let zoom = $derived($toolbarStore.zoom;);
+	$: selectedTool = $toolbarStore.selectedTool;
+	$: formatting = $toolbarStore.formatting;
+	$: drawing = $toolbarStore.drawing;
+	$: canUndo = $toolbarStore.canUndo;
+	$: canRedo = $toolbarStore.canRedo;
+	$: zoom = $toolbarStore.zoom;
 
 	function selectTool(toolId: string) {
 		toolbarStore.update(state => ({
 			...state,
 			selectedTool: toolId
 		}));
-		ontoolSelected?.();
+		dispatch('toolSelected', { tool: toolId });
 }
 	function toggleFormatting(formatType: string) {
 		toolbarStore.update(state => ({
@@ -83,7 +71,7 @@ https://svelte.dev/e/js_parse_error -->
 				[formatType]: !(state.formatting as any)[formatType]
 }
 		}));
-		onformatToggled?.()[formatType] });
+		dispatch('formatToggled', { type: formatType, value: !(formatting as any)[formatType] });
 }
 	function setAlignment(alignment: string) {
 		toolbarStore.update(state => ({
@@ -93,7 +81,7 @@ https://svelte.dev/e/js_parse_error -->
 				textAlign: alignment
 }
 		}));
-		onalignmentChanged?.();
+		dispatch('alignmentChanged', { alignment });
 }
 	function handleColorChange(event: Event, type: 'color' | 'backgroundColor') {
 		const target = event.target as HTMLInputElement;
@@ -106,7 +94,7 @@ https://svelte.dev/e/js_parse_error -->
 				[type]: color
 }
 		}));
-		oncolorChanged?.();
+		dispatch('colorChanged', { type, color });
 }
 	function handleFontSizeChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -119,7 +107,7 @@ https://svelte.dev/e/js_parse_error -->
 				fontSize
 }
 		}));
-		onfontSizeChanged?.();
+		dispatch('fontSizeChanged', { fontSize });
 }
 	function handleStrokeWidthChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -132,10 +120,10 @@ https://svelte.dev/e/js_parse_error -->
 				strokeWidth
 }
 		}));
-		onstrokeWidthChanged?.();
+		dispatch('strokeWidthChanged', { strokeWidth });
 }
 	function handleAction(action: string) {
-		onaction?.();
+		dispatch('action', { action });
 }
 	function handleZoom(delta: number) {
 		const newZoom = Math.max(10, Math.min(500, zoom + delta));
@@ -143,19 +131,19 @@ https://svelte.dev/e/js_parse_error -->
 			...state,
 			zoom: newZoom
 		}));
-		onzoomChanged?.();
+		dispatch('zoomChanged', { zoom: newZoom });
 }
 </script>
 
-<div class="space-y-4" role="toolbar" aria-label="Canvas tools">
+<div class="container mx-auto px-4" role="toolbar" aria-label="Canvas tools">
 	<!-- Tool Selection -->
-	<div class="space-y-4">
-		<div class="space-y-4">
+	<div class="container mx-auto px-4">
+		<div class="container mx-auto px-4">
 			{#each tools as tool}
 				<button
-					class="space-y-4"
+					class="container mx-auto px-4"
 					class:active={selectedTool === tool.id}
-					onclick={() => selectTool(tool.id)}
+					on:click={() => selectTool(tool.id)}
 					aria-label={tool.label}
 					title={tool.label}
 				>
@@ -165,16 +153,16 @@ https://svelte.dev/e/js_parse_error -->
 		</div>
 	</div>
 
-	<div class="space-y-4"></div>
+	<div class="container mx-auto px-4"></div>
 
 	<!-- Text Formatting -->
-	<div class="space-y-4">
-		<div class="space-y-4">
+	<div class="container mx-auto px-4">
+		<div class="container mx-auto px-4">
 			{#each formatActions as action}
 				<button
-					class="space-y-4"
+					class="container mx-auto px-4"
 					class:active={(formatting as any)[action.id]}
-					onclick={() => toggleFormatting(action.id)}
+					on:click={() => toggleFormatting(action.id)}
 					aria-label={action.label}
 					title={action.label}
 					disabled={selectedTool !== 'text'}
@@ -184,12 +172,12 @@ https://svelte.dev/e/js_parse_error -->
 			{/each}
 		</div>
 
-		<div class="space-y-4">
+		<div class="container mx-auto px-4">
 			{#each alignActions as action}
 				<button
-					class="space-y-4"
+					class="container mx-auto px-4"
 					class:active={formatting.textAlign === action.id}
-					onclick={() => setAlignment(action.id)}
+					on:click={() => setAlignment(action.id)}
 					aria-label={action.label}
 					title={action.label}
 					disabled={selectedTool !== 'text'}
@@ -199,72 +187,72 @@ https://svelte.dev/e/js_parse_error -->
 			{/each}
 		</div>
 
-		<div class="space-y-4">
-			<label class="space-y-4">
+		<div class="container mx-auto px-4">
+			<label class="container mx-auto px-4">
 				<input
 					type="color"
 					value={formatting.color}
-					onchange={(e) => handleColorChange(e, 'color')}
+					on:change={(e) => handleColorChange(e, 'color')}
 					title="Text Color"
 					disabled={selectedTool !== 'text'}
 				/>
-				<span class="space-y-4" style="background-color: {formatting.color}"></span>
+				<span class="container mx-auto px-4" style="background-color: {formatting.color}"></span>
 			</label>
 
-			<label class="space-y-4">
+			<label class="container mx-auto px-4">
 				<input
 					type="range"
 					min="8"
 					max="72"
 					value={formatting.fontSize}
-					oninput={handleFontSizeChange}
+					on:input={handleFontSizeChange}
 					title="Font Size: {formatting.fontSize}px"
 					disabled={selectedTool !== 'text'}
 				/>
-				<span class="space-y-4">{formatting.fontSize}px</span>
+				<span class="container mx-auto px-4">{formatting.fontSize}px</span>
 			</label>
 		</div>
 	</div>
 
-	<div class="space-y-4"></div>
+	<div class="container mx-auto px-4"></div>
 
 	<!-- Drawing Tools -->
-	<div class="space-y-4">
-		<div class="space-y-4">
-			<label class="space-y-4">
+	<div class="container mx-auto px-4">
+		<div class="container mx-auto px-4">
+			<label class="container mx-auto px-4">
 				<input
 					type="color"
 					value={drawing.strokeColor}
-					onchange={(e) => handleColorChange(e, 'color')}
+					on:change={(e) => handleColorChange(e, 'color')}
 					title="Stroke Color"
 					disabled={!['draw', 'rectangle', 'circle'].includes(selectedTool)}
 				/>
-				<span class="space-y-4" style="background-color: {drawing.strokeColor}"></span>
+				<span class="container mx-auto px-4" style="background-color: {drawing.strokeColor}"></span>
 			</label>
 
-			<label class="space-y-4">
+			<label class="container mx-auto px-4">
 				<input
 					type="range"
 					min="1"
 					max="20"
 					value={drawing.strokeWidth}
-					oninput={handleStrokeWidthChange}
+					on:input={handleStrokeWidthChange}
 					title="Stroke Width: {drawing.strokeWidth}px"
 					disabled={!['draw', 'rectangle', 'circle'].includes(selectedTool)}
 				/>
-				<span class="space-y-4">{drawing.strokeWidth}px</span>
+				<span class="container mx-auto px-4">{drawing.strokeWidth}px</span>
 			</label>
 		</div>
 	</div>
 
-	<div class="space-y-4"></div>
+	<div class="container mx-auto px-4"></div>
 
 	<!-- Actions -->
-	<div class="space-y-4">
-		<div class="space-y-4">
+	<div class="container mx-auto px-4">
+		<div class="container mx-auto px-4">
 			<button
-				class="space-y-4"
-				onclick={() => handleAction('undo')}
+				class="container mx-auto px-4"
+				on:click={() => handleAction('undo')}
 				disabled={!canUndo}
 				aria-label="Undo"
 				title="Undo"
@@ -273,8 +261,8 @@ https://svelte.dev/e/js_parse_error -->
 			</button>
 
 			<button
-				class="space-y-4"
-				onclick={() => handleAction('redo')}
+				class="container mx-auto px-4"
+				on:click={() => handleAction('redo')}
 				disabled={!canRedo}
 				aria-label="Redo"
 				title="Redo"
@@ -283,10 +271,10 @@ https://svelte.dev/e/js_parse_error -->
 			</button>
 		</div>
 
-		<div class="space-y-4">
+		<div class="container mx-auto px-4">
 			<button
-				class="space-y-4"
-				onclick={() => handleAction('copy')}
+				class="container mx-auto px-4"
+				on:click={() => handleAction('copy')}
 				aria-label="Copy"
 				title="Copy"
 			>
@@ -294,8 +282,8 @@ https://svelte.dev/e/js_parse_error -->
 			</button>
 
 			<button
-				class="space-y-4"
-				onclick={() => handleAction('delete')}
+				class="container mx-auto px-4"
+				on:click={() => handleAction('delete')}
 				aria-label="Delete"
 				title="Delete"
 			>
@@ -304,25 +292,25 @@ https://svelte.dev/e/js_parse_error -->
 		</div>
 	</div>
 
-	<div class="space-y-4"></div>
+	<div class="container mx-auto px-4"></div>
 
 	<!-- Zoom Controls -->
-	<div class="space-y-4">
-		<div class="space-y-4">
+	<div class="container mx-auto px-4">
+		<div class="container mx-auto px-4">
 			<button
-				class="space-y-4"
-				onclick={() => handleZoom(-10)}
+				class="container mx-auto px-4"
+				on:click={() => handleZoom(-10)}
 				aria-label="Zoom Out"
 				title="Zoom Out"
 			>
 				<ZoomOut size={18} />
 			</button>
 
-			<span class="space-y-4">{zoom}%</span>
+			<span class="container mx-auto px-4">{zoom}%</span>
 
 			<button
-				class="space-y-4"
-				onclick={() => handleZoom(10)}
+				class="container mx-auto px-4"
+				on:click={() => handleZoom(10)}
 				aria-label="Zoom In"
 				title="Zoom In"
 			>

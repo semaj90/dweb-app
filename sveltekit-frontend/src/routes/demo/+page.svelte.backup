@@ -23,10 +23,9 @@
             variant: "primary",
           },
         ],
-      }
+}
     );
-  }
-
+}
   function showErrorNotification() {
     notifications.error(
       "Error Occurred",
@@ -45,24 +44,21 @@
             variant: "secondary",
           },
         ],
-      }
+}
     );
-  }
-
+}
   function showWarningNotification() {
     notifications.warning(
       "Warning",
       "This action may have consequences. Please review before proceeding."
     );
-  }
-
+}
   function showInfoNotification() {
     notifications.info(
       "Information",
       "Here is some useful information about the current process."
     );
-  }
-
+}
   // Demo modal functions
   function showConfirmModal() {
     modals.confirm({
@@ -81,8 +77,7 @@
         notifications.info("Cancelled", "Delete operation was cancelled.");
       },
     });
-  }
-
+}
   function showAlertModal() {
     modals.alert({
       title: "System Maintenance",
@@ -92,8 +87,7 @@
         console.log("Alert dismissed");
       },
     });
-  }
-
+}
   function showPromptModal() {
     modals.prompt({
       title: "Add Note",
@@ -110,8 +104,7 @@
         console.log("Prompt cancelled");
       },
     });
-  }
-
+}
   // Demo form
   const demoFormOptions = {
     initialValues: {
@@ -158,9 +151,7 @@
         "Form submitted!",
         `Welcome ${values.name}! Your account has been created.`
       );
-    }
-  }
-
+}}
   let interactiveCardSelected = false;
 </script>
 
@@ -168,34 +159,34 @@
   <title>UI Components Demo - Legal Case Management</title>
 </svelte:head>
 
-<div class="mx-auto px-4 max-w-7xl">
-  <div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
     <!-- Header -->
-    <div class="mx-auto px-4 max-w-7xl">
-      <h1 class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
+      <h1 class="container mx-auto px-4">
         UI Components Demo
       </h1>
-      <p class="mx-auto px-4 max-w-7xl">
+      <p class="container mx-auto px-4">
         Explore our comprehensive UI component library built with Svelte stores,
         UnoCSS, PicoCSS, Melt UI, and Bits UI. All components feature
         interactive updates, modern styling, and accessibility support.
       </p>
     </div>
 
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <!-- Buttons Demo -->
       <Card variant="elevated" padding="lg">
         <div slot="header">
-          <h2 class="mx-auto px-4 max-w-7xl">
+          <h2 class="container mx-auto px-4">
             Button Variants
           </h2>
-          <p class="mx-auto px-4 max-w-7xl">
+          <p class="container mx-auto px-4">
             Different button styles and states with loading support
           </p>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
-          <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
             <Button variant="primary">Primary</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="secondary">Success</Button>
@@ -204,7 +195,7 @@
             <Button variant="secondary">Info</Button>
           </div>
 
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost">Ghost</Button>
@@ -239,7 +230,7 @@
             </Tooltip>
           </div>
 
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             <Button size="sm">Extra Small</Button>
             <Button size="sm">Small</Button>
             <Button size="md">Medium</Button>
@@ -247,16 +238,16 @@
             <!-- Removed unsupported xl size -->
           </div>
 
-          <div class="mx-auto px-4 max-w-7xl">
-            <Button class="mx-auto px-4 max-w-7xl">
-              <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+          <div class="container mx-auto px-4">
+            <Button class="container mx-auto px-4">
+              <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
               Full Width with Icon
             </Button>
             <Button
               variant="secondary"
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
             >
-              <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+              <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
               Download Report
             </Button>
           </div>
@@ -266,45 +257,45 @@
       <!-- Notifications Demo -->
       <Card variant="elevated" padding="lg">
         <div slot="header">
-          <h2 class="mx-auto px-4 max-w-7xl">
+          <h2 class="container mx-auto px-4">
             Notification System
           </h2>
-          <p class="mx-auto px-4 max-w-7xl">
+          <p class="container mx-auto px-4">
             Toast notifications with actions and auto-dismiss
           </p>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <Button
             variant="secondary"
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             on:click={() => showSuccessNotification()}
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
             Show Success
           </Button>
           <Button
             variant="danger"
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             on:click={() => showErrorNotification()}
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
             Show Error
           </Button>
           <Button
             variant="danger"
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             on:click={() => showWarningNotification()}
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
             Show Warning
           </Button>
           <Button
             variant="secondary"
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             on:click={() => showInfoNotification()}
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
             Show Info
           </Button>
         </div>
@@ -313,40 +304,40 @@
       <!-- Modals Demo -->
       <Card variant="elevated" padding="lg">
         <div slot="header">
-          <h2 class="mx-auto px-4 max-w-7xl">
+          <h2 class="container mx-auto px-4">
             Modal System
           </h2>
-          <p class="mx-auto px-4 max-w-7xl">
+          <p class="container mx-auto px-4">
             Confirm dialogs, alerts, and prompts
           </p>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             type="button"
             on:click={() => showConfirmModal()}
             aria-label="Confirm Dialog"
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
             Confirm Dialog
           </button>
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             type="button"
             on:click={() => showAlertModal()}
             aria-label="Alert Dialog"
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
             Alert Dialog
           </button>
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             type="button"
             on:click={() => showPromptModal()}
             aria-label="Prompt Dialog"
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
             Prompt Dialog
           </button>
         </div>
@@ -355,15 +346,15 @@
       <!-- Interactive Cards Demo -->
       <Card variant="elevated" padding="lg">
         <div slot="header">
-          <h2 class="mx-auto px-4 max-w-7xl">
+          <h2 class="container mx-auto px-4">
             Interactive Cards
           </h2>
-          <p class="mx-auto px-4 max-w-7xl">
+          <p class="container mx-auto px-4">
             Cards with hover effects and selection states
           </p>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <Card
             variant="outlined"
             interactive
@@ -372,16 +363,16 @@
               (interactiveCardSelected = !interactiveCardSelected)}
             padding="md"
           >
-            <div class="mx-auto px-4 max-w-7xl">
+            <div class="container mx-auto px-4">
               <div>
-                <h3 class="mx-auto px-4 max-w-7xl">
+                <h3 class="container mx-auto px-4">
                   Clickable Card
                 </h3>
-                <p class="mx-auto px-4 max-w-7xl">
+                <p class="container mx-auto px-4">
                   Click to select/deselect
                 </p>
               </div>
-              <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
                 {interactiveCardSelected ? "✅" : "⭕"}
               </div>
             </div>
@@ -389,18 +380,18 @@
 
           <Card variant="filled" padding="md">
             <div slot="header">
-              <h3 class="mx-auto px-4 max-w-7xl">
+              <h3 class="container mx-auto px-4">
                 Card with Slots
               </h3>
             </div>
 
-            <p class="mx-auto px-4 max-w-7xl">
+            <p class="container mx-auto px-4">
               This card demonstrates the header and footer slots.
             </p>
 
             <div slot="footer">
               <div
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
               >
                 <span>Footer content</span>
                 <span>Created today</span>
@@ -409,7 +400,7 @@
           </Card>
 
           <Card variant="elevated" loading padding="md">
-            <p class="mx-auto px-4 max-w-7xl">
+            <p class="container mx-auto px-4">
               This card is in a loading state...
             </p>
           </Card>
@@ -417,13 +408,13 @@
       </Card>
 
       <!-- Form Demo -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <Card variant="elevated" padding="lg">
           <div slot="header">
-            <h2 class="mx-auto px-4 max-w-7xl">
+            <h2 class="container mx-auto px-4">
               Advanced Form System
             </h2>
-            <p class="mx-auto px-4 max-w-7xl">
+            <p class="container mx-auto px-4">
               Forms with validation, error handling, and real-time feedback
             </p>
           </div>
@@ -434,7 +425,7 @@
             submitText="Create Account"
             showResetButton={true}
             resetText="Clear Form"
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
             <div
               slot="default"
@@ -445,9 +436,9 @@
               let:isValid
               let:isDirty
             >
-              <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
                 <h3
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 >
                   Account Information
                 </h3>
@@ -518,13 +509,13 @@
                 on:blur={() => formApi.touchField("confirmPassword")}
               />
 
-              <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
                 <label
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 >
                   <input
                     type="checkbox"
-                    class="mx-auto px-4 max-w-7xl"
+                    class="container mx-auto px-4"
                     checked={values.terms || false}
                     on:change={(e) =>
                       formApi.setField(
@@ -536,7 +527,7 @@
                   I agree to the terms and conditions *
                 </label>
                 {#if errors.terms}
-                  <p class="mx-auto px-4 max-w-7xl">
+                  <p class="container mx-auto px-4">
                     {errors.terms}
                   </p>
                 {/if}
@@ -548,23 +539,23 @@
     </div>
 
     <!-- Component Features -->
-    <Card variant="outlined" padding="lg" class="mx-auto px-4 max-w-7xl">
+    <Card variant="outlined" padding="lg" class="container mx-auto px-4">
       <div slot="header">
-        <h2 class="mx-auto px-4 max-w-7xl">
+        <h2 class="container mx-auto px-4">
           🚀 Component Features
         </h2>
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <h3
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"
             ></iconify-icon>
             Modern Styling
           </h3>
-          <ul class="mx-auto px-4 max-w-7xl">
+          <ul class="container mx-auto px-4">
             <li>• UnoCSS utility classes</li>
             <li>• PicoCSS base styles</li>
             <li>• Dark mode support</li>
@@ -572,15 +563,15 @@
           </ul>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <h3
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"
             ></iconify-icon>
             Interactive Updates
           </h3>
-          <ul class="mx-auto px-4 max-w-7xl">
+          <ul class="container mx-auto px-4">
             <li>• Svelte stores integration</li>
             <li>• Real-time state management</li>
             <li>• Optimistic updates</li>
@@ -588,15 +579,15 @@
           </ul>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <h3
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
-            <iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"
+            <iconify-icon data-icon="${1}" class="container mx-auto px-4"
             ></iconify-icon>
             Accessibility
           </h3>
-          <ul class="mx-auto px-4 max-w-7xl">
+          <ul class="container mx-auto px-4">
             <li>• ARIA labels and roles</li>
             <li>• Keyboard navigation</li>
             <li>• Screen reader support</li>

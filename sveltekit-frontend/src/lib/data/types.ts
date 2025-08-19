@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
   canvasStates,
   cases,
@@ -28,6 +27,7 @@ export interface ExtendedUser extends User {
   // UI computed properties for backward compatibility
   username?: string; // alias for email or name
 }
+
 // Helper function to convert User to ExtendedUser
 export function extendUser(user: User): ExtendedUser {
   return {
@@ -36,6 +36,7 @@ export function extendUser(user: User): ExtendedUser {
       user.name || user.email || `${user.firstName} ${user.lastName}`.trim(),
   };
 }
+
 export type Evidence = InferSelectModel<typeof evidence>;
 export type NewEvidence = InferInsertModel<typeof evidence>;
 
@@ -46,6 +47,7 @@ export interface ExtendedEvidence extends Evidence {
   type?: string; // alias for evidenceType
   createdAt?: string | Date; // alias for collectedAt or uploadedAt
 }
+
 // Helper function to convert Evidence to ExtendedEvidence
 export function extendEvidence(evidence: Evidence): ExtendedEvidence {
   return {
@@ -55,6 +57,7 @@ export function extendEvidence(evidence: Evidence): ExtendedEvidence {
     createdAt: evidence.collectedAt || evidence.uploadedAt,
   };
 }
+
 // Enhanced Report Builder types
 export type Report = InferSelectModel<typeof reports>;
 export type NewReport = InferInsertModel<typeof reports>;
@@ -75,6 +78,7 @@ export interface CitationPoint {
   createdAt: Date;
   updatedAt: Date;
 }
+
 export interface NewCitationPoint {
   text: string;
   source: string;
@@ -87,6 +91,7 @@ export interface NewCitationPoint {
   aiSummary?: string;
   relevanceScore?: number;
 }
+
 export type CanvasState = InferSelectModel<typeof canvasStates>;
 export type NewCanvasState = InferInsertModel<typeof canvasStates>;
 
@@ -105,6 +110,7 @@ export interface CaseWithBooks extends Case {
   books?: Book[];
   citationPoints?: CitationPoint[];
 }
+
 // Case Book interface - contains multiple reports and citations
 export interface Book {
   id: string;
@@ -133,6 +139,7 @@ export interface Book {
   createdAt: Date;
   updatedAt: Date;
 }
+
 // Report Editor types
 export interface ReportSection {
   id: string;
@@ -146,11 +153,13 @@ export interface ReportSection {
     canvasStateId?: string; // CanvasState ID if type is 'canvas'
   };
 }
+
 export interface ReportWithSections extends Report {
   sections: ReportSection[];
   citationPoints: CitationPoint[];
   canvasState?: CanvasState;
 }
+
 // AI Integration types
 export interface AIAnalysis {
   id: string;
@@ -168,6 +177,7 @@ export interface AIAnalysis {
   };
   timestamp: Date;
 }
+
 export interface CitationSuggestion {
   id: string;
   text: string;
@@ -176,6 +186,7 @@ export interface CitationSuggestion {
   context: string;
   reasoning: string;
 }
+
 // Fabric.js Canvas types
 export interface CanvasObject {
   id: string;
@@ -187,6 +198,7 @@ export interface CanvasObject {
     annotations?: string[];
   };
 }
+
 export interface CanvasStateData {
   objects: CanvasObject[];
   background?: string;
@@ -207,6 +219,7 @@ export interface CanvasStateData {
     citationIds: string[];
   };
 }
+
 // Search and filtering types
 export interface SearchFilters {
   query?: string;
@@ -221,6 +234,7 @@ export interface SearchFilters {
   confidentialityLevel?: string[];
   status?: string[];
 }
+
 export interface SearchResult {
   id: string;
   type: "report" | "citation" | "evidence" | "case";
@@ -230,6 +244,7 @@ export interface SearchResult {
   metadata: Record<string, any>;
   highlights: string[];
 }
+
 // Export types
 export interface ExportOptions {
   format: "pdf" | "docx" | "html" | "json";
@@ -242,6 +257,7 @@ export interface ExportOptions {
     footer: string;
   };
 }
+
 export interface ExportResult {
   success: boolean;
   downloadUrl?: string;
@@ -252,6 +268,7 @@ export interface ExportResult {
     generatedAt: Date;
   };
 }
+
 // Legacy support for Loki.js (offline/local storage)
 export interface LegacyCitationPoint {
   id: string;
@@ -268,6 +285,7 @@ export interface LegacyCitationPoint {
   createdAt: string; // ISO string for Loki.js compatibility
   updatedAt: string; // ISO string for Loki.js compatibility
 }
+
 // UI State types
 export interface EditorState {
   activeReportId?: string;
@@ -281,6 +299,7 @@ export interface EditorState {
   lastSaved?: Date;
   isDirty: boolean;
 }
+
 export interface SidebarState {
   activeTab: "citations" | "evidence" | "ai-suggestions" | "canvas-tools";
   citationFilters: {
@@ -290,6 +309,7 @@ export interface SidebarState {
   };
   collapsed: boolean;
 }
+
 // Real-time collaboration types (future feature)
 export interface CollaborationState {
   activeUsers: {
@@ -316,10 +336,10 @@ export interface CollaborationState {
     data: any;
   }[];
 }
+
 // AI-related types
 export interface AIResponse {
-  content: string;
-  sources?: any[];
+  response: string;
   confidence?: number;
   contextUsed?: any[];
   suggestions?: string[];
@@ -332,9 +352,9 @@ export interface AIResponse {
     fromCache: boolean;
   };
 }
+
 // Gemma3 Configuration types
 export interface Gemma3Config {
-  model: string;
   temperature: number;
   maxTokens: number;
   topP: number;
@@ -342,6 +362,7 @@ export interface Gemma3Config {
   repeatPenalty: number;
   systemPrompt: string;
 }
+
 // Local Model types
 export interface LocalModel {
   name: string;
@@ -350,6 +371,7 @@ export interface LocalModel {
   size: string;
   available: boolean;
 }
+
 // API Response types
 export interface ApiResponse {
   success: boolean;
@@ -357,6 +379,7 @@ export interface ApiResponse {
   error?: string;
   message?: string;
 }
+
 // Conversation History for AI interactions
 export interface ConversationHistory {
   id: string;

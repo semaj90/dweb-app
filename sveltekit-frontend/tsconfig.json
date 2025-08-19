@@ -25,9 +25,15 @@
     "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": false,
     "assumeChangesOnlyAffectDirectDependencies": true,
-    "downlevelIteration": true
+  "downlevelIteration": true
   },
-  "include": ["ambient.d.ts", "src/**/*.ts", "src/**/*.svelte"],
+  "include": [
+    "ambient.d.ts",
+    "src/**/*.ts",
+    "src/**/*.svelte",
+    "src/types/**/*.d.ts",
+    "../shared/**/*.ts"
+  ],
   "exclude": [
     "node_modules/**",
     "build/**",

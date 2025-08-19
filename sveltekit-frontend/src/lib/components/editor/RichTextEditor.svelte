@@ -18,7 +18,7 @@ https://svelte.dev/e/js_parse_error -->
   import Editor from '@tinymce/tinymce-svelte';
   import { report, reportActions, editorState } from '$lib/stores/report';
   
-  export const initialValue = '';
+  const initialValue = '';
         
   let editorInstance: any;
   let isInitialized = false;
@@ -147,17 +147,20 @@ https://svelte.dev/e/js_parse_error -->
   };
   
   // Reactive updates
-  $effect(() => { if (editorInstance && $report.content !== editorInstance.getContent()) {
-    editorInstance.setContent($report.content);
-}
+  $effect(() => { 
+    if (editorInstance && $report.content !== editorInstance.getContent()) {
+      editorInstance.setContent($report.content);
+    }
+  });
+  
   // Custom methods
-  export const insertContent = (content: string) => {
+  function insertContent(content: string) {
     if (editorInstance) {
       editorInstance.insertContent(content);
-}
-  };
+    }
+  }
   
-  export const insertEvidence = (evidence: any) => {
+  function insertEvidence(evidence: any) {
     const evidenceHtml = `
       <div class="space-y-4" data-evidence-id="${evidence.id}">
         <div class="space-y-4">
@@ -171,13 +174,13 @@ https://svelte.dev/e/js_parse_error -->
     insertContent(evidenceHtml);
   };
   
-  export const getWordCount = () => {
+  function getWordCount() {
     return editorInstance?.plugins.wordcount?.getCount() || 0;
-  };
+  }
   
-  export const getCharCount = () => {
+  function getCharCount() {
     return editorInstance?.plugins.wordcount?.getCharacterCount() || 0;
-  };
+  }
   
   onDestroy(() => {
     editorState.update(s => ({ ...s, isEditing: false }));

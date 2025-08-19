@@ -1,25 +1,15 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    oncitationSelected?: (event?: any) => void;
-    ondeleteCitation?: (event?: any) => void;
-    onupdateCitation?: (event?: any) => void;
-  }
-  let {
-    citations = []
-  }: Props = $props();
-
-
-
   import { Button } from "$lib/components/ui/button";
   import type { Citation } from "$lib/types/api";
   import { Copy, Search, Star, Tag, Trash2 } from "lucide-svelte";
-    import Badge from '$lib/components/ui/Badge.svelte';
-  import { Card } from '$lib/components/ui/card';
+  import { createEventDispatcher } from "svelte";
+  import Badge from '$lib/components/ui/Badge.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
   import Input from '$lib/components/ui/Input.svelte';
 
+  export let citations: Citation[] = [];
 
+  const dispatch = createEventDispatcher();
 
   let searchQuery = "";
   let selectedCategory = "all";
@@ -36,7 +26,7 @@ https://svelte.dev/e/js_parse_error -->
   ];
 
   // Reactive filtering
-  $effect(() => { {
+  $: {
     filteredCitations = citations.filter((citation) => {
       const matchesSearch =
         searchQuery === "" ||
@@ -54,10 +44,10 @@ https://svelte.dev/e/js_parse_error -->
     });
 }
   function selectCitation(citation: Citation) {
-    oncitationSelected?.();
+    dispatch("citationSelected", citation);
 }
   function deleteCitation(citation: Citation) {
-    ondeleteCitation?.();
+    dispatch("deleteCitation", citation);
 }
   function copyCitation(citation: Citation) {
     const citationText = `${citation.content}\n\nSource: ${citation.source}`;
@@ -66,7 +56,7 @@ https://svelte.dev/e/js_parse_error -->
   function toggleFavorite(citation: Citation) {
     // Update favorite status - in real app, this would update the database
     citation.isFavorite = !citation.isFavorite;
-    onupdateCitation?.();
+    dispatch("updateCitation", citation);
 }
   // Drag and drop functionality
   function handleDragStart(event: DragEvent, citation: Citation) {
@@ -77,27 +67,27 @@ https://svelte.dev/e/js_parse_error -->
 }}
 </script>
 
-<div class="space-y-4">
-  <div class="space-y-4">
-    <h2 class="space-y-4">Saved Citations</h2>
-    <p class="space-y-4">
+<div class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
+    <h2 class="container mx-auto px-4">Saved Citations</h2>
+    <p class="container mx-auto px-4">
       {filteredCitations.length} of {citations.length} citations
     </p>
   </div>
 
   <!-- Search and Filters -->
-  <div class="space-y-4">
-    <div class="space-y-4">
-      <Search class="space-y-4" />
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <Search class="container mx-auto px-4" />
       <Input
         type="text"
         placeholder="Search citations..."
         bind:value={searchQuery}
-        class="space-y-4"
+        class="container mx-auto px-4"
       />
     </div>
 
-    <select bind:value={selectedCategory} class="space-y-4">
+    <select bind:value={selectedCategory} class="container mx-auto px-4">
       {#each categories as category}
         <option value={category.value}>{category.label}</option>
       {/each}
@@ -105,58 +95,58 @@ https://svelte.dev/e/js_parse_error -->
   </div>
 
   <!-- Citations List -->
-  <div class="space-y-4">
+  <div class="container mx-auto px-4">
     {#each filteredCitations as citation (citation.id)}
-      <Card class="space-y-4">
-        <div class="space-y-4">
-          <div class="space-y-4">
-            <h3 class="space-y-4">{citation.title}</h3>
-            <div class="space-y-4">
+      <Card class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
+            <h3 class="container mx-auto px-4">{citation.title}</h3>
+            <div class="container mx-auto px-4">
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => toggleFavorite(citation)}
-                class="space-y-4"
+                on:click={() => toggleFavorite(citation)}
+                class="container mx-auto px-4"
               >
-                <Star class="space-y-4" />
+                <Star class="container mx-auto px-4" />
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => copyCitation(citation)}
+                on:click={() => copyCitation(citation)}
                 title="Copy citation"
               >
-                <Copy class="space-y-4" />
+                <Copy class="container mx-auto px-4" />
               </Button>
 
               <Button
                 variant="ghost"
                 size="sm"
-                onclick={() => deleteCitation(citation)}
+                on:click={() => deleteCitation(citation)}
                 title="Delete citation"
-                class="space-y-4"
+                class="container mx-auto px-4"
               >
-                <Trash2 class="space-y-4" />
+                <Trash2 class="container mx-auto px-4" />
               </Button>
             </div>
           </div>
 
-          <div class="space-y-4">
-            <p class="space-y-4">{citation.content}</p>
-            <p class="space-y-4">Source: {citation.source}</p>
+          <div class="container mx-auto px-4">
+            <p class="container mx-auto px-4">{citation.content}</p>
+            <p class="container mx-auto px-4">Source: {citation.source}</p>
 
             {#if citation.notes}
-              <p class="space-y-4">Notes: {citation.notes}</p>
+              <p class="container mx-auto px-4">Notes: {citation.notes}</p>
             {/if}
           </div>
 
           <!-- Tags -->
           {#if citation.tags.length > 0}
-            <div class="space-y-4">
+            <div class="container mx-auto px-4">
               {#each citation.tags as tag}
-                <Badge variant="secondary" class="space-y-4">
-                  <Tag class="space-y-4" />
+                <Badge variant="secondary" class="container mx-auto px-4">
+                  <Tag class="container mx-auto px-4" />
                   {tag}
                 </Badge>
               {/each}
@@ -165,12 +155,12 @@ https://svelte.dev/e/js_parse_error -->
 
           <!-- Drag Handle -->
           <div
-            class="space-y-4"
+            class="container mx-auto px-4"
             draggable={true}
             role="button"
             tabindex={0}
-            ondragstart={(e) => handleDragStart(e, citation)}
-            onkeydown={(e) => {
+            on:dragstart={(e) => handleDragStart(e, citation)}
+            on:keydown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 // For keyboard users, trigger a click event instead
@@ -178,19 +168,19 @@ https://svelte.dev/e/js_parse_error -->
             }"
             title="Drag to insert into report"
           >
-            <div class="space-y-4">
-              <div class="space-y-4"></div>
-              <div class="space-y-4"></div>
-              <div class="space-y-4"></div>
+            <div class="container mx-auto px-4">
+              <div class="container mx-auto px-4"></div>
+              <div class="container mx-auto px-4"></div>
+              <div class="container mx-auto px-4"></div>
             </div>
-            <span class="space-y-4">Drag to report</span>
+            <span class="container mx-auto px-4">Drag to report</span>
           </div>
 
-          <div class="space-y-4">
-            <span class="space-y-4">
+          <div class="container mx-auto px-4">
+            <span class="container mx-auto px-4">
               Saved {new Date(citation.savedAt).toLocaleDateString()}
             </span>
-            <Badge variant="secondary" class="space-y-4">
+            <Badge variant="secondary" class="container mx-auto px-4">
               {citation.category}
             </Badge>
           </div>
@@ -199,13 +189,13 @@ https://svelte.dev/e/js_parse_error -->
     {/each}
 
     {#if filteredCitations.length === 0}
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         {#if searchQuery || selectedCategory !== "all"}
-          <p class="space-y-4">No citations match your search criteria.</p>
+          <p class="container mx-auto px-4">No citations match your search criteria.</p>
           <Button
             variant="secondary"
             size="sm"
-            onclick={() => {
+            on:click={() => {
               searchQuery = "";
               selectedCategory = "all";
             "
@@ -213,8 +203,8 @@ https://svelte.dev/e/js_parse_error -->
             Clear filters
           </Button>
         {:else}
-          <p class="space-y-4">No saved citations yet.</p>
-          <p class="space-y-4">
+          <p class="container mx-auto px-4">No saved citations yet.</p>
+          <p class="container mx-auto px-4">
             Right-click on text in reports to save citations, or add them from
             the search results.
           </p>

@@ -1,984 +1,1407 @@
-<script>
-  import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+<!-- @migration-task Error while migrating Svelte code: Unexpected token
+https://svelte.dev/e/js_parse_error -->
+<script lang="ts">
+  interface Props {
+    data: PageData;
+  }
+  let {
+    data
+  }: Props = $props();
 
+
+
+  import type { Evidence } from '$lib/types';
+  import { browser } from "$app/environment";
+  import { page } from "$app/stores";
+  import EvidenceUploadModal from "$lib/components/modals/EvidenceUploadModal.svelte";
+  import EvidenceValidationModal from "$lib/components/modals/EvidenceValidationModal.svelte";
+  import { Button } from "$lib/components/ui/button";
+  import Tooltip from "$lib/components/ui/Tooltip.svelte";
+  import AdvancedFileUpload from "$lib/components/upload/AdvancedFileUpload.svelte";
+  import ThinkingStyleToggle from "$lib/components/ai/ThinkingStyleToggle.svelte";
+  import {
+    evidenceActions,
+    evidenceGrid,
+    uploadActions,
+  } from "$lib/stores/evidence-store";
+  import { notifications } from "$lib/stores/notification";
+  import { ThinkingProcessor } from "$lib/ai/thinking-processor";
+  import { logSecurityEvent } from "$lib/utils/security";
+  import { Activity, AlertTriangle, Archive, Brain, Calendar, CheckCircle, CheckSquare, Clock, Download, Edit, Eye, FileCheck, FileText, Filter, Grid, Hash, Image, List, Mic, MoreHorizontal, Plus, RefreshCw, Search, Shield, SortAsc, SortDesc, Square, Trash2, Upload, User as UserIcon, Video, XCircle, Zap } from "lucide-svelte";
+  import { onMount } from "svelte";
+
+  import type { PageData } from "./$types";
+  // ... other imports ...
+  
   // State management
-  let isLoading = $state(true);
-  let evidenceFiles = $state([]);
-  let analysisResults = $state([]);
-  let selectedFile = $state(null);
-  let processingStatus = $state('idle');
-  let uploadProgress = $state(0);
+  let validationModal = {
+    open: false,
+    evidence: null as Evidence | null,
+    aiEvent: null as any,
+  };
 
-  // Mock evidence data
-  let mockEvidence = [
-    {
-      id: 'evidence-001',
-      name: 'contract_signed.pdf',
-      type: 'document',
-      size: '2.3 MB',
-      status: 'analyzed',
-      timestamp: '2024-08-18T10:30:00Z',
-      analysis: {
-        confidence: 0.94,
-        entities: ['Person: John Smith', 'Date: 2024-01-15', 'Amount: $50,000'],
-        summary: 'Legal contract document with digital signatures detected'
-      }
-    },
-    {
-      id: 'evidence-002', 
-      name: 'email_thread.eml',
-      type: 'email',
-      size: '156 KB',
-      status: 'processing',
-      timestamp: '2024-08-18T11:15:00Z',
-      analysis: null
-    },
-    {
-      id: 'evidence-003',
-      name: 'financial_records.xlsx',
-      type: 'spreadsheet', 
-      size: '4.7 MB',
-      status: 'pending',
-      timestamp: '2024-08-18T12:00:00Z',
-      analysis: null
-    }
-  ];
+  let analysisModal = {
+    open: false,
+    evidence: null as Evidence | null,
+    result: null as any,
+    loading: false
+  };
 
-  // Navigation function
-  function navigateHome() {
-    goto('/');
-  }
+  let searchQuery = "";
+  let showFilters = false;
+  let showBulkActions = false;
+  let viewMode: "grid" | "list" = "grid";
+  let sortBy = "createdAt";
+  let sortOrder: "asc" | "desc" = "desc";
 
-  function selectFile(file) {
-    selectedFile = file;
-  }
+  // Enhanced AI analysis state
+  let thinkingStyleEnabled = false;
+  let bulkAnalysisMode = false;
+  let analysisInProgress = new Set<string>();
 
-  function getStatusColor(status) {
-    switch (status) {
-      case 'analyzed': return '#00ff41';
-      case 'processing': return '#ffbf00';
-      case 'pending': return '#ff6b6b';
-      default: return '#888';
-    }
-  }
+  // Filtering and selection
+  let selectedEvidence = new Set<string>();
+  let selectedType = "";
+  let selectedStatus = "";
+  let selectedCollector = "";
+  let dateFrom = "";
+  let dateTo = "";
+  let showAdvancedUpload = false;
 
-  function getStatusIcon(status) {
-    switch (status) {
-      case 'analyzed': return '✅';
-      case 'processing': return '⚙️';
-      case 'pending': return '⏳';
-      default: return '❓';
-    }
-  }
+  // Pagination
+  let currentPage = 1;
+  let itemsPerPage = 12;
+  let totalPages = 1;
 
-  function getTypeIcon(type) {
-    switch (type) {
-      case 'document': return '📄';
-      case 'email': return '📧';
-      case 'spreadsheet': return '📊';
-      case 'image': return '🖼️';
-      default: return '📁';
-    }
-  }
+  // Bulk operations
+  let bulkOperationLoading = false;
 
-  // Initialize component
+  // Get case ID from URL if available
+  let caseId = $derived($page.url.searchParams.get("caseId") || undefined;);
+
+  // Reactive values from SSR data and store
+  $effect(() => { ({ isLoading: loading, error } = $evidenceGrid);
+  let allEvidence = $derived(data.evidence || [];);
+  let filteredEvidence = $derived(filterAndSortEvidence(allEvidence););
+  let visibleEvidence = $derived(getPaginatedEvidence(););
+
   onMount(() => {
-    evidenceFiles = mockEvidence;
-    setTimeout(() => {
-      isLoading = false;
-    }, 800);
-
-    // Simulate processing updates
-    const processingInterval = setInterval(() => {
-      evidenceFiles = evidenceFiles.map(file => {
-        if (file.status === 'processing') {
-          return {
-            ...file,
-            status: 'analyzed',
-            analysis: {
-              confidence: 0.87,
-              entities: ['Person: Jane Doe', 'Subject: Meeting Schedule'],
-              summary: 'Email communication analysis completed'
-            }
-          };
-        }
-        return file;
-      });
-    }, 3000);
-
-    return () => clearInterval(processingInterval);
+    // Initialize store with SSR data
+    evidenceActions.setItems(data.evidence || []);
+    // Set case context if available
+    if (caseId) {
+      evidenceActions.loadEvidence(caseId);
+}
   });
+
+  function filterAndSortEvidence(evidence: Evidence[]) {
+    let filtered = [...evidence];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (e) =>
+          e.title?.toLowerCase().includes(query) ||
+          e.description?.toLowerCase().includes(query) ||
+          e.collectedBy?.toLowerCase().includes(query) ||
+          e.tags?.some((tag) => tag.toLowerCase().includes(query))
+      );
+}
+    // Apply type filter
+    if (selectedType) {
+      filtered = filtered.filter((e) => e.evidenceType === selectedType);
+}
+    // Apply status filter - using isAdmissible as a simple status indicator
+    if (selectedStatus) {
+      if (selectedStatus === "admissible") {
+        filtered = filtered.filter((e) => e.isAdmissible);
+      } else if (selectedStatus === "pending") {
+        filtered = filtered.filter((e) => !e.isAdmissible);
+}
+}
+    // Apply collector filter
+    if (selectedCollector) {
+      filtered = filtered.filter((e) =>
+        e.collectedBy?.toLowerCase().includes(selectedCollector.toLowerCase())
+      );
+}
+    // Apply date filters
+    if (dateFrom) {
+      const fromDate = new Date(dateFrom);
+      filtered = filtered.filter(
+        (e) => new Date(e.uploadedAt || 0) >= fromDate
+      );
+}
+    if (dateTo) {
+      const toDate = new Date(dateTo);
+      toDate.setHours(23, 59, 59, 999); // End of day
+      filtered = filtered.filter((e) => new Date(e.uploadedAt || 0) <= toDate);
+}
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aValue = a[sortBy as keyof Evidence];
+      let bValue = b[sortBy as keyof Evidence];
+
+      if (sortBy === "createdAt" || sortBy === "updatedAt") {
+        aValue = new Date(aValue || 0).getTime();
+        bValue = new Date(bValue || 0).getTime();
+      } else if (typeof aValue === "string") {
+        aValue = aValue.toLowerCase();
+        bValue = (bValue as string)?.toLowerCase();
+}
+      if (sortOrder === "asc") {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+}
+    });
+
+    totalPages = Math.ceil(filtered.length / itemsPerPage);
+    currentPage = Math.min(currentPage, totalPages || 1);
+
+    return filtered;
+}
+  function getPaginatedEvidence() {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredEvidence.slice(start, end);
+}
+  // Enhanced AI Analysis Functions
+  async function analyzeEvidence(evidence: Evidence) {
+    if (analysisInProgress.has(evidence.id)) return;
+    
+    analysisInProgress.add(evidence.id);
+    analysisInProgress = analysisInProgress;
+
+    try {
+      const analysis = await ThinkingProcessor.analyzeEvidence(evidence.id, {
+        analysisType: 'reasoning',
+        useThinkingStyle: thinkingStyleEnabled,
+        documentType: 'evidence'
+      });
+
+      analysisModal = {
+        open: true,
+        evidence,
+        result: analysis,
+        loading: false
+      };
+
+      notifications.add({
+        type: "success",
+        title: `Evidence Analysis Complete`,
+        message: `${thinkingStyleEnabled ? 'Detailed thinking' : 'Quick'} analysis completed for ${evidence.title}`,
+      });
+
+    } catch (error) {
+      console.error('Evidence analysis failed:', error);
+      notifications.add({
+        type: "error",
+        title: "Analysis Failed",
+        message: `Failed to analyze evidence: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      });
+    } finally {
+      analysisInProgress.delete(evidence.id);
+      analysisInProgress = analysisInProgress;
+}
+}
+  async function bulkAnalyzeEvidence() {
+    if (selectedEvidence.size === 0) {
+      notifications.add({
+        type: "warning",
+        title: "No Evidence Selected",
+        message: "Please select evidence items to analyze.",
+      });
+      return;
+}
+    bulkOperationLoading = true;
+    const evidenceIds = Array.from(selectedEvidence);
+    let successCount = 0;
+    let failureCount = 0;
+
+    try {
+      for (const evidenceId of evidenceIds) {
+        try {
+          await ThinkingProcessor.analyzeEvidence(evidenceId, {
+            analysisType: 'classification',
+            useThinkingStyle: thinkingStyleEnabled,
+            documentType: 'evidence'
+          });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to analyze evidence ${evidenceId}:`, error);
+          failureCount++;
+}
+}
+      notifications.add({
+        type: successCount > 0 ? "success" : "error",
+        title: "Bulk Analysis Complete",
+        message: `${successCount} evidence items analyzed successfully${failureCount > 0 ? `, ${failureCount} failed` : ''}.`,
+      });
+
+      if (successCount > 0) {
+        await refreshEvidence();
+}
+    } finally {
+      bulkOperationLoading = false;
+      selectedEvidence.clear();
+      selectedEvidence = selectedEvidence;
+      showBulkActions = false;
+}
+}
+  function handleThinkingToggle(event: CustomEvent<{ enabled: boolean }>) {
+    thinkingStyleEnabled = event.detail.enabled;
+    
+    notifications.add({
+      type: "info",
+      title: "Analysis Mode Changed",
+      message: thinkingStyleEnabled 
+        ? "🧠 Thinking Style enabled - detailed reasoning will be shown"
+        : "⚡ Quick Mode enabled - concise analysis results",
+    });
+}
+  function closeAnalysisModal() {
+    analysisModal = {
+      open: false,
+      evidence: null,
+      result: null,
+      loading: false
+    };
+}
+  function formatAnalysisForDisplay(analysis: any): string {
+    if (!analysis) return "No analysis available";
+    
+    let display = "";
+    
+    if (analysis.thinking && thinkingStyleEnabled) {
+      display += `**🧠 AI Reasoning Process:**\n${analysis.thinking}\n\n---\n\n`;
+}
+    if (analysis.analysis) {
+      display += `**📋 Analysis Results:**\n`;
+      const analysisData = analysis.analysis;
+      
+      if (analysisData.key_findings) {
+        display += `\n**Key Findings:**\n`;
+        analysisData.key_findings.forEach((finding: string) => {
+          display += `• ${finding}\n`;
+        });
+}
+      if (analysisData.legal_implications) {
+        display += `\n**Legal Implications:**\n`;
+        analysisData.legal_implications.forEach((implication: string) => {
+          display += `• ${implication}\n`;
+        });
+}
+      if (analysisData.recommendations) {
+        display += `\n**Recommendations:**\n`;
+        analysisData.recommendations.forEach((rec: string) => {
+          display += `• ${rec}\n`;
+        });
+}
+}
+    display += `\n**Confidence:** ${Math.round(analysis.confidence * 100)}%`;
+    
+    return display;
+}
+  function toggleEvidenceSelection(evidenceId: string) {
+    if (selectedEvidence.has(evidenceId)) {
+      selectedEvidence.delete(evidenceId);
+    } else {
+      selectedEvidence.add(evidenceId);
+}
+    selectedEvidence = selectedEvidence;
+    showBulkActions = selectedEvidence.size > 0;
+}
+  function selectAllEvidence() {
+    if (selectedEvidence.size === visibleEvidence.length) {
+      selectedEvidence.clear();
+    } else {
+      visibleEvidence.forEach((e) => selectedEvidence.add(e.id));
+}
+    selectedEvidence = selectedEvidence;
+    showBulkActions = selectedEvidence.size > 0;
+}
+  async function bulkOperation(operation: string) {
+    if (selectedEvidence.size === 0) return;
+
+    bulkOperationLoading = true;
+    try {
+      const evidenceIds = Array.from(selectedEvidence);
+
+      switch (operation) {
+        case "analyze":
+          await bulkAnalyzeEvidence();
+          return; // bulkAnalyzeEvidence handles its own completion
+        case "archive":
+          await Promise.all(
+            evidenceIds.map((id) => updateEvidenceStatus(id, "Archived"))
+          );
+          notifications.add({
+            type: "success",
+            title: "Evidence Archived",
+            message: `${evidenceIds.length} evidence items archived successfully.`,
+          });
+          break;
+        case "verify":
+          await Promise.all(
+            evidenceIds.map((id) => updateEvidenceStatus(id, "Verified"))
+          );
+          notifications.add({
+            type: "success",
+            title: "Evidence Verified",
+            message: `${evidenceIds.length} evidence items verified successfully.`,
+          });
+          break;
+        case "export":
+          await exportEvidence(evidenceIds);
+          notifications.add({
+            type: "success",
+            title: "Evidence Exported",
+            message: `${evidenceIds.length} evidence items exported successfully.`,
+          });
+          break;
+        case "delete":
+          await deleteEvidence(evidenceIds);
+          notifications.add({
+            type: "success",
+            title: "Evidence Deleted",
+            message: `${evidenceIds.length} evidence items deleted successfully.`,
+          });
+          break;
+}
+      selectedEvidence.clear();
+      selectedEvidence = selectedEvidence;
+      showBulkActions = false;
+      await refreshEvidence();
+    } catch (err) {
+      console.error("Bulk operation failed:", err);
+      notifications.add({
+        type: "error",
+        title: "Bulk Operation Failed",
+        message: "Failed to perform bulk operation. Please try again.",
+        duration: 5000,
+      });
+    } finally {
+      bulkOperationLoading = false;
+}
+}
+  async function updateEvidenceStatus(evidenceId: string, status: string) {
+    // Implementation would call API
+    console.log("Updating evidence status:", evidenceId, status);
+}
+  async function exportEvidence(evidenceIds: string[]) {
+    const evidenceToExport = allEvidence.filter((e) =>
+      evidenceIds.includes(e.id)
+    );
+    const dataStr = JSON.stringify(evidenceToExport, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+    if (browser) {
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `evidence_export_${new Date().toISOString().split("T")[0]}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+}
+    // Log security event
+    logSecurityEvent({
+      type: "data_export",
+      details: { evidenceIds, exportType: "bulk" },
+      severity: "medium",
+    });
+}
+  async function deleteEvidence(evidenceIds: string[]) {
+    // Implementation would call API
+    console.log("Deleting evidence:", evidenceIds);
+}
+  async function refreshEvidence() {
+    if (caseId) {
+      await evidenceActions.loadEvidence(caseId);
+}
+}
+  function openUploadModal() {
+    uploadActions.openModal(caseId);
+}
+  function handleEvidenceValidation(event: CustomEvent) {
+    const { evidence, aiEvent } = event.detail;
+    validationModal = {
+      open: true,
+      evidence,
+      aiEvent: aiEvent || null,
+    };
+}
+  function handleValidationComplete(event: CustomEvent) {
+    validationModal.open = false;
+    // Refresh evidence grid to show updated analysis
+    refreshEvidence();
+}
+  function handleAdvancedUpload() {
+    showAdvancedUpload = true;
+}
+  function handleFileUpload(event: CustomEvent) {
+    const { files } = event.detail;
+    // Process uploaded files
+    console.log("Files uploaded:", files);
+    showAdvancedUpload = false;
+    refreshEvidence();
+}
+  function getEvidenceTypeIcon(type: string) {
+    switch (type?.toLowerCase()) {
+      case "document":
+        return FileText;
+      case "image":
+        return Image;
+      case "video":
+        return Video;
+      case "audio":
+        return Mic;
+      default:
+        return FileCheck;
+}
+}
+  function getEvidenceStatusColor(status: string) {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return "badge-warning";
+      case "verified":
+        return "badge-success";
+      case "archived":
+        return "badge-neutral";
+      case "flagged":
+        return "badge-error";
+      default:
+        return "badge-ghost";
+}
+}
+  function getEvidenceStatusIcon(status: string) {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return Clock;
+      case "verified":
+        return CheckCircle;
+      case "archived":
+        return Archive;
+      case "flagged":
+        return AlertTriangle;
+      default:
+        return FileCheck;
+}
+}
+  // Reactive statements
+  $effect(() => { if (
+    searchQuery ||
+    selectedType ||
+    selectedStatus ||
+    selectedCollector ||
+    dateFrom ||
+    dateTo ||
+    sortBy ||
+    sortOrder
+  ) {
+    filteredEvidence = filterAndSortEvidence(allEvidence);
+}
 </script>
 
 <svelte:head>
-  <title>Evidence Analysis - YoRHa Legal AI</title>
-  <meta name="description" content="Digital evidence processing with OCR and AI analysis">
+  <title>Evidence Management - WardenNet Detective Mode</title>
+  <meta
+    name="description"
+    content="Advanced evidence management with secure file handling, chain of custody, and AI-powered analysis"
+  />
 </svelte:head>
 
-<!-- Loading Screen -->
-{#if isLoading}
-  <div class="loading-screen">
-    <div class="loading-content">
-      <div class="loading-icon">🔍</div>
-      <div class="loading-text">INITIALIZING EVIDENCE ANALYSIS SYSTEM...</div>
-      <div class="loading-bar">
-        <div class="loading-progress"></div>
+<div class="space-y-4">
+  <!-- Header Section -->
+  <div
+    class="space-y-4"
+  >
+    <div>
+      <h1 class="space-y-4">Evidence Management</h1>
+      <p class="space-y-4">
+        {#if caseId}
+          Evidence for Case #{caseId}
+        {:else}
+          All Evidence Files
+        {/if}
+        ({filteredEvidence.length} of {allEvidence.length} items)
+      </p>
+    </div>
+
+    <!-- Enhanced Action Buttons with AI Analysis -->
+    <div class="space-y-4">
+      <!-- AI Analysis Toggle -->
+      <div class="space-y-4">
+        <ThinkingStyleToggle 
+          bind:enabled={thinkingStyleEnabled}
+          premium={true}
+          size="sm"
+          ontoggle={handleThinkingToggle}
+        />
       </div>
+
+      <Tooltip content="Refresh evidence list">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => refreshEvidence()}
+          disabled={loading}
+          aria-label="Refresh evidence"
+        >
+          <span class:animate-spin={loading}>
+            <RefreshCw class="space-y-4" />
+          </span>
+        </Button>
+      </Tooltip>
+
+      <Tooltip content="Toggle filters">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => (showFilters = !showFilters)}
+          class="space-y-4"
+          aria-label="Toggle filters"
+          aria-expanded={showFilters}
+        >
+          <Filter class="space-y-4" />
+          Filters
+        </Button>
+      </Tooltip>
+
+      <Tooltip content="Toggle view mode">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+          aria-label="Toggle view mode"
+        >
+          {#if viewMode === "grid"}
+            <List class="space-y-4" />
+          {:else}
+            <Grid class="space-y-4" />
+          {/if}
+        </Button>
+      </Tooltip>
+
+      <Tooltip content="Advanced file upload">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => handleAdvancedUpload()}
+          class="space-y-4"
+        >
+          <Upload class="space-y-4" />
+          Advanced Upload
+        </Button>
+      </Tooltip>
+
+      <Tooltip content="Standard evidence upload">
+        <Button onclick={() => openUploadModal()} class="space-y-4">
+          <Plus class="space-y-4" />
+          Upload Evidence
+        </Button>
+      </Tooltip>
     </div>
   </div>
-{:else}
-  <!-- Main Interface -->
-  <div class="evidence-interface">
-    
-    <!-- Header -->
-    <header class="evidence-header">
-      <div class="header-left">
-        <button class="back-button" onclick={navigateHome}>
-          ← COMMAND CENTER
-        </button>
-        <div class="header-title">
-          <h1>🔍 EVIDENCE ANALYSIS SYSTEM</h1>
-          <div class="header-subtitle">Digital Evidence Processing with OCR and AI</div>
+
+  <!-- Search and Filters -->
+  <div class="space-y-4">
+    <!-- Search Bar -->
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <Search
+          class="space-y-4"
+        />
+        <input
+          type="text"
+          placeholder="Search evidence by title, description, collector, or tags..."
+          class="space-y-4"
+          bind:value={searchQuery}
+          aria-label="Search evidence"
+        />
+      </div>
+
+      <div class="space-y-4">
+        <select
+          class="space-y-4"
+          bind:value={sortBy}
+          aria-label="Sort by field"
+        >
+          <option value="createdAt">Created Date</option>
+          <option value="updatedAt">Updated Date</option>
+          <option value="title">Title</option>
+          <option value="type">Type</option>
+          <option value="status">Status</option>
+          <option value="collectedBy">Collector</option>
+        </select>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          aria-label="Toggle sort order"
+        >
+          {#if sortOrder === "asc"}
+            <SortAsc class="space-y-4" />
+          {:else}
+            <SortDesc class="space-y-4" />
+          {/if}
+        </Button>
+      </div>
+    </div>
+
+    <!-- Advanced Filters -->
+    {#if showFilters}
+      <div
+        class="space-y-4"
+      >
+        <div>
+          <label for="type-filter" class="space-y-4">Evidence Type</label
+          >
+          <select
+            id="type-filter"
+            class="space-y-4"
+            bind:value={selectedType}
+            aria-label="Filter by evidence type"
+          >
+            <option value="">All Types</option>
+            <option value="document">Documents</option>
+            <option value="image">Images</option>
+            <option value="video">Videos</option>
+            <option value="audio">Audio</option>
+            <option value="physical">Physical</option>
+            <option value="digital">Digital</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="status-filter" class="space-y-4">Status</label>
+          <select
+            id="status-filter"
+            class="space-y-4"
+            bind:value={selectedStatus}
+            aria-label="Filter by status"
+          >
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Verified">Verified</option>
+            <option value="Archived">Archived</option>
+            <option value="Flagged">Flagged</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="collector-filter" class="space-y-4"
+            >Collected By</label
+          >
+          <input
+            id="collector-filter"
+            type="text"
+            placeholder="Officer name..."
+            class="space-y-4"
+            bind:value={selectedCollector}
+            aria-label="Filter by collector"
+          />
+        </div>
+
+        <div>
+          <label for="date-from" class="space-y-4">Date From</label>
+          <input
+            id="date-from"
+            type="date"
+            class="space-y-4"
+            bind:value={dateFrom}
+            aria-label="Filter from date"
+          />
+        </div>
+
+        <div>
+          <label for="date-to" class="space-y-4">Date To</label>
+          <input
+            id="date-to"
+            type="date"
+            class="space-y-4"
+            bind:value={dateTo}
+            aria-label="Filter to date"
+          />
         </div>
       </div>
-      
-      <div class="header-stats">
-        <div class="stat-item">
-          <div class="stat-value">{evidenceFiles.length}</div>
-          <div class="stat-label">TOTAL FILES</div>
+
+      <div class="space-y-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => {
+            selectedType = "";
+            selectedStatus = "";
+            selectedCollector = "";
+            dateFrom = "";
+            dateTo = "";
+            searchQuery = "";
+          }}
+        >
+          Clear Filters
+        </Button>
+      </div>
+    {/if}
+  </div>
+
+  <!-- Enhanced Bulk Actions with AI Analysis -->
+  {#if showBulkActions}
+    <div class="space-y-4">
+      <div
+        class="space-y-4"
+      >
+        <div class="space-y-4">
+          <CheckSquare class="space-y-4" />
+          <span class="space-y-4"
+            >{selectedEvidence.size} evidence item(s) selected</span
+          >
         </div>
-        <div class="stat-item">
-          <div class="stat-value">{evidenceFiles.filter(f => f.status === 'analyzed').length}</div>
-          <div class="stat-label">ANALYZED</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value">{evidenceFiles.filter(f => f.status === 'processing').length}</div>
-          <div class="stat-label">PROCESSING</div>
+
+        <div class="space-y-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => bulkOperation("analyze")}
+            disabled={bulkOperationLoading}
+            class="space-y-4"
+          >
+            {#if thinkingStyleEnabled}
+              <Brain class="space-y-4" />
+              Analyze (Thinking)
+            {:else}
+              <Zap class="space-y-4" />
+              Quick Analyze
+            {/if}
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => bulkOperation("verify")}
+            disabled={bulkOperationLoading}
+            class="space-y-4"
+          >
+            <CheckCircle class="space-y-4" />
+            Verify
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => bulkOperation("archive")}
+            disabled={bulkOperationLoading}
+            class="space-y-4"
+          >
+            <Archive class="space-y-4" />
+            Archive
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => bulkOperation("export")}
+            disabled={bulkOperationLoading}
+            class="space-y-4"
+          >
+            <Download class="space-y-4" />
+            Export
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => bulkOperation("delete")}
+            disabled={bulkOperationLoading}
+            class="space-y-4"
+          >
+            <Trash2 class="space-y-4" />
+            Delete
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onclick={() => {
+              selectedEvidence.clear();
+              selectedEvidence = selectedEvidence;
+              showBulkActions = false;
+            }}
+            disabled={bulkOperationLoading}
+          >
+            Cancel
+          </Button>
         </div>
       </div>
-    </header>
+    </div>
+  {/if}
 
-    <!-- Main Content Grid -->
-    <div class="evidence-content">
-      
-      <!-- Evidence Files List -->
-      <section class="evidence-files">
-        <h2 class="section-title">📁 EVIDENCE FILES</h2>
-        
-        <div class="upload-zone">
-          <div class="upload-area">
-            <div class="upload-icon">📤</div>
-            <div class="upload-text">
-              <div class="upload-title">DROP FILES TO ANALYZE</div>
-              <div class="upload-subtitle">Supports PDF, DOC, XLS, EML, TXT, Images</div>
-            </div>
-            <button class="upload-button">BROWSE FILES</button>
-          </div>
+  <!-- Evidence List/Grid -->
+  {#if loading}
+    <div class="space-y-4">
+      <div class="space-y-4"></div>
+      <span class="space-y-4">Loading evidence...</span>
+    </div>
+  {:else if error}
+    <div class="space-y-4" role="alert">
+      <XCircle class="space-y-4" />
+      <div>
+        <h3 class="space-y-4">Error Loading Evidence</h3>
+        <div class="space-y-4">{error}</div>
+      </div>
+      <Button variant="outline" size="sm" onclick={() => refreshEvidence()}>
+        <RefreshCw class="space-y-4" />
+        Retry
+      </Button>
+    </div>
+  {:else if filteredEvidence.length === 0}
+    <div class="space-y-4">
+      <FileCheck class="space-y-4" />
+      <h3 class="space-y-4">
+        {searchQuery ||
+        selectedType ||
+        selectedStatus ||
+        selectedCollector ||
+        dateFrom ||
+        dateTo
+          ? "No matching evidence found"
+          : "No evidence found"}
+      </h3>
+      <p class="space-y-4">
+        {searchQuery ||
+        selectedType ||
+        selectedStatus ||
+        selectedCollector ||
+        dateFrom ||
+        dateTo
+          ? "Try adjusting your search criteria or filters"
+          : "Upload files, documents, and digital evidence to get started"}
+      </p>
+      {#if !searchQuery && !selectedType && !selectedStatus && !selectedCollector && !dateFrom && !dateTo}
+        <div class="space-y-4">
+          <Button onclick={() => openUploadModal()} class="space-y-4">
+            <Plus class="space-y-4" />
+            Upload Evidence
+          </Button>
+          <Button
+            variant="outline"
+            onclick={() => handleAdvancedUpload()}
+            class="space-y-4"
+          >
+            <Upload class="space-y-4" />
+            Advanced Upload
+          </Button>
         </div>
+      {/if}
+    </div>
+  {:else}
+    <!-- Evidence Header Controls -->
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <span class="space-y-4">
+          Showing {(currentPage - 1) * itemsPerPage + 1}-{Math.min(
+            currentPage * itemsPerPage,
+            filteredEvidence.length
+          )} of {filteredEvidence.length} evidence items
+        </span>
 
-        <div class="files-list">
-          {#each evidenceFiles as file (file.id)}
-            <div 
-              class="file-card {selectedFile?.id === file.id ? 'selected' : ''}"
-              onclick={() => selectFile(file)}
+        {#if visibleEvidence.length > 0}
+          <Button
+            variant="ghost"
+            size="sm"
+            onclick={() => selectAllEvidence()}
+            class="space-y-4"
+            aria-label="Select all visible evidence"
+          >
+            {#if selectedEvidence.size === visibleEvidence.length}
+              <CheckSquare class="space-y-4" />
+            {:else}
+              <Square class="space-y-4" />
+            {/if}
+            Select All
+          </Button>
+        {/if}
+      </div>
+    </div>
+
+    <!-- Enhanced Evidence Grid/List View with AI Analysis -->
+    <div class="space-y-4">
+      {#if viewMode === "grid"}
+        <div class="space-y-4">
+          {#each visibleEvidence as evidence}
+            <div
+              class="space-y-4"
             >
-              <div class="file-icon">{getTypeIcon(file.type)}</div>
-              
-              <div class="file-info">
-                <div class="file-name">{file.name}</div>
-                <div class="file-meta">
-                  <span class="file-size">{file.size}</span>
-                  <span class="file-timestamp">{new Date(file.timestamp).toLocaleString()}</span>
+              <div class="space-y-4">
+                <!-- Selection Checkbox -->
+                <div class="space-y-4">
+                  <input
+                    type="checkbox"
+                    class="space-y-4"
+                    checked={selectedEvidence.has(evidence.id)}
+                    onchange={() => toggleEvidenceSelection(evidence.id)}
+                    aria-label="Select evidence {evidence.title ||
+                      'Untitled Evidence'}"
+                  />
+
+                  <div class="space-y-4">
+                    <Tooltip content="Evidence actions">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        tabindex={0}
+                        role="button"
+                        aria-label="Evidence actions menu"
+                      >
+                        <MoreHorizontal class="space-y-4" />
+                      </Button>
+                    </Tooltip>
+                    <ul
+                      tabindex={0}
+                      role="menu"
+                      class="space-y-4"
+                    >
+                      <li>
+                        <a href="/evidence/{evidence.id}" class="space-y-4">
+                          <Eye class="space-y-4" />
+                          View Details
+                        </a>
+                      </li>
+                      <li>
+                        <button 
+                          class="space-y-4"
+                          onclick={() => analyzeEvidence(evidence)}
+                          disabled={analysisInProgress.has(evidence.id)}
+                        >
+                          {#if thinkingStyleEnabled}
+                            <Brain class="space-y-4" />
+                            Analyze (Thinking)
+                          {:else}
+                            <Zap class="space-y-4" />
+                            Quick Analyze
+                          {/if}
+                        </button>
+                      </li>
+                      <li>
+                        <a href="/evidence/{evidence.id}/edit" class="space-y-4">
+                          <Edit class="space-y-4" />
+                          Edit Evidence
+                        </a>
+                      </li>
+                      <li>
+                        <button class="space-y-4">
+                          <Hash class="space-y-4" />
+                          Verify Hash
+                        </button>
+                      </li>
+                      <li>
+                        <button class="space-y-4">
+                          <Trash2 class="space-y-4" />
+                          Delete
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-              
-              <div class="file-status">
-                <div class="status-badge" style="color: {getStatusColor(file.status)}">
-                  {getStatusIcon(file.status)} {file.status.toUpperCase()}
+
+                <!-- Evidence Content -->
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <svelte:component
+                      this={getEvidenceTypeIcon(evidence.evidenceType)}
+                      class="space-y-4"
+                    />
+                    <h2 class="space-y-4">
+                      {evidence.title || "Untitled Evidence"}
+                    </h2>
+                  </div>
+
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      {evidence.evidenceType || "Unknown"}
+                    </div>
+                    <div
+                      class="space-y-4"
+                    >
+                      {evidence.isAdmissible ? "Admissible" : "Pending"}
+                    </div>
+                    {#if evidence.hash}
+                      <div class="space-y-4">
+                        <Shield class="space-y-4" />
+                        Verified
+                      </div>
+                    {/if}
+                    {#if evidence.aiAnalysis && Object.keys(evidence.aiAnalysis).length > 0}
+                      <div class="space-y-4">
+                        <Brain class="space-y-4" />
+                        AI Analyzed
+                      </div>
+                    {/if}
+                  </div>
+
+                  <p class="space-y-4">
+                    {evidence.description
+                      ? evidence.description.length > 120
+                        ? evidence.description.substring(0, 120) + "..."
+                        : evidence.description
+                      : "No description available"}
+                  </p>
+
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      <Calendar class="space-y-4" />
+                      Collected: {evidence.uploadedAt
+                        ? new Date(evidence.uploadedAt).toLocaleDateString()
+                        : "Unknown"}
+                    </div>
+                    {#if evidence.collectedBy}
+                      <div class="space-y-4">
+                        <UserIcon class="space-y-4" />
+                        By: {evidence.collectedBy}
+                      </div>
+                    {/if}
+                    {#if evidence.fileSize}
+                      <div class="space-y-4">
+                        <Activity class="space-y-4" />
+                        Size: {(evidence.fileSize / 1024 / 1024).toFixed(2)} MB
+                      </div>
+                    {/if}
+                  </div>
                 </div>
-              </div>
-              
-              <div class="file-actions">
-                <button class="action-btn">VIEW</button>
-                <button class="action-btn">ANALYZE</button>
+
+                <!-- Enhanced Actions with AI Analysis -->
+                <div class="space-y-4">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onclick={() => analyzeEvidence(evidence)}
+                    disabled={analysisInProgress.has(evidence.id)}
+                    class="space-y-4"
+                  >
+                    {#if analysisInProgress.has(evidence.id)}
+                      <div class="space-y-4"></div>
+                      Analyzing...
+                    {:else if thinkingStyleEnabled}
+                      <Brain class="space-y-4" />
+                      Think
+                    {:else}
+                      <Zap class="space-y-4" />
+                      Analyze
+                    {/if}
+                  </Button>
+                  
+                  <a href="/evidence/{evidence.id}" class="space-y-4">
+                    <Button size="sm">
+                      <Eye class="space-y-4" />
+                      View
+                    </Button>
+                  </a>
+                </div>
               </div>
             </div>
           {/each}
         </div>
-      </section>
+      {:else}
+        <!-- Enhanced List View -->
+        <div class="space-y-4">
+          {#each visibleEvidence as evidence}
+            <div
+              class="space-y-4"
+            >
+              <div class="space-y-4">
+                <input
+                  type="checkbox"
+                  class="space-y-4"
+                  checked={selectedEvidence.has(evidence.id)}
+                  onchange={() => toggleEvidenceSelection(evidence.id)}
+                  aria-label="Select evidence {evidence.title ||
+                    'Untitled Evidence'}"
+                />
 
-      <!-- Analysis Panel -->
-      <section class="analysis-panel">
-        <h2 class="section-title">🧠 AI ANALYSIS</h2>
-        
-        {#if selectedFile}
-          <div class="analysis-content">
-            <div class="file-details">
-              <h3>{selectedFile.name}</h3>
-              <div class="file-metadata">
-                <div class="meta-item">
-                  <span class="meta-label">TYPE:</span>
-                  <span class="meta-value">{selectedFile.type.toUpperCase()}</span>
+                <svelte:component
+                  this={getEvidenceTypeIcon(evidence.evidenceType)}
+                  class="space-y-4"
+                />
+
+                <div class="space-y-4">
+                  <div class="space-y-4">
+                    <div class="space-y-4">
+                      <h3 class="space-y-4">
+                        {evidence.title || "Untitled Evidence"}
+                      </h3>
+                      <p class="space-y-4">
+                        {evidence.description || "No description available"}
+                      </p>
+                    </div>
+
+                    <div class="space-y-4">
+                      <div class="space-y-4">
+                        {evidence.evidenceType || "Unknown"}
+                      </div>
+                      <div
+                        class="space-y-4"
+                      >
+                        {evidence.isAdmissible ? "Admissible" : "Pending"}
+                      </div>
+                      {#if evidence.hash}
+                        <div class="space-y-4">
+                          <Shield class="space-y-4" />
+                          Verified
+                        </div>
+                      {/if}
+                      {#if evidence.aiAnalysis && Object.keys(evidence.aiAnalysis).length > 0}
+                        <div class="space-y-4">
+                          <Brain class="space-y-4" />
+                          AI Analyzed
+                        </div>
+                      {/if}
+                    </div>
+                  </div>
+
+                  <div
+                    class="space-y-4"
+                  >
+                    <div class="space-y-4">
+                      <Calendar class="space-y-4" />
+                      {evidence.uploadedAt
+                        ? new Date(evidence.uploadedAt).toLocaleDateString()
+                        : "Unknown"}
+                    </div>
+                    {#if evidence.collectedBy}
+                      <div class="space-y-4">
+                        <UserIcon class="space-y-4" />
+                        {evidence.collectedBy}
+                      </div>
+                    {/if}
+                    {#if evidence.fileSize}
+                      <div class="space-y-4">
+                        <Activity class="space-y-4" />
+                        {(evidence.fileSize / 1024 / 1024).toFixed(2)} MB
+                      </div>
+                    {/if}
+                  </div>
                 </div>
-                <div class="meta-item">
-                  <span class="meta-label">SIZE:</span>
-                  <span class="meta-value">{selectedFile.size}</span>
-                </div>
-                <div class="meta-item">
-                  <span class="meta-label">STATUS:</span>
-                  <span class="meta-value" style="color: {getStatusColor(selectedFile.status)}">
-                    {selectedFile.status.toUpperCase()}
-                  </span>
+
+                <div class="space-y-4">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onclick={() => analyzeEvidence(evidence)}
+                    disabled={analysisInProgress.has(evidence.id)}
+                    class="space-y-4"
+                  >
+                    {#if analysisInProgress.has(evidence.id)}
+                      <div class="space-y-4"></div>
+                      Analyzing...
+                    {:else if thinkingStyleEnabled}
+                      <Brain class="space-y-4" />
+                      Think
+                    {:else}
+                      <Zap class="space-y-4" />
+                      Analyze
+                    {/if}
+                  </Button>
+
+                  <a href="/evidence/{evidence.id}" class="space-y-4">
+                    <Button size="sm" variant="outline">
+                      <Eye class="space-y-4" />
+                      View
+                    </Button>
+                  </a>
+
+                  <div class="space-y-4">
+                    <Tooltip content="More actions">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        tabindex={0}
+                        role="button"
+                        aria-label="More actions for {evidence.title ||
+                          'Untitled Evidence'}"
+                      >
+                        <MoreHorizontal class="space-y-4" />
+                      </Button>
+                    </Tooltip>
+                    <ul
+                      tabindex={0}
+                      role="menu"
+                      class="space-y-4"
+                    >
+                      <li>
+                        <a href="/evidence/{evidence.id}/edit" class="space-y-4">
+                          <Edit class="space-y-4" />
+                          Edit Evidence
+                        </a>
+                      </li>
+                      <li>
+                        <button class="space-y-4">
+                          <Hash class="space-y-4" />
+                          Verify Hash
+                        </button>
+                      </li>
+                      <li>
+                        <button class="space-y-4">
+                          <Trash2 class="space-y-4" />
+                          Delete
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {#if selectedFile.analysis}
-              <div class="analysis-results">
-                <div class="confidence-score">
-                  <div class="confidence-label">CONFIDENCE SCORE</div>
-                  <div class="confidence-value">{Math.round(selectedFile.analysis.confidence * 100)}%</div>
-                  <div class="confidence-bar">
-                    <div 
-                      class="confidence-fill" 
-                      style="width: {selectedFile.analysis.confidence * 100}%"
-                    ></div>
-                  </div>
-                </div>
-
-                <div class="entities-section">
-                  <h4>EXTRACTED ENTITIES</h4>
-                  <div class="entities-list">
-                    {#each selectedFile.analysis.entities as entity}
-                      <div class="entity-tag">{entity}</div>
-                    {/each}
-                  </div>
-                </div>
-
-                <div class="summary-section">
-                  <h4>AI SUMMARY</h4>
-                  <div class="summary-text">{selectedFile.analysis.summary}</div>
-                </div>
-              </div>
-            {:else if selectedFile.status === 'processing'}
-              <div class="processing-indicator">
-                <div class="processing-spinner">⚙️</div>
-                <div class="processing-text">AI ANALYSIS IN PROGRESS...</div>
-                <div class="processing-stages">
-                  <div class="stage active">OCR EXTRACTION</div>
-                  <div class="stage">ENTITY RECOGNITION</div>
-                  <div class="stage">SEMANTIC ANALYSIS</div>
-                  <div class="stage">CONFIDENCE SCORING</div>
-                </div>
-              </div>
-            {:else}
-              <div class="no-analysis">
-                <div class="no-analysis-icon">⏳</div>
-                <div class="no-analysis-text">ANALYSIS PENDING</div>
-                <button class="start-analysis-btn">START AI ANALYSIS</button>
-              </div>
-            {/if}
-          </div>
-        {:else}
-          <div class="no-selection">
-            <div class="no-selection-icon">📋</div>
-            <div class="no-selection-text">SELECT A FILE TO VIEW ANALYSIS</div>
-          </div>
-        {/if}
-      </section>
+          {/each}
+        </div>
+      {/if}
     </div>
 
-    <!-- Footer Actions -->
-    <footer class="evidence-footer">
-      <div class="footer-actions">
-        <button class="footer-btn primary">BATCH ANALYZE ALL</button>
-        <button class="footer-btn secondary">EXPORT RESULTS</button>
-        <button class="footer-btn secondary">GENERATE REPORT</button>
+    <!-- Pagination -->
+    {#if totalPages > 1}
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <Button
+            variant="outline"
+            size="sm"
+            class="space-y-4"
+            disabled={currentPage === 1}
+            onclick={() => (currentPage = Math.max(1, currentPage - 1))}
+            aria-label="Previous page"
+          >
+            Previous
+          </Button>
+
+          {#each Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            const start = Math.max(1, currentPage - 2);
+            return start + i;
+          }).filter((p) => p <= totalPages) as page}
+            <Button
+              variant={page === currentPage ? "default" : "outline"}
+              size="sm"
+              class="space-y-4"
+              onclick={() => (currentPage = page)}
+              aria-label="Go to page {page}"
+              aria-current={page === currentPage ? "page" : undefined}
+            >
+              {page}
+            </Button>
+          {/each}
+
+          <Button
+            variant="outline"
+            size="sm"
+            class="space-y-4"
+            disabled={currentPage === totalPages}
+            onclick={() =>
+              (currentPage = Math.min(totalPages, currentPage + 1))}
+            aria-label="Next page"
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    {/if}
+  {/if}
+</div>
+
+<!-- Modals -->
+<EvidenceUploadModal />
+
+<EvidenceValidationModal
+  bind:open={validationModal.open}
+  evidence={validationModal.evidence}
+  aiEvent={validationModal.aiEvent}
+  oncomplete={handleValidationComplete}
+/>
+
+<!-- AI Analysis Results Modal -->
+{#if analysisModal.open && analysisModal.evidence && analysisModal.result}
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <div class="space-y-4">
+        <h3 class="space-y-4">
+          {#if thinkingStyleEnabled}
+            <Brain class="space-y-4" />
+            Thinking Style Analysis
+          {:else}
+            <Zap class="space-y-4" />
+            Quick Analysis
+          {/if}
+          - {analysisModal.evidence.title}
+        </h3>
+        <Button variant="ghost" size="sm" onclick={closeAnalysisModal}>
+          ✕
+        </Button>
       </div>
       
-      <div class="footer-info">
-        <div class="system-status">
-          <span class="status-label">AI ENGINE:</span>
-          <span class="status-value active">OPERATIONAL</span>
+      <div class="space-y-4">
+        <div class="space-y-4">
+          <div class="space-y-4">{formatAnalysisForDisplay(analysisModal.result)}</div>
         </div>
-        <div class="timestamp">LAST UPDATE: {new Date().toLocaleString()}</div>
+        
+        {#if analysisModal.result.reasoning_steps && analysisModal.result.reasoning_steps.length > 0}
+          <div class="space-y-4">
+            <h4 class="space-y-4">Reasoning Steps:</h4>
+            <ol class="space-y-4">
+              {#each analysisModal.result.reasoning_steps as step}
+                <li class="space-y-4">{step}</li>
+              {/each}
+            </ol>
+          </div>
+        {/if}
       </div>
-    </footer>
+      
+      <div class="space-y-4">
+        <Button variant="outline" onclick={closeAnalysisModal}>Close</Button>
+        <Button onclick={() => {
+          // Save analysis or perform other actions
+          closeAnalysisModal();
+        }}>Save Analysis</Button>
+      </div>
+    </div>
+    <div class="space-y-4" onclick={closeAnalysisModal}></div>
+  </div>
+{/if}
+
+{#if showAdvancedUpload}
+  <div class="space-y-4">
+    <div class="space-y-4">
+      <h3 class="space-y-4">Advanced Evidence Upload</h3>
+      <AdvancedFileUpload
+        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt,.json"
+        multiple={true}
+        maxFiles={10}
+        maxFileSize={50 * 1024 * 1024}
+        onupload={handleFileUpload}
+        oncancel={() => (showAdvancedUpload = false)}
+      />
+    </div>
+    <div
+      class="space-y-4"
+      role="button"
+      tabindex={0}
+      aria-label="Close modal"
+      onclick={() => (showAdvancedUpload = false)}
+      onkeydown={(e) => e.key === "Escape" && (showAdvancedUpload = false)}
+    ></div>
   </div>
 {/if}
 
 <style>
-  /* === GLOBAL VARIABLES === */
-  :global(:root) {
-    --yorha-primary: #c4b49a;
-    --yorha-secondary: #b5a48a;
-    --yorha-accent-warm: #ffbf00;
-    --yorha-accent-cool: #4ecdc4;
-    --yorha-success: #00ff41;
-    --yorha-warning: #ffbf00;
-    --yorha-error: #ff6b6b;
-    --yorha-light: #ffffff;
-    --yorha-muted: #f0f0f0;
-    --yorha-dark: #1a1a1a;
-    --yorha-darker: #0a0a0a;
-    --yorha-bg: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-  }
-
-  /* === LOADING SCREEN === */
-  .loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: var(--yorha-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--yorha-light);
-  }
-
-  .loading-content {
-    text-align: center;
-    animation: fadeInUp 0.8s ease-out;
-  }
-
-  .loading-icon {
-    font-size: 4rem;
-    margin-bottom: 2rem;
-    color: var(--yorha-accent-warm);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  .loading-text {
-    font-size: 1.2rem;
-    color: var(--yorha-muted);
-    letter-spacing: 2px;
-    margin-bottom: 2rem;
-  }
-
-  .loading-bar {
-    width: 300px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+  /* @unocss-include */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    margin: 0 auto;
-  }
-
-  .loading-progress {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, var(--yorha-accent-warm), var(--yorha-success));
-    animation: loading 2s ease-in-out infinite;
-  }
-
-  /* === MAIN INTERFACE === */
-  .evidence-interface {
-    min-height: 100vh;
-    background: var(--yorha-bg);
-    color: var(--yorha-light);
-    font-family: 'JetBrains Mono', monospace;
-    animation: fadeIn 0.5s ease-out;
-  }
-
-  /* === HEADER === */
-  .evidence-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem;
-    border-bottom: 2px solid var(--yorha-accent-warm);
-    background: rgba(26, 26, 26, 0.9);
-    backdrop-filter: blur(10px);
-  }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  .back-button {
-    background: transparent;
-    border: 2px solid var(--yorha-accent-cool);
-    color: var(--yorha-accent-cool);
-    padding: 0.8rem 1.5rem;
-    font-family: inherit;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .back-button:hover {
-    background: var(--yorha-accent-cool);
-    color: var(--yorha-dark);
-    transform: translateX(-5px);
-  }
-
-  .header-title h1 {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, var(--yorha-accent-warm), var(--yorha-success));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .header-subtitle {
-    font-size: 0.9rem;
-    color: var(--yorha-muted);
-    margin-top: 0.5rem;
-    letter-spacing: 1px;
-  }
-
-  .header-stats {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .stat-item {
-    text-align: center;
-  }
-
-  .stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--yorha-accent-warm);
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-size: 0.7rem;
-    color: var(--yorha-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 0.3rem;
-  }
-
-  /* === MAIN CONTENT === */
-  .evidence-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    padding: 2rem;
-    min-height: calc(100vh - 250px);
-  }
-
-  /* === EVIDENCE FILES SECTION === */
-  .evidence-files {
-    background: rgba(26, 26, 26, 0.8);
-    border: 1px solid rgba(255, 191, 0, 0.3);
-    border-radius: 8px;
-    padding: 1.5rem;
-  }
-
-  .section-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--yorha-accent-warm);
-    margin: 0 0 1.5rem 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255, 191, 0, 0.3);
-  }
-
-  .upload-zone {
-    margin-bottom: 2rem;
-  }
-
-  .upload-area {
-    border: 2px dashed rgba(78, 205, 196, 0.5);
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
-
-  .upload-area:hover {
-    border-color: var(--yorha-accent-cool);
-    background: rgba(78, 205, 196, 0.05);
-  }
-
-  .upload-icon {
-    font-size: 3rem;
-    color: var(--yorha-accent-cool);
-    margin-bottom: 1rem;
-  }
-
-  .upload-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--yorha-light);
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .upload-subtitle {
-    font-size: 0.9rem;
-    color: var(--yorha-muted);
-    margin-bottom: 1.5rem;
-  }
-
-  .upload-button {
-    background: var(--yorha-accent-cool);
-    color: var(--yorha-dark);
-    border: none;
-    padding: 1rem 2rem;
-    font-family: inherit;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 4px;
-  }
-
-  .upload-button:hover {
-    background: var(--yorha-success);
-    transform: scale(1.05);
-  }
-
-  .files-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .file-card {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    gap: 1rem;
-    align-items: center;
-    background: rgba(42, 42, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    padding: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .file-card:hover {
-    border-color: var(--yorha-accent-warm);
-    background: rgba(42, 42, 42, 0.8);
-    transform: translateY(-2px);
-  }
-
-  .file-card.selected {
-    border-color: var(--yorha-success);
-    background: rgba(0, 255, 65, 0.1);
-  }
-
-  .file-icon {
-    font-size: 2rem;
-  }
-
-  .file-info {
-    min-width: 0;
-  }
-
-  .file-name {
-    font-weight: 600;
-    color: var(--yorha-light);
-    margin-bottom: 0.3rem;
-    text-overflow: ellipsis;
+}
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    white-space: nowrap;
-  }
-
-  .file-meta {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.8rem;
-    color: var(--yorha-muted);
-  }
-
-  .status-badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    padding: 0.3rem 0.6rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    border: 1px solid currentColor;
-    text-transform: uppercase;
-  }
-
-  .file-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .action-btn {
-    background: transparent;
-    border: 1px solid var(--yorha-accent-cool);
-    color: var(--yorha-accent-cool);
-    padding: 0.4rem 0.8rem;
-    font-family: inherit;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 3px;
-  }
-
-  .action-btn:hover {
-    background: var(--yorha-accent-cool);
-    color: var(--yorha-dark);
-  }
-
-  /* === ANALYSIS PANEL === */
-  .analysis-panel {
-    background: rgba(26, 26, 26, 0.8);
-    border: 1px solid rgba(255, 191, 0, 0.3);
-    border-radius: 8px;
-    padding: 1.5rem;
-  }
-
-  .analysis-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .file-details h3 {
-    font-size: 1.2rem;
-    color: var(--yorha-light);
-    margin: 0 0 1rem 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .file-metadata {
-    display: grid;
-    gap: 0.5rem;
-  }
-
-  .meta-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-  }
-
-  .meta-label {
-    color: var(--yorha-muted);
-    font-weight: 600;
-  }
-
-  .meta-value {
-    color: var(--yorha-light);
-  }
-
-  .confidence-score {
-    padding: 1rem;
-    background: rgba(42, 42, 42, 0.6);
-    border-radius: 6px;
-    border: 1px solid rgba(0, 255, 65, 0.3);
-  }
-
-  .confidence-label {
-    font-size: 0.8rem;
-    color: var(--yorha-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.5rem;
-  }
-
-  .confidence-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--yorha-success);
-    margin-bottom: 0.5rem;
-  }
-
-  .confidence-bar {
-    width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-
-  .confidence-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--yorha-success), var(--yorha-accent-warm));
-    transition: width 0.5s ease;
-  }
-
-  .entities-section h4,
-  .summary-section h4 {
-    font-size: 1rem;
-    color: var(--yorha-accent-warm);
-    margin: 0 0 1rem 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .entities-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .entity-tag {
-    background: rgba(78, 205, 196, 0.2);
-    color: var(--yorha-accent-cool);
-    padding: 0.4rem 0.8rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    border: 1px solid var(--yorha-accent-cool);
-  }
-
-  .summary-text {
-    color: var(--yorha-light);
-    line-height: 1.6;
-    padding: 1rem;
-    background: rgba(42, 42, 42, 0.4);
-    border-radius: 6px;
-    border-left: 3px solid var(--yorha-accent-warm);
-  }
-
-  .processing-indicator {
-    text-align: center;
-    padding: 2rem;
-  }
-
-  .processing-spinner {
-    font-size: 3rem;
-    animation: spin 2s linear infinite;
-    margin-bottom: 1rem;
-  }
-
-  .processing-text {
-    font-size: 1.1rem;
-    color: var(--yorha-warning);
-    margin-bottom: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .processing-stages {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .stage {
-    padding: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    color: var(--yorha-muted);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .stage.active {
-    border-color: var(--yorha-warning);
-    background: rgba(255, 191, 0, 0.1);
-    color: var(--yorha-warning);
-  }
-
-  .no-analysis,
-  .no-selection {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: var(--yorha-muted);
-  }
-
-  .no-analysis-icon,
-  .no-selection-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-  }
-
-  .no-analysis-text,
-  .no-selection-text {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .start-analysis-btn {
-    background: var(--yorha-success);
-    color: var(--yorha-dark);
-    border: none;
-    padding: 1rem 2rem;
-    font-family: inherit;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 4px;
-  }
-
-  .start-analysis-btn:hover {
-    background: var(--yorha-accent-warm);
-    transform: scale(1.05);
-  }
-
-  /* === FOOTER === */
-  .evidence-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2rem;
-    border-top: 2px solid var(--yorha-accent-warm);
-    background: rgba(26, 26, 26, 0.9);
-  }
-
-  .footer-actions {
-    display: flex;
-    gap: 1rem;
-  }
-
-  .footer-btn {
-    padding: 1rem 2rem;
-    font-family: inherit;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 4px;
-  }
-
-  .footer-btn.primary {
-    background: var(--yorha-success);
-    color: var(--yorha-dark);
-    border: none;
-  }
-
-  .footer-btn.primary:hover {
-    background: var(--yorha-accent-warm);
-    transform: scale(1.05);
-  }
-
-  .footer-btn.secondary {
-    background: transparent;
-    color: var(--yorha-accent-cool);
-    border: 2px solid var(--yorha-accent-cool);
-  }
-
-  .footer-btn.secondary:hover {
-    background: var(--yorha-accent-cool);
-    color: var(--yorha-dark);
-  }
-
-  .footer-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .system-status {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .status-label {
-    color: var(--yorha-muted);
-  }
-
-  .status-value.active {
-    color: var(--yorha-success);
-    font-weight: 600;
-  }
-
-  .timestamp {
-    color: var(--yorha-muted);
-  }
-
-  /* === ANIMATIONS === */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(50px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes loading {
-    0% { transform: translateX(-100%); }
-    50% { transform: translateX(0%); }
-    100% { transform: translateX(100%); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); }
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* === RESPONSIVE DESIGN === */
-  @media (max-width: 1200px) {
-    .evidence-content {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .evidence-header {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
-    }
-
-    .header-left {
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .header-stats {
-      gap: 1rem;
-    }
-
-    .file-card {
-      grid-template-columns: auto 1fr;
-      grid-template-rows: auto auto;
-      gap: 0.5rem;
-    }
-
-    .file-actions {
-      grid-column: 1 / -1;
-      justify-content: center;
-    }
-
-    .footer-actions {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-  }
+}
 </style>

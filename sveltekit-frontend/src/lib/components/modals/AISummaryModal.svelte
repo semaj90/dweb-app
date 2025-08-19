@@ -15,12 +15,12 @@ https://svelte.dev/e/js_parse_error -->
     let copied = false;
 
   // Use the Svelte store reactively
-  let summary = $derived($aiService.summary;);
-  let isLoading = $derived($aiService.isLoading;);
-  let error = $derived($aiService.error;);
-  let model = $derived($aiService.model;);
-  let lastSummarizedContent = $derived($aiService.lastSummarizedContent;);
-  let isOpen = $derived(isLoading || summary !== null || error !== null;);
+  let summary = $derived($aiService.summary);
+  let isLoading = $derived($aiService.isLoading);
+  let error = $derived($aiService.error);
+  let model = $derived($aiService.model);
+  let lastSummarizedContent = $derived($aiService.lastSummarizedContent);
+  let isOpen = $derived(isLoading || summary !== null || error !== null);
 
   async function copyToClipboard() {
     if (summary) {

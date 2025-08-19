@@ -1,29 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    evidence: ExtendedEvidence;
-    onView: (evidence: Evidence) ;
-    onEdit: (evidence: Evidence) ;
-    onDelete: (evidence: Evidence) ;
-    onDownload: (evidence: Evidence) ;
-    draggable?: any;
-    compact?: any;
-    expandOnHover?: any;
-  }
-  let {
-    evidence,
-    onView = > void = () => {},
-    onEdit = > void = () => {},
-    onDelete = > void = () => {},
-    onDownload = > void = () => {},
-    draggable = true,
-    compact = false,
-    expandOnHover = false
-  }: Props = $props();
-
-
-
   import { createTooltip, melt } from "@melt-ui/svelte";
   import {
     Download,
@@ -48,7 +23,15 @@ https://svelte.dev/e/js_parse_error -->
     updatedAt?: Date | string;
   };
 
-                  export const showPreview = true;
+  export let evidence: ExtendedEvidence;
+  export let onView: (evidence: Evidence) => void = () => {};
+  export let onEdit: (evidence: Evidence) => void = () => {};
+  export let onDelete: (evidence: Evidence) => void = () => {};
+  export let onDownload: (evidence: Evidence) => void = () => {};
+  export let draggable = true;
+  export let compact = false;
+  export let expandOnHover = false;
+  export const showPreview = true;
 
   const {
     elements: { trigger: tooltipTrigger, content: tooltipContent },
@@ -87,7 +70,7 @@ https://svelte.dev/e/js_parse_error -->
   const fileSize = evidence.metadata?.size || evidence.fileSize || 0;
   let isHovered = false;
 
-  let IconComponent = $derived(getIcon();
+  $: IconComponent = getIcon(
     ["document", "image", "video", "audio", "link"].includes(evidence.evidenceType || evidence.type)
       ? (evidence.evidenceType || evidence.type) as Evidence["type"]
       : "document"
@@ -111,9 +94,9 @@ https://svelte.dev/e/js_parse_error -->
     {compact ? 'text-sm' : ''}
     {draggable ? 'cursor-grab active:cursor-grabbing' : ''}
     {isHovered ? 'scale-105 z-10 shadow-2xl' : ''}"
-  transitionscale={{ duration: 200, easing: quintOut }}
-  onmouseenter={handleMouseEnter}
-  onmouseleave={handleMouseLeave}
+  transition:scale={{ duration: 200, easing: quintOut }}
+  on:mouseenter={handleMouseEnter}
+  on:mouseleave={handleMouseLeave}
   role="article"
 >
   <!-- Header -->
@@ -143,7 +126,7 @@ https://svelte.dev/e/js_parse_error -->
     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-blue-600"
-        onclick={() => onView(evidence as Evidence)}
+        on:click={() => onView(evidence as Evidence)}
         title="View evidence"
       >
         <Eye size={14} />
@@ -152,7 +135,7 @@ https://svelte.dev/e/js_parse_error -->
       {#if evidence.url || evidence.file}
         <button
           class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-indigo-600"
-          onclick={() => onDownload(evidence as Evidence)}
+          on:click={() => onDownload(evidence as Evidence)}
           title="Download"
         >
           <Download size={14} />
@@ -161,7 +144,7 @@ https://svelte.dev/e/js_parse_error -->
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-green-600"
-        onclick={() => onEdit(evidence as Evidence)}
+        on:click={() => onEdit(evidence as Evidence)}
         title="Edit evidence"
       >
         <PenLine size={14} />
@@ -169,7 +152,7 @@ https://svelte.dev/e/js_parse_error -->
 
       <button
         class="flex items-center justify-center w-7 h-7 rounded text-gray-500 hover:bg-gray-100 hover:text-red-600"
-        onclick={() => onDelete(evidence as Evidence)}
+        on:click={() => onDelete(evidence as Evidence)}
         title="Delete evidence"
       >
         <Trash2 size={14} />
@@ -187,7 +170,7 @@ https://svelte.dev/e/js_parse_error -->
           alt={evidence.title}
           loading="lazy"
           class="w-full h-auto max-h-48 object-cover"
-          onerror={(e) => {
+          on:error={(e) => {
             const target = e.currentTarget as HTMLImageElement;
             target.style.display = "none";
           }}
@@ -275,7 +258,7 @@ https://svelte.dev/e/js_parse_error -->
   <div
     use:melt={$tooltipContent}
     class="mx-auto px-4"
-    transitionfly={{ y: -5, duration: 150 }}
+    transition:fly={{ y: -5, duration: 150 }}
   >
     <div class="mx-auto px-4">
       <strong>{evidence.title}</strong>

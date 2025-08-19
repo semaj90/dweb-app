@@ -3,13 +3,16 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
+	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
@@ -260,9 +263,9 @@ func (h *FileMergeHandler) GetFiles(c *gin.Context) {
 	}
 
 	query := `
-		SELECT id, filename, original_path, size, mime_type, checksum, 
+		SELECT id, filename, original_path, size, mime_type, checksum,
 		       uploaded_at, tags, case_id, user_id, vector_id
-		FROM file_metadata 
+		FROM file_metadata
 		WHERE user_id = $1
 	`
 	args := []interface{}{userID}
@@ -457,21 +460,27 @@ func (h *FileMergeHandler) DownloadFile(c *gin.Context) {
 // Helper functions
 
 func generateFileID() string {
-	return fmt.Sprintf("file_%d_%s", time.Now().UnixNano(), randomString(8))
-}
-
 func randomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
-	result := make([]byte, length)
-	for i := range result {
-		result[i] = charset[time.Now().UnixNano()%int64(len(charset))]
+	b := make([]byte, length)
+	for i := range b {
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			// Fallback to time-based index if crypto/rand fails
+			b[i] = charset[time.Now().UnixNano()%int64(len(charset))]
+			continue
+		}
+		b[i] = charset[n.Int64()]
+	}
+	return string(b)
+}
 	}
 	return string(result)
 }
 
 func (h *FileMergeHandler) saveFileMetadata(metadata *FileMetadata) error {
 	tagsJSON, _ := json.Marshal(metadata.Tags)
-	
+
 	_, err := h.db.Exec(`
 		INSERT INTO file_metadata (
 			id, filename, original_path, size, mime_type, checksum,
@@ -480,66 +489,72 @@ func (h *FileMergeHandler) saveFileMetadata(metadata *FileMetadata) error {
 	`, metadata.ID, metadata.Filename, metadata.OriginalPath, metadata.Size,
 		metadata.MimeType, metadata.Checksum, metadata.UploadedAt,
 		string(tagsJSON), metadata.CaseID, metadata.UserID)
-	
+
 	return err
 }
 
 func (h *FileMergeHandler) saveMergeOperation(operation *MergeOperation) error {
 	sourceFilesJSON, _ := json.Marshal(operation.SourceFiles)
-	
+
 	_, err := h.db.Exec(`
 		INSERT INTO merge_operations (
 			id, source_files, target_filename, merge_type, status,
-			progress, user_id, case_id, created_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-	`, operation.ID, string(sourceFilesJSON), operation.TargetFilename,
-		operation.MergeType, operation.Status, operation.Progress,
-		operation.UserID, operation.CaseID, operation.CreatedAt)
-	
-	return err
-}
-
 func (h *FileMergeHandler) generateEmbedding(text string) (string, error) {
-	// This would call your Ollama service to generate embeddings
-	// For now, return a placeholder
 	payload := map[string]interface{}{
 		"model":  "nomic-embed-text",
 		"prompt": text,
 	}
-	
 	payloadBytes, _ := json.Marshal(payload)
-	
-	resp, err := http.Post("http://localhost:11434/api/embeddings",
-		"application/json", bytes.NewBuffer(payloadBytes))
+
+	resp, err := http.Post("http://localhost:11434/api/embeddings", "application/json", bytes.NewBuffer(payloadBytes))
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
-	
-	var result map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	if err != nil {
+
+	if resp.StatusCode != http.StatusOK {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return "", fmt.Errorf("embedding service returned %d: %s", resp.StatusCode, string(bodyBytes))
+	}
+
+	// Strongly typed decode
+	var result struct {
+		Embedding []float64 `json:"embedding"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return "", err
 	}
-	
-	// Convert embedding to PostgreSQL vector format
-	embedding := result["embedding"].([]interface{})
-	embeddingStr := "["
-	for i, val := range embedding {
+	if len(result.Embedding) == 0 {
+		return "", errors.New("empty embedding returned")
+	}
+
+	var builder strings.Builder
+	builder.WriteByte('[')
+	for i, v := range result.Embedding {
+		if i > 0 {
+			builder.WriteByte(',')
+		}
+		// Use consistent floating format
+		builder.WriteString(fmt.Sprintf("%f", v))
+	}
+	builder.WriteByte(']')
+
+	return builder.String(), nil
+}
 		if i > 0 {
 			embeddingStr += ","
 		}
 		embeddingStr += fmt.Sprintf("%f", val)
 	}
 	embeddingStr += "]"
-	
+
 	return embeddingStr, nil
 }
 
 func (h *FileMergeHandler) processEmbeddings(metadata *FileMetadata, content []byte) {
 	// Extract text content based on file type
 	var textContent string
-	
+
 	if strings.HasPrefix(metadata.MimeType, "text/") {
 		textContent = string(content)
 	} else if metadata.MimeType == "application/pdf" {
@@ -549,14 +564,14 @@ func (h *FileMergeHandler) processEmbeddings(metadata *FileMetadata, content []b
 		// Skip non-text files
 		return
 	}
-	
+
 	// Generate embedding
 	embedding, err := h.generateEmbedding(textContent)
 	if err != nil {
 		log.Printf("Failed to generate embedding for file %s: %v", metadata.ID, err)
 		return
 	}
-	
+
 	// Store in document_embeddings table
 	_, err = h.db.Exec(`
 		INSERT INTO document_embeddings (file_id, content, embedding)
@@ -565,7 +580,7 @@ func (h *FileMergeHandler) processEmbeddings(metadata *FileMetadata, content []b
 			content = EXCLUDED.content,
 			embedding = EXCLUDED.embedding
 	`, metadata.ID, textContent, embedding)
-	
+
 	if err != nil {
 		log.Printf("Failed to store embedding for file %s: %v", metadata.ID, err)
 	}
@@ -574,19 +589,19 @@ func (h *FileMergeHandler) processEmbeddings(metadata *FileMetadata, content []b
 func (h *FileMergeHandler) processMergeOperation(operation *MergeOperation, tags map[string]interface{}) {
 	// Update status to processing
 	h.db.Exec("UPDATE merge_operations SET status = 'processing', progress = 10 WHERE id = $1", operation.ID)
-	
+
 	// Simulate merge operation (you would implement actual merging logic here)
 	time.Sleep(2 * time.Second)
 	h.db.Exec("UPDATE merge_operations SET progress = 50 WHERE id = $1", operation.ID)
-	
+
 	time.Sleep(2 * time.Second)
 	h.db.Exec("UPDATE merge_operations SET progress = 90 WHERE id = $1", operation.ID)
-	
+
 	// Complete operation
 	completedAt := time.Now()
 	h.db.Exec(`
-		UPDATE merge_operations 
-		SET status = 'completed', progress = 100, completed_at = $1 
+		UPDATE merge_operations
+		SET status = 'completed', progress = 100, completed_at = $1
 		WHERE id = $2
 	`, completedAt, operation.ID)
 }

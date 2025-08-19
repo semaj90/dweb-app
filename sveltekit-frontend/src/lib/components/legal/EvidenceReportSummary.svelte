@@ -1,12 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    evidenceId: string;;
-    caseId: string;;
-    reportData: EvidenceReport;;
-    allowExport: boolean ;
-  }
+  import type { Props } from "$lib/types/global";
+
   let {
     evidenceId,
     caseId,
@@ -28,62 +22,22 @@ https://svelte.dev/e/js_parse_error -->
     Target,
   } from "lucide-svelte";
   import AISummaryReader from "./AISummaryReader.svelte";
-
-
   interface EvidenceReport {
-    id: string;
-    title: string;
-    type:
-      | "digital_forensics"
-      | "dna_analysis"
-      | "ballistics"
-      | "financial"
-      | "document_analysis"
-      | "witness_statement";
-    status: "pending" | "in_progress" | "completed" | "reviewed" | "challenged";
-    priority: "low" | "medium" | "high" | "critical";
-    createdAt: string;
-    updatedAt: string;
-    analyst: {
-      name: string;
-      credentials: string;
-      department: string;
-    };
-    evidence: {
-      itemNumber: string;
-      description: string;
-      chainOfCustody: string[];
-      dateCollected: string;
-      location: string;
-    };
-    methodology: {
-      procedures: string[];
-      tools: string[];
-      standards: string[];
-    };
-    findings: {
-      summary: string;
-      keyPoints: string[];
-      confidence: number;
-      limitations: string[];
-    };
-    legalImplications: {
-      charges: string[];
-      precedents: string[];
-      challengePoints: string[];
-    };
-    attachments: {
-      id: string;
-      name: string;
-      type: string;
-      size: number;
-    }[];
+    type: string;
+    priority: string;
+    status: string;
+    analyst: { name: string; credentials: string; department: string };
+    evidence: { itemNumber: string; description: string; dateCollected: string; location: string; chainOfCustody: string[] };
+    methodology: { procedures: string[]; tools: string[]; standards: string[] };
+    findings: { summary: string; keyPoints: string[]; limitations: string[]; confidence: number };
+    legalImplications: { charges: string[]; precedents: string[]; challengePoints: string[] };
+    attachments: { id: string; name: string; size: number; type?: string }[];
   }
 
   const { state, send } = useMachine(aiSummaryMachine);
 
   // Generate comprehensive content for AI analysis
-  let analysisContent = $derived(generateAnalysisContent(reportData););
+  let analysisContent = $derived(generateAnalysisContent(reportData));
 
   function generateAnalysisContent(report: EvidenceReport): string {
     return `
@@ -241,7 +195,7 @@ ${report.attachments.map((att) => `• ${att.name} (${att.type})`).join("\n")}
 
         {#if allowExport}
           <button
-            on:click={exportReport}
+            onclick={exportReport as any}
             class="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
             title="Export Report"
           >
@@ -558,3 +512,5 @@ ${report.attachments.map((att) => `• ${att.name} (${att.type})`).join("\n")}
     margin-right: auto;
   }
 </style>
+
+

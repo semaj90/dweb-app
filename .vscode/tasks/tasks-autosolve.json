@@ -1,0 +1,104 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Maintenance: Autosolve Cycle (Threshold)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Run fast tsc check & conditional autosolve force cycle"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Start Multi-Core Solver",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "vscode-auto-solver/core/multi-core-solver.js"
+      ],
+      "options": {
+        "env": {
+          "ENABLE_CLUSTERING": "true",
+          "ENABLE_GPU": "false",
+          "VS_CODE_DEBUG": "true",
+          "SEMANTIC_BATCH_SIZE": "64"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Launch multi-core semantic autosolve event loop"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Force Cycle",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X",
+        "POST",
+        "-H",
+        "Content-Type: application/json",
+        "-d",
+        "{\"action\":\"trigger\"}",
+        "http://localhost:5173/api/context7-autosolve"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Manually trigger an autosolve cycle via API"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Health",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/context7-autosolve?action=health"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Check autosolve system health"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Status",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/context7-autosolve?action=status"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Fetch autosolve status & recent history"
+    }
+  ]
+}

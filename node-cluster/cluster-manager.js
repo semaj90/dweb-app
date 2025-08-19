@@ -1,15 +1,13 @@
 #!/usr/bin/env node
-
 /**
- * Legal AI Node.js Cluster Manager
- * 
- * Manages specialized worker processes for legal document processing,
- * AI analysis, vector operations, and database queries.
+ * Legal AI Node.js Cluster Manager (CommonJS version)
+ * Maintains workers for legal, AI, vector, and database roles.
  */
-
 const cluster = require('cluster');
 const os = require('os');
 const http = require('http');
+const path = require('path');
+const __dirname = path.resolve();
 
 const CLUSTER_CONFIG = {
   legal: { count: 3, memory: '512MB', port: 3010 },
@@ -28,8 +26,8 @@ class LegalAIClusterManager {
 
   async initialize() {
     console.log('[CLUSTER] Starting Legal AI Cluster Manager...');
-    
-    if (cluster.isMaster) {
+
+    if (cluster.isPrimary) {
       await this.startMasterProcess();
     } else {
       await this.startWorkerProcess();
@@ -39,16 +37,16 @@ class LegalAIClusterManager {
   async startMasterProcess() {
     console.log(`[MASTER] Master process started (PID: ${process.pid})`);
     console.log(`[MASTER] CPU cores available: ${os.cpus().length}`);
-    
+
     // Start management server
     this.startManagementServer();
-    
+
     // Spawn worker processes
     this.spawnWorkers();
-    
+
     // Set up cluster event handlers
     this.setupClusterEvents();
-    
+
     console.log('[MASTER] Cluster manager fully initialized');
   }
 
@@ -77,9 +75,9 @@ class LegalAIClusterManager {
     });
 
     this.workerTypes.set(worker.id, type);
-    
+
     console.log(`[MASTER] Spawned ${type} worker: ${workerId} (PID: ${worker.process.pid})`);
-    
+
     return worker;
   }
 
@@ -93,13 +91,13 @@ class LegalAIClusterManager {
     cluster.on('exit', (worker, code, signal) => {
       const workerId = this.findWorkerById(worker.id);
       const workerType = this.workerTypes.get(worker.id);
-      
+
       console.log(`[MASTER] Worker ${workerId} died (code: ${code}, signal: ${signal})`);
-      
+
       // Remove from tracking
       this.workers.delete(workerId);
       this.workerTypes.delete(worker.id);
-      
+
       // Respawn worker after delay
       if (code !== 0 && !worker.exitedAfterDisconnect) {
         console.log(`[MASTER] Respawning ${workerType} worker in 2 seconds...`);
@@ -113,7 +111,7 @@ class LegalAIClusterManager {
     cluster.on('online', (worker) => {
       const workerId = this.findWorkerById(worker.id);
       console.log(`[MASTER] Worker ${workerId} is online`);
-      
+
       if (this.workers.has(workerId)) {
         this.workers.get(workerId).status = 'online';
       }
@@ -146,7 +144,7 @@ class LegalAIClusterManager {
             uptime: (Date.now() - info.startTime) / 1000
           }))
         };
-        
+
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(status, null, 2));
       } else if (req.url === '/health' && req.method === 'GET') {
@@ -168,9 +166,9 @@ class LegalAIClusterManager {
   async startWorkerProcess() {
     const workerType = process.env.WORKER_TYPE;
     const workerPort = process.env.WORKER_PORT;
-    
+
     console.log(`[WORKER] Starting ${workerType} worker (PID: ${process.pid})`);
-    
+
     // Create basic worker server
     const server = http.createServer((req, res) => {
       if (req.url === '/health' && req.method === 'GET') {
@@ -191,7 +189,7 @@ class LegalAIClusterManager {
         }));
       }
     });
-    
+
     server.listen(workerPort, () => {
       console.log(`[WORKER] ${workerType} worker listening on port ${workerPort}`);
     });
@@ -206,10 +204,13 @@ class LegalAIClusterManager {
   }
 }
 
-// Start the cluster manager
+// Start the cluster manager when invoked directly
 if (require.main === module) {
   const manager = new LegalAIClusterManager();
-  manager.initialize().catch(console.error);
+  manager.initialize().catch(err => {
+    console.error('[MASTER] Cluster manager failed to initialize:', err);
+    process.exit(1);
+  });
 }
 
 module.exports = LegalAIClusterManager;

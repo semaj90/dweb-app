@@ -355,7 +355,11 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ''legal_documents'' ORDER BY ordinal_position;\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\d legal_documents\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"CREATE TABLE IF NOT EXISTS legal_documents AS SELECT 1 WHERE 1=0;\")",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"ALTER TABLE legal_documents ADD COLUMN IF NOT EXISTS content TEXT;\")"
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"ALTER TABLE legal_documents ADD COLUMN IF NOT EXISTS content TEXT;\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\schema-consolidation-phase14.sql\")",
+      "Bash(time curl:*)",
+      "Bash(do echo \"Test $i:\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT table_name FROM information_schema.tables WHERE table_schema = ''public'' AND table_name IN (''evidence_items'', ''legal_documents'', ''document_chunks'');\" -t)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

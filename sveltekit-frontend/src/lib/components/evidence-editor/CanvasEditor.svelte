@@ -1,28 +1,18 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    onnodeUpdate?: (event?: any) => void;
-    onnodeSelect?: (event?: any) => void;
-    onautoSaved?: (event?: any) => void;
-  }
-  let {
-    caseId = null,
-    readOnly = false
-  }: Props = $props();
-
-
-
   import { browser } from '$app/environment';
   import { autoTaggingMachine } from '$lib/stores/autoTaggingMachine';
   import { useMachine } from '@xstate/svelte';
-  
-    const { snapshot, send } = useMachine(autoTaggingMachine);
+  import { createEventDispatcher, onMount } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+  const { snapshot, send } = useMachine(autoTaggingMachine);
 
   // Access state from snapshot
-  let state = $derived($snapshot;);
+  $: state = $snapshot;
 
-    
+  export let caseId: string | null = null;
+  export let readOnly = false;
+
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
   let canvasContainer: HTMLDivElement;
@@ -462,8 +452,8 @@ https://svelte.dev/e/js_parse_error -->
         draw();
 
         // Dispatch events for other panels
-        onnodeUpdate?.();
-        onnodeSelect?.();
+        dispatch('nodeUpdate', { node, aiTags });
+        dispatch('nodeSelect', node);
 
         // Auto-save after tagging
         await autoSave();
@@ -558,10 +548,10 @@ https://svelte.dev/e/js_parse_error -->
     if (clickedNode) {
       selectedNodeId = clickedNode.id;
       send({ type: 'SELECT_NODE', node: clickedNode });
-      onnodeSelect?.();
+      dispatch('nodeSelect', clickedNode);
     } else {
       selectedNodeId = null;
-      onnodeSelect?.();
+      dispatch('nodeSelect', null);
 }
     draw();
 }
@@ -706,7 +696,7 @@ https://svelte.dev/e/js_parse_error -->
         })
       });
 
-      onautoSaved?.();
+      dispatch('autoSaved', canvasState);
     } catch (error) {
       console.error('Auto-save failed:', error);
     } finally {
@@ -764,46 +754,46 @@ https://svelte.dev/e/js_parse_error -->
 <div class="container mx-auto px-4 enhanced-canvas-editor" bind:this={canvasContainer}>
   <canvas
     bind:this={canvas}
-    class="space-y-4"
-    ondrop={handleDrop}
-    ondragover={handleDragOver}
-    onclick={handleCanvasClick}
-    onmousedown={handleMouseDown}
-    onmousemove={handleMouseMove}
-    onmouseup={handleMouseUp}
-    onmouseleave={handleMouseUp}
-    onwheel={handleWheel}
+    class="container mx-auto px-4"
+    on:drop={handleDrop}
+    on:dragover={handleDragOver}
+    on:click={handleCanvasClick}
+    on:mousedown={handleMouseDown}
+    on:mousemove={handleMouseMove}
+    on:mouseup={handleMouseUp}
+    on:mouseleave={handleMouseUp}
+    on:wheel={handleWheel}
     on:contextmenu|preventDefault
   ></canvas>
 
   <!-- Enhanced drop zone overlay -->
-  <div class="space-y-4">
-    <div class="space-y-4">
-      <div class="space-y-4">🎯</div>
-      <div class="space-y-4">Visual Evidence Canvas</div>
-      <div class="space-y-4">Drop files • AI auto-tagging • Smart connections</div>
-      <div class="space-y-4">Shift+click to connect • Wheel to zoom • Ctrl+drag to pan</div>
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">🎯</div>
+      <div class="container mx-auto px-4">Visual Evidence Canvas</div>
+      <div class="container mx-auto px-4">Drop files • AI auto-tagging • Smart connections</div>
+      <div class="container mx-auto px-4">Shift+click to connect • Wheel to zoom • Ctrl+drag to pan</div>
     </div>
   </div>
 
   <!-- Auto-save indicator -->
   {#if isAutoSaving}
-    <div class="space-y-4">
-      <div class="space-y-4"></div>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4"></div>
       Auto-saving...
     </div>
   {/if}
 
   <!-- XState status indicator -->
   {#if state && state.matches('processing')}
-    <div class="space-y-4">
-      <div class="space-y-4"></div>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4"></div>
       AI analyzing evidence...
     </div>
   {/if}
 
   {#if state && state.matches('error')}
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       AI analysis failed - Click to retry
     </div>
   {/if}

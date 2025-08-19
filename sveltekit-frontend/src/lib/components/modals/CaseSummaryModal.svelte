@@ -1,20 +1,8 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- Case Summary Modal with AI-generated insights -->
 <script lang="ts">
-  interface Props {
-    onsummaryGenerated?: (event?: any) => void;
-  }
-  let {
-    open = false,
-    caseData,
-    useDrawer = false
-  }: Props = $props();
-
-
-
   import { Button } from "$lib/components/ui/button";
-    import Badge from '$lib/components/ui/Badge.svelte';
+  import { createEventDispatcher } from "svelte";
+  import Badge from '$lib/components/ui/Badge.svelte';
   import * as Dialog from '$lib/components/ui/dialog';
   import Drawer from '$lib/components/ui/drawer/Drawer.svelte';
   import Grid from '$lib/components/ui/grid/Grid.svelte';
@@ -33,8 +21,10 @@ https://svelte.dev/e/js_parse_error -->
     Users,
   } from "lucide-svelte";
 
-    // SSR-compatible: all dates as strings
-      id: string;
+  export let open: boolean = false;
+  // SSR-compatible: all dates as strings
+  export let caseData: {
+    id: string;
     title: string;
     description: string;
     status: "active" | "pending" | "closed";
@@ -74,8 +64,10 @@ https://svelte.dev/e/js_parse_error -->
     };
   } | null = null;
 
-  
-  
+  export let useDrawer: boolean = false;
+
+  const dispatch = createEventDispatcher();
+
   let isGeneratingSummary = false;
   let activeTab: "overview" | "timeline" | "evidence" | "recommendations" =
     "overview";
@@ -99,7 +91,7 @@ https://svelte.dev/e/js_parse_error -->
       const result = await response.json();
       if (result.success) {
         caseData = { ...caseData, summary: result.summary };
-        onsummaryGenerated?.();
+        dispatch("summaryGenerated", caseData);
 }
     } catch (error) {
       console.error("Summary generation failed:", error);
@@ -169,7 +161,7 @@ https://svelte.dev/e/js_parse_error -->
     </svelte:fragment>
   </Drawer>
 {:else}
-  <Dialog.Root open={isOpen} onclose={closeModal}>
+  <Dialog.Root open={isOpen} on:close={closeModal}>
     <Dialog.Content size="lg">
       <Dialog.Header>
         <Dialog.Title>Case Summary</Dialog.Title>
@@ -188,7 +180,7 @@ https://svelte.dev/e/js_parse_error -->
           <div class="space-y-4">
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-semibold">Overview</h3>
-              <Button onclick={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
+              <Button on:click={generateSummary} disabled={isGeneratingSummary} size="sm" variant="outline">
                 <Sparkles class="w-4 h-4 mr-2" /> Regenerate
               </Button>
             </div>
@@ -248,7 +240,7 @@ https://svelte.dev/e/js_parse_error -->
           <div class="flex flex-col items-center justify-center h-48 text-muted-foreground">
             <Brain class="w-16 h-16 mb-4 opacity-50" />
             <p>No AI summary available for this case.</p>
-            <Button onclick={generateSummary} disabled={isGeneratingSummary} class="mt-4">
+            <Button on:click={generateSummary} disabled={isGeneratingSummary} class="mt-4">
               <Sparkles class="w-4 h-4 mr-2" /> Generate Summary
             </Button>
           </div>

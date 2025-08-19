@@ -1,16 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import { page } from '$app/state';
+  import { page } from "$app/state";
   import { createDialog } from '@melt-ui/svelte';
   // Dropzone and Superforms fallback for SvelteKit 2/Svelte 5
   // If Bits UI and Superforms are unavailable, use SvelteKit's built-in file input and Zod validation
   import { z } from 'zod';
-  import { Button } from '$lib/components/ui/button/index.js';
+  import { Button } from "$lib/components/ui/button/index";
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import { Badge } from '$lib/components/ui/badge/index.js';
-  import { Input } from '$lib/components/ui/input/index.js';
-  import { Textarea } from '$lib/components/ui/textarea/index.js';
+  import { Badge } from "$lib/components/ui/badge/index";
+  import { Input } from "$lib/components/ui/input/index";
+  import { Textarea } from "$lib/components/ui/textarea/index";
   import GoldenRatioLoader from '$lib/components/ui/enhanced-bits/GoldenRatioLoader.svelte';
   import {
     Upload,
@@ -42,31 +42,32 @@
   let ragEnhanced = $state(true);
 
   // Zod schema for evidence upload
-  const evidenceSchema = z.object({
-    files: z.any().refine((val) => val instanceof FileList && val.length > 0, {
-      message: 'Please select at least one file.',
-    }),
-    context7Enabled: z.boolean(),
-    ragEnhanced: z.boolean(),
-  });
+  const evidenceSchema = z
+    .object({
+      files: z.any().refine((val) => val instanceof FileList && val.length > 0, {
+        message: 'Please select at least one file.',
+      }),
+      context7Enabled: z.boolean(),
+      ragEnhanced: z.boolean(),
+      summarizeWithAI: z.boolean(),
+      summaryType: z.enum(['key_points', 'narrative', 'prosecutorial']).optional(),
+    })
+    .refine(
+      (data) => {
+        if (!data.summarizeWithAI) return true;
+        return !!data.summaryType;
+      },
+      { message: 'Select a summary type', path: ['summaryType'] }
+    );
 
   // Fallback form state
+  // Fallback form state
   let formErrors = $state<{ files?: string } | null>(null);
+  let generateSummary = $state(false);
+  let summaryType = $state('key_points');
   // ...existing code...
-  interface EvidenceItem {
-    id: string;
-    filename: string;
-    type: 'pdf' | 'image' | 'document';
-    uploadDate: Date;
-    size: number;
-    status: 'processing' | 'ready' | 'error';
-    summary?: string;
-    entities?: any[];
-    prosecutionScore?: number;
-    context7Analysis?: any;
-    tags: string[];
-    embedding?: number[];
-  }
+  // ...existing code...
+
 
   // Melt UI Components
   const {
@@ -80,6 +81,8 @@
   let formFields = $state({
     context7Enabled: true,
     ragEnhanced: true,
+  summarizeWithAI: true,
+  summaryType: 'narrative' as 'key_points' | 'narrative' | 'prosecutorial',
   });
 
   // ...existing code...
@@ -98,7 +101,16 @@
 
   async function loadExistingEvidence() {
     try {
-      const response = await fetch('/api/evidence/list');
+      let response: Response;
+        try {
+          response = await fetch('/api/evidence/list');
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Fetch failed:', error);
+          throw error;
+        }
       if (response.ok) {
         const data = await response.json();
         evidenceItems = data.evidence || [];
@@ -121,12 +133,17 @@
       files: dropzoneFiles,
       context7Enabled: formFields.context7Enabled,
       ragEnhanced: formFields.ragEnhanced,
+      summarizeWithAI: formFields.summarizeWithAI,
+      summaryType: formFields.summaryType,
     });
     if (!result.success) {
       // Zod error output is string[]; join for display
       const fieldErrors = result.error.formErrors.fieldErrors;
       formErrors = {
         files: Array.isArray(fieldErrors.files) ? fieldErrors.files.join(', ') : fieldErrors.files,
+        summaryType: Array.isArray(fieldErrors.summaryType)
+          ? fieldErrors.summaryType.join(', ')
+          : fieldErrors.summaryType,
       };
       isUploading = false;
       return;
@@ -142,13 +159,25 @@
     formData.append('context7Enabled', formFields.context7Enabled ? 'true' : 'false');
     formData.append('ragEnhanced', formFields.ragEnhanced ? 'true' : 'false');
     formData.append('extractEntities', 'true');
-    formData.append('generateSummary', 'true');
+    formData.append('generateSummary', formFields.summarizeWithAI ? 'true' : 'false');
+    if (formFields.summarizeWithAI) {
+      formData.append('summaryType', formFields.summaryType);
+    }
 
     try {
-      const response = await fetch('/api/evidence/upload', {
+      let response: Response;
+        try {
+          response = await fetch('/api/evidence/upload', {
         method: 'POST',
         body: formData,
       });
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Fetch failed:', error);
+          throw error;
+        }
 
       if (response.ok) {
         const result = await response.json();
@@ -283,9 +312,18 @@
 
   async function deleteEvidence(evidenceId: string) {
     try {
-      const response = await fetch(`/api/evidence/${evidenceId}`, {
+      let response: Response;
+        try {
+          response = await fetch(`/api/evidence/${evidenceId}`, {
         method: 'DELETE',
       });
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Fetch failed:', error);
+          throw error;
+        }
 
       if (response.ok) {
         evidenceItems = evidenceItems.filter((item) => item.id !== evidenceId);
@@ -325,6 +363,34 @@
     if (bytes === 0) return '0 Bytes';
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  // Evidence item shape (lightweight client-side typing)
+  interface EvidenceItem {
+    id: string;
+    filename: string;
+    status: string;
+    type: string;
+    size: number;
+    uploadDate: string | number | Date;
+    summary?: string;
+    prosecutionScore?: number;
+    tags: string[];
+    summaryType?: string | null;
+    context7Analysis?: any; // future structured type
+  }
+
+  function getSummaryTypeVariant(summaryType: string) {
+    switch (summaryType) {
+      case 'key_points':
+        return { label: 'Key Points', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
+      case 'narrative':
+        return { label: 'Narrative', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
+      case 'prosecutorial':
+        return { label: 'Prosecutorial', color: 'bg-rose-100 text-rose-700 border-rose-200' };
+      default:
+        return { label: summaryType, color: 'bg-slate-100 text-slate-700 border-slate-200' };
+    }
   }
 </script>
 
@@ -449,7 +515,31 @@
                     class="rounded" />
                   <span class="text-sm">Enhanced RAG Processing</span>
                 </label>
+                <label class="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    name="summarizeWithAI"
+                    bind:checked={formFields.summarizeWithAI}
+                    class="rounded" />
+                  <span class="text-sm">Summarize with AI</span>
+                </label>
               </div>
+
+              {#if formFields.summarizeWithAI}
+                <div class="mt-4 w-full max-w-xs">
+                  <label class="block text-sm font-medium text-slate-700 mb-1">Summary Type</label>
+                  <select
+                    bind:value={formFields.summaryType}
+                    class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm bg-white">
+                    <option value="key_points">Key Points</option>
+                    <option value="narrative">Narrative Summary</option>
+                    <option value="prosecutorial">Prosecutorial Analysis</option>
+                  </select>
+                  {#if formErrors?.summaryType}
+                    <p class="text-red-500 text-xs mt-1">{formErrors.summaryType}</p>
+                  {/if}
+                </div>
+              {/if}
 
               <Button type="submit" class="mt-4 w-full" disabled={isUploading}>
                 <Upload class="h-4 w-4 mr-2" />
@@ -523,9 +613,26 @@
                     </div>
 
                     <div class="space-y-2 mb-3">
-                      <Badge size="sm" variant="outline">
-                        {item.status}
-                      </Badge>
+                      <div class="flex flex-wrap gap-2 items-center">
+                        <Badge size="sm" variant="outline">
+                          {item.status}
+                        </Badge>
+                        {#if item.summaryType}
+                          {#key item.summaryType}
+                            {#if item.summaryType}
+                              {#if item.summaryType}
+                                {#key item.summaryType}
+                                  {#if item.summaryType}
+                                    <span class={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getSummaryTypeVariant(item.summaryType).color}`}>
+                                      {getSummaryTypeVariant(item.summaryType).label}
+                                    </span>
+                                  {/if}
+                                {/key}
+                              {/if}
+                            {/if}
+                          {/key}
+                        {/if}
+                      </div>
                       <p class="text-xs text-slate-500">
                         {formatFileSize(item.size)} • Uploaded {new Date(
                           item.uploadDate
@@ -686,3 +793,4 @@
     overflow: hidden;
   }
 </style>
+

@@ -4,7 +4,7 @@
 
 <div 
   use:menu 
-  className="${1}"
+  class="container mx-auto px-4"
   {...$$restProps}
 >
   <slot />

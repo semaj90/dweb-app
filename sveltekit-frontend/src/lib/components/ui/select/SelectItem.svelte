@@ -28,7 +28,7 @@ https://svelte.dev/e/js_parse_error -->
     } as SelectContext);
   const { selected, open, onSelect, onToggle } = context;
 
-  let isSelected = $derived($selected === value;);
+  let isSelected = $derived($selected === value);
 
   function handleClick() {
     onSelect(value);

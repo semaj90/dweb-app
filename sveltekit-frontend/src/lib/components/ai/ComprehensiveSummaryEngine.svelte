@@ -1,28 +1,7 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- Comprehensive AI Summary Engine - End-to-End Integration Component -->
 <!-- Features: Local LLM + Enhanced RAG + Loki.js + Fuse.js + XState + Service Workers -->
 
 <script lang="ts">
-  interface Props {
-    targetId: string;
-    targetType: 'case' | 'evidence' | 'legal_document' | 'cross_analysis' ;
-    depth: 'quick' | 'comprehensive' | 'forensic' ;
-    enableStreaming?: any;
-    enableUserActivity?: any;
-    enableRAG?: any;
-  }
-  let {
-    targetId,
-    targetType = 'case',
-    depth = 'comprehensive',
-    enableStreaming = true,
-    enableUserActivity = true,
-    enableRAG = true
-  }: Props = $props();
-
-
-
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
   import { useMachine } from '@xstate/svelte';
@@ -45,7 +24,13 @@ https://svelte.dev/e/js_parse_error -->
   } from 'lucide-svelte';
 
   // Props
-            
+  export let targetId: string;
+  export let targetType: 'case' | 'evidence' | 'legal_document' | 'cross_analysis' = 'case';
+  export let depth: 'quick' | 'comprehensive' | 'forensic' = 'comprehensive';
+  export let enableStreaming = true;
+  export let enableUserActivity = true;
+  export let enableRAG = true;
+
   // XState machine integration
   const { state, send, context } = useMachine(aiSummaryMachine);
 
@@ -424,9 +409,9 @@ https://svelte.dev/e/js_parse_error -->
   }
 
   // Reactive statements
-  let progressPercentage = $derived($summaryProgress;);
-  let canExport = $derived($synthesisResult !== null;);
-  let showMetrics = $derived(metrics.llmProcessingTime > 0;);
+  $: progressPercentage = $summaryProgress;
+  $: canExport = $synthesisResult !== null;
+  $: showMetrics = metrics.llmProcessingTime > 0;
 </script>
 
 <!-- Main Component Template -->
@@ -450,7 +435,7 @@ https://svelte.dev/e/js_parse_error -->
       <button
         class="btn-advanced"
         class:active={showAdvancedOptions}
-        onclick={() => showAdvancedOptions = !showAdvancedOptions}
+        on:click={() => showAdvancedOptions = !showAdvancedOptions}
       >
         <Settings size="16" />
         Advanced
@@ -460,7 +445,7 @@ https://svelte.dev/e/js_parse_error -->
 
   <!-- Advanced Configuration Panel -->
   {#if showAdvancedOptions}
-    <div class="advanced-panel" transitionslide={{ duration: 300 }}>
+    <div class="advanced-panel" transition:slide={{ duration: 300 }}>
       <div class="config-grid">
         <div class="config-group">
           <label>Chunk Size</label>
@@ -513,16 +498,16 @@ https://svelte.dev/e/js_parse_error -->
 
       <div class="processing-controls">
         {#if !isProcessing}
-          <button class="btn-primary" onclick={startComprehensiveSummary}>
+          <button class="btn-primary" on:click={startComprehensiveSummary}>
             <Play size="16" />
             Start Analysis
           </button>
         {:else}
-          <button class="btn-secondary" onclick={pauseProcessing}>
+          <button class="btn-secondary" on:click={pauseProcessing}>
             <Pause size="16" />
             Pause
           </button>
-          <button class="btn-danger" onclick={stopProcessing}>
+          <button class="btn-danger" on:click={stopProcessing}>
             <Square size="16" />
             Stop
           </button>
@@ -591,7 +576,7 @@ https://svelte.dev/e/js_parse_error -->
             <option value="json">JSON</option>
             <option value="txt">Text</option>
           </select>
-          <button class="btn-export" onclick={exportSummary} disabled={!canExport}>
+          <button class="btn-export" on:click={exportSummary} disabled={!canExport}>
             <Download size="16" />
             Export
           </button>

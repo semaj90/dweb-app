@@ -1,24 +1,15 @@
-<!-- @migration-task Error while migrating Svelte code: `<div>` was left open
-https://svelte.dev/e/element_unclosed -->
 <script lang="ts">
-  interface Props {
-    onresponse?: (event?: any) => void;
-    oncitation?: (event?: any) => void;
-  }
-  let {
-    caseId = undefined,
-    placeholder = "Ask AI about this case...",
-    maxHeight = "400px",
-    showReferences = true
-  }: Props = $props();
-
-
-
   import { Bot, Download, Loader2, MessageSquare, Quote, Search, Settings, User as UserIcon } from "lucide-svelte";
-  
-    export const evidenceIds: string[] = [];
-      
-  
+  import { createEventDispatcher } from "svelte";
+
+  export let caseId: string | undefined = undefined;
+  export const evidenceIds: string[] = [];
+  export let placeholder = "Ask AI about this case...";
+  export let maxHeight = "400px";
+  export let showReferences = true;
+
+  const dispatch = createEventDispatcher();
+
   // State
   let query = "";
   let isLoading = false;
@@ -81,7 +72,11 @@ https://svelte.dev/e/element_unclosed -->
       messages = [...messages, assistantMessage];
 
       // Dispatch event for parent components
-      onresponse?.();
+      dispatch("response", {
+        query: currentQuery,
+        response: data.answer,
+        references: data.references,
+      });
     } catch (error) {
       console.error("AI chat error:", error);
       const errorMessage = {
@@ -104,7 +99,7 @@ https://svelte.dev/e/element_unclosed -->
     showCitationDialog = true;
 }
   function insertCitation() {
-    oncitation?.();
+    dispatch("citation", selectedCitation);
     showCitationDialog = false;
 }
   function clearChat() {
@@ -129,47 +124,47 @@ https://svelte.dev/e/element_unclosed -->
 }
 </script>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
   <!-- Header -->
-  <div class="space-y-4">
-    <div class="space-y-4">
-      <Bot class="space-y-4" />
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <Bot class="container mx-auto px-4" />
       <span>AI Assistant</span>
       {#if caseId}
-        <span class="space-y-4">Case: {caseId}</span>
+        <span class="container mx-auto px-4">Case: {caseId}</span>
       {/if}
 <!-- End main container -->
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <button
-        class="space-y-4"
-        onclick={() => (showSettings = !showSettings)}
+        class="container mx-auto px-4"
+        on:click={() => (showSettings = !showSettings)}
         title="Settings"
       >
-        <Settings class="space-y-4" />
+        <Settings class="container mx-auto px-4" />
       </button>
       <button
-        class="space-y-4"
-        onclick={() => downloadChat()}
+        class="container mx-auto px-4"
+        on:click={() => downloadChat()}
         title="Download chat"
         disabled={messages.length === 0}
       >
-        <Download class="space-y-4" />
+        <Download class="container mx-auto px-4" />
       </button>
       <button
-        class="space-y-4"
-        onclick={() => clearChat()}
+        class="container mx-auto px-4"
+        on:click={() => clearChat()}
         title="Clear chat"
         disabled={messages.length === 0}
       >
-        <MessageSquare class="space-y-4" />
+        <MessageSquare class="container mx-auto px-4" />
       </button>
     </div>
   </div>
 
   <!-- Settings Panel -->
   {#if showSettings}
-    <div class="space-y-4">
-      <div class="space-y-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
         <label for="model-select">Model:</label>
         <select id="model-select" bind:value={selectedModel}>
           <option value="gpt-4">GPT-4</option>
@@ -178,7 +173,7 @@ https://svelte.dev/e/element_unclosed -->
         </select>
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="temperature-slider">Temperature:</label>
         <input
           id="temperature-slider"
@@ -191,7 +186,7 @@ https://svelte.dev/e/element_unclosed -->
         <span>{temperature}</span>
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="threshold-slider">Search Threshold:</label>
         <input
           id="threshold-slider"
@@ -204,7 +199,7 @@ https://svelte.dev/e/element_unclosed -->
         <span>{searchThreshold}</span>
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="max-results-input">Max Results:</label>
         <input
           id="max-results-input"
@@ -218,31 +213,31 @@ https://svelte.dev/e/element_unclosed -->
   {/if}
 
   <!-- Chat Messages -->
-  <div class="space-y-4" style="max-height: {maxHeight}">
+  <div class="container mx-auto px-4" style="max-height: {maxHeight}">
     {#each messages as message}
-      <div class="space-y-4">
-        <div class="space-y-4">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           {#if message.role === "user"}
-            <UserIcon class="space-y-4" />
+            <UserIcon class="container mx-auto px-4" />
           {:else}
-            <Bot class="space-y-4" />
+            <Bot class="container mx-auto px-4" />
           {/if}
-          <span class="space-y-4">
+          <span class="container mx-auto px-4">
             {message.timestamp.toLocaleTimeString()}
           </span>
         </div>
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           {message.content}
         </div>
         {#if message.references && message.references.length > 0 && showReferences}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             <h4>References:</h4>
             <ul>
               {#each message.references as ref}
                 <li>
                   <button
-                    class="space-y-4"
-                    onclick={() => showCitation(ref.citation)}
+                    class="container mx-auto px-4"
+                    on:click={() => showCitation(ref.citation)}
                   >
                     {ref.title}
                   </button>
@@ -254,37 +249,37 @@ https://svelte.dev/e/element_unclosed -->
       </div>
     {/each}
     {#if isLoading}
-      <div class="space-y-4">
-        <div class="space-y-4">
-          <Bot class="space-y-4" />
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
+          <Bot class="container mx-auto px-4" />
           <span>Thinking...</span>
         </div>
-        <div class="space-y-4">
-          <Loader2 class="space-y-4" />
+        <div class="container mx-auto px-4">
+          <Loader2 class="container mx-auto px-4" />
         </div>
       </div>
     {/if}
   </div>
 
   <!-- Input Area -->
-  <div class="space-y-4">
-    <div class="space-y-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       <textarea
         bind:value={query}
-        onkeydown={handleKeyDown}
+        on:keydown={handleKeyDown}
         {placeholder}
         rows="4"
         disabled={isLoading}
       ></textarea>
       <button
-        class="space-y-4"
-        onclick={() => handleSubmit()}
+        class="container mx-auto px-4"
+        on:click={() => handleSubmit()}
         disabled={!query.trim() || isLoading}
       >
         {#if isLoading}
-          <Loader2 class="space-y-4" />
+          <Loader2 class="container mx-auto px-4" />
         {:else}
-          <Search class="space-y-4" />
+          <Search class="container mx-auto px-4" />
         {/if}
       </button>
     </div>
@@ -292,7 +287,7 @@ https://svelte.dev/e/element_unclosed -->
 
   <!-- Citation Dialog -->
   {#if showCitationDialog}
-    <div class="modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="citation-modal-title" onkeydown={(e) => { if (e.key === 'Escape') showCitationDialog = false; }}>
+    <div class="modal-overlay" tabindex="-1" aria-modal="true" role="dialog" aria-labelledby="citation-modal-title" on:keydown={(e) => { if (e.key === 'Escape') showCitationDialog = false; }}>
       <div class="modal" role="document">
         <div class="modal-header">
           <h2 id="citation-modal-title" class="visually-hidden">Legal Citation</h2>
@@ -304,16 +299,16 @@ https://svelte.dev/e/element_unclosed -->
             <p>{selectedCitation}</p>
           </div>
           <div class="modal-actions">
-            <button class="btn-primary" onclick={() => insertCitation()}>
+            <button class="btn-primary" on:click={() => insertCitation()}>
               Insert Citation
             </button>
-            <button class="btn-secondary" onclick={() => navigator.clipboard.writeText(selectedCitation)}>
+            <button class="btn-secondary" on:click={() => navigator.clipboard.writeText(selectedCitation)}>
               Copy
             </button>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-close" onclick={() => (showCitationDialog = false)}>
+          <button class="btn-close" on:click={() => (showCitationDialog = false)}>
             Close
           </button>
         </div>

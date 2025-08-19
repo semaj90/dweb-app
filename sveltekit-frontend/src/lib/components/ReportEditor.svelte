@@ -1,28 +1,14 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    report: Report | null ;
-    caseId: string;
-    onSave: (report: Report) ;
-    autoSaveEnabled?: any;
-    readOnly?: any;
-  }
-  let {
-    report = null,
-    caseId,
-    onSave = > Promise<void> = async () => {},
-    autoSaveEnabled = true,
-    readOnly = false
-  }: Props = $props();
-
-
-
   import { browser } from "$app/environment";
   import type { CitationPoint, Report, ReportSection } from "$lib/data/types";
   import { onDestroy, onMount } from "svelte";
 
-          
+  export let report: Report | null = null;
+  export let caseId: string;
+  export let onSave: (report: Report) => Promise<void> = async () => {};
+  export let autoSaveEnabled = true;
+  export let readOnly = false;
+
   let editorElement: HTMLDivElement;
   let citationSidebar: HTMLDivElement;
   let isDirty = false;
@@ -166,7 +152,7 @@ https://svelte.dev/e/js_parse_error -->
   function insertCitation(citation: CitationPoint) {
     if (readOnly) return;
 
-    const citationHtml = `<span class="space-y-4" data-citation-id="${citation.id}" title="${citation.source}">[${citation.source}]</span>`;
+    const citationHtml = `<span class="container mx-auto px-4" data-citation-id="${citation.id}" title="${citation.source}">[${citation.source}]</span>`;
 
     if (currentSelection) {
       // Insert at current cursor position
@@ -367,43 +353,43 @@ https://svelte.dev/e/js_parse_error -->
 }
 </script>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
   <!-- Header with title and controls -->
-  <div class="space-y-4">
+  <div class="container mx-auto px-4">
     <input
       bind:value={title}
-      class="space-y-4"
+      class="container mx-auto px-4"
       placeholder="Report Title"
       disabled={readOnly}
     />
 
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <span class="space-y-4">{wordCount} words</span>
-        <span class="space-y-4">{characterCount} characters</span>
-        <span class="space-y-4">{estimatedReadTime} min read</span>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <span class="container mx-auto px-4">{wordCount} words</span>
+        <span class="container mx-auto px-4">{characterCount} characters</span>
+        <span class="container mx-auto px-4">{estimatedReadTime} min read</span>
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         {#if isLoading}
-          <span class="space-y-4">Saving...</span>
+          <span class="container mx-auto px-4">Saving...</span>
         {:else if lastSaved}
-          <span class="space-y-4">Saved {lastSaved.toLocaleTimeString()}</span>
+          <span class="container mx-auto px-4">Saved {lastSaved.toLocaleTimeString()}</span>
         {:else if isDirty}
-          <span class="space-y-4">Unsaved changes</span>
+          <span class="container mx-auto px-4">Unsaved changes</span>
         {/if}
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <button
-          class="space-y-4"
-          onclick={() => (showAiPanel = !showAiPanel)}
+          class="container mx-auto px-4"
+          on:click={() => (showAiPanel = !showAiPanel)}
         >
           AI Assist
         </button>
         <button
-          class="space-y-4"
-          onclick={() => saveReport()}
+          class="container mx-auto px-4"
+          on:click={() => saveReport()}
           disabled={!isDirty || isLoading}
         >
           Save
@@ -413,35 +399,35 @@ https://svelte.dev/e/js_parse_error -->
   </div>
 
   <!-- Main editing area -->
-  <div class="space-y-4">
+  <div class="container mx-auto px-4">
     <!-- Formatting toolbar -->
     {#if !readOnly}
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <button
           type="button"
-          onclick={() => formatText("bold")}
+          on:click={() => formatText("bold")}
           title="Bold (Ctrl+B)"
         >
           <strong>B</strong>
         </button>
         <button
           type="button"
-          onclick={() => formatText("italic")}
+          on:click={() => formatText("italic")}
           title="Italic (Ctrl+I)"
         >
           <em>I</em>
         </button>
         <button
           type="button"
-          onclick={() => formatText("underline")}
+          on:click={() => formatText("underline")}
           title="Underline (Ctrl+U)"
         >
           <u>U</u>
         </button>
-        <div class="space-y-4"></div>
+        <div class="container mx-auto px-4"></div>
         <button
           type="button"
-          onclick={() => insertCitationPrompt()}
+          on:click={() => insertCitationPrompt()}
           title="Insert Citation (Ctrl+K)"
         >
           📎 Citation
@@ -452,7 +438,7 @@ https://svelte.dev/e/js_parse_error -->
     <!-- Content editor -->
     <div
       bind:this={editorElement}
-      class="space-y-4"
+      class="container mx-auto px-4"
       class:read-only={readOnly}
       role="textbox"
       aria-multiline="true"
@@ -463,30 +449,30 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Citation sidebar -->
   <div
     bind:this={citationSidebar}
-    class="space-y-4"
+    class="container mx-auto px-4"
     style="display: none;"
   >
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <h3>Citations</h3>
       <button
-        class="space-y-4"
-        onclick={() => (citationSidebar.style.display = "none")}>×</button
+        class="container mx-auto px-4"
+        on:click={() => (citationSidebar.style.display = "none")}>×</button
       >
     </div>
 
-    <div class="space-y-4">
-      <div class="space-y-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
         <input type="text" placeholder="Search citations..." />
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         {#each availableCitations as citation}
-          <div class="space-y-4">
-            <div class="space-y-4">{citation.text}</div>
-            <div class="space-y-4">{citation.source}</div>
+          <div class="container mx-auto px-4">
+            <div class="container mx-auto px-4">{citation.text}</div>
+            <div class="container mx-auto px-4">{citation.source}</div>
             <button
-              class="space-y-4"
-              onclick={() => insertCitation(citation)}
+              class="container mx-auto px-4"
+              on:click={() => insertCitation(citation)}
             >
               Add
             </button>
@@ -498,24 +484,24 @@ https://svelte.dev/e/js_parse_error -->
 
   <!-- AI suggestions panel -->
   {#if showAiPanel}
-    <div class="space-y-4">
-      <div class="space-y-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
         <h3>AI Suggestions</h3>
-        <button class="space-y-4" onclick={() => (showAiPanel = false)}
+        <button class="container mx-auto px-4" on:click={() => (showAiPanel = false)}
           >×</button
         >
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         {#if isGeneratingAi}
-          <div class="space-y-4">Generating suggestions...</div>
+          <div class="container mx-auto px-4">Generating suggestions...</div>
         {:else if aiSuggestions.length > 0}
           {#each aiSuggestions as suggestion}
-            <div class="space-y-4">
+            <div class="container mx-auto px-4">
               <p>{suggestion}</p>
               <button
-                class="space-y-4"
-                onclick={() => insertAiSuggestion(suggestion)}
+                class="container mx-auto px-4"
+                on:click={() => insertAiSuggestion(suggestion)}
               >
                 Use This
               </button>
@@ -530,14 +516,14 @@ https://svelte.dev/e/js_parse_error -->
 
   <!-- Selected citations display -->
   {#if selectedCitations.length > 0}
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <h4>Citations in this report:</h4>
       {#each selectedCitations as citation}
-        <div class="space-y-4">
-          <span class="space-y-4">[{citation.source}]</span>
+        <div class="container mx-auto px-4">
+          <span class="container mx-auto px-4">[{citation.source}]</span>
           <button
-            class="space-y-4"
-            onclick={() => removeCitation(citation.id)}>×</button
+            class="container mx-auto px-4"
+            on:click={() => removeCitation(citation.id)}>×</button
           >
         </div>
       {/each}

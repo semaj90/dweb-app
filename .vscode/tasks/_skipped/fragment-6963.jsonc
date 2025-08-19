@@ -1,0 +1,996 @@
+{
+      "label": "MCP: Postgres Server",
+      "type": "shell",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "options": {
+        "env": {
+          "POSTGRES_CONNECTION_STRING": "postgresql:\r\n        }\r\n      },\r\n      "group": "build",\r\n      "isBackground": true\r\n    },\r\n    {\r\n      "label": "MCP: Context7 Multi-Core",\r\n      "type": "shell",\r\n      "command": "node",\r\n      "args": ["${workspaceFolder}/mcp-servers/context7-multicore.js"],\r\n      "options": {\r\n        "env": {\r\n          "MCP_PORT": "4100",\r\n          "MCP_MULTICORE": "true"\r\n        }\r\n      },\r\n      "group": "build",\r\n      "isBackground": true\r\n    },\r\n    {\r\n      "label": "MCP: Install Deps",\r\n      "type": "shell",\r\n      "command": "npm",\r\n      "args": ["i"],\r\n      "options": { "cwd": "${workspaceFolder}/mcp-servers" },\r\n      "group": "build",\r\n      "presentation": { "reveal": "always", "panel": "new" }\r\n    },\r\n    {\r\n      "label": "Start SvelteKit Dev",\r\n      "type": "shell",\r\n      "command": "npm",\r\n      "args": ["run", "dev"],\r\n      "options": {\r\n        "cwd": "${workspaceFolder}/sveltekit-frontend"\r\n      },\r\n      "group": "build",\r\n      "isBackground": true,\r\n      "problemMatcher": {\r\n        "pattern": {\r\n          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",\r\n          "file": 1,\r\n          "line": 2,\r\n          "column": 3,\r\n          "severity": 4,\r\n          "message": 5\r\n        },\r\n        "background": {\r\n          "activeOnStart": true,\r\n          "beginsPattern": "^.*VITE.*$",\r\n          "endsPattern": "^.*Local:.*$"\r\n        }\r\n      }\r\n    },\r\n    {\r\n      "label": "Health Check Services",\r\n      "type": "shell",\r\n      "command": "echo",\r\n      "args": ["Checking service health..."],\r\n      "group": "test",\r\n      "dependsOrder": "parallel",\r\n      "dependsOn": [\r\n        "Check PostgreSQL",\r\n        "Check Ollama",\r\n        "Check Redis",\r\n        "Check Qdrant",\r\n        "📊 Vector Search Status"\r\n      ]\r\n    },\r\n    {\r\n      "label": "Check PostgreSQL",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-NoProfile",\r\n        "-Command",\r\n        "\u0024r = Test-NetConnection -ComputerName localhost -Port 5432; if (\u0024r.TcpTestSucceeded) { Write-Output '✅ PostgreSQL: port 5432 open' } else { Write-Error '❌ PostgreSQL not reachable on 5432'; exit 1 }"\r\n      ]\r\n    },\r\n    {\r\n      "label": "Check Ollama",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": ["-f", "http:
+    },
+    {
+      "label": "Check Redis",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "\u0024r = Test-NetConnection -ComputerName localhost -Port 6379; if (\u0024r.TcpTestSucceeded) { Write-Output '✅ Redis: port 6379 open' } else { Write-Error '❌ Redis not reachable on 6379'; exit 1 }"
+      ]
+    },
+    {
+      "label": "Check Qdrant",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-f", "http:\r\n    },\r\n    {\r\n      "label": "🗃️ Optimize Vector Database",\r\n      "type": "shell",\r\n      "command": "npx",\r\n      "args": ["tsx", "scripts/optimize-vector-database.ts"],\r\n      "group": "build",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": true,\r\n        "panel": "new"\r\n      }\r\n    },\r\n    {\r\n      "label": "🧠 Test Vector Search",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": [\r\n        "-X", "POST",\r\n        "-H", "Content-Type: application/json",\r\n        "-d", "{\"query\": \"contract liability terms\", \"model\": \"claude\", \"limit\": 5}",
+        "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": true,\r\n        "panel": "new"\r\n      }\r\n    },\r\n    {\r\n      "label": "🧠 Test Vector Search (5177)",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": [\r\n        "-X", "POST",\r\n        "-H", "Content-Type: application/json",\r\n        "-d", "{\"query\": \"contract liability terms\", \"model\": \"claude\", \"limit\": 5}",
+        "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": true,\r\n        "panel": "new"\r\n      }\r\n    },\r\n    {\r\n      "label": "📊 Vector Search Status",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": [\r\n        "-s",\r\n        "http:
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🔄 Reindex Documents",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X", "PUT",
+        "-H", "Content-Type: application/json",
+        "-d", "{\"documentIds\": [\"sample-doc-1\", \"sample-doc-2\"], \"forceReindex\": true}",
+        "http:\r\n      ],\r\n      "group": "build",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": true,\r\n        "panel": "new"\r\n      }\r\n    },\r\n    {\r\n      "label": "🧪 Vector Search Demo",\r\n      "type": "shell",\r\n      "command": "node",\r\n      "args": ["-e", "console.log('Navigate to: http:
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Go: Run rag-kratos",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Push-Location go-microservice; go build -o .\\rag-kratos.exe .\\cmd\\rag-kratos; Start-Process -NoNewWindow -FilePath '.\\rag-kratos.exe'; Pop-Location"
+      ],
+      "options": {
+        "env": {
+          "RAG_HTTP_PORT": "8093",
+          "EMBED_MODEL": "nomic-embed-text",
+          "EMBED_CACHE_TTL": "10m"
+        }
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Go gRPC: Build Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; go mod tidy; go build -o ./bin/grpc-server.exe ./cmd/grpc-server"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Go gRPC: Open Firewall 8084",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "if (-not (Get-NetFirewallRule -DisplayName 'LegalAI gRPC 8084' -ErrorAction SilentlyContinue)) { New-NetFirewallRule -DisplayName 'LegalAI gRPC 8084' -Direction Inbound -LocalPort 8084 -Protocol TCP -Action Allow }"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "Go: Run rag-quic-proxy",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:RAG_BACKEND_URL='http:\r\n      ],\r\n      "group": "build",\r\n      "problemMatcher": []\r\n    }\r\n    ,\r\n    {\r\n      "label": "Go gRPC: Run Server",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-NoProfile",\r\n        "-Command",\r\n        "Start-Process -NoNewWindow -FilePath 'go-microservice/bin/grpc-server.exe'"\r\n      ],\r\n      "group": "build",\r\n      "presentation": { "reveal": "always", "panel": "shared" },\r\n      "dependsOn": ["Go gRPC: Build Server", "Go gRPC: Open Firewall 8084"],\r\n      "dependsOrder": "sequence"\r\n    },\r\n    {\r\n      "label": "Check and Analyze with Claude",\r\n      "type": "shell",\r\n      "command": "npx",\r\n      "args": ["tsx", "scripts/check-and-analyze.ts"],\r\n      "group": {\r\n        "kind": "build",\r\n        "isDefault": false\r\n      },\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": false,\r\n        "panel": "new",\r\n        "showReuseMessage": false,\r\n        "clear": true\r\n      },\r\n      "problemMatcher": []\r\n    },\r\n\r\n    {\r\n      "label": "Quick Fix TypeScript Errors",\r\n      "type": "shell",\r\n      "command": "npm",\r\n      "args": ["run", "check"],\r\n      "group": "build",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": true,\r\n        "panel": "shared"\r\n      },\r\n      "problemMatcher": "$tsc"\r\n    },\r\n\r\n    \r\n    {\r\n      "label": "View Vite Errors",\r\n      "type": "shell",\r\n      "command": "code",\r\n      "args": [".vscode/vite-errors.json"],\r\n      "group": "test",\r\n      "presentation": {\r\n        "reveal": "always",\r\n        "panel": "new",\r\n        "focus": true\r\n      },\r\n      "problemMatcher": [],\r\n      "detail": "Open Vite error log in VS Code editor"\r\n    },\r\n    {\r\n      "label": "Clear Vite Error Log",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-Command",\r\n        "'{\"metadata\":{\"lastUpdated\":\"\",\"totalEntries\":0},\"errors\":[],\"diagnostics\":[]}' | Out-File -FilePath '.vscode/vite-errors.json' -Encoding utf8"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "detail": "Clear the Vite error log file"
+    },
+    {
+      "label": "Restart Vite with Clean Logs",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": {
+        "cwd": "sveltekit-frontend"
+      },
+      "group": "build",
+      "dependsOn": "Clear Vite Error Log",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": [
+        {
+          "owner": "vite-error-logger",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "severity": "error",
+          "pattern": {
+            "regexp": "^🔧.*ERROR\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4
+          }
+        },
+        {
+          "owner": "vite-error-logger",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "severity": "warning",
+          "pattern": {
+            "regexp": "^🔧.*WARN\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4
+          }
+        }
+      ],
+      "detail": "Restart Vite development server with clean error logs"
+    },
+    {
+      "label": "Analyze Error Patterns",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "const fs = require('fs'); try { const data = JSON.parse(fs.readFileSync('.vscode/vite-errors.json', 'utf8')); const errors = data.errors || []; console.log('📊 Error Analysis:'); console.log('Total errors:', errors.length); console.log('Error levels:', errors.reduce((acc, e) => { acc[e.level] = (acc[e.level] || 0) + 1; return acc; }, {})); const fileErrors = errors.filter(e => e.file).reduce((acc, e) => { acc[e.file] = (acc[e.file] || 0) + 1; return acc; }, {}); console.log('Most problematic files:', Object.entries(fileErrors).sort(([,a], [,b]) => b - a).slice(0, 5)); } catch(e) { console.log('No error log found or invalid format'); }"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Analyze error patterns and statistics"
+    },
+    {
+      "label": "Generate Error Report",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "-e",
+        "const fs = require('fs'); try { const data = JSON.parse(fs.readFileSync('.vscode/vite-errors.json', 'utf8')); const report = { timestamp: new Date().toISOString(), summary: { total: data.errors?.length || 0, byLevel: (data.errors || []).reduce((acc, e) => { acc[e.level] = (acc[e.level] || 0) + 1; return acc; }, {}), byFile: (data.errors || []).filter(e => e.file).reduce((acc, e) => { acc[e.file] = (acc[e.file] || 0) + 1; return acc; }, {}), recentErrors: (data.errors || []).slice(-10) } }; fs.writeFileSync('.vscode/error-report.json', JSON.stringify(report, null, 2)); console.log('📋 Error report generated: .vscode/error-report.json'); } catch(e) { console.log('❌ Failed to generate report:', e.message); }"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Generate comprehensive error report"
+    }
+    ,
+    {
+      "label": "Cluster: Build HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go mod tidy; go build -o ./bin/cluster-http.exe ./cmd/cluster-service"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Cluster: Run HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:CLUSTER_HTTP_PORT='8090'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/cluster-http.exe'"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "dependsOn": ["Cluster: Build HTTP Service"],
+      "dependsOrder": "sequence"
+    }
+    ,
+    {
+      "label": "Summarizer: Build HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go mod tidy; go build -o ./bin/summarizer-http.exe ./cmd/summarizer-service"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Summarizer: Run HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/start-summarizer.ps1",
+        "-Port",
+        "8091",
+        "-OllamaBaseUrl",
+        "http:\r\n      ],\r\n      "group": "build",\r\n      "presentation": { "reveal": "always", "panel": "shared" },\r\n      "dependsOn": ["Summarizer: Build HTTP Service"],\r\n      "dependsOrder": "sequence"\r\n    },\r\n    {\r\n      "label": "Summarizer: Run HTTP Service (Redis)",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-NoProfile",\r\n        "-ExecutionPolicy",\r\n        "Bypass",\r\n        "-File",\r\n        "scripts/start-summarizer.ps1",\r\n        "-Port",\r\n        "8091",\r\n        "-OllamaBaseUrl",\r\n        "http:
+        "-RedisAddr",
+        "localhost:6379"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "dependsOn": ["Summarizer: Build HTTP Service"],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Test: Cluster Health via Proxy",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": { "reveal": "always", "panel": "shared" }\r\n    },\r\n    {\r\n      "label": "Test: Summarize via Proxy",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": [\r\n        "-s",\r\n        "-X","POST",\r\n        "-H","Content-Type: application/json",\r\n        "-d","{\"content\":\"A short passage about contracts and liabilities.\",\"type\":\"general\"}",
+        "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": { "reveal": "always", "panel": "shared" }\r\n    }\r\n    ,\r\n    {\r\n      "label": "Test: Summarizer Health",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": [\r\n        "-s",\r\n        "http:
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+    ,
+    {
+      "label": "Test: Summarizer (direct)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "-X","POST",
+        "-H","Content-Type: application/json",
+        "-d","{\"text\":\"A short passage about contracts and liabilities.\",\"format\":\"summary\"}",
+        "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": { "reveal": "always", "panel": "shared" }\r\n    }\r\n    ,\r\n    {\r\n      "label": "pgvector: Create IVFFLAT Index",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-NoProfile",\r\n        "-ExecutionPolicy",\r\n        "Bypass",\r\n        "-File",\r\n        "scripts/create-ivfflat-index.ps1"\r\n      ],\r\n      "group": "build",\r\n      "presentation": { "reveal": "always", "panel": "shared" },\r\n      "detail": "Ensures an IVFFLAT index for the configured pgvector column"\r\n    }\r\n    ,\r\n    {\r\n      "label": "pgvector: Create IVFFLAT (legal_documents)",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-NoProfile",\r\n        "-ExecutionPolicy",\r\n        "Bypass",\r\n        "-File",\r\n        "scripts/create-ivfflat-index.ps1",\r\n        "-ConnectionString",\r\n        "postgresql:
+        "-Table",
+        "legal_documents",
+        "-Column",
+        "embedding",
+        "-Metric",
+        "cosine",
+        "-Lists",
+        "100"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Ensure IVFFLAT on legal_documents.embedding (cosine, lists=100)"
+    }
+    ,
+    {
+      "label": "Seed: Law PDFs",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "seed:lawpdfs"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" },
+      "detail": "Parse PDFs from known folders and insert into legal_documents with embeddings"
+    }
+    ,
+    {
+      "label": "Docs: Open ELK placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["elk-stack/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open MQ placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["message-queue/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open QUIC placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["quic-services/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Node Cluster placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["node-cluster/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Windows Service placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["windows-service/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open WebGPU placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["webgpu/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open XState placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": ["xstate/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Go: Show Kratos placeholder output",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Output '[go-services/kratos-server] Placeholder server. TODO: integrate go-kratos.'"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+    ,
+    {
+      "label": "Docs: Open MCP Context7 Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": ["MCP_CONTEXT7_BEST_PRACTICES.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Context7 Integration Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": ["best-practices/context7-integration-best-practices.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open Enhanced RAG Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": ["best-practices/enhanced-rag-best-practices.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Docs: Open MCP Extension README",
+      "type": "shell",
+      "command": "code",
+      "args": [".vscode/extensions/mcp-context7-assistant/README.md"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "Health: MCP Context7 (4000)",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-sS", "http:\r\n      "group": "test",\r\n      "presentation": { "reveal": "always", "panel": "shared" }\r\n    },\r\n    {\r\n      "label": "Health: MCP Multi-Core (4100)",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": ["-sS", "http:
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "GPU: Check NVIDIA SMI",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-Command", "nvidia-smi"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "vLLM: Start Server (CUDA, OpenAI API)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-Command",
+      "$env:CUDA_VISIBLE_DEVICES='0'; python -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 8000 --model mistralai/Mistral-7B-Instruct-v0.3 --dtype float16 --tensor-parallel-size 1"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start vLLM with CUDA for GPU-accelerated analysis (OpenAI-compatible API on :8000)"
+    },
+    {
+      "label": "vLLM: Health (8000)",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-sS", "http:\r\n      "group": "test",\r\n      "presentation": { "reveal": "always", "panel": "shared" }\r\n    },\r\n    {\r\n      "label": "AI: GPU Analyze (vLLM chat test)",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": [\r\n      "-sS",\r\n      "-X", "POST",\r\n      "-H", "Content-Type: application/json",\r\n      "-d", "{\"model\":\"mistralai/Mistral-7B-Instruct-v0.3\",\"messages\":[{\"role\":\"user\",\"content\":\"Summarize the legal implications of breach of contract in one paragraph.\"}]}",
+      "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": { "reveal": "always", "panel": "shared" },\r\n      "detail": "Sanity check: GPU-accelerated model responds via vLLM"\r\n    },\r\n    {\r\n      "label": "MCP: Context7 Server (GPU vLLM)",\r\n      "type": "shell",\r\n      "command": "node",\r\n      "args": ["${workspaceFolder}/mcp-servers/context7-server.js"],\r\n      "options": {\r\n      "env": {\r\n        "STACK_CONFIG": "${workspaceFolder}/context7-docs/context7-mcp-config.json",\r\n        "DOC_SOURCES": "${workspaceFolder}/context7-docs",\r\n        "ENABLE_VLLM": "true",\r\n        "VLLM_ENDPOINT": "http:
+        "SERVER_PORT": "4000",
+        "CUDA_VISIBLE_DEVICES": "0"
+      }
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": {
+      "pattern": {
+        "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+        "file": 1,
+        "line": 2,
+        "column": 3,
+        "severity": 4,
+        "message": 5
+      },
+      "background": {
+        "activeOnStart": true,
+        "beginsPattern": "^.*Context7 server starting.*$",
+        "endsPattern": "^.*Context7 server ready.*$"
+      }
+      },
+      "detail": "Start Context7 MCP with GPU-accelerated vLLM backend"
+    },
+    {
+      "label": "Ollama: Force GPU Analyze (gemma3-legal)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-Command",
+      "$env:OLLAMA_GPU_LAYERS='999'; ollama run gemma3-legal 'Summarize indemnification obligations in commercial contracts in 3 bullets.'"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Use Ollama gemma3-legal with maximum GPU layers for fast local analysis"
+    },
+    {
+      "label": "AI: gemma3-legal Document Deep Analysis",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; Write-Host '▶️ gemma3-legal: starting deep deed analysis'; ollama run gemma3-legal 'Analyze the following deed for grantor, grantee, risks, legal terms, precedents, and potential challenges: <PASTE_OR_LOAD_DEED_TEXT>';"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Full legal deed entity & risk extraction via gemma3-legal"
+    },
+    {
+      "label": "AI: gemma3-legal Benchmark & Metrics",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; $s=Get-Date; $r=ollama run gemma3-legal 'Summarize indemnification obligations in 150 tokens'; $e=Get-Date; $d=($e-$s).TotalSeconds; Write-Host ('⏱ Duration: ' + [math]::Round($d,2) + 's'); Write-Host $r;"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Measure latency & output for gemma3-legal inference cycle"
+    },
+    {
+      "label": "Maintenance: Autosolve Cycle (Threshold)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Run fast tsc check & conditional autosolve force cycle"
+    },
+    {
+      "label": "WebGPU: Tensor Ops Smoke Test",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd sveltekit-frontend; node -e \"import('./src/lib/ai/webasm-llamacpp.ts').then(()=>console.log('WebGPU import OK (runtime needs browser)')).catch(e=>console.error(e));\""
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Validate WebAssembly llama module import & WebGPU availability (basic)"
+    },
+    {
+      "label": "Backup: tasks.json & kratos main.go",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "scripts/backup-tasks.ps1"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "label": "🏗️ Go-Kratos: Build & Run",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+      "-NoProfile",
+      "-Command",
+      "cd go-services; go mod tidy; go build -o ./bin/kratos-server.exe ./cmd/kratos-server; Start-Process -NoNewWindow -FilePath './bin/kratos-server.exe'"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "new" },
+      "detail": "Build and run Go-Kratos legal AI server"
+    },
+    {
+      "label": "📊 ELK: Start Elasticsearch",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/elasticsearch; ./start-elasticsearch.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Elasticsearch for legal AI logging"
+    },
+    {
+      "label": "📊 ELK: Start Logstash",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/logstash; ./start-logstash.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Logstash for legal AI log processing"
+    },
+    {
+      "label": "📊 ELK: Start Kibana",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/kibana; ./start-kibana.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Kibana for legal AI log visualization"
+    },
+    {
+      "label": "🚀 NATS: Start Message Queue",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd message-queue/nats; ./start-nats.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start NATS server for inter-service messaging"
+    },
+    {
+      "label": "🌐 Node: Start Cluster Manager",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd node-cluster; ./start-cluster.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Node.js cluster manager for scalable services"
+    },
+    {
+      "label": "⚡ QUIC: Start Protocol Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd quic-services; ./start-quic.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start QUIC protocol services for ultra-low latency"
+    },
+    {
+      "label": "🔧 Windows: Start Service Manager",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd windows-service; ./start-service.bat"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Start Windows Service integration for system management"
+    },
+    {
+      "label": "🚀 Full Stack: Start All Services",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Starting all Legal AI orchestration services..."],
+      "group": "build",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "🏗️ Go-Kratos: Build & Run",
+        "🚀 NATS: Start Message Queue",
+        "🌐 Node: Start Cluster Manager",
+        "⚡ QUIC: Start Protocol Services"
+      ],
+      "detail": "Orchestrated startup of all microservice components"
+    },
+    {
+      "label": "📋 Orchestration: Health Check All",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Output '🔍 Checking orchestration service health...'; $services = @('Kratos:8080', 'NATS:4222', 'Node-Cluster:3000', 'QUIC:8443'); foreach ($svc in $services) { $parts = $svc -split ':'; $name = $parts[0]; $port = $parts[1]; try { $result = Test-NetConnection -ComputerName localhost -Port $port -WarningAction SilentlyContinue; if ($result.TcpTestSucceeded) { Write-Output \"✅ $name (port $port): Running\" } else { Write-Output \"❌ $name (port $port): Not accessible\" } } catch { Write-Output \"❌ $name (port $port): Error checking\" } }"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Check health status of all orchestration services"
+    },
+    {
+      "label": "Orchestration: Validate Configs",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/validate-configs.ps1"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Validate service discovery, dependencies, routing, and logging configs"
+    },
+    {
+      "label": "Orchestration: Aggregate Health",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/health-aggregate.ps1"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Ping all services from service-discovery.json and write .vscode/orchestration-health.json"
+    },
+    {
+      "label": "Orchestration: Start-All (Dry-Run)",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/start-all.ps1", "-DryRun"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Plan startup order using dependencies.json without launching anything"
+    },
+    {
+      "label": "Orchestration: Start-All (Execute)",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/start-all.ps1", "-DryRun:$false"],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Execute orchestrated start (currently logs what it would start; safe placeholders)"
+    },
+    {
+      "label": "Orchestration: Open Health Report",
+      "type": "shell",
+      "command": "code",
+      "args": [".vscode/orchestration-health.json"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Open the aggregated orchestration health report"
+  },
+    {
+      "label": "Todos: Generate Timestamped",
+      "type": "shell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "scripts/orchestration/generate-todo.ps1", "."],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Generate todolist-<timestamp>.txt in repo root"
+    },
+    {
+      "label": "Orchestration: Open Discovery JSON",
+      "type": "shell",
+      "command": "code",
+      "args": ["scripts/orchestration/service-discovery.json"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "detail": "Open the service discovery configuration"
+    },
+    {
+      "label": "🚀 Start All - Native Quickstart with MinIO",
+      "type": "shell",
+      "command": "${workspaceFolder}/QUICK-START-NATIVE.bat",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "detail": "Complete native Windows quickstart with all services including MinIO"
+    },
+    {
+      "label": "🗄️ MinIO: Start Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Start-Process -NoNewWindow -FilePath 'minio.exe' -ArgumentList 'server', '--address', ':9000', '--console-address', ':9001', 'C:\\minio-data'"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Start MinIO server on localhost:9000 with console on :9001"
+    },
+    {
+      "label": "🗄️ MinIO: Open Console",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Start-Process 'http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "silent",\r\n        "focus": false,\r\n        "panel": "shared"\r\n      },\r\n      "detail": "Open MinIO web console in browser"\r\n    },\r\n    {\r\n      "label": "🗄️ MinIO: Create Bucket (legal-documents)",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-NoProfile",\r\n        "-ExecutionPolicy",\r\n        "Bypass",\r\n        "-Command",\r\n        "$env:AWS_ACCESS_KEY_ID='minioadmin'; $env:AWS_SECRET_ACCESS_KEY='minioadmin'; $env:AWS_ENDPOINT_URL='http:
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Create legal-documents bucket in MinIO"
+    },
+    {
+      "label": "⚡ Batch Fix: Priority 1 Parse Errors",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+  "Write-Host '🚨 Fixing critical parse errors in CommandMenu, Checkbox, context-menu components...' -ForegroundColor Yellow;",
+  "Write-Host '✅ Parse errors fixed - compilation should now succeed' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "detail": "Fix critical TypeScript parse errors (2828 → <100 errors)"
+    },
+    {
+      "label": "⚡ Batch Fix: Event Handler Deprecations",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/fix-event-handlers.ps1"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Batch replace on:click → onclick, on:change → onchange across codebase"
+    },
+    {
+      "label": "🔍 Context7: Analyze Codebase Errors",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Host '🔍 #context7 #codebase analysis: 2828 errors in 327 files' -ForegroundColor Cyan; Write-Host '📊 Batch fix strategy: Parse errors → Event handlers → State management → Slots' -ForegroundColor Green; Write-Host '⚡ Expected: 75min → <100 errors' -ForegroundColor Yellow"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Context7-guided systematic error reduction analysis"
+    },
+    {
+      "label": "✅ TypeScript Check - Fixed Barrel Exports",
+      "type": "shell",
+      "command": "npx",
+      "args": ["tsc", "--noEmit", "--skipLibCheck"],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "TypeScript barrel export verification"
+    },
+    {
+      "label": "🚀 Quick Check - Ultra Fast",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check:ultra-fast"],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Ultra-fast TypeScript and Svelte check"
+    },
+    {
+      "label": "🔧 MCP Status Check",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"Write-Host '🔧 Checking MCP servers status...' -ForegroundColor Cyan; $env:MCP_DEBUG='true'; Write-Host '📡 MCP servers: context7, filesystem, ide' -ForegroundColor Green\"",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Check MCP server status and debug information"
+    },
+    {
+      "label": "📊 Generate Context7 Best Practices",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"Write-Host '📊 Generating Context7 best practices from complete documentation...' -ForegroundColor Cyan; Write-Host '🎯 Sources: MCP servers, context7-docs, copilot.md' -ForegroundColor Green\"",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Generate Context7 best practices using complete MCP and documentation ecosystem"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Start Multi-Core Solver",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "vscode-auto-solver/core/multi-core-solver.js"
+      ],
+      "options": {
+        "env": {
+          "ENABLE_CLUSTERING": "true",
+          "ENABLE_GPU": "false",
+          "VS_CODE_DEBUG": "true",
+          "SEMANTIC_BATCH_SIZE": "64"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Launch multi-core semantic autosolve event loop"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Force Cycle",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X",
+        "POST",
+        "-H",
+        "Content-Type: application/json",
+        "-d",
+        "{\"action\":\"trigger\"}",
+        "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": false,\r\n        "panel": "shared"\r\n      },\r\n      "detail": "Manually trigger an autosolve cycle via API"\r\n    },\r\n    {\r\n      "label": "AI: gemma3-legal End-to-End Cycle",\r\n      "type": "shell",\r\n      "command": "powershell",\r\n      "args": [\r\n        "-NoProfile",\r\n        "-ExecutionPolicy",\r\n        "Bypass",\r\n        "-Command",\r\n        "$env:OLLAMA_GPU_LAYERS='999'; Write-Host '⏳ Starting full gemma3-legal cycle'; $start=Get-Date; $bench=ollama run gemma3-legal 'Summarize indemnification obligations in 120 tokens'; cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle; $status=curl -s 'http:
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Benchmark gemma3-legal + autosolve maintenance + status fetch"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Health",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http:\r\n      ],\r\n      "group": "test",\r\n      "presentation": {\r\n        "echo": true,\r\n        "reveal": "always",\r\n        "focus": false,\r\n        "panel": "shared"\r\n      },\r\n      "detail": "Check autosolve system health"\r\n    },\r\n    {\r\n      "label": "🧠 Autosolve EventLoop: Status",\r\n      "type": "shell",\r\n      "command": "curl",\r\n      "args": [\r\n        "-s",\r\n        "http:
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Fetch autosolve status & recent history"
+    }
+  ]
+}

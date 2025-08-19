@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { aiHistory } from "$lib/stores/aiHistoryStore";
   import Fuse from "fuse.js";
@@ -8,7 +6,7 @@ https://svelte.dev/e/js_parse_error -->
   let recommendations: any[] = [];
   let fuse: Fuse<any>;
 
-  let history = $derived($aiHistory;);
+  $: history = $aiHistory;
 
   onMount(() => {
     fuse = new Fuse(history, {
@@ -22,17 +20,17 @@ https://svelte.dev/e/js_parse_error -->
         .search(lastPrompt)
         .map((r) => r.item)
         .slice(0, 3);
-}
+    }
   });
 </script>
 
-<div class="space-y-4">
-  <h3 class="space-y-4">Recommended Next Actions</h3>
-  <ul class="space-y-4">
+<div class="mx-auto px-4 max-w-7xl">
+  <h3 class="mx-auto px-4 max-w-7xl">Recommended Next Actions</h3>
+  <ul class="mx-auto px-4 max-w-7xl">
     {#each recommendations as item}
-      <li class="space-y-4">
-        <div class="space-y-4">{item.prompt}</div>
-        <div class="space-y-4">{item.response}</div>
+      <li class="mx-auto px-4 max-w-7xl">
+        <div class="mx-auto px-4 max-w-7xl">{item.prompt}</div>
+        <div class="mx-auto px-4 max-w-7xl">{item.response}</div>
       </li>
     {/each}
   </ul>

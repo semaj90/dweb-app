@@ -60,9 +60,8 @@
         return "bg-gray-100 text-gray-800";
     }
   }
-
   $: evidenceIcon = getEvidenceIcon(evidence.evidenceType || evidence.type);
-  $: formattedDate = formatDistanceToNow(new Date(${1} || new Date()), {
+  $: formattedDate = formatDistanceToNow(new Date(evidence.createdAt || evidence.dateCollected || Date.now()), {
     addSuffix: true,
   });
 
@@ -92,88 +91,83 @@
 </script>
 
 <div
-  class="mx-auto px-4 max-w-7xl"
-  class:disabled
+  class="bg-white rounded-lg shadow-sm border p-4 transition-all hover:shadow-md"
+  class:opacity-60={disabled}
+  class:pointer-events-none={disabled}
 >
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">
-        <svelte:component this={evidenceIcon} class="mx-auto px-4 max-w-7xl" />
+  <div class="flex items-start gap-3">
+    <div class="flex-shrink-0">
+      <svelte:component this={evidenceIcon} class="h-6 w-6 text-gray-600" />
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <h4 class="text-sm font-medium text-gray-900 truncate">
+        {evidence.title}
+      </h4>
+
+      <div class="mt-1">
+        <span
+          class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {getTypeColor(evidence.evidenceType || evidence.type)}"
+        >
+          {evidence.evidenceType || evidence.type}
+        </span>
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <h4 class="mx-auto px-4 max-w-7xl">
-          {evidence.title}
-        </h4>
+      {#if evidence.description}
+        <p class="mt-2 text-sm text-gray-600 line-clamp-2">
+          {evidence.description}
+        </p>
+      {/if}
 
-        <div class="mx-auto px-4 max-w-7xl">
-          <span
-            class="mx-auto px-4 max-w-7xl"
-          >
-            {evidence.evidenceType || evidence.type}
-          </span>
-        </div>
-
-        {#if evidence.description}
-          <p class="mx-auto px-4 max-w-7xl">
-            {evidence.description}
-          </p>
-        {/if}
-
-        <div class="mx-auto px-4 max-w-7xl">
-          <Calendar class="mx-auto px-4 max-w-7xl" />
-          {formattedDate}
-        </div>
+      <div class="mt-2 flex items-center text-xs text-gray-500">
+        <Calendar class="h-3 w-3 mr-1" />
+        {formattedDate}
       </div>
     </div>
 
     <!-- Actions -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="flex-shrink-0 flex items-center gap-1">
       <button
-        on:click={() => handleView()}
-        class="mx-auto px-4 max-w-7xl"
+        onclick={() => handleView()}
+        class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="View evidence"
         {disabled}
       >
-        <Eye class="mx-auto px-4 max-w-7xl" />
+        <Eye class="h-4 w-4" />
       </button>
 
       <button
-        on:click={() => handleEdit()}
-        class="mx-auto px-4 max-w-7xl"
+        onclick={() => handleEdit()}
+        class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="Edit evidence"
         {disabled}
       >
-        <Edit class="mx-auto px-4 max-w-7xl" />
+        <Edit class="h-4 w-4" />
       </button>
 
       <button
-        on:click={() => handleDownload()}
-        class="mx-auto px-4 max-w-7xl"
+        onclick={() => handleDownload()}
+        class="p-1 text-gray-400 hover:text-gray-600 rounded"
         title="Download evidence"
         {disabled}
       >
-        <Download class="mx-auto px-4 max-w-7xl" />
+        <Download class="h-4 w-4" />
       </button>
 
       <button
-        on:click={() => handleDelete()}
-        class="mx-auto px-4 max-w-7xl"
+        onclick={() => handleDelete()}
+        class="p-1 text-red-400 hover:text-red-600 rounded"
         title="Delete evidence"
         {disabled}
       >
-        <Trash2 class="mx-auto px-4 max-w-7xl" />
+        <Trash2 class="h-4 w-4" />
       </button>
     </div>
   </div>
 </div>
 
 <style>
-  .disabled {
-    opacity: 0.6;
-    pointer-events: none;
-  }
-
+  /* @unocss-include */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

@@ -1,0 +1,171 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Frontend: CLI Detect",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "cli:detect"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Frontend: CLI Update",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "cli:update"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Svelte: Generate Error Suggestions",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "check:suggest"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "detail": "Run svelte-check with AI suggestions; see logs/svelte-suggestions.json"
+    },
+    {
+      "label": "Start SvelteKit Dev",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "dev"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*VITE.*$",
+          "endsPattern": "^.*Local:.*$"
+        }
+      }
+    },
+    {
+      "label": "View Vite Errors",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        ".vscode/vite-errors.json"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": [],
+      "detail": "Open Vite error log in VS Code editor"
+    },
+    {
+      "label": "Clear Vite Error Log",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "'{\"metadata\":{\"lastUpdated\":\"\",\"totalEntries\":0},\"errors\":[],\"diagnostics\":[]}' | Out-File -FilePath '.vscode/vite-errors.json' -Encoding utf8"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "detail": "Clear the Vite error log file"
+    },
+    {
+      "label": "Restart Vite with Clean Logs",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "dev"
+      ],
+      "options": {
+        "cwd": "sveltekit-frontend"
+      },
+      "group": "build",
+      "dependsOn": "Clear Vite Error Log",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      },
+      "problemMatcher": [
+        {
+          "owner": "vite-error-logger",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "severity": "error",
+          "pattern": {
+            "regexp": "^🔧.*ERROR\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4
+          }
+        },
+        {
+          "owner": "vite-error-logger",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "severity": "warning",
+          "pattern": {
+            "regexp": "^🔧.*WARN\\s+(.+):(\\d+):(\\d+)\\s+(.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "message": 4
+          }
+        }
+      ],
+      "detail": "Restart Vite development server with clean error logs"
+    }
+  ]
+}

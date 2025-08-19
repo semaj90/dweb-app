@@ -75,74 +75,71 @@ Would you like me to elaborate on any of these aspects?`,
       messages = [...messages, aiResponse];
       isLoading = false;
     }, 1500);
-  }
-
+}
   function handleReferenceClick(reference: any) {
     selectedCitation = `${reference.title} - ${reference.citation}`;
     showCitationDialog = true;
-  }
-
+}
   function insertCitation() {
     dispatch("citation-inserted", selectedCitation);
     showCitationDialog = false;
-  }
-
+}
   function clearMessages() {
     messages = [];
-  }
+}
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
   <!-- Main Chat Interface -->
-  <div class="mx-auto px-4 max-w-7xl" style="max-height: {maxHeight}">
+  <div class="container mx-auto px-4" style="max-height: {maxHeight}">
     <!-- Header -->
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">
-        <Brain class="mx-auto px-4 max-w-7xl" />
-        <h3 class="mx-auto px-4 max-w-7xl">Legal AI Assistant</h3>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <Brain class="container mx-auto px-4" />
+        <h3 class="container mx-auto px-4">Legal AI Assistant</h3>
         {#if caseId}
-          <span class="mx-auto px-4 max-w-7xl"
+          <span class="container mx-auto px-4"
             >Case: {caseId}</span
           >
         {/if}
       </div>
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <button
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
           on:click={() => (showSettings = !showSettings)}
           title="Settings"
         >
-          <Settings class="mx-auto px-4 max-w-7xl" />
+          <Settings class="container mx-auto px-4" />
         </button>
         <button
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
           on:click={() => clearMessages()}
           title="Clear conversation"
         >
-          <Trash2 class="mx-auto px-4 max-w-7xl" />
+          <Trash2 class="container mx-auto px-4" />
         </button>
       </div>
     </div>
 
     <!-- Messages -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       {#each messages as message}
-        <div class="mx-auto px-4 max-w-7xl">
-          <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
             {message.content}
           </div>
 
           {#if message.references && showReferences}
-            <div class="mx-auto px-4 max-w-7xl">
-              <h4 class="mx-auto px-4 max-w-7xl">References:</h4>
+            <div class="container mx-auto px-4">
+              <h4 class="container mx-auto px-4">References:</h4>
               {#each message.references as reference}
                 <button
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                   on:click={() => handleReferenceClick(reference)}
                 >
-                  <Quote class="mx-auto px-4 max-w-7xl" />
-                  <span class="mx-auto px-4 max-w-7xl">{reference.title}</span>
-                  <span class="mx-auto px-4 max-w-7xl">{reference.citation}</span>
+                  <Quote class="container mx-auto px-4" />
+                  <span class="container mx-auto px-4">{reference.title}</span>
+                  <span class="container mx-auto px-4">{reference.citation}</span>
                 </button>
               {/each}
             </div>
@@ -151,9 +148,9 @@ Would you like me to elaborate on any of these aspects?`,
       {/each}
 
       {#if isLoading}
-        <div class="mx-auto px-4 max-w-7xl">
-          <div class="mx-auto px-4 max-w-7xl">
-            <Loader2 class="mx-auto px-4 max-w-7xl" />
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
+            <Loader2 class="container mx-auto px-4" />
             Analyzing your query...
           </div>
         </div>
@@ -161,21 +158,21 @@ Would you like me to elaborate on any of these aspects?`,
     </div>
 
     <!-- Input -->
-    <form class="mx-auto px-4 max-w-7xl" on:submit|preventDefault={handleSubmit}>
-      <div class="mx-auto px-4 max-w-7xl">
+    <form class="container mx-auto px-4" on:submit|preventDefault={handleSubmit}>
+      <div class="container mx-auto px-4">
         <input
           type="text"
           bind:value={query}
           {placeholder}
           disabled={isLoading}
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         />
         <button
           type="submit"
           disabled={!query.trim() || isLoading}
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         >
-          <Search class="mx-auto px-4 max-w-7xl" />
+          <Search class="container mx-auto px-4" />
         </button>
       </div>
     </form>
@@ -183,16 +180,16 @@ Would you like me to elaborate on any of these aspects?`,
 
   <!-- Settings Panel -->
   {#if showSettings}
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">
-        <h4 class="mx-auto px-4 max-w-7xl">AI Assistant Settings</h4>
-        <button class="mx-auto px-4 max-w-7xl" on:click={() => (showSettings = false)}
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <h4 class="container mx-auto px-4">AI Assistant Settings</h4>
+        <button class="container mx-auto px-4" on:click={() => (showSettings = false)}
           >×</button
         >
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <label for="model-select">Model:</label>
           <select id="model-select" bind:value={selectedModel}>
             <option value="gpt-4">GPT-4</option>
@@ -201,7 +198,7 @@ Would you like me to elaborate on any of these aspects?`,
           </select>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <label for="temperature-range">Temperature: {temperature}</label>
           <input
             id="temperature-range"
@@ -213,7 +210,7 @@ Would you like me to elaborate on any of these aspects?`,
           />
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <label for="threshold-range"
             >Search Threshold: {searchThreshold}</label
           >
@@ -227,7 +224,7 @@ Would you like me to elaborate on any of these aspects?`,
           />
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <label for="max-results">Max Results:</label>
           <input
             id="max-results"
@@ -244,37 +241,37 @@ Would you like me to elaborate on any of these aspects?`,
   <!-- Citation Dialog -->
   {#if showCitationDialog}
     <div
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
       on:click={() => (showCitationDialog = false)}
       on:keydown={(e) => {
         if (e.key === "Escape") {
           showCitationDialog = false;
         }
-      "
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="citation-dialog-title"
       tabindex={-1}
     >
-      <div class="mx-auto px-4 max-w-7xl" role="document">
-        <div class="mx-auto px-4 max-w-7xl">
-          <h4 class="mx-auto px-4 max-w-7xl" id="citation-dialog-title">
-            <Quote class="mx-auto px-4 max-w-7xl" />
+      <div class="container mx-auto px-4" role="document">
+        <div class="container mx-auto px-4">
+          <h4 class="container mx-auto px-4" id="citation-dialog-title">
+            <Quote class="container mx-auto px-4" />
             Legal Citation
           </h4>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
-          <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
             <p>{selectedCitation}</p>
           </div>
 
-          <div class="mx-auto px-4 max-w-7xl">
-            <button class="mx-auto px-4 max-w-7xl" on:click={() => insertCitation()}>
+          <div class="container mx-auto px-4">
+            <button class="container mx-auto px-4" on:click={() => insertCitation()}>
               Insert Citation
             </button>
             <button
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
               on:click={() => navigator.clipboard.writeText(selectedCitation)}
             >
               Copy to Clipboard
@@ -282,9 +279,9 @@ Would you like me to elaborate on any of these aspects?`,
           </div>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <button
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             on:click={() => (showCitationDialog = false)}
           >
             Close
@@ -296,20 +293,19 @@ Would you like me to elaborate on any of these aspects?`,
 </div>
 
 <style>
+  /* @unocss-include */
   .ai-assistant-container {
     position: relative;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     background: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
+}
   .chat-container {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-  }
-
+}
   .chat-header {
     display: flex;
     justify-content: space-between;
@@ -317,50 +313,42 @@ Would you like me to elaborate on any of these aspects?`,
     padding: 12px 16px;
     border-bottom: 1px solid #e5e7eb;
     background: #f9fafb;
-  }
-
+}
   .messages-container {
     flex: 1;
     overflow-y: auto;
     padding: 16px;
     max-height: 300px;
-  }
-
+}
   .message {
     margin-bottom: 16px;
     padding: 12px;
     border-radius: 8px;
-  }
-
+}
   .message.user {
     background: #dbeafe;
     margin-left: 20%;
     text-align: right;
-  }
-
+}
   .message.assistant {
     background: #f3f4f6;
     margin-right: 20%;
-  }
-
+}
   .message-content {
     white-space: pre-wrap;
     line-height: 1.5;
-  }
-
+}
   .references {
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px solid #e5e7eb;
-  }
-
+}
   .references-title {
     font-size: 0.875rem;
     font-weight: 600;
     color: #374151;
     margin-bottom: 8px;
-  }
-
+}
   .reference-item {
     display: flex;
     align-items: center;
@@ -374,33 +362,27 @@ Would you like me to elaborate on any of these aspects?`,
     transition: all 0.2s;
     width: 100%;
     text-align: left;
-  }
-
+}
   .reference-item:hover {
     background: #f9fafb;
     border-color: #d1d5db;
-  }
-
+}
   .reference-title {
     font-weight: 500;
     color: #111827;
-  }
-
+}
   .reference-citation {
     color: #6b7280;
     font-size: 0.875rem;
-  }
-
+}
   .chat-input {
     padding: 16px;
     border-top: 1px solid #e5e7eb;
-  }
-
+}
   .input-container {
     display: flex;
     gap: 8px;
-  }
-
+}
   .chat-input-field {
     flex: 1;
     padding: 12px;
@@ -408,13 +390,11 @@ Would you like me to elaborate on any of these aspects?`,
     border-radius: 6px;
     outline: none;
     transition: border-color 0.2s;
-  }
-
+}
   .chat-input-field:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
+}
   .chat-submit-btn {
     padding: 12px;
     background: #3b82f6;
@@ -423,17 +403,14 @@ Would you like me to elaborate on any of these aspects?`,
     border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s;
-  }
-
+}
   .chat-submit-btn:hover:not(:disabled) {
     background: #2563eb;
-  }
-
+}
   .chat-submit-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-
+}
   .btn-icon {
     padding: 8px;
     background: none;
@@ -442,13 +419,11 @@ Would you like me to elaborate on any of these aspects?`,
     cursor: pointer;
     color: #6b7280;
     transition: all 0.2s;
-  }
-
+}
   .btn-icon:hover {
     background: #f3f4f6;
     color: #374151;
-  }
-
+}
   .settings-panel {
     position: absolute;
     top: 0;
@@ -459,45 +434,38 @@ Would you like me to elaborate on any of these aspects?`,
     border-left: 1px solid #e5e7eb;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
     z-index: 10;
-  }
-
+}
   .settings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px;
     border-bottom: 1px solid #e5e7eb;
-  }
-
+}
   .settings-title {
     font-weight: 600;
     color: #111827;
-  }
-
+}
   .btn-close {
     background: none;
     border: none;
     font-size: 20px;
     cursor: pointer;
     color: #6b7280;
-  }
-
+}
   .settings-content {
     padding: 16px;
-  }
-
+}
   .setting-group {
     margin-bottom: 16px;
-  }
-
+}
   .setting-group label {
     display: block;
     margin-bottom: 4px;
     font-size: 0.875rem;
     font-weight: 500;
     color: #374151;
-  }
-
+}
   .setting-group select,
   .setting-group input[type="number"] {
     width: 100%;
@@ -505,12 +473,10 @@ Would you like me to elaborate on any of these aspects?`,
     border: 1px solid #d1d5db;
     border-radius: 4px;
     outline: none;
-  }
-
+}
   .setting-group input[type="range"] {
     width: 100%;
-  }
-
+}
   .dialog-overlay {
     position: fixed;
     top: 0;
@@ -522,8 +488,7 @@ Would you like me to elaborate on any of these aspects?`,
     align-items: center;
     justify-content: center;
     z-index: 1000;
-  }
-
+}
   .dialog-content {
     background: white;
     border-radius: 8px;
@@ -532,39 +497,33 @@ Would you like me to elaborate on any of these aspects?`,
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-  }
-
+}
   .dialog-header {
     padding: 16px;
     border-bottom: 1px solid #e5e7eb;
-  }
-
+}
   .dialog-title {
     display: flex;
     align-items: center;
     gap: 8px;
     font-weight: 600;
     color: #111827;
-  }
-
+}
   .dialog-body {
     padding: 16px;
-  }
-
+}
   .citation-display {
     padding: 16px;
     background: #f9fafb;
     border-radius: 6px;
     margin-bottom: 16px;
     border-left: 4px solid #3b82f6;
-  }
-
+}
   .dialog-actions {
     display: flex;
     gap: 8px;
     margin-bottom: 16px;
-  }
-
+}
   .btn-primary {
     padding: 8px 16px;
     background: #3b82f6;
@@ -573,12 +532,10 @@ Would you like me to elaborate on any of these aspects?`,
     border-radius: 6px;
     cursor: pointer;
     font-weight: 500;
-  }
-
+}
   .btn-primary:hover {
     background: #2563eb;
-  }
-
+}
   .btn-secondary {
     padding: 8px 16px;
     background: #6b7280;
@@ -587,18 +544,15 @@ Would you like me to elaborate on any of these aspects?`,
     border-radius: 6px;
     cursor: pointer;
     font-weight: 500;
-  }
-
+}
   .btn-secondary:hover {
     background: #4b5563;
-  }
-
+}
   .dialog-footer {
     padding: 16px;
     border-top: 1px solid #e5e7eb;
     text-align: right;
-  }
-
+}
   .dialog-footer .btn-close {
     padding: 8px 16px;
     background: #f3f4f6;
@@ -606,9 +560,8 @@ Would you like me to elaborate on any of these aspects?`,
     border: 1px solid #d1d5db;
     border-radius: 6px;
     cursor: pointer;
-  }
-
+}
   .dialog-footer .btn-close:hover {
     background: #e5e7eb;
-  }
+}
 </style>

@@ -8,7 +8,7 @@ import { vscodeErrorLogger } from "./src/lib/vite/vscode-error-logger";
 // Smart port discovery utility
 async function findAvailablePort(startPort: number, maxAttempts: number = 10): Promise<number> {
   const net = await import('net');
-  
+
   for (let i = 0; i < maxAttempts; i++) {
     const port = startPort + i;
     try {
@@ -35,7 +35,7 @@ export default defineConfig(async ({ mode }) => {
   // Smart port discovery - prefer 5173, fallback to next available
   const preferredPort = 5173;
   let availablePort: number;
-  
+
   try {
     availablePort = await findAvailablePort(preferredPort);
     if (availablePort !== preferredPort) {
@@ -62,7 +62,7 @@ export default defineConfig(async ({ mode }) => {
     }),
     sveltekit()
   ],
-  
+
   // Development server configuration with smart port discovery
   server: {
     port: availablePort,
@@ -88,19 +88,42 @@ export default defineConfig(async ({ mode }) => {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/qdrant/, '')
       },
-      // Go microservice proxy for high-performance operations
-      '/api/go': {
-        target: 'http://localhost:8080',
+      // Production Go microservices proxy (multi-tier)
+      '/api/go/enhanced-rag': {
+        target: 'http://localhost:8094',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/go/, ''),
+        rewrite: (path) => path.replace(/^\/api\/go\/enhanced-rag/, ''),
+      },
+      '/api/go/upload': {
+        target: 'http://localhost:8093',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/go\/upload/, ''),
+      },
+      '/api/go/cluster': {
+        target: 'http://localhost:8213',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/go\/cluster/, ''),
+      },
+      '/api/go/xstate': {
+        target: 'http://localhost:8212',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/go\/xstate/, ''),
+      },
+      // Multi-core Ollama cluster (load balanced)
+      '/api/ollama': {
+        target: 'http://localhost:11434',
+        changeOrigin: true,
         configure: (proxy, options) => {
           proxy.on('error', (err, req, res) => {
-            console.log('Go microservice proxy error:', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
-            console.log('Proxying to Go microservice:', req.method, req.url);
+            console.log('Ollama cluster proxy error:', err);
           });
         }
+      },
+      // NVIDIA go-llama integration
+      '/api/nvidia-llama': {
+        target: 'http://localhost:8222', // Load balancer port
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/nvidia-llama/, ''),
       },
       '/api/parse': {
         target: 'http://localhost:8080',
@@ -122,24 +145,24 @@ export default defineConfig(async ({ mode }) => {
       }
     }
   },
-  
+
   preview: {
     port: availablePort + 1000, // Use different port for preview
     host: "0.0.0.0",
     cors: true,
     strictPort: false // Allow alternative ports for preview too
   },
-  
+
   // Build optimizations
   build: {
     target: 'esnext',
     minify: mode === 'production' ? 'esbuild' : false,
     sourcemap: mode === 'development',
-    
+
     rollupOptions: {
       external: [
         "amqplib",
-        "ioredis", 
+        "ioredis",
         "@qdrant/js-client-rest",
         "neo4j-driver",
         "@xstate/svelte",
@@ -147,9 +170,11 @@ export default defineConfig(async ({ mode }) => {
         "@langchain/community",
         "@langchain/anthropic",
         "@langchain/google-genai",
-        "drizzle-orm"
+        "drizzle-orm",
+        "minio",
+        "sharp"
       ],
-      
+
       // Optimize chunks for performance
       output: {
         manualChunks: {
@@ -159,7 +184,7 @@ export default defineConfig(async ({ mode }) => {
           'vendor-db': ['drizzle-orm', 'postgres'],
           'vendor-cache': ['ioredis'],
           'vendor-ai': ['@langchain/community', '@langchain/core'],
-          
+
           // Feature chunks
           'legal-analysis': [
             './src/lib/legal/analysis.js',
@@ -177,14 +202,14 @@ export default defineConfig(async ({ mode }) => {
         }
       }
     },
-    
+
     // Chunk size warnings threshold
     chunkSizeWarningLimit: 1000,
-    
+
     // Asset optimization
     assetsInlineLimit: 4096,
   },
-  
+
   // Dependency optimization
   optimizeDeps: {
     include: [
@@ -195,18 +220,18 @@ export default defineConfig(async ({ mode }) => {
     ],
     exclude: [
       '@langchain/community',
-      '@langchain/anthropic', 
+      '@langchain/anthropic',
       '@langchain/google-genai',
       'ioredis',
       'drizzle-orm',
       'postgres',
       '@qdrant/js-client-rest'
     ],
-    
+
     // Force pre-bundling for better performance
     force: true
   },
-  
+
   // Path resolution
   resolve: {
     alias: {
@@ -216,10 +241,12 @@ export default defineConfig(async ({ mode }) => {
       $utils: resolve('./src/lib/utils'),
       $database: resolve('./src/lib/database'),
       $agents: resolve('./src/lib/agents'),
-      $legal: resolve('./src/lib/legal')
+  $legal: resolve('./src/lib/legal'),
+  '@shared': resolve('../shared'),
+  '@text': resolve('../shared/text')
     }
   },
-  
+
   // CSS processing optimizations
   css: {
     devSourcemap: mode === 'development',
@@ -232,23 +259,23 @@ export default defineConfig(async ({ mode }) => {
       ]
     } : undefined
   },
-  
+
   // ESBuild configuration for optimal transpilation
   esbuild: {
     target: 'esnext',
     keepNames: mode === 'development',
     minify: mode === 'production',
-    
+
     // Legal compliance - preserve license comments
     legalComments: 'linked',
-    
+
     // Drop console/debugger in production
     ...(mode === 'production' && {
       drop: ['console', 'debugger'],
       pure: ['console.log', 'console.warn']
     })
   },
-  
+
   // Worker configuration for Node.js clustering support
   worker: {
     format: 'es',
@@ -256,7 +283,7 @@ export default defineConfig(async ({ mode }) => {
       UnoCSS()
     ]
   },
-  
+
   // Environment variables
   define: {
     __DEV__: mode === 'development',
@@ -267,7 +294,7 @@ export default defineConfig(async ({ mode }) => {
     __MCP_SERVER_PORT__: 4100,
     __GRPC_SERVER_PORT__: 8084
   },
-  
+
   // Performance optimizations
   experimental: {
     renderBuiltUrl(filename, { hostType }) {

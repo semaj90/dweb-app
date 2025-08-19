@@ -15,7 +15,7 @@
       if (models.length > 0) selectedModel = models[0];
     } catch (e) {
       error = 'Failed to load models.';
-    }
+}
   });
 
   async function handleInference() {
@@ -29,13 +29,12 @@
       error = 'Inference failed.';
     } finally {
       loading = false;
-    }
-  }
+}}
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
   <h2>Local LLM Inference (Tauri Desktop)</h2>
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <label for="model">Model:</label>
     <select id="model" bind:value={selectedModel}>
       {#each models as model}
@@ -43,18 +42,18 @@
       {/each}
     </select>
   </div>
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <label for="prompt">Prompt:</label>
     <textarea id="prompt" rows="4" bind:value={prompt} placeholder="Enter your prompt..."></textarea>
   </div>
-  <button class="mx-auto px-4 max-w-7xl" on:click={() => handleInference()} disabled={loading || !selectedModel || !prompt.trim()}>
+  <button class="container mx-auto px-4" on:click={() => handleInference()} disabled={loading || !selectedModel || !prompt.trim()}>
     {loading ? 'Running...' : 'Run Inference'}
   </button>
   {#if error}
-    <div class="mx-auto px-4 max-w-7xl">{error}</div>
+    <div class="container mx-auto px-4">{error}</div>
   {/if}
   {#if result}
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <h3>Result:</h3>
       <pre>{result}</pre>
     </div>
@@ -62,6 +61,7 @@
 </div>
 
 <style>
+  /* @unocss-include */
 .llm-inference-container {
   max-width: 500px;
   margin: 2rem auto;

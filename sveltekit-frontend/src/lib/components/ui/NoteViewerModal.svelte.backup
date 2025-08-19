@@ -1,22 +1,13 @@
 <script lang="ts">
   import { createDialog, melt } from "@melt-ui/svelte";
-  import {
-    Bookmark,
-    BookmarkCheck,
-    Calendar,
-    Edit3,
-    Eye,
-    Tag,
-    User,
-    X,
-  } from "lucide-svelte";
+  import { Bookmark, BookmarkCheck, Calendar, Edit3, Eye, Tag, User as UserIcon, X } from "lucide-svelte";
   import { marked } from "marked";
   import { writable } from "svelte/store";
   import { fade, fly } from "svelte/transition";
   import {
     removeSavedNote,
     saveNoteForLater,
-  } from "../../../lib/stores/saved-notes";
+  } from '$lib/stores/saved-notes';
   import RichTextEditor from "./RichTextEditor.svelte";
 
   export let noteId: string;
@@ -140,67 +131,67 @@
 {#if isOpen}
   <div
     use:melt={$overlay}
-    class="mx-auto px-4 max-w-7xl"
-    transition:fade={{ duration: 150 "
+    class="container mx-auto px-4"
+    transition:fade={{ duration: 150 }}
   >
     <div
       use:melt={$dialogContent}
-      class="mx-auto px-4 max-w-7xl"
-      transition:fly={{ y: -20, duration: 200 "
+      class="container mx-auto px-4"
+      transition:fly={{ y: -20, duration: 200 }}
     >
       <!-- Header -->
       <div
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
       >
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           {#if mode === "edit"}
             <input
               bind:value={editedTitle}
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
               placeholder="Note title..."
             />
           {:else}
             <h2
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
             >
               {title || "Untitled Note"}
             </h2>
           {/if}
 
           <div
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
-            <Calendar class="mx-auto px-4 max-w-7xl" />
+            <Calendar class="container mx-auto px-4" />
             {createdAt.toLocaleDateString()}
 
             {#if userId}
-              <User class="mx-auto px-4 max-w-7xl" />
-              <span class="mx-auto px-4 max-w-7xl">{userId}</span>
+              <UserIcon class="container mx-auto px-4" />
+              <span class="container mx-auto px-4">{userId}</span>
             {/if}
 
             <span
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
             >
               {noteType}
             </span>
           </div>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           {#if canEdit}
             {#if mode === "view"}
               <button
                 type="button"
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
                 on:click={() => startEdit()}
                 title="Edit Note"
               >
-                <Edit3 class="mx-auto px-4 max-w-7xl" />
+                <Edit3 class="container mx-auto px-4" />
               </button>
             {:else}
               <button
                 type="button"
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
                 on:click={() => cancelEdit()}
               >
                 Cancel
@@ -210,44 +201,44 @@
 
           <button
             type="button"
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             on:click={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
             title={isSaved ? "Remove from saved" : "Save for later"}
           >
             {#if isSaved}
-              <BookmarkCheck class="mx-auto px-4 max-w-7xl" />
+              <BookmarkCheck class="container mx-auto px-4" />
             {:else}
-              <Bookmark class="mx-auto px-4 max-w-7xl" />
+              <Bookmark class="container mx-auto px-4" />
             {/if}
           </button>
 
           <button
             type="button"
             use:melt={$close}
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
-            <X class="mx-auto px-4 max-w-7xl" />
+            <X class="container mx-auto px-4" />
           </button>
         </div>
       </div>
 
       <!-- Tags Section -->
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
-          <Tag class="mx-auto px-4 max-w-7xl" />
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
+          <Tag class="container mx-auto px-4" />
 
           {#if mode === "edit"}
             {#each editedTags as tag}
               <span
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
               >
                 {tag}
                 <button
                   type="button"
                   on:click={() => removeTag(tag)}
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 >
-                  <X class="mx-auto px-4 max-w-7xl" />
+                  <X class="container mx-auto px-4" />
                 </button>
               </span>
             {/each}
@@ -255,13 +246,13 @@
             <input
               bind:value={newTag}
               on:keydown={(e) => e.key === "Enter" && addTag()}
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
               placeholder="Add tag..."
             />
           {:else}
             {#each tags as tag}
               <span
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
               >
                 {tag}
               </span>
@@ -271,7 +262,7 @@
       </div>
 
       <!-- Content -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         {#if mode === "edit"}
           <RichTextEditor
             content={editedContent}
@@ -280,15 +271,15 @@
             autoSave={false}
           />
         {:else if displayHtml}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             {@html displayHtml}
           </div>
         {:else if content}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             {content}
           </div>
         {:else}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             No content available
           </div>
         {/if}
@@ -297,9 +288,9 @@
       <!-- Footer -->
       {#if mode === "view"}
         <div
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         >
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             {#if caseId}
               <span>Associated with case: {caseId}</span>
             {:else}
@@ -307,9 +298,9 @@
             {/if}
           </div>
 
-          <div class="mx-auto px-4 max-w-7xl">
-            <Eye class="mx-auto px-4 max-w-7xl" />
-            <span class="mx-auto px-4 max-w-7xl"
+          <div class="container mx-auto px-4">
+            <Eye class="container mx-auto px-4" />
+            <span class="container mx-auto px-4"
               >Read-only</span
             >
           </div>

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Pre-commit: ensure tasks fragments are in sync and valid
+echo "🔍 Running tasks verification..."
+node scripts/verify-tasks-fragments.mjs || exit 1
+echo "✅ tasks verification passed"

@@ -75,32 +75,32 @@
       const compare = aVal > bVal ? 1 : -1;
       return sortOrder === 'asc' ? compare : -compare;
     });
-  }
+}
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
-  <div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
     <input 
       type="text" 
       bind:value={searchQuery}
       placeholder="Search cases..."
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
     />
     
-    <select bind:value={statusFilter} class="mx-auto px-4 max-w-7xl">
+    <select bind:value={statusFilter} class="container mx-auto px-4">
       <option value="all">All Statuses</option>
       <option value="active">Active</option>
       <option value="pending">Pending</option>
       <option value="closed">Closed</option>
     </select>
     
-    <select bind:value={sortBy} class="mx-auto px-4 max-w-7xl">
+    <select bind:value={sortBy} class="container mx-auto px-4">
       <option value="createdAt">Created Date</option>
       <option value="title">Title</option>
       <option value="status">Status</option>
     </select>
     
-    <select bind:value={sortOrder} class="mx-auto px-4 max-w-7xl">
+    <select bind:value={sortOrder} class="container mx-auto px-4">
       <option value="desc">Descending</option>
       <option value="asc">Ascending</option>
     </select>
@@ -108,26 +108,24 @@
 </div>
 
 <style>
+  /* @unocss-include */
   .case-filters {
     margin-bottom: 1rem;
-  }
-  
+}
   .filter-row {
     display: flex;
     gap: 1rem;
     align-items: center;
-  }
-  
+}
   .search-input {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-  }
-  
+}
   .filter-select {
     padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-  }
+}
 </style>

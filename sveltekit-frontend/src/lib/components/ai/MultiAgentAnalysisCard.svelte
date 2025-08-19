@@ -1,21 +1,11 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    analysisData: {;
-  }
-  let {
-    analysisData
-  }: Props = $props();
-
-
-
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { Separator } from '$lib/components/ui/separator/Separator.svelte';
   
-      evidenceAnalysis?: any;
+  export let analysisData: {
+    evidenceAnalysis?: any;
     personsData?: any;
     caseSynthesis?: any;
     caseId?: string;
@@ -23,13 +13,13 @@ https://svelte.dev/e/js_parse_error -->
   };
 
   // Extract data with fallbacks
-  let evidence = $derived(analysisData?.evidenceAnalysis ?? {};);
-  let persons = $derived(analysisData?.personsData?.persons ?? [];);
-  let relationships = $derived(analysisData?.personsData?.relationships ?? [];);
-  let synthesis = $derived(analysisData?.caseSynthesis ?? {};);
+  $: evidence = analysisData?.evidenceAnalysis ?? {};
+  $: persons = analysisData?.personsData?.persons ?? [];
+  $: relationships = analysisData?.personsData?.relationships ?? [];
+  $: synthesis = analysisData?.caseSynthesis ?? {};
   
   // Case strength styling
-  let strengthColor = $derived({);
+  $: strengthColor = {
     strong: 'text-green-600 bg-green-50',
     moderate: 'text-yellow-600 bg-yellow-50', 
     weak: 'text-red-600 bg-red-50'
@@ -233,7 +223,7 @@ https://svelte.dev/e/js_parse_error -->
       <Button 
         variant="outline" 
         size="sm"
-        onclick={() => showDetails = !showDetails}
+        on:click={() => showDetails = !showDetails}
       >
         {showDetails ? 'Hide' : 'Show'} Full Analysis
       </Button>

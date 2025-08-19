@@ -42,11 +42,11 @@
 		return {
 			title: 'Input Required',
 			content: `
-				<div class="mx-auto px-4 max-w-7xl">
-					<p class="mx-auto px-4 max-w-7xl">${props.message}</p>
+				<div class="container mx-auto px-4">
+					<p class="container mx-auto px-4">${props.message}</p>
 					<input
 						type="text"
-						class="mx-auto px-4 max-w-7xl"
+						class="container mx-auto px-4"
 						placeholder="${props.placeholder || ''}"
 						value="${inputValue}"
 						autofocus
@@ -96,20 +96,20 @@
 <!-- Render all active modals -->
 {#each $modals.modals as modal (modal.id)}
 	<div
-		class="mx-auto px-4 max-w-7xl"
+		class="container mx-auto px-4"
 		on:click={(e) => handleBackdropClick(e, modal)}
 		on:keydown={(e) => handleKeydown(e, modal)}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="{modal.id}-title"
 		tabindex={-1}
-		in:fade={{ duration: 200 "
-		out:fade={{ duration: 150 "
+		in:fade={{ duration: 200 }}
+		out:fade={{ duration: 150 }}
 	>
 		<!-- Backdrop -->
 		<div
-			class="mx-auto px-4 max-w-7xl"
-			aria-hidden="true "
+			class="container mx-auto px-4"
+			aria-hidden="true"
 		></div>
 
 		<!-- Modal Content -->
@@ -122,21 +122,21 @@
 				y: 30,
 				duration: 300,
 				easing: quintOut
-			"
+			}}
 			out:fly={{
 				y: -30,
 				duration: 200,
 				easing: quintOut
-			 "
+			}}
 		>
 			<!-- Header -->
 			{#if modal.title || modal.closable !== false}
-				<div class="mx-auto px-4 max-w-7xl">
-					<div class="mx-auto px-4 max-w-7xl">
+				<div class="container mx-auto px-4">
+					<div class="container mx-auto px-4">
 						{#if modal.title}
 							<h2
 								id="{modal.id}-title"
-								class="mx-auto px-4 max-w-7xl"
+								class="container mx-auto px-4"
 							>
 								{modal.title}
 							</h2>
@@ -145,18 +145,18 @@
 
 					{#if modal.closable !== false}
 						<button
-							class="mx-auto px-4 max-w-7xl"
+							class="container mx-auto px-4"
 							on:click={() => modals.close(modal.id)}
 							aria-label="Close modal"
 						>
-							<iconify-icon data-icon="${1}" class="mx-auto px-4 max-w-7xl"></iconify-icon>
+							<iconify-icon data-icon="${1}" class="container mx-auto px-4"></iconify-icon>
 						</button>
 					{/if}
 				</div>
 			{/if}
 
 			<!-- Content -->
-			<div class="mx-auto px-4 max-w-7xl">
+			<div class="container mx-auto px-4">
 				{#if modal.component && typeof modal.component === 'string' && modal.component in builtInComponents}
 					{@const builtInModal = (builtInComponents as any)[modal.component]({
 						props: modal.props,
@@ -173,7 +173,7 @@
 
 					<!-- Built-in component actions -->
 					{#if builtInModal.actions}
-						<div class="mx-auto px-4 max-w-7xl">
+						<div class="container mx-auto px-4">
 							{#each builtInModal.actions as action}
 								<Button
 									variant={action.variant}
@@ -194,7 +194,7 @@
 					/>
 				{:else}
 					<!-- Default slot content -->
-					<div class="mx-auto px-4 max-w-7xl">
+					<div class="container mx-auto px-4">
 						Modal content goes here
 					</div>
 				{/if}
@@ -204,6 +204,7 @@
 {/each}
 
 <style>
+  /* @unocss-include */
 	/* Smooth scrolling for modal content */
 	.overflow-y-auto {
 		scrollbar-width: thin;
@@ -223,3 +224,4 @@
 		background-color: #6b7280;
 }
 </style>
+

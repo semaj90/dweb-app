@@ -72,14 +72,16 @@ https://svelte.dev/e/js_parse_error -->
 	}
 
 	// Reactive statement to scroll down when messages change
-	$effect(() => { if ($state.context.messages && typeof window !== 'undefined') {
-		// Use a microtask to wait for the DOM to update
-		Promise.resolve().then(() => {
-			if (chatContainer) {
-				chatContainer.scrollTop = chatContainer.scrollHeight;
-			}
-		});
-	}
+	$effect(() => { 
+		if ($state.context.messages && typeof window !== 'undefined') {
+			// Use a microtask to wait for the DOM to update
+			Promise.resolve().then(() => {
+				if (chatContainer) {
+					chatContainer.scrollTop = chatContainer.scrollHeight;
+				}
+			});
+		}
+	});
 </script>
 
 <div class="flex flex-col h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-900">

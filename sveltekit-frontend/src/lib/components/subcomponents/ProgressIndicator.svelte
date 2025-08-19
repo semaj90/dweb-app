@@ -1,29 +1,17 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- Progress Indicator Component -->
 <script lang="ts">
-  interface Props {
-    steps: Array<{;
-    currentStep: number;;
-    validationResults: Record<number, {;
-  }
-  let {
-    steps,
-    currentStep,
-    validationResults
-  }: Props = $props();
-
-
-
     import { createEventDispatcher } from 'svelte';
 
-            id: string;
+    export let steps: Array<{
+        id: string;
         title: string;
         description: string;
         required: boolean;
         estimatedTime: number;
     }>;
-                isValid: boolean;
+    export let currentStep: number;
+    export let validationResults: Record<number, {
+        isValid: boolean;
         errors: string[];
         warnings: string[];
     }> = {};
@@ -70,7 +58,7 @@ https://svelte.dev/e/js_parse_error -->
         }
     }
 
-    let progressPercentage = $derived(Math.round((currentStep / (steps.length - 1)) * 100););
+    $: progressPercentage = Math.round((currentStep / (steps.length - 1)) * 100);
 </script>
 
 <div class="progress-indicator bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -93,7 +81,7 @@ https://svelte.dev/e/js_parse_error -->
 
                     <li class="flex-1 min-w-0">
                         <button
-                            onclick={() => handleStepClick(index)}
+                            on:click={() => handleStepClick(index)}
                             disabled={!isClickable}
                             class="group flex items-center w-full text-left
                                    {isClickable ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700' : 'cursor-not-allowed'}

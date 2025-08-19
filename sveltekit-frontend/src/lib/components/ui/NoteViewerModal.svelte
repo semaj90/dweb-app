@@ -1,43 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    noteId: string;
-    title: string ;
-    content: string ;
-    markdown: string ;
-    html: string ;
-    contentJson: any ;
-    noteType: string ;
-    tags: string[] ;
-    userId: string ;
-    caseId: string | undefined ;
-    createdAt: Date ;
-    isOpen?: any;
-    mode: "view" | "edit" ;
-    canEdit?: any;
-    onSave: (data: any) => void;
-  }
-  let {
-    noteId,
-    title = "",
-    content = "",
-    markdown = "",
-    html = "",
-    contentJson = null,
-    noteType = "general",
-    tags = [],
-    userId = "",
-    caseId = undefined,
-    createdAt = new Date(),
-    isOpen = false,
-    mode = "view",
-    canEdit = true,
-    onSave = undefined
-  }: Props = $props();
-
-
-
   import { createDialog, melt } from "@melt-ui/svelte";
   import { Bookmark, BookmarkCheck, Calendar, Edit3, Eye, Tag, User as UserIcon, X } from "lucide-svelte";
   import { marked } from "marked";
@@ -49,12 +10,27 @@ https://svelte.dev/e/js_parse_error -->
   } from '$lib/stores/saved-notes';
   import RichTextEditor from "./RichTextEditor.svelte";
 
-                              
-  let isSaved = $state(false);
-  let editedContent = $state(content);
-  let editedTitle = $state(title);
-  let editedTags = $state([...tags]);
-  let newTag = $state("");
+  export let noteId: string;
+  export let title: string = "";
+  export let content: string = "";
+  export let markdown: string = "";
+  export let html: string = "";
+  export let contentJson: any = null;
+  export let noteType: string = "general";
+  export let tags: string[] = [];
+  export let userId: string = "";
+  export let caseId: string | undefined = undefined;
+  export let createdAt: Date = new Date();
+  export let isOpen = false;
+  export let mode: "view" | "edit" = "view";
+  export let canEdit = true;
+  export let onSave: ((data: any) => void) | undefined = undefined;
+
+  let isSaved = false;
+  let editedContent = content;
+  let editedTitle = title;
+  let editedTags = [...tags];
+  let newTag = "";
 
   const {
     elements: { trigger, overlay, content: dialogContent, close },
@@ -67,13 +43,11 @@ https://svelte.dev/e/js_parse_error -->
     },
   });
 
-  $effect(() => { 
-    if (isOpen !== $open) {
-      open.set(isOpen);
-    }
-  });
+  $: if (isOpen !== $open) {
+    open.set(isOpen);
+}
   // Parse markdown to HTML for display
-  let displayHtml = $derived(html || (markdown ? marked.parse(markdown) : ""));
+  $: displayHtml = html || (markdown ? marked.parse(markdown) : "");
 
   async function handleSaveForLater() {
     try {
@@ -157,68 +131,68 @@ https://svelte.dev/e/js_parse_error -->
 {#if isOpen}
   <div
     use:melt={$overlay}
-    class="space-y-4"
-    transitionfade={{ duration: 150 }}
+    class="container mx-auto px-4"
+    transition:fade={{ duration: 150 }}
   >
     <div
       use:melt={$dialogContent}
-      class="space-y-4"
-      transitionfly={{ y: -20, duration: 200 }}
+      class="container mx-auto px-4"
+      transition:fly={{ y: -20, duration: 200 }}
     >
       <!-- Header -->
       <div
-        class="space-y-4"
+        class="container mx-auto px-4"
       >
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           {#if mode === "edit"}
             <input
               bind:value={editedTitle}
-              class="space-y-4"
+              class="container mx-auto px-4"
               placeholder="Note title..."
             />
           {:else}
             <h2
-              class="space-y-4"
+              class="container mx-auto px-4"
             >
               {title || "Untitled Note"}
             </h2>
           {/if}
 
           <div
-            class="space-y-4"
+            class="container mx-auto px-4"
           >
-            <Calendar class="space-y-4" />
+            <Calendar class="container mx-auto px-4" />
             {createdAt.toLocaleDateString()}
 
             {#if userId}
-              <UserIcon class="space-y-4" />
-              <span class="space-y-4">{userId}</span>
+              <UserIcon class="container mx-auto px-4" />
+              <span class="container mx-auto px-4">{userId}</span>
             {/if}
 
             <span
-              class="space-y-4"
+              class="container mx-auto px-4"
             >
               {noteType}
             </span>
           </div>
         </div>
 
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           {#if canEdit}
             {#if mode === "view"}
               <button
                 type="button"
-                class="space-y-4"
-                onclick={() => startEdit()}
+                class="container mx-auto px-4"
+                on:click={() => startEdit()}
                 title="Edit Note"
               >
-                <Edit3 class="space-y-4" />
+                <Edit3 class="container mx-auto px-4" />
               </button>
             {:else}
               <button
                 type="button"
-                class="space-y-4"
-                onclick={() => cancelEdit()}
+                class="container mx-auto px-4"
+                on:click={() => cancelEdit()}
               >
                 Cancel
               </button>
@@ -227,58 +201,58 @@ https://svelte.dev/e/js_parse_error -->
 
           <button
             type="button"
-            class="space-y-4"
-            onclick={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
+            class="container mx-auto px-4"
+            on:click={() => isSaved ? handleRemoveFromSaved : handleSaveForLater()}
             title={isSaved ? "Remove from saved" : "Save for later"}
           >
             {#if isSaved}
-              <BookmarkCheck class="space-y-4" />
+              <BookmarkCheck class="container mx-auto px-4" />
             {:else}
-              <Bookmark class="space-y-4" />
+              <Bookmark class="container mx-auto px-4" />
             {/if}
           </button>
 
           <button
             type="button"
             use:melt={$close}
-            class="space-y-4"
+            class="container mx-auto px-4"
           >
-            <X class="space-y-4" />
+            <X class="container mx-auto px-4" />
           </button>
         </div>
       </div>
 
       <!-- Tags Section -->
-      <div class="space-y-4">
-        <div class="space-y-4">
-          <Tag class="space-y-4" />
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
+          <Tag class="container mx-auto px-4" />
 
           {#if mode === "edit"}
             {#each editedTags as tag}
               <span
-                class="space-y-4"
+                class="container mx-auto px-4"
               >
                 {tag}
                 <button
                   type="button"
-                  onclick={() => removeTag(tag)}
-                  class="space-y-4"
+                  on:click={() => removeTag(tag)}
+                  class="container mx-auto px-4"
                 >
-                  <X class="space-y-4" />
+                  <X class="container mx-auto px-4" />
                 </button>
               </span>
             {/each}
 
             <input
               bind:value={newTag}
-              onkeydown={(e) => e.key === "Enter" && addTag()}
-              class="space-y-4"
+              on:keydown={(e) => e.key === "Enter" && addTag()}
+              class="container mx-auto px-4"
               placeholder="Add tag..."
             />
           {:else}
             {#each tags as tag}
               <span
-                class="space-y-4"
+                class="container mx-auto px-4"
               >
                 {tag}
               </span>
@@ -288,24 +262,24 @@ https://svelte.dev/e/js_parse_error -->
       </div>
 
       <!-- Content -->
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         {#if mode === "edit"}
           <RichTextEditor
             content={editedContent}
             placeholder="Edit your note..."
-            onsave={handleEditorSave}
+            on:save={handleEditorSave}
             autoSave={false}
           />
         {:else if displayHtml}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             {@html displayHtml}
           </div>
         {:else if content}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             {content}
           </div>
         {:else}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             No content available
           </div>
         {/if}
@@ -314,9 +288,9 @@ https://svelte.dev/e/js_parse_error -->
       <!-- Footer -->
       {#if mode === "view"}
         <div
-          class="space-y-4"
+          class="container mx-auto px-4"
         >
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             {#if caseId}
               <span>Associated with case: {caseId}</span>
             {:else}
@@ -324,9 +298,9 @@ https://svelte.dev/e/js_parse_error -->
             {/if}
           </div>
 
-          <div class="space-y-4">
-            <Eye class="space-y-4" />
-            <span class="space-y-4"
+          <div class="container mx-auto px-4">
+            <Eye class="container mx-auto px-4" />
+            <span class="container mx-auto px-4"
               >Read-only</span
             >
           </div>

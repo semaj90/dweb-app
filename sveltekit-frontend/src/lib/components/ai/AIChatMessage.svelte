@@ -1,19 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script context="module">
-  interface Props {
-    message: {;
-    showSources?: any;
-    showMetadata?: any;
-  }
-  let {
-    message,
-    showSources = false,
-    showMetadata = false
-  }: Props = $props();
-
-
-
   import { slide } from "svelte/transition";
 </script>
 
@@ -22,7 +7,8 @@ https://svelte.dev/e/js_parse_error -->
   import { browser } from "$app/environment";
   import { onMount } from "svelte";
 
-      id: string;
+  export let message: {
+    id: string;
     role: "user" | "assistant" | "system";
     content: string;
     timestamp: Date;
@@ -42,8 +28,8 @@ https://svelte.dev/e/js_parse_error -->
     };
   };
 
-  let { showSources = $bindable() } = $props(); // false;
-  let { showMetadata = $bindable() } = $props(); // false;
+  export let showSources = false;
+  export let showMetadata = false;
 
   let formattedTime = "";
   let isSourcesExpanded = false;
@@ -81,12 +67,12 @@ https://svelte.dev/e/js_parse_error -->
 </script>
 
 <div
-  class="space-y-4"
+  class="container mx-auto px-4"
   role="article"
   aria-label="{message.role} message"
 >
-  <div class="space-y-4">
-    <div class="space-y-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       {#if message.role === "user"}
         <svg
           width="20"
@@ -118,7 +104,7 @@ https://svelte.dev/e/js_parse_error -->
         AI Assistant
         {#if message.metadata?.provider}
           <span
-            class="space-y-4"
+            class="container mx-auto px-4"
             class:local={message.metadata.provider === "local"}
           >
             {message.metadata.provider}
@@ -127,9 +113,9 @@ https://svelte.dev/e/js_parse_error -->
       {/if}
     </div>
 
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <span
-        class="space-y-4"
+        class="container mx-auto px-4"
         title="Message sent at {new Date(message.timestamp).toLocaleString()}"
       >
         {formattedTime}
@@ -137,8 +123,8 @@ https://svelte.dev/e/js_parse_error -->
 
       <button
         type="button"
-        class="space-y-4"
-        onclick={() => copyToClipboard()}
+        class="container mx-auto px-4"
+        on:click={() => copyToClipboard()}
         title="Copy message"
         aria-label="Copy message to clipboard"
       >
@@ -157,17 +143,17 @@ https://svelte.dev/e/js_parse_error -->
     </div>
   </div>
 
-  <div class="space-y-4">
-    <div class="space-y-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       {message.content}
     </div>
 
     {#if showSources && message.sources && message.sources.length > 0}
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <button
           type="button"
-          class="space-y-4"
-          onclick={() => (isSourcesExpanded = !isSourcesExpanded)}
+          class="container mx-auto px-4"
+          on:click={() => (isSourcesExpanded = !isSourcesExpanded)}
           aria-expanded={isSourcesExpanded}
         >
           <svg
@@ -185,17 +171,17 @@ https://svelte.dev/e/js_parse_error -->
         </button>
 
         {#if isSourcesExpanded}
-          <div class="space-y-4" transitionslide={{ duration: 200 }}>
+          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
             {#each message.sources as source (source.id)}
-              <div class="space-y-4">
-                <div class="space-y-4">
-                  <span class="space-y-4">{source.title}</span>
-                  <span class="space-y-4"
+              <div class="container mx-auto px-4">
+                <div class="container mx-auto px-4">
+                  <span class="container mx-auto px-4">{source.title}</span>
+                  <span class="container mx-auto px-4"
                     >{Math.round(source.score * 100)}%</span
                   >
-                  <span class="space-y-4">{source.type}</span>
+                  <span class="container mx-auto px-4">{source.type}</span>
                 </div>
-                <div class="space-y-4">
+                <div class="container mx-auto px-4">
                   {source.content}
                 </div>
               </div>
@@ -206,11 +192,11 @@ https://svelte.dev/e/js_parse_error -->
     {/if}
 
     {#if showMetadata && message.metadata}
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <button
           type="button"
-          class="space-y-4"
-          onclick={() => (isMetadataExpanded = !isMetadataExpanded)}
+          class="container mx-auto px-4"
+          on:click={() => (isMetadataExpanded = !isMetadataExpanded)}
           aria-expanded={isMetadataExpanded}
         >
           <svg
@@ -228,31 +214,31 @@ https://svelte.dev/e/js_parse_error -->
         </button>
 
         {#if isMetadataExpanded}
-          <div class="space-y-4" transitionslide={{ duration: 200 }}>
-            <div class="space-y-4">
-              <span class="space-y-4">Model:</span>
-              <span class="space-y-4">{message.metadata.model}</span>
+          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Model:</span>
+              <span class="container mx-auto px-4">{message.metadata.model}</span>
             </div>
-            <div class="space-y-4">
-              <span class="space-y-4">Provider:</span>
-              <span class="space-y-4">{message.metadata.provider}</span>
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Provider:</span>
+              <span class="container mx-auto px-4">{message.metadata.provider}</span>
             </div>
-            <div class="space-y-4">
-              <span class="space-y-4">Confidence:</span>
-              <span class="space-y-4"
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Confidence:</span>
+              <span class="container mx-auto px-4"
                 >{formatConfidence(message.metadata.confidence)}</span
               >
             </div>
-            <div class="space-y-4">
-              <span class="space-y-4">Response Time:</span>
-              <span class="space-y-4"
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Response Time:</span>
+              <span class="container mx-auto px-4"
                 >{formatExecutionTime(message.metadata.executionTime)}</span
               >
             </div>
             {#if message.metadata.fromCache}
-              <div class="space-y-4">
-                <span class="space-y-4">Source:</span>
-                <span class="space-y-4">Cached</span>
+              <div class="container mx-auto px-4">
+                <span class="container mx-auto px-4">Source:</span>
+                <span class="container mx-auto px-4">Cached</span>
               </div>
             {/if}
           </div>

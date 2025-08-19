@@ -2,20 +2,15 @@
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
-    position: | "bottom-right";
-    show?: any;
+    position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
+    show?: boolean;
   }
   let {
-    position,
+    position = "bottom-right",
     show = true
   }: Props = $props();
 
-
-
   import { Button } from "$lib/components/ui/button";
-      | "bottom-left"
-    | "top-right"
-    | "top-left" = "bottom-right";
   </script>
 
 {#if show}

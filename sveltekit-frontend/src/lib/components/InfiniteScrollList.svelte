@@ -1,22 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'loadMoreThreshold' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    onloadMore?: (event?: any) => void;
-    onitemClick?: (event?: any) => void;
-  }
-  let {
-    items = [],
-    itemType = "evidence",
-    loadMoreThreshold = 100,
-    pageSize = 20,
-    isLoading = false,
-    selectedIndex = -1
-  }: Props = $props();
-
-
-
-    import { quintOut } from "svelte/easing";
+  import { createEventDispatcher, onMount } from "svelte";
+  import { quintOut } from "svelte/easing";
   import { fade, slide } from "svelte/transition";
 
   import {
@@ -28,16 +12,21 @@ https://svelte.dev/e/js_parse_error -->
     Video,
   } from "lucide-svelte";
 
-      let { loadMoreThreshold = $bindable() } = $props(); // 100; // pixels from bottom
-      let { selectedIndex = $bindable() } = $props(); // number = -1; // Index of selected item
+  export let items: any[] = [];
+  export let itemType: "evidence" | "notes" | "canvas" = "evidence";
+  export let loadMoreThreshold = 100; // pixels from bottom
+  export let pageSize = 20;
+  export let isLoading = false;
+  export let selectedIndex: number = -1; // Index of selected item
 
-  
+  const dispatch = createEventDispatcher();
+
   let scrollContainer: HTMLElement;
   let displayedItems: any[] = [];
   let currentPage = 0;
   let hasMore = true;
 
-  $effect(() => { {
+  $: {
     // Reset when items change
     if (items !== displayedItems.slice(0, items.length)) {
       currentPage = 0;
@@ -67,7 +56,7 @@ https://svelte.dev/e/js_parse_error -->
 
     // Emit event for loading more data from API
     if (!hasMore && items.length >= currentPage * pageSize) {
-      onloadMore?.();
+      dispatch("loadMore");
 }}
   function handleScroll() {
     if (!scrollContainer) return;
@@ -80,7 +69,7 @@ https://svelte.dev/e/js_parse_error -->
       loadMore();
 }}
   function handleItemClick(item: any) {
-    onitemClick?.();
+    dispatch("itemClick", { item, type: itemType });
 }
   function getItemIcon(item: any) {
     if (itemType === "notes") {
@@ -112,39 +101,39 @@ https://svelte.dev/e/js_parse_error -->
 </script>
 
 <div
-  class="space-y-4"
+  class="mx-auto px-4 max-w-7xl"
   bind:this={scrollContainer}
-  onscroll={handleScroll}
+  on:scroll={handleScroll}
   role="listbox"
   aria-label="{itemType} list"
 >
   {#if displayedItems.length === 0 && !isLoading}
-    <div class="space-y-4" transitionfade={{ duration: 200 }}>
-      <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl" transition:fade={{ duration: 200 ">
+      <div class="mx-auto px-4 max-w-7xl">
         <svelte:component this={getItemIcon({})} size={48} />
       </div>
-      <p class="space-y-4">No {itemType} found</p>
+      <p class="mx-auto px-4 max-w-7xl">No {itemType} found</p>
     </div>
   {:else}
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       {#each displayedItems as item, index (item.id || index)}
         <div
-          class="space-y-4"
-          transitionslide={{ duration: 300, easing: quintOut }}
-          onclick={() => handleItemClick(item)}
-          onkeydown={(e) => e.key === "Enter" && handleItemClick(item)}
+          class="mx-auto px-4 max-w-7xl"
+          transition:slide={{ duration: 300, easing: quintOut "
+          on:click={() => handleItemClick(item)}
+          on:keydown={(e) => e.key === "Enter" && handleItemClick(item)}
           role="option"
           tabindex={0}
           aria-label="{itemType} item"
           aria-selected={index === selectedIndex}
         >
-          <div class="space-y-4">
+          <div class="mx-auto px-4 max-w-7xl">
             <svelte:component this={getItemIcon(item)} size={20} />
           </div>
 
-          <div class="space-y-4">
-            <div class="space-y-4">
-              <h4 class="space-y-4">
+          <div class="mx-auto px-4 max-w-7xl">
+            <div class="mx-auto px-4 max-w-7xl">
+              <h4 class="mx-auto px-4 max-w-7xl">
                 {#if itemType === "evidence"}
                   {item.fileName || item.title || "Untitled Evidence"}
                 {:else if itemType === "notes"}
@@ -153,14 +142,14 @@ https://svelte.dev/e/js_parse_error -->
                   {item.name || `Canvas ${formatDate(item.lastModified)}`}
                 {/if}
               </h4>
-              <span class="space-y-4">
+              <span class="mx-auto px-4 max-w-7xl">
                 {formatDate(
                   item.createdAt || item.lastModified || item.updatedAt
                 )}
               </span>
             </div>
 
-            <p class="space-y-4">
+            <p class="mx-auto px-4 max-w-7xl">
               {#if itemType === "evidence"}
                 {truncateText(item.description)}
               {:else if itemType === "notes"}
@@ -171,12 +160,12 @@ https://svelte.dev/e/js_parse_error -->
             </p>
 
             {#if item.tags && item.tags.length > 0}
-              <div class="space-y-4">
+              <div class="mx-auto px-4 max-w-7xl">
                 {#each item.tags.slice(0, 3) as tag}
-                  <span class="space-y-4">{tag}</span>
+                  <span class="mx-auto px-4 max-w-7xl">{tag}</span>
                 {/each}
                 {#if item.tags.length > 3}
-                  <span class="space-y-4">+{item.tags.length - 3}</span>
+                  <span class="mx-auto px-4 max-w-7xl">+{item.tags.length - 3}</span>
                 {/if}
               </div>
             {/if}
@@ -187,26 +176,25 @@ https://svelte.dev/e/js_parse_error -->
   {/if}
 
   {#if isLoading}
-    <div class="space-y-4" transitionfade={{ duration: 200 }}>
-      <div class="space-y-4"></div>
+    <div class="mx-auto px-4 max-w-7xl" transition:fade={{ duration: 200 ">
+      <div class="mx-auto px-4 max-w-7xl"></div>
       <p>Loading more {itemType}...</p>
     </div>
   {/if}
 
   {#if !hasMore && displayedItems.length > 0}
-    <div class="space-y-4" transitionfade={{ duration: 200 }}>
+    <div class="mx-auto px-4 max-w-7xl" transition:fade={{ duration: 200 ">
       <p>No more {itemType} to load</p>
     </div>
   {/if}
 </div>
 
 <style>
-  /* @unocss-include */
   .infinite-scroll-container {
     flex: 1;
     overflow-y: auto;
     padding: 0;
-    background: var(--bg-primary);
+    background: var(--pico-background-color);
 }
   .empty-state {
     display: flex;
@@ -215,7 +203,7 @@ https://svelte.dev/e/js_parse_error -->
     justify-content: center;
     padding: 2rem;
     text-align: center;
-    color: var(--text-muted);
+    color: var(--pico-muted-color);
     min-height: 200px;
 }
   .empty-icon {
@@ -241,13 +229,13 @@ https://svelte.dev/e/js_parse_error -->
     margin-bottom: 0.5rem;
 }
   .list-item:hover {
-    background: var(--bg-tertiary);
-    border-color: var(--border-light);
+    background: var(--pico-secondary-background);
+    border-color: var(--pico-muted-border-color);
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
   .list-item:focus {
-    outline: 2px solid var(--harvard-crimson);
+    outline: 2px solid var(--pico-primary);
     outline-offset: 2px;
 }
   .list-item:active {
@@ -260,8 +248,8 @@ https://svelte.dev/e/js_parse_error -->
     width: 40px;
     height: 40px;
     border-radius: 8px;
-    background: var(--bg-secondary);
-    color: var(--harvard-crimson);
+    background: var(--pico-primary-background);
+    color: var(--pico-primary);
     flex-shrink: 0;
 }
   .item-content {
@@ -279,7 +267,7 @@ https://svelte.dev/e/js_parse_error -->
     margin: 0;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--pico-color);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -287,13 +275,13 @@ https://svelte.dev/e/js_parse_error -->
 }
   .item-date {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--pico-muted-color);
     flex-shrink: 0;
 }
   .item-description {
     margin: 0 0 0.5rem;
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--pico-muted-color);
     line-height: 1.4;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -311,39 +299,39 @@ https://svelte.dev/e/js_parse_error -->
   .tag {
     font-size: 0.7rem;
     padding: 0.15rem 0.5rem;
-    background: var(--bg-secondary);
-    color: var(--harvard-crimson);
+    background: var(--pico-primary-background);
+    color: var(--pico-primary);
     border-radius: 12px;
-    border: 1px solid var(--harvard-crimson);
+    border: 1px solid var(--pico-primary);
 }
   .tag-more {
     font-size: 0.7rem;
     padding: 0.15rem 0.5rem;
-    background: var(--muted-background);
-    color: var(--text-muted);
+    background: var(--pico-muted-background);
+    color: var(--pico-muted-color);
     border-radius: 12px;
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--pico-muted-border-color);
 }
   .loading-indicator {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1rem;
-    color: var(--text-muted);
+    color: var(--pico-muted-color);
     gap: 0.5rem;
 }
   .loading-spinner {
     width: 24px;
     height: 24px;
-    border: 2px solid var(--border-light);
-    border-top: 2px solid var(--harvard-crimson);
+    border: 2px solid var(--pico-muted-border-color);
+    border-top: 2px solid var(--pico-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
   .end-indicator {
     text-align: center;
     padding: 1rem;
-    color: var(--text-muted);
+    color: var(--pico-muted-color);
     font-size: 0.875rem;
 }
   @keyframes spin {
@@ -358,13 +346,13 @@ https://svelte.dev/e/js_parse_error -->
     width: 6px;
 }
   .infinite-scroll-container::-webkit-scrollbar-track {
-    background: var(--bg-primary);
+    background: var(--pico-background-color);
 }
   .infinite-scroll-container::-webkit-scrollbar-thumb {
-    background: var(--border-light);
+    background: var(--pico-muted-border-color);
     border-radius: 3px;
 }
   .infinite-scroll-container::-webkit-scrollbar-thumb:hover {
-    background: var(--harvard-crimson);
+    background: var(--pico-primary);
 }
 </style>

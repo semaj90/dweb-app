@@ -1,21 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'showInline' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    showInline?: any;
-    autoHide?: any;
-    maxWidth?: any;
-  }
-  let {
-    showInline = false,
-    autoHide = true,
-    maxWidth = "max-w-lg"
-  }: Props = $props();
-
-
-
-  import type { User } from '$lib/types';
-  import { Button } from "$lib/components/ui/button/index.js";
+  import { Button } from "$lib/components/ui/button";
   import {
     errorHandler,
     type UserFriendlyError,
@@ -34,9 +18,9 @@ https://svelte.dev/e/js_parse_error -->
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  let { showInline = $bindable() } = $props(); // false; // Show as inline alert vs modal
-  let { autoHide = $bindable() } = $props(); // true; // Auto-hide non-critical errors
-  let { maxWidth = $bindable() } = $props(); // "max-w-lg"; // Maximum width class
+  export let showInline = false; // Show as inline alert vs modal
+  export let autoHide = true; // Auto-hide non-critical errors
+  export let maxWidth = "max-w-lg"; // Maximum width class
 
   let currentError: UserFriendlyError | null = null;
   let showDetails = false;
@@ -51,9 +35,9 @@ https://svelte.dev/e/js_parse_error -->
         setTimeout(() => {
           if (currentError === error) {
             clearError();
-}
+          }
         }, 5000);
-}
+      }
     });
 
     return unsubscribe;
@@ -64,7 +48,8 @@ https://svelte.dev/e/js_parse_error -->
     currentError = null;
     showDetails = false;
     retryInProgress = false;
-}
+  }
+
   async function retryAction() {
     if (!currentError?.canRetry) return;
 
@@ -84,7 +69,9 @@ https://svelte.dev/e/js_parse_error -->
       errorHandler.handle(error, { context: "retry_failed" });
     } finally {
       retryInProgress = false;
-}}
+    }
+  }
+
   function copyErrorDetails() {
     if (!currentError) return;
 
@@ -118,7 +105,8 @@ Timestamp: ${new Date().toISOString()}`;
           message: "Error details copied to clipboard.",
         });
       });
-}
+  }
+
   function getIcon(severity: string) {
     switch (severity) {
       case "critical":
@@ -129,7 +117,9 @@ Timestamp: ${new Date().toISOString()}`;
       case "info":
       default:
         return Info;
-}}
+    }
+  }
+
   function getAlertClass(severity: string) {
     switch (severity) {
       case "critical":
@@ -141,7 +131,9 @@ Timestamp: ${new Date().toISOString()}`;
       case "info":
       default:
         return "alert-info border-info/20 bg-info/5";
-}}
+    }
+  }
+
   function getButtonClass(severity: string) {
     switch (severity) {
       case "critical":
@@ -152,7 +144,9 @@ Timestamp: ${new Date().toISOString()}`;
       case "info":
       default:
         return "btn-info";
-}}
+    }
+  }
+
   // Report error to support (placeholder)
   function reportError() {
     if (!currentError) return;
@@ -165,50 +159,50 @@ Timestamp: ${new Date().toISOString()}`;
       title: "Error Reported",
       message: "Thank you for reporting this issue. Our team will investigate.",
     });
-}
+  }
 </script>
 
 {#if currentError}
   {#if showInline}
     <!-- Inline Alert -->
     <div
-      class={`alert ${getAlertClass(currentError.severity)} ${maxWidth} mx-auto`}
+      class="mx-auto px-4 max-w-7xl"
       role="alert"
     >
       {#if currentError.severity === "critical" || currentError.severity === "error"}
-        <AlertCircle class="h-5 w-5 flex-shrink-0" />
+        <AlertCircle class="mx-auto px-4 max-w-7xl" />
       {:else if currentError.severity === "warning"}
-        <AlertTriangle class="h-5 w-5 flex-shrink-0" />
+        <AlertTriangle class="mx-auto px-4 max-w-7xl" />
       {:else}
-        <Info class="h-5 w-5 flex-shrink-0" />
+        <Info class="mx-auto px-4 max-w-7xl" />
       {/if}
 
-      <div class="flex-1">
-        <h3 class="font-semibold">{currentError.title}</h3>
-        <p class="text-sm mt-1">{currentError.message}</p>
+      <div class="mx-auto px-4 max-w-7xl">
+        <h3 class="mx-auto px-4 max-w-7xl">{currentError.title}</h3>
+        <p class="mx-auto px-4 max-w-7xl">{currentError.message}</p>
 
         {#if currentError.suggestion}
-          <p class="text-sm mt-2">
+          <p class="mx-auto px-4 max-w-7xl">
             <strong>Suggestion:</strong>
             {currentError.suggestion}
           </p>
         {/if}
 
         {#if showDetails && currentError.showDetails}
-          <div class="mt-3 p-3 bg-base-200 rounded-lg">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-medium">Technical Details</span>
+          <div class="mx-auto px-4 max-w-7xl">
+            <div class="mx-auto px-4 max-w-7xl">
+              <span class="mx-auto px-4 max-w-7xl">Technical Details</span>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                onclick={() => copyErrorDetails()}
-                class="h-8 w-8 p-0"
+                on:click={() => copyErrorDetails()}
+                class="mx-auto px-4 max-w-7xl"
                 aria-label="Copy error details"
               >
-                <Copy class="h-4 w-4" />
+                <Copy class="mx-auto px-4 max-w-7xl" />
               </Button>
             </div>
-            <div class="text-xs space-y-1">
+            <div class="mx-auto px-4 max-w-7xl">
               <div>Severity: {currentError.severity}</div>
               <div>Time: {new Date().toLocaleString()}</div>
             </div>
@@ -216,20 +210,20 @@ Timestamp: ${new Date().toISOString()}`;
         {/if}
       </div>
 
-      <div class="flex items-start gap-1">
+      <div class="mx-auto px-4 max-w-7xl">
         {#if currentError.canRetry}
           <Button
             size="sm"
             variant="outline"
             class={getButtonClass(currentError.severity)}
-            onclick={() => retryAction()}
+            on:click={() => retryAction()}
             disabled={retryInProgress}
             aria-label="Retry action"
           >
             {#if retryInProgress}
-              <div class="loading loading-spinner loading-xs"></div>
+              <div class="mx-auto px-4 max-w-7xl"></div>
             {:else}
-              <RefreshCw class="h-4 w-4" />
+              <RefreshCw class="mx-auto px-4 max-w-7xl" />
             {/if}
             Retry
           </Button>
@@ -238,50 +232,50 @@ Timestamp: ${new Date().toISOString()}`;
         {#if currentError.showDetails}
           <Button
             size="sm"
-            variant="outline"
-            onclick={() => (showDetails = !showDetails)}
+            variant="ghost"
+            on:click={() => (showDetails = !showDetails)}
             aria-label="Toggle error details"
           >
             {#if showDetails}
-              <ChevronUp class="h-4 w-4" />
+              <ChevronUp class="mx-auto px-4 max-w-7xl" />
             {:else}
-              <ChevronDown class="h-4 w-4" />
+              <ChevronDown class="mx-auto px-4 max-w-7xl" />
             {/if}
           </Button>
         {/if}
 
         <Button
           size="sm"
-          variant="outline"
-          onclick={() => clearError()}
+          variant="ghost"
+          on:click={() => clearError()}
           aria-label="Dismiss error"
         >
-          <X class="h-4 w-4" />
+          <X class="mx-auto px-4 max-w-7xl" />
         </Button>
       </div>
     </div>
   {:else}
     <!-- Modal Error -->
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div class={`modal-box ${maxWidth} max-h-[90vh] overflow-y-auto`}>
-        <div class="flex items-start gap-4">
+    <div class="mx-auto px-4 max-w-7xl">
+      <div class="mx-auto px-4 max-w-7xl">
+        <div class="mx-auto px-4 max-w-7xl">
           {#if currentError.severity === "critical" || currentError.severity === "error"}
-            <AlertCircle class="h-6 w-6 text-error flex-shrink-0" />
+            <AlertCircle class="mx-auto px-4 max-w-7xl" />
           {:else if currentError.severity === "warning"}
-            <AlertTriangle class="h-6 w-6 text-warning flex-shrink-0" />
+            <AlertTriangle class="mx-auto px-4 max-w-7xl" />
           {:else}
-            <Info class="h-6 w-6 text-info flex-shrink-0" />
+            <Info class="mx-auto px-4 max-w-7xl" />
           {/if}
 
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold mb-2">{currentError.title}</h3>
-            <p class="text-base-content/80">
+          <div class="mx-auto px-4 max-w-7xl">
+            <h3 class="mx-auto px-4 max-w-7xl">{currentError.title}</h3>
+            <p class="mx-auto px-4 max-w-7xl">
               {currentError.message}
             </p>
 
             {#if currentError.suggestion}
-              <div class="mt-4 p-3 bg-base-200 rounded-lg">
-                <p class="text-sm">
+              <div class="mx-auto px-4 max-w-7xl">
+                <p class="mx-auto px-4 max-w-7xl">
                   <strong>💡 Suggestion:</strong>
                   {currentError.suggestion}
                 </p>
@@ -289,21 +283,21 @@ Timestamp: ${new Date().toISOString()}`;
             {/if}
 
             {#if showDetails && currentError.showDetails}
-              <div class="mt-4 p-4 bg-base-200 rounded-lg">
-                <div class="flex items-center justify-between mb-3">
-                  <h4 class="font-medium">Technical Details</h4>
+              <div class="mx-auto px-4 max-w-7xl">
+                <div class="mx-auto px-4 max-w-7xl">
+                  <h4 class="mx-auto px-4 max-w-7xl">Technical Details</h4>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    onclick={() => copyErrorDetails()}
-                    class="gap-2"
+                    on:click={() => copyErrorDetails()}
+                    class="mx-auto px-4 max-w-7xl"
                     aria-label="Copy error details"
                   >
-                    <Copy class="h-4 w-4" />
+                    <Copy class="mx-auto px-4 max-w-7xl" />
                     Copy
                   </Button>
                 </div>
-                <div class="text-sm space-y-1 font-mono">
+                <div class="mx-auto px-4 max-w-7xl">
                   <div>Severity: {currentError.severity}</div>
                   <div>Time: {new Date().toLocaleString()}</div>
                   <div>Browser: {navigator.userAgent}</div>
@@ -313,15 +307,15 @@ Timestamp: ${new Date().toISOString()}`;
           </div>
         </div>
 
-        <div class="modal-action">
+        <div class="mx-auto px-4 max-w-7xl">
           {#if currentError.severity === "critical" || currentError.severity === "error"}
             <Button
               variant="outline"
               size="sm"
-              onclick={() => reportError()}
-              class="gap-2"
+              on:click={() => reportError()}
+              class="mx-auto px-4 max-w-7xl"
             >
-              <Bug class="h-4 w-4" />
+              <Bug class="mx-auto px-4 max-w-7xl" />
               Report Issue
             </Button>
           {/if}
@@ -330,14 +324,14 @@ Timestamp: ${new Date().toISOString()}`;
             <Button
               variant="outline"
               size="sm"
-              onclick={() => (showDetails = !showDetails)}
-              class="gap-2"
+              on:click={() => (showDetails = !showDetails)}
+              class="mx-auto px-4 max-w-7xl"
             >
               {#if showDetails}
-                <ChevronUp class="h-4 w-4" />
+                <ChevronUp class="mx-auto px-4 max-w-7xl" />
                 Hide Details
               {:else}
-                <ChevronDown class="h-4 w-4" />
+                <ChevronDown class="mx-auto px-4 max-w-7xl" />
                 Show Details
               {/if}
             </Button>
@@ -346,22 +340,22 @@ Timestamp: ${new Date().toISOString()}`;
           {#if currentError.canRetry}
             <Button
               class={`gap-2 ${getButtonClass(currentError.severity)}`}
-              onclick={() => retryAction()}
+              on:click={() => retryAction()}
               disabled={retryInProgress}
             >
               {#if retryInProgress}
-                <div class="loading loading-spinner loading-xs"></div>
+                <div class="mx-auto px-4 max-w-7xl"></div>
                 Retrying...
               {:else}
-                <RefreshCw class="h-4 w-4" />
+                <RefreshCw class="mx-auto px-4 max-w-7xl" />
                 Retry
               {/if}
             </Button>
           {/if}
 
           <Button
-            variant={currentError.canRetry ? "outline" : "primary"}
-            onclick={() => clearError()}
+            variant={currentError.canRetry ? "outline" : "default"}
+            on:click={() => clearError()}
           >
             {currentError.canRetry ? "Cancel" : "Close"}
           </Button>

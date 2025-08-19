@@ -1,17 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    item: {;
-    open?: any;
-  }
-  let {
-    item,
-    open = false
-  }: Props = $props();
-
-
-
   import Dialog from 'bits-ui/Dialog.svelte';
   import Button from 'bits-ui/Button.svelte';
   import { onMount } from 'svelte';
@@ -19,7 +6,8 @@ https://svelte.dev/e/js_parse_error -->
   import { evidenceSchema } from '$lib/server/schemas';
   import { createMachine } from 'xstate';
   // Explicit type for item
-      jsonData: {
+  export let item: {
+    jsonData: {
       title: string;
       description: string;
       tags?: string[];
@@ -27,7 +15,8 @@ https://svelte.dev/e/js_parse_error -->
       type?: string;
     };
   };
-    let form: any = null;
+  export let open = false;
+  let form: any = null;
   let title = '';
   let description = '';
   let tagsString = '';
@@ -92,7 +81,7 @@ https://svelte.dev/e/js_parse_error -->
         <!-- Add other view-only fields as needed -->
       </div>
       <div class="flex gap-2 mt-2">
-        <Button onclick={handleEdit}>Edit</Button>
+        <Button on:click={handleEdit}>Edit</Button>
       </div>
     {:else}
       <form class="flex flex-col gap-2" on:submit|preventDefault={handleSave}>
@@ -102,12 +91,12 @@ https://svelte.dev/e/js_parse_error -->
         <input name="jsonData.type" bind:value={type} placeholder="Type" class="input input-bordered" />
         <div class="flex gap-2 mt-2">
           <Button type="submit" class="uno-bg-green-600 uno-text-white uno-px-3 uno-py-1 uno-rounded">Save</Button>
-          <Button variant="outline" onclick={handleCancel}>Cancel</Button>
+          <Button variant="outline" on:click={handleCancel}>Cancel</Button>
         </div>
       </form>
     {/if}
     <div class="mt-4 flex justify-end">
-      <Button onclick={() => (open = false)} variant="ghost">Close</Button>
+      <Button on:click={() => (open = false)} variant="ghost">Close</Button>
     </div>
   </div>
 </Dialog>

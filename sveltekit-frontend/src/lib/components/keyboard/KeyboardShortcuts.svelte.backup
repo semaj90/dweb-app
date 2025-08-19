@@ -1,7 +1,8 @@
 <script lang="ts">
+  import type { User } from '$lib/types/user';
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
-  import { Button } from "$lib/components/ui/button";
+  import Button from "$lib/components/ui/button/Button.svelte";
   import { notifications } from "$lib/stores/notification";
   import { FocusManager } from "$lib/utils/accessibility";
   import {
@@ -18,7 +19,11 @@
 
   const dispatch = createEventDispatcher();
 
-  export let open = false;
+  // Convert to Svelte 5 $props
+  let {
+    open = $bindable(false),
+    shortcutsHelp
+  } = $props();
 
   // Keyboard shortcuts configuration
   const shortcuts = [
@@ -174,38 +179,50 @@
     },
   ];
 
-  // Command palette state
-  let searchQuery = "";
-  let selectedIndex = 0;
-  let filteredCommands: any[] = [];
+  import { keyboardShortcuts, loadShortcutsFromAI } from '$lib/stores';
+// Duplicate import removed: onMount is already imported above
+  import { get } from 'svelte/store';
+
+  let searchQuery = $state("");
+  let selectedIndex = $state(0);
+  let filteredShortcuts = $state([]);
+  let filteredCommands = $state([]);
   let commandInput: HTMLInputElement;
 
-  // All available commands
+  // Subscribe to keyboardShortcuts store for dynamic/AI-driven shortcuts
+  let allShortcuts = $state(get(keyboardShortcuts));
+  const unsubscribeShortcuts = keyboardShortcuts.subscribe((shortcuts) => {
+    allShortcuts = shortcuts;
+    filterShortcuts();
+  });
+
+  function filterShortcuts() {
+    if (searchQuery.trim()) {
+      filteredShortcuts = allShortcuts.filter(
+        (s) =>
+          s.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          s.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    } else {
+      filteredShortcuts = allShortcuts;
+    }
+    selectedIndex = 0;
+  }
+
+  // Convert reactive statement to Svelte 5 $effect
+  $effect(() => {
+    filterShortcuts();
+  });
+
+  // Optionally, load AI-driven shortcuts on mount
+  onMount(async () => {
+    await loadShortcutsFromAI();
+  });
+
+  // Command palette items
   const commands = [
-    // Navigation
     {
-      title: "Dashboard",
-      description: "Go to dashboard",
-      icon: Command,
-      action: () => goto("/dashboard"),
-      keywords: ["home", "overview"],
-    },
-    {
-      title: "Cases",
-      description: "View all cases",
-      icon: FileText,
-      action: () => goto("/cases"),
-      keywords: ["case", "investigation"],
-    },
-    {
-      title: "Evidence",
-      description: "Manage evidence",
-      icon: Search,
-      action: () => goto("/evidence"),
-      keywords: ["files", "documents"],
-    },
-    {
-      title: "Persons",
+      title: "Persons of interest",
       description: "Persons of interest",
       icon: Users,
       action: () => goto("/criminals"),
@@ -239,8 +256,6 @@
       action: () => goto("/help"),
       keywords: ["support", "docs"],
     },
-
-    // Creation
     {
       title: "New Case",
       description: "Create a new case",
@@ -262,8 +277,6 @@
       action: () => goto("/evidence"),
       keywords: ["upload", "files"],
     },
-
-    // Tools
     {
       title: "Hash Verification",
       description: "Verify evidence integrity",
@@ -287,7 +300,8 @@
     },
   ];
 
-  $: {
+  // Convert reactive statement to Svelte 5 $effect
+  $effect(() => {
     if (searchQuery.trim()) {
       filteredCommands = commands.filter(
         (cmd) =>
@@ -299,9 +313,9 @@
       );
     } else {
       filteredCommands = commands;
-}
+    }
     selectedIndex = 0;
-}
+  });
   onMount(() => {
     if (!browser) return;
 
@@ -499,35 +513,39 @@
 }
     if (!style.parentNode) {
       document.head.appendChild(style);
-}}
-  // Focus management for command palette
-  $: if (open && commandInput) {
-    commandInput.focus();
-}
+    }
+  }
+
+  // Focus management for command palette - convert to Svelte 5 $effect
+  $effect(() => {
+    if (open && commandInput) {
+      commandInput.focus();
+    }
+  });
 </script>
 
 <!-- Command Palette Overlay -->
 {#if open}
   <div
-    class="mx-auto px-4 max-w-7xl"
+    class="command-palette-overlay"
     role="dialog"
     tabindex={0}
     aria-modal="true"
     aria-labelledby="command-palette-title"
-    on:click|self={() => (open = false)}
-    on:keydown={(e) => (e.key === "Escape" ? (open = false) : null)}
+    onclick={(e) => { if (e.target === e.currentTarget) open = false; }}
+    onkeydown={(e) => (e.key === "Escape" ? (open = false) : null)}
   >
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">
-        <h2 id="command-palette-title" class="mx-auto px-4 max-w-7xl">Command Palette</h2>
-        <div class="mx-auto px-4 max-w-7xl">
-          <Command class="mx-auto px-4 max-w-7xl" />
+    <div class="command-palette">
+      <div class="command-palette-header">
+        <h2 id="command-palette-title" class="sr-only">Command Palette</h2>
+        <div class="search-container">
+          <Command class="search-icon" />
           <input
             bind:this={commandInput}
             bind:value={searchQuery}
             type="text"
             placeholder="Type a command or search..."
-            class="mx-auto px-4 max-w-7xl"
+            class="search-input"
             autocomplete="off"
             spellcheck="false"
             aria-label="Command search"
@@ -535,58 +553,63 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (open = false)}
-            class="mx-auto px-4 max-w-7xl"
+            onclick={() => (open = false)}
+            class="close-button"
             aria-label="Close command palette"
           >
-            <X class="mx-auto px-4 max-w-7xl" />
+            <X class="w-4 h-4" />
           </Button>
         </div>
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        {#if filteredCommands.length > 0}
+      <div class="command-palette-body">
+        {#if filteredShortcuts.length > 0}
           <ul
-            class="mx-auto px-4 max-w-7xl"
+            class="command-list"
             role="listbox"
             aria-label="Available commands"
           >
-            {#each filteredCommands as command, index}
+            {#each filteredShortcuts as shortcut, index}
               <li
-                class="mx-auto px-4 max-w-7xl"
+                class="command-item"
                 class:selected={index === selectedIndex}
                 role="option"
                 aria-selected={index === selectedIndex}
                 tabindex={0}
-                on:click={() => executeCommand(command)}
-                on:keydown={(e) => {
+                onclick={() => shortcut.action && shortcut.action()}
+                onkeydown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    executeCommand(command);
-}
-                "
-                on:mouseenter={() => (selectedIndex = index)}
+                    shortcut.action && shortcut.action();
+                  }
+                }}
+                onmouseenter={() => (selectedIndex = index)}
               >
-                <div class="mx-auto px-4 max-w-7xl">
-                  <svelte:component this={command.icon} class="mx-auto px-4 max-w-7xl" />
-                </div>
-                <div class="mx-auto px-4 max-w-7xl">
-                  <div class="mx-auto px-4 max-w-7xl">{command.title}</div>
-                  <div class="mx-auto px-4 max-w-7xl">{command.description}</div>
+                <div class="command-content">
+                  <div class="command-title flex items-center gap-2">
+                    {shortcut.description}
+                    {#if shortcut.aiScore !== undefined}
+                      <span class="ml-2 px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold" title="AI Score">AI: {(shortcut.aiScore * 100).toFixed(0)}%</span>
+                    {/if}
+                  </div>
+                  {#if shortcut.aiSummary}
+                    <div class="command-description text-xs text-gray-500 mt-1">{shortcut.aiSummary}</div>
+                  {/if}
+                  <div class="command-key text-xs text-gray-400 mt-1">{shortcut.key}</div>
                 </div>
               </li>
             {/each}
           </ul>
         {:else}
-          <div class="mx-auto px-4 max-w-7xl">
-            <Search class="mx-auto px-4 max-w-7xl" />
-            <p>No commands found for "{searchQuery}"</p>
+          <div class="empty-state">
+            <Search class="w-8 h-8" />
+            <p>No shortcuts found for "{searchQuery}"</p>
           </div>
         {/if}
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div class="command-palette-footer">
+        <div class="footer-hint">
           <kbd>↑↓</kbd> to navigate
           <kbd>Enter</kbd> to select
           <kbd>Esc</kbd> to close
@@ -597,14 +620,15 @@
 {/if}
 
 <!-- Keyboard Shortcuts Help Modal -->
-<div class="mx-auto px-4 max-w-7xl" class:hidden={!$$slots.shortcutsHelp}>
-  <slot name="shortcutsHelp" />
+<div class="container mx-auto px-4">
+  {@render shortcutsHelp?.()}
 </div>
 
 <!-- Shortcut definitions for screen readers -->
-<div class="mx-auto px-4 max-w-7xl" aria-live="polite" id="shortcuts-announcements"></div>
+<div class="container mx-auto px-4" aria-live="polite" id="shortcuts-announcements"></div>
 
 <style>
+  /* @unocss-include */
   .command-palette-overlay {
     position: fixed;
     top: 0;

@@ -10,7 +10,7 @@
 
   import { melt } from "@melt-ui/svelte";
   import { getContext } from "svelte";
-  import { fly } from "svelte/transition"; children,
+  import { fly } from "svelte/transition";
 
   
   const contextMenu = (getContext("contextMenu") as any) || {

@@ -16,14 +16,15 @@
 {#if $menu}
   <div
     use:melt={$menu}
-    class="mx-auto px-4 max-w-7xl"
-    transition:fly={{ duration: 150, y: -10 "
+    class="container mx-auto px-4"
+    transition:fly={{ duration: 150, y: -10 }}
   >
     <slot />
   </div>
 {/if}
 
 <style>
+  /* @unocss-include */
   .context-menu {
     animation: contextMenuFadeIn 150ms ease-out;
 }

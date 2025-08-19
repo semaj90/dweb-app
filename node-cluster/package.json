@@ -1,12 +1,11 @@
 {
   "name": "legal-ai-cluster-manager",
   "version": "1.0.0",
-  "type": "module",
   "description": "Node.js cluster manager for Legal AI system",
-  "main": "cluster-manager.js",
+  "main": "cluster-manager.cjs",
   "scripts": {
-    "start": "node cluster-manager.js",
-    "dev": "node --inspect cluster-manager.js"
+  "start": "node cluster-manager.cjs",
+  "dev": "node --inspect cluster-manager.cjs"
   },
   "keywords": ["cluster", "legal-ai", "node.js", "worker-processes"],
   "author": "Legal AI System",

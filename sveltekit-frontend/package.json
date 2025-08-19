@@ -95,7 +95,16 @@
     "setup": "node scripts/setup-environment.mjs",
     "setup:windows": "powershell -ExecutionPolicy Bypass -File scripts/setup-windows.ps1",
     "precommit": "npm run check:all && npm run test:quick",
-    "prepush": "npm run build:prod"
+  "prepush": "npm run build:prod",
+  "autosolve:ai-synthesis": "node scripts/autosolve-ai-synthesis.mjs",
+  "autosolve:svelte5-bitsui": "node scripts/autosolve-svelte5-bitsui.mjs",
+  "check:autosolve": "node scripts/autosolve-check-delta.mjs",
+  "autosolve:eventloop:start": "node vscode-auto-solver/core/multi-core-solver.js",
+  "autosolve:eventloop:cycle": "curl -s -X POST -H 'Content-Type: application/json' -d '{\"action\":\"force_cycle\"}' http://localhost:5173/api/context7-autosolve",
+  "autosolve:eventloop:status": "curl -s 'http://localhost:5173/api/context7-autosolve?action=status'",
+  "autosolve:eventloop:health": "curl -s 'http://localhost:5173/api/context7-autosolve?action=health'",
+  "autosolve:eventloop:run-once": "npm-run-all -s autosolve:eventloop:start -p autosolve:eventloop:cycle autosolve:eventloop:status"
+  ,"maintenance:cycle": "node scripts/autosolve-maintenance.mjs"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.20",
@@ -142,6 +151,7 @@
     "vite": "^5.4.19",
     "vitest": "^2.1.9",
     "ws": "^8.18.3"
+  ,"npm-run-all": "^4.1.5"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.23",

@@ -1,124 +1,91 @@
-// @ts-nocheck
-import { db, sql, pool } from "./drizzle";
-export { db, sql, pool };
+// Database connection and schema exports
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+export { sql } from 'drizzle-orm';
+import * as vectorSchema from '../database/vector-schema-simple';
+import * as schema from './unified-schema';
 
-// Database type detection
-export const isPostgreSQL = true; // Since we're using PostgreSQL with pgvector
+// Database type helper - exported first to avoid temporal dead zone
+export const isPostgreSQL = true;
 
-// Re-export all database tables and relations from schema
-export * from "./schema-postgres";
-
-// Explicitly export tables to ensure they're available
-import {
-  users,
-  sessions,
-  cases,
-  evidence,
-  legalDocuments,
-  caseActivities,
-  statutes,
-} from "./schema-postgres";
-
-export {
-  users,
-  sessions,
-  cases,
-  evidence,
-  legalDocuments,
-  caseActivities,
-  statutes,
+// Combine all schemas
+export const fullSchema = {
+  ...schema,
+  ...vectorSchema,
 };
 
-// Re-export performance optimizations (optional - may not exist)
-// export { OptimizedQueries, CacheService } from '$lib/performance/optimizations';
+// Create the connection
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/prosecutor_db';
 
-// Type-safe database queries helper
-export function getTableByName(tableName: string) {
-  const tableMap = {
-    users,
-    sessions,
-    cases,
-    evidence,
-    legalDocuments,
-    caseActivities,
-    statutes,
-  };
-  
-  return tableMap[tableName as keyof typeof tableMap];
+// For query purposes
+const queryClient = postgres(connectionString);
+export const db = drizzle(queryClient, { schema: fullSchema });
+
+// For migrations
+const migrationClient = postgres(connectionString, { max: 1 });
+export const migrationDb = drizzle(migrationClient);
+
+// Export all schemas and types
+export * from '../database/vector-schema-simple';
+export * from './unified-schema';
+
+// Helper function to test database connection
+export async function testConnection() {
+  try {
+    await queryClient`SELECT 1`;
+    console.log('✅ Database connection successful');
+    
+    // Check for pgvector extension
+    const result = await queryClient`
+      SELECT EXISTS (
+        SELECT 1 FROM pg_extension WHERE extname = 'vector'
+      ) as has_vector
+    `;
+    
+    if (result[0].has_vector) {
+      console.log('✅ pgvector extension is installed');
+    } else {
+      console.log('⚠️  pgvector extension not found, installing...');
+      await queryClient`CREATE EXTENSION IF NOT EXISTS vector`;
+      console.log('✅ pgvector extension installed');
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('❌ Database connection failed:', error);
+    return false;
+  }
 }
 
-// Database connection health check with enhanced error handling
+// Initialize pgvector on first run
+if (process.env.NODE_ENV !== 'production') {
+  testConnection().catch(console.error);
+}
+
+// Health check function for API routes
 export async function healthCheck() {
   try {
-    if (!db) {
-      return {
-        status: "unhealthy" as const,
-        error: "Database not initialized",
-        timestamp: new Date(),
-      };
-    }
+    await queryClient`SELECT 1`;
     
-    // Test basic connectivity
-    await db.execute(sql`SELECT 1`);
-    
-    // Test specific tables
-    const tableTests = await Promise.allSettled([
-      db.select().from(users).limit(1),
-      db.select().from(sessions).limit(1),
-      db.select().from(cases).limit(1),
-    ]);
-    
-    const failedTests = tableTests.filter((result: any) => result.status === 'rejected');
-    
-    if (failedTests.length > 0) {
-      return {
-        status: "degraded" as const,
-        error: `${failedTests.length} table(s) inaccessible`,
-        timestamp: new Date(),
-      };
-    }
+    // Check if tables are accessible
+    const tables = await queryClient`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      LIMIT 5
+    `;
     
     return { 
-      status: "healthy" as const, 
-      timestamp: new Date(),
-      tablesAccessible: tableTests.length 
+      status: 'healthy', 
+      database: 'connected',
+      tablesAccessible: tables.length > 0
     };
-  } catch (error: any) {
+  } catch (error) {
     return { 
-      status: "unhealthy" as const, 
-      error: error.message, 
-      timestamp: new Date() 
+      status: 'unhealthy', 
+      database: 'disconnected', 
+      error: error.message,
+      tablesAccessible: false
     };
   }
 }
-
-// --- Context7, Bits UI, Melt UI, and Svelte 5 Integration Best Practices ---
-// This file is the main DB entry point for SvelteKit/Legal AI with Context7 MCP orchestration.
-// All DB, vector, and health utilities are exported here for type-safe, scalable use.
-
-// Context7 MCP: Expose DB pool for vector store and semantic search
-// (Already exported above)
-
-// Enhanced vector store with error handling
-import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-import { OpenAIEmbeddings } from "@langchain/openai";
-
-export function getVectorStore() {
-  try {
-    const embeddings = new OpenAIEmbeddings({
-      modelName: "nomic-embed-text",
-      openAIApiKey: "N/A", // Local LLM, no key needed
-      // baseURL intentionally omitted for local compatibility
-    });
-    return new PGVectorStore(embeddings, { pool, tableName: "vectors" });
-  } catch (error: any) {
-    console.error('Vector store initialization failed:', error);
-    throw new Error(`Vector store unavailable: ${error.message}`);
-  }
-}
-
-// Example: Bits UI/Melt UI best practice (for Svelte 5):
-// Use stores, context, and type-safe exports for all DB and UI modules.
-// See README or docs for more advanced UI/agent orchestration patterns.
-
-// --- End Context7/Legal AI DB Integration ---

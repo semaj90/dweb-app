@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { healthCheck } from '$lib/server/db';
+import { healthCheck } from '$lib/server/db/index.js';
 
 // Environment variables for Ollama configuration
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
@@ -91,7 +91,7 @@ async function checkDatabaseStatus() {
       return {
         status: 'connected',
         type: 'PostgreSQL',
-        tablesAccessible: result.tablesAccessible
+        tablesAccessible: (result as any).tablesAccessible
       };
     } else {
       return {

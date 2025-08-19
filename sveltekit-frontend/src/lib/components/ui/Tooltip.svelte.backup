@@ -1,7 +1,17 @@
 <script lang="ts">
-  export let content: string = "";
-  export let placement: "top" | "bottom" | "left" | "right" = "top";
-  export let disabled: boolean = false;
+  interface Props {
+    content?: string;
+    placement?: "top" | "bottom" | "left" | "right";
+    disabled?: boolean;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    content = "",
+    placement = "top",
+    disabled = false,
+    children
+  }: Props = $props();
 
   let showTooltip = false;
   let timeoutId: ReturnType<typeof setTimeout>;
@@ -11,34 +21,33 @@
     timeoutId = setTimeout(() => {
       showTooltip = true;
     }, 500);
-  }
-
+}
   function handleMouseLeave() {
     clearTimeout(timeoutId);
     showTooltip = false;
-  }
+}
 </script>
 
 <div
-  class="mx-auto px-4 max-w-7xl"
+  class="container mx-auto px-4"
   role="tooltip"
   on:mouseenter={handleMouseEnter}
   on:mouseleave={handleMouseLeave}
 >
-  <slot />
+  {@render children?.()}
   {#if showTooltip && content}
-    <div class="mx-auto px-4 max-w-7xl" role="tooltip">
+    <div class="container mx-auto px-4" role="tooltip">
       {content}
     </div>
   {/if}
 </div>
 
 <style>
+  /* @unocss-include */
   .tooltip-wrapper {
     position: relative;
     display: inline-block;
-  }
-
+}
   .tooltip {
     position: absolute;
     z-index: 9999;
@@ -53,33 +62,29 @@
     word-wrap: break-word;
     white-space: normal;
     pointer-events: none;
-  }
-
+}
   .tooltip-top {
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     margin-bottom: 0.5rem;
-  }
-
+}
   .tooltip-bottom {
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
     margin-top: 0.5rem;
-  }
-
+}
   .tooltip-left {
     right: 100%;
     top: 50%;
     transform: translateY(-50%);
     margin-right: 0.5rem;
-  }
-
+}
   .tooltip-right {
     left: 100%;
     top: 50%;
     transform: translateY(-50%);
     margin-left: 0.5rem;
-  }
+}
 </style>

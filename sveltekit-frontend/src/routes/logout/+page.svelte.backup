@@ -9,7 +9,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+}
       });
       
       if (response.ok) {
@@ -20,12 +20,12 @@
         console.error('Logout failed');
         // Redirect anyway for security
         goto('/');
-      }
+}
     } catch (error) {
       console.error('Logout error:', error);
       // Redirect anyway for security
       goto('/');
-    }
+}
   });
 </script>
 
@@ -33,13 +33,13 @@
   <title>Logging out... - WardenNet</title>
 </svelte:head>
 
-<div class="mx-auto px-4 max-w-7xl">
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
-      <h2 class="mx-auto px-4 max-w-7xl">Logging out...</h2>
+<div class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <h2 class="container mx-auto px-4">Logging out...</h2>
       <p>Please wait while we log you out securely.</p>
-      <div class="mx-auto px-4 max-w-7xl">
-        <span class="mx-auto px-4 max-w-7xl"></span>
+      <div class="container mx-auto px-4">
+        <span class="container mx-auto px-4"></span>
       </div>
     </div>
   </div>

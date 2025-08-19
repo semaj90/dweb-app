@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { aiHistory } from "$lib/stores/aiHistoryStore";
   import Fuse from "fuse.js";
@@ -9,7 +7,7 @@ https://svelte.dev/e/js_parse_error -->
   let results: any[] = [];
   let fuse: Fuse<any>;
 
-  let history = $derived($aiHistory;);
+  $: history = $aiHistory;
 
   onMount(() => {
     fuse = new Fuse(history, {
@@ -18,22 +16,22 @@ https://svelte.dev/e/js_parse_error -->
     });
   });
 
-  let results = $derived(query && fuse ? fuse.search(query).map((r) => r.item) : history;);
+  $: results = query && fuse ? fuse.search(query).map((r) => r.item) : history;
 </script>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
   <input
     type="text"
     bind:value={query}
     placeholder="Search AI history..."
-    class="space-y-4"
+    class="container mx-auto px-4"
   />
-  <ul class="space-y-4">
+  <ul class="container mx-auto px-4">
     {#each results as item}
-      <li class="space-y-4">
-        <div class="space-y-4">{item.prompt}</div>
-        <div class="space-y-4">{item.response}</div>
-        <div class="space-y-4">{item.timestamp}</div>
+      <li class="container mx-auto px-4">
+        <div class="container mx-auto px-4">{item.prompt}</div>
+        <div class="container mx-auto px-4">{item.response}</div>
+        <div class="container mx-auto px-4">{item.timestamp}</div>
       </li>
     {/each}
   </ul>

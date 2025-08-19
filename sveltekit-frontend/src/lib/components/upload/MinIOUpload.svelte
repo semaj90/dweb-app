@@ -147,33 +147,68 @@
     }
   }
 
-  // Enhanced form submission with progress tracking
+  // Enhanced form submission with integrated processing pipeline
   function handleSubmit() {
     uploadStatus = 'uploading';
     uploadProgress = 0;
     
-    // Simulate upload progress (in real implementation, track actual progress)
-    const progressInterval = setInterval(() => {
-      if (uploadProgress < 90) {
-        uploadProgress += Math.random() * 10;
-      }
-    }, 200);
-
-    return async ({ result }: { result: any }) => {
-      clearInterval(progressInterval);
-      
-      if (result.type === 'success') {
-        uploadProgress = 100;
+    return async ({ formData }: { formData: FormData }) => {
+      try {
+        // Add processing configuration
+        formData.append('enableOCR', 'true');
+        formData.append('enableLegalBERT', 'true');
+        formData.append('enableEmbeddings', 'true');
+        formData.append('enableSummarization', 'true');
+        formData.append('enableMinIOStorage', 'true');
+        
+        uploadProgress = 20;
         uploadStatus = 'processing';
         
-        // Simulate processing time
-        setTimeout(() => {
+        // Call unified document processor
+        const response = await fetch('/api/documents/process', {
+          method: 'POST',
+          body: formData
+        });
+        
+        uploadProgress = 60;
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          uploadProgress = 100;
           uploadStatus = 'completed';
-          uploadProgress = 0;
-        }, 1000);
-      } else {
+          
+          // Trigger callbacks with enhanced result
+          const enhancedResult = {
+            success: true,
+            documentId: result.results.documentId,
+            url: result.results.storage.minioUrl || '',
+            objectName: result.results.documentId,
+            message: `Document processed successfully: ${result.results.metadata.stagesCompleted.join(', ')}`,
+            processing: {
+              ocr: result.results.ocr,
+              embeddings: result.results.embeddings,
+              analysis: result.results.analysis,
+              summarization: result.results.summarization
+            }
+          };
+          
+          onUploadComplete?.(enhancedResult);
+          
+          // Reset form after delay
+          setTimeout(() => {
+            uploadProgress = 0;
+            uploadStatus = 'idle';
+          }, 2000);
+        } else {
+          throw new Error(result.error || 'Processing failed');
+        }
+        
+      } catch (error) {
+        console.error('Upload/processing failed:', error);
         uploadStatus = 'error';
         uploadProgress = 0;
+        onUploadError?.(error.message || 'Upload failed');
       }
     };
   }

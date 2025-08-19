@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!--
   Security Monitoring Dashboard
   Displays security events, system health, and security metrics
@@ -32,26 +30,26 @@ https://svelte.dev/e/js_parse_error -->
   import { onDestroy, onMount } from "svelte";
   import { writable } from "svelte/store";
 
-  let securityEvents: SecurityEvent[] = $state([]);
-  let filteredEvents: SecurityEvent[] = $state([]);
-  let selectedSeverity = $state("");
-  let selectedType = $state("");
-  let showDetails = $state(new Set<number>());
-  let refreshInterval: number | null = $state(null);
-  let loading = $state(false);
+  let securityEvents: SecurityEvent[] = [];
+  let filteredEvents: SecurityEvent[] = [];
+  let selectedSeverity = "";
+  let selectedType = "";
+  let showDetails = new Set<number>();
+  let refreshInterval: number | null = null;
+  let loading = false;
 
   // Security metrics
-  let criticalEvents = $derived(securityEvents.filter(
+  $: criticalEvents = securityEvents.filter(
     (e) => e.severity === "critical"
-  ).length);
-  let highEvents = $derived(securityEvents.filter((e) => e.severity === "high").length);
-  let recentEvents = $derived(securityEvents.filter(
+  ).length;
+  $: highEvents = securityEvents.filter((e) => e.severity === "high").length;
+  $: recentEvents = securityEvents.filter(
     (e) => Date.now() - e.timestamp < 24 * 60 * 60 * 1000
-  ).length);
-  let loginAttempts = $derived(securityEvents.filter((e) => e.type === "login").length);
-  let accessDeniedEvents = $derived(securityEvents.filter(
+  ).length;
+  $: loginAttempts = securityEvents.filter((e) => e.type === "login").length;
+  $: accessDeniedEvents = securityEvents.filter(
     (e) => e.type === "access_denied"
-  ).length);
+  ).length;
 
   // System status
   const systemHealth = writable({
@@ -208,163 +206,161 @@ https://svelte.dev/e/js_parse_error -->
         return "text-base-content";
 }}
   // Reactive statements
-  $effect(() => { 
-    if (selectedSeverity || selectedType) {
-      filterEvents();
-    }
-  });
+  $: if (selectedSeverity || selectedType) {
+    filterEvents();
+}
 </script>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
   <!-- Header -->
   <div
-    class="space-y-4"
+    class="container mx-auto px-4"
   >
     <div>
-      <h2 class="space-y-4">
-        <Shield class="space-y-4" />
+      <h2 class="container mx-auto px-4">
+        <Shield class="container mx-auto px-4" />
         Security Monitoring
       </h2>
-      <p class="space-y-4">
+      <p class="container mx-auto px-4">
         Monitor system security events and health status
       </p>
     </div>
 
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <Button
         variant="outline"
         size="sm"
-        onclick={() => loadSecurityEvents()}
+        on:click={() => loadSecurityEvents()}
         disabled={loading}
       >
         <RefreshCw class={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         Refresh
       </Button>
-      <Button variant="outline" size="sm" onclick={() => exportEvents()}>
-        <Download class="space-y-4" />
+      <Button variant="outline" size="sm" on:click={() => exportEvents()}>
+        <Download class="container mx-auto px-4" />
         Export
       </Button>
       <Button
         variant="outline"
         size="sm"
-        onclick={() => clearAllEvents()}
-        class="space-y-4"
+        on:click={() => clearAllEvents()}
+        class="container mx-auto px-4"
       >
-        <Trash2 class="space-y-4" />
+        <Trash2 class="container mx-auto px-4" />
         Clear All
       </Button>
     </div>
   </div>
 
   <!-- Security Metrics -->
-  <div class="space-y-4">
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <AlertTriangle class="space-y-4" />
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <AlertTriangle class="container mx-auto px-4" />
       </div>
-      <div class="space-y-4">Critical Events</div>
-      <div class="space-y-4">{criticalEvents}</div>
-      <div class="space-y-4">Requiring immediate attention</div>
+      <div class="container mx-auto px-4">Critical Events</div>
+      <div class="container mx-auto px-4">{criticalEvents}</div>
+      <div class="container mx-auto px-4">Requiring immediate attention</div>
     </div>
 
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <AlertCircle class="space-y-4" />
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <AlertCircle class="container mx-auto px-4" />
       </div>
-      <div class="space-y-4">High Priority</div>
-      <div class="space-y-4">{highEvents}</div>
-      <div class="space-y-4">Need investigation</div>
+      <div class="container mx-auto px-4">High Priority</div>
+      <div class="container mx-auto px-4">{highEvents}</div>
+      <div class="container mx-auto px-4">Need investigation</div>
     </div>
 
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <Activity class="space-y-4" />
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <Activity class="container mx-auto px-4" />
       </div>
-      <div class="space-y-4">Recent Events</div>
-      <div class="space-y-4">{recentEvents}</div>
-      <div class="space-y-4">Last 24 hours</div>
+      <div class="container mx-auto px-4">Recent Events</div>
+      <div class="container mx-auto px-4">{recentEvents}</div>
+      <div class="container mx-auto px-4">Last 24 hours</div>
     </div>
 
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <Users class="space-y-4" />
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <Users class="container mx-auto px-4" />
       </div>
-      <div class="space-y-4">Login Attempts</div>
-      <div class="space-y-4">{loginAttempts}</div>
-      <div class="space-y-4">{accessDeniedEvents} denied</div>
+      <div class="container mx-auto px-4">Login Attempts</div>
+      <div class="container mx-auto px-4">{loginAttempts}</div>
+      <div class="container mx-auto px-4">{accessDeniedEvents} denied</div>
     </div>
   </div>
 
   <!-- System Health -->
-  <div class="space-y-4">
-    <h3 class="space-y-4">
-      <Monitor class="space-y-4" />
+  <div class="container mx-auto px-4">
+    <h3 class="container mx-auto px-4">
+      <Monitor class="container mx-auto px-4" />
       System Health
     </h3>
 
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <Database class="space-y-4" />
-        <div class="space-y-4">
-          <div class="space-y-4">Database</div>
-          <div class="space-y-4">Connection status</div>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <Database class="container mx-auto px-4" />
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">Database</div>
+          <div class="container mx-auto px-4">Connection status</div>
         </div>
         <svelte:component
           this={getSystemHealthIcon($systemHealth.database)}
-          class="space-y-4"
+          class="container mx-auto px-4"
         />
       </div>
 
-      <div class="space-y-4">
-        <Key class="space-y-4" />
-        <div class="space-y-4">
-          <div class="space-y-4">Authentication</div>
-          <div class="space-y-4">Service status</div>
+      <div class="container mx-auto px-4">
+        <Key class="container mx-auto px-4" />
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">Authentication</div>
+          <div class="container mx-auto px-4">Service status</div>
         </div>
         <svelte:component
           this={getSystemHealthIcon($systemHealth.authentication)}
-          class="space-y-4"
+          class="container mx-auto px-4"
         />
       </div>
 
-      <div class="space-y-4">
-        <Server class="space-y-4" />
-        <div class="space-y-4">
-          <div class="space-y-4">File System</div>
-          <div class="space-y-4">Storage access</div>
+      <div class="container mx-auto px-4">
+        <Server class="container mx-auto px-4" />
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">File System</div>
+          <div class="container mx-auto px-4">Storage access</div>
         </div>
         <svelte:component
           this={getSystemHealthIcon($systemHealth.fileSystem)}
-          class="space-y-4"
+          class="container mx-auto px-4"
         />
       </div>
 
-      <div class="space-y-4">
-        <Activity class="space-y-4" />
-        <div class="space-y-4">
-          <div class="space-y-4">Network</div>
-          <div class="space-y-4">Connectivity</div>
+      <div class="container mx-auto px-4">
+        <Activity class="container mx-auto px-4" />
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">Network</div>
+          <div class="container mx-auto px-4">Connectivity</div>
         </div>
         <svelte:component
           this={getSystemHealthIcon($systemHealth.network)}
-          class="space-y-4"
+          class="container mx-auto px-4"
         />
       </div>
     </div>
   </div>
 
   <!-- Security Events -->
-  <div class="space-y-4">
-    <div class="space-y-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       <div
-        class="space-y-4"
+        class="container mx-auto px-4"
       >
-        <h3 class="space-y-4">Security Events</h3>
+        <h3 class="container mx-auto px-4">Security Events</h3>
 
         <!-- Filters -->
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <select
-            class="space-y-4"
+            class="container mx-auto px-4"
             bind:value={selectedSeverity}
           >
             <option value="">All Severities</option>
@@ -375,7 +371,7 @@ https://svelte.dev/e/js_parse_error -->
           </select>
 
           <select
-            class="space-y-4"
+            class="container mx-auto px-4"
             bind:value={selectedType}
           >
             <option value="">All Types</option>
@@ -390,50 +386,50 @@ https://svelte.dev/e/js_parse_error -->
       </div>
     </div>
 
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       {#if loading}
-        <div class="space-y-4">
-          <div class="space-y-4"></div>
-          <span class="space-y-4">Loading security events...</span>
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4"></div>
+          <span class="container mx-auto px-4">Loading security events...</span>
         </div>
       {:else if filteredEvents.length === 0}
-        <div class="space-y-4">
-          <Shield class="space-y-4" />
-          <h4 class="space-y-4">
+        <div class="container mx-auto px-4">
+          <Shield class="container mx-auto px-4" />
+          <h4 class="container mx-auto px-4">
             No Security Events
           </h4>
-          <p class="space-y-4">
+          <p class="container mx-auto px-4">
             {securityEvents.length === 0
               ? "No security events have been recorded yet."
               : "No events match the selected filters."}
           </p>
         </div>
       {:else}
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           {#each filteredEvents as event, index}
             <div
-              class="space-y-4"
+              class="container mx-auto px-4"
             >
-              <div class="space-y-4">
-                <div class="space-y-4">
+              <div class="container mx-auto px-4">
+                <div class="container mx-auto px-4">
                   <svelte:component
                     this={getSeverityIcon(event.severity)}
-                    class="space-y-4"
+                    class="container mx-auto px-4"
                   />
-                  <div class="space-y-4">
-                    <div class="space-y-4">
+                  <div class="container mx-auto px-4">
+                    <div class="container mx-auto px-4">
                       <svelte:component
                         this={getTypeIcon(event.type)}
-                        class="space-y-4"
+                        class="container mx-auto px-4"
                       />
-                      <span class="space-y-4"
+                      <span class="container mx-auto px-4"
                         >{event.type.replace("_", " ")}</span
                       >
-                      <div class="space-y-4">{event.severity}</div>
+                      <div class="container mx-auto px-4">{event.severity}</div>
                     </div>
 
-                    <div class="space-y-4">
-                      <Clock class="space-y-4" />
+                    <div class="container mx-auto px-4">
+                      <Clock class="container mx-auto px-4" />
                       {formatTimestamp(event.timestamp)}
                       {#if event.userId}
                         • User: {event.userId}
@@ -442,13 +438,13 @@ https://svelte.dev/e/js_parse_error -->
 
                     {#if showDetails.has(index)}
                       <div
-                        class="space-y-4"
+                        class="container mx-auto px-4"
                       >
                         {#if event.details}
                           <div>
                             <strong>Details:</strong>
                             <pre
-                              class="space-y-4">{JSON.stringify(
+                              class="container mx-auto px-4">{JSON.stringify(
                                 event.details,
                                 null,
                                 2
@@ -475,10 +471,10 @@ https://svelte.dev/e/js_parse_error -->
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => toggleEventDetails(index)}
-                  class="space-y-4"
+                  on:click={() => toggleEventDetails(index)}
+                  class="container mx-auto px-4"
                 >
-                  <Eye class="space-y-4" />
+                  <Eye class="container mx-auto px-4" />
                 </Button>
               </div>
             </div>

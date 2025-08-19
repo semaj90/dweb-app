@@ -2,7 +2,7 @@
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
-    caseId: string | null ;
+    caseId?: string | null;
   }
   let {
     caseId = null
@@ -24,8 +24,7 @@ https://svelte.dev/e/js_parse_error -->
   import ProgressIndicator from './ProgressIndicator.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
 
-  // Form state management
-  let { caseId = $bindable() } = $props(); // string | null = null;
+  // Form state management (caseId already declared above)
 
   interface FormData {
     caseInfo: {

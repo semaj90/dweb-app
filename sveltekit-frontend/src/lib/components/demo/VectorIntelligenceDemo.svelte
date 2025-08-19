@@ -1,6 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
+  import type { SearchResults } from "$lib/types/global";
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
@@ -19,7 +18,7 @@ https://svelte.dev/e/js_parse_error -->
 
   // Demo data and filters
   const availableFilters = [
-    'contracts', 'evidence', 'case-law', 'regulations', 
+    'contracts', 'evidence', 'case-law', 'regulations',
     'high-similarity', 'recent', 'archived'
   ];
 
@@ -32,7 +31,7 @@ https://svelte.dev/e/js_parse_error -->
 
   onMount(async () => {
     await context7Service.initialize();
-    
+
     // Load search history from localStorage
     const saved = localStorage.getItem('vector-search-history');
     if (saved) {
@@ -41,13 +40,15 @@ https://svelte.dev/e/js_parse_error -->
   });
 
   // Subscribe to vector results from service
-  $effect(() => { if ($vectorResults) {
-    searchResults = $vectorResults;
-  }
+  $effect(() => {
+    if ($vectorResults) {
+      searchResults = $vectorResults;
+    }
+  });
 
   async function performSearch() {
     if (!searchQuery.trim()) return;
-    
+
     await context7Service.vectorSearch(searchQuery, {
       filters: selectedFilters,
       limit: 10
@@ -126,8 +127,8 @@ https://svelte.dev/e/js_parse_error -->
           class="flex-1"
           onkeydown={(e) => e.key === 'Enter' && performSearch()}
         />
-        <Button 
-          onclick={performSearch} 
+        <Button
+          onclick={performSearch}
           disabled={$isAnalyzing || !searchQuery.trim()}
           class="px-6"
         >
@@ -212,7 +213,7 @@ https://svelte.dev/e/js_parse_error -->
                     </div>
                     <div class="ml-4 text-right">
                       <div class="flex items-center gap-2">
-                        <div 
+                        <div
                           class="w-3 h-3 rounded-full {getSimilarityColor(result.similarity)}"
                         ></div>
                         <span class="text-sm font-medium">
@@ -221,7 +222,7 @@ https://svelte.dev/e/js_parse_error -->
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Metadata -->
                   <div class="flex flex-wrap gap-2 mt-3">
                     {#each Object.entries(result.metadata) as [key, value]}
@@ -337,3 +338,4 @@ https://svelte.dev/e/js_parse_error -->
     overflow: hidden;
   }
 </style>
+</script>

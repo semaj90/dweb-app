@@ -23,7 +23,7 @@ https://svelte.dev/e/js_parse_error -->
     disabled = false,
     maxFiles = multiple ? 10 : 1,
     maxSizeMB = 100,
-    acceptedTypes = [
+    acceptedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt']
   }: Props = $props();
 
 

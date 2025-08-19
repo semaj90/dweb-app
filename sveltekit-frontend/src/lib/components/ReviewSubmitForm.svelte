@@ -1,17 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    formData: {;
-    allFormData: any;;
-  }
-  let {
-    formData,
-    allFormData
-  }: Props = $props();
-
-
-
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -19,14 +6,16 @@ https://svelte.dev/e/js_parse_error -->
 
   const dispatch = createEventDispatcher();
 
-      final_review: string;
+  export let formData: {
+    final_review: string;
     quality_score: number;
     completeness_check: boolean;
     reviewed_sections: string[];
     submission_notes: string;
   };
 
-  
+  export let allFormData: any;
+
   let isSubmitting = false;
   let submissionProgress = writable(0);
   let currentSubmissionStep = writable('');
@@ -204,7 +193,7 @@ https://svelte.dev/e/js_parse_error -->
   }
 
   // Calculate quality score on component mount and when data changes
-  $effect(() => { if (allFormData) calculateQualityScore();
+  $: if (allFormData) calculateQualityScore();
 </script>
 
 <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg" transition:fade>
@@ -251,7 +240,7 @@ https://svelte.dev/e/js_parse_error -->
               <input
                 type="checkbox"
                 checked={formData.reviewed_sections.includes(criterion.id)}
-                onchange={() => toggleSectionReview(criterion.id)}
+                on:change={() => toggleSectionReview(criterion.id)}
                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
               />
             </div>

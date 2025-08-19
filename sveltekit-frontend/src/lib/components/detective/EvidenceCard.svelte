@@ -3,7 +3,6 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     item: Evidence;
-;
   }
   let {
     item

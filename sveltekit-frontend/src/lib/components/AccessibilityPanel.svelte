@@ -1,15 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax
-https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <script lang="ts">
-  interface Props {
-    showPanel?: any;
-  }
-  let {
-    showPanel = false
-  }: Props = $props();
-
-
-
   import { browser } from "$app/environment";
   import { Button } from "$lib/components/ui/button";
   import { notifications } from "$lib/stores/notification";
@@ -23,7 +12,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  
+  export let showPanel = false;
+
   interface AccessibilityIssue {
     id: string;
     severity: "error" | "warning" | "info";
@@ -32,7 +22,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     description: string;
     suggestion: string;
     wcagGuideline?: string;
-}
+  }
+
   let auditResults: AccessibilityIssue[] = [];
   let isAuditing = false;
   let auditProgress = 0;
@@ -54,7 +45,7 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       loadAccessibilitySettings();
       // Check for system preferences
       checkSystemPreferences();
-}
+    }
   });
 
   function loadAccessibilitySettings() {
@@ -68,11 +59,12 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         keyboardNavigation = settings.keyboardNavigation || false;
         screenReaderMode = settings.screenReaderMode || false;
         applyAccessibilitySettings();
-}
+      }
     } catch (error) {
       console.warn("Failed to load accessibility settings:", error);
-}
-}
+    }
+  }
+
   function saveAccessibilitySettings() {
     try {
       const settings = {
@@ -85,21 +77,25 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       localStorage.setItem("accessibility-settings", JSON.stringify(settings));
     } catch (error) {
       console.warn("Failed to save accessibility settings:", error);
-}
-}
+    }
+  }
+
   function checkSystemPreferences() {
     if (!browser) return;
 
     // Check for prefers-reduced-motion
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       reducedMotion = true;
-}
+    }
+
     // Check for prefers-contrast
     if (window.matchMedia("(prefers-contrast: high)").matches) {
       highContrast = true;
-}
+    }
+
     applyAccessibilitySettings();
-}
+  }
+
   function applyAccessibilitySettings() {
     if (!browser) return;
 
@@ -110,33 +106,39 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       root.classList.add("high-contrast");
     } else {
       root.classList.remove("high-contrast");
-}
+    }
+
     // Reduced motion
     if (reducedMotion) {
       root.classList.add("reduced-motion");
     } else {
       root.classList.remove("reduced-motion");
-}
+    }
+
     // Large text
     if (largeText) {
       root.classList.add("large-text");
     } else {
       root.classList.remove("large-text");
-}
+    }
+
     // Keyboard navigation
     if (keyboardNavigation) {
       root.classList.add("keyboard-navigation");
     } else {
       root.classList.remove("keyboard-navigation");
-}
+    }
+
     // Screen reader mode
     if (screenReaderMode) {
       root.classList.add("screen-reader-mode");
     } else {
       root.classList.remove("screen-reader-mode");
-}
+    }
+
     saveAccessibilitySettings();
-}
+  }
+
   async function runAccessibilityAudit() {
     if (!browser) return;
 
@@ -162,7 +164,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         auditProgress = ((i + 1) / checks.length) * 100;
         // Small delay to show progress
         await new Promise((resolve) => setTimeout(resolve, 200));
-}
+      }
+
       // Calculate stats
       totalIssues = auditResults.length;
       errorCount = auditResults.filter(
@@ -189,8 +192,9 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       });
     } finally {
       isAuditing = false;
-}
-}
+    }
+  }
+
   async function checkHeadingStructure() {
     const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
     const headingLevels: number[] = [];
@@ -211,7 +215,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         suggestion: "Add a main h1 heading to the page",
         wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
       });
-}
+    }
+
     // Check for skipped heading levels
     for (let i = 1; i < headingLevels.length; i++) {
       if (headingLevels[i] - headingLevels[i - 1] > 1) {
@@ -224,9 +229,10 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
           suggestion: "Use headings in sequential order (h1, h2, h3, etc.)",
           wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
         });
-}
-}
-}
+      }
+    }
+  }
+
   async function checkImageAltText() {
     const images = document.querySelectorAll("img");
 
@@ -256,9 +262,10 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             "Verify this is a decorative image, or add descriptive alt text",
           wcagGuideline: "WCAG 2.1 - 1.1.1 Non-text Content",
         });
-}
+      }
     });
-}
+  }
+
   async function checkFormLabels() {
     const inputs = document.querySelectorAll("input, select, textarea");
 
@@ -285,9 +292,10 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             "Add a label element, aria-label, or aria-labelledby attribute",
           wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
         });
-}
+      }
     });
-}
+  }
+
   async function checkColorContrast() {
     // Simplified contrast check - in real implementation, you'd check computed colors
     const textElements = document.querySelectorAll(
@@ -305,7 +313,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         "Ensure text has at least 4.5:1 contrast ratio (3:1 for large text)",
       wcagGuideline: "WCAG 2.1 - 1.4.3 Contrast (Minimum)",
     });
-}
+  }
+
   async function checkKeyboardAccessibility() {
     const interactiveElements = document.querySelectorAll(
       "button, a, input, select, textarea, [tabindex]"
@@ -326,7 +335,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             'Use tabindex={${1" or remove tabindex to follow natural tab order',
           wcagGuideline: "WCAG 2.1 - 2.4.3 Focus Order",
         });
-}
+      }
+
       // Check for missing href on links
       if (element.tagName === "A" && !element.getAttribute("href")) {
         auditResults.push({
@@ -339,9 +349,10 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             "Add href attribute or use button element for interactions",
           wcagGuideline: "WCAG 2.1 - 2.1.1 Keyboard",
         });
-}
+      }
     });
-}
+  }
+
   async function checkAriaLabels() {
     const elementsWithAriaHidden = document.querySelectorAll(
       '[aria-hidden="true"]'
@@ -362,9 +373,10 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
             "Provide descriptive aria-label text or remove the attribute",
           wcagGuideline: "WCAG 2.1 - 4.1.2 Name, Role, Value",
         });
-}
+      }
     });
-}
+  }
+
   async function checkFocusManagement() {
     // Check if focus indicators are visible
     auditResults.push({
@@ -377,7 +389,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         "Ensure all interactive elements have visible focus indicators",
       wcagGuideline: "WCAG 2.1 - 2.4.7 Focus Visible",
     });
-}
+  }
+
   async function checkSemanticHTML() {
     const hasMain = document.querySelector("main");
     const hasNav = document.querySelector("nav");
@@ -392,7 +405,8 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         suggestion: "Use <main> element to identify primary content",
         wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
       });
-}
+    }
+
     if (!hasNav) {
       auditResults.push({
         id: "missing-nav",
@@ -403,8 +417,9 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         suggestion: "Use <nav> element for navigation sections",
         wcagGuideline: "WCAG 2.1 - 1.3.1 Info and Relationships",
       });
-}
-}
+    }
+  }
+
   function exportAuditResults() {
     const report = {
       timestamp: new Date().toISOString(),
@@ -428,8 +443,9 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
       link.download = `accessibility-audit-${new Date().toISOString().split("T")[0]}.json`;
       link.click();
       URL.revokeObjectURL(url);
-}
-}
+    }
+  }
+
   function getSeverityIcon(severity: string) {
     switch (severity) {
       case "error":
@@ -440,8 +456,9 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         return Info;
       default:
         return CheckCircle;
-}
-}
+    }
+  }
+
   function getSeverityColor(severity: string) {
     switch (severity) {
       case "error":
@@ -452,31 +469,31 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         return "text-info";
       default:
         return "text-success";
-}
-}
+    }
+  }
 </script>
 
 {#if showPanel}
   <div
-    class="space-y-4"
-    onclick={() => (showPanel = false)}
-    onkeydown={(e) => e.key === 'Escape' && (showPanel = false)}
+    class="mx-auto px-4 max-w-7xl"
+    on:click={() => (showPanel = false)}
+    on:keydown={(e) => e.key === 'Escape' && (showPanel = false)}
     role="dialog"
     aria-modal="true"
     aria-labelledby="accessibility-panel-title"
   >
     <div
-      class="space-y-4"
+      class="mx-auto px-4 max-w-7xl"
       on:click|stopPropagation
       role="document"
     >
-      <div class="space-y-4">
-        <div class="space-y-4">
-          <h2 id="accessibility-panel-title" class="space-y-4">Accessibility Panel</h2>
+      <div class="mx-auto px-4 max-w-7xl">
+        <div class="mx-auto px-4 max-w-7xl">
+          <h2 id="accessibility-panel-title" class="mx-auto px-4 max-w-7xl">Accessibility Panel</h2>
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => (showPanel = false)}
+            on:click={() => (showPanel = false)}
             aria-label="Close accessibility panel"
           >
             ✕
@@ -484,56 +501,56 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         </div>
 
         <!-- Accessibility Settings -->
-        <div class="space-y-4">
-          <h3 class="space-y-4">Accessibility Settings</h3>
+        <div class="mx-auto px-4 max-w-7xl">
+          <h3 class="mx-auto px-4 max-w-7xl">Accessibility Settings</h3>
 
-          <div class="space-y-4">
-            <label class="space-y-4">
+          <div class="mx-auto px-4 max-w-7xl">
+            <label class="mx-auto px-4 max-w-7xl">
               <input
                 type="checkbox"
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 bind:checked={highContrast}
-                onchange={applyAccessibilitySettings}
+                on:change={applyAccessibilitySettings}
               />
               <span>High Contrast</span>
             </label>
 
-            <label class="space-y-4">
+            <label class="mx-auto px-4 max-w-7xl">
               <input
                 type="checkbox"
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 bind:checked={reducedMotion}
-                onchange={applyAccessibilitySettings}
+                on:change={applyAccessibilitySettings}
               />
               <span>Reduced Motion</span>
             </label>
 
-            <label class="space-y-4">
+            <label class="mx-auto px-4 max-w-7xl">
               <input
                 type="checkbox"
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 bind:checked={largeText}
-                onchange={applyAccessibilitySettings}
+                on:change={applyAccessibilitySettings}
               />
               <span>Large Text</span>
             </label>
 
-            <label class="space-y-4">
+            <label class="mx-auto px-4 max-w-7xl">
               <input
                 type="checkbox"
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 bind:checked={keyboardNavigation}
-                onchange={applyAccessibilitySettings}
+                on:change={applyAccessibilitySettings}
               />
               <span>Enhanced Keyboard Navigation</span>
             </label>
 
-            <label class="space-y-4">
+            <label class="mx-auto px-4 max-w-7xl">
               <input
                 type="checkbox"
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 bind:checked={screenReaderMode}
-                onchange={applyAccessibilitySettings}
+                on:change={applyAccessibilitySettings}
               />
               <span>Screen Reader Optimizations</span>
             </label>
@@ -541,33 +558,33 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
         </div>
 
         <!-- Audit Section -->
-        <div class="space-y-4">
-          <div class="space-y-4">
-            <h3 class="space-y-4">Accessibility Audit</h3>
+        <div class="mx-auto px-4 max-w-7xl">
+          <div class="mx-auto px-4 max-w-7xl">
+            <h3 class="mx-auto px-4 max-w-7xl">Accessibility Audit</h3>
             <Button
               size="sm"
-              onclick={() => runAccessibilityAudit()}
+              on:click={() => runAccessibilityAudit()}
               disabled={isAuditing}
-              class="space-y-4"
+              class="mx-auto px-4 max-w-7xl"
             >
               {#if isAuditing}
-                <div class="space-y-4"></div>
+                <div class="mx-auto px-4 max-w-7xl"></div>
                 Auditing...
               {:else}
-                <RefreshCw class="space-y-4" />
+                <RefreshCw class="mx-auto px-4 max-w-7xl" />
                 Run Audit
               {/if}
             </Button>
           </div>
 
           {#if isAuditing}
-            <div class="space-y-4">
-              <div class="space-y-4">
+            <div class="mx-auto px-4 max-w-7xl">
+              <div class="mx-auto px-4 max-w-7xl">
                 <span>Scanning page...</span>
                 <span>{Math.round(auditProgress)}%</span>
               </div>
               <progress
-                class="space-y-4"
+                class="mx-auto px-4 max-w-7xl"
                 value={auditProgress}
                 max="100"
               ></progress>
@@ -576,23 +593,23 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 
           {#if auditResults.length > 0}
             <!-- Audit Summary -->
-            <div class="space-y-4">
-              <h4 class="space-y-4">Audit Summary</h4>
-              <div class="space-y-4">
-                <div class="space-y-4">
-                  <XCircle class="space-y-4" />
+            <div class="mx-auto px-4 max-w-7xl">
+              <h4 class="mx-auto px-4 max-w-7xl">Audit Summary</h4>
+              <div class="mx-auto px-4 max-w-7xl">
+                <div class="mx-auto px-4 max-w-7xl">
+                  <XCircle class="mx-auto px-4 max-w-7xl" />
                   <span>{errorCount} Errors</span>
                 </div>
-                <div class="space-y-4">
-                  <AlertTriangle class="space-y-4" />
+                <div class="mx-auto px-4 max-w-7xl">
+                  <AlertTriangle class="mx-auto px-4 max-w-7xl" />
                   <span>{warningCount} Warnings</span>
                 </div>
-                <div class="space-y-4">
-                  <Info class="space-y-4" />
+                <div class="mx-auto px-4 max-w-7xl">
+                  <Info class="mx-auto px-4 max-w-7xl" />
                   <span>{infoCount} Info</span>
                 </div>
-                <div class="space-y-4">
-                  <CheckCircle class="space-y-4" />
+                <div class="mx-auto px-4 max-w-7xl">
+                  <CheckCircle class="mx-auto px-4 max-w-7xl" />
                   <span>{totalIssues} Total</span>
                 </div>
               </div>
@@ -600,33 +617,33 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
               <Button
                 variant="outline"
                 size="sm"
-                class="space-y-4"
-                onclick={() => exportAuditResults()}
+                class="mx-auto px-4 max-w-7xl"
+                on:click={() => exportAuditResults()}
               >
-                <Download class="space-y-4" />
+                <Download class="mx-auto px-4 max-w-7xl" />
                 Export Report
               </Button>
             </div>
 
             <!-- Audit Results -->
-            <div class="space-y-4">
+            <div class="mx-auto px-4 max-w-7xl">
               {#each auditResults as issue}
                 {@const IconComponent = getSeverityIcon(issue.severity)}
-                <div class="space-y-4">
-                  <div class="space-y-4">
+                <div class="mx-auto px-4 max-w-7xl">
+                  <div class="mx-auto px-4 max-w-7xl">
                     <IconComponent
-                      class="space-y-4"
+                      class="mx-auto px-4 max-w-7xl"
                     />
-                    <div class="space-y-4">
-                      <div class="space-y-4">{issue.description}</div>
-                      <div class="space-y-4">
+                    <div class="mx-auto px-4 max-w-7xl">
+                      <div class="mx-auto px-4 max-w-7xl">{issue.description}</div>
+                      <div class="mx-auto px-4 max-w-7xl">
                         Element: {issue.element}
                       </div>
-                      <div class="space-y-4">
+                      <div class="mx-auto px-4 max-w-7xl">
                         {issue.suggestion}
                       </div>
                       {#if issue.wcagGuideline}
-                        <div class="space-y-4">
+                        <div class="mx-auto px-4 max-w-7xl">
                           {issue.wcagGuideline}
                         </div>
                       {/if}
@@ -644,7 +661,6 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 
 <!-- Global accessibility styles -->
 <style>
-  /* @unocss-include */
   :global(.high-contrast) {
     --primary: #000000;
     --primary-content: #ffffff;
@@ -656,19 +672,23 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     --base-200: #f0f0f0;
     --base-300: #e0e0e0;
     --base-content: #000000;
-}
+  }
+
   :global(.reduced-motion) * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-}
+  }
+
   :global(.large-text) {
     font-size: 1.2em;
-}
+  }
+
   :global(.keyboard-navigation) *:focus {
     outline: 2px solid #0066cc !important;
     outline-offset: 2px !important;
-}
+  }
+
   :global(.screen-reader-mode) .sr-only {
     position: static !important;
     width: auto !important;
@@ -678,5 +698,5 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
     overflow: visible !important;
     clip: auto !important;
     white-space: normal !important;
-}
+  }
 </style>

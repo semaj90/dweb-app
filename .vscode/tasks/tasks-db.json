@@ -1,0 +1,164 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Check Redis",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$r = Test-NetConnection -ComputerName localhost -Port 6379; if ($r.TcpTestSucceeded) { Write-Output '✅ Redis: port 6379 open' } else { Write-Error '❌ Redis not reachable on 6379'; exit 1 }"
+      ]
+    },
+    {
+      "label": "Summarizer: Run HTTP Service (Redis)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/start-summarizer.ps1",
+        "-Port",
+        "8091",
+        "-OllamaBaseUrl",
+        "http://localhost:11434",
+        "-RedisAddr",
+        "localhost:6379"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "dependsOn": [
+        "Summarizer: Build HTTP Service"
+      ],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "pgvector: Create IVFFLAT Index",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/create-ivfflat-index.ps1"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Ensures an IVFFLAT index for the configured pgvector column"
+    },
+    {
+      "label": "pgvector: Create IVFFLAT (legal_documents)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/create-ivfflat-index.ps1",
+        "-ConnectionString",
+        "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+        "-Table",
+        "legal_documents",
+        "-Column",
+        "embedding",
+        "-Metric",
+        "cosine",
+        "-Lists",
+        "100"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Ensure IVFFLAT on legal_documents.embedding (cosine, lists=100)"
+    },
+    {
+      "label": "🚀 Start All - Native Quickstart with MinIO",
+      "type": "shell",
+      "command": "${workspaceFolder}/QUICK-START-NATIVE.bat",
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "detail": "Complete native Windows quickstart with all services including MinIO"
+    },
+    {
+      "label": "🗄️ MinIO: Start Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Start-Process -NoNewWindow -FilePath 'minio.exe' -ArgumentList 'server', '--address', ':9000', '--console-address', ':9001', 'C:\\minio-data'"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "detail": "Start MinIO server on localhost:9000 with console on :9001"
+    },
+    {
+      "label": "🗄️ MinIO: Open Console",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Start-Process 'http://localhost:9001'"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Open MinIO web console in browser"
+    },
+    {
+      "label": "🗄️ MinIO: Create Bucket (legal-documents)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:AWS_ACCESS_KEY_ID='minioadmin'; $env:AWS_SECRET_ACCESS_KEY='minioadmin'; $env:AWS_ENDPOINT_URL='http://localhost:9000'; aws s3 mb s3://legal-documents --endpoint-url http://localhost:9000"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Create legal-documents bucket in MinIO"
+    }
+  ]
+}

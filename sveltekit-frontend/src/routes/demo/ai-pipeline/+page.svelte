@@ -108,10 +108,10 @@ Termination requires 30 days notice from either party.`;
 	});
 	
 	// Reactive derived values
-	let tags = $derived($autoTagResult?.autoTags || [];);
-	let entities = $derived($autoTagResult?.entities || [];);
-	let confidence = $derived($autoTagResult?.confidence || 0;);
-	let similarDocs = $derived($autoTagResult?.similarDocuments || [];);
+	let tags = $derived($autoTagResult?.autoTags || []);
+	let entities = $derived($autoTagResult?.entities || []);
+	let confidence = $derived($autoTagResult?.confidence || 0);
+	let similarDocs = $derived($autoTagResult?.similarDocuments || []);
 </script>
 
 <svelte:head>

@@ -1,0 +1,189 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Health Check Services",
+      "type": "shell",
+      "command": "echo",
+      "args": [
+        "Checking service health..."
+      ],
+      "group": "test",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Check PostgreSQL",
+        "Check Ollama",
+        "Check Redis",
+        "Check Qdrant",
+        "📊 Vector Search Status"
+      ]
+    },
+    {
+      "label": "Check PostgreSQL",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$r = Test-NetConnection -ComputerName localhost -Port 5432; if ($r.TcpTestSucceeded) { Write-Output '✅ PostgreSQL: port 5432 open' } else { Write-Error '❌ PostgreSQL not reachable on 5432'; exit 1 }"
+      ]
+    },
+    {
+      "label": "Check Qdrant",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-f",
+        "http://localhost:6333/collections"
+      ]
+    },
+    {
+      "label": "📊 Vector Search Status",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/ai/vector-search"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Check and Analyze with Claude",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "tsx",
+        "scripts/check-and-analyze.ts"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Health: MCP Context7 (4000)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-sS",
+        "http://localhost:4000/health"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Health: MCP Multi-Core (4100)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-sS",
+        "http://localhost:4100/health"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "📋 Orchestration: Health Check All",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Output '🔍 Checking orchestration service health...'; $services = @('Kratos:8080', 'NATS:4222', 'Node-Cluster:3000', 'QUIC:8443'); foreach ($svc in $services) { $parts = $svc -split ':'; $name = $parts[0]; $port = $parts[1]; try { $result = Test-NetConnection -ComputerName localhost -Port $port -WarningAction SilentlyContinue; if ($result.TcpTestSucceeded) { Write-Output \"✅ $name (port $port): Running\" } else { Write-Output \"❌ $name (port $port): Not accessible\" } } catch { Write-Output \"❌ $name (port $port): Error checking\" } }"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Check health status of all orchestration services"
+    },
+    {
+      "label": "Orchestration: Aggregate Health",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/orchestration/health-aggregate.ps1"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Ping all services from service-discovery.json and write .vscode/orchestration-health.json"
+    },
+    {
+      "label": "Orchestration: Open Health Report",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        ".vscode/orchestration-health.json"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Open the aggregated orchestration health report"
+    },
+    {
+      "label": "✅ TypeScript Check - Fixed Barrel Exports",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "tsc",
+        "--noEmit",
+        "--skipLibCheck"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "TypeScript barrel export verification"
+    },
+    {
+      "label": "🔧 MCP Status Check",
+      "type": "shell",
+      "command": "powershell -NoProfile -Command \"Write-Host '🔧 Checking MCP servers status...' -ForegroundColor Cyan; $env:MCP_DEBUG='true'; Write-Host '📡 MCP servers: context7, filesystem, ide' -ForegroundColor Green\"",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Check MCP server status and debug information"
+    }
+  ]
+}

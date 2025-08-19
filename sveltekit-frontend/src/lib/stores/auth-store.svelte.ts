@@ -3,7 +3,7 @@
  * Uses modern reactive patterns with $state runes and XState integration
  */
 
-import { type User } from '$lib/server/auth';
+import type { SessionUser } from '$lib/types/auth';
 import { createMachine, assign, fromPromise  } from "xstate";
 import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
@@ -11,7 +11,7 @@ import { page } from "$app/stores";
 
 // Authentication context
 interface AuthContext {
-  user: User | null;
+  user: SessionUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -26,7 +26,7 @@ type AuthEvents =
   | { type: 'CHECK_AUTH' }
   | { type: 'CLEAR_ERROR' }
   | { type: 'SET_REDIRECT'; path: string }
-  | { type: 'AUTHENTICATED'; user: User }
+  | { type: 'AUTHENTICATED'; user: SessionUser }
   | { type: 'UNAUTHENTICATED' };
 
 interface RegisterData {

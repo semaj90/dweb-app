@@ -1,9 +1,7 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { Button } from "$lib/components/ui/button";
-  import { Card } from '$lib/components/ui/card';
+  import Card from '$lib/components/ui/Card.svelte';
   import Form from '$lib/components/ui/Form.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import { notifications } from '$lib/stores/notification';
@@ -69,7 +67,7 @@ https://svelte.dev/e/js_parse_error -->
     console.log("Form values changed:", values);
 }
   // Update form state when formApi is available
-  $effect(() => { if (formApi) {
+  $: if (formApi) {
     // You can access formApi methods here if needed
 }
   async function handleSubmit(event: CustomEvent) {
@@ -132,19 +130,24 @@ https://svelte.dev/e/js_parse_error -->
 }}}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
-<div class="space-y-4">
-  <div class="space-y-4">
-    <h1 class="space-y-4">Create New Case</h1>
-    <p class="space-y-4">
-      Fill out the form below to create a new legal case. All required fields must be completed.
+<div class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
+    <h1 class="container mx-auto px-4">
+      Create New Case
+    </h1>
+    <p class="container mx-auto px-4">
+      Fill out the form below to create a new legal case. All required fields
+      must be completed.
     </p>
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <p>
-        💡 Tip: Use <kbd class="space-y-4">Ctrl+S</kbd>
+        💡 Tip: Use <kbd class="container mx-auto px-4"
+          >Ctrl+S</kbd
+        >
         to save,
-        <kbd class="space-y-4">Ctrl+R</kbd>
+        <kbd class="container mx-auto px-4">Ctrl+R</kbd>
         to reset
       </p>
     </div>
@@ -154,65 +157,98 @@ https://svelte.dev/e/js_parse_error -->
     <Form
       bind:formApi
       options={formOptions}
-      onsubmit={handleSubmit}
-      onchange={handleFormChange}
+      on:submit={handleSubmit}
+      on:change={handleFormChange}
       submitText="Create Case"
       submitVariant="primary"
       showResetButton={true}
       loading={isSubmitting}
-      class="space-y-4">
-      <div slot="default" let:form let:formApi let:values let:errors let:isValid let:isDirty>
+      class="container mx-auto px-4"
+    >
+      <div
+        slot="default"
+        let:form
+        let:formApi
+        let:values
+        let:errors
+        let:isValid
+        let:isDirty
+      >
         <!-- Basic Information -->
-        <div class="space-y-4">
-          <h2 class="space-y-4">Basic Information</h2>
+        <div class="container mx-auto px-4">
+          <h2
+            class="container mx-auto px-4"
+          >
+            Basic Information
+          </h2>
 
-          <div class="space-y-4">
-            <div class="space-y-4">
+          <div class="container mx-auto px-4">
+            <div class="container mx-auto px-4">
               <Input
                 label="Case Title"
                 placeholder="Enter a descriptive title for the case"
                 required
-                value={formValues.title || ''}
+                value={formValues.title || ""}
                 error={formErrors.title}
                 data-icon="${1}"
                 clearable
-                oninput={(e) => formApi?.setField('title', (e.target as HTMLInputElement)?.value)}
-                onblur={() => formApi?.touchField('title')} />
+                on:input={(e) =>
+                  formApi?.setField(
+                    "title",
+                    (e.target as HTMLInputElement)?.value
+                  )}
+                on:blur={() => formApi?.touchField("title")}
+              />
             </div>
 
-            <div class="space-y-4">
-              <label for="case-description" class="space-y-4">
-                Description <span class="space-y-4">*</span>
+            <div class="container mx-auto px-4">
+              <label
+                for="case-description"
+                class="container mx-auto px-4"
+              >
+                Description <span class="container mx-auto px-4">*</span>
               </label>
               <textarea
                 id="case-description"
-                class="space-y-4"
+                class="container mx-auto px-4"
                 rows="4"
                 placeholder="Provide a detailed description of the case"
-                value={values.description || ''}
+                value={values.description || ""}
                 class:border-red-300={errors.description}
-                class:border-green-300={values.description && !errors.description}
-                oninput={(e) =>
-                  formApi.setField('description', (e.target as HTMLTextAreaElement)?.value)}
-                onblur={() => formApi.touchField('description')}></textarea>
+                class:border-green-300={values.description &&
+                  !errors.description}
+                on:input={(e) =>
+                  formApi.setField(
+                    "description",
+                    (e.target as HTMLTextAreaElement)?.value
+                  )}
+                on:blur={() => formApi.touchField("description")}
+              ></textarea>
               {#if errors.description}
-                <p class="space-y-4">
+                <p class="container mx-auto px-4">
                   {errors.description}
                 </p>
               {/if}
             </div>
 
             <div>
-              <label for="case-priority" class="space-y-4">
-                Priority <span class="space-y-4">*</span>
+              <label
+                for="case-priority"
+                class="container mx-auto px-4"
+              >
+                Priority <span class="container mx-auto px-4">*</span>
               </label>
               <select
                 id="case-priority"
-                class="space-y-4"
-                value={values.priority || 'medium'}
-                onchange={(e) =>
-                  formApi.setField('priority', (e.target as HTMLSelectElement)?.value)}
-                onblur={() => formApi.touchField('priority')}>
+                class="container mx-auto px-4"
+                value={values.priority || "medium"}
+                on:change={(e) =>
+                  formApi.setField(
+                    "priority",
+                    (e.target as HTMLSelectElement)?.value
+                  )}
+                on:blur={() => formApi.touchField("priority")}
+              >
                 <option value="low">🟢 Low</option>
                 <option value="medium">🟡 Medium</option>
                 <option value="high">🟠 High</option>
@@ -224,51 +260,70 @@ https://svelte.dev/e/js_parse_error -->
               <Input
                 label="Due Date"
                 type="date"
-                value={values.dueDate || ''}
+                value={values.dueDate || ""}
                 error={errors.dueDate}
                 data-icon="${1}"
-                oninput={(e) => formApi.setField('dueDate', (e.target as HTMLInputElement)?.value)}
-                onblur={() => formApi.touchField('dueDate')} />
+                on:input={(e) =>
+                  formApi.setField(
+                    "dueDate",
+                    (e.target as HTMLInputElement)?.value
+                  )}
+                on:blur={() => formApi.touchField("dueDate")}
+              />
             </div>
           </div>
         </div>
 
         <!-- Assignment -->
-        <div class="space-y-4">
-          <h2 class="space-y-4">Assignment & Tags</h2>
+        <div class="container mx-auto px-4">
+          <h2
+            class="container mx-auto px-4"
+          >
+            Assignment & Tags
+          </h2>
 
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             <div>
               <Input
                 label="Assigned To"
                 placeholder="Enter assignee email or name"
-                value={values.assignedTo || ''}
+                value={values.assignedTo || ""}
                 error={errors.assignedTo}
                 data-icon="${1}"
-                oninput={(e) =>
-                  formApi.setField('assignedTo', (e.target as HTMLInputElement)?.value)}
-                onblur={() => formApi.touchField('assignedTo')} />
+                on:input={(e) =>
+                  formApi.setField(
+                    "assignedTo",
+                    (e.target as HTMLInputElement)?.value
+                  )}
+                on:blur={() => formApi.touchField("assignedTo")}
+              />
             </div>
 
             <div>
-              <div class="space-y-4">
-                <div class="space-y-4">
+              <div class="container mx-auto px-4">
+                <div class="container mx-auto px-4">
                   <Input
                     label="Tags"
                     placeholder="Enter tags separated by commas"
-                    value={values.tags || ''}
+                    value={values.tags || ""}
                     error={errors.tags}
                     data-icon="${1}"
                     clearable
-                    oninput={(e) => formApi.setField('tags', (e.target as HTMLInputElement)?.value)}
-                    onblur={() => formApi.touchField('tags')} />
+                    on:input={(e) =>
+                      formApi.setField(
+                        "tags",
+                        (e.target as HTMLInputElement)?.value
+                      )}
+                    on:blur={() => formApi.touchField("tags")}
+                  />
                 </div>
                 <Button
                   type="button"
                   variant="secondary"
                   size="md"
                   data-icon="${1}"
-                  onclick={() => addTag()}>
+                  on:click={() => addTag()}
+                >
                   Add
                 </Button>
               </div>
@@ -277,25 +332,26 @@ https://svelte.dev/e/js_parse_error -->
         </div>
 
         <!-- Form Status -->
-        <div class="space-y-4">
-          <div class="space-y-4">
+        <div
+          class="container mx-auto px-4"
+        >
+          <div class="container mx-auto px-4">
             {#if isDirty}
-              <span class="space-y-4">
-                <div class="space-y-4"></div>
+              <span class="container mx-auto px-4">
+                <div class="container mx-auto px-4"></div>
                 Unsaved changes
               </span>
             {:else}
-              <span class="space-y-4">
-                <div class="space-y-4"></div>
+              <span class="container mx-auto px-4">
+                <div class="container mx-auto px-4"></div>
                 All changes saved
               </span>
             {/if}
           </div>
 
-          <div class="space-y-4">
-            Valid: {isValid ? '✅' : '❌'} | Fields: {Object.keys(values).length} | Errors: {Object.keys(
-              errors
-            ).length}
+          <div class="container mx-auto px-4">
+            Valid: {isValid ? "✅" : "❌"} | Fields: {Object.keys(values)
+              .length} | Errors: {Object.keys(errors).length}
           </div>
         </div>
       </div>
@@ -307,8 +363,8 @@ https://svelte.dev/e/js_parse_error -->
   /* @unocss-include */
   kbd {
     font-family:
-      ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono',
-      'Courier New', monospace;
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
     font-size: 0.75rem;
-  }
+}
 </style>

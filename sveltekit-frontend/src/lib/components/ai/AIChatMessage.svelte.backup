@@ -11,7 +11,7 @@
     id: string;
     role: "user" | "assistant" | "system";
     content: string;
-    timestamp: number;
+    timestamp: Date;
     sources?: Array<{
       id: string;
       title: string;
@@ -38,8 +38,7 @@
   // Format timestamp
   onMount(() => {
     if (browser) {
-      const date = new Date(message.timestamp);
-      formattedTime = date.toLocaleTimeString([], {
+      formattedTime = new Date(message.timestamp).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -68,12 +67,12 @@
 </script>
 
 <div
-  class="mx-auto px-4 max-w-7xl"
+  class="container mx-auto px-4"
   role="article"
   aria-label="{message.role} message"
 >
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       {#if message.role === "user"}
         <svg
           width="20"
@@ -105,7 +104,7 @@
         AI Assistant
         {#if message.metadata?.provider}
           <span
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             class:local={message.metadata.provider === "local"}
           >
             {message.metadata.provider}
@@ -114,9 +113,9 @@
       {/if}
     </div>
 
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <span
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
         title="Message sent at {new Date(message.timestamp).toLocaleString()}"
       >
         {formattedTime}
@@ -124,7 +123,7 @@
 
       <button
         type="button"
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
         on:click={() => copyToClipboard()}
         title="Copy message"
         aria-label="Copy message to clipboard"
@@ -144,16 +143,16 @@
     </div>
   </div>
 
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       {message.content}
     </div>
 
     {#if showSources && message.sources && message.sources.length > 0}
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <button
           type="button"
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
           on:click={() => (isSourcesExpanded = !isSourcesExpanded)}
           aria-expanded={isSourcesExpanded}
         >
@@ -172,17 +171,17 @@
         </button>
 
         {#if isSourcesExpanded}
-          <div class="mx-auto px-4 max-w-7xl" transition:slide={{ duration: 200 ">
+          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
             {#each message.sources as source (source.id)}
-              <div class="mx-auto px-4 max-w-7xl">
-                <div class="mx-auto px-4 max-w-7xl">
-                  <span class="mx-auto px-4 max-w-7xl">{source.title}</span>
-                  <span class="mx-auto px-4 max-w-7xl"
+              <div class="container mx-auto px-4">
+                <div class="container mx-auto px-4">
+                  <span class="container mx-auto px-4">{source.title}</span>
+                  <span class="container mx-auto px-4"
                     >{Math.round(source.score * 100)}%</span
                   >
-                  <span class="mx-auto px-4 max-w-7xl">{source.type}</span>
+                  <span class="container mx-auto px-4">{source.type}</span>
                 </div>
-                <div class="mx-auto px-4 max-w-7xl">
+                <div class="container mx-auto px-4">
                   {source.content}
                 </div>
               </div>
@@ -193,10 +192,10 @@
     {/if}
 
     {#if showMetadata && message.metadata}
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <button
           type="button"
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
           on:click={() => (isMetadataExpanded = !isMetadataExpanded)}
           aria-expanded={isMetadataExpanded}
         >
@@ -215,31 +214,31 @@
         </button>
 
         {#if isMetadataExpanded}
-          <div class="mx-auto px-4 max-w-7xl" transition:slide={{ duration: 200 ">
-            <div class="mx-auto px-4 max-w-7xl">
-              <span class="mx-auto px-4 max-w-7xl">Model:</span>
-              <span class="mx-auto px-4 max-w-7xl">{message.metadata.model}</span>
+          <div class="container mx-auto px-4" transition:slide={{ duration: 200 }}>
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Model:</span>
+              <span class="container mx-auto px-4">{message.metadata.model}</span>
             </div>
-            <div class="mx-auto px-4 max-w-7xl">
-              <span class="mx-auto px-4 max-w-7xl">Provider:</span>
-              <span class="mx-auto px-4 max-w-7xl">{message.metadata.provider}</span>
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Provider:</span>
+              <span class="container mx-auto px-4">{message.metadata.provider}</span>
             </div>
-            <div class="mx-auto px-4 max-w-7xl">
-              <span class="mx-auto px-4 max-w-7xl">Confidence:</span>
-              <span class="mx-auto px-4 max-w-7xl"
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Confidence:</span>
+              <span class="container mx-auto px-4"
                 >{formatConfidence(message.metadata.confidence)}</span
               >
             </div>
-            <div class="mx-auto px-4 max-w-7xl">
-              <span class="mx-auto px-4 max-w-7xl">Response Time:</span>
-              <span class="mx-auto px-4 max-w-7xl"
+            <div class="container mx-auto px-4">
+              <span class="container mx-auto px-4">Response Time:</span>
+              <span class="container mx-auto px-4"
                 >{formatExecutionTime(message.metadata.executionTime)}</span
               >
             </div>
             {#if message.metadata.fromCache}
-              <div class="mx-auto px-4 max-w-7xl">
-                <span class="mx-auto px-4 max-w-7xl">Source:</span>
-                <span class="mx-auto px-4 max-w-7xl">Cached</span>
+              <div class="container mx-auto px-4">
+                <span class="container mx-auto px-4">Source:</span>
+                <span class="container mx-auto px-4">Cached</span>
               </div>
             {/if}
           </div>
@@ -250,6 +249,7 @@
 </div>
 
 <style>
+  /* @unocss-include */
   .chat-message {
     margin: 16px 0;
     padding: 16px;

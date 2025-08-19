@@ -1,21 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    triggerText?: any;
-    placeholder?: any;
-    onInsert: (text: string) => void;
-    textareaElement: HTMLTextAreaElement | undefined;
-  }
-  let {
-    triggerText = "#",
-    placeholder = "Type a command...",
-    onInsert = () => {},
-    textareaElement = undefined
-  }: Props = $props();
-
-
-
   import { goto } from "$app/navigation";
   import { citationStore } from "$lib/stores/citations";
   import { createPopover, melt } from "@melt-ui/svelte";
@@ -30,6 +13,10 @@ https://svelte.dev/e/js_parse_error -->
   import { tick } from "svelte";
   import { fly } from "svelte/transition";
 
+  export let triggerText = "#";
+  export let placeholder = "Type a command...";
+  export let onInsert: (text: string) => void = () => {};
+  export let textareaElement: HTMLTextAreaElement | undefined = undefined;
 
   // Command menu state
   let searchQuery = "";
@@ -49,10 +36,10 @@ https://svelte.dev/e/js_parse_error -->
   });
 
   // Get recent citations
-  let recentCitations = $derived(citationStore.getRecentCitations($citationStore, 5));
+  $: recentCitations = citationStore.getRecentCitations($citationStore, 5);
 
   // Available commands
-  let commands = $derived([
+  $: commands = [
     {
       id: "search",
       label: "Search Cases",
@@ -117,17 +104,17 @@ https://svelte.dev/e/js_parse_error -->
       action: () => insertCitation(citation),
       category: "Citations",
     })),
-  ]);
+  ];
 
   // Filter commands based on search query
-  let filteredCommands = $derived(commands.filter(
+  $: filteredCommands = commands.filter(
     (cmd) =>
       cmd.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
       cmd.category.toLowerCase().includes(searchQuery.toLowerCase())
-  ));
+  );
 
   // Group commands by category
-  let groupedCommands = $derived(filteredCommands.reduce(
+  $: groupedCommands = filteredCommands.reduce(
     (acc, cmd) => {
       if (!acc[cmd.category]) {
         acc[cmd.category] = [];
@@ -136,7 +123,7 @@ https://svelte.dev/e/js_parse_error -->
       return acc;
     },
     {} as Record<string, typeof commands>
-  ));
+  );
 
   // Handle keyboard navigation
   function handleKeydown(e: KeyboardEvent) {
@@ -216,13 +203,13 @@ https://svelte.dev/e/js_parse_error -->
     });
 }
   // Reset when closing
-  $effect(() => { if (!$open) {
+  $: if (!$open) {
     searchQuery = "";
     selectedIndex = 0;
 }
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
 <!-- Hidden trigger (we'll open programmatically) -->
 <button use:melt={$trigger} style="display: none;">Trigger</button>
@@ -230,52 +217,52 @@ https://svelte.dev/e/js_parse_error -->
 {#if $open}
   <div
     use:melt={$content}
-    class="space-y-4"
-    transitionfly={{ y: -10, duration: 150 }}
+    class="container mx-auto px-4"
+    transition:fly={{ y: -10, duration: 150 }}
   >
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <Search size={16} />
       <input
         bind:this={inputElement}
         bind:value={searchQuery}
         {placeholder}
-        class="space-y-4"
+        class="container mx-auto px-4"
         autocomplete="off"
         spellcheck="false"
       />
     </div>
 
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       {#each Object.entries(groupedCommands) as [category, categoryCommands], categoryIndex}
-        <div class="space-y-4">
-          <div class="space-y-4">{category}</div>
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">{category}</div>
           {#each categoryCommands as command, commandIndex}
             {@const globalIndex = filteredCommands.findIndex(
               (c) => c.id === command.id
             )}
             <button
-              class="space-y-4"
+              class="container mx-auto px-4"
               class:selected={globalIndex === selectedIndex}
-              onclick={() => executeCommand(command)}
-              onmouseenter={() => (selectedIndex = globalIndex)}
+              on:click={() => executeCommand(command)}
+              on:mouseenter={() => (selectedIndex = globalIndex)}
             >
               <svelte:component this={command.icon} size={16} />
-              <span class="space-y-4">{command.label}</span>
+              <span class="container mx-auto px-4">{command.label}</span>
             </button>
           {/each}
         </div>
       {/each}
 
       {#if filteredCommands.length === 0}
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <Search size={24} />
           <p>No commands found for "{searchQuery}"</p>
         </div>
       {/if}
     </div>
 
-    <div class="space-y-4">
-      <div class="space-y-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
         <kbd>↑↓</kbd> Navigate
         <kbd>Enter</kbd> Select
         <kbd>Esc</kbd> Close

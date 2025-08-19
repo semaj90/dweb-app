@@ -1,8 +1,49 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run check:*)"
+      "Bash(npm run check:*)",
+      "Bash(go mod:*)",
+      "Bash(go build:*)",
+      "Bash(./bin/kratos-server.exe)",
+      "Bash(grep:*)",
+      "Bash(cp:*)",
+      "Bash(npm run dev:*)",
+      "Bash(go run:*)",
+      "Bash(node:*)",
+      "Bash(node:*)",
+      "Bash(echo $TORCH_HOME)",
+      "Bash(echo $HF_HOME)",
+      "Bash(echo $TRANSFORMERS_CACHE)",
+      "Bash(ollama list:*)",
+      "Bash(chmod:*)",
+      "Bash(find:*)",
+      "Bash(copy \"src\\lib\\components\\AIAssistantButton.svelte.backup\" \"src\\lib\\components\\AIAssistantButton.svelte\")",
+      "Bash(npx svelte-check:*)",
+      "Bash(../go-microservice/bin/enhanced-rag.exe)",
+      "Bash(../go-microservice/bin/upload-service.exe)",
+      "Bash(copy:*)",
+      "Bash(./go-microservice/bin/enhanced-rag.exe)",
+      "Bash(./go-microservice/bin/upload-service.exe)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(sed:*)",
+      "Bash(rm:*)",
+      "Bash(npm run test:quick:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(psql:*)",
+      "WebFetch(domain:next.melt-ui.com)",
+      "Bash(set PGPASSWORD=123456)",
+      "Bash(where redis-server)",
+      "Bash(./rag-kratos.exe)",
+      "Bash(install-nats-server.bat)",
+      "Bash(cp:*)"
     ],
-    "deny": []
+    "deny": [],
+    "additionalDirectories": [
+      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+    ]
   }
 }

@@ -1,21 +1,11 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    open?: any;
-  }
-  let {
-    open = false
-  }: Props = $props();
-
-
-
   import type { User } from '$lib/types';
   import { onMount, createEventDispatcher } from 'svelte';
   import { Search, File, Briefcase, User as UserIcon, Settings, Command } from "lucide-svelte";
   import { cn } from '$lib/utils';
   
-    
+  export let open = false;
+  
   // Define the command item type
   interface CommandItem {
     id: string;
@@ -37,7 +27,7 @@ https://svelte.dev/e/js_parse_error -->
   let searchQuery = '';
   let selectedIndex = 0;
   
-  let filteredItems = $derived(searchQuery );
+  $: filteredItems = searchQuery 
     ? allItems.filter(item => 
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -119,7 +109,7 @@ https://svelte.dev/e/js_parse_error -->
 }
   });
   
-  $effect(() => { if (open && searchInput) {
+  $: if (open && searchInput) {
     searchInput.focus();
 }
   function handleKeydown(e: KeyboardEvent) {
@@ -160,21 +150,21 @@ https://svelte.dev/e/js_parse_error -->
     open = false;
     dispatch('close');
 }
-  $effect(() => { if (filteredItems.length > 0 && selectedIndex >= filteredItems.length) {
+  $: if (filteredItems.length > 0 && selectedIndex >= filteredItems.length) {
     selectedIndex = 0;
 }
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
 {#if open}
   <!-- Backdrop -->
   <div 
     class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-    onclick={close}
+    on:click={close}
     role="button"
     tabindex="0"
-    onkeydown={(e) => e.key === 'Enter' && close()}
+    on:keydown={(e) => e.key === 'Enter' && close()}
   >
     <!-- Command palette -->
     <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
@@ -194,7 +184,7 @@ https://svelte.dev/e/js_parse_error -->
             type="text"
             placeholder="Search commands, cases, evidence..."
             class="flex-1 bg-transparent border-none outline-none py-4 text-foreground placeholder:text-muted-foreground"
-            oninput={() => selectedIndex = 0}
+            on:input={() => selectedIndex = 0}
           />
           <div class="flex items-center gap-1 text-xs text-muted-foreground">
             <kbd class="px-1.5 py-0.5 bg-nier-surface-light rounded border border-nier-gray">
@@ -230,8 +220,8 @@ https://svelte.dev/e/js_parse_error -->
                         ? "bg-harvard-crimson text-white shadow-nier-glow"
                         : "hover:bg-nier-surface-light text-foreground"
                     )}
-                    onclick={() => selectItem(item)}
-                    onmouseenter={() => selectedIndex = globalIndex}
+                    on:click={() => selectItem(item)}
+                    on:mouseenter={() => selectedIndex = globalIndex}
                   >
                     <div class="flex items-center">
                       <svelte:component 

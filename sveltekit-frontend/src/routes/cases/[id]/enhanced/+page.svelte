@@ -1,15 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    data: PageData;;
-  }
-  let {
-    data
-  }: Props = $props();
-
-
-
   import { onMount } from "svelte";
   import { writable } from "svelte/store";
   import type { PageData } from "./$types";
@@ -19,7 +8,8 @@ https://svelte.dev/e/js_parse_error -->
   import EvidenceUploader from "$lib/components/EvidenceUploader.svelte";
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
 
-  
+  export let data: PageData;
+
   // Use correct SvelteKit param for caseId
   const caseId = data.case.id;
   let caseData = data.case;
@@ -325,41 +315,41 @@ https://svelte.dev/e/js_parse_error -->
   <title>Case: {caseData.title} - Legal Case Management</title>
 </svelte:head>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
   <!-- Header with case info and AI controls -->
-  <header class="space-y-4">
-    <div class="space-y-4">
-      <h1 class="space-y-4">{caseData.title}</h1>
-      <div class="space-y-4">
-        <span class="space-y-4">#{caseData.caseNumber}</span>
+  <header class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <h1 class="container mx-auto px-4">{caseData.title}</h1>
+      <div class="container mx-auto px-4">
+        <span class="container mx-auto px-4">#{caseData.caseNumber}</span>
         <span
-          class="space-y-4"
+          class="container mx-auto px-4"
           class:status-open={caseData.status === "open"}
         >
           {caseData.status}
         </span>
-        <span class="space-y-4"
+        <span class="container mx-auto px-4"
           >{$evidenceList.length} pieces of evidence</span
         >
       </div>
     </div>
 
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <button
-        class="space-y-4"
-        onclick={() => sidebarOpen.update((open) => !open)}
+        class="container mx-auto px-4"
+        on:click={() => sidebarOpen.update((open) => !open)}
       >
         {$sidebarOpen ? "◀" : "▶"}
         {$sidebarOpen ? "Hide" : "Show"} Sidebar
       </button>
 
       <button
-        class="space-y-4"
-        onclick={() => generateCaseSummary()}
+        class="container mx-auto px-4"
+        on:click={() => generateCaseSummary()}
         disabled={aiGenerating}
       >
         {#if aiGenerating}
-          <span class="space-y-4">⏳</span>
+          <span class="container mx-auto px-4">⏳</span>
         {:else}
           🤖
         {/if}
@@ -367,8 +357,8 @@ https://svelte.dev/e/js_parse_error -->
       </button>
 
       <button
-        class="space-y-4"
-        onclick={() => generateProsecutionStrategy()}
+        class="container mx-auto px-4"
+        on:click={() => generateProsecutionStrategy()}
         disabled={aiGenerating}
       >
         📋 Prosecution Strategy
@@ -378,67 +368,67 @@ https://svelte.dev/e/js_parse_error -->
 
   <!-- Notification Bar -->
   {#if $errorMessages.length > 0 || $successMessages.length > 0}
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       {#each $errorMessages as error}
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           ❌ {error}
         </div>
       {/each}
       {#each $successMessages as success}
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           ✅ {success}
         </div>
       {/each}
     </div>
   {/if}
 
-  <div class="space-y-4">
+  <div class="container mx-auto px-4">
     <!-- Sidebar with evidence and tools -->
-    <aside class="space-y-4" class:open={$sidebarOpen}>
-      <div class="space-y-4">
+    <aside class="container mx-auto px-4" class:open={$sidebarOpen}>
+      <div class="container mx-auto px-4">
         <button
-          class="space-y-4"
+          class="container mx-auto px-4"
           class:active={$activeTab === "evidence"}
-          onclick={() => activeTab.set("evidence")}
+          on:click={() => activeTab.set("evidence")}
           title="Evidence List (Ctrl/Cmd + 3)"
         >
           📁 Evidence
         </button>
         <button
-          class="space-y-4"
+          class="container mx-auto px-4"
           class:active={$activeTab === "reports"}
-          onclick={() => activeTab.set("reports")}
+          on:click={() => activeTab.set("reports")}
           title="AI Reports (Ctrl/Cmd + 4)"
         >
           📊 AI Reports
         </button>
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         {#if $activeTab === "evidence"}
-          <div class="space-y-4">
-            <EvidenceUploader {caseId} onuploaded={handleEvidenceUploaded} />
+          <div class="container mx-auto px-4">
+            <EvidenceUploader {caseId} on:uploaded={handleEvidenceUploaded} />
 
-            <div class="space-y-4">
-              <div class="space-y-4">
+            <div class="container mx-auto px-4">
+              <div class="container mx-auto px-4">
                 <h3>Evidence ({$evidenceList.length})</h3>
                 {#if loadingStates.evidence}
-                  <div class="space-y-4">
-                    <span class="space-y-4"></span>
+                  <div class="container mx-auto px-4">
+                    <span class="container mx-auto px-4"></span>
                     Loading...
                   </div>
                 {/if}
               </div>
               {#each $evidenceList as evidence}
-                <div class="space-y-4" draggable={true}>
-                  <div class="space-y-4">
+                <div class="container mx-auto px-4" draggable={true}>
+                  <div class="container mx-auto px-4">
                     {#if evidence.fileUrl}
                       <img
                         src="/api/upload?file={evidence.fileUrl}&thumbnail=true"
                         alt="Thumbnail"
                       />
                     {:else}
-                      <div class="space-y-4">
+                      <div class="container mx-auto px-4">
                         {evidence.evidenceType === "image"
                           ? "🖼️"
                           : evidence.evidenceType === "video"
@@ -447,24 +437,24 @@ https://svelte.dev/e/js_parse_error -->
                       </div>
                     {/if}
                   </div>
-                  <div class="space-y-4">
-                    <div class="space-y-4">{evidence.title}</div>
-                    <div class="space-y-4">
+                  <div class="container mx-auto px-4">
+                    <div class="container mx-auto px-4">{evidence.title}</div>
+                    <div class="container mx-auto px-4">
                       {evidence.evidenceType} • {evidence.fileSize
                         ? (evidence.fileSize / 1024).toFixed(1) + "KB"
                         : ""}
                     </div>
                     {#if Array.isArray(evidence.tags) && evidence.tags.length > 0}
-                      <div class="space-y-4">
+                      <div class="container mx-auto px-4">
                         {#each evidence.tags.slice(0, 2) as tag}
-                          <span class="space-y-4">{tag}</span>
+                          <span class="container mx-auto px-4">{tag}</span>
                         {/each}
                       </div>
                     {/if}
                   </div>
                   <button
-                    class="space-y-4"
-                    onclick={() => canvasEditor?.addEvidenceToCanvas(evidence)}
+                    class="container mx-auto px-4"
+                    on:click={() => canvasEditor?.addEvidenceToCanvas(evidence)}
                   >
                     ➕
                   </button>
@@ -473,27 +463,27 @@ https://svelte.dev/e/js_parse_error -->
             </div>
           </div>
         {:else if $activeTab === "reports"}
-          <div class="space-y-4">
-            <div class="space-y-4">
+          <div class="container mx-auto px-4">
+            <div class="container mx-auto px-4">
               <h3>AI Generated Reports</h3>
               {#if loadingStates.reports}
-                <div class="space-y-4">
-                  <span class="space-y-4"></span>
+                <div class="container mx-auto px-4">
+                  <span class="container mx-auto px-4"></span>
                   Loading reports...
                 </div>
               {/if}
             </div>
             {#each $aiReports as report}
-              <div class="space-y-4">
-                <div class="space-y-4">{report.title}</div>
-                <div class="space-y-4">
+              <div class="container mx-auto px-4">
+                <div class="container mx-auto px-4">{report.title}</div>
+                <div class="container mx-auto px-4">
                   {report.reportType} • {new Date(
                     report.generatedAt
                   ).toLocaleDateString()}
                 </div>
                 <button
-                  class="space-y-4"
-                  onclick={() =>
+                  class="container mx-auto px-4"
+                  on:click={() =>
                     reportEditor?.setContent(report.richTextContent)}
                 >
                   Load into Editor
@@ -502,7 +492,7 @@ https://svelte.dev/e/js_parse_error -->
             {/each}
 
             {#if aiAnalysisComplete}
-              <div class="space-y-4">
+              <div class="container mx-auto px-4">
                 <h4>Case Summary</h4>
                 <p>{$caseSummary}</p>
               </div>
@@ -513,38 +503,38 @@ https://svelte.dev/e/js_parse_error -->
     </aside>
 
     <!-- Main content area with tabs -->
-    <main class="space-y-4">
-      <div class="space-y-4">
+    <main class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
         <button
-          class="space-y-4"
+          class="container mx-auto px-4"
           class:active={$activeTab === "canvas"}
-          onclick={() => activeTab.set("canvas")}
+          on:click={() => activeTab.set("canvas")}
           title="Interactive Canvas (Ctrl/Cmd + 1)"
         >
           🎨 Interactive Canvas
         </button>
         <button
-          class="space-y-4"
+          class="container mx-auto px-4"
           class:active={$activeTab === "editor"}
-          onclick={() => activeTab.set("editor")}
+          on:click={() => activeTab.set("editor")}
           title="Report Editor (Ctrl/Cmd + 2)"
         >
           📝 Report Editor
         </button>
 
-        <div class="space-y-4">
-          <span class="space-y-4"
+        <div class="container mx-auto px-4">
+          <span class="container mx-auto px-4"
             >Shortcuts: Ctrl/Cmd + B (toggle sidebar), 1-4 (switch tabs)</span
           >
         </div>
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         {#if $activeTab === "canvas"}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             {#if loadingStates.canvasSave}
-              <div class="space-y-4">
-                <span class="space-y-4"></span>
+              <div class="container mx-auto px-4">
+                <span class="container mx-auto px-4"></span>
                 Saving canvas...
               </div>
             {/if}
@@ -557,10 +547,10 @@ https://svelte.dev/e/js_parse_error -->
             />
           </div>
         {:else if $activeTab === "editor"}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             {#if loadingStates.reportSave}
-              <div class="space-y-4">
-                <span class="space-y-4"></span>
+              <div class="container mx-auto px-4">
+                <span class="container mx-auto px-4"></span>
                 Saving report...
               </div>
             {/if}

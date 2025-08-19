@@ -1,23 +1,12 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    onaiAnalysisComplete?: (event?: any) => void;
-    onautoSaved?: (event?: any) => void;
-    onsave?: (event?: any) => void;
-    onshowNotification?: (event?: any) => void;
-  }
-  let {
-    selectedNode = null,
-    readOnly = false
-  }: Props = $props();
-
-
-
-    import { writable } from 'svelte/store';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { writable } from 'svelte/store';
   
-    
-      
+  const dispatch = createEventDispatcher();
+  
+  export let selectedNode: any = null;
+  export let readOnly = false;
+  
   // Enhanced form fields with auto-population
   let formData = writable({
     // Basic fields
@@ -112,11 +101,11 @@ https://svelte.dev/e/js_parse_error -->
   ];
   
   // Watch for node changes and auto-populate form
-  $effect(() => { if (selectedNode) {
+  $: if (selectedNode) {
     autoPopulateForm(selectedNode);
 }
   // Track changes for auto-save
-  $effect(() => { if ($formData && selectedNode) {
+  $: if ($formData && selectedNode) {
     hasUnsavedChanges = true;
     scheduleAutoSave();
 }
@@ -253,7 +242,7 @@ https://svelte.dev/e/js_parse_error -->
         });
         
         // Notify parent components
-        onaiAnalysisComplete?.();
+        dispatch('aiAnalysisComplete', { node, aiTags });
 }
     } catch (error) {
       console.error('Enhanced AI analysis failed:', error);
@@ -388,7 +377,7 @@ https://svelte.dev/e/js_parse_error -->
       if (response.ok) {
         hasUnsavedChanges = false;
         lastSavedAt = new Date();
-        onautoSaved?.();
+        dispatch('autoSaved', updatedNode);
 }
     } catch (error) {
       console.warn('Auto-save failed:', error);
@@ -434,14 +423,20 @@ https://svelte.dev/e/js_parse_error -->
         hasUnsavedChanges = false;
         lastSavedAt = new Date();
         
-        onsave?.();
-        onshowNotification?.();
+        dispatch('save', result.evidence);
+        dispatch('showNotification', {
+          type: 'success',
+          message: 'Evidence saved successfully'
+        });
       } else {
         throw new Error('Save failed');
 }
     } catch (error) {
       console.error('Save failed:', error);
-      onshowNotification?.();
+      dispatch('showNotification', {
+        type: 'error',
+        message: 'Failed to save evidence'
+      });
     } finally {
       isSaving = false;
 }
@@ -458,10 +453,16 @@ https://svelte.dev/e/js_parse_error -->
       // Trigger fresh AI analysis
       await triggerEnhancedAIAnalysis(selectedNode, $formData);
       
-      onshowNotification?.();
+      dispatch('showNotification', {
+        type: 'success',
+        message: 'AI re-analysis completed'
+      });
     } catch (error) {
       console.error('Re-analysis failed:', error);
-      onshowNotification?.();
+      dispatch('showNotification', {
+        type: 'error',
+        message: 'AI re-analysis failed'
+      });
     } finally {
       isLoading = false;
 }
@@ -480,34 +481,34 @@ https://svelte.dev/e/js_parse_error -->
 }
 </script>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
   {#if selectedNode}
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <h2 class="space-y-4">Evidence Inspector</h2>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <h2 class="container mx-auto px-4">Evidence Inspector</h2>
         
         <!-- Action buttons -->
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           {#if hasUnsavedChanges}
-            <span class="space-y-4">
-              <div class="space-y-4"></div>
+            <span class="container mx-auto px-4">
+              <div class="container mx-auto px-4"></div>
               Unsaved changes
             </span>
           {/if}
           
           {#if lastSavedAt}
-            <span class="space-y-4">
+            <span class="container mx-auto px-4">
               Saved {new Date(lastSavedAt).toLocaleTimeString()}
             </span>
           {/if}
           
           <button 
-            onclick={reanalyzeWithAI}
+            on:click={reanalyzeWithAI}
             disabled={isLoading}
-            class="space-y-4"
+            class="container mx-auto px-4"
           >
             {#if isLoading}
-              <div class="space-y-4"></div>
+              <div class="container mx-auto px-4"></div>
             {:else}
               🤖
             {/if}
@@ -517,73 +518,73 @@ https://svelte.dev/e/js_parse_error -->
       </div>
       
       <!-- File info header -->
-      <div class="space-y-4">
-        <div class="space-y-4">
-          <span class="space-y-4">{evidenceTypes.find(t => t.value === $formData.evidenceType)?.icon || '📁'}</span>
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
+          <span class="container mx-auto px-4">{evidenceTypes.find(t => t.value === $formData.evidenceType)?.icon || '📁'}</span>
           <div>
-            <div class="space-y-4">{selectedNode.name}</div>
-            <div class="space-y-4">{selectedNode.type}</div>
+            <div class="container mx-auto px-4">{selectedNode.name}</div>
+            <div class="container mx-auto px-4">{selectedNode.type}</div>
           </div>
         </div>
         
         {#if $formData.qualityScore > 0}
-          <div class="space-y-4">
-            <span class="space-y-4">Quality Score:</span>
-            <div class="space-y-4">
+          <div class="container mx-auto px-4">
+            <span class="container mx-auto px-4">Quality Score:</span>
+            <div class="container mx-auto px-4">
               <div 
-                class="space-y-4"
+                class="container mx-auto px-4"
                 style="width: {$formData.qualityScore * 100}%"
               ></div>
             </div>
-            <span class="space-y-4">{Math.round($formData.qualityScore * 100)}%</span>
+            <span class="container mx-auto px-4">{Math.round($formData.qualityScore * 100)}%</span>
           </div>
         {/if}
       </div>
       
       <!-- Loading state -->
       {#if isLoading}
-        <div class="space-y-4">
-          <div class="space-y-4">
-            <div class="space-y-4"></div>
-            <div class="space-y-4">Analyzing with AI...</div>
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
+            <div class="container mx-auto px-4"></div>
+            <div class="container mx-auto px-4">Analyzing with AI...</div>
           </div>
         </div>
       {:else}
         <!-- Form sections -->
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           
           <!-- Basic Information -->
           <section>
-            <h3 class="space-y-4">Basic Information</h3>
-            <div class="space-y-4">
+            <h3 class="container mx-auto px-4">Basic Information</h3>
+            <div class="container mx-auto px-4">
               <div>
-                <label class="space-y-4">Title</label>
+                <label class="container mx-auto px-4">Title</label>
                 <input
                   bind:value={$formData.title}
                   placeholder="Enter evidence title"
                   disabled={readOnly}
-                  class="space-y-4"
+                  class="container mx-auto px-4"
                 />
               </div>
               
               <div>
-                <label class="space-y-4">Description</label>
+                <label class="container mx-auto px-4">Description</label>
                 <textarea
                   bind:value={$formData.description}
                   placeholder="Enter description or summary"
                   disabled={readOnly}
                   rows={3}
-                  class="space-y-4"
+                  class="container mx-auto px-4"
                 ></textarea>
               </div>
               
-              <div class="space-y-4">
+              <div class="container mx-auto px-4">
                 <div>
-                  <label class="space-y-4">Evidence Type</label>
+                  <label class="container mx-auto px-4">Evidence Type</label>
                   <select 
                     bind:value={$formData.evidenceType}
                     disabled={readOnly}
-                    class="space-y-4"
+                    class="container mx-auto px-4"
                   >
                     {#each evidenceTypes as type}
                       <option value={type.value}>{type.icon} {type.label}</option>
@@ -592,11 +593,11 @@ https://svelte.dev/e/js_parse_error -->
                 </div>
                 
                 <div>
-                  <label class="space-y-4">Legal Relevance</label>
+                  <label class="container mx-auto px-4">Legal Relevance</label>
                   <select 
                     bind:value={$formData.legalRelevance}
                     disabled={readOnly}
-                    class="space-y-4"
+                    class="container mx-auto px-4"
                   >
                     {#each relevanceOptions as option}
                       <option value={option.value}>{option.label}</option>
@@ -605,13 +606,13 @@ https://svelte.dev/e/js_parse_error -->
                 </div>
               </div>
               
-              <div class="space-y-4">
+              <div class="container mx-auto px-4">
                 <div>
-                  <label class="space-y-4">Confidentiality</label>
+                  <label class="container mx-auto px-4">Confidentiality</label>
                   <select 
                     bind:value={$formData.confidentialityLevel}
                     disabled={readOnly}
-                    class="space-y-4"
+                    class="container mx-auto px-4"
                   >
                     {#each confidentialityLevels as level}
                       <option value={level.value}>{level.label}</option>
@@ -620,11 +621,11 @@ https://svelte.dev/e/js_parse_error -->
                 </div>
                 
                 <div>
-                  <label class="space-y-4">Urgency</label>
+                  <label class="container mx-auto px-4">Urgency</label>
                   <select 
                     bind:value={$formData.urgencyLevel}
                     disabled={readOnly}
-                    class="space-y-4"
+                    class="container mx-auto px-4"
                   >
                     {#each urgencyLevels as level}
                       <option value={level.value}>{level.label}</option>
@@ -637,15 +638,15 @@ https://svelte.dev/e/js_parse_error -->
           
           <!-- Tags Section -->
           <section>
-            <h3 class="space-y-4">Tags</h3>
-            <div class="space-y-4">
+            <h3 class="container mx-auto px-4">Tags</h3>
+            <div class="container mx-auto px-4">
               <!-- AI-generated tags -->
               {#if $formData.tags.length > 0}
                 <div>
-                  <label class="space-y-4">AI-Generated Tags</label>
-                  <div class="space-y-4">
+                  <label class="container mx-auto px-4">AI-Generated Tags</label>
+                  <div class="container mx-auto px-4">
                     {#each $formData.tags as tag}
-                      <span class="space-y-4">{tag}</span>
+                      <span class="container mx-auto px-4">{tag}</span>
                     {/each}
                   </div>
                 </div>
@@ -653,15 +654,15 @@ https://svelte.dev/e/js_parse_error -->
               
               <!-- Custom tags -->
               <div>
-                <label class="space-y-4">Custom Tags</label>
-                <div class="space-y-4">
+                <label class="container mx-auto px-4">Custom Tags</label>
+                <div class="container mx-auto px-4">
                   {#each $formData.customTags as tag}
-                    <span class="space-y-4">
+                    <span class="container mx-auto px-4">
                       {tag}
                       {#if !readOnly}
                         <button 
-                          onclick={() => removeCustomTag(tag)}
-                          class="space-y-4"
+                          on:click={() => removeCustomTag(tag)}
+                          class="container mx-auto px-4"
                         >×</button>
                       {/if}
                     </span>
@@ -669,16 +670,16 @@ https://svelte.dev/e/js_parse_error -->
                 </div>
                 
                 {#if !readOnly}
-                  <div class="space-y-4">
+                  <div class="container mx-auto px-4">
                     <input
                       bind:value={customTag}
                       placeholder="Add custom tag"
-                      onkeydown={(e) => e.key === 'Enter' && addCustomTag()}
-                      class="space-y-4"
+                      on:keydown={(e) => e.key === 'Enter' && addCustomTag()}
+                      class="container mx-auto px-4"
                     />
                     <button 
-                      onclick={addCustomTag} 
-                      class="space-y-4"
+                      on:click={addCustomTag} 
+                      class="container mx-auto px-4"
                     >Add</button>
                   </div>
                 {/if}
@@ -688,29 +689,29 @@ https://svelte.dev/e/js_parse_error -->
           
           <!-- Entities Section -->
           <section>
-            <h3 class="space-y-4">Extracted Entities</h3>
-            <div class="space-y-4">
+            <h3 class="container mx-auto px-4">Extracted Entities</h3>
+            <div class="container mx-auto px-4">
               
               <!-- People -->
               {#if $formData.people.length > 0 || !readOnly}
                 <div>
-                  <div class="space-y-4">
-                    <label class="space-y-4">People</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">People</label>
                     {#if $formData.extractionConfidence.people > 0}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.people * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="space-y-4">
+                  <div class="container mx-auto px-4">
                     {#each $formData.people as person}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         👤 {person}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removePerson(person)}
-                            class="space-y-4"
+                            on:click={() => removePerson(person)}
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -718,16 +719,16 @@ https://svelte.dev/e/js_parse_error -->
                   </div>
                   
                   {#if !readOnly}
-                    <div class="space-y-4">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customPerson}
                         placeholder="Add person"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomPerson()}
-                        class="space-y-4"
+                        on:keydown={(e) => e.key === 'Enter' && addCustomPerson()}
+                        class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomPerson} 
-                        class="space-y-4"
+                        on:click={addCustomPerson} 
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -737,23 +738,23 @@ https://svelte.dev/e/js_parse_error -->
               <!-- Locations -->
               {#if $formData.locations.length > 0 || !readOnly}
                 <div>
-                  <div class="space-y-4">
-                    <label class="space-y-4">Locations</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">Locations</label>
                     {#if $formData.extractionConfidence.locations > 0}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.locations * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="space-y-4">
+                  <div class="container mx-auto px-4">
                     {#each $formData.locations as location}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         📍 {location}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removeLocation(location)}
-                            class="space-y-4"
+                            on:click={() => removeLocation(location)}
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -761,16 +762,16 @@ https://svelte.dev/e/js_parse_error -->
                   </div>
                   
                   {#if !readOnly}
-                    <div class="space-y-4">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customLocation}
                         placeholder="Add location"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomLocation()}
-                        class="space-y-4"
+                        on:keydown={(e) => e.key === 'Enter' && addCustomLocation()}
+                        class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomLocation} 
-                        class="space-y-4"
+                        on:click={addCustomLocation} 
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -780,23 +781,23 @@ https://svelte.dev/e/js_parse_error -->
               <!-- Organizations -->
               {#if $formData.organizations.length > 0 || !readOnly}
                 <div>
-                  <div class="space-y-4">
-                    <label class="space-y-4">Organizations</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">Organizations</label>
                     {#if $formData.extractionConfidence.organizations > 0}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.organizations * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="space-y-4">
+                  <div class="container mx-auto px-4">
                     {#each $formData.organizations as org}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         🏢 {org}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removeOrganization(org)}
-                            class="space-y-4"
+                            on:click={() => removeOrganization(org)}
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -804,16 +805,16 @@ https://svelte.dev/e/js_parse_error -->
                   </div>
                   
                   {#if !readOnly}
-                    <div class="space-y-4">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customOrganization}
                         placeholder="Add organization"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomOrganization()}
-                        class="space-y-4"
+                        on:keydown={(e) => e.key === 'Enter' && addCustomOrganization()}
+                        class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomOrganization} 
-                        class="space-y-4"
+                        on:click={addCustomOrganization} 
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -823,18 +824,18 @@ https://svelte.dev/e/js_parse_error -->
               <!-- Dates -->
               {#if $formData.dates.length > 0}
                 <div>
-                  <div class="space-y-4">
-                    <label class="space-y-4">Dates</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">Dates</label>
                     {#if $formData.extractionConfidence.dates > 0}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.dates * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="space-y-4">
+                  <div class="container mx-auto px-4">
                     {#each $formData.dates as date}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         📅 {formatDate(date)}
                       </span>
                     {/each}
@@ -847,12 +848,12 @@ https://svelte.dev/e/js_parse_error -->
           <!-- Key Facts -->
           {#if $formData.keyFacts.length > 0}
             <section>
-              <h3 class="space-y-4">Key Facts</h3>
-              <ul class="space-y-4">
+              <h3 class="container mx-auto px-4">Key Facts</h3>
+              <ul class="container mx-auto px-4">
                 {#each $formData.keyFacts as fact}
-                  <li class="space-y-4">
-                    <span class="space-y-4">•</span>
-                    <span class="space-y-4">{fact}</span>
+                  <li class="container mx-auto px-4">
+                    <span class="container mx-auto px-4">•</span>
+                    <span class="container mx-auto px-4">{fact}</span>
                   </li>
                 {/each}
               </ul>
@@ -862,20 +863,20 @@ https://svelte.dev/e/js_parse_error -->
           <!-- Actions & Recommendations -->
           {#if $formData.actions.length > 0 || $formData.recommendations.length > 0 || !readOnly}
             <section>
-              <h3 class="space-y-4">Actions & Recommendations</h3>
-              <div class="space-y-4">
+              <h3 class="container mx-auto px-4">Actions & Recommendations</h3>
+              <div class="container mx-auto px-4">
                 
                 <!-- Action Items -->
                 <div>
-                  <label class="space-y-4">Action Items</label>
-                  <div class="space-y-4">
+                  <label class="container mx-auto px-4">Action Items</label>
+                  <div class="container mx-auto px-4">
                     {#each $formData.actions as action}
-                      <span class="space-y-4">
+                      <span class="container mx-auto px-4">
                         ⚡ {action}
                         {#if !readOnly}
                           <button 
-                            onclick={() => removeAction(action)}
-                            class="space-y-4"
+                            on:click={() => removeAction(action)}
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -883,16 +884,16 @@ https://svelte.dev/e/js_parse_error -->
                   </div>
                   
                   {#if !readOnly}
-                    <div class="space-y-4">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customAction}
                         placeholder="Add action item"
-                        onkeydown={(e) => e.key === 'Enter' && addCustomAction()}
-                        class="space-y-4"
+                        on:keydown={(e) => e.key === 'Enter' && addCustomAction()}
+                        class="container mx-auto px-4"
                       />
                       <button 
-                        onclick={addCustomAction} 
-                        class="space-y-4"
+                        on:click={addCustomAction} 
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -901,11 +902,11 @@ https://svelte.dev/e/js_parse_error -->
                 <!-- AI Recommendations -->
                 {#if $formData.recommendations.length > 0}
                   <div>
-                    <label class="space-y-4">AI Recommendations</label>
-                    <ul class="space-y-4">
+                    <label class="container mx-auto px-4">AI Recommendations</label>
+                    <ul class="container mx-auto px-4">
                       {#each $formData.recommendations as recommendation}
-                        <li class="space-y-4">
-                          <span class="space-y-4">💡</span>
+                        <li class="container mx-auto px-4">
+                          <span class="container mx-auto px-4">💡</span>
                           <span>{recommendation}</span>
                         </li>
                       {/each}
@@ -919,14 +920,14 @@ https://svelte.dev/e/js_parse_error -->
           <!-- Red Flags -->
           {#if $formData.redFlags.length > 0}
             <section>
-              <h3 class="space-y-4">
-                <span class="space-y-4">⚠️</span>
+              <h3 class="container mx-auto px-4">
+                <span class="container mx-auto px-4">⚠️</span>
                 Red Flags
               </h3>
-              <div class="space-y-4">
+              <div class="container mx-auto px-4">
                 {#each $formData.redFlags as flag}
-                  <div class="space-y-4">
-                    <span class="space-y-4">{flag}</span>
+                  <div class="container mx-auto px-4">
+                    <span class="container mx-auto px-4">{flag}</span>
                   </div>
                 {/each}
               </div>
@@ -936,15 +937,15 @@ https://svelte.dev/e/js_parse_error -->
           <!-- Additional Legal Information -->
           {#if $formData.statutes.length > 0 || $formData.monetaryAmounts.length > 0 || $formData.potentialWitnesses.length > 0 || $formData.relatedCases.length > 0}
             <section>
-              <h3 class="space-y-4">Legal Information</h3>
-              <div class="space-y-4">
+              <h3 class="container mx-auto px-4">Legal Information</h3>
+              <div class="container mx-auto px-4">
                 
                 {#if $formData.statutes.length > 0}
                   <div>
-                    <label class="space-y-4">Relevant Statutes</label>
-                    <div class="space-y-4">
+                    <label class="container mx-auto px-4">Relevant Statutes</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.statutes as statute}
-                        <span class="space-y-4">⚖️ {statute}</span>
+                        <span class="container mx-auto px-4">⚖️ {statute}</span>
                       {/each}
                     </div>
                   </div>
@@ -952,10 +953,10 @@ https://svelte.dev/e/js_parse_error -->
                 
                 {#if $formData.monetaryAmounts.length > 0}
                   <div>
-                    <label class="space-y-4">Monetary Amounts</label>
-                    <div class="space-y-4">
+                    <label class="container mx-auto px-4">Monetary Amounts</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.monetaryAmounts as amount}
-                        <span class="space-y-4">💰 {amount}</span>
+                        <span class="container mx-auto px-4">💰 {amount}</span>
                       {/each}
                     </div>
                   </div>
@@ -963,10 +964,10 @@ https://svelte.dev/e/js_parse_error -->
                 
                 {#if $formData.potentialWitnesses.length > 0}
                   <div>
-                    <label class="space-y-4">Potential Witnesses</label>
-                    <div class="space-y-4">
+                    <label class="container mx-auto px-4">Potential Witnesses</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.potentialWitnesses as witness}
-                        <span class="space-y-4">👁️ {witness}</span>
+                        <span class="container mx-auto px-4">👁️ {witness}</span>
                       {/each}
                     </div>
                   </div>
@@ -974,10 +975,10 @@ https://svelte.dev/e/js_parse_error -->
                 
                 {#if $formData.relatedCases.length > 0}
                   <div>
-                    <label class="space-y-4">Related Cases</label>
-                    <div class="space-y-4">
+                    <label class="container mx-auto px-4">Related Cases</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.relatedCases as case_ref}
-                        <span class="space-y-4">📁 {case_ref}</span>
+                        <span class="container mx-auto px-4">📁 {case_ref}</span>
                       {/each}
                     </div>
                   </div>
@@ -989,14 +990,14 @@ https://svelte.dev/e/js_parse_error -->
         
         <!-- Save button -->
         {#if !readOnly}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             <button 
-              onclick={handleSave}
+              on:click={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
-              class="space-y-4"
+              class="container mx-auto px-4"
             >
               {#if isSaving}
-                <div class="space-y-4"></div>
+                <div class="container mx-auto px-4"></div>
                 Saving...
               {:else}
                 💾 Save Evidence
@@ -1008,11 +1009,11 @@ https://svelte.dev/e/js_parse_error -->
     </div>
   {:else}
     <!-- No selection state -->
-    <div class="space-y-4">
-      <div class="space-y-4">📋</div>
-      <div class="space-y-4">Enhanced Inspector</div>
-      <div class="space-y-4">Select evidence to view AI-powered analysis and auto-populated fields</div>
-      <div class="space-y-4">Powered by advanced natural language processing</div>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">📋</div>
+      <div class="container mx-auto px-4">Enhanced Inspector</div>
+      <div class="container mx-auto px-4">Select evidence to view AI-powered analysis and auto-populated fields</div>
+      <div class="container mx-auto px-4">Powered by advanced natural language processing</div>
     </div>
   {/if}
 </div>

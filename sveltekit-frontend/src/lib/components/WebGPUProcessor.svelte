@@ -745,31 +745,33 @@ https://svelte.dev/e/js_parse_error -->
 	});
 
 	// Reactive updates
-	$effect(() => { if (documentData && $isWebGPUReady) {
-		processDocumentData(documentData);
-	}
+	$effect(() => { 
+		if (documentData && $isWebGPUReady) {
+			processDocumentData(documentData);
+		}
+	});
 
 	// Expose methods for external use
-	export function processEmbedding(embedding: Float32Array) {
+	function processEmbedding(embedding: Float32Array) {
 		return queueOperation('embedding', embedding, [1, embedding.length]);
 	}
 
-	export function processAttention(scores: Float32Array) {
+	function processAttention(scores: Float32Array) {
 		return queueOperation('attention', scores, [1, scores.length]);
 	}
 
-	export function updateSOM(weights: Float32Array, input: Float32Array) {
+	function updateSOM(weights: Float32Array, input: Float32Array) {
 		const combined = new Float32Array(weights.length + input.length);
 		combined.set(weights);
 		combined.set(input, weights.length);
 		return queueOperation('som_update', combined, [weights.length, input.length]);
 	}
 
-	export function getMetrics() {
+	function getMetrics() {
 		return $gpuMetrics;
 	}
 
-	export function getOperationStatus(operationId: string) {
+	function getOperationStatus(operationId: string) {
 		return $tensorOperations.find(op => op.id === operationId);
 	}
 </script>

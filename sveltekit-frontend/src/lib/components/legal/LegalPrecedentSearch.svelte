@@ -116,9 +116,9 @@ https://svelte.dev/e/js_parse_error -->
     searchPrecedents();
   }
 
-  let totalPages = $derived(Math.ceil(totalCount / itemsPerPage););
-  let startItem = $derived((currentPage - 1) * itemsPerPage + 1;);
-  let endItem = $derived(Math.min(currentPage * itemsPerPage, totalCount););
+  let totalPages = $derived(Math.ceil(totalCount / itemsPerPage));
+  let startItem = $derived((currentPage - 1) * itemsPerPage + 1);
+  let endItem = $derived(Math.min(currentPage * itemsPerPage, totalCount));
 </script>
 
 <div class="space-y-6">

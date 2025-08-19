@@ -1,31 +1,21 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    onsearch?: (event?: any) => void;
-    onsortChanged?: (event?: any) => void;
-    onfiltersChanged?: (event?: any) => void;
-  }
-  let {
-    placeholder = 'Search...',
-    value = '',
-    showFilters = true,
-    sortOptions = [
-  }: Props = $props();
-
-
-
-		import SearchInput from './SearchInput.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import SearchInput from './SearchInput.svelte';
 	
 	import { Filter, ArrowUpDown } from 'lucide-svelte';
 
-						{ id: 'relevance', label: 'Relevance' },
+	export let placeholder = 'Search...';
+	export let value = '';
+	export let showFilters = true;
+	export let sortOptions = [
+		{ id: 'relevance', label: 'Relevance' },
 		{ id: 'date', label: 'Date' },
 		{ id: 'name', label: 'Name' },
 		{ id: 'type', label: 'Type' }
 	];
 
-	
+	const dispatch = createEventDispatcher();
+
 	let selectedSort = 'relevance';
 	let filtersOpen = false;
 	
@@ -37,11 +27,11 @@ https://svelte.dev/e/js_parse_error -->
 	};
 
 	function handleSearch(event: CustomEvent) {
-		onsearch?.();
+		dispatch('search', event.detail);
 }
 	function handleSortChange(sortId: string) {
 		selectedSort = sortId;
-		onsortChanged?.();
+		dispatch('sortChanged', { sort: sortId });
 }
 	function toggleFilters() {
 		filtersOpen = !filtersOpen;
@@ -64,27 +54,30 @@ https://svelte.dev/e/js_parse_error -->
 		dispatchFilters();
 }
 	function dispatchFilters() {
-		onfiltersChanged?.();
+		dispatch('filtersChanged', {
+			fileTypes: selectedFileTypes,
+			dateRange: dateRange
+		});
 }
 </script>
 
-<div class="space-y-4">
+<div class="container mx-auto px-4">
 	<!-- Main Search Input -->
 	<SearchInput 
 		{placeholder}
 		{value}
-		onsearch={handleSearch}
+		on:search={handleSearch}
 	/>
 
 	<!-- Controls -->
 	{#if showFilters}
-		<div class="space-y-4">
+		<div class="container mx-auto px-4">
 			<!-- Sort Dropdown -->
-			<div class="space-y-4">
+			<div class="container mx-auto px-4">
 				<select
 					bind:value={selectedSort}
-					onchange={() => handleSortChange(selectedSort)}
-					class="space-y-4"
+					on:change={() => handleSortChange(selectedSort)}
+					class="container mx-auto px-4"
 					aria-label="Sort by"
 				>
 					{#each sortOptions as option}
@@ -96,9 +89,9 @@ https://svelte.dev/e/js_parse_error -->
 
 			<!-- Filter Button -->
 			<button
-				class="space-y-4"
+				class="container mx-auto px-4"
 				class:active={filtersOpen}
-				onclick={() => toggleFilters()}
+				on:click={() => toggleFilters()}
 				aria-label="Toggle filters"
 				title="Filters"
 			>
@@ -110,75 +103,75 @@ https://svelte.dev/e/js_parse_error -->
 
 <!-- Advanced Filters -->
 {#if filtersOpen}
-	<div class="space-y-4">
-		<div class="space-y-4">
-			<span class="space-y-4">File Type:</span>
-			<div class="space-y-4">
-				<label class="space-y-4">
+	<div class="container mx-auto px-4">
+		<div class="container mx-auto px-4">
+			<span class="container mx-auto px-4">File Type:</span>
+			<div class="container mx-auto px-4">
+				<label class="container mx-auto px-4">
 					<input 
 						type="checkbox" 
 						value="image" 
 						checked={selectedFileTypes.includes('image')}
-						onchange={handleFileTypeChange}
+						on:change={handleFileTypeChange}
 					/>
 					Images
 				</label>
-				<label class="space-y-4">
+				<label class="container mx-auto px-4">
 					<input 
 						type="checkbox" 
 						value="document" 
 						checked={selectedFileTypes.includes('document')}
-						onchange={handleFileTypeChange}
+						on:change={handleFileTypeChange}
 					/>
 					Documents
 				</label>
-				<label class="space-y-4">
+				<label class="container mx-auto px-4">
 					<input 
 						type="checkbox" 
 						value="video" 
 						checked={selectedFileTypes.includes('video')}
-						onchange={handleFileTypeChange}
+						on:change={handleFileTypeChange}
 					/>
 					Videos
 				</label>
-				<label class="space-y-4">
+				<label class="container mx-auto px-4">
 					<input 
 						type="checkbox" 
 						value="audio" 
 						checked={selectedFileTypes.includes('audio')}
-						onchange={handleFileTypeChange}
+						on:change={handleFileTypeChange}
 					/>
 					Audio
 				</label>
 			</div>
 		</div>
 
-		<div class="space-y-4">
-			<span class="space-y-4">Date Range:</span>
-			<div class="space-y-4">
+		<div class="container mx-auto px-4">
+			<span class="container mx-auto px-4">Date Range:</span>
+			<div class="container mx-auto px-4">
 				<input 
 					type="date" 
-					class="space-y-4" 
+					class="container mx-auto px-4" 
 					aria-label="From date"
 					bind:value={dateRange.from}
-					onchange={handleDateChange}
+					on:change={handleDateChange}
 				/>
 				<span>to</span>
 				<input 
 					type="date" 
-					class="space-y-4" 
+					class="container mx-auto px-4" 
 					aria-label="To date"
 					bind:value={dateRange.to}
-					onchange={handleDateChange}
+					on:change={handleDateChange}
 				/>
 			</div>
 		</div>
 
-		<div class="space-y-4">
+		<div class="container mx-auto px-4">
 			<button 
 				type="button" 
-				class="space-y-4"
-				onclick={() => {
+				class="container mx-auto px-4"
+				on:click={() => {
 					selectedFileTypes = [];
 					dateRange = { from: '', to: '' };
 					dispatchFilters();

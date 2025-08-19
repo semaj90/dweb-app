@@ -15,7 +15,7 @@ YoRHa Legal AI is an enterprise-grade platform combining SvelteKit 2/Svelte 5 fr
 ### **Key Features**
 
 - 🚀 **GPU-Accelerated Processing**: NVIDIA GPU clustering with Ollama LLM inference
-- ⚡ **Real-time Chat**: Server-sent events with sub-second response times  
+- ⚡ **Real-time Chat**: Server-sent events with sub-second response times
 - 🔍 **Semantic Search**: PostgreSQL pgvector with Redis caching
 - 📄 **Document Processing**: Multi-format support (PDF, DOCX, TXT) with OCR
 - 🎮 **YoRHa UI Theme**: Gaming-inspired professional interface
@@ -30,9 +30,15 @@ YoRHa Legal AI is an enterprise-grade platform combining SvelteKit 2/Svelte 5 fr
 - ✅ **Zero migration errors** with comprehensive safety backups
 - ✅ **Phase 4 & 9 Complete** - Production-ready infrastructure
 
-### **Critical Error Analysis (2,873 Total Errors)**
+### **Frontend Static Analysis Snapshot (Updated 2025-08-18)**
 
-Based on `svelte-check-errors-20250811.log`, the main issues are:
+Latest `svelte-check` (Aug 18 2025): **3,460 errors / 1,141 warnings across ~357 files**
+Previous logged snapshot (`svelte-check-errors-20250811.log`): 2,873 errors (now superseded).
+Delta reflects inclusion of additional unmigrated UI primitives & dialog duplicates discovered in extended scan.
+
+Primary active categories (condensed): missing `class`/rest forwarding, legacy event prop names (`onresponse`), migration attrs (`transitionfly`), variant enum mismatches, duplicate dialog implementations, attributify utility props lacking ambient types, invalid binds (`bind:open`) on non‑bindable components, and missing event dispatcher typings (events falling back to `never`).
+
+See unified remediation table further below ("Frontend Static Analysis Baseline") and `sveltekit-frontend/PRODUCTION_WIRING_PLAN.md` for batch strategy.
 
 #### **1. Svelte 5 Runes Migration (Priority: HIGH)**
 ```typescript
@@ -90,3 +96,58 @@ node scripts/list-changes-since.mjs "2025-08-09"
 ```
 
 The script prints a summary and saves a timestamped report (CHANGES-since-YYYYMMDD-HHMMSS.txt) in this folder.
+
+---
+
+## 📊 Frontend Static Analysis Baseline (SvelteKit)
+
+Current consolidated baseline (pre-remediation):
+
+- Errors: **3460**
+- Warnings: **1141**
+- Affected Files: **~357**
+
+Primary categories (see `sveltekit-frontend/PRODUCTION_WIRING_PLAN.md`):
+
+| Category | Cause | Planned Batch |
+|----------|-------|---------------|
+| Missing `class` / rest forwarding | UI primitives omit `class` + `...$$restProps` | Batch 2 |
+| Legacy event props (`onresponse`) | Should use `on:response` syntax | Batch 1 |
+| Migration attrs (`transitionfly`) | Needs `transition:fly` directive form | Batch 1 |
+| Button variant enum mismatches | Variant union incomplete | Batch 3 |
+| Duplicate dialogs | Parallel legacy + Bits implementations | Batch 4 |
+| Attributify utility prop errors | No ambient typings | Batch 7 (early ambient added) |
+| Invalid binds (`bind:open`) | Component not `$bindable` | Batch 5 |
+| Event typings → `never` | Missing dispatcher / HTML attribute augmentation | Batch 5 |
+
+### Remediation Milestones
+
+| Stage | Target Error Ceiling | Focus |
+|-------|----------------------|-------|
+| Baseline | 3460 | Inventory only |
+| After Batch 1 | <2600 | Mechanical attr + event renames |
+| After Batch 2 | <1800 | Prop forwarding (`class`) |
+| After Batch 3 | <1400 | Variant / enum normalization |
+| After Batch 4 | <500  | Dialog consolidation |
+| Final Gate | <50 | Semantic + typing polish |
+
+CI (planned): Fail if post-Batch-4 >500 errors OR performance regression test fails.
+
+#### Autosolve Status (Updated 2025-08-19)
+
+Latest automated cycle snapshot (`check:autosolve`): baseline 10 TypeScript errors (narrow incremental scope) → 10 after autosolve (no eligible mechanical fixes above threshold 100). Full Svelte + TS baseline remains 3,460 pending Batch 1 execution; autosolve currently gated to run only when error count exceeds threshold.
+
+Next actions:
+- Lower threshold gradually after Batch 1 to continuously harvest residual mechanical errors.
+- Integrate event-loop driven autosolve trigger (Context7 condition) once global error count < 2,600.
+- Persist multi-cycle deltas to `autosolve_results` table for trend graphing.
+
+To refresh counts: run from `sveltekit-frontend`:
+
+```bash
+npm run check
+```
+
+Tracked deltas will be recorded both here and in the frontend README until error budget target reached.
+
+---

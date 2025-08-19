@@ -1,34 +1,18 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    items: Evidence[] ;
-    onResults: (results: Evidence[]) ;
-    onSelect: (item: Evidence) ;
-    placeholder?: any;
-    maxResults?: any;
-    showFilters?: any;
-    showTags?: any;
-  }
-  let {
-    items = [],
-    onResults = > void = () => {},
-    onSelect = > void = () => {},
-    placeholder = 'Search evidence...',
-    maxResults = 10,
-    showFilters = true,
-    showTags = true
-  }: Props = $props();
-
-
-
   import { createCombobox, melt } from '@melt-ui/svelte';
   import { fly } from 'svelte/transition';
   import Fuse from "fuse.js";
   import { Search, X, Tag, Calendar, FileType } from 'lucide-svelte';
   import type { Evidence } from '$lib/stores/report';
 
-              
+  export let items: Evidence[] = [];
+  export let onResults: (results: Evidence[]) => void = () => {};
+  export let onSelect: (item: Evidence) => void = () => {};
+  export let placeholder = 'Search evidence...';
+  export let maxResults = 10;
+  export let showFilters = true;
+  export let showTags = true;
+
   let searchValue = '';
   let fuse: Fuse<Evidence>;
   let searchResults: Evidence[] = [];
@@ -63,13 +47,13 @@ https://svelte.dev/e/js_parse_error -->
   });
 
   // Initialize Fuse when items change
-  $effect(() => { if (items.length > 0) {
+  $: if (items.length > 0) {
     fuse = new Fuse(items, fuseOptions);
     allTags = [...new Set(items.flatMap(item => item.tags || []))];
   }
 
   // Perform search when input changes
-  $effect(() => { if (fuse && searchValue) {
+  $: if (fuse && searchValue) {
     const fuseResults = fuse.search(searchValue);
     searchResults = fuseResults
       .map(result => result.item)
@@ -79,7 +63,7 @@ https://svelte.dev/e/js_parse_error -->
   }
 
   // Apply filters
-  let filteredResults = $derived(searchResults.filter(item => {);
+  $: filteredResults = searchResults.filter(item => {
     // Type filter
     if (selectedTypes.length > 0 && !selectedTypes.includes(item.type)) {
       return false;
@@ -101,10 +85,10 @@ https://svelte.dev/e/js_parse_error -->
   });
 
   // Update results when filters change
-  $effect(() => { onResults(filteredResults);
+  $: onResults(filteredResults);
 
   // Sync input value
-  let searchValue = $derived($inputValue;);
+  $: searchValue = $inputValue;
 
   // Handle item selection
   const handleSelect = (item: Evidence) => {
@@ -164,7 +148,7 @@ https://svelte.dev/e/js_parse_error -->
       {#if searchValue}
         <button
           class="clear-button"
-          onclick={() => clearSearch()}
+          on:click={() => clearSearch()}
           title="Clear search"
         >
           <X size={16} />
@@ -177,14 +161,14 @@ https://svelte.dev/e/js_parse_error -->
       <div
         use:melt={$menu}
         class="search-results"
-        transitionfly={{ y: -5, duration: 150 }}
+        transition:fly={{ y: -5, duration: 150 }}
       >
         {#each filteredResults as item (item.id)}
           <button
             use:melt={$option({ value: item.id, label: item.title })}
             class="search-result-item"
             class:highlighted={$isSelected(item.id)}
-            onclick={() => handleSelect(item)}
+            on:click={() => handleSelect(item)}
           >
             <div class="result-icon">
               {#if item.type === 'document'}
@@ -250,7 +234,7 @@ https://svelte.dev/e/js_parse_error -->
             <button
               class="filter-chip"
               class:active={selectedTypes.includes(type)}
-              onclick={() => toggleType(type)}
+              on:click={() => toggleType(type)}
             >
               {type}
             </button>
@@ -270,7 +254,7 @@ https://svelte.dev/e/js_parse_error -->
               <button
                 class="filter-chip"
                 class:active={selectedTags.includes(tag)}
-                onclick={() => toggleTag(tag)}
+                on:click={() => toggleTag(tag)}
               >
                 {tag}
               </button>
@@ -312,7 +296,7 @@ https://svelte.dev/e/js_parse_error -->
       {#each selectedTypes as type}
         <span class="active-filter">
           {type}
-          <button onclick={() => toggleType(type)}>
+          <button on:click={() => toggleType(type)}>
             <X size={12} />
           </button>
         </span>
@@ -321,7 +305,7 @@ https://svelte.dev/e/js_parse_error -->
       {#each selectedTags as tag}
         <span class="active-filter">
           #{tag}
-          <button onclick={() => toggleTag(tag)}>
+          <button on:click={() => toggleTag(tag)}>
             <X size={12} />
           </button>
         </span>
@@ -330,13 +314,13 @@ https://svelte.dev/e/js_parse_error -->
       {#if dateRange.start || dateRange.end}
         <span class="active-filter">
           {dateRange.start?.toLocaleDateString() || '...'} - {dateRange.end?.toLocaleDateString() || '...'}
-          <button onclick={() => dateRange = {}}>
+          <button on:click={() => dateRange = {}}>
             <X size={12} />
           </button>
         </span>
       {/if}
 
-      <button class="clear-all-filters" onclick={() => clearSearch()}>
+      <button class="clear-all-filters" on:click={() => clearSearch()}>
         Clear all
       </button>
     </div>

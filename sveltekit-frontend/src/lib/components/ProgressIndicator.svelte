@@ -1,20 +1,7 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    currentStep: number;;
-    totalSteps: number;;
-    stepLabels: string[] ;
-  }
-  let {
-    currentStep,
-    totalSteps,
-    stepLabels = []
-  }: Props = $props();
-
-
-
-      let { stepLabels = $bindable() } = $props(); // string[] = [];
+  export let currentStep: number;
+  export let totalSteps: number;
+  export let stepLabels: string[] = [];
 
   function getStepStatus(stepIndex: number): 'completed' | 'current' | 'upcoming' {
     if (stepIndex < currentStep) return 'completed';
@@ -43,7 +30,7 @@ https://svelte.dev/e/js_parse_error -->
     'Review'
   ];
 
-  let labels = $derived(stepLabels.length > 0 ? stepLabels : defaultLabels;);
+  $: labels = stepLabels.length > 0 ? stepLabels : defaultLabels;
 </script>
 
 <div class="py-6">

@@ -1,27 +1,13 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- AI Status Indicator Component -->
 <script lang="ts">
-  interface Props {
-    isReady?: any;
-    isLoading?: any;
-    provider: "local" | "cloud" | "hybrid" | null ;
-    model: string | null ;
-    error: string | null ;
-  }
-  let {
-    isReady = false,
-    isLoading = false,
-    provider = null,
-    model = null,
-    error = null
-  }: Props = $props();
+  export let isReady = false;
+  export let isLoading = false;
+  export let provider: "local" | "cloud" | "hybrid" | null = null;
+  export let model: string | null = null;
+  export let error: string | null = null;
 
-
-
-          
   // Status computation
-  let currentStatus = $derived(error);
+  $: currentStatus = error
     ? "error"
     : isLoading
       ? "loading"
@@ -29,14 +15,14 @@ https://svelte.dev/e/js_parse_error -->
         ? "ready"
         : "unavailable";
 
-  let statusText = $derived({);
+  $: statusText = {
     ready: "AI Ready",
     loading: "Loading...",
     error: "AI Error",
     unavailable: "AI Unavailable",
   }[currentStatus];
 
-  let statusColor = $derived({);
+  $: statusColor = {
     ready: "var(--status-success, #10b981)",
     loading: "var(--status-warning, #f59e0b)",
     error: "var(--status-error, #ef4444)",
@@ -44,7 +30,8 @@ https://svelte.dev/e/js_parse_error -->
   }[currentStatus];
 
   // Provider details
-  let providerText = $derived(provider === "local");
+  $: providerText =
+    provider === "local"
       ? "Local AI"
       : provider === "cloud"
         ? "Cloud AI"
@@ -52,22 +39,22 @@ https://svelte.dev/e/js_parse_error -->
           ? "Hybrid AI"
           : "No Provider";
 
-  let isErrorState = $derived(currentStatus === "error";);
-  let isLoadingState = $derived(currentStatus === "loading";);
-  let isReadyState = $derived(currentStatus === "ready";);
-  let modelText = $derived(model || "No Model";);
+  $: isErrorState = currentStatus === "error";
+  $: isLoadingState = currentStatus === "loading";
+  $: isReadyState = currentStatus === "ready";
+  $: modelText = model || "No Model";
 </script>
 
 <div
-  class="space-y-4"
+  class="mx-auto px-4 max-w-7xl"
   class:error={isErrorState}
   class:loading={isLoadingState}
   class:ready={isReadyState}
 >
   <!-- Status Icon -->
-  <div class="space-y-4" style="color: {statusColor}">
+  <div class="mx-auto px-4 max-w-7xl" style="color: {statusColor}">
     {#if currentStatus === "loading"}
-      <div class="space-y-4"></div>
+      <div class="mx-auto px-4 max-w-7xl"></div>
     {:else if currentStatus === "ready"}
       <svg
         width="16"
@@ -110,55 +97,55 @@ https://svelte.dev/e/js_parse_error -->
   </div>
 
   <!-- Status Text -->
-  <div class="space-y-4">
-    <div class="space-y-4" style="color: {statusColor}">
+  <div class="mx-auto px-4 max-w-7xl">
+    <div class="mx-auto px-4 max-w-7xl" style="color: {statusColor}">
       {statusText}
     </div>
 
     {#if isReady && provider && model}
-      <div class="space-y-4">
-        <span class="space-y-4" class:local={provider === "local"}>
+      <div class="mx-auto px-4 max-w-7xl">
+        <span class="mx-auto px-4 max-w-7xl" class:local={provider === "local"}>
           {providerText}
         </span>
-        <span class="space-y-4">•</span>
-        <span class="space-y-4" title="Current AI model: {model}">
+        <span class="mx-auto px-4 max-w-7xl">•</span>
+        <span class="mx-auto px-4 max-w-7xl" title="Current AI model: {model}">
           {modelText}
         </span>
       </div>
     {:else if error}
-      <div class="space-y-4" title={error}>
+      <div class="mx-auto px-4 max-w-7xl" title={error}>
         {error.length > 50 ? error.substring(0, 50) + "..." : error}
       </div>
     {/if}
   </div>
 
   <!-- Detailed Tooltip -->
-  <div class="space-y-4">
-    <div class="space-y-4">
-      <div class="space-y-4">
+  <div class="mx-auto px-4 max-w-7xl">
+    <div class="mx-auto px-4 max-w-7xl">
+      <div class="mx-auto px-4 max-w-7xl">
         <strong>Status:</strong>
         {statusText}
       </div>
 
       {#if provider && model}
-        <div class="space-y-4">
+        <div class="mx-auto px-4 max-w-7xl">
           <strong>Provider:</strong>
           {providerText}
         </div>
-        <div class="space-y-4">
+        <div class="mx-auto px-4 max-w-7xl">
           <strong>Model:</strong>
           {model}
         </div>
       {/if}
 
       {#if error}
-        <div class="space-y-4">
+        <div class="mx-auto px-4 max-w-7xl">
           <strong>Error:</strong>
           {error}
         </div>
       {/if}
 
-      <div class="space-y-4">
+      <div class="mx-auto px-4 max-w-7xl">
         <small>
           {#if currentStatus === "ready"}
             AI system is ready to process requests
@@ -176,7 +163,6 @@ https://svelte.dev/e/js_parse_error -->
 </div>
 
 <style>
-  /* @unocss-include */
   .ai-status-indicator {
     position: relative;
     display: flex;
@@ -187,21 +173,25 @@ https://svelte.dev/e/js_parse_error -->
     font-size: 0.875rem;
     transition: all 0.2s ease;
     cursor: help;
-}
+  }
+
   .ai-status-indicator:hover {
     background: var(--bg-hover, rgba(0, 0, 0, 0.05));
-}
+  }
+
   .ai-status-indicator:hover .status-tooltip {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
-}
+  }
+
   .status-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-}
+  }
+
   .loading-spinner {
     width: 16px;
     height: 16px;
@@ -209,24 +199,29 @@ https://svelte.dev/e/js_parse_error -->
     border-top: 2px solid currentColor;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-}
+  }
+
   @keyframes spin {
     0% {
       transform: rotate(0deg);
-}
+    }
     100% {
       transform: rotate(360deg);
-}}
+    }
+  }
+
   .status-details {
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0; /* Allow text truncation */
-}
+  }
+
   .status-text {
     font-weight: 600;
     line-height: 1.2;
-}
+  }
+
   .provider-info {
     display: flex;
     align-items: center;
@@ -234,23 +229,28 @@ https://svelte.dev/e/js_parse_error -->
     font-size: 0.75rem;
     color: var(--text-secondary, #64748b);
     line-height: 1.2;
-}
+  }
+
   .provider {
     font-weight: 500;
-}
+  }
+
   .provider.local {
     color: var(--text-success, #059669);
-}
+  }
+
   .separator {
     color: var(--text-muted, #94a3b8);
-}
+  }
+
   .model {
     font-family: monospace;
     background: var(--bg-muted, #f1f5f9);
     padding: 1px 4px;
     border-radius: 2px;
     color: var(--text-primary, #1e293b);
-}
+  }
+
   .error-text {
     font-size: 0.75rem;
     color: var(--status-error, #ef4444);
@@ -259,7 +259,8 @@ https://svelte.dev/e/js_parse_error -->
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
+  }
+
   .status-tooltip {
     position: absolute;
     bottom: 100%;
@@ -277,7 +278,8 @@ https://svelte.dev/e/js_parse_error -->
     white-space: nowrap;
     font-size: 0.75rem;
     min-width: 200px;
-}
+  }
+
   .status-tooltip::after {
     content: "";
     position: absolute;
@@ -286,69 +288,86 @@ https://svelte.dev/e/js_parse_error -->
     transform: translateX(-50%);
     border: 6px solid transparent;
     border-top-color: var(--bg-tooltip, #1e293b);
-}
+  }
+
   .tooltip-content {
     display: flex;
     flex-direction: column;
     gap: 6px;
-}
+  }
+
   .tooltip-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-}
+  }
+
   .tooltip-section.error {
     color: var(--status-error, #fca5a5);
-}
+  }
+
   .tooltip-section strong {
     color: var(--text-primary-inverse, #f8fafc);
-}
+  }
+
   .tooltip-section small {
     font-style: italic;
     opacity: 0.8;
     white-space: normal;
     max-width: 180px;
-}
+  }
+
   /* Dark mode support */
   @media (prefers-color-scheme: dark) {
     .ai-status-indicator:hover {
       background: var(--bg-hover, rgba(255, 255, 255, 0.05));
-}
+    }
+
     .model {
       background: var(--bg-muted, #334155);
       color: var(--text-primary, #f8fafc);
-}
+    }
+
     .status-tooltip {
       background: var(--bg-tooltip, #0f172a);
       border: 1px solid var(--border-color, #334155);
-}
+    }
+
     .status-tooltip::after {
       border-top-color: var(--bg-tooltip, #0f172a);
-}}
+    }
+  }
+
   /* Responsive design */
   @media (max-width: 768px) {
     .ai-status-indicator {
       padding: 2px 6px;
       font-size: 0.8125rem;
-}
+    }
+
     .status-icon {
       width: 14px;
       height: 14px;
-}
+    }
+
     .status-icon svg,
     .loading-spinner {
       width: 14px;
       height: 14px;
-}
+    }
+
     .provider-info {
       font-size: 0.6875rem;
-}
+    }
+
     .status-tooltip {
       min-width: 180px;
       font-size: 0.6875rem;
-}
+    }
+
     .tooltip-section small {
       max-width: 160px;
-}}
+    }
+  }
 </style>

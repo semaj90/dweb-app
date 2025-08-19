@@ -18,10 +18,10 @@ https://svelte.dev/e/js_parse_error -->
 
   
   // Type-safe fallback for message.role
-  let isUser = $derived(message.role === "user" || message.type === "user";);
-  let isAssistant = $derived(message.role === "assistant" || message.type === "assistant";);
-  let emotionalTone = $derived(message.metadata?.emotionalTone;);
-  let isProactive = $derived(message.metadata?.proactive;);
+  let isUser = $derived(message.role === "user" || message.type === "user");
+  let isAssistant = $derived(message.role === "assistant" || message.type === "assistant");
+  let emotionalTone = $derived(message.metadata?.emotionalTone);
+  let isProactive = $derived(message.metadata?.proactive);
 
   function copyToClipboard() {
     navigator.clipboard.writeText(message.content);

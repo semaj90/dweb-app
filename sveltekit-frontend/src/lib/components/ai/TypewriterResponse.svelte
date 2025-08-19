@@ -1,37 +1,19 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'speed' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    text: string ;
-    speed: number ;
-    showCursor: boolean ;
-    cursorChar: string ;
-    cacheKey: string ;
-    userActivity: UserActivity[] ;
-    enableThinking: boolean ;
-    autoStart: boolean ;
-  }
-  let {
-    text = '',
-    speed = 50,
-    showCursor = true,
-    cursorChar = '▋',
-    cacheKey = '',
-    userActivity = [],
-    enableThinking = true,
-    autoStart = true
-  }: Props = $props();
-
-
-
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';
 	import { advancedCache } from '$lib/services/advanced-cache-manager';
 
 	// Props
-		let { speed = $bindable() } = $props(); // number = 50; // milliseconds per character
-						
+	export let text: string = '';
+	export let speed: number = 50; // milliseconds per character
+	export let showCursor: boolean = true;
+	export let cursorChar: string = '▋';
+	export let cacheKey: string = '';
+	export let userActivity: UserActivity[] = [];
+	export let enableThinking: boolean = true;
+	export let autoStart: boolean = true;
+
 	// Types
 	interface UserActivity {
 		timestamp: number;
@@ -356,7 +338,7 @@ https://svelte.dev/e/js_parse_error -->
 	}
 
 	// Reactive statements
-	$effect(() => { if (text && autoStart) {
+	$: if (text && autoStart) {
 		restart();
 	}
 
@@ -428,10 +410,10 @@ https://svelte.dev/e/js_parse_error -->
 <!-- Advanced Controls (for development/debugging) -->
 {#if $$props.showControls}
 	<div class="typewriter-controls" in:fade={{ delay: 500 }}>
-		<button onclick={pause} disabled={!isTyping || isPaused}>Pause</button>
-		<button onclick={resume} disabled={!isPaused}>Resume</button>
-		<button onclick={restart}>Restart</button>
-		<button onclick={stop}>Stop</button>
+		<button on:click={pause} disabled={!isTyping || isPaused}>Pause</button>
+		<button on:click={resume} disabled={!isPaused}>Resume</button>
+		<button on:click={restart}>Restart</button>
+		<button on:click={stop}>Stop</button>
 		
 		<div class="speed-controls">
 			<label>
@@ -441,7 +423,7 @@ https://svelte.dev/e/js_parse_error -->
 					min="10" 
 					max="200" 
 					bind:value={speed}
-					onchange={() => setSpeed(speed)}
+					on:change={() => setSpeed(speed)}
 				/>
 				<span>{speed}ms</span>
 			</label>
@@ -454,7 +436,7 @@ https://svelte.dev/e/js_parse_error -->
 					max="5" 
 					step="0.1"
 					bind:value={replaySpeed}
-					onchange={() => setReplaySpeed(replaySpeed)}
+					on:change={() => setReplaySpeed(replaySpeed)}
 				/>
 				<span>{replaySpeed}x</span>
 			</label>

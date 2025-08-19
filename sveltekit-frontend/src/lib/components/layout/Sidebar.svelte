@@ -31,7 +31,7 @@ https://svelte.dev/e/js_parse_error -->
     mounted = true;
   });
 
-  let currentPath = $derived(page.url.pathname;);
+  let currentPath = $derived(page.url.pathname);
 
   const navigation = [
     {

@@ -195,7 +195,7 @@ https://svelte.dev/e/js_parse_error -->
   let count = $state(0);
 
   // Need suggestions here
-</script>`.trim();
+<\/script>`.trim();
 
     try {
       isLoading = true;
@@ -617,7 +617,6 @@ https://svelte.dev/e/js_parse_error -->
   let count = $state(0);
 
   // Cursor position - suggestions generated here
-  |
 </script>
 `}</code></pre>
 

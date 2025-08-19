@@ -3,10 +3,10 @@
   import { notifications } from "$lib/stores/notification";
   import type { User } from "$lib/types/user";
   import { createEventDispatcher } from "svelte";
-
   import type { Case } from "$lib/types/index";
-  
-  export let case_: Case | null = null; // Edit mode if provided
+
+  export let case_: Case| null = null; // Edit mode if provided
+
   export let user: User;
 
   const dispatch = createEventDispatcher();
@@ -42,23 +42,18 @@
 
     if (!formData.title.trim()) {
       errors.title = "Title is required";
-    }
-
+}
     if (!formData.caseNumber.trim()) {
       errors.caseNumber = "Case number is required";
-    }
-
+}
     if (formData.dangerScore < 0 || formData.dangerScore > 10) {
       errors.dangerScore = "Danger score must be between 0 and 10";
-    }
-
+}
     if (formData.estimatedValue && isNaN(Number(formData.estimatedValue))) {
       errors.estimatedValue = "Estimated value must be a number";
-    }
-
+}
     return Object.keys(errors).length === 0;
-  }
-
+}
   // Handle form submission
   async function handleSubmit() {
     if (!validateForm()) {
@@ -68,8 +63,7 @@
         message: "Please fix the form errors before submitting.",
       });
       return;
-    }
-
+}
     loading = true;
 
     try {
@@ -102,8 +96,7 @@
       // Defensive: always check for valid API data before fetch
       if (!apiData.title || !apiData.caseNumber) {
         throw new Error("Missing required fields");
-      }
-
+}
       const url = case_ ? `/api/cases/${case_.id}` : "/api/cases";
       const method = case_ ? "PUT" : "POST";
 
@@ -121,12 +114,10 @@
         savedCase = await response.json();
       } catch (e) {
         throw new Error("Server returned invalid response");
-      }
-
+}
       if (!response.ok) {
         throw new Error(savedCase?.error || "Failed to save case");
-      }
-
+}
       notifications.add({
         type: "success",
         title: case_ ? "Case Updated" : "Case Created",
@@ -146,9 +137,8 @@
       });
     } finally {
       loading = false;
-    }
-  }
-
+}
+}
   // Handle tag management
   function addTag() {
     const tagInput = document.getElementById("new-tag") as HTMLInputElement;
@@ -157,13 +147,11 @@
     if (newTag && !formData.tags.includes(newTag)) {
       formData.tags = [...formData.tags, newTag];
       tagInput.value = "";
-    }
-  }
-
+}
+}
   function removeTag(tag: string) {
     formData.tags = formData.tags.filter((t) => t !== tag);
-  }
-
+}
   // Handle team assignment
   function addTeamMember() {
     const memberInput = document.getElementById(
@@ -174,22 +162,21 @@
     if (newMember && !formData.assignedTeam.includes(newMember)) {
       formData.assignedTeam = [...formData.assignedTeam, newMember];
       memberInput.value = "";
-    }
-  }
-
+}
+}
   function removeTeamMember(member: string) {
     formData.assignedTeam = formData.assignedTeam.filter((m) => m !== member);
-  }
+}
 </script>
 
-<form on:submit|preventDefault={handleSubmit} class="mx-auto px-4 max-w-7xl">
-  <div class="mx-auto px-4 max-w-7xl">
+<form on:submit|preventDefault={handleSubmit} class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
     <!-- Basic Information -->
-    <section class="mx-auto px-4 max-w-7xl">
+    <section class="container mx-auto px-4">
       <h3>Basic Information</h3>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <label for="title" class="mx-auto px-4 max-w-7xl">Case Title</label>
+      <div class="container mx-auto px-4">
+        <label for="title" class="container mx-auto px-4">Case Title</label>
         <input
           id="title"
           type="text"
@@ -199,12 +186,12 @@
           required
         />
         {#if errors.title}
-          <span class="mx-auto px-4 max-w-7xl">{errors.title}</span>
+          <span class="container mx-auto px-4">{errors.title}</span>
         {/if}
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <label for="caseNumber" class="mx-auto px-4 max-w-7xl">Case Number</label>
+      <div class="container mx-auto px-4">
+        <label for="caseNumber" class="container mx-auto px-4">Case Number</label>
         <input
           id="caseNumber"
           type="text"
@@ -214,11 +201,11 @@
           required
         />
         {#if errors.caseNumber}
-          <span class="mx-auto px-4 max-w-7xl">{errors.caseNumber}</span>
+          <span class="container mx-auto px-4">{errors.caseNumber}</span>
         {/if}
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="name">Case Name (Optional)</label>
         <input
           id="name"
@@ -228,23 +215,23 @@
         />
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="description">Description</label>
         <textarea
           id="description"
           bind:value={formData.description}
           placeholder="Detailed case description"
-          rows={${1"
+          rows="4"
         ></textarea>
       </div>
     </section>
 
     <!-- Case Details -->
-    <section class="mx-auto px-4 max-w-7xl">
+    <section class="container mx-auto px-4">
       <h3>Case Details</h3>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <label for="priority">Priority</label>
           <select id="priority" bind:value={formData.priority}>
             <option value="low">Low</option>
@@ -254,7 +241,7 @@
           </select>
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <label for="status">Status</label>
           <select id="status" bind:value={formData.status}>
             <option value="open">Open</option>
@@ -266,7 +253,7 @@
         </div>
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="category">Category</label>
         <input
           id="category"
@@ -276,8 +263,8 @@
         />
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <label for="dangerScore">Danger Score (0-10)</label>
           <input
             id="dangerScore"
@@ -288,11 +275,11 @@
             class:error={errors.dangerScore}
           />
           {#if errors.dangerScore}
-            <span class="mx-auto px-4 max-w-7xl">{errors.dangerScore}</span>
+            <span class="container mx-auto px-4">{errors.dangerScore}</span>
           {/if}
         </div>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <label for="estimatedValue">Estimated Value ($)</label>
           <input
             id="estimatedValue"
@@ -303,17 +290,17 @@
             class:error={errors.estimatedValue}
           />
           {#if errors.estimatedValue}
-            <span class="mx-auto px-4 max-w-7xl">{errors.estimatedValue}</span>
+            <span class="container mx-auto px-4">{errors.estimatedValue}</span>
           {/if}
         </div>
       </div>
     </section>
 
     <!-- Location & Timeline -->
-    <section class="mx-auto px-4 max-w-7xl">
+    <section class="container mx-auto px-4">
       <h3>Location & Timeline</h3>
 
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="incidentDate">Incident Date</label>
         <input
           id="incidentDate"
@@ -322,7 +309,7 @@
         />
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="location">Location</label>
         <input
           id="location"
@@ -332,7 +319,7 @@
         />
       </div>
 
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="jurisdiction">Jurisdiction</label>
         <input
           id="jurisdiction"
@@ -344,13 +331,13 @@
     </section>
 
     <!-- Team & Tags -->
-    <section class="mx-auto px-4 max-w-7xl">
+    <section class="container mx-auto px-4">
       <h3>Team & Tags</h3>
 
       <!-- Assigned Team -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="new-member">Assigned Team</label>
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <input
             id="new-member"
             type="text"
@@ -362,9 +349,9 @@
         </div>
 
         {#if formData.assignedTeam.length > 0}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             {#each formData.assignedTeam as member}
-              <span class="mx-auto px-4 max-w-7xl">
+              <span class="container mx-auto px-4">
                 {member}
                 <button type="button" on:click={() => removeTeamMember(member)}
                   >×</button
@@ -376,9 +363,9 @@
       </div>
 
       <!-- Tags -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <label for="new-tag">Tags</label>
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <input
             id="new-tag"
             type="text"
@@ -390,9 +377,9 @@
         </div>
 
         {#if formData.tags.length > 0}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             {#each formData.tags as tag}
-              <span class="mx-auto px-4 max-w-7xl">
+              <span class="container mx-auto px-4">
                 {tag}
                 <button type="button" on:click={() => removeTag(tag)}>×</button>
               </span>
@@ -404,9 +391,9 @@
   </div>
 
   <!-- Form Actions -->
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <button type="button" on:click={() => dispatch("cancel")}> Cancel </button>
-    <button type="submit" disabled={loading} class="mx-auto px-4 max-w-7xl">
+    <button type="submit" disabled={loading} class="container mx-auto px-4">
       {#if loading}
         Saving...
       {:else}
@@ -417,6 +404,7 @@
 </form>
 
 <style>
+  /* @unocss-include */
   .enhanced-case-form {
     max-width: 800px;
     margin: 0 auto;
@@ -424,19 +412,16 @@
     border-radius: 8px;
     padding: 2rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
+}
   .form-grid {
     display: grid;
     gap: 2rem;
-  }
-
+}
   .form-section {
     border: 1px solid #e5e7eb;
     border-radius: 6px;
     padding: 1.5rem;
-  }
-
+}
   .form-section h3 {
     margin: 0 0 1rem 0;
     color: #374151;
@@ -444,31 +429,26 @@
     font-weight: 600;
     border-bottom: 1px solid #e5e7eb;
     padding-bottom: 0.5rem;
-  }
-
+}
   .field-group {
     margin-bottom: 1.5rem;
-  }
-
+}
   .field-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-  }
-
+}
   label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: #374151;
-  }
-
+}
   label.required::after {
     content: "*";
     color: #ef4444;
     margin-left: 0.25rem;
-  }
-
+}
   input,
   select,
   textarea {
@@ -480,37 +460,31 @@
     transition:
       border-color 0.2s,
       box-shadow 0.2s;
-  }
-
+}
   input:focus,
   select:focus,
   textarea:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  }
-
+}
   input.error {
     border-color: #ef4444;
-  }
-
+}
   .field-error {
     display: block;
     margin-top: 0.25rem;
     font-size: 0.875rem;
     color: #ef4444;
-  }
-
+}
   .tag-input {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
-  }
-
+}
   .tag-input input {
     flex: 1;
-  }
-
+}
   .tag-input button {
     padding: 0.75rem 1rem;
     background: #3b82f6;
@@ -520,18 +494,15 @@
     cursor: pointer;
     font-size: 0.875rem;
     transition: background-color 0.2s;
-  }
-
+}
   .tag-input button:hover {
     background: #2563eb;
-  }
-
+}
   .tags-list {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-  }
-
+}
   .tag {
     display: inline-flex;
     align-items: center;
@@ -541,8 +512,7 @@
     border-radius: 9999px;
     font-size: 0.875rem;
     color: #374151;
-  }
-
+}
   .tag button {
     background: none;
     border: none;
@@ -557,13 +527,11 @@
     justify-content: center;
     border-radius: 50%;
     transition: background-color 0.2s;
-  }
-
+}
   .tag button:hover {
     background: #d1d5db;
     color: #374151;
-  }
-
+}
   .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -571,8 +539,7 @@
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid #e5e7eb;
-  }
-
+}
   .form-actions button {
     padding: 0.75rem 1.5rem;
     border: 1px solid #d1d5db;
@@ -582,39 +549,32 @@
     cursor: pointer;
     font-size: 1rem;
     transition: all 0.2s;
-  }
-
+}
   .form-actions button:hover {
     background: #f9fafb;
-  }
-
+}
   .form-actions button.primary {
     background: #3b82f6;
     color: white;
     border-color: #3b82f6;
-  }
-
+}
   .form-actions button.primary:hover {
     background: #2563eb;
     border-color: #2563eb;
-  }
-
+}
   .form-actions button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-
+}
   @media (max-width: 768px) {
     .enhanced-case-form {
       padding: 1rem;
-    }
-
+}
     .field-row {
       grid-template-columns: 1fr;
-    }
-
+}
     .form-actions {
       flex-direction: column;
-    }
-  }
+}
+}
 </style>

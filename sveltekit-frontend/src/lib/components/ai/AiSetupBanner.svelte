@@ -24,8 +24,6 @@ https://svelte.dev/e/js_parse_error -->
     };
   };
 
-  let { autoFetch = $bindable() } = $props(); // boolean = true;
-  let { data = $bindable() } = $props(); // ValidateResponse | null = null;
 
   async function load() {
     try {

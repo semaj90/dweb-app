@@ -42,17 +42,18 @@ https://svelte.dev/e/js_parse_error -->
   let evidenceFormData: any = null; // For the evidence form
 
   // Reactive layout classes
-  let layoutClass = $derived($report && $report.settings);
+  let layoutClass = $derived(
+    ($report && $report.settings)
     ? {
         single: "layout-single",
         dual: "layout-dual",
         masonry: "layout-masonry",
       }[$report.settings.layout]
-    : "layout-single";
+    : "layout-single"
+  );
 
   // Reactive editor height
-  let editorHeight = 500;
-  let editorHeight = $derived($reportUI && $reportUI.fullscreen ? window.innerHeight - 200 : 500;);
+  let editorHeight = $derived($reportUI && $reportUI.fullscreen ? window.innerHeight - 200 : 500);
 
   function updateEditorHeight() {
     editorHeight = $reportUI.fullscreen ? window.innerHeight - 200 : 500;

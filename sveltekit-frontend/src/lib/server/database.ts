@@ -5,7 +5,7 @@ import { pgTable, serial, text, timestamp, jsonb, vector, real, uuid } from 'dri
 
 // Database connection
 const connectionString = process.env.DATABASE_URL || 
-  `postgresql://${process.env.POSTGRES_USER || 'postgres'}:${process.env.POSTGRES_PASSWORD || '123456'}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || '5432'}/${process.env.POSTGRES_DB || 'legal_ai'}`;
+  `postgresql://${process.env.POSTGRES_USER || 'legal_admin'}:${process.env.POSTGRES_PASSWORD || '123456'}@${process.env.POSTGRES_HOST || 'localhost'}:${process.env.POSTGRES_PORT || '5432'}/${process.env.POSTGRES_DB || 'legal_ai_db'}`;
 
 const sql = postgres(connectionString, {
   max: 10,

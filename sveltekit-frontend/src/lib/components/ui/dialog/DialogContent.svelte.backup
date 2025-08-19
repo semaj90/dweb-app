@@ -5,7 +5,7 @@
   export let content: any;
   export let openState: any;
   export let size: 'sm' | 'md' | 'lg' | 'xl' | 'full' = 'md';
-  
+
   const sizeClasses = {
     sm: 'max-w-sm',
     md: 'max-w-md', 
@@ -19,14 +19,14 @@
   <!-- Overlay -->
   <div
     use:overlay
-    class="mx-auto px-4 max-w-7xl"
-    transition:fade={{ duration: 200 "
+    class="container mx-auto px-4"
+    transition:fade={{ duration: 200 }}
   ></div>
   
   <!-- Content -->
   <div
     use:content
-    class="mx-auto px-4 max-w-7xl"
+    class="container mx-auto px-4"
     transition:fly={{ y: -20, duration: 200  }}
     {...$$restProps}
   >

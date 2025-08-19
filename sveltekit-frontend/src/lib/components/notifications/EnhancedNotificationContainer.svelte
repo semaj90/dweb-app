@@ -1,18 +1,12 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 mcp<script lang="ts">
-  interface Props {
-    ondismiss?: (event?: any) => void;
-    ondismissAll?: (event?: any) => void;
-  }
-
-
   import { Button } from "$lib/components/ui/button";
   import { notifications, type Notification } from "$lib/stores/notification";
   import { FocusManager } from "$lib/utils/accessibility";
   import { AlertCircle, AlertTriangle, Check, Info, X } from "lucide-svelte";
-  
-  
+  import { createEventDispatcher, onMount } from "svelte";
+
+  const dispatch = createEventDispatcher();
+
   let container: HTMLElement;
   let notificationElements = new Map<string, HTMLElement>();
   let isVisible = false;
@@ -30,8 +24,8 @@ mcp<script lang="ts">
   let enableSounds = true;
 
   // Reactive notifications list
-  let visibleNotifications = $derived($notifications.notifications.slice(0, maxVisible););
-  let hiddenCount = $derived(Math.max();
+  $: visibleNotifications = $notifications.notifications.slice(0, maxVisible);
+  $: hiddenCount = Math.max(
     0,
     $notifications.notifications.length - maxVisible
   );
@@ -98,12 +92,12 @@ mcp<script lang="ts">
   function dismissNotification(id: string) {
     notifications.remove(id);
     notificationElements.delete(id);
-    ondismiss?.();
+    dispatch("dismiss", { id });
 }
   function dismissAll() {
     notifications.clear();
     notificationElements.clear();
-    ondismissAll?.();
+    dispatch("dismissAll");
 }
   // Action to set notification element in the Map
   function setNotificationElement(node: HTMLElement, notificationId: string) {
@@ -194,12 +188,12 @@ mcp<script lang="ts">
   aria-atomic="false"
 >
   {#if hiddenCount > 0}
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <Button
         variant="ghost"
         size="sm"
-        onclick={() => (maxVisible += 5)}
-        class="space-y-4"
+        on:click={() => (maxVisible += 5)}
+        class="container mx-auto px-4"
       >
         +{hiddenCount} more notifications
       </Button>
@@ -207,40 +201,40 @@ mcp<script lang="ts">
   {/if}
 
   <div
-    class="space-y-4"
+    class="container mx-auto px-4"
   >
     {#each visibleNotifications as notification (notification.id)}
       <div
-        class="space-y-4"
+        class="container mx-auto px-4"
         use:setNotificationElement={notification.id}
         role="alert"
         aria-labelledby="notification-title-{notification.id}"
         aria-describedby="notification-message-{notification.id}"
-        onmouseenter={() => pauseTimer(notification)}
-        onmouseleave={() => resumeTimer(notification)}
-        onfocusin={() => pauseTimer(notification)}
-        onfocusout={() => resumeTimer(notification)}
+        on:mouseenter={() => pauseTimer(notification)}
+        on:mouseleave={() => resumeTimer(notification)}
+        on:focusin={() => pauseTimer(notification)}
+        on:focusout={() => resumeTimer(notification)}
       >
         <div
-          class="space-y-4"
+          class="container mx-auto px-4"
         >
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             <!-- Icon -->
-            <div class="space-y-4">
+            <div class="container mx-auto px-4">
               <svelte:component
                 this={getNotificationIcon(notification.type)}
-                class="space-y-4"
+                class="container mx-auto px-4"
                 aria-hidden="true"
               />
             </div>
 
             <!-- Content -->
-            <div class="space-y-4">
-              <div class="space-y-4">
-                <div class="space-y-4">
+            <div class="container mx-auto px-4">
+              <div class="container mx-auto px-4">
+                <div class="container mx-auto px-4">
                   <p
                     id="notification-title-{notification.id}"
-                    class="space-y-4"
+                    class="container mx-auto px-4"
                   >
                     {notification.title}
                   </p>
@@ -248,7 +242,7 @@ mcp<script lang="ts">
                   {#if notification.message}
                     <p
                       id="notification-message-{notification.id}"
-                      class="space-y-4"
+                      class="container mx-auto px-4"
                     >
                       {notification.message}
                     </p>
@@ -257,10 +251,10 @@ mcp<script lang="ts">
                   <!-- Progress bar for timed notifications -->
                   {#if notification.duration && notification.duration > 0}
                     <div
-                      class="space-y-4"
+                      class="container mx-auto px-4"
                     >
                       <div
-                        class="space-y-4"
+                        class="container mx-auto px-4"
                         style="width: 100%"
                       ></div>
                     </div>
@@ -268,16 +262,16 @@ mcp<script lang="ts">
 
                   <!-- Actions -->
                   {#if notification.actions && notification.actions.length > 0}
-                    <div class="space-y-4">
+                    <div class="container mx-auto px-4">
                       {#each notification.actions as action}
                         <Button
                           size="sm"
                           variant={action.variant === "primary"
                             ? "default"
                             : "ghost"}
-                          onclick={() =>
+                          on:click={() =>
                             handleNotificationAction(notification, action)}
-                          class="space-y-4"
+                          class="container mx-auto px-4"
                         >
                           {action.label}
                         </Button>
@@ -287,15 +281,15 @@ mcp<script lang="ts">
                 </div>
 
                 <!-- Dismiss button -->
-                <div class="space-y-4">
+                <div class="container mx-auto px-4">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onclick={() => dismissNotification(notification.id)}
-                    class="space-y-4"
+                    on:click={() => dismissNotification(notification.id)}
+                    class="container mx-auto px-4"
                     aria-label="Dismiss notification"
                   >
-                    <X class="space-y-4" />
+                    <X class="container mx-auto px-4" />
                   </Button>
                 </div>
               </div>
@@ -308,12 +302,12 @@ mcp<script lang="ts">
 
   <!-- Dismiss all button for multiple notifications -->
   {#if visibleNotifications.length > 1}
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <Button
         variant="ghost"
         size="sm"
-        onclick={() => dismissAll()}
-        class="space-y-4"
+        on:click={() => dismissAll()}
+        class="container mx-auto px-4"
       >
         Clear all ({$notifications.notifications.length})
       </Button>
@@ -323,31 +317,31 @@ mcp<script lang="ts">
 
 <!-- Notification settings (can be toggled via settings page) -->
 {#if false}
-  <div class="space-y-4">
-    <h3 class="space-y-4">Notification Settings</h3>
+  <div class="container mx-auto px-4">
+    <h3 class="container mx-auto px-4">Notification Settings</h3>
 
-    <div class="space-y-4">
-      <label for="pause-on-hover" class="space-y-4">
+    <div class="container mx-auto px-4">
+      <label for="pause-on-hover" class="container mx-auto px-4">
         <input
           id="pause-on-hover"
           type="checkbox"
           bind:checked={pauseOnHover}
         />
-        <span class="space-y-4">Pause on hover</span>
+        <span class="container mx-auto px-4">Pause on hover</span>
       </label>
 
-      <label for="enable-sounds" class="space-y-4">
+      <label for="enable-sounds" class="container mx-auto px-4">
         <input id="enable-sounds" type="checkbox" bind:checked={enableSounds} />
-        <span class="space-y-4">Enable sounds</span>
+        <span class="container mx-auto px-4">Enable sounds</span>
       </label>
 
-      <label for="group-similar" class="space-y-4">
+      <label for="group-similar" class="container mx-auto px-4">
         <input id="group-similar" type="checkbox" bind:checked={groupSimilar} />
-        <span class="space-y-4">Group similar notifications</span>
+        <span class="container mx-auto px-4">Group similar notifications</span>
       </label>
 
       <div>
-        <label for="max-visible-range" class="space-y-4"
+        <label for="max-visible-range" class="container mx-auto px-4"
           >Max visible</label
         >
         <input
@@ -356,19 +350,19 @@ mcp<script lang="ts">
           min="1"
           max="10"
           bind:value={maxVisible}
-          class="space-y-4"
+          class="container mx-auto px-4"
         />
-        <span class="space-y-4">{maxVisible} notifications</span>
+        <span class="container mx-auto px-4">{maxVisible} notifications</span>
       </div>
 
       <div>
-        <label for="position-select" class="space-y-4"
+        <label for="position-select" class="container mx-auto px-4"
           >Position</label
         >
         <select
           id="position-select"
           bind:value={position}
-          class="space-y-4"
+          class="container mx-auto px-4"
         >
           <option value="top-right">Top Right</option>
           <option value="top-left">Top Left</option>

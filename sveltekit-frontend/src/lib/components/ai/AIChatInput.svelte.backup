@@ -13,12 +13,7 @@
   export let maxRows = 6;
 
   // Event dispatcher
-  const dispatch = createEventDispatcher<{
-    send: string;
-    input: string;
-    focus: void;
-    blur: void;
-  }>();
+  const dispatch = createEventDispatcher();
 
   // Elements
   let textarea: HTMLTextAreaElement;
@@ -28,7 +23,7 @@
   onMount(() => {
     if (browser && autoFocus && textarea) {
       setTimeout(() => textarea.focus(), 100);
-}
+    }
   });
 
   // Handle input changes
@@ -37,7 +32,7 @@
     value = target.value;
     dispatch("input", value);
     adjustTextareaHeight();
-}
+  }
   // Handle key press
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === "Enter") {
@@ -48,7 +43,9 @@
         // Enter: send message
         event.preventDefault();
         handleSend();
-}}}
+      }
+    }
+  }
   // Send message
   function handleSend() {
     const trimmedValue = value.trim();
@@ -57,7 +54,7 @@
     dispatch("send", trimmedValue);
     value = "";
     resetTextareaHeight();
-}
+  }
   // Auto-resize textarea
   function adjustTextareaHeight() {
     if (!textarea) return;
@@ -78,7 +75,7 @@
 
     textarea.style.height = `${targetRows * lineHeight + paddingHeight}px`;
     isMultiline = targetRows > 1;
-}
+  }
   // Reset textarea height
   function resetTextareaHeight() {
     if (!textarea) return;
@@ -90,33 +87,33 @@
 
     textarea.style.height = `${rows * lineHeight + paddingHeight}px`;
     isMultiline = false;
-}
+  }
   // Handle focus/blur events
   function handleFocus() {
     dispatch("focus");
-}
+  }
   function handleBlur() {
     dispatch("blur");
-}
+  }
   // Character count
   $: characterCount = value.length;
   $: isNearLimit = characterCount > maxLength * 0.8;
   $: isAtLimit = characterCount >= maxLength;
 </script>
 
-<div class="mx-auto px-4 max-w-7xl" class:multiline={isMultiline}>
-  <div class="mx-auto px-4 max-w-7xl">
+<div class="chat-input-wrapper" class:multiline={isMultiline}>
+  <div class="input-container">
     <textarea
       bind:this={textarea}
-      bind:value
-      {placeholder}
-      {disabled}
+      bind:value={value}
+      placeholder={placeholder}
+      disabled={disabled}
       maxlength={maxLength}
-      class="mx-auto px-4 max-w-7xl"
-      class:disabled
+      class="chat-input"
+      class:disabled={disabled}
       class:near-limit={isNearLimit}
       class:at-limit={isAtLimit}
-      rows={${1"
+      rows={rows}
       on:input={handleInput}
       on:keydown={handleKeydown}
       on:focus={handleFocus}
@@ -125,10 +122,10 @@
       spellcheck="true"
     ></textarea>
 
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="input-actions">
       {#if characterCount > 0}
         <span
-          class="mx-auto px-4 max-w-7xl"
+          class="character-count"
           class:near-limit={isNearLimit}
           class:at-limit={isAtLimit}
         >
@@ -138,8 +135,8 @@
 
       <button
         type="button"
-        class="mx-auto px-4 max-w-7xl"
-        {disabled}
+        class="send-button"
+        disabled={disabled}
         class:has-content={value.trim().length > 0}
         on:click={() => handleSend()}
         title="Send message (Enter)"
@@ -161,8 +158,8 @@
   </div>
 
   {#if isMultiline}
-    <div class="mx-auto px-4 max-w-7xl">
-      <span class="mx-auto px-4 max-w-7xl">
+    <div class="input-hint">
+      <span class="hint-text">
         <kbd>Shift + Enter</kbd> for new line, <kbd>Enter</kbd> to send
       </span>
     </div>
@@ -170,21 +167,23 @@
 </div>
 
 <style>
-  .chat-input-wrapper {
-    position: relative;
-    width: 100%;
+.chat-input-wrapper {
+  position: relative;
+  width: 100%;
 }
-  .input-container {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    padding: 12px;
-    background: var(--bg-primary, #ffffff);
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 8px;
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
+
+/* --- Chat Input Styles --- */
+.input-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
   .input-container:focus-within {
     border-color: var(--accent-color, #3b82f6);

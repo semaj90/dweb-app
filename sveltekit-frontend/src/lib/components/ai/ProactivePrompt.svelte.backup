@@ -24,58 +24,57 @@
 
   function handleAccept() {
     dispatch("accept");
-  }
-
+}
   function handleDismiss() {
     dispatch("dismiss");
-  }
+}
 </script>
 
 <div
-  class="mx-auto px-4 max-w-7xl"
+  class="container mx-auto px-4"
 >
   <!-- Header -->
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <!-- AI Avatar with pulse animation -->
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
         <div
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         >
-          <Sparkles class="mx-auto px-4 max-w-7xl" />
+          <Sparkles class="container mx-auto px-4" />
         </div>
         <!-- Pulse ring -->
         <div
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
         ></div>
       </div>
     </div>
 
     <!-- Content -->
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <!-- Header -->
-      <div class="mx-auto px-4 max-w-7xl">
-        <Clock class="mx-auto px-4 max-w-7xl" />
-        <span class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
+        <Clock class="container mx-auto px-4" />
+        <span class="container mx-auto px-4">
           {$aiPersonality.name} here!
         </span>
       </div>
 
       <!-- Message -->
-      <p class="mx-auto px-4 max-w-7xl">
+      <p class="container mx-auto px-4">
         {randomPrompt}
       </p>
 
       <!-- Actions -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <!-- Accept Button -->
         <Button
           variant="outline"
           size="sm"
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
           on:click={() => handleAccept()}
         >
-          <MessageCircle class="mx-auto px-4 max-w-7xl" />
+          <MessageCircle class="container mx-auto px-4" />
           Yes, help me
         </Button>
 
@@ -83,10 +82,10 @@
         <Button
           variant="ghost"
           size="sm"
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
           on:click={() => dispatch("quickResponse", "summarize")}
         >
-          <Lightbulb class="mx-auto px-4 max-w-7xl" />
+          <Lightbulb class="container mx-auto px-4" />
           Summarize
         </Button>
 
@@ -94,45 +93,42 @@
         <Button
           variant="ghost"
           size="sm"
-          class="mx-auto px-4 max-w-7xl"
+          class="container mx-auto px-4"
           on:click={() => handleDismiss()}
           title="Not now"
         >
-          <X class="mx-auto px-4 max-w-7xl" />
+          <X class="container mx-auto px-4" />
         </Button>
       </div>
     </div>
   </div>
 
   <!-- Subtle progress indicator -->
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <div
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
     ></div>
   </div>
 </div>
 
 <style>
+  /* @unocss-include */
   @keyframes slide-in-from-bottom {
     from {
       transform: translateY(100%);
       opacity: 0;
-    }
+}
     to {
       transform: translateY(0);
       opacity: 1;
-    }
-  }
-
+}}
   .animate-in {
     animation-fill-mode: both;
-  }
-
+}
   .slide-in-from-bottom {
     animation-name: slide-in-from-bottom;
-  }
-
+}
   .duration-300 {
     animation-duration: 300ms;
-  }
+}
 </style>

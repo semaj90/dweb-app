@@ -207,7 +207,7 @@ export const POST: RequestHandler = async ({ request }) => {
           LIMIT ${limit}
         `);
 
-        const mapped: ServerVectorSearchResult[] = (result.rows as any[]).map(
+        const mapped: ServerVectorSearchResult[] = (result as any[]).map(
           (r: any) => ({
             id: r.id,
             title: r.title || "",

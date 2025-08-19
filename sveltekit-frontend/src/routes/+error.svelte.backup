@@ -11,12 +11,12 @@
   <title>Error {status}</title>
 </svelte:head>
 
-<div className="${1}">
-  <div className="${1}">
-    <div className="${1}">
-      <div className="${1}">
-        <h1 className="${1}">{status}</h1>
-        <h2 className="${1}">
+<div class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <h1 class="container mx-auto px-4">{status}</h1>
+        <h2 class="container mx-auto px-4">
           {#if status === 404}
             Page not found
           {:else if status === 500}
@@ -27,24 +27,24 @@
         </h2>
         
         {#if error?.message}
-          <p className="${1}">{error.message}</p>
+          <p class="container mx-auto px-4">{error.message}</p>
         {/if}
         
         {#if dev && error}
-          <details className="${1}">
-            <summary className="${1}">
+          <details class="container mx-auto px-4">
+            <summary class="container mx-auto px-4">
               Error Details (Development)
             </summary>
-            <pre className="${1}">
+            <pre class="container mx-auto px-4">
               {JSON.stringify(error, null, 2)}
             </pre>
           </details>
         {/if}
         
-        <div className="${1}">
+        <div class="container mx-auto px-4">
           <a 
             href="/" 
-            className="${1}"
+            class="container mx-auto px-4"
           >
             Go Home
           </a>

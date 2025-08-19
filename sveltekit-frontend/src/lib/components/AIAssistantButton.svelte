@@ -1,28 +1,19 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 // Production AI Assistant Component - bits-ui Implementation
 // File: AIAssistantButton.svelte
 
-<script lang="ts">
-  interface Props {
-    onresponse?: (event?: any) => void;
-    onerror?: (event?: any) => void;
-  }
-  let {
-    query = '',
-    isProcessing = false,
-    systemStatus = 'unknown',
-    responseTime = 0
-  }: Props = $props();
-
-
-
-    import { Button } from 'bits-ui';
+<script>
+  import { createEventDispatcher } from 'svelte';
+  import { Button } from 'bits-ui';
   import { Badge } from 'bits-ui';
   import { Loader2, Brain, Zap, AlertTriangle } from 'lucide-svelte';
   
-          
-    
+  export let query = '';
+  export let isProcessing = false;
+  export let systemStatus = 'unknown';
+  export let responseTime = 0;
+  
+  const dispatch = createEventDispatcher();
+  
   let apiLogs = [];
   let currentTest = null;
   
@@ -66,14 +57,18 @@ https://svelte.dev/e/js_parse_error -->
         const result = await response.json();
         systemStatus = 'operational';
         logAPI('Gemma3 Legal', 200, time);
-        onresponse?.();
+        dispatch('response', { 
+          source: 'gemma3',
+          content: result.response,
+          metadata: { time, confidence: 0.92 }
+        });
       } else {
         throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       systemStatus = 'offline';
       logAPI('Gemma3 Legal', 0, Date.now() - startTime, error.message);
-      onerror?.();
+      dispatch('error', { source: 'gemma3', error: error.message });
     }
     
     isProcessing = false;
@@ -108,7 +103,9 @@ https://svelte.dev/e/js_parse_error -->
         systemStatus = 'operational';
         logAPI('Synthesis API', response.status, time);
         const result = await response.json();
-        onresponse?.(),
+        dispatch('response', {
+          source: 'synthesis',
+          content: JSON.stringify(result, null, 2),
           metadata: { time, status: response.status }
         });
       } else {
@@ -116,7 +113,7 @@ https://svelte.dev/e/js_parse_error -->
       }
     } catch (error) {
       logAPI('Synthesis API', 0, Date.now() - startTime, error.message);
-      onerror?.();
+      dispatch('error', { source: 'synthesis', error: error.message });
     }
     
     isProcessing = false;
@@ -147,7 +144,9 @@ https://svelte.dev/e/js_parse_error -->
       if (response.ok) {
         const result = await response.json();
         logAPI('RAG Studio', 200, time);
-        onresponse?.(),
+        dispatch('response', {
+          source: 'rag',
+          content: JSON.stringify(result, null, 2),
           metadata: { time, documents: result.documents?.length }
         });
       } else {
@@ -155,7 +154,7 @@ https://svelte.dev/e/js_parse_error -->
       }
     } catch (error) {
       logAPI('RAG Studio', 0, Date.now() - startTime, error.message);
-      onerror?.();
+      dispatch('error', { source: 'rag', error: error.message });
     }
     
     isProcessing = false;
@@ -175,7 +174,7 @@ https://svelte.dev/e/js_parse_error -->
   <!-- Action Buttons -->
   <div class="grid grid-cols-3 gap-3">
     <Button.Root
-      onclick={testGemma3}
+      on:click={testGemma3}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
     >
@@ -188,7 +187,7 @@ https://svelte.dev/e/js_parse_error -->
     </Button.Root>
 
     <Button.Root
-      onclick={testSynthesis}
+      on:click={testSynthesis}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
     >
@@ -201,7 +200,7 @@ https://svelte.dev/e/js_parse_error -->
     </Button.Root>
 
     <Button.Root
-      onclick={testRAG}
+      on:click={testRAG}
       disabled={isProcessing}
       class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
     >

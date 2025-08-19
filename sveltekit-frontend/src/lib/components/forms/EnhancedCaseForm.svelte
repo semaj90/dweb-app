@@ -1,25 +1,16 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'case_' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <!-- Enhanced Case Form with proper schema mapping -->
 <script lang="ts">
-  interface Props {
-    oncancel?: (event?: any) => void;
-  }
-  let {
-    case_ = null,
-    user
-  }: Props = $props();
-
-
-
   import { notifications } from "$lib/stores/notification";
   import type { User } from "$lib/types/user";
-    import type { Case } from "$lib/types/index";
+  import { createEventDispatcher } from "svelte";
+  import type { Case } from "$lib/types/index";
 
-  let { case_ = $bindable() } = $props(); // Case| null = null; // Edit mode if provided
+  export let case_: Case| null = null; // Edit mode if provided
 
-  
-  
+  export let user: User;
+
+  const dispatch = createEventDispatcher();
+
   // Form data matching the database schema
   let formData = {
     title: case_?.title || "",
@@ -178,14 +169,14 @@ https://svelte.dev/e/js_parse_error -->
 }
 </script>
 
-<form on:submit|preventDefault={handleSubmit} class="space-y-4">
-  <div class="space-y-4">
+<form on:submit|preventDefault={handleSubmit} class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
     <!-- Basic Information -->
-    <section class="space-y-4">
+    <section class="container mx-auto px-4">
       <h3>Basic Information</h3>
 
-      <div class="space-y-4">
-        <label for="title" class="space-y-4">Case Title</label>
+      <div class="container mx-auto px-4">
+        <label for="title" class="container mx-auto px-4">Case Title</label>
         <input
           id="title"
           type="text"
@@ -195,12 +186,12 @@ https://svelte.dev/e/js_parse_error -->
           required
         />
         {#if errors.title}
-          <span class="space-y-4">{errors.title}</span>
+          <span class="container mx-auto px-4">{errors.title}</span>
         {/if}
       </div>
 
-      <div class="space-y-4">
-        <label for="caseNumber" class="space-y-4">Case Number</label>
+      <div class="container mx-auto px-4">
+        <label for="caseNumber" class="container mx-auto px-4">Case Number</label>
         <input
           id="caseNumber"
           type="text"
@@ -210,11 +201,11 @@ https://svelte.dev/e/js_parse_error -->
           required
         />
         {#if errors.caseNumber}
-          <span class="space-y-4">{errors.caseNumber}</span>
+          <span class="container mx-auto px-4">{errors.caseNumber}</span>
         {/if}
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="name">Case Name (Optional)</label>
         <input
           id="name"
@@ -224,7 +215,7 @@ https://svelte.dev/e/js_parse_error -->
         />
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="description">Description</label>
         <textarea
           id="description"
@@ -236,11 +227,11 @@ https://svelte.dev/e/js_parse_error -->
     </section>
 
     <!-- Case Details -->
-    <section class="space-y-4">
+    <section class="container mx-auto px-4">
       <h3>Case Details</h3>
 
-      <div class="space-y-4">
-        <div class="space-y-4">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <label for="priority">Priority</label>
           <select id="priority" bind:value={formData.priority}>
             <option value="low">Low</option>
@@ -250,7 +241,7 @@ https://svelte.dev/e/js_parse_error -->
           </select>
         </div>
 
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <label for="status">Status</label>
           <select id="status" bind:value={formData.status}>
             <option value="open">Open</option>
@@ -262,7 +253,7 @@ https://svelte.dev/e/js_parse_error -->
         </div>
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="category">Category</label>
         <input
           id="category"
@@ -272,8 +263,8 @@ https://svelte.dev/e/js_parse_error -->
         />
       </div>
 
-      <div class="space-y-4">
-        <div class="space-y-4">
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
           <label for="dangerScore">Danger Score (0-10)</label>
           <input
             id="dangerScore"
@@ -284,11 +275,11 @@ https://svelte.dev/e/js_parse_error -->
             class:error={errors.dangerScore}
           />
           {#if errors.dangerScore}
-            <span class="space-y-4">{errors.dangerScore}</span>
+            <span class="container mx-auto px-4">{errors.dangerScore}</span>
           {/if}
         </div>
 
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <label for="estimatedValue">Estimated Value ($)</label>
           <input
             id="estimatedValue"
@@ -299,17 +290,17 @@ https://svelte.dev/e/js_parse_error -->
             class:error={errors.estimatedValue}
           />
           {#if errors.estimatedValue}
-            <span class="space-y-4">{errors.estimatedValue}</span>
+            <span class="container mx-auto px-4">{errors.estimatedValue}</span>
           {/if}
         </div>
       </div>
     </section>
 
     <!-- Location & Timeline -->
-    <section class="space-y-4">
+    <section class="container mx-auto px-4">
       <h3>Location & Timeline</h3>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="incidentDate">Incident Date</label>
         <input
           id="incidentDate"
@@ -318,7 +309,7 @@ https://svelte.dev/e/js_parse_error -->
         />
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="location">Location</label>
         <input
           id="location"
@@ -328,7 +319,7 @@ https://svelte.dev/e/js_parse_error -->
         />
       </div>
 
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="jurisdiction">Jurisdiction</label>
         <input
           id="jurisdiction"
@@ -340,29 +331,29 @@ https://svelte.dev/e/js_parse_error -->
     </section>
 
     <!-- Team & Tags -->
-    <section class="space-y-4">
+    <section class="container mx-auto px-4">
       <h3>Team & Tags</h3>
 
       <!-- Assigned Team -->
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="new-member">Assigned Team</label>
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <input
             id="new-member"
             type="text"
             placeholder="Add team member ID"
-            onkeydown={(e) =>
+            on:keydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTeamMember())}
           />
-          <button type="button" onclick={() => addTeamMember()}>Add</button>
+          <button type="button" on:click={() => addTeamMember()}>Add</button>
         </div>
 
         {#if formData.assignedTeam.length > 0}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             {#each formData.assignedTeam as member}
-              <span class="space-y-4">
+              <span class="container mx-auto px-4">
                 {member}
-                <button type="button" onclick={() => removeTeamMember(member)}
+                <button type="button" on:click={() => removeTeamMember(member)}
                   >×</button
                 >
               </span>
@@ -372,25 +363,25 @@ https://svelte.dev/e/js_parse_error -->
       </div>
 
       <!-- Tags -->
-      <div class="space-y-4">
+      <div class="container mx-auto px-4">
         <label for="new-tag">Tags</label>
-        <div class="space-y-4">
+        <div class="container mx-auto px-4">
           <input
             id="new-tag"
             type="text"
             placeholder="Add tag"
-            onkeydown={(e) =>
+            on:keydown={(e) =>
               e.key === "Enter" && (e.preventDefault(), addTag())}
           />
-          <button type="button" onclick={() => addTag()}>Add</button>
+          <button type="button" on:click={() => addTag()}>Add</button>
         </div>
 
         {#if formData.tags.length > 0}
-          <div class="space-y-4">
+          <div class="container mx-auto px-4">
             {#each formData.tags as tag}
-              <span class="space-y-4">
+              <span class="container mx-auto px-4">
                 {tag}
-                <button type="button" onclick={() => removeTag(tag)}>×</button>
+                <button type="button" on:click={() => removeTag(tag)}>×</button>
               </span>
             {/each}
           </div>
@@ -400,9 +391,9 @@ https://svelte.dev/e/js_parse_error -->
   </div>
 
   <!-- Form Actions -->
-  <div class="space-y-4">
-    <button type="button" onclick={() => oncancel?.()}> Cancel </button>
-    <button type="submit" disabled={loading} class="space-y-4">
+  <div class="container mx-auto px-4">
+    <button type="button" on:click={() => dispatch("cancel")}> Cancel </button>
+    <button type="submit" disabled={loading} class="container mx-auto px-4">
       {#if loading}
         Saving...
       {:else}

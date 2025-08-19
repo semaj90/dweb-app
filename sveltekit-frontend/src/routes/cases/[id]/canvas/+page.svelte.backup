@@ -12,7 +12,7 @@
   // FIX: Corrected the Button import path
   import { Button } from "$lib/components/ui/button";
   // Icons
-  import { FileText, Image, Upload, User } from "lucide-svelte";
+  import { FileText, Image, Upload, User as UserIcon } from "lucide-svelte";
 
   // NOTE: For a large app, these types should be moved to a shared file (e.g., src/lib/types.ts)
   interface Report {
@@ -21,7 +21,7 @@
     posX: number;
     posY: number;
     caseId: string;
-  }
+}
   interface Evidence {
     id: string;
     title?: string;
@@ -36,7 +36,7 @@
     height?: number;
     isSelected?: boolean;
     isDirty?: boolean;
-  }
+}
   interface POI {
     id: string;
     name: string;
@@ -44,13 +44,12 @@
     posY: number;
     relationship?: string;
     caseId: string;
-  }
+}
   interface ContextMenuState {
     show: boolean;
     x: number;
     y: number;
-  }
-
+}
   // FIX: Simplified store access
   const {
     reports,
@@ -71,14 +70,13 @@
   onMount(() => {
     if (caseId) {
       caseService.loadCase(caseId);
-    }
+}
   });
 
   function getCanvasCoordinates(clientX: number, clientY: number) {
     const rect = canvasElement.getBoundingClientRect();
     return { x: clientX - rect.left, y: clientY - rect.top };
-  }
-
+}
   function createNewReport(x: number, y: number) {
     const coords = getCanvasCoordinates(x, y);
     caseService.createReport({
@@ -88,8 +86,7 @@
       caseId: caseId,
     });
     contextMenuState.show = false;
-  }
-
+}
   function createNewPOI(x: number, y: number, relationship?: string) {
     const coords = getCanvasCoordinates(x, y);
     caseService.createPOI({
@@ -100,8 +97,7 @@
       caseId: caseId,
     });
     contextMenuState.show = false;
-  }
-
+}
   function createNewEvidence(x: number, y: number) {
     const input = document.createElement("input");
     input.type = "file";
@@ -110,12 +106,11 @@
       if (file) {
         const coords = getCanvasCoordinates(x, y);
         await uploadAndCreateEvidence(file, coords.x, coords.y);
-      }
+}
     };
     input.click();
     contextMenuState.show = false;
-  }
-
+}
   // Modernized file upload using fetch
   async function uploadAndCreateEvidence(file: File, x: number, y: number) {
     if (!file || !caseId) return;
@@ -135,7 +130,7 @@
         throw new Error(
           errorResult.message || `Upload failed: ${response.statusText}`
         );
-      }
+}
       const result = await response.json();
 
       await caseService.createEvidence({
@@ -150,9 +145,8 @@
       console.error("Error uploading evidence:", err);
     } finally {
       isUploading = false;
-    }
-  }
-
+}
+}
   async function handleCanvasDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -161,25 +155,21 @@
     const file = files[0];
     const coords = getCanvasCoordinates(event.clientX, event.clientY);
     await uploadAndCreateEvidence(file, coords.x, coords.y);
-  }
-
+}
   function handleCanvasDragOver(event: DragEvent) {
     event.preventDefault();
     event.dataTransfer!.dropEffect = "copy";
-  }
-
+}
   function handleCanvasDragEnter(event: DragEvent) {
     event.preventDefault();
     canvasElement?.classList.add("drag-over");
-  }
-
+}
   function handleCanvasDragLeave(event: DragEvent) {
     event.preventDefault();
     if (event.target === canvasElement) {
       canvasElement?.classList.remove("drag-over");
-    }
-  }
-
+}
+}
   function handleCanvasContextMenu(event: MouseEvent) {
     event.preventDefault();
     contextMenuState = {
@@ -187,20 +177,20 @@
       x: event.clientX,
       y: event.clientY,
     };
-  }
+}
 </script>
 
 <svelte:head>
   <title>Case {caseId} - Interactive Canvas</title>
 </svelte:head>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
   <!-- Canvas Area -->
   <ContextMenu.Root>
     <ContextMenu.Trigger asChild>
       <div
         bind:this={canvasElement}
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
         role="application"
         aria-label="Case evidence canvas"
         on:contextmenu={handleCanvasContextMenu}
@@ -210,17 +200,17 @@
         on:dragleave={handleCanvasDragLeave}
       >
         <!-- Grid Background -->
-        <div class="mx-auto px-4 max-w-7xl" aria-hidden="true"></div>
+        <div class="container mx-auto px-4" aria-hidden="true"></div>
 
         <!-- Drop Zone Indicator -->
         {#if isUploading}
-          <div class="mx-auto px-4 max-w-7xl">
-            <div class="mx-auto px-4 max-w-7xl">
-              <Upload class="mx-auto px-4 max-w-7xl" />
+          <div class="container mx-auto px-4">
+            <div class="container mx-auto px-4">
+              <Upload class="container mx-auto px-4" />
               <p>Uploading... {Math.round(uploadProgress)}%</p>
-              <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
                 <div
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                   style="width: {uploadProgress}%"
                 ></div>
               </div>
@@ -248,8 +238,8 @@
               createdBy: report.createdBy ?? "",
               metadata: report.metadata ?? {},
               caseId: report.caseId ?? caseId,
-              reportType: report.reportType ?? "",
-            "
+              reportType: report.reportType ?? ""
+            }}
           />
         {/each}
 
@@ -261,11 +251,11 @@
             position={{
               x: evidenceItem.posX ?? evidenceItem.x ?? 0,
               y: evidenceItem.posY ?? evidenceItem.y ?? 0,
-            "
+            }}
             size={{
               width: evidenceItem.width || 200,
               height: evidenceItem.height || 150,
-            "
+            }}
             isSelected={evidenceItem.isSelected || false}
             isDirty={evidenceItem.isDirty || false}
           />
@@ -278,26 +268,26 @@
 
         <!-- Loading overlay -->
         {#if $isLoading}
-          <div class="mx-auto px-4 max-w-7xl" aria-live="polite">
-            <div class="mx-auto px-4 max-w-7xl" aria-hidden="true"></div>
+          <div class="container mx-auto px-4" aria-live="polite">
+            <div class="container mx-auto px-4" aria-hidden="true"></div>
             <p>Loading case data...</p>
           </div>
         {/if}
       </div>
     </ContextMenu.Trigger>
 
-    <ContextMenu.Content class="mx-auto px-4 max-w-7xl">
+    <ContextMenu.Content class="container mx-auto px-4">
       <ContextMenu.Item
         on:click={() => createNewReport(contextMenuState.x, contextMenuState.y)}
       >
-        <FileText class="mx-auto px-4 max-w-7xl" />
+        <FileText class="container mx-auto px-4" />
         New Report
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewEvidence(contextMenuState.x, contextMenuState.y)}
       >
-        <Image class="mx-auto px-4 max-w-7xl" />
+        <Image class="container mx-auto px-4" />
         New Evidence
       </ContextMenu.Item>
       <ContextMenu.Separator />
@@ -305,21 +295,21 @@
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "suspect")}
       >
-        <User class="mx-auto px-4 max-w-7xl" />
+        <UserIcon class="container mx-auto px-4" />
         Add Suspect
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "witness")}
       >
-        <User class="mx-auto px-4 max-w-7xl" />
+        <UserIcon class="container mx-auto px-4" />
         Add Witness
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "victim")}
       >
-        <User class="mx-auto px-4 max-w-7xl" />
+        <UserIcon class="container mx-auto px-4" />
         Add Victim
       </ContextMenu.Item>
       <ContextMenu.Item
@@ -330,45 +320,45 @@
             "co-conspirator"
           )}
       >
-        <User class="mx-auto px-4 max-w-7xl" />
+        <UserIcon class="container mx-auto px-4" />
         Add Co-conspirator
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() =>
           createNewPOI(contextMenuState.x, contextMenuState.y, "informant")}
       >
-        <User class="mx-auto px-4 max-w-7xl" />
+        <UserIcon class="container mx-auto px-4" />
         Add Informant
       </ContextMenu.Item>
       <ContextMenu.Item
         on:click={() => createNewPOI(contextMenuState.x, contextMenuState.y)}
       >
-        <User class="mx-auto px-4 max-w-7xl" />
+        <UserIcon class="container mx-auto px-4" />
         Add Other POI
       </ContextMenu.Item>
     </ContextMenu.Content>
   </ContextMenu.Root>
 
   <!-- Toolbar -->
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       <Button variant="secondary" on:click={() => createNewReport(100, 100)}>
-        <FileText class="mx-auto px-4 max-w-7xl" />
+        <FileText class="container mx-auto px-4" />
         New Report
       </Button>
 
       <Button variant="secondary" on:click={() => createNewEvidence(200, 100)}>
-        <Image class="mx-auto px-4 max-w-7xl" />
+        <Image class="container mx-auto px-4" />
         New Evidence
       </Button>
 
       <Button variant="secondary" on:click={() => createNewPOI(300, 100)}>
-        <User class="mx-auto px-4 max-w-7xl" />
+        <UserIcon class="container mx-auto px-4" />
         New POI
       </Button>
     </div>
 
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <Button variant="secondary" on:click={() => caseService.saveAll()}>
         Save All
       </Button>
@@ -376,22 +366,22 @@
   </div>
 
   <!-- Status Bar -->
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       <span>Reports: {$reports.length}</span>
       <span>Evidence: {$evidence.length}</span>
       <span>POIs: {$pois.length}</span>
     </div>
 
     {#if $caseServiceError}
-      <div class="mx-auto px-4 max-w-7xl" role="alert">
+      <div class="container mx-auto px-4" role="alert">
         Error: {$caseServiceError}
       </div>
     {/if}
   </div>
 
   <!-- Drop Zone Help -->
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <p>Drag and drop files here to add evidence</p>
   </div>
 </div>
@@ -400,13 +390,13 @@
 <AISummaryModal />
 
 <style>
+  /* @unocss-include */
   .canvas-container {
     position: relative;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-  }
-
+}
   .canvas-background {
     position: relative;
     width: 100%;
@@ -415,17 +405,14 @@
     cursor: grab;
     overflow: hidden;
     transition: background-color 0.2s;
-  }
-
+}
   .canvas-background:active {
     cursor: grabbing;
-  }
-
+}
   .canvas-background.drag-over {
     background-color: #e0f2fe;
     border: 2px dashed #0ea5e9;
-  }
-
+}
   .canvas-grid {
     position: absolute;
     top: 0;
@@ -438,8 +425,7 @@
     background-size: 20px 20px;
     pointer-events: none;
     opacity: 0.3;
-  }
-
+}
   .upload-overlay {
     position: absolute;
     top: 0;
@@ -451,13 +437,11 @@
     align-items: center;
     justify-content: center;
     z-index: 150;
-  }
-
+}
   .upload-progress {
     text-align: center;
     color: #0ea5e9;
-  }
-
+}
   .progress-bar {
     width: 200px;
     height: 4px;
@@ -465,14 +449,12 @@
     border-radius: 2px;
     overflow: hidden;
     margin-top: 1rem;
-  }
-
+}
   .progress-fill {
     height: 100%;
     background: #0ea5e9;
     transition: width 0.3s ease;
-  }
-
+}
   .canvas-toolbar {
     position: absolute;
     top: 1rem;
@@ -485,14 +467,12 @@
     padding: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     z-index: 100;
-  }
-
+}
   .toolbar-section {
     display: flex;
     gap: 0.5rem;
     align-items: center;
-  }
-
+}
   .status-bar {
     position: absolute;
     bottom: 0;
@@ -506,19 +486,16 @@
     align-items: center;
     z-index: 100;
     font-size: 0.875rem;
-  }
-
+}
   .status-info {
     display: flex;
     gap: 1rem;
     color: #64748b;
-  }
-
+}
   .status-error {
     color: #ef4444;
     font-weight: 500;
-  }
-
+}
   .loading-overlay {
     position: absolute;
     top: 0;
@@ -531,8 +508,7 @@
     align-items: center;
     justify-content: center;
     z-index: 200;
-  }
-
+}
   .loading-spinner {
     width: 2rem;
     height: 2rem;
@@ -541,8 +517,7 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
-  }
-
+}
   .drop-zone-help {
     position: absolute;
     bottom: 3rem;
@@ -556,16 +531,15 @@
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
-  }
-
+}
   /* Removed unused selector: .canvas-background.drag-over .drop-zone-help */
 
   @keyframes spin {
     0% {
       transform: rotate(0deg);
-    }
+}
     100% {
       transform: rotate(360deg);
-    }
-  }
+}
+}
 </style>

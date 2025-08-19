@@ -1,0 +1,456 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Go: Run rag-kratos",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Push-Location go-microservice; go build -o .\\rag-kratos.exe .\\cmd\\rag-kratos; Start-Process -NoNewWindow -FilePath '.\\rag-kratos.exe'; Pop-Location"
+      ],
+      "options": {
+        "env": {
+          "RAG_HTTP_PORT": "8093",
+          "EMBED_MODEL": "nomic-embed-text",
+          "EMBED_CACHE_TTL": "10m"
+        }
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Go gRPC: Build Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; go mod tidy; go build -o ./bin/grpc-server.exe ./cmd/grpc-server"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Go gRPC: Open Firewall 8084",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "if (-not (Get-NetFirewallRule -DisplayName 'LegalAI gRPC 8084' -ErrorAction SilentlyContinue)) { New-NetFirewallRule -DisplayName 'LegalAI gRPC 8084' -Direction Inbound -LocalPort 8084 -Protocol TCP -Action Allow }"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "Go: Run rag-quic-proxy",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:RAG_BACKEND_URL='http://localhost:8093'; $env:RAG_QUIC_FRONT_PORT='8443'; cd go-microservice; go build -o .\\rag-quic-proxy.exe .\\cmd\\rag-quic-proxy; Start-Process -NoNewWindow -FilePath '.\\rag-quic-proxy.exe'"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Go gRPC: Run Server",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Start-Process -NoNewWindow -FilePath 'go-microservice/bin/grpc-server.exe'"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "dependsOn": [
+        "Go gRPC: Build Server",
+        "Go gRPC: Open Firewall 8084"
+      ],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Quick Fix TypeScript Errors",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "check"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "Cluster: Build HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go mod tidy; go build -o ./bin/cluster-http.exe ./cmd/cluster-service"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Cluster: Run HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:CLUSTER_HTTP_PORT='8090'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/cluster-http.exe'"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "dependsOn": [
+        "Cluster: Build HTTP Service"
+      ],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Summarizer: Build HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-microservice; if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null }; go mod tidy; go build -o ./bin/summarizer-http.exe ./cmd/summarizer-service"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Summarizer: Run HTTP Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/start-summarizer.ps1",
+        "-Port",
+        "8091",
+        "-OllamaBaseUrl",
+        "http://localhost:11434"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "dependsOn": [
+        "Summarizer: Build HTTP Service"
+      ],
+      "dependsOrder": "sequence"
+    },
+    {
+      "label": "Test: Cluster Health via Proxy",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/cluster"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Test: Summarizer Health",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:8091/health"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Test: Summarizer (direct)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "-X",
+        "POST",
+        "-H",
+        "Content-Type: application/json",
+        "-d",
+        "{\"text\":\"A short passage about contracts and liabilities.\",\"format\":\"summary\"}",
+        "http://localhost:8091/summarize"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open ELK placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "elk-stack/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open QUIC placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "quic-services/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open Node Cluster placeholder",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "node-cluster/README.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Go: Show Kratos placeholder output",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Write-Output '[go-services/kratos-server] Placeholder server. TODO: integrate go-kratos.'"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Docs: Open Enhanced RAG Best Practices",
+      "type": "shell",
+      "command": "code",
+      "args": [
+        "best-practices/enhanced-rag-best-practices.md"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "GPU: Check NVIDIA SMI",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "nvidia-smi"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Backup: tasks.json & kratos main.go",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/backup-tasks.ps1"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "🏗️ Go-Kratos: Build & Run",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd go-services; go mod tidy; go build -o ./bin/kratos-server.exe ./cmd/kratos-server; Start-Process -NoNewWindow -FilePath './bin/kratos-server.exe'"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "detail": "Build and run Go-Kratos legal AI server"
+    },
+    {
+      "label": "📊 ELK: Start Elasticsearch",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/elasticsearch; ./start-elasticsearch.bat"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Start Elasticsearch for legal AI logging"
+    },
+    {
+      "label": "📊 ELK: Start Logstash",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/logstash; ./start-logstash.bat"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Start Logstash for legal AI log processing"
+    },
+    {
+      "label": "📊 ELK: Start Kibana",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd elk-stack/kibana; ./start-kibana.bat"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Start Kibana for legal AI log visualization"
+    },
+    {
+      "label": "🚀 NATS: Start Message Queue",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd message-queue/nats; ./start-nats.bat"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Start NATS server for inter-service messaging"
+    },
+    {
+      "label": "🌐 Node: Start Cluster Manager",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd node-cluster; ./start-cluster.bat"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Start Node.js cluster manager for scalable services"
+    },
+    {
+      "label": "⚡ QUIC: Start Protocol Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "cd quic-services; ./start-quic.bat"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Start QUIC protocol services for ultra-low latency"
+    },
+    {
+      "label": "🚀 Quick Check - Ultra Fast",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "check:ultra-fast"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/sveltekit-frontend"
+      },
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Ultra-fast TypeScript and Svelte check"
+    }
+  ]
+}

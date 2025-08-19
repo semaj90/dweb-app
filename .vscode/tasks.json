@@ -1063,21 +1063,6 @@
       "detail": "Start Context7 MCP with GPU-accelerated vLLM backend"
     },
     {
-      "label": "Ollama: Force GPU Analyze",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-      "-NoProfile",
-      "-ExecutionPolicy",
-      "Bypass",
-      "-Command",
-      "$env:OLLAMA_GPU_LAYERS='999'; ollama run llama3.1 'Summarize indemnification obligations in commercial contracts in 3 bullets.'"
-      ],
-      "group": "test",
-      "presentation": { "reveal": "always", "panel": "shared" },
-      "detail": "Use Ollama with maximum GPU layers for fast local analysis"
-    },
-    {
       "label": "Ollama: Force GPU Analyze (gemma3-legal)",
       "type": "shell",
       "command": "powershell",
@@ -1091,6 +1076,78 @@
       "group": "test",
       "presentation": { "reveal": "always", "panel": "shared" },
       "detail": "Use Ollama gemma3-legal with maximum GPU layers for fast local analysis"
+    },
+    {
+      "label": "AI: gemma3-legal Document Deep Analysis",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; Write-Host '▶️ gemma3-legal: starting deep deed analysis'; ollama run gemma3-legal 'Analyze the following deed for grantor, grantee, risks, legal terms, precedents, and potential challenges: <PASTE_OR_LOAD_DEED_TEXT>';"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Full legal deed entity & risk extraction via gemma3-legal"
+    },
+    {
+      "label": "AI: gemma3-legal Benchmark & Metrics",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; $s=Get-Date; $r=ollama run gemma3-legal 'Summarize indemnification obligations in 150 tokens'; $e=Get-Date; $d=($e-$s).TotalSeconds; Write-Host ('⏱ Duration: ' + [math]::Round($d,2) + 's'); Write-Host $r;"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Measure latency & output for gemma3-legal inference cycle"
+    },
+    {
+      "label": "Maintenance: Autosolve Cycle (Threshold)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Run fast tsc check & conditional autosolve force cycle"
+    },
+    {
+      "label": "WebGPU: Tensor Ops Smoke Test",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd sveltekit-frontend; node -e \"import('./src/lib/ai/webasm-llamacpp.ts').then(()=>console.log('WebGPU import OK (runtime needs browser)')).catch(e=>console.error(e));\""
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Validate WebAssembly llama module import & WebGPU availability (basic)"
     },
     {
       "label": "Backup: tasks.json & kratos main.go",
@@ -1386,7 +1443,8 @@
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
-        "Write-Host '🚨 Fixing critical parse errors in CommandMenu, Checkbox, context-menu components...' -ForegroundColor Yellow; Write-Host '✅ Parse errors fixed - compilation should now succeed' -ForegroundColor Green"
+  "Write-Host '🚨 Fixing critical parse errors in CommandMenu, Checkbox, context-menu components...' -ForegroundColor Yellow;",
+  "Write-Host '✅ Parse errors fixed - compilation should now succeed' -ForegroundColor Green"
       ],
       "group": "build",
       "presentation": {
@@ -1448,6 +1506,10 @@
         "echo": true,
         "reveal": "always",
         "focus": true,
+        "panel": "shared"
+      },
+      "detail": "TypeScript barrel export verification"
+    },
     {
       "label": "🚀 Quick Check - Ultra Fast",
       "type": "shell",
@@ -1461,10 +1523,6 @@
         "echo": true,
         "reveal": "always",
         "focus": true,
-        "panel": "shared"
-      },
-      "detail": "Ultra-fast TypeScript and Svelte check"
-    },
         "panel": "shared"
       },
       "detail": "Ultra-fast TypeScript and Svelte check"
@@ -1494,6 +1552,105 @@
         "panel": "shared"
       },
       "detail": "Generate Context7 best practices using complete MCP and documentation ecosystem"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Start Multi-Core Solver",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "vscode-auto-solver/core/multi-core-solver.js"
+      ],
+      "options": {
+        "env": {
+          "ENABLE_CLUSTERING": "true",
+          "ENABLE_GPU": "false",
+          "VS_CODE_DEBUG": "true",
+          "SEMANTIC_BATCH_SIZE": "64"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Launch multi-core semantic autosolve event loop"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Force Cycle",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X",
+        "POST",
+        "-H",
+        "Content-Type: application/json",
+        "-d",
+        "{\"action\":\"trigger\"}",
+        "http://localhost:5173/api/context7-autosolve"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Manually trigger an autosolve cycle via API"
+    },
+    {
+      "label": "AI: gemma3-legal End-to-End Cycle",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; Write-Host '⏳ Starting full gemma3-legal cycle'; $start=Get-Date; $bench=ollama run gemma3-legal 'Summarize indemnification obligations in 120 tokens'; cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle; $status=curl -s 'http://localhost:5173/api/context7-autosolve?action=status'; $dur=(Get-Date)-$start; Write-Host ('✅ Cycle complete in ' + [math]::Round($dur.TotalSeconds,2) + 's'); Write-Host $bench; Write-Host $status;"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Benchmark gemma3-legal + autosolve maintenance + status fetch"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Health",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/context7-autosolve?action=health"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Check autosolve system health"
+    },
+    {
+      "label": "🧠 Autosolve EventLoop: Status",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-s",
+        "http://localhost:5173/api/context7-autosolve?action=status"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Fetch autosolve status & recent history"
     }
   ]
 }

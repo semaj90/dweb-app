@@ -1,26 +1,5 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- Smart Document Form with OCR Auto-Population -->
 <script lang="ts">
-  interface Props {
-    title?: any;
-    description?: any;
-    formSchema: FormField[] ;
-    enableOCR?: any;
-    enableSmartSuggestions?: any;
-    documentTypes: string[] ;
-  }
-  let {
-    title = "Smart Document Form",
-    description = "Upload a document for automatic field extraction and population",
-    formSchema = [],
-    enableOCR = true,
-    enableSmartSuggestions = true,
-    documentTypes = ['legal_document', 'contract', 'form']
-  }: Props = $props();
-
-
-
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { Button } from 'bits-ui';
 	import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
@@ -34,7 +13,13 @@ https://svelte.dev/e/js_parse_error -->
 	import { fade, fly, scale } from 'svelte/transition';
 	import { writable } from 'svelte/store';
 
-						
+	export let title = "Smart Document Form";
+	export let description = "Upload a document for automatic field extraction and population";
+	export let formSchema: FormField[] = [];
+	export let enableOCR = true;
+	export let enableSmartSuggestions = true;
+	export let documentTypes: string[] = ['legal_document', 'contract', 'form'];
+
 	const dispatch = createEventDispatcher<{
 		submit: { formData: Record<string, any>; extractedFields: ExtractedField[] };
 		fieldChange: { fieldName: string; value: string; confidence?: number };
@@ -50,10 +35,10 @@ https://svelte.dev/e/js_parse_error -->
 	let selectedDocumentType = 'auto';
 
 	// OCR stores
-	let processing = $derived(ocrService.processing$;);
-	let progress = $derived(ocrService.progress$;);
-	let ocrResult = $derived(ocrService.currentResult$;);
-	let extractedFields = $derived(ocrService.extractedFields$;);
+	$: processing = ocrService.processing$;
+	$: progress = ocrService.progress$;
+	$: ocrResult = ocrService.currentResult$;
+	$: extractedFields = ocrService.extractedFields$;
 
 	// Form validation
 	const formErrors = writable<Record<string, string>>({});
@@ -266,8 +251,8 @@ https://svelte.dev/e/js_parse_error -->
 				<div 
 					class="border-2 border-dashed border-yorha-border rounded-lg p-8 text-center transition-colors duration-200 hover:border-yorha-primary hover:bg-yorha-bg-secondary/50"
 					class:border-yorha-primary={uploadedFile}
-					ondrop={handleDrop}
-					ondragover={handleDragOver}
+					on:drop={handleDrop}
+					on:dragover={handleDragOver}
 					role="button"
 					tabindex="0"
 				>
@@ -294,7 +279,7 @@ https://svelte.dev/e/js_parse_error -->
 						type="file"
 						accept=".pdf,.png,.jpg,.jpeg,.tiff"
 						class="hidden"
-						onchange={(e) => {
+						on:change={(e) => {
 							const files = e.target?.files;
 							if (files && files.length > 0) {
 								uploadedFile = files[0];
@@ -307,7 +292,7 @@ https://svelte.dev/e/js_parse_error -->
 						<Button 
 							variant="outline" 
 							class="mt-4"
-							onclick={() => fileInput.click()}
+							on:click={() => fileInput.click()}
 						>
 							Browse Files
 						</Button>
@@ -327,7 +312,7 @@ https://svelte.dev/e/js_parse_error -->
 
 				<!-- OCR Results Preview -->
 				{#if $ocrResult && showPreview}
-					<div class="bg-yorha-bg-secondary rounded-md p-4 border border-yorha-border" transitionfly={{ y: 20 }}>
+					<div class="bg-yorha-bg-secondary rounded-md p-4 border border-yorha-border" transition:fly={{ y: 20 }}>
 						<div class="flex items-center justify-between mb-2">
 							<h4 class="font-medium text-yorha-text-primary">Extraction Results</h4>
 							<Badge class="bg-yorha-success text-yorha-bg-primary">
@@ -390,7 +375,7 @@ https://svelte.dev/e/js_parse_error -->
 									bind:value={field.value}
 									placeholder={`Enter ${field.label.toLowerCase()}...`}
 									class="min-h-[80px] bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
-									oninput={(e) => handleFieldChange(field.name, e.target.value)}
+									on:input={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{:else}
 								<Input
@@ -400,7 +385,7 @@ https://svelte.dev/e/js_parse_error -->
 									class="bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
 									class:border-yorha-danger={$formErrors[field.name]}
 									class:border-yorha-success={field.confidence && field.confidence > 0.8}
-									oninput={(e) => handleFieldChange(field.name, e.target.value)}
+									on:input={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{/if}
 
@@ -413,7 +398,7 @@ https://svelte.dev/e/js_parse_error -->
 
 							<!-- Smart Suggestions -->
 							{#if activeSuggestions[field.name] && activeSuggestions[field.name].length > 0}
-								<div class="space-y-1" transitionfly={{ y: -10 }}>
+								<div class="space-y-1" transition:fly={{ y: -10 }}>
 									<p class="text-xs text-yorha-text-secondary">Suggestions:</p>
 									<div class="flex flex-wrap gap-1">
 										{#each activeSuggestions[field.name] as suggestion}
@@ -421,7 +406,7 @@ https://svelte.dev/e/js_parse_error -->
 												variant="outline"
 												size="sm"
 												class="text-xs h-6 px-2"
-												onclick={() => applySuggestion(field.name, suggestion)}
+												on:click={() => applySuggestion(field.name, suggestion)}
 											>
 												{suggestion}
 											</Button>
@@ -458,7 +443,7 @@ https://svelte.dev/e/js_parse_error -->
 					<div class="flex items-center space-x-3">
 						<Button 
 							variant="outline"
-							onclick={() => {
+							on:click={() => {
 								populatedFields = populatedFields.map(f => ({ ...f, value: '' }));
 								formErrors.set({});
 							}}
@@ -489,7 +474,7 @@ https://svelte.dev/e/js_parse_error -->
 					<Button
 						variant="ghost"
 						size="sm"
-						onclick={() => showPreview = !showPreview}
+						on:click={() => showPreview = !showPreview}
 					>
 						{showPreview ? 'Hide' : 'Show'}
 					</Button>

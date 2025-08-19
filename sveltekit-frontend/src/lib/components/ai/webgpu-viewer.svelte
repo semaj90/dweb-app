@@ -373,10 +373,12 @@ function zoomOut() {
 }
 
 // React to prop changes
-$effect(() => { if (embeddings.length > 0 && device) {
-  updateEmbeddings(embeddings);
-  render();
-}
+$effect(() => { 
+  if (embeddings.length > 0 && device) {
+    updateEmbeddings(embeddings);
+    render();
+  }
+});
 </script>
 
 <div class="webgpu-viewer">

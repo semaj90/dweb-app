@@ -1,26 +1,15 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
 	import { aiStore } from "$lib/stores/canvas";
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
 	import { fade, fly } from 'svelte/transition';
+	
+	import { Bot, Send, User, X } from 'lucide-svelte';
 
-	import { Bot, Send, User as UserIcon, X } from "lucide-svelte";
+	export let title = 'AI Assistant';
+	export let open = false;
 
-	interface Props {
-		title?: string;
-		open?: boolean;
-		onclose?: () => void;
-		onsubmit?: (data: any) => void;
-	}
-
-	let {
-		title = 'AI Assistant',
-		open = $bindable(false),
-		onclose,
-		onsubmit
-	}: Props = $props();
+	const dispatch = createEventDispatcher();
 
 	let dialogElement: HTMLElement;
 	let promptInput: HTMLTextAreaElement;
@@ -36,38 +25,43 @@ https://svelte.dev/e/js_parse_error -->
 	];
 
 	// Reactive state
-	let selectedVibe = $derived($aiStore.selectedVibe;);
-	let prompt = $derived($aiStore.prompt;);
-	let response = $derived($aiStore.response;);
-	let isGenerating = $derived($aiStore.isGenerating;);
-	let history = $derived($aiStore.history;);
+	$: selectedVibe = $aiStore.selectedVibe;
+	$: prompt = $aiStore.prompt;
+	$: response = $aiStore.response;
+	$: isGenerating = $aiStore.isGenerating;
+	$: history = $aiStore.history;
 
 	let currentPrompt = '';
 
 	onMount(() => {
 		if (open) {
 			focusInput();
-}
+		}
 	});
 
 	function focusInput() {
 		setTimeout(() => {
 			promptInput?.focus();
 		}, 100);
-}
+	}
+
 	function handleClose() {
 		aiStore.update(state => ({ ...state, dialogOpen: false }));
 		dispatch('close');
-}
+	}
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			handleClose();
 		} else if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
 			handleSubmit();
-}}
+		}
+	}
+
 	function handleVibeChange(vibeId: string) {
 		aiStore.update(state => ({ ...state, selectedVibe: vibeId }));
-}
+	}
+
 	async function handleSubmit() {
 		if (!currentPrompt.trim() || isGenerating) return;
 
@@ -105,7 +99,8 @@ https://svelte.dev/e/js_parse_error -->
 
 			if (!response.ok) {
 				throw new Error('Failed to get AI response');
-}
+			}
+
 			const data = await response.json();
 
 			const aiMessage = {
@@ -132,7 +127,7 @@ https://svelte.dev/e/js_parse_error -->
 
 		} catch (error) {
 			console.error('AI request failed:', error);
-
+			
 			const errorMessage = {
 				id: crypto.randomUUID(),
 				role: 'assistant',
@@ -146,14 +141,16 @@ https://svelte.dev/e/js_parse_error -->
 				isGenerating: false,
 				history: [...state.history, errorMessage]
 			}));
-}
+		}
+
 		// Scroll to bottom of messages
 		setTimeout(() => {
 			if (messagesContainer) {
 				messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
+			}
 		}, 100);
-}
+	}
+
 	function clearHistory() {
 		aiStore.update(state => ({
 			...state,
@@ -161,42 +158,45 @@ https://svelte.dev/e/js_parse_error -->
 			prompt: '',
 			response: ''
 		}));
-}
+	}
+
 	function formatTimestamp(timestamp: string) {
 		return new Date(timestamp).toLocaleTimeString('en-US', {
 			hour: '2-digit',
 			minute: '2-digit'
 		});
-}
+	}
+
 	// Close on outside click
 	function handleBackdropClick(event: MouseEvent) {
 		if (event.target === event.currentTarget) {
 			handleClose();
-}}
+		}
+	}
 </script>
 
 {#if open}
-	<div
-		class="space-y-4"
-		transitionfade={{ duration: 200 }}
-		onclick={handleBackdropClick}
-		onkeydown={handleKeydown}
+	<div 
+		class="mx-auto px-4 max-w-7xl"
+		transition:fade={{ duration: 200  "
+		on:click={() => handleBackdropClick()}
+		on:keydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="dialog-title"
 		tabindex={-1}
 	>
-		<div
-			class="space-y-4"
+		<div 
+			class="mx-auto px-4 max-w-7xl"
 			bind:this={dialogElement}
-			transitionfly={{ y: 50, duration: 300, easing: quintOut }}
+			transition:fly={{ y: 50, duration: 300, easing: quintOut  "
 		>
 			<!-- Header -->
-			<div class="space-y-4">
-				<h2 id="dialog-title" class="space-y-4">{title}</h2>
+			<div class="mx-auto px-4 max-w-7xl">
+				<h2 id="dialog-title" class="mx-auto px-4 max-w-7xl">{title}</h2>
 				<button
-					class="space-y-4"
-					onclick={() => handleClose()}
+					class="mx-auto px-4 max-w-7xl"
+					on:click={() => handleClose()}
 					aria-label="Close dialog"
 				>
 					<X size={20} />
@@ -204,14 +204,14 @@ https://svelte.dev/e/js_parse_error -->
 			</div>
 
 			<!-- Vibe Selection -->
-			<div class="space-y-4">
-				<h3 class="space-y-4">Select AI Vibe:</h3>
-				<div class="space-y-4">
+			<div class="mx-auto px-4 max-w-7xl">
+				<h3 class="mx-auto px-4 max-w-7xl">Select AI Vibe:</h3>
+				<div class="mx-auto px-4 max-w-7xl">
 					{#each vibes as vibe}
 						<button
-							class="space-y-4"
+							class="mx-auto px-4 max-w-7xl"
 							class:active={selectedVibe === vibe.id}
-							onclick={() => handleVibeChange(vibe.id)}
+							on:click={() => handleVibeChange(vibe.id)}
 							title={vibe.description}
 						>
 							{vibe.label}
@@ -221,10 +221,10 @@ https://svelte.dev/e/js_parse_error -->
 			</div>
 
 			<!-- Messages -->
-			<div class="space-y-4" bind:this={messagesContainer}>
+			<div class="mx-auto px-4 max-w-7xl" bind:this={messagesContainer}>
 				{#if history.length === 0}
-					<div class="space-y-4">
-						<div class="space-y-4">
+					<div class="mx-auto px-4 max-w-7xl">
+						<div class="mx-auto px-4 max-w-7xl">
 							<Bot size={48} />
 						</div>
 						<h3>AI Assistant Ready</h3>
@@ -238,24 +238,24 @@ https://svelte.dev/e/js_parse_error -->
 					</div>
 				{:else}
 					{#each history as message}
-						<div class="space-y-4" class:user={message.role === 'user'} class:error={message.isError}>
-							<div class="space-y-4">
+						<div class="mx-auto px-4 max-w-7xl" class:user={message.role === 'user'} class:error={message.isError}>
+							<div class="mx-auto px-4 max-w-7xl">
 								{#if message.role === 'user'}
-									<UserIcon size={20} />
+									<User size={20} />
 								{:else}
 									<Bot size={20} />
 								{/if}
 							</div>
-							<div class="space-y-4">
-								<div class="space-y-4">
-									<span class="space-y-4">
+							<div class="mx-auto px-4 max-w-7xl">
+								<div class="mx-auto px-4 max-w-7xl">
+									<span class="mx-auto px-4 max-w-7xl">
 										{message.role === 'user' ? 'You' : 'AI Assistant'}
 									</span>
-									<span class="space-y-4">
+									<span class="mx-auto px-4 max-w-7xl">
 										{formatTimestamp(message.timestamp)}
 									</span>
 								</div>
-								<div class="space-y-4">
+								<div class="mx-auto px-4 max-w-7xl">
 									{message.content}
 								</div>
 							</div>
@@ -264,18 +264,18 @@ https://svelte.dev/e/js_parse_error -->
 				{/if}
 
 				{#if isGenerating}
-					<div class="space-y-4">
-						<div class="space-y-4">
+					<div class="mx-auto px-4 max-w-7xl">
+						<div class="mx-auto px-4 max-w-7xl">
 							<Bot size={20} />
 						</div>
-						<div class="space-y-4">
-							<div class="space-y-4">
-								<div class="space-y-4">
+						<div class="mx-auto px-4 max-w-7xl">
+							<div class="mx-auto px-4 max-w-7xl">
+								<div class="mx-auto px-4 max-w-7xl">
 									<span></span>
 									<span></span>
 									<span></span>
 								</div>
-								<span class="space-y-4">AI is thinking...</span>
+								<span class="mx-auto px-4 max-w-7xl">AI is thinking...</span>
 							</div>
 						</div>
 					</div>
@@ -283,33 +283,34 @@ https://svelte.dev/e/js_parse_error -->
 			</div>
 
 			<!-- Input -->
-			<div class="space-y-4">
-				<div class="space-y-4">				<textarea
-					bind:this={promptInput}
-					bind:value={currentPrompt}
-					placeholder="Ask the AI assistant anything about your case..."
-					rows="4"
-					disabled={isGenerating}
-					onkeydown={(e) => {
-						if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-							e.preventDefault();
-							handleSubmit();
-						}
-					}}
-				></textarea>
+			<div class="mx-auto px-4 max-w-7xl">
+				<div class="mx-auto px-4 max-w-7xl">
+					<textarea
+						bind:this={promptInput}
+						bind:value={currentPrompt}
+						placeholder="Ask the AI assistant anything about your case..."
+						rows="4"
+						disabled={isGenerating}
+						on:keydown={(e) => {
+							if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+								e.preventDefault();
+								handleSubmit();
+							}
+						"
+					></textarea>
 					<button
-						class="space-y-4"
-						onclick={() => handleSubmit()}
+						class="mx-auto px-4 max-w-7xl"
+						on:click={() => handleSubmit()}
 						disabled={!currentPrompt.trim() || isGenerating}
 						aria-label="Send message"
 					>
 						<Send size={20} />
 					</button>
 				</div>
-				<div class="space-y-4">
+				<div class="mx-auto px-4 max-w-7xl">
 					<span>Press Ctrl+Enter to send</span>
 					{#if history.length > 0}
-						<button class="space-y-4" onclick={() => clearHistory()}>
+						<button class="mx-auto px-4 max-w-7xl" on:click={() => clearHistory()}>
 							Clear History
 						</button>
 					{/if}
@@ -320,7 +321,6 @@ https://svelte.dev/e/js_parse_error -->
 {/if}
 
 <style>
-  /* @unocss-include */
 	.dialog-backdrop {
 		position: fixed;
 		top: 0;
@@ -333,32 +333,36 @@ https://svelte.dev/e/js_parse_error -->
 		justify-content: center;
 		z-index: 2000;
 		padding: 1rem;
-}
+	}
+
 	.dialog-container {
 		width: 100%;
 		max-width: 600px;
 		max-height: 80vh;
-		background: var(--bg-secondary);
+		background: var(--pico-card-background-color);
 		border-radius: 12px;
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-}
+	}
+
 	.dialog-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		padding: 1.5rem;
-		border-bottom: 1px solid var(--border-light);
-		background: var(--bg-primary);
-}
+		border-bottom: 1px solid var(--pico-muted-border-color);
+		background: var(--pico-background-color);
+	}
+
 	.dialog-title {
 		margin: 0;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: var(--text-primary);
-}
+		color: var(--pico-color);
+	}
+
 	.close-button {
 		display: flex;
 		align-items: center;
@@ -370,84 +374,100 @@ https://svelte.dev/e/js_parse_error -->
 		cursor: pointer;
 		border-radius: 6px;
 		transition: background 0.2s ease;
-		color: var(--text-muted);
-}
+		color: var(--pico-muted-color);
+	}
+
 	.close-button:hover {
-		background: var(--bg-tertiary);
-		color: var(--text-primary);
-}
+		background: var(--pico-secondary-background);
+		color: var(--pico-color);
+	}
+
 	.vibe-section {
 		padding: 1rem 1.5rem;
-		border-bottom: 1px solid var(--border-light);
-		background: var(--bg-primary);
-}
+		border-bottom: 1px solid var(--pico-muted-border-color);
+		background: var(--pico-background-color);
+	}
+
 	.vibe-title {
 		margin: 0 0 0.75rem;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--text-primary);
-}
+		color: var(--pico-color);
+	}
+
 	.vibe-options {
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
-}
+	}
+
 	.vibe-button {
 		padding: 0.5rem 1rem;
-		background: var(--bg-tertiary);
-		border: 1px solid var(--border-light);
-		color: var(--text-primary);
+		background: var(--pico-secondary-background);
+		border: 1px solid var(--pico-muted-border-color);
+		color: var(--pico-color);
 		border-radius: 20px;
 		cursor: pointer;
 		transition: all 0.2s ease;
 		font-size: 0.8rem;
-}
+	}
+
 	.vibe-button:hover {
-		background: var(--bg-secondary);
-		border-color: var(--harvard-crimson);
-		color: var(--harvard-crimson);
-}
+		background: var(--pico-primary-background);
+		border-color: var(--pico-primary);
+		color: var(--pico-primary);
+	}
+
 	.vibe-button.active {
-		background: var(--harvard-crimson);
-		border-color: var(--harvard-crimson);
-		color: var(--text-inverse);
-}
+		background: var(--pico-primary);
+		border-color: var(--pico-primary);
+		color: var(--pico-primary-inverse);
+	}
+
 	.messages-container {
 		flex: 1;
 		overflow-y: auto;
 		padding: 1rem 1.5rem;
 		max-height: 400px;
-}
+	}
+
 	.welcome-message {
 		text-align: center;
 		padding: 2rem 1rem;
-		color: var(--text-muted);
-}
+		color: var(--pico-muted-color);
+	}
+
 	.welcome-icon {
 		margin-bottom: 1rem;
-		color: var(--harvard-crimson);
-}
+		color: var(--pico-primary);
+	}
+
 	.welcome-message h3 {
 		margin: 0 0 1rem;
-		color: var(--text-primary);
-}
+		color: var(--pico-color);
+	}
+
 	.welcome-message ul {
 		text-align: left;
 		max-width: 300px;
 		margin: 1rem auto 0;
-}
+	}
+
 	.message {
 		display: flex;
 		gap: 0.75rem;
 		margin-bottom: 1.5rem;
-}
+	}
+
 	.message.user {
 		flex-direction: row-reverse;
-}
+	}
+
 	.message.error .message-content {
-		background: var(--del-background);
-		border-color: var(--del-color);
-}
+		background: var(--pico-del-background);
+		border-color: var(--pico-del-color);
+	}
+
 	.message-avatar {
 		display: flex;
 		align-items: center;
@@ -455,187 +475,215 @@ https://svelte.dev/e/js_parse_error -->
 		width: 36px;
 		height: 36px;
 		border-radius: 50%;
-		background: var(--bg-secondary);
-		color: var(--harvard-crimson);
+		background: var(--pico-primary-background);
+		color: var(--pico-primary);
 		flex-shrink: 0;
-}
+	}
+
 	.message.user .message-avatar {
-		background: var(--bg-tertiary);
-		color: var(--text-primary);
-}
+		background: var(--pico-secondary-background);
+		color: var(--pico-color);
+	}
+
 	.message-content {
 		flex: 1;
 		min-width: 0;
-}
+	}
+
 	.message-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		margin-bottom: 0.5rem;
-}
+	}
+
 	.message-role {
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: var(--text-primary);
-}
+		color: var(--pico-color);
+	}
+
 	.message-time {
 		font-size: 0.75rem;
-		color: var(--text-muted);
-}
+		color: var(--pico-muted-color);
+	}
+
 	.message-text {
-		background: var(--bg-primary);
-		border: 1px solid var(--border-light);
+		background: var(--pico-background-color);
+		border: 1px solid var(--pico-muted-border-color);
 		border-radius: 12px;
 		padding: 0.75rem 1rem;
 		line-height: 1.5;
-		color: var(--text-primary);
-}
+		color: var(--pico-color);
+	}
+
 	.message.user .message-text {
-		background: var(--harvard-crimson);
-		color: var(--text-inverse);
-		border-color: var(--harvard-crimson);
-}
+		background: var(--pico-primary);
+		color: var(--pico-primary-inverse);
+		border-color: var(--pico-primary);
+	}
+
 	.typing-indicator {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: var(--bg-primary);
-		border: 1px solid var(--border-light);
+		background: var(--pico-background-color);
+		border: 1px solid var(--pico-muted-border-color);
 		border-radius: 12px;
-}
+	}
+
 	.typing-dots {
 		display: flex;
 		gap: 0.25rem;
-}
+	}
+
 	.typing-dots span {
 		width: 8px;
 		height: 8px;
-		background: var(--harvard-crimson);
+		background: var(--pico-primary);
 		border-radius: 50%;
 		animation: typing 1.4s infinite ease-in-out;
-}
+	}
+
 	.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
 	.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
 
 	.typing-text {
 		font-size: 0.875rem;
-		color: var(--text-muted);
-}
+		color: var(--pico-muted-color);
+	}
+
 	.input-section {
 		padding: 1.5rem;
-		border-top: 1px solid var(--border-light);
-		background: var(--bg-primary);
-}
+		border-top: 1px solid var(--pico-muted-border-color);
+		background: var(--pico-background-color);
+	}
+
 	.input-container {
 		display: flex;
 		gap: 0.75rem;
 		align-items: flex-end;
-}
+	}
+
 	.input-container textarea {
 		flex: 1;
 		resize: none;
-		border: 1px solid var(--border-light);
+		border: 1px solid var(--pico-muted-border-color);
 		border-radius: 8px;
 		padding: 0.75rem;
-		background: var(--bg-secondary);
-		color: var(--text-primary);
+		background: var(--pico-card-background-color);
+		color: var(--pico-color);
 		line-height: 1.4;
-}
+	}
+
 	.input-container textarea:focus {
 		outline: none;
-		border-color: var(--harvard-crimson);
-		box-shadow: 0 0 0 2px var(--bg-secondary);
-}
+		border-color: var(--pico-primary);
+		box-shadow: 0 0 0 2px var(--pico-primary-background);
+	}
+
 	.send-button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 44px;
 		height: 44px;
-		background: var(--harvard-crimson);
-		color: var(--text-inverse);
+		background: var(--pico-primary);
+		color: var(--pico-primary-inverse);
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s ease;
 		flex-shrink: 0;
-}
+	}
+
 	.send-button:hover:not(:disabled) {
-		background: var(--primary-hover);
+		background: var(--pico-primary-hover);
 		transform: translateY(-1px);
-}
+	}
+
 	.send-button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 		transform: none;
-}
+	}
+
 	.input-help {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		margin-top: 0.75rem;
 		font-size: 0.75rem;
-		color: var(--text-muted);
-}
+		color: var(--pico-muted-color);
+	}
+
 	.clear-button {
 		background: transparent;
 		border: none;
-		color: var(--harvard-crimson);
+		color: var(--pico-primary);
 		cursor: pointer;
 		font-size: 0.75rem;
 		text-decoration: underline;
-}
+	}
+
 	.clear-button:hover {
-		color: var(--primary-hover);
-}
+		color: var(--pico-primary-hover);
+	}
+
 	@keyframes typing {
 		0%, 60%, 100% {
 			transform: scale(1);
 			opacity: 0.5;
-}
+		}
 		30% {
 			transform: scale(1.4);
 			opacity: 1;
-}}
+		}
+	}
+
 	/* Custom scrollbar */
 	.messages-container::-webkit-scrollbar {
 		width: 6px;
-}
+	}
+
 	.messages-container::-webkit-scrollbar-track {
-		background: var(--bg-primary);
-}
+		background: var(--pico-background-color);
+	}
+
 	.messages-container::-webkit-scrollbar-thumb {
-		background: var(--border-light);
+		background: var(--pico-muted-border-color);
 		border-radius: 3px;
-}
+	}
+
 	.messages-container::-webkit-scrollbar-thumb:hover {
-		background: var(--harvard-crimson);
-}
+		background: var(--pico-primary);
+	}
+
 	/* Responsive */
 	@media (max-width: 768px) {
 		.dialog-container {
 			max-height: 90vh;
 			margin: 0.5rem;
-}
+		}
+
 		.dialog-header,
 		.vibe-section,
 		.input-section {
 			padding: 1rem;
-}
+		}
+
 		.messages-container {
 			padding: 1rem;
-}
+		}
+
 		.vibe-options {
 			gap: 0.25rem;
-}
+		}
+
 		.vibe-button {
 			padding: 0.4rem 0.8rem;
 			font-size: 0.75rem;
-}}
+		}
+	}
 </style>
-
-
-<script lang="ts" context="module">
-  export { default as Dialog } from "./Dialog.svelte";
-</script>

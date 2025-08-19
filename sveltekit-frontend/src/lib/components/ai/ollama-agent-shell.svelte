@@ -316,7 +316,7 @@ Type /help for commands`,
   }
 
   // Reactive state from XState
-  let xstateResponse = $derived($state.context.response;);
+  let xstateResponse = $derived($state.context.response);
   $: if (
     xstateResponse &&
     messages.length > 0 &&

@@ -1,0 +1,228 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Ollama: Chat (quick test)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/ollama-json.ps1",
+        "-Mode",
+        "chat",
+        "-Prompt",
+        "'Hello from VS Code Task'"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Send a test chat to local Ollama and save to logs/ollama-response.json"
+    },
+    {
+      "label": "Ollama: Embedding (quick test)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "scripts/ollama-json.ps1",
+        "-Mode",
+        "embeddings",
+        "-Prompt",
+        "'contract liability terms'"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Request embeddings from local Ollama and save to logs/ollama-response.json"
+    },
+    {
+      "label": "Check Ollama",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-f",
+        "http://localhost:11434/api/version"
+      ]
+    },
+    {
+      "label": "vLLM: Start Server (CUDA, OpenAI API)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:CUDA_VISIBLE_DEVICES='0'; python -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 8000 --model mistralai/Mistral-7B-Instruct-v0.3 --dtype float16 --tensor-parallel-size 1"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Start vLLM with CUDA for GPU-accelerated analysis (OpenAI-compatible API on :8000)"
+    },
+    {
+      "label": "vLLM: Health (8000)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-sS",
+        "http://localhost:8000/v1/models"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "AI: GPU Analyze (vLLM chat test)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-sS",
+        "-X",
+        "POST",
+        "-H",
+        "Content-Type: application/json",
+        "-d",
+        "{\"model\":\"mistralai/Mistral-7B-Instruct-v0.3\",\"messages\":[{\"role\":\"user\",\"content\":\"Summarize the legal implications of breach of contract in one paragraph.\"}]}",
+        "http://localhost:8000/v1/chat/completions"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Sanity check: GPU-accelerated model responds via vLLM"
+    },
+    {
+      "label": "MCP: Context7 Server (GPU vLLM)",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/mcp-servers/context7-server.js"
+      ],
+      "options": {
+        "env": {
+          "STACK_CONFIG": "${workspaceFolder}/context7-docs/context7-mcp-config.json",
+          "DOC_SOURCES": "${workspaceFolder}/context7-docs",
+          "ENABLE_VLLM": "true",
+          "VLLM_ENDPOINT": "http://localhost:8000/v1",
+          "SERVER_PORT": "4000",
+          "CUDA_VISIBLE_DEVICES": "0"
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Context7 server starting.*$",
+          "endsPattern": "^.*Context7 server ready.*$"
+        }
+      },
+      "detail": "Start Context7 MCP with GPU-accelerated vLLM backend"
+    },
+    {
+      "label": "Ollama: Force GPU Analyze (gemma3-legal)",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; ollama run gemma3-legal 'Summarize indemnification obligations in commercial contracts in 3 bullets.'"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Use Ollama gemma3-legal with maximum GPU layers for fast local analysis"
+    },
+    {
+      "label": "AI: gemma3-legal Document Deep Analysis",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; Write-Host '▶️ gemma3-legal: starting deep deed analysis'; ollama run gemma3-legal 'Analyze the following deed for grantor, grantee, risks, legal terms, precedents, and potential challenges: <PASTE_OR_LOAD_DEED_TEXT>';"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Full legal deed entity & risk extraction via gemma3-legal"
+    },
+    {
+      "label": "AI: gemma3-legal Benchmark & Metrics",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; $s=Get-Date; $r=ollama run gemma3-legal 'Summarize indemnification obligations in 150 tokens'; $e=Get-Date; $d=($e-$s).TotalSeconds; Write-Host ('⏱ Duration: ' + [math]::Round($d,2) + 's'); Write-Host $r;"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Measure latency & output for gemma3-legal inference cycle"
+    },
+    {
+      "label": "AI: gemma3-legal End-to-End Cycle",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$env:OLLAMA_GPU_LAYERS='999'; Write-Host '⏳ Starting full gemma3-legal cycle'; $start=Get-Date; $bench=ollama run gemma3-legal 'Summarize indemnification obligations in 120 tokens'; cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle; $status=curl -s 'http://localhost:5173/api/context7-autosolve?action=status'; $dur=(Get-Date)-$start; Write-Host ('✅ Cycle complete in ' + [math]::Round($dur.TotalSeconds,2) + 's'); Write-Host $bench; Write-Host $status;"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Benchmark gemma3-legal + autosolve maintenance + status fetch"
+    }
+  ]
+}

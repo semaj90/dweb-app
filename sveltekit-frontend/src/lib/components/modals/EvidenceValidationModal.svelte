@@ -2,12 +2,16 @@
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
+    open?: boolean;
+    evidence?: any;
+    aiEvent?: any;
     onvalidated?: (event?: any) => void;
   }
   let {
     open = false,
     evidence = null,
-    aiEvent = null
+    aiEvent = null,
+    onvalidated
   }: Props = $props();
 
 
@@ -24,7 +28,6 @@ https://svelte.dev/e/js_parse_error -->
   } from "lucide-svelte";
     import type { Evidence } from '$lib/stores/evidence-store';
 
-      let { aiEvent = $bindable() } = $props(); // any = null; // Specific AI analysis event to validate
 
   
   let validationChoice: "approve" | "reject" | null = null;
@@ -102,7 +105,9 @@ https://svelte.dev/e/js_parse_error -->
       );
     } finally {
       isSubmitting = false;
-}}
+    }
+  }
+  
   function closeModal() {
     validationChoice = null;
     feedback = "";

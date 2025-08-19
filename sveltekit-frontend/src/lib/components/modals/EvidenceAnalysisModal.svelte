@@ -2,29 +2,8 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- Evidence Analysis Modal with LLM integration -->
 <script lang="ts">
-  interface Props {
-    onevidenceUpdated?: (event?: any) => void;
-    onsaveAnalysis?: (event?: any) => void;
-  }
-  let {
-    open = false,
-    evidence
-  }: Props = $props();
-
-
-
-    import { fade, fly } from 'svelte/transition';
-  import { Dialog } from '$lib/components/ui/dialog/Dialog.svelte';
-  import Grid from '$lib/components/ui/grid/Grid.svelte';
-  import GridItem from '$lib/components/ui/grid/GridItem.svelte';
-  import Button from "$lib/components/ui/button";
-  import Input from '$lib/components/ui/Input.svelte';
-  import Badge from '$lib/components/ui/Badge.svelte';
-  
-  // Icons
-  import { FileText, Brain, Tag, Scale, Zap, Download, Upload, Sparkles } from 'lucide-svelte';
-
-        id: string;
+  interface Evidence {
+    id: string;
     content: string;
     type: string;
     caseId?: string;
@@ -38,12 +17,36 @@ https://svelte.dev/e/js_parse_error -->
       suggestedTags: string[];
     };
     tags?: string[];
+  }
+
+  interface Props {
+    open?: boolean;
+    evidence?: Evidence;
+    onevidenceUpdated?: (event?: any) => void;
+    onsaveAnalysis?: (event?: any) => void;
     similarEvidence?: Array<{
       id: string;
       content: string;
       similarity: number;
     }>;
-  } | null = null;
+  }
+  
+  let {
+    open = false,
+    evidence = null,
+    similarEvidence = null
+  }: Props = $props();
+
+  import { fade, fly } from 'svelte/transition';
+  import { Dialog } from '$lib/components/ui/dialog/Dialog.svelte';
+  import Grid from '$lib/components/ui/grid/Grid.svelte';
+  import GridItem from '$lib/components/ui/grid/GridItem.svelte';
+  import Button from "$lib/components/ui/button";
+  import Input from '$lib/components/ui/Input.svelte';
+  import Badge from '$lib/components/ui/Badge.svelte';
+  
+  // Icons
+  import { FileText, Brain, Tag, Scale, Zap, Download, Upload, Sparkles } from 'lucide-svelte';
 
   
   let isAnalyzing = false;

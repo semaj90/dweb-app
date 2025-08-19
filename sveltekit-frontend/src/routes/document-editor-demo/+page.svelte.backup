@@ -11,25 +11,21 @@
 
   function handleSave(event: CustomEvent) {
     console.log("Document saved:", event.detail);
-  }
-
+}
   function handleAIRequest(event: CustomEvent) {
     console.log("AI request:", event.detail);
-  }
-
+}
   function handleCitationAdded(event: CustomEvent) {
     console.log("Citation added:", event.detail);
-  }
-
+}
   function createNewDocument() {
     documentId = `doc-${Date.now()}`;
     console.log("Created new document:", documentId);
-  }
-
+}
   function switchDocumentType(type: typeof selectedDocumentType) {
     selectedDocumentType = type;
     editorTitle = `${type.charAt(0).toUpperCase() + type.slice(1)} Demo`;
-  }
+}
 </script>
 
 <svelte:head>
@@ -40,27 +36,27 @@
   />
 </svelte:head>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
   <!-- Demo Controls -->
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">
-        <h1 class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <h1 class="container mx-auto px-4">
           Legal Document Editor Demo
         </h1>
 
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <!-- Document Type Selector -->
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             <label
               for="document-type-selector"
-              class="mx-auto px-4 max-w-7xl">Type:</label
+              class="container mx-auto px-4">Type:</label
             >
             <select
               id="document-type-selector"
               bind:value={selectedDocumentType}
               on:change={() => switchDocumentType(selectedDocumentType)}
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
             >
               <option value="brief">Brief</option>
               <option value="motion">Motion</option>
@@ -72,19 +68,19 @@
           <!-- New Document Button -->
           <button
             on:click={() => createNewDocument()}
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
             New Document
           </button>
 
           <!-- Readonly Toggle -->
-          <label class="mx-auto px-4 max-w-7xl">
+          <label class="container mx-auto px-4">
             <input
               type="checkbox"
               bind:checked={isReadonly}
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
             />
-            <span class="mx-auto px-4 max-w-7xl">Read-only</span>
+            <span class="container mx-auto px-4">Read-only</span>
           </label>
         </div>
       </div>
@@ -105,10 +101,11 @@
 </div>
 
 <style>
+  /* @unocss-include */
   /* Additional demo-specific styles */
   :global(body) {
     font-family:
       -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
       sans-serif;
-  }
+}
 </style>

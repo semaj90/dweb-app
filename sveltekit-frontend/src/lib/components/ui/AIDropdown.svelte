@@ -4,9 +4,9 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     disabled?: any;
-    onReportGenerate: (reportType: string) ;
-    onSummarize: () ;
-    onAnalyze: () ;
+    onReportGenerate: (reportType: string) => void;
+    onSummarize: () => void;
+    onAnalyze: () => void;
     hasContent?: any;
     isGenerating?: any;
   }

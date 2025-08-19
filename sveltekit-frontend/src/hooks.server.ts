@@ -1,78 +1,91 @@
-import type { Handle, HandleServerError } from "@sveltejs/kit";
-import { validateSession } from "$lib/server/lucia";
-// import { enhancedRAGService } from "$lib/services/enhanced-rag-service.js"; // Disabled during debugging
+import { lucia } from "$lib/server/auth";
+import type { Handle, HandleFetch, HandleServerError } from "@sveltejs/kit";
+import { sequence } from '@sveltejs/kit/hooks';
+import { db } from '$lib/server/db/index.js';
+import { vectorOps } from '$lib/server/db/enhanced-vector-operations.js';
+import { productionServiceClient } from '$lib/services/productionServiceClient.js';
 
-// Enhanced server hooks with proper Lucia v3 authentication
-export const handle: Handle = async ({ event, resolve }) => {
-  // Skip database-dependent initializations in development
-  // const isDevelopment = process.env.NODE_ENV === 'development' || process.env.SKIP_RAG_INITIALIZATION === 'true';
-  
-  // Auto-initialize enhanced RAG on API requests (skip in development)
-  // Temporarily disabled during debugging
-  /*
-  if (event.url.pathname.startsWith("/api/") && !isDevelopment) {
-    try {
-      await enhancedRAGService.initialize();
-    } catch (error) {
-      console.warn("Enhanced RAG initialization failed:", error);
+// Enhanced API context for SSR
+interface APIContext {
+  db: typeof db;
+  vectorOps: typeof vectorOps;
+  productionServices: typeof productionServiceClient;
+  userId?: string;
+  userRole?: string;
+  requestId: string;
+  startTime: number;
+  features: {
+    enhancedRAG: boolean;
+    vectorSearch: boolean;
+    multiCoreOllama: boolean;
+    nvidiaLLama: boolean;
+    neo4jIntegration: boolean;
+    realTimeAnalytics: boolean;
+  };
+}
+
+// Initialize services hook
+const initializeServices: Handle = async ({ event, resolve }) => {
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+
+  // Add API context to event.locals
+  event.locals.apiContext = {
+    db,
+    vectorOps,
+    productionServices: productionServiceClient,
+    requestId,
+    startTime,
+    features: {
+      enhancedRAG: true,
+      vectorSearch: true,
+      multiCoreOllama: true,
+      nvidiaLLama: true,
+      neo4jIntegration: true,
+      realTimeAnalytics: true
     }
-  }
-  */
+  } as APIContext;
 
-  // Always validate sessions - needed for login to work
+  // Check service health for SSR
   try {
-    const sessionId = event.cookies.get('session_id');
-    
-    if (sessionId) {
-      const user = await validateSession(sessionId);
-      event.locals.user = user;
-      event.locals.session = sessionId;
-    } else {
-      event.locals.user = null;
-      event.locals.session = null;
-    }
+    const healthStatus = await productionServiceClient.checkAllServicesHealth();
+    event.locals.serviceHealth = healthStatus;
   } catch (error) {
-    console.error('Session validation error in hooks:', error);
-    event.locals.user = null;
-    event.locals.session = null;
-  }
-
-  // Add CORS headers for API routes
-  if (event.url.pathname.startsWith("/api")) {
-    const response = await resolve(event);
-    response.headers.set("Access-Control-Allow-Origin", "*");
-    response.headers.set(
-      "Access-Control-Allow-Methods",
-      "GET, POST, PUT, DELETE, OPTIONS"
-    );
-    response.headers.set(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
-    return response;
+    console.warn('Service health check failed during SSR:', error);
+    event.locals.serviceHealth = {};
   }
 
   return resolve(event);
 };
 
-export const handleError: HandleServerError = async ({
-  error,
-  event,
-  status,
-}) => {
-  const errorId = crypto.randomUUID();
+// Original Lucia auth hook
+const luciaAuthHook: Handle = async ({ event, resolve }) => {
+  const sessionId = event.cookies.get(lucia.sessionCookieName);
+  if (!sessionId) {
+    event.locals.user = null;
+    event.locals.session = null;
+    return resolve(event);
+  }
 
-  console.error("Server error:", {
-    errorId,
-    error: error instanceof Error ? error.message : String(error),
-    stack: error instanceof Error ? error.stack : undefined,
-    status,
-    url: event.url.pathname,
-    method: event.request.method,
-  });
+  const { session, user } = await lucia.validateSession(sessionId);
+  if (session && session.fresh) {
+    const sessionCookie = lucia.createSessionCookie(session.id);
+    event.cookies.set(sessionCookie.name, sessionCookie.value, {
+      path: ".",
+      ...sessionCookie.attributes,
+    });
+  }
+  if (!session) {
+    const sessionCookie = lucia.createBlankSessionCookie();
+    event.cookies.set(sessionCookie.name, sessionCookie.value, {
+      path: ".",
+      ...sessionCookie.attributes,
+    });
+  }
 
-  return {
-    message: "Internal Server Error",
-    errorId,
-  };
+  // Set user and session in locals  
+  event.locals.user = user;
+  event.locals.session = session?.id || null;
+  
+  return resolve(event);
 };

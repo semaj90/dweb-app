@@ -3,12 +3,11 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
     caseId: string;
-;
-    onEvidenceDrop: (evidence: Evidence) ;
+    onEvidenceDrop: (evidence: Evidence) => void;
   }
   let {
     caseId,
-    onEvidenceDrop = > void = () => {}
+    onEvidenceDrop = () => {}
   }: Props = $props();
 
 
@@ -17,7 +16,6 @@ https://svelte.dev/e/js_parse_error -->
   import { createEventDispatcher, onMount } from "svelte";
   import { writable } from "svelte/store";
 
-    let { onEvidenceDrop = $bindable() } = $props(); // (evidence: Evidence) => void = () => {};
 
   const evidenceList = writable<Evidence[]>([]);
   const isUploading = writable(false);

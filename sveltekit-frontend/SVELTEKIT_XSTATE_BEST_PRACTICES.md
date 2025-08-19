@@ -496,6 +496,400 @@ const { state, send } = useMachine(myMachine, {
 
 ---
 
+## 🎨 Svelte 5 + Bits UI v2 + Melt UI Integration Best Practices
+
+### 24. **Component Composition with mergeProps**
+
+Use `mergeProps` from Bits UI for proper component composition and prop forwarding.
+
+**✅ Bits UI v2 Component Pattern:**
+
+```typescript
+<script lang="ts">
+  import { mergeProps } from 'bits-ui';
+  import { Button as ButtonPrimitive } from 'bits-ui';
+  
+  interface Props {
+    variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+    size?: 'default' | 'sm' | 'lg' | 'icon';
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
+  
+  let {
+    variant = 'default',
+    size = 'default', 
+    class: className = '',
+    children,
+    ...restProps
+  }: Props = $props();
+  
+  // ✅ Merge props with Bits UI primitives
+  const buttonProps = mergeProps(restProps, {
+    class: cn(buttonVariants({ variant, size }), className)
+  });
+</script>
+
+<ButtonPrimitive.Root {...buttonProps}>
+  {#if children}
+    {@render children()}
+  {/if}
+</ButtonPrimitive.Root>
+```
+
+### 25. **Snippet-based Slot Forwarding**
+
+Use Svelte 5 snippets for flexible component composition with Bits UI.
+
+**✅ Snippet Composition Pattern:**
+
+```typescript
+<script lang="ts">
+  import { Dialog as DialogPrimitive } from 'bits-ui';
+  
+  interface Props {
+    title?: string;
+    description?: string;
+    children: import('svelte').Snippet;
+    footer?: import('svelte').Snippet<[{ close: () => void }]>;
+  }
+  
+  let { title, description, children, footer }: Props = $props();
+</script>
+
+<DialogPrimitive.Root>
+  <DialogPrimitive.Content>
+    {#if title}
+      <DialogPrimitive.Title>{title}</DialogPrimitive.Title>
+    {/if}
+    {#if description}
+      <DialogPrimitive.Description>{description}</DialogPrimitive.Description>
+    {/if}
+    
+    <!-- ✅ Render child snippet -->
+    {@render children()}
+    
+    {#if footer}
+      <!-- ✅ Pass context to footer snippet -->
+      {@render footer({ close: () => {} })}
+    {/if}
+  </DialogPrimitive.Content>
+</DialogPrimitive.Root>
+```
+
+### 26. **Prop Consolidation for Duplicate Variables**
+
+Consolidate duplicate prop declarations to fix syntax errors.
+
+**❌ Duplicate Props (causes errors):**
+
+```typescript
+<script lang="ts">
+  let { size = 'md' } = $props();
+  // ... other code ...
+  let { size = $bindable() } = $props(); // ❌ Duplicate declaration
+</script>
+```
+
+**✅ Consolidated Props Pattern:**
+
+```typescript
+<script lang="ts">
+  interface Props {
+    size?: 'sm' | 'md' | 'lg' | 'xl';
+    color?: 'blue' | 'green' | 'red' | 'yellow' | 'gray' | 'white';
+    label?: string;
+    inline?: boolean;
+  }
+  
+  let {
+    size = 'md',
+    color = 'blue', 
+    label = 'Loading...',
+    inline = false
+  }: Props = $props();
+  
+  // ✅ Single prop destructuring with proper types
+</script>
+```
+
+### 27. **Melt UI Integration with Svelte 5**
+
+Use Melt UI builders and components with Svelte 5 runes system.
+
+**✅ Melt UI Builder Pattern (Reactive Getters/Setters):**
+
+```typescript
+<script lang="ts">
+  import { Toggle } from "melt/builders";
+  
+  interface Props {
+    value?: boolean;
+    onValueChange?: (value: boolean) => void;
+  }
+  
+  let { value = false, onValueChange }: Props = $props();
+  
+  // ✅ Use Melt UI builder with Svelte 5 runes
+  const toggle = new Toggle({
+    value: () => value,
+    onValueChange: (v) => {
+      value = v;
+      onValueChange?.(v);
+    }
+  });
+</script>
+
+<button {...toggle.trigger}>
+  {toggle.value ? "On" : "Off"}
+</button>
+```
+
+**✅ Melt UI Component Pattern (Traditional Approach):**
+
+```typescript
+<script lang="ts">
+  import { Toggle } from "melt/components";
+  
+  interface Props {
+    initialValue?: boolean;
+    onValueChange?: (value: boolean) => void;
+  }
+  
+  let { initialValue = false, onValueChange }: Props = $props();
+  let value = $state(initialValue);
+  
+  // ✅ React to value changes
+  $effect(() => {
+    onValueChange?.(value);
+  });
+</script>
+
+<Toggle bind:value>
+  {#snippet children(toggle)}
+    <button {...toggle.trigger} class="toggle-button">
+      {toggle.value ? "✅ On" : "❌ Off"}
+    </button>
+  {/snippet}
+</Toggle>
+```
+
+**✅ Complex Melt UI Integration (Dialog Example):**
+
+```typescript
+<script lang="ts">
+  import { Dialog } from "melt/components";
+  
+  interface Props {
+    open?: boolean;
+    title: string;
+    description?: string;
+    children: import('svelte').Snippet;
+    onOpenChange?: (open: boolean) => void;
+  }
+  
+  let { 
+    open = false, 
+    title, 
+    description, 
+    children, 
+    onOpenChange 
+  }: Props = $props();
+  
+  // ✅ Use $effect for prop synchronization
+  $effect(() => {
+    onOpenChange?.(open);
+  });
+</script>
+
+<Dialog bind:open closeOnOutsideClick>
+  {#snippet children(dialog)}
+    <button {...dialog.trigger} class="dialog-trigger">
+      Open Dialog
+    </button>
+    
+    {#if dialog.open}
+      <div {...dialog.overlay} class="dialog-overlay">
+        <div {...dialog.content} class="dialog-content">
+          <h2 {...dialog.title}>{title}</h2>
+          {#if description}
+            <p {...dialog.description}>{description}</p>
+          {/if}
+          
+          {@render children()}
+          
+          <button {...dialog.close} class="dialog-close">
+            Close
+          </button>
+        </div>
+      </div>
+    {/if}
+  {/snippet}
+</Dialog>
+```
+
+### 28. **Event Handler Chaining**
+
+Properly chain event handlers when using Bits UI + custom logic.
+
+**✅ Event Handler Chaining:**
+
+```typescript
+<script lang="ts">
+  import { Button as ButtonPrimitive } from 'bits-ui';
+  
+  interface Props {
+    onclick?: (event: MouseEvent) => void;
+    variant?: 'default' | 'destructive';
+    children: import('svelte').Snippet;
+  }
+  
+  let { onclick, variant = 'default', children, ...restProps }: Props = $props();
+  
+  // ✅ Chain custom handler with primitive handler
+  function handleClick(event: MouseEvent) {
+    // Custom logic first
+    console.log('Button clicked:', variant);
+    
+    // Then call user-provided handler
+    onclick?.(event);
+  }
+</script>
+
+<ButtonPrimitive.Root 
+  {...restProps}
+  onclick={handleClick}
+  class={cn(buttonVariants({ variant }))}
+>
+  {@render children()}
+</ButtonPrimitive.Root>
+```
+
+### 29. **Class Merging with clsx**
+
+Use `clsx` for proper class merging in component libraries.
+
+**✅ Class Merging Pattern:**
+
+```typescript
+<script lang="ts">
+  import { clsx, type ClassValue } from 'clsx';
+  import { twMerge } from 'tailwind-merge';
+  
+  // ✅ Utility for class merging
+  export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+  }
+  
+  interface Props {
+    class?: string;
+    variant?: 'default' | 'secondary' | 'destructive';
+    size?: 'sm' | 'md' | 'lg';
+  }
+  
+  let { 
+    class: className = '',
+    variant = 'default',
+    size = 'md',
+    ...restProps 
+  }: Props = $props();
+  
+  // ✅ Define variant styles
+  const variants = {
+    default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+    destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+  };
+  
+  const sizes = {
+    sm: 'h-9 rounded-md px-3',
+    md: 'h-10 px-4 py-2', 
+    lg: 'h-11 rounded-md px-8'
+  };
+  
+  // ✅ Merge all classes properly
+  const buttonClass = cn(
+    'inline-flex items-center justify-center rounded-md font-medium transition-colors',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    'disabled:pointer-events-none disabled:opacity-50',
+    variants[variant],
+    sizes[size],
+    className
+  );
+</script>
+```
+
+### 30. **Accessibility with Bits UI Primitives**
+
+Leverage Bits UI's built-in accessibility features properly.
+
+**✅ Accessible Component Pattern:**
+
+```typescript
+<script lang="ts">
+  import { 
+    Select as SelectPrimitive,
+    Label as LabelPrimitive 
+  } from 'bits-ui';
+  
+  interface Props {
+    label: string;
+    placeholder?: string;
+    value?: string;
+    onValueChange?: (value: string) => void;
+    items: Array<{ value: string; label: string }>;
+    disabled?: boolean;
+    required?: boolean;
+  }
+  
+  let {
+    label,
+    placeholder = 'Select an option...',
+    value = '',
+    onValueChange,
+    items,
+    disabled = false,
+    required = false
+  }: Props = $props();
+</script>
+
+<!-- ✅ Accessible select with proper labeling -->
+<LabelPrimitive.Root class="select-label">
+  {label}
+  {#if required}
+    <span class="text-destructive" aria-label="required">*</span>
+  {/if}
+</LabelPrimitive.Root>
+
+<SelectPrimitive.Root 
+  {value} 
+  onValueChange={onValueChange}
+  {disabled}
+  {required}
+>
+  <SelectPrimitive.Trigger 
+    class={cn(
+      'flex h-10 w-full items-center justify-between rounded-md border px-3 py-2',
+      disabled && 'cursor-not-allowed opacity-50'
+    )}
+    aria-label={label}
+  >
+    <SelectPrimitive.Value {placeholder} />
+    <SelectPrimitive.Icon />
+  </SelectPrimitive.Trigger>
+  
+  <SelectPrimitive.Content>
+    {#each items as item}
+      <SelectPrimitive.Item value={item.value}>
+        <SelectPrimitive.ItemText>{item.label}</SelectPrimitive.ItemText>
+      </SelectPrimitive.Item>
+    {/each}
+  </SelectPrimitive.Content>
+</SelectPrimitive.Root>
+```
+
+---
+
 ## 📋 Key Principles Summary
 
 ### **Never Do This:**

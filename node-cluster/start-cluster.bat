@@ -18,7 +18,7 @@ echo Starting Legal AI Node.js Cluster Manager...
 echo.
 echo Cluster Configuration:
 echo   - Legal Workers: 3 instances (512MB each)
-echo   - AI Workers: 2 instances (1GB each)  
+echo   - AI Workers: 2 instances (1GB each)
 echo   - Vector Workers: 2 instances (256MB each)
 echo   - Database Workers: 3 instances (256MB each)
 echo.
@@ -28,7 +28,7 @@ echo Cluster Status: http://localhost:3000/status
 echo.
 
 REM Start the cluster manager
-node cluster-manager.js
+node cluster-manager.cjs
 
 echo.
 echo Cluster manager stopped

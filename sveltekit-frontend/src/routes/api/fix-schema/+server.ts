@@ -23,7 +23,7 @@ export async function POST() {
     return json({
       success: true,
       message: 'Schema fixed successfully',
-      columns: columns.rows
+      columns: columns
     });
     
   } catch (error: any) {

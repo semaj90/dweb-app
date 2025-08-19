@@ -1,31 +1,11 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- Enhanced Interactive Canvas with Fabric.js, No VDOM, Auto-save with Loki.js -->
 <script lang="ts">
-  interface Props {
-    caseId: string;
-    canvasId: string ;
-    width?: any;
-    height?: any;
-    readOnly?: any;
-  }
-  let {
-    caseId,
-    canvasId = "",
-    width = 1200,
-    height = 800,
-    readOnly = false
-  }: Props = $props();
-
-
-
-  import type { User } from '$lib/types';
   import { aiSummarizationService } from "$lib/services/aiSummarizationService";
   import { evidenceStore } from "$lib/stores/evidenceStore";
   import type { TEvent } from "fabric";
   import * as fabric from "fabric";
   import Fuse from "fuse.js";
-  import Loki, { Collection } from "lokijs";
+  import Loki from "lokijs";
   import {
     Archive,
     Circle,
@@ -54,7 +34,12 @@ https://svelte.dev/e/js_parse_error -->
   import { onDestroy, onMount } from "svelte";
   import { get, writable } from "svelte/store";
 
-          
+  export let caseId: string;
+  export let canvasId: string = "";
+  export let width = 1200;
+  export let height = 800;
+  export let readOnly = false;
+
   let canvasElement: HTMLCanvasElement;
   let canvas: fabric.Canvas | null = null;
   let lokiDb: Loki | null = null;
@@ -128,13 +113,13 @@ https://svelte.dev/e/js_parse_error -->
   onDestroy(() => {
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
-}
+    }
     if (canvas) {
       canvas.dispose();
-}
+    }
     if (lokiDb) {
       lokiDb.close();
-}
+    }
   });
 
   function initializeLokiDB() {
@@ -150,7 +135,8 @@ https://svelte.dev/e/js_parse_error -->
       autosave: true,
       autosaveInterval: 4000,
     });
-}
+  }
+
   function initializeCanvas() {
     canvas = new fabric.Canvas(canvasElement, {
       width,
@@ -180,7 +166,8 @@ https://svelte.dev/e/js_parse_error -->
 
     // Initialize history
     saveState();
-}
+  }
+
   function initializeSearch() {
     const searchOptions = {
       keys: ["title", "description", "evidenceType", "tags"],
@@ -188,12 +175,14 @@ https://svelte.dev/e/js_parse_error -->
       includeMatches: true,
     };
     searchEngine = new Fuse(evidenceItems, searchOptions);
-}
+  }
+
   function updateSearchEngine() {
     if (searchEngine && evidenceItems) {
       searchEngine.setCollection(evidenceItems);
-}
-}
+    }
+  }
+
   function setupEventListeners() {
     // Keyboard shortcuts
     document.addEventListener("keydown", handleKeyboard);
@@ -203,8 +192,9 @@ https://svelte.dev/e/js_parse_error -->
       canvas.on("mouse:down", handleMouseDown);
       canvas.on("mouse:move", handleMouseMove);
       canvas.on("mouse:up", handleMouseUp);
-}
-}
+    }
+  }
+
   function handleKeyboard(e: KeyboardEvent) {
     if (!canvas) return;
 
@@ -216,7 +206,7 @@ https://svelte.dev/e/js_parse_error -->
             redo();
           } else {
             undo();
-}
+          }
           break;
         case "s":
           e.preventDefault();
@@ -239,9 +229,10 @@ https://svelte.dev/e/js_parse_error -->
           e.preventDefault();
           deleteSelected();
           break;
-}
-}
-}
+      }
+    }
+  }
+
   function handleMouseDown(event: TEvent) {
     const state = get(canvasState);
     if (!canvas) return;
@@ -264,14 +255,17 @@ https://svelte.dev/e/js_parse_error -->
       case "arrow":
         createArrow(pointer);
         break;
-}
-}
+    }
+  }
+
   function handleMouseMove(event: TEvent) {
     // Handle drawing modes
-}
+  }
+
   function handleMouseUp(event: TEvent) {
     // Finalize drawing operations
-}
+  }
+
   function createRectangle(pointer: fabric.Point) {
     if (!canvas) return;
 
@@ -289,7 +283,8 @@ https://svelte.dev/e/js_parse_error -->
 
     canvas.add(rect);
     canvas.setActiveObject(rect);
-}
+  }
+
   function createCircle(pointer: fabric.Point) {
     if (!canvas) return;
 
@@ -304,7 +299,8 @@ https://svelte.dev/e/js_parse_error -->
 
     canvas.add(circle);
     canvas.setActiveObject(circle);
-}
+  }
+
   function createText(pointer: fabric.Point) {
     if (!canvas) return;
 
@@ -319,7 +315,8 @@ https://svelte.dev/e/js_parse_error -->
     canvas.add(text);
     canvas.setActiveObject(text);
     text.enterEditing();
-}
+  }
+
   function createLine(pointer: fabric.Point) {
     if (!canvas) return;
 
@@ -329,12 +326,13 @@ https://svelte.dev/e/js_parse_error -->
         stroke: "#ef4444",
         strokeWidth: 2,
         selectable: true,
-}
+      }
     );
 
     canvas.add(line);
     canvas.setActiveObject(line);
-}
+  }
+
   function createArrow(pointer: fabric.Point) {
     if (!canvas) return;
 
@@ -360,7 +358,8 @@ https://svelte.dev/e/js_parse_error -->
 
     canvas.add(arrow);
     canvas.setActiveObject(arrow);
-}
+  }
+
   function createEvidenceObject(evidence: any): fabric.Group {
     const rect = new fabric.Rect({
       width: 200,
@@ -395,14 +394,15 @@ https://svelte.dev/e/js_parse_error -->
         left: 10,
         width: 180,
         fill: "#374151",
-}
+      }
     );
 
     // Add thumbnail if available
     let thumbnail = null;
     if (evidence.fileUrl) {
       thumbnail = createThumbnail(evidence);
-}
+    }
+
     const elements = [rect, title, type, description];
     if (thumbnail) elements.push(thumbnail);
 
@@ -418,7 +418,8 @@ https://svelte.dev/e/js_parse_error -->
     group.set("objectType", "evidence");
 
     return group;
-}
+  }
+
   function createThumbnail(evidence: any): fabric.Object | null {
     // Create appropriate thumbnail based on file type
     const fileType = evidence.fileType || evidence.mimeType || "";
@@ -452,9 +453,11 @@ https://svelte.dev/e/js_parse_error -->
         left: 140,
         fill: "#7c2d12",
       });
-}
+    }
+
     return null;
-}
+  }
+
   function addTimelineToCanvas() {
     if (!canvas) return;
 
@@ -462,7 +465,8 @@ https://svelte.dev/e/js_parse_error -->
     const timelineGroup = createTimelineVisualization();
     canvas.add(timelineGroup);
     canvas.setActiveObject(timelineGroup);
-}
+  }
+
   function createTimelineVisualization(): fabric.Group {
     const line = new fabric.Line([0, 0, 400, 0], {
       stroke: "#374151",
@@ -490,7 +494,8 @@ https://svelte.dev/e/js_parse_error -->
       });
 
       elements.push(marker, date);
-}
+    }
+
     const timeline = new fabric.Group(elements, {
       left: 100,
       top: 200,
@@ -498,14 +503,16 @@ https://svelte.dev/e/js_parse_error -->
 
     timeline.set("objectType", "timeline");
     return timeline;
-}
+  }
+
   function addPersonToCanvas() {
     if (!canvas) return;
 
     const person = createPersonVisualization();
     canvas.add(person);
     canvas.setActiveObject(person);
-}
+  }
+
   function createPersonVisualization(): fabric.Group {
     const circle = new fabric.Circle({
       radius: 30,
@@ -537,14 +544,16 @@ https://svelte.dev/e/js_parse_error -->
 
     person.set("objectType", "person");
     return person;
-}
+  }
+
   function addLocationToCanvas() {
     if (!canvas) return;
 
     const location = createLocationVisualization();
     canvas.add(location);
     canvas.setActiveObject(location);
-}
+  }
+
   function createLocationVisualization(): fabric.Group {
     const marker = new fabric.Polygon(
       [
@@ -559,7 +568,7 @@ https://svelte.dev/e/js_parse_error -->
         fill: "#dc2626",
         stroke: "#991b1b",
         strokeWidth: 1,
-}
+      }
     );
 
     const label = new fabric.Text("Location", {
@@ -576,37 +585,45 @@ https://svelte.dev/e/js_parse_error -->
 
     location.set("objectType", "location");
     return location;
-}
+  }
+
   // Canvas state management functions
   function handleObjectAdded() {
     isDirty = true;
     updateCanvasState();
     scheduleAutoSave();
     saveState();
-}
+  }
+
   function handleObjectRemoved() {
     isDirty = true;
     updateCanvasState();
     scheduleAutoSave();
     saveState();
-}
+  }
+
   function handleObjectModified() {
     isDirty = true;
     scheduleAutoSave();
     saveState();
-}
+  }
+
   function handleSelectionCreated(options: any) {
     updateSelection();
-}
+  }
+
   function handleSelectionUpdated(options: any) {
     updateSelection();
-}
+  }
+
   function handleSelectionCleared() {
     updateSelection();
-}
+  }
+
   function handlePathCreated() {
     saveState();
-}
+  }
+
   function updateSelection() {
     if (!canvas) return;
 
@@ -615,7 +632,8 @@ https://svelte.dev/e/js_parse_error -->
       ...state,
       selectedObjects: activeObjects,
     }));
-}
+  }
+
   function updateCanvasState() {
     if (!canvas) return;
 
@@ -625,7 +643,8 @@ https://svelte.dev/e/js_parse_error -->
       canUndo: historyIndex > 0,
       canRedo: historyIndex < historyStack.length - 1,
     }));
-}
+  }
+
   // History management
   function saveState() {
     if (!canvas) return;
@@ -643,9 +662,11 @@ https://svelte.dev/e/js_parse_error -->
     if (historyStack.length > maxHistorySize) {
       historyStack.shift();
       historyIndex--;
-}
+    }
+
     updateCanvasState();
-}
+  }
+
   async function undo() {
     if (!canvas || historyIndex <= 0) return;
 
@@ -654,7 +675,8 @@ https://svelte.dev/e/js_parse_error -->
     await canvas.loadFromJSON(state);
     canvas.renderAll();
     updateCanvasState();
-}
+  }
+
   async function redo() {
     if (!canvas || historyIndex >= historyStack.length - 1) return;
 
@@ -663,16 +685,18 @@ https://svelte.dev/e/js_parse_error -->
     await canvas.loadFromJSON(state);
     canvas.renderAll();
     updateCanvasState();
-}
+  }
+
   // Auto-save functionality
   function scheduleAutoSave() {
     if (autoSaveTimeout) {
       clearTimeout(autoSaveTimeout);
-}
+    }
     autoSaveTimeout = setTimeout(() => {
       saveCanvas();
     }, 3000);
-}
+  }
+
   async function saveCanvas() {
     if (!canvas || !canvasCollection || !isDirty) return;
 
@@ -698,7 +722,8 @@ https://svelte.dev/e/js_parse_error -->
         canvasCollection.update({ ...existing, ...canvasData });
       } else {
         canvasCollection.insert(canvasData);
-}
+      }
+
       // Save to server
       await fetch("/api/canvas/save", {
         method: "POST",
@@ -710,8 +735,9 @@ https://svelte.dev/e/js_parse_error -->
       showSaveIndicator();
     } catch (error) {
       console.error("Failed to save canvas:", error);
-}
-}
+    }
+  }
+
   async function loadCanvasData() {
     if (!canvasCollection) return;
 
@@ -724,7 +750,8 @@ https://svelte.dev/e/js_parse_error -->
           canvas?.renderAll();
         });
         return;
-}
+      }
+
       // Fallback to server
       const response = await fetch(`/api/canvas/${caseId}`);
       if (response.ok) {
@@ -732,11 +759,12 @@ https://svelte.dev/e/js_parse_error -->
         canvas?.loadFromJSON(serverData.data, () => {
           canvas?.renderAll();
         });
-}
+      }
     } catch (error) {
       console.error("Failed to load canvas:", error);
-}
-}
+    }
+  }
+
   function showSaveIndicator() {
     // Visual save indicator
     const indicator = document.createElement("div");
@@ -747,9 +775,10 @@ https://svelte.dev/e/js_parse_error -->
     setTimeout(() => {
       if (document.body.contains(indicator)) {
         document.body.removeChild(indicator);
-}
+      }
     }, 2000);
-}
+  }
+
   // Tool functions
   function setTool(toolId: string) {
     canvasState.update((state) => ({ ...state, tool: toolId }));
@@ -770,29 +799,34 @@ https://svelte.dev/e/js_parse_error -->
         break;
       default:
         canvas.defaultCursor = "default";
-}
-}
+    }
+  }
+
   function zoomIn() {
     const currentZoom = get(canvasState).zoom;
     const newZoom = Math.min(currentZoom + 10, 200);
     setZoom(newZoom);
-}
+  }
+
   function zoomOut() {
     const currentZoom = get(canvasState).zoom;
     const newZoom = Math.max(currentZoom - 10, 25);
     setZoom(newZoom);
-}
+  }
+
   function setZoom(zoom: number) {
     if (!canvas) return;
 
     canvasState.update((state) => ({ ...state, zoom }));
     canvas.setZoom(zoom / 100);
     canvas.renderAll();
-}
+  }
+
   function toggleGrid() {
     canvasState.update((state) => ({ ...state, showGrid: !state.showGrid }));
     updateGrid();
-}
+  }
+
   function updateGrid() {
     if (!canvas) return;
 
@@ -806,8 +840,9 @@ https://svelte.dev/e/js_parse_error -->
     } else {
       canvas.backgroundColor = "#ffffff";
       canvas.renderAll();
-}
-}
+    }
+  }
+
   function createGridPattern(size: number): string {
     const svg = `
       <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
@@ -820,7 +855,8 @@ https://svelte.dev/e/js_parse_error -->
       </svg>
     `;
     return `data:image/svg+xml;base64,${btoa(svg)}`;
-}
+  }
+
   // Object manipulation
   function deleteSelected() {
     if (!canvas) return;
@@ -830,8 +866,9 @@ https://svelte.dev/e/js_parse_error -->
       canvas.discardActiveObject();
       activeObjects.forEach((obj) => canvas?.remove(obj));
       canvas.renderAll();
-}
-}
+    }
+  }
+
   async function copySelected() {
     if (!canvas) return;
 
@@ -845,8 +882,9 @@ https://svelte.dev/e/js_parse_error -->
       canvas?.add(cloned);
       canvas?.setActiveObject(cloned);
       canvas?.renderAll();
-}
-}
+    }
+  }
+
   function pasteClipboard() {
     // Implement clipboard paste functionality
     navigator.clipboard.read().then((items) => {
@@ -863,10 +901,11 @@ https://svelte.dev/e/js_parse_error -->
             };
             reader.readAsDataURL(blob);
           });
-}
-}
+        }
+      }
     });
-}
+  }
+
   function selectAll() {
     if (!canvas) return;
 
@@ -874,7 +913,8 @@ https://svelte.dev/e/js_parse_error -->
     const selection = new fabric.ActiveSelection(allObjects, { canvas });
     canvas.setActiveObject(selection);
     canvas.renderAll();
-}
+  }
+
   // Export functions
   function exportCanvas(format: "png" | "svg" | "json") {
     if (!canvas) return;
@@ -900,21 +940,25 @@ https://svelte.dev/e/js_parse_error -->
         dataUrl = `data:application/json;base64,${btoa(JSON.stringify(jsonData, null, 2))}`;
         filename = `canvas-${caseId}.json`;
         break;
-}
+    }
+
     const link = document.createElement("a");
     link.href = dataUrl;
     link.download = filename;
     link.click();
-}
+  }
+
   // Search functionality
   function searchEvidence(query: string) {
     if (!searchEngine || !query.trim()) {
       searchResults = [];
       return;
-}
+    }
+
     const results = searchEngine.search(query);
     searchResults = results.map((result) => result.item);
-}
+  }
+
   // Generate AI summary for canvas
   async function generateAISummary() {
     if (!canvas) return;
@@ -931,7 +975,8 @@ https://svelte.dev/e/js_parse_error -->
       if (evidenceData.length === 0) {
         alert("No evidence items found on canvas to summarize.");
         return;
-}
+      }
+
       const summary = await aiSummarizationService.generateEvidenceAnalysis(
         evidenceData,
         caseId
@@ -948,7 +993,7 @@ https://svelte.dev/e/js_parse_error -->
           fill: "#374151",
           backgroundColor: "#f0f9ff",
           padding: 10,
-}
+        }
       );
 
       canvas.add(summaryText);
@@ -956,10 +1001,11 @@ https://svelte.dev/e/js_parse_error -->
     } catch (error) {
       console.error("Failed to generate AI summary:", error);
       alert("Failed to generate AI summary. Please try again.");
-}
-}
+    }
+  }
+
   // Reactive statements
-  let state = $derived(get(canvasState););
+  $: state = get(canvasState);
 
   // Exported functions for parent component access
   export function addEvidenceToCanvas(evidence: any) {
@@ -967,7 +1013,8 @@ https://svelte.dev/e/js_parse_error -->
     const evidenceObject = createEvidenceObject(evidence);
     canvas.add(evidenceObject);
     canvas.setActiveObject(evidenceObject);
-}
+  }
+
   export function addElementsToCanvas(elements: any[]) {
     if (!canvas || !elements) return;
     elements.forEach((element) => {
@@ -975,10 +1022,11 @@ https://svelte.dev/e/js_parse_error -->
       const canvasObject = createCanvasObjectFromData(element);
       if (canvasObject) {
         canvas.add(canvasObject);
-}
+      }
     });
     canvas.renderAll();
-}
+  }
+
   function createCanvasObjectFromData(elementData: any): fabric.Object | null {
     try {
       // Basic implementation - can be expanded based on element types
@@ -991,40 +1039,40 @@ https://svelte.dev/e/js_parse_error -->
           fontSize: elementData.fontSize || 16,
           fill: elementData.fill || "#333",
         });
-}
+      }
       return null;
     } catch (error) {
       console.error("Error creating canvas object:", error);
       return null;
-}
-}
+    }
+  }
 </script>
 
-<div class="space-y-4">
+<div class="mx-auto px-4 max-w-7xl">
   <!-- Main Toolbar -->
   <div
-    class="space-y-4"
+    class="mx-auto px-4 max-w-7xl"
   >
     <!-- File Operations -->
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       <button
-        class="space-y-4"
-        onclick={() => saveCanvas()}
+        class="mx-auto px-4 max-w-7xl"
+        on:click={() => saveCanvas()}
         title="Save Canvas"
       >
         <Save size="18" />
       </button>
       <button
-        class="space-y-4"
-        onclick={() => undo()}
+        class="mx-auto px-4 max-w-7xl"
+        on:click={() => undo()}
         disabled={!state.canUndo}
         title="Undo"
       >
         <Undo size="18" />
       </button>
       <button
-        class="space-y-4"
-        onclick={() => redo()}
+        class="mx-auto px-4 max-w-7xl"
+        on:click={() => redo()}
         disabled={!state.canRedo}
         title="Redo"
       >
@@ -1032,15 +1080,15 @@ https://svelte.dev/e/js_parse_error -->
       </button>
     </div>
 
-    <div class="space-y-4"></div>
+    <div class="mx-auto px-4 max-w-7xl"></div>
 
     <!-- Tools -->
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       {#each tools as tool}
         <button
-          class="space-y-4"
+          class="mx-auto px-4 max-w-7xl"
           class:active={state.tool === tool.id}
-          onclick={() => setTool(tool.id)}
+          on:click={() => setTool(tool.id)}
           title={tool.label}
         >
           <svelte:component this={tool.icon} size="18" />
@@ -1048,142 +1096,142 @@ https://svelte.dev/e/js_parse_error -->
       {/each}
     </div>
 
-    <div class="space-y-4"></div>
+    <div class="mx-auto px-4 max-w-7xl"></div>
 
     <!-- Canvas Controls -->
-    <div class="space-y-4">
-      <button class="space-y-4" onclick={() => zoomOut()} title="Zoom Out">
+    <div class="mx-auto px-4 max-w-7xl">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => zoomOut()} title="Zoom Out">
         <ZoomOut size="18" />
       </button>
-      <span class="space-y-4">{state.zoom}%</span>
-      <button class="space-y-4" onclick={() => zoomIn()} title="Zoom In">
+      <span class="mx-auto px-4 max-w-7xl">{state.zoom}%</span>
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => zoomIn()} title="Zoom In">
         <ZoomIn size="18" />
       </button>
 
       <button
-        class="space-y-4"
+        class="mx-auto px-4 max-w-7xl"
         class:active={state.showGrid}
-        onclick={() => toggleGrid()}
+        on:click={() => toggleGrid()}
         title="Toggle Grid"
       >
         <Grid size="18" />
       </button>
     </div>
 
-    <div class="space-y-4"></div>
+    <div class="mx-auto px-4 max-w-7xl"></div>
 
     <!-- Object Actions -->
-    <div class="space-y-4">
-      <button class="space-y-4" onclick={() => copySelected()} title="Copy">
+    <div class="mx-auto px-4 max-w-7xl">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => copySelected()} title="Copy">
         <Copy size="18" />
       </button>
-      <button class="space-y-4" onclick={() => pasteClipboard()} title="Paste">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => pasteClipboard()} title="Paste">
         <Copy size="18" />
       </button>
-      <button class="space-y-4" onclick={() => deleteSelected()} title="Delete">
+      <button class="mx-auto px-4 max-w-7xl" on:click={() => deleteSelected()} title="Delete">
         <Trash2 size="18" />
       </button>
     </div>
 
-    <div class="space-y-4"></div>
+    <div class="mx-auto px-4 max-w-7xl"></div>
 
     <!-- AI Features -->
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       <button
-        class="space-y-4"
-        onclick={() => generateAISummary()}
+        class="mx-auto px-4 max-w-7xl"
+        on:click={() => generateAISummary()}
         title="Generate AI Summary"
       >
         <FileText size="18" />
       </button>
     </div>
 
-    <div class="space-y-4"></div>
+    <div class="mx-auto px-4 max-w-7xl"></div>
 
     <!-- Export -->
-    <div class="space-y-4">
-      <button class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
+      <button class="mx-auto px-4 max-w-7xl">
         <Download size="18" />
       </button>
-      <div class="space-y-4">
-        <button onclick={() => exportCanvas("png")}>Export as PNG</button>
-        <button onclick={() => exportCanvas("svg")}>Export as SVG</button>
-        <button onclick={() => exportCanvas("json")}>Export as JSON</button>
+      <div class="mx-auto px-4 max-w-7xl">
+        <button on:click={() => exportCanvas("png")}>Export as PNG</button>
+        <button on:click={() => exportCanvas("svg")}>Export as SVG</button>
+        <button on:click={() => exportCanvas("json")}>Export as JSON</button>
       </div>
     </div>
 
-    <div class="space-y-4"></div>
+    <div class="mx-auto px-4 max-w-7xl"></div>
 
     <!-- Canvas Info -->
-    <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
       Objects: {state.objectCount} | Selected: {state.selectedObjects.length}
     </div>
   </div>
 
   <!-- Content Area -->
-  <div class="space-y-4">
+  <div class="mx-auto px-4 max-w-7xl">
     <!-- Evidence Sidebar -->
-    <div class="space-y-4">
-      <div class="space-y-4">
-        <div class="space-y-4">
+    <div class="mx-auto px-4 max-w-7xl">
+      <div class="mx-auto px-4 max-w-7xl">
+        <div class="mx-auto px-4 max-w-7xl">
           <Search size="16" />
           <input
             type="text"
             placeholder="Search evidence..."
             bind:value={state.searchQuery}
-            oninput={(e) =>
+            on:input={(e) =>
               searchEvidence((e.target as HTMLInputElement).value)}
-            class="space-y-4"
+            class="mx-auto px-4 max-w-7xl"
           />
         </div>
 
-        <h3 class="space-y-4">Evidence Items</h3>
-        <div class="space-y-4">
+        <h3 class="mx-auto px-4 max-w-7xl">Evidence Items</h3>
+        <div class="mx-auto px-4 max-w-7xl">
           {#each state.searchQuery ? searchResults : evidenceItems as evidence}
             <div
-              class="space-y-4"
-              onclick={() => addEvidenceToCanvas(evidence)}
-              onkeydown={(e) =>
+              class="mx-auto px-4 max-w-7xl"
+              on:click={() => addEvidenceToCanvas(evidence)}
+              on:keydown={(e) =>
                 e.key === "Enter" && addEvidenceToCanvas(evidence)}
               role="button"
               tabindex={0}
             >
-              <div class="space-y-4">{evidence.title}</div>
-              <div class="space-y-4">{evidence.evidenceType}</div>
+              <div class="mx-auto px-4 max-w-7xl">{evidence.title}</div>
+              <div class="mx-auto px-4 max-w-7xl">{evidence.evidenceType}</div>
             </div>
           {/each}
         </div>
       </div>
 
-      <div class="space-y-4">
-        <h3 class="space-y-4">Quick Add</h3>
-        <div class="space-y-4">
+      <div class="mx-auto px-4 max-w-7xl">
+        <h3 class="mx-auto px-4 max-w-7xl">Quick Add</h3>
+        <div class="mx-auto px-4 max-w-7xl">
           <button
-            class="space-y-4"
-            onclick={() => addTimelineToCanvas()}
+            class="mx-auto px-4 max-w-7xl"
+            on:click={() => addTimelineToCanvas()}
           >
-            <Clock size="16" class="space-y-4" />
+            <Clock size="16" class="mx-auto px-4 max-w-7xl" />
             Timeline
           </button>
           <button
-            class="space-y-4"
-            onclick={() => addPersonToCanvas()}
+            class="mx-auto px-4 max-w-7xl"
+            on:click={() => addPersonToCanvas()}
           >
-            <Users size="16" class="space-y-4" />
+            <Users size="16" class="mx-auto px-4 max-w-7xl" />
             Person
           </button>
           <button
-            class="space-y-4"
-            onclick={() => addLocationToCanvas()}
+            class="mx-auto px-4 max-w-7xl"
+            on:click={() => addLocationToCanvas()}
           >
-            <MapPin size="16" class="space-y-4" />
+            <MapPin size="16" class="mx-auto px-4 max-w-7xl" />
             Location
           </button>
           <button
-            class="space-y-4"
-            onclick={() => setTool("note")}
+            class="mx-auto px-4 max-w-7xl"
+            on:click={() => setTool("note")}
           >
-            <FileText size="16" class="space-y-4" />
+            <FileText size="16" class="mx-auto px-4 max-w-7xl" />
             Note
           </button>
         </div>
@@ -1191,25 +1239,27 @@ https://svelte.dev/e/js_parse_error -->
     </div>
 
     <!-- Canvas Area -->
-    <div class="space-y-4">
-      <canvas bind:this={canvasElement} class="space-y-4"></canvas>
+    <div class="mx-auto px-4 max-w-7xl">
+      <canvas bind:this={canvasElement} class="mx-auto px-4 max-w-7xl"></canvas>
     </div>
   </div>
 </div>
 
 <style>
-  /* @unocss-include */
   .canvas-editor-container {
     background: #f9fafb;
-}
+  }
+
   .toolbar {
     min-height: 48px;
-}
+  }
+
   .toolbar-group {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-}
+  }
+
   .toolbar-btn {
     padding: 0.5rem;
     border-radius: 0.375rem;
@@ -1222,33 +1272,40 @@ https://svelte.dev/e/js_parse_error -->
     justify-content: center;
     min-width: 36px;
     height: 36px;
-}
+  }
+
   .toolbar-btn:hover {
     background-color: #f3f4f6;
-}
+  }
+
   .toolbar-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
+  }
+
   .toolbar-btn.active {
     background-color: #dbeafe;
     color: #2563eb;
-}
+  }
+
   .toolbar-separator {
     width: 1px;
     height: 1.5rem;
     background-color: #d1d5db;
     margin: 0 0.25rem;
-}
+  }
+
   .zoom-display {
     font-size: 0.875rem;
     color: #4b5563;
     min-width: 40px;
     text-align: center;
-}
+  }
+
   .dropdown {
     position: relative;
-}
+  }
+
   .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -1263,10 +1320,12 @@ https://svelte.dev/e/js_parse_error -->
     z-index: 20;
     min-width: 150px;
     display: none;
-}
+  }
+
   .dropdown:hover .dropdown-menu {
     display: block;
-}
+  }
+
   .dropdown-menu button {
     width: 100%;
     text-align: left;
@@ -1274,21 +1333,25 @@ https://svelte.dev/e/js_parse_error -->
     border: none;
     background-color: transparent;
     cursor: pointer;
-}
+  }
+
   .dropdown-menu button:hover {
     background-color: #f3f4f6;
-}
+  }
+
   .evidence-item {
     transition: all 0.2s ease;
-}
+  }
+
   .evidence-item:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  }
+
   .canvas-area {
     background:
       linear-gradient(to right, #e5e7eb 1px, transparent 1px),
       linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
     background-size: 20px 20px;
-}
+  }
 </style>

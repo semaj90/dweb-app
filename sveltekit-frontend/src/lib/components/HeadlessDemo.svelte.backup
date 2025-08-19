@@ -20,19 +20,19 @@
   });
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
-  <h2 class="mx-auto px-4 max-w-7xl">Headless UI Components Demo</h2>
+<div class="container mx-auto px-4">
+  <h2 class="container mx-auto px-4">Headless UI Components Demo</h2>
   
   <!-- Melt UI Button -->
-  <button class="mx-auto px-4 max-w-7xl">
+  <button class="container mx-auto px-4">
     Primary Action Button
   </button>
   
   <!-- Melt UI Select -->
-  <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
     <button 
       use:selectTrigger 
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
       aria-label="Case Type Filter"
     >
       {$selectedLabel || 'Select case type...'}
@@ -41,13 +41,13 @@
     {#if $selectOpen}
       <div 
         use:menu 
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
         transition:fade={{ duration: 150 }}
       >
         {#each items as item, index}
           <div 
             use:option
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
             data-value={item}
           >
             {item}
@@ -60,27 +60,27 @@
   <!-- Melt UI Dialog Trigger -->
   <button 
     use:trigger
-    class="mx-auto px-4 max-w-7xl"
+    class="container mx-auto px-4"
   >
     Open Case Details Dialog
   </button>
   
   <!-- Melt UI Dialog -->
   {#if $open}
-    <div use:overlay class="mx-auto px-4 max-w-7xl" transition:fade={{ duration: 150 }}>
-      <div use:content class="mx-auto px-4 max-w-7xl">
-        <h3 use:dialogTitle class="mx-auto px-4 max-w-7xl">
+    <div use:overlay class="container mx-auto px-4" transition:fade={{ duration: 150 }}>
+      <div use:content class="container mx-auto px-4">
+        <h3 use:dialogTitle class="container mx-auto px-4">
           Case Management System
         </h3>
-        <p use:description class="mx-auto px-4 max-w-7xl">
+        <p use:description class="container mx-auto px-4">
           This is a demo of Melt UI headless components integrated with PicoCSS styling and custom CSS variables.
         </p>
         
-        <div class="mx-auto px-4 max-w-7xl">
-          <button use:close class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
+          <button use:close class="container mx-auto px-4">
             Cancel
           </button>
-          <button class="mx-auto px-4 max-w-7xl">
+          <button class="container mx-auto px-4">
             Save Changes
           </button>
         </div>
@@ -90,12 +90,12 @@
 </div>
 
 <style>
+  /* @unocss-include */
   .headless-demo {
     max-width: 500px;
     margin: 0 auto;
     padding: var(--spacing-lg);
-  }
-
+}
   .select-menu {
     position: absolute;
     z-index: 50;
@@ -106,19 +106,16 @@
     box-shadow: var(--shadow-lg);
     padding: var(--spacing-xs);
     margin-top: var(--spacing-xs);
-  }
-
+}
   .select-option {
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: background-color var(--transition-fast);
-  }
-
+}
   .select-option:hover {
     background-color: var(--color-surface);
-  }
-
+}
   .dialog-overlay {
     position: fixed;
     inset: 0;
@@ -128,8 +125,7 @@
     align-items: center;
     justify-content: center;
     padding: var(--spacing-lg);
-  }
-
+}
   .dialog-content {
     background-color: var(--color-background);
     border-radius: var(--radius-lg);
@@ -139,24 +135,21 @@
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-  }
-
+}
   .dialog-title {
     font-size: var(--font-size-xl);
     font-weight: 600;
     margin-bottom: var(--spacing-md);
     color: var(--color-text);
-  }
-
+}
   .dialog-description {
     color: var(--color-text-muted);
     margin-bottom: var(--spacing-lg);
     line-height: 1.6;
-  }
-
+}
   .dialog-actions {
     display: flex;
     gap: var(--spacing-sm);
     justify-content: flex-end;
-  }
+}
 </style>

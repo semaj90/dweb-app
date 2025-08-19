@@ -1,23 +1,11 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    person: {;
-    relationships: Array<{;
-  }
-  let {
-    person,
-    relationships
-  }: Props = $props();
-
-
-
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   // import { Avatar } from '$lib/components/ui/Avatar.svelte';
   
-      name: string;
+  export let person: {
+    name: string;
     role: 'suspect' | 'witness' | 'victim' | 'associate' | 'unknown';
     details?: {
       age?: number;
@@ -30,7 +18,8 @@ https://svelte.dev/e/js_parse_error -->
     sourceContext?: string;
   };
 
-      person1: string;
+  export let relationships: Array<{
+    person1: string;
     person2: string;
     relationship: string;
     context?: string;
@@ -38,7 +27,7 @@ https://svelte.dev/e/js_parse_error -->
   }> = [];
 
   // Filter relationships for this person
-  let personRelationships = $derived(relationships.filter(rel => );
+  $: personRelationships = relationships.filter(rel => 
     rel.person1 === person.name || rel.person2 === person.name
   );
 
@@ -71,10 +60,10 @@ https://svelte.dev/e/js_parse_error -->
     }
   };
 
-  let roleInfo = $derived(roleConfig[person.role] ?? roleConfig.unknown;);
+  $: roleInfo = roleConfig[person.role] ?? roleConfig.unknown;
   
   // Confidence level styling
-  let confidenceColor = $derived(person.confidence > 0.8 ? 'text-green-600' : );
+  $: confidenceColor = person.confidence > 0.8 ? 'text-green-600' : 
                       person.confidence > 0.6 ? 'text-yellow-600' : 'text-red-600';
 
   let showFullDetails = false;
@@ -212,7 +201,7 @@ https://svelte.dev/e/js_parse_error -->
         variant="outline" 
         size="sm" 
         class="flex-1 text-xs"
-        onclick={() => showFullDetails = !showFullDetails}
+        on:click={() => showFullDetails = !showFullDetails}
       >
         {showFullDetails ? 'Less' : 'More'} Info
       </Button>

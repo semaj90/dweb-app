@@ -1,23 +1,11 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    timelineEvents: Array<{;
-    caseId: string;
-  }
-  let {
-    timelineEvents,
-    caseId
-  }: Props = $props();
-
-
-
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { Separator } from '$lib/components/ui/separator/Separator.svelte';
   
-      date: string;
+  export let timelineEvents: Array<{
+    date: string;
     time?: string;
     event: string;
     persons?: string[];
@@ -26,14 +14,15 @@ https://svelte.dev/e/js_parse_error -->
     category?: 'crime' | 'witness' | 'discovery' | 'movement' | 'communication';
   }> = [];
 
-  
+  export let caseId: string;
+
   // Sort events chronologically
-  let sortedEvents = $derived(timelineEvents);
+  $: sortedEvents = timelineEvents
     .sort((a, b) => new Date(a.date + ' ' + (a.time || '00:00')).getTime() - 
                    new Date(b.date + ' ' + (b.time || '00:00')).getTime());
 
   // Group events by date
-  let groupedEvents = $derived(sortedEvents.reduce((groups, event) => {);
+  $: groupedEvents = sortedEvents.reduce((groups, event) => {
     const dateKey = event.date;
     if (!groups[dateKey]) {
       groups[dateKey] = [];
@@ -152,7 +141,7 @@ https://svelte.dev/e/js_parse_error -->
                 <div class="flex-1">
                   <button 
                     class="text-left w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    onclick={() => toggleDate(date)}
+                    on:click={() => toggleDate(date)}
                   >
                     <div>
                       <h3 class="font-semibold text-lg">{formatDate(date)}</h3>

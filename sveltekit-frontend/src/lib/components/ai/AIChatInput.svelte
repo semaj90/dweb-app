@@ -1,31 +1,20 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!-- AI Chat Input Component -->
 <script lang="ts">
-  interface Props {
-    oninput?: (event?: any) => void;
-    onsend?: (event?: any) => void;
-    onfocus?: (event?: any) => void;
-    onblur?: (event?: any) => void;
-  }
-  let {
-    placeholder = "Type your message...",
-    disabled = false,
-    autoFocus = false,
-    value = "",
-    maxLength = 2000,
-    rows = 1,
-    maxRows = 6
-  }: Props = $props();
-
-
-
   import { browser } from "$app/environment";
-  
+  import { createEventDispatcher, onMount } from "svelte";
+
   // Props
-              
+  export let placeholder = "Type your message...";
+  export let disabled = false;
+  export let autoFocus = false;
+  export let value = "";
+  export let maxLength = 2000;
+  export let rows = 1;
+  export let maxRows = 6;
+
   // Event dispatcher
-  
+  const dispatch = createEventDispatcher();
+
   // Elements
   let textarea: HTMLTextAreaElement;
   let isMultiline = false;
@@ -41,7 +30,7 @@ https://svelte.dev/e/js_parse_error -->
   function handleInput(event: Event) {
     const target = event.target as HTMLTextAreaElement;
     value = target.value;
-    oninput?.();
+    dispatch("input", value);
     adjustTextareaHeight();
   }
   // Handle key press
@@ -62,7 +51,7 @@ https://svelte.dev/e/js_parse_error -->
     const trimmedValue = value.trim();
     if (!trimmedValue || disabled) return;
 
-    onsend?.();
+    dispatch("send", trimmedValue);
     value = "";
     resetTextareaHeight();
   }
@@ -101,15 +90,15 @@ https://svelte.dev/e/js_parse_error -->
   }
   // Handle focus/blur events
   function handleFocus() {
-    onfocus?.();
+    dispatch("focus");
   }
   function handleBlur() {
-    onblur?.();
+    dispatch("blur");
   }
   // Character count
-  let characterCount = $derived(value.length;);
-  let isNearLimit = $derived(characterCount > maxLength * 0.8;);
-  let isAtLimit = $derived(characterCount >= maxLength;);
+  $: characterCount = value.length;
+  $: isNearLimit = characterCount > maxLength * 0.8;
+  $: isAtLimit = characterCount >= maxLength;
 </script>
 
 <div class="chat-input-wrapper" class:multiline={isMultiline}>
@@ -125,10 +114,10 @@ https://svelte.dev/e/js_parse_error -->
       class:near-limit={isNearLimit}
       class:at-limit={isAtLimit}
       rows={rows}
-      oninput={handleInput}
-      onkeydown={handleKeydown}
-      onfocus={handleFocus}
-      onblur={handleBlur}
+      on:input={handleInput}
+      on:keydown={handleKeydown}
+      on:focus={handleFocus}
+      on:blur={handleBlur}
       aria-label="Chat message input"
       spellcheck="true"
     ></textarea>
@@ -149,7 +138,7 @@ https://svelte.dev/e/js_parse_error -->
         class="send-button"
         disabled={disabled}
         class:has-content={value.trim().length > 0}
-        onclick={() => handleSend()}
+        on:click={() => handleSend()}
         title="Send message (Enter)"
         aria-label="Send message"
       >

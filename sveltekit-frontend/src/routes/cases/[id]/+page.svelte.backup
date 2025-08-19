@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { writable } from "svelte/store";
-  import CanvasEditor from "../../../lib/components/CanvasEditor.svelte";
-  import EvidencePanel from "../../../lib/components/EvidencePanel.svelte";
+  import CanvasEditor from '$lib/components/CanvasEditor.svelte';
+  import EvidencePanel from '$lib/components/EvidencePanel.svelte';
 
   let caseId = $page.params.id;
   let caseDetails = $page.data.caseDetails;
@@ -15,25 +15,24 @@
   function handleSidebarMouseEnter() {
     sidebarHovered = true;
     showSidebar.set(true);
-  }
+}
   function handleSidebarMouseLeave() {
     sidebarHovered = false;
     setTimeout(() => {
       if (!sidebarHovered) showSidebar.set(false);
     }, 300);
-  }
-
+}
   function handleEvidenceDrop(evd: any) {
     // Forward to CanvasEditor (could push to a store or call a method)
     // For now, just log
     console.log("Dropped on canvas:", evd);
-  }
+}
 </script>
 
-<section class="mx-auto px-4 max-w-7xl">
-  <div class="mx-auto px-4 max-w-7xl">
+<section class="container mx-auto px-4">
+  <div class="container mx-auto px-4">
     <div
-      class="mx-auto px-4 max-w-7xl"
+      class="container mx-auto px-4"
       role="button"
       tabindex={0}
       on:mouseenter={handleSidebarMouseEnter}
@@ -43,17 +42,17 @@
           e.preventDefault();
           handleSidebarMouseEnter();
         }
-      "
+      }}
     >
       <div
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
       >
         &#9776;
       </div>
     </div>
     {#if $showSidebar}
       <div
-        class="mx-auto px-4 max-w-7xl"
+        class="container mx-auto px-4"
         role="complementary"
         on:mouseenter={handleSidebarMouseEnter}
         on:mouseleave={handleSidebarMouseLeave}
@@ -61,14 +60,14 @@
           if (e.key === "Escape") {
             handleSidebarMouseLeave();
           }
-        "
+        }}
       >
         <EvidencePanel {caseId} onEvidenceDrop={handleEvidenceDrop} />
       </div>
     {/if}
   </div>
-  <div class="mx-auto px-4 max-w-7xl">
-    <div class="mx-auto px-4 max-w-7xl">
+  <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4">
       <CanvasEditor
         bind:canvasState
         reportId={caseId}
@@ -77,8 +76,8 @@
         width={undefined}
         height={undefined}
       />
-      <button class="mx-auto px-4 max-w-7xl" aria-label="Ask AI">
-        <svg width="32" height="32" fill="currentColor" class="mx-auto px-4 max-w-7xl"
+      <button class="container mx-auto px-4" aria-label="Ask AI">
+        <svg width="32" height="32" fill="currentColor" class="container mx-auto px-4"
           ><circle
             cx="16"
             cy="16"
@@ -91,7 +90,7 @@
           /></svg
         >
       </button>
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <!-- Infinite scroll logic: load more on scroll bottom, show evidence or canvas items -->
       </div>
     </div>
@@ -99,10 +98,11 @@
 </section>
 
 <style>
+  /* @unocss-include */
   .case-layout {
     margin-top: 2rem;
     margin-bottom: 2rem;
-  }
+}
   .canvas-stretch-container {
     position: relative;
     width: 100%;
@@ -113,31 +113,30 @@
     background: var(--pico-background, #fff);
     border-radius: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  }
+}
   .sidebar-trigger {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-  }
+}
   .sidebar-tab {
     --uno: bg-primary text-white rounded-r px-2 py-4 shadow
       hover: bg-primary-600 transition;
-  }
+}
   .sidebar-panel {
     --uno: bg-background-alt shadow-lg w-64 h-full fixed left-0 top-0 z-30 flex
       flex-col;
     animation: slideInSidebar 0.3s;
-  }
+}
   @keyframes slideInSidebar {
     from {
       transform: translateX(-100%);
       opacity: 0;
-    }
+}
     to {
       transform: translateX(0);
       opacity: 1;
-    }
-  }
+}}
   .ai-fab {
     position: absolute;
     right: 2rem;
@@ -150,10 +149,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+}
   .infinite-scroll-list {
     flex: 1;
     overflow-y: auto;
     margin-top: 1rem;
-  }
+}
 </style>

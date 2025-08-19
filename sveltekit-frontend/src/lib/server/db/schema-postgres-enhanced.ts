@@ -12,7 +12,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { vector } from "pgvector/drizzle-orm";
-import { relations } from "drizzle-orm";
+import { relations  } from "drizzle-orm";
 
 // Enable vector extension
 // CREATE EXTENSION IF NOT EXISTS vector;
@@ -90,6 +90,7 @@ export const evidence = pgTable(
     aiTags: jsonb("ai_tags").default([]),
     aiSummary: text("ai_summary"),
     summary: text("summary"),
+  summaryType: text("summary_type"), // key_points | narrative | prosecutorial
 
     // Vector embeddings
     titleEmbedding: vector("title_embedding", { dimensions: 768 }),
@@ -389,3 +390,4 @@ export type NewConversation = typeof conversations.$inferInsert;
 export type NewMessage = typeof messages.$inferInsert;
 export type NewUserActivity = typeof userActivity.$inferInsert;
 export type NewSystemConfig = typeof systemConfig.$inferInsert;
+

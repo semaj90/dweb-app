@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: Unterminated string constant
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { createDropdownMenu, createToolbar, melt } from "@melt-ui/svelte";
   import {
@@ -85,14 +83,14 @@ https://svelte.dev/e/js_parse_error -->
   };
 </script>
 
-<div class="space-y-4" use:melt={$toolbarRoot}>
+<div class="container mx-auto px-4" use:melt={$toolbarRoot}>
   <!-- Main Menu Bar -->
-  <div class="space-y-4">
+  <div class="container mx-auto px-4">
     <!-- File Menu -->
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <button
         use:melt={$fileTrigger}
-        class="space-y-4"
+        class="container mx-auto px-4"
         class:active={$fileOpen}
       >
         File
@@ -101,41 +99,41 @@ https://svelte.dev/e/js_parse_error -->
       {#if $fileOpen}
         <div
           use:melt={$fileMenu}
-          class="space-y-4"
-          transitionfly={{ y: -5, duration: 150 }}
+          class="container mx-auto px-4"
+          transition:fly={{ y: -5, duration: 150 }}
         >
           <button
             use:melt={$fileItem}
-            class="space-y-4"
-            onclick={() => handleSave()}
+            class="container mx-auto px-4"
+            on:click={() => handleSave()}
           >
             <Save size={16} />
             Save Report
-            <span class="space-y-4">Ctrl+S</span>
+            <span class="container mx-auto px-4">Ctrl+S</span>
           </button>
-          <button use:melt={$fileItem} class="space-y-4">
+          <button use:melt={$fileItem} class="container mx-auto px-4">
             <FileText size={16} />
             New Report
-            <span class="space-y-4">Ctrl+N</span>
+            <span class="container mx-auto px-4">Ctrl+N</span>
           </button>
-          <div class="space-y-4"></div>
-          <button use:melt={$fileItem} class="space-y-4">
+          <div class="container mx-auto px-4"></div>
+          <button use:melt={$fileItem} class="container mx-auto px-4">
             <Upload size={16} />
             Import
           </button>
           <button
             use:melt={$fileItem}
-            class="space-y-4"
-            onclick={() => handleExport()}
+            class="container mx-auto px-4"
+            on:click={() => handleExport()}
           >
             <Download size={16} />
             Export
           </button>
-          <div class="space-y-4"></div>
+          <div class="container mx-auto px-4"></div>
           <button
             use:melt={$fileItem}
-            class="space-y-4"
-            onclick={() => handlePreview()}
+            class="container mx-auto px-4"
+            on:click={() => handlePreview()}
           >
             <Eye size={16} />
             Preview
@@ -145,10 +143,10 @@ https://svelte.dev/e/js_parse_error -->
     </div>
 
     <!-- Edit Menu -->
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <button
         use:melt={$editTrigger}
-        class="space-y-4"
+        class="container mx-auto px-4"
         class:active={$editOpen}
       >
         Edit
@@ -157,39 +155,39 @@ https://svelte.dev/e/js_parse_error -->
       {#if $editOpen}
         <div
           use:melt={$editMenu}
-          class="space-y-4"
-          transitionfly={{ y: -5, duration: 150 "
+          class="container mx-auto px-4"
+          transition:fly={{ y: -5, duration: 150 "
         >
-          <button use:melt={$editItem} class="space-y-4">
+          <button use:melt={$editItem} class="container mx-auto px-4">
             <Undo size={16} />
             Undo
-            <span class="space-y-4">Ctrl+Z</span>
+            <span class="container mx-auto px-4">Ctrl+Z</span>
           </button>
-          <button use:melt={$editItem} class="space-y-4">
+          <button use:melt={$editItem} class="container mx-auto px-4">
             <Redo size={16} />
             Redo
-            <span class="space-y-4">Ctrl+Y</span>
+            <span class="container mx-auto px-4">Ctrl+Y</span>
           </button>
-          <div class="space-y-4"></div>
-          <button use:melt={$editItem} class="space-y-4">
+          <div class="container mx-auto px-4"></div>
+          <button use:melt={$editItem} class="container mx-auto px-4">
             <Search size={16} />
             Find
-            <span class="space-y-4">Ctrl+F</span>
+            <span class="container mx-auto px-4">Ctrl+F</span>
           </button>
-          <button use:melt={$editItem} class="space-y-4">
+          <button use:melt={$editItem} class="container mx-auto px-4">
             <Replace size={16} />
             Replace
-            <span class="space-y-4">Ctrl+H</span>
+            <span class="container mx-auto px-4">Ctrl+H</span>
           </button>
         </div>
       {/if}
     </div>
 
     <!-- View Menu -->
-    <div class="space-y-4">
+    <div class="container mx-auto px-4">
       <button
         use:melt={$viewTrigger}
-        class="space-y-4"
+        class="container mx-auto px-4"
         class:active={$viewOpen}
       >
         View
@@ -198,30 +196,30 @@ https://svelte.dev/e/js_parse_error -->
       {#if $viewOpen}
         <div
           use:melt={$viewMenu}
-          class="space-y-4"
-          transitionfly={{ y: -5, duration: 150 "
+          class="container mx-auto px-4"
+          transition:fly={{ y: -5, duration: 150 "
         >
           <button
             use:melt={$viewItem}
-            class="space-y-4"
-            onclick={() => toggleSidebar()}
+            class="container mx-auto px-4"
+            on:click={() => toggleSidebar()}
           >
             <Sidebar size={16} />
             Toggle Sidebar
-            <span class="space-y-4">Ctrl+B</span>
+            <span class="container mx-auto px-4">Ctrl+B</span>
           </button>
           <button
             use:melt={$viewItem}
-            class="space-y-4"
-            onclick={() => toggleLayout()}
+            class="container mx-auto px-4"
+            on:click={() => toggleLayout()}
           >
             <Layout size={16} />
             Switch Layout ({$report.settings.layout})
           </button>
           <button
             use:melt={$viewItem}
-            class="space-y-4"
-            onclick={() => toggleFullscreen()}
+            class="container mx-auto px-4"
+            on:click={() => toggleFullscreen()}
           >
             {#if $reportUI.fullscreen}
               <Minimize size={16} />
@@ -230,7 +228,7 @@ https://svelte.dev/e/js_parse_error -->
               <Maximize size={16} />
               Fullscreen
             {/if}
-            <span class="space-y-4">F11</span>
+            <span class="container mx-auto px-4">F11</span>
           </button>
         </div>
       {/if}
@@ -238,23 +236,23 @@ https://svelte.dev/e/js_parse_error -->
   </div>
 
   <!-- Quick Actions -->
-  <div class="space-y-4">
+  <div class="container mx-auto px-4">
     <button
       use:melt={$toolbarButton}
-      class="space-y-4"
+      class="container mx-auto px-4"
       class:unsaved={$editorState.hasUnsavedChanges}
-      onclick={() => handleSave()}
+      on:click={() => handleSave()}
       title="Save Report"
     >
       <Save size={16} />
     </button>
 
-    <div class="space-y-4"></div>
+    <div class="container mx-auto px-4"></div>
 
     <button
       use:melt={$toolbarButton}
-      class="space-y-4"
-      onclick={() => toggleSidebar()}
+      class="container mx-auto px-4"
+      on:click={() => toggleSidebar()}
       title="Toggle Sidebar"
     >
       <Sidebar size={16} />
@@ -262,19 +260,19 @@ https://svelte.dev/e/js_parse_error -->
 
     <button
       use:melt={$toolbarButton}
-      class="space-y-4"
-      onclick={() => toggleLayout()}
+      class="container mx-auto px-4"
+      on:click={() => toggleLayout()}
       title="Switch Layout"
     >
       <Layout size={16} />
     </button>
 
-    <div class="space-y-4"></div>
+    <div class="container mx-auto px-4"></div>
 
     <button
       use:melt={$toolbarButton}
-      class="space-y-4"
-      onclick={() => handlePreview()}
+      class="container mx-auto px-4"
+      on:click={() => handlePreview()}
       title="Preview Report"
     >
       <Eye size={16} />
@@ -282,17 +280,17 @@ https://svelte.dev/e/js_parse_error -->
   </div>
 
   <!-- Status Info -->
-  <div class="space-y-4">
-    <span class="space-y-4">
+  <div class="container mx-auto px-4">
+    <span class="container mx-auto px-4">
       {$editorState.wordCount} words
     </span>
 
     {#if $editorState.hasUnsavedChanges}
-      <span class="space-y-4" transitionslide={{ duration: 200 ">
+      <span class="container mx-auto px-4" transition:slide={{ duration: 200 ">
         Unsaved changes
       </span>
     {:else}
-      <span class="space-y-4" transitionslide={{ duration: 200 ">
+      <span class="container mx-auto px-4" transition:slide={{ duration: 200 ">
         Saved {$editorState.lastSaved.toLocaleTimeString()}
       </span>
     {/if}

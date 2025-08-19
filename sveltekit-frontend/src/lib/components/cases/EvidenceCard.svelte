@@ -1,19 +1,4 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    onedit?: (event?: any) => void;
-    ondelete?: (event?: any) => void;
-    onview?: (event?: any) => void;
-    ondownload?: (event?: any) => void;
-  }
-  let {
-    evidence,
-    disabled = false
-  }: Props = $props();
-
-
-
   import { formatDistanceToNow } from "date-fns";
   import {
     Archive,
@@ -27,9 +12,13 @@ https://svelte.dev/e/js_parse_error -->
     Trash2,
     Video,
   } from "lucide-svelte";
-  
-    
-  
+  import { createEventDispatcher } from "svelte";
+
+  export let evidence: any;
+  export let disabled = false;
+
+  const dispatch = createEventDispatcher();
+
   function getEvidenceIcon(type: string) {
     switch (type) {
       case "document":
@@ -71,32 +60,32 @@ https://svelte.dev/e/js_parse_error -->
         return "bg-gray-100 text-gray-800";
     }
   }
-  let evidenceIcon = $derived(getEvidenceIcon(evidence.evidenceType || evidence.type););
-  let formattedDate = $derived(formatDistanceToNow(new Date(evidence.createdAt || evidence.dateCollected || Date.now()), {);
+  $: evidenceIcon = getEvidenceIcon(evidence.evidenceType || evidence.type);
+  $: formattedDate = formatDistanceToNow(new Date(evidence.createdAt || evidence.dateCollected || Date.now()), {
     addSuffix: true,
   });
 
   function handleEdit() {
     if (!disabled) {
-      onedit?.();
+      dispatch("edit", evidence);
     }
   }
 
   function handleDelete() {
     if (!disabled) {
-      ondelete?.();
+      dispatch("delete", evidence);
     }
   }
 
   function handleView() {
     if (!disabled) {
-      onview?.();
+      dispatch("view", evidence);
     }
   }
 
   function handleDownload() {
     if (!disabled) {
-      ondownload?.();
+      dispatch("download", evidence);
     }
   }
 </script>

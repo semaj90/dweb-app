@@ -66,11 +66,11 @@
     onkeydown={(e) => { if (e.key === 'Escape') handleClose(); }}
     role="presentation"
     aria-hidden="true"
-    transitionfade={{ duration: 200 }}
+    transition:fade={{ duration: 200 }}
   >
     <div
       class="modal-content {sizeClasses}"
-      transitionfly={{ y: 50, duration: 300 }}
+      transition:fly={{ y: 50, duration: 300 }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}

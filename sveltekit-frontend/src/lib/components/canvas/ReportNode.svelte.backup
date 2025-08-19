@@ -1,20 +1,17 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from "svelte";
-  import type { Report } from "../../../lib/data/types";
+import { onMount } from "svelte";
+import type { Report } from '$lib/data/types';
 // UI Components
-  import * as ContextMenu from "../../../lib/components/ui/context-menu";
-  // Icons
-  import { Link, Sparkles } from "lucide-svelte";
+import * as ContextMenu from '$lib/components/ui/context-menu';
+// Icons
+import { Link, Sparkles } from "lucide-svelte";
 
-  export let report: Report;
+export let report: Report;
 
-  const dispatch = createEventDispatcher();
-
-  let nodeElement: HTMLDivElement;
-  let editorRef: HTMLElement | null;
-  let isDragging = false;
-  let dragStartX = 0;
-  let dragStartY = 0;
+let nodeElement: HTMLDivElement;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
 
   // Add local position state for drag-and-drop
   let position = { x: 100, y: 100 };
@@ -27,32 +24,27 @@
       isDragging = true;
       dragStartX = event.clientX - position.x;
       dragStartY = event.clientY - position.y;
-    }
-  }
-
+}
+}
   function handleMouseMove(event: MouseEvent) {
     if (isDragging) {
       position.x = event.clientX - dragStartX;
       position.y = event.clientY - dragStartY;
-    }
-  }
-
+}
+}
   function handleMouseUp() {
     isDragging = false;
-  }
-
+}
   async function saveCitation(text: string) {
     if (!text.trim()) return;
 
     // Implementation for saving citation
     console.log("Saving citation:", text);
-  }
-
+}
   async function summarizeReport() {
     // Implementation for AI summary
     console.log("Summarizing report");
-  }
-
+}
   onMount(() => {
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
@@ -60,34 +52,32 @@
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      nodeElement = null;
     };
   });
 </script>
 
 <ContextMenu.Root>
-  <ContextMenu.Trigger asChild={false}>
+  <ContextMenu.Trigger>
     <div
       bind:this={nodeElement}
-      class="mx-auto px-4 max-w-7xl"
-      style="left: {position.x}px; top: {position.y}px; z-index: 10;"
+      class="container mx-auto px-4"
+      style={`left: ${position.x}px; top: ${position.y}px; z-index: 10;`}
       on:mousedown={handleMouseDown}
       on:keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleMouseDown(e);
+          isDragging = true;
+          dragStartX = 0;
+          dragStartY = 0;
         }
-      "
+      }}
       role="button"
       tabindex={0}
       aria-label="Drag report node"
     >
-      <div
-        class="mx-auto px-4 max-w-7xl"
-      >
-        <h3 class="mx-auto px-4 max-w-7xl">{report.title}</h3>
-      </div>
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
+      <div>
+        <div>
           {report.content}
         </div>
       </div>
@@ -95,25 +85,19 @@
   </ContextMenu.Trigger>
   <ContextMenu.Content menu={true}>
     <ContextMenu.Item
-      on:select={() => saveCitation(editorRef?.getSelectedText?.() || "")}
+    <ContextMenu.Item
+      on:select={() => saveCitation(window.getSelection()?.toString() || "")}
     >
-      <Link class="mx-auto px-4 max-w-7xl" />
+      <Link class="container mx-auto px-4" />
       Save as Citation
     </ContextMenu.Item>
-    <ContextMenu.Separator />
     <ContextMenu.Item on:select={summarizeReport}>
-      <Sparkles class="mx-auto px-4 max-w-7xl" />
+      <Sparkles class="container mx-auto px-4" />
       AI Summary
     </ContextMenu.Item>
   </ContextMenu.Content>
 </ContextMenu.Root>
 
 <style>
-  .report-node {
-    user-select: none;
-  }
-
-  .node-header {
-    cursor: move;
-  }
+  /* @unocss-include */
 </style>

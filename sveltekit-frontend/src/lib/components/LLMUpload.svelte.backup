@@ -16,24 +16,24 @@
       error = 'Upload failed or cancelled.';
     } finally {
       loading = false;
-    }
-  }
+}}
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
   <h2>Upload Local LLM Model</h2>
-  <button class="mx-auto px-4 max-w-7xl" on:click={() => handleUpload()} disabled={loading}>
+  <button class="container mx-auto px-4" on:click={() => handleUpload()} disabled={loading}>
     {loading ? 'Uploading...' : 'Select & Upload Model'}
   </button>
   {#if uploadResult}
-    <div class="mx-auto px-4 max-w-7xl">{uploadResult}</div>
+    <div class="container mx-auto px-4">{uploadResult}</div>
   {/if}
   {#if error}
-    <div class="mx-auto px-4 max-w-7xl">{error}</div>
+    <div class="container mx-auto px-4">{error}</div>
   {/if}
 </div>
 
 <style>
+  /* @unocss-include */
 .llm-upload-container {
   max-width: 400px;
   margin: 2rem auto;

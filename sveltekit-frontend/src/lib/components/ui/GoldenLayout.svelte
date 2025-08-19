@@ -1,47 +1,26 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    ratio?: string;
-    mainFlex?: number;
-    sidebarFlex?: number;
-    sidebarPosition?: string;
-    collapsible?: boolean;
-    collapsed?: boolean;
-    minSidebarWidth?: string;
-    maxSidebarWidth?: string;
-    gap?: string;
-    ontoggle?: (event?: any) => void;
-  }
-  
-  let {
-    ratio = "golden",
-    mainFlex = 1.618,
-    sidebarFlex = 1,
-    sidebarPosition = "right",
-    collapsible = true,
-    collapsed = $bindable(false),
-    minSidebarWidth = "200px",
-    maxSidebarWidth = "400px",
-    gap = "1rem",
-    ontoggle,
-    children,
-    sidebar
-  }: Props & { children?: any, sidebar?: any } = $props();
+  import { createEventDispatcher } from "svelte";
 
+  export let ratio: "golden" | "thirds" | "half" | "custom" = "golden";
+  export let mainFlex = 1.618;
+  export let sidebarFlex = 1;
+  export let sidebarPosition: "left" | "right" = "right";
+  export let collapsible = true;
+  export let collapsed = false;
+  export let minSidebarWidth = "200px";
+  export let maxSidebarWidth = "400px";
+  export let gap = "1rem";
 
-
-  
-                  
   let className = "";
-  ;
+  export { className as class };
 
-  
+  const dispatch = createEventDispatcher();
+
   // Calculate flex values based on ratio
   let calculatedMainFlex: number;
   let calculatedSidebarFlex: number;
 
-  $effect(() => {
+  $: {
     switch (ratio) {
       case "golden":
         calculatedMainFlex = 1.618;
@@ -59,32 +38,28 @@ https://svelte.dev/e/js_parse_error -->
         calculatedMainFlex = mainFlex;
         calculatedSidebarFlex = sidebarFlex;
         break;
-    }
-  });
-
+}}
   function toggleSidebar() {
     collapsed = !collapsed;
-    ontoggle?.();
-  }
-
+    dispatch("toggle", { collapsed });
+}
   function handleKeydown(e: KeyboardEvent) {
     if (collapsible && (e.ctrlKey || e.metaKey) && e.key === "\\") {
       e.preventDefault();
       toggleSidebar();
-    }
-  }
+}}
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
 <div
-  class="space-y-4"
+  class="container mx-auto px-4"
   class:collapsed
   class:sidebar-left={sidebarPosition === "left"}
 >
   {#if sidebarPosition === "left"}
     <aside
-      class="space-y-4"
+      class="container mx-auto px-4"
       class:collapsed
       style="
         flex: {collapsed ? '0' : calculatedSidebarFlex}; 
@@ -93,16 +68,14 @@ https://svelte.dev/e/js_parse_error -->
         margin-right: {collapsed ? '0' : gap};
       "
     >
-      <div class="space-y-4" class:hidden={collapsed}>
-        {#if sidebar}
-          {@render sidebar()}
-        {/if}
+      <div class="container mx-auto px-4" class:hidden={collapsed}>
+        <slot name="sidebar" />
       </div>
 
       {#if collapsible}
         <button
-          class="space-y-4"
-          onclick={() => toggleSidebar()}
+          class="container mx-auto px-4"
+          on:click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}
@@ -113,15 +86,13 @@ https://svelte.dev/e/js_parse_error -->
     </aside>
   {/if}
 
-  <main class="space-y-4" style="flex: {calculatedMainFlex};">
-    {#if children}
-      {@render children()}
-    {/if}
+  <main class="container mx-auto px-4" style="flex: {calculatedMainFlex};">
+    <slot />
   </main>
 
   {#if sidebarPosition === "right"}
     <aside
-      class="space-y-4"
+      class="container mx-auto px-4"
       class:collapsed
       style="
         flex: {collapsed ? '0' : calculatedSidebarFlex}; 
@@ -130,16 +101,14 @@ https://svelte.dev/e/js_parse_error -->
         margin-left: {collapsed ? '0' : gap};
       "
     >
-      <div class="space-y-4" class:hidden={collapsed}>
-        {#if sidebar}
-          {@render sidebar()}
-        {/if}
+      <div class="container mx-auto px-4" class:hidden={collapsed}>
+        <slot name="sidebar" />
       </div>
 
       {#if collapsible}
         <button
-          class="space-y-4"
-          onclick={() => toggleSidebar()}
+          class="container mx-auto px-4"
+          on:click={() => toggleSidebar()}
           title={collapsed
             ? "Expand sidebar (Ctrl+\\)"
             : "Collapse sidebar (Ctrl+\\)"}

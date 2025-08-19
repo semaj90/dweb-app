@@ -187,46 +187,60 @@ https://svelte.dev/e/js_parse_error -->
   });
 
   // Reactive update when content prop changes
-  $effect(() => { if (editor && isInitialized && content) {
-    const currentMarkdown = editor.getMarkdown();
-    const newMarkdown = contentToMarkdown(content);
-    
-    if (currentMarkdown !== newMarkdown) {
-      editor.setMarkdown(newMarkdown);
-}}
+  $effect(() => { 
+    if (editor && isInitialized && content) {
+      const currentMarkdown = editor.getMarkdown();
+      const newMarkdown = contentToMarkdown(content);
+      
+      if (currentMarkdown !== newMarkdown) {
+        editor.setMarkdown(newMarkdown);
+      }
+    }
+  });
+
   // Expose methods for parent component
-  export function setContent(newContent: ContentNode[]) {
+  function setContent(newContent: ContentNode[]) {
     if (editor) {
       editor.setMarkdown(contentToMarkdown(newContent));
-}}
-  export function getContent(): ContentNode[] {
+    }
+  }
+
+  function getContent(): ContentNode[] {
     if (editor) {
       return markdownToContent(editor.getMarkdown());
-}
+    }
     return content;
-}
-  export function getMarkdown(): string {
+  }
+
+  function getMarkdown(): string {
     return editor ? editor.getMarkdown() : '';
-}
-  export function getHTML(): string {
+  }
+
+  function getHTML(): string {
     return editor ? editor.getHTML() : '';
-}
-  export function insertText(text: string) {
+  }
+
+  function insertText(text: string) {
     if (editor) {
       editor.insertText(text);
-}}
-  export function getSelectedText(): string {
+    }
+  }
+
+  function getSelectedText(): string {
     if (editor) {
       return editor.getSelectedText() || '';
-}
+    }
     return '';
-}
-  export function focus() {
+  }
+
+  function focus() {
     if (editor) {
       editor.focus();
-}}
+    }
+  }
+
   // Formatting methods
-  export function toggleMark(mark: string) {
+  function toggleMark(mark: string) {
     if (!editor) return;
     
     const selectedText = editor.getSelectedText();
@@ -244,10 +258,11 @@ https://svelte.dev/e/js_parse_error -->
       case 'code':
         formattedText = `\`${selectedText}\``;
         break;
-}
+    }
     editor.replaceSelection(formattedText);
-}
-  export function addMark(mark: string, value: string) {
+  }
+
+  function addMark(mark: string, value: string) {
     if (!editor) return;
     
     const selectedText = editor.getSelectedText();
@@ -262,10 +277,11 @@ https://svelte.dev/e/js_parse_error -->
       case 'fontSize':
         formattedText = `<span style="font-size: ${value}">${selectedText}</span>`;
         break;
-}
+    }
     editor.replaceSelection(formattedText);
-}
-  export function insertNode(node: any) {
+  }
+
+  function insertNode(node: any) {
     if (!editor) return;
 
     switch (node.type) {
@@ -279,7 +295,8 @@ https://svelte.dev/e/js_parse_error -->
         const level = '#'.repeat(node.level || 1);
         editor.insertText(`\n${level} ${node.text || 'Heading'}\n`);
         break;
-}}
+    }
+  }
 </script>
 
 <div bind:this={editorElement} class="space-y-4"></div>

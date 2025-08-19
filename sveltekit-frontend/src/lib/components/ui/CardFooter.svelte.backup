@@ -3,6 +3,6 @@
   $: classes = className;
 </script>
 
-<div className="${1}">
+<div class="container mx-auto px-4">
   <slot />
 </div>

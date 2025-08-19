@@ -1,5 +1,7 @@
 # Web App with Docker, Ollama, and SvelteKit
 
+> Snapshot (2025-08-18): Latest `svelte-check` baseline **3,460 errors / 1,141 warnings (~357 files)** – full remediation roadmap at bottom (Static Analysis Baseline) and detailed batches in `PRODUCTION_WIRING_PLAN.md`.
+
 ## 🚀 Quick Start
 
 ### Option 1: Use the Control Panel (Recommended)
@@ -223,3 +225,44 @@ If you encounter issues:
 
 **Version**: 2.0.0
 **Last Updated**: July 2025
+
+## 📊 Static Analysis Baseline (Pre-Remediation)
+
+Latest `svelte-check` / TypeScript aggregate (baseline for tracking):
+
+- Errors: **3460**
+- Warnings: **1141**
+- Affected Files: **~357**
+
+Top high‑impact categories (see `PRODUCTION_WIRING_PLAN.md` for full table):
+
+1. Missing `class` / rest prop forwarding in UI primitives (Card*, Progress, Dialog variants)
+2. Invalid legacy event prop names (`onresponse`, `onupload`) needing `on:response` style
+3. Migration attribute artefacts (`transitionfly`, `transitionfade`) → `transition:fly|fade`
+4. Button variant enum mismatches (`primary`, `danger` not in union)
+5. Duplicate dialog/modal implementations causing prop/event divergence
+6. Attributify utility props flagged (no ambient typings) e.g. `mb-8`, `rounded-lg`
+7. Bindings to non‑bindable props (`bind:open`) on components lacking `$bindable`
+8. Event handler typings falling back to `never` / missing dispatcher generics
+
+### Remediation Batches (In Flight)
+
+Batch 1 (mechanical regex) → Batch 2 (prop forwarding) → Batch 3 (variant normalization) → Batch 4 (dialog consolidation) → Batch 5+ (event typings, form unions, attributify types, semantic cleanups).
+
+Target milestones:
+
+| Stage | Error Ceiling | Actions Complete |
+|-------|---------------|------------------|
+| Baseline (now) | 3460 | Collection only |
+| After Batch 1 | <2600 | Syntax / attr rewrites |
+| After Batch 2 | <1800 | `class` + rest forwarding |
+| After Batch 3 | <1400 | Variant & enum fixes |
+| After Batch 4 | <500  | Dialog consolidation |
+| Final Gate    | <50   | Remaining semantic issues |
+
+CI (planned): Fail build if post‑Batch‑4 error count >500 or perf regression test fails.
+
+To update the baseline: run `npm run check` (or `npx svelte-check --tsconfig ./tsconfig.json`) and record deltas here before/after each batch.
+
+---
+For detailed patch patterns, acceptance criteria, and optional follow‑ups see `PRODUCTION_WIRING_PLAN.md`.

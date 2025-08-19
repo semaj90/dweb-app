@@ -59,8 +59,27 @@ export async function apiFetch<T = unknown>(
           : ((await res.text()) as unknown)
       ) as T;
       if (t) clearTimeout(t);
+      // Attach lightweight request metadata for observability (non-enumerable)
+      if (out && typeof out === 'object') {
+        Object.defineProperty(out as any, '__requestMeta', {
+          value: { url, method, attempt: i + 1, ok: true },
+          enumerable: false
+        });
+      }
       return out;
-    } catch (err) {
+        } catch (err) {
+      // Augment error with context (safe, non-enumerable)
+      if (err && typeof err === 'object') {
+        try {
+          Object.defineProperty(err, '__apiRequest', {
+        value: { url, method, attempt: i + 1, remaining: attempts - (i + 1) },
+        enumerable: false
+          });
+        } catch {}
+      }
+      if (i < attempts - 1 && typeof console !== 'undefined') {
+        console.warn(`[apiFetch] attempt ${i + 1} failed (${method} ${url}), retrying…`, err);
+      }
       lastErr = err;
       if (t) clearTimeout(t);
       if (i < attempts - 1 && baseBackoff > 0) {
@@ -78,3 +97,4 @@ export async function apiFetch<T = unknown>(
 }
 
 export const ApiClient = { fetch: apiFetch };
+export default ApiClient;

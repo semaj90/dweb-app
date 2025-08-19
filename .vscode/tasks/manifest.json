@@ -1,0 +1,15 @@
+{
+  "generated": "2025-08-19T02:58:28.402Z",
+  "counts": {
+    "ai": 11,
+    "autosolve": 5,
+    "db": 8,
+    "backend": 28,
+    "frontend": 7,
+    "docs": 8,
+    "health": 12,
+    "misc": 34
+  },
+  "totalParsed": 113,
+  "skipped": 0
+}

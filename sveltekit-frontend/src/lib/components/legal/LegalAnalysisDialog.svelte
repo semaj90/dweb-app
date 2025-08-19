@@ -2,16 +2,16 @@
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   interface Props {
-    isOpen?: any;
-    caseId: string | undefined ;
-    evidenceId: string | undefined ;
-    onAnalysisComplete: (analysis: any) ;
+    isOpen?: boolean;
+    caseId?: string;
+    evidenceId?: string;
+    onAnalysisComplete?: (analysis: any) => void;
   }
   let {
     isOpen = false,
     caseId = undefined,
     evidenceId = undefined,
-    onAnalysisComplete = > void = () => {}
+    onAnalysisComplete = () => {}
   }: Props = $props();
 
 

@@ -3,10 +3,10 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 const pool = new Pool({
-  user: 'postgres',
+  user: 'legal_admin',
   host: 'localhost',
-  database: 'postgres',
-  // Try without password first (Windows might use trusted authentication)
+  database: 'legal_ai_db',
+  password: '123456',
   port: 5432,
 });
 

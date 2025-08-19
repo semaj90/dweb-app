@@ -103,14 +103,12 @@
   // Watch for node changes and auto-populate form
   $: if (selectedNode) {
     autoPopulateForm(selectedNode);
-  }
-  
+}
   // Track changes for auto-save
   $: if ($formData && selectedNode) {
     hasUnsavedChanges = true;
     scheduleAutoSave();
-  }
-  
+}
   onMount(() => {
     return () => {
       if (autoSaveTimer) clearTimeout(autoSaveTimer);
@@ -184,13 +182,11 @@
       } else {
         // Trigger AI analysis for enhanced auto-population
         await triggerEnhancedAIAnalysis(node, newFormData);
-      }
-      
+}
       // Add any existing custom data
       if (node.metadata) {
         newFormData.customTags = [...(node.customTags || [])];
-      }
-      
+}
       formData.set(newFormData);
       hasUnsavedChanges = false;
       
@@ -198,9 +194,8 @@
       console.error('Auto-population failed:', error);
     } finally {
       isLoading = false;
-    }
-  }
-  
+}
+}
   async function triggerEnhancedAIAnalysis(node: any, formData: any) {
     try {
       const response = await fetch('/api/ai/tag', {
@@ -248,20 +243,18 @@
         
         // Notify parent components
         dispatch('aiAnalysisComplete', { node, aiTags });
-      }
+}
     } catch (error) {
       console.error('Enhanced AI analysis failed:', error);
-    }
-  }
-  
+}
+}
   function detectEvidenceType(fileType: string): string {
     if (fileType.includes('image')) return 'photo';
     if (fileType.includes('video')) return 'video';
     if (fileType.includes('audio')) return 'audio';
     if (fileType.includes('pdf') || fileType.includes('document')) return 'document';
     return 'digital';
-  }
-  
+}
   // Add/remove functions for arrays
   function addCustomTag() {
     if (customTag.trim() && !$formData.customTags.includes(customTag.trim())) {
@@ -270,16 +263,14 @@
         customTags: [...data.customTags, customTag.trim()]
       }));
       customTag = '';
-    }
-  }
-  
+}
+}
   function removeCustomTag(tag: string) {
     formData.update(data => ({
       ...data,
       customTags: data.customTags.filter(t => t !== tag)
     }));
-  }
-  
+}
   function addCustomPerson() {
     if (customPerson.trim() && !$formData.people.includes(customPerson.trim())) {
       formData.update(data => ({
@@ -287,16 +278,14 @@
         people: [...data.people, customPerson.trim()]
       }));
       customPerson = '';
-    }
-  }
-  
+}
+}
   function removePerson(person: string) {
     formData.update(data => ({
       ...data,
       people: data.people.filter(p => p !== person)
     }));
-  }
-  
+}
   function addCustomLocation() {
     if (customLocation.trim() && !$formData.locations.includes(customLocation.trim())) {
       formData.update(data => ({
@@ -304,16 +293,14 @@
         locations: [...data.locations, customLocation.trim()]
       }));
       customLocation = '';
-    }
-  }
-  
+}
+}
   function removeLocation(location: string) {
     formData.update(data => ({
       ...data,
       locations: data.locations.filter(l => l !== location)
     }));
-  }
-  
+}
   function addCustomOrganization() {
     if (customOrganization.trim() && !$formData.organizations.includes(customOrganization.trim())) {
       formData.update(data => ({
@@ -321,16 +308,14 @@
         organizations: [...data.organizations, customOrganization.trim()]
       }));
       customOrganization = '';
-    }
-  }
-  
+}
+}
   function removeOrganization(org: string) {
     formData.update(data => ({
       ...data,
       organizations: data.organizations.filter(o => o !== org)
     }));
-  }
-  
+}
   function addCustomAction() {
     if (customAction.trim() && !$formData.actions.includes(customAction.trim())) {
       formData.update(data => ({
@@ -338,16 +323,14 @@
         actions: [...data.actions, customAction.trim()]
       }));
       customAction = '';
-    }
-  }
-  
+}
+}
   function removeAction(action: string) {
     formData.update(data => ({
       ...data,
       actions: data.actions.filter(a => a !== action)
     }));
-  }
-  
+}
   // Auto-save functionality
   function scheduleAutoSave() {
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
@@ -355,10 +338,9 @@
     autoSaveTimer = setTimeout(() => {
       if (hasUnsavedChanges && !readOnly) {
         autoSave();
-      }
+}
     }, 5000); // Auto-save after 5 seconds of inactivity
-  }
-  
+}
   async function autoSave() {
     if (!selectedNode || readOnly) return;
     
@@ -380,7 +362,7 @@
         metadata: {
           ...selectedNode.metadata,
           lastModified: new Date().toISOString()
-        }
+}
       };
       
       const response = await fetch('/api/evidence/save-node', {
@@ -396,12 +378,11 @@
         hasUnsavedChanges = false;
         lastSavedAt = new Date();
         dispatch('autoSaved', updatedNode);
-      }
+}
     } catch (error) {
       console.warn('Auto-save failed:', error);
-    }
-  }
-  
+}
+}
   async function handleSave() {
     if (!selectedNode || isSaving) return;
     
@@ -425,7 +406,7 @@
         metadata: {
           ...selectedNode.metadata,
           lastModified: new Date().toISOString()
-        }
+}
       };
       
       const response = await fetch('/api/evidence/save-node', {
@@ -449,7 +430,7 @@
         });
       } else {
         throw new Error('Save failed');
-      }
+}
     } catch (error) {
       console.error('Save failed:', error);
       dispatch('showNotification', {
@@ -458,9 +439,8 @@
       });
     } finally {
       isSaving = false;
-    }
-  }
-  
+}
+}
   async function reanalyzeWithAI() {
     if (!selectedNode || isLoading) return;
     
@@ -485,41 +465,39 @@
       });
     } finally {
       isLoading = false;
-    }
-  }
-  
+}
+}
   function formatDate(dateStr: string) {
     try {
       return new Date(dateStr).toLocaleDateString();
     } catch {
       return dateStr;
-    }
-  }
-  
+}
+}
   function getConfidenceColor(confidence: number): string {
     if (confidence >= 0.8) return 'text-green-600';
     if (confidence >= 0.6) return 'text-yellow-600';
     return 'text-red-600';
-  }
+}
 </script>
 
-<div class="mx-auto px-4 max-w-7xl">
+<div class="container mx-auto px-4">
   {#if selectedNode}
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">
-        <h2 class="mx-auto px-4 max-w-7xl">Evidence Inspector</h2>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">
+        <h2 class="container mx-auto px-4">Evidence Inspector</h2>
         
         <!-- Action buttons -->
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           {#if hasUnsavedChanges}
-            <span class="mx-auto px-4 max-w-7xl">
-              <div class="mx-auto px-4 max-w-7xl"></div>
+            <span class="container mx-auto px-4">
+              <div class="container mx-auto px-4"></div>
               Unsaved changes
             </span>
           {/if}
           
           {#if lastSavedAt}
-            <span class="mx-auto px-4 max-w-7xl">
+            <span class="container mx-auto px-4">
               Saved {new Date(lastSavedAt).toLocaleTimeString()}
             </span>
           {/if}
@@ -527,10 +505,10 @@
           <button 
             on:click={reanalyzeWithAI}
             disabled={isLoading}
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
             {#if isLoading}
-              <div class="mx-auto px-4 max-w-7xl"></div>
+              <div class="container mx-auto px-4"></div>
             {:else}
               🤖
             {/if}
@@ -540,73 +518,73 @@
       </div>
       
       <!-- File info header -->
-      <div class="mx-auto px-4 max-w-7xl">
-        <div class="mx-auto px-4 max-w-7xl">
-          <span class="mx-auto px-4 max-w-7xl">{evidenceTypes.find(t => t.value === $formData.evidenceType)?.icon || '📁'}</span>
+      <div class="container mx-auto px-4">
+        <div class="container mx-auto px-4">
+          <span class="container mx-auto px-4">{evidenceTypes.find(t => t.value === $formData.evidenceType)?.icon || '📁'}</span>
           <div>
-            <div class="mx-auto px-4 max-w-7xl">{selectedNode.name}</div>
-            <div class="mx-auto px-4 max-w-7xl">{selectedNode.type}</div>
+            <div class="container mx-auto px-4">{selectedNode.name}</div>
+            <div class="container mx-auto px-4">{selectedNode.type}</div>
           </div>
         </div>
         
         {#if $formData.qualityScore > 0}
-          <div class="mx-auto px-4 max-w-7xl">
-            <span class="mx-auto px-4 max-w-7xl">Quality Score:</span>
-            <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
+            <span class="container mx-auto px-4">Quality Score:</span>
+            <div class="container mx-auto px-4">
               <div 
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
                 style="width: {$formData.qualityScore * 100}%"
               ></div>
             </div>
-            <span class="mx-auto px-4 max-w-7xl">{Math.round($formData.qualityScore * 100)}%</span>
+            <span class="container mx-auto px-4">{Math.round($formData.qualityScore * 100)}%</span>
           </div>
         {/if}
       </div>
       
       <!-- Loading state -->
       {#if isLoading}
-        <div class="mx-auto px-4 max-w-7xl">
-          <div class="mx-auto px-4 max-w-7xl">
-            <div class="mx-auto px-4 max-w-7xl"></div>
-            <div class="mx-auto px-4 max-w-7xl">Analyzing with AI...</div>
+        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4">
+            <div class="container mx-auto px-4"></div>
+            <div class="container mx-auto px-4">Analyzing with AI...</div>
           </div>
         </div>
       {:else}
         <!-- Form sections -->
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           
           <!-- Basic Information -->
           <section>
-            <h3 class="mx-auto px-4 max-w-7xl">Basic Information</h3>
-            <div class="mx-auto px-4 max-w-7xl">
+            <h3 class="container mx-auto px-4">Basic Information</h3>
+            <div class="container mx-auto px-4">
               <div>
-                <label class="mx-auto px-4 max-w-7xl">Title</label>
+                <label class="container mx-auto px-4">Title</label>
                 <input
                   bind:value={$formData.title}
                   placeholder="Enter evidence title"
                   disabled={readOnly}
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 />
               </div>
               
               <div>
-                <label class="mx-auto px-4 max-w-7xl">Description</label>
+                <label class="container mx-auto px-4">Description</label>
                 <textarea
                   bind:value={$formData.description}
                   placeholder="Enter description or summary"
                   disabled={readOnly}
                   rows={3}
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 ></textarea>
               </div>
               
-              <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
                 <div>
-                  <label class="mx-auto px-4 max-w-7xl">Evidence Type</label>
+                  <label class="container mx-auto px-4">Evidence Type</label>
                   <select 
                     bind:value={$formData.evidenceType}
                     disabled={readOnly}
-                    class="mx-auto px-4 max-w-7xl"
+                    class="container mx-auto px-4"
                   >
                     {#each evidenceTypes as type}
                       <option value={type.value}>{type.icon} {type.label}</option>
@@ -615,11 +593,11 @@
                 </div>
                 
                 <div>
-                  <label class="mx-auto px-4 max-w-7xl">Legal Relevance</label>
+                  <label class="container mx-auto px-4">Legal Relevance</label>
                   <select 
                     bind:value={$formData.legalRelevance}
                     disabled={readOnly}
-                    class="mx-auto px-4 max-w-7xl"
+                    class="container mx-auto px-4"
                   >
                     {#each relevanceOptions as option}
                       <option value={option.value}>{option.label}</option>
@@ -628,13 +606,13 @@
                 </div>
               </div>
               
-              <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
                 <div>
-                  <label class="mx-auto px-4 max-w-7xl">Confidentiality</label>
+                  <label class="container mx-auto px-4">Confidentiality</label>
                   <select 
                     bind:value={$formData.confidentialityLevel}
                     disabled={readOnly}
-                    class="mx-auto px-4 max-w-7xl"
+                    class="container mx-auto px-4"
                   >
                     {#each confidentialityLevels as level}
                       <option value={level.value}>{level.label}</option>
@@ -643,11 +621,11 @@
                 </div>
                 
                 <div>
-                  <label class="mx-auto px-4 max-w-7xl">Urgency</label>
+                  <label class="container mx-auto px-4">Urgency</label>
                   <select 
                     bind:value={$formData.urgencyLevel}
                     disabled={readOnly}
-                    class="mx-auto px-4 max-w-7xl"
+                    class="container mx-auto px-4"
                   >
                     {#each urgencyLevels as level}
                       <option value={level.value}>{level.label}</option>
@@ -660,15 +638,15 @@
           
           <!-- Tags Section -->
           <section>
-            <h3 class="mx-auto px-4 max-w-7xl">Tags</h3>
-            <div class="mx-auto px-4 max-w-7xl">
+            <h3 class="container mx-auto px-4">Tags</h3>
+            <div class="container mx-auto px-4">
               <!-- AI-generated tags -->
               {#if $formData.tags.length > 0}
                 <div>
-                  <label class="mx-auto px-4 max-w-7xl">AI-Generated Tags</label>
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <label class="container mx-auto px-4">AI-Generated Tags</label>
+                  <div class="container mx-auto px-4">
                     {#each $formData.tags as tag}
-                      <span class="mx-auto px-4 max-w-7xl">{tag}</span>
+                      <span class="container mx-auto px-4">{tag}</span>
                     {/each}
                   </div>
                 </div>
@@ -676,15 +654,15 @@
               
               <!-- Custom tags -->
               <div>
-                <label class="mx-auto px-4 max-w-7xl">Custom Tags</label>
-                <div class="mx-auto px-4 max-w-7xl">
+                <label class="container mx-auto px-4">Custom Tags</label>
+                <div class="container mx-auto px-4">
                   {#each $formData.customTags as tag}
-                    <span class="mx-auto px-4 max-w-7xl">
+                    <span class="container mx-auto px-4">
                       {tag}
                       {#if !readOnly}
                         <button 
                           on:click={() => removeCustomTag(tag)}
-                          class="mx-auto px-4 max-w-7xl"
+                          class="container mx-auto px-4"
                         >×</button>
                       {/if}
                     </span>
@@ -692,16 +670,16 @@
                 </div>
                 
                 {#if !readOnly}
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="container mx-auto px-4">
                     <input
                       bind:value={customTag}
                       placeholder="Add custom tag"
                       on:keydown={(e) => e.key === 'Enter' && addCustomTag()}
-                      class="mx-auto px-4 max-w-7xl"
+                      class="container mx-auto px-4"
                     />
                     <button 
                       on:click={addCustomTag} 
-                      class="mx-auto px-4 max-w-7xl"
+                      class="container mx-auto px-4"
                     >Add</button>
                   </div>
                 {/if}
@@ -711,29 +689,29 @@
           
           <!-- Entities Section -->
           <section>
-            <h3 class="mx-auto px-4 max-w-7xl">Extracted Entities</h3>
-            <div class="mx-auto px-4 max-w-7xl">
+            <h3 class="container mx-auto px-4">Extracted Entities</h3>
+            <div class="container mx-auto px-4">
               
               <!-- People -->
               {#if $formData.people.length > 0 || !readOnly}
                 <div>
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <label class="mx-auto px-4 max-w-7xl">People</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">People</label>
                     {#if $formData.extractionConfidence.people > 0}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.people * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="container mx-auto px-4">
                     {#each $formData.people as person}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         👤 {person}
                         {#if !readOnly}
                           <button 
                             on:click={() => removePerson(person)}
-                            class="mx-auto px-4 max-w-7xl"
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -741,16 +719,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customPerson}
                         placeholder="Add person"
                         on:keydown={(e) => e.key === 'Enter' && addCustomPerson()}
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       />
                       <button 
                         on:click={addCustomPerson} 
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -760,23 +738,23 @@
               <!-- Locations -->
               {#if $formData.locations.length > 0 || !readOnly}
                 <div>
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <label class="mx-auto px-4 max-w-7xl">Locations</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">Locations</label>
                     {#if $formData.extractionConfidence.locations > 0}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.locations * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="container mx-auto px-4">
                     {#each $formData.locations as location}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         📍 {location}
                         {#if !readOnly}
                           <button 
                             on:click={() => removeLocation(location)}
-                            class="mx-auto px-4 max-w-7xl"
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -784,16 +762,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customLocation}
                         placeholder="Add location"
                         on:keydown={(e) => e.key === 'Enter' && addCustomLocation()}
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       />
                       <button 
                         on:click={addCustomLocation} 
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -803,23 +781,23 @@
               <!-- Organizations -->
               {#if $formData.organizations.length > 0 || !readOnly}
                 <div>
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <label class="mx-auto px-4 max-w-7xl">Organizations</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">Organizations</label>
                     {#if $formData.extractionConfidence.organizations > 0}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.organizations * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="container mx-auto px-4">
                     {#each $formData.organizations as org}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         🏢 {org}
                         {#if !readOnly}
                           <button 
                             on:click={() => removeOrganization(org)}
-                            class="mx-auto px-4 max-w-7xl"
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -827,16 +805,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customOrganization}
                         placeholder="Add organization"
                         on:keydown={(e) => e.key === 'Enter' && addCustomOrganization()}
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       />
                       <button 
                         on:click={addCustomOrganization} 
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -846,18 +824,18 @@
               <!-- Dates -->
               {#if $formData.dates.length > 0}
                 <div>
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <label class="mx-auto px-4 max-w-7xl">Dates</label>
+                  <div class="container mx-auto px-4">
+                    <label class="container mx-auto px-4">Dates</label>
                     {#if $formData.extractionConfidence.dates > 0}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         {Math.round($formData.extractionConfidence.dates * 100)}% confidence
                       </span>
                     {/if}
                   </div>
                   
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="container mx-auto px-4">
                     {#each $formData.dates as date}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         📅 {formatDate(date)}
                       </span>
                     {/each}
@@ -870,12 +848,12 @@
           <!-- Key Facts -->
           {#if $formData.keyFacts.length > 0}
             <section>
-              <h3 class="mx-auto px-4 max-w-7xl">Key Facts</h3>
-              <ul class="mx-auto px-4 max-w-7xl">
+              <h3 class="container mx-auto px-4">Key Facts</h3>
+              <ul class="container mx-auto px-4">
                 {#each $formData.keyFacts as fact}
-                  <li class="mx-auto px-4 max-w-7xl">
-                    <span class="mx-auto px-4 max-w-7xl">•</span>
-                    <span class="mx-auto px-4 max-w-7xl">{fact}</span>
+                  <li class="container mx-auto px-4">
+                    <span class="container mx-auto px-4">•</span>
+                    <span class="container mx-auto px-4">{fact}</span>
                   </li>
                 {/each}
               </ul>
@@ -885,20 +863,20 @@
           <!-- Actions & Recommendations -->
           {#if $formData.actions.length > 0 || $formData.recommendations.length > 0 || !readOnly}
             <section>
-              <h3 class="mx-auto px-4 max-w-7xl">Actions & Recommendations</h3>
-              <div class="mx-auto px-4 max-w-7xl">
+              <h3 class="container mx-auto px-4">Actions & Recommendations</h3>
+              <div class="container mx-auto px-4">
                 
                 <!-- Action Items -->
                 <div>
-                  <label class="mx-auto px-4 max-w-7xl">Action Items</label>
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <label class="container mx-auto px-4">Action Items</label>
+                  <div class="container mx-auto px-4">
                     {#each $formData.actions as action}
-                      <span class="mx-auto px-4 max-w-7xl">
+                      <span class="container mx-auto px-4">
                         ⚡ {action}
                         {#if !readOnly}
                           <button 
                             on:click={() => removeAction(action)}
-                            class="mx-auto px-4 max-w-7xl"
+                            class="container mx-auto px-4"
                           >×</button>
                         {/if}
                       </span>
@@ -906,16 +884,16 @@
                   </div>
                   
                   {#if !readOnly}
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <div class="container mx-auto px-4">
                       <input
                         bind:value={customAction}
                         placeholder="Add action item"
                         on:keydown={(e) => e.key === 'Enter' && addCustomAction()}
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       />
                       <button 
                         on:click={addCustomAction} 
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       >Add</button>
                     </div>
                   {/if}
@@ -924,11 +902,11 @@
                 <!-- AI Recommendations -->
                 {#if $formData.recommendations.length > 0}
                   <div>
-                    <label class="mx-auto px-4 max-w-7xl">AI Recommendations</label>
-                    <ul class="mx-auto px-4 max-w-7xl">
+                    <label class="container mx-auto px-4">AI Recommendations</label>
+                    <ul class="container mx-auto px-4">
                       {#each $formData.recommendations as recommendation}
-                        <li class="mx-auto px-4 max-w-7xl">
-                          <span class="mx-auto px-4 max-w-7xl">💡</span>
+                        <li class="container mx-auto px-4">
+                          <span class="container mx-auto px-4">💡</span>
                           <span>{recommendation}</span>
                         </li>
                       {/each}
@@ -942,14 +920,14 @@
           <!-- Red Flags -->
           {#if $formData.redFlags.length > 0}
             <section>
-              <h3 class="mx-auto px-4 max-w-7xl">
-                <span class="mx-auto px-4 max-w-7xl">⚠️</span>
+              <h3 class="container mx-auto px-4">
+                <span class="container mx-auto px-4">⚠️</span>
                 Red Flags
               </h3>
-              <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
                 {#each $formData.redFlags as flag}
-                  <div class="mx-auto px-4 max-w-7xl">
-                    <span class="mx-auto px-4 max-w-7xl">{flag}</span>
+                  <div class="container mx-auto px-4">
+                    <span class="container mx-auto px-4">{flag}</span>
                   </div>
                 {/each}
               </div>
@@ -959,15 +937,15 @@
           <!-- Additional Legal Information -->
           {#if $formData.statutes.length > 0 || $formData.monetaryAmounts.length > 0 || $formData.potentialWitnesses.length > 0 || $formData.relatedCases.length > 0}
             <section>
-              <h3 class="mx-auto px-4 max-w-7xl">Legal Information</h3>
-              <div class="mx-auto px-4 max-w-7xl">
+              <h3 class="container mx-auto px-4">Legal Information</h3>
+              <div class="container mx-auto px-4">
                 
                 {#if $formData.statutes.length > 0}
                   <div>
-                    <label class="mx-auto px-4 max-w-7xl">Relevant Statutes</label>
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <label class="container mx-auto px-4">Relevant Statutes</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.statutes as statute}
-                        <span class="mx-auto px-4 max-w-7xl">⚖️ {statute}</span>
+                        <span class="container mx-auto px-4">⚖️ {statute}</span>
                       {/each}
                     </div>
                   </div>
@@ -975,10 +953,10 @@
                 
                 {#if $formData.monetaryAmounts.length > 0}
                   <div>
-                    <label class="mx-auto px-4 max-w-7xl">Monetary Amounts</label>
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <label class="container mx-auto px-4">Monetary Amounts</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.monetaryAmounts as amount}
-                        <span class="mx-auto px-4 max-w-7xl">💰 {amount}</span>
+                        <span class="container mx-auto px-4">💰 {amount}</span>
                       {/each}
                     </div>
                   </div>
@@ -986,10 +964,10 @@
                 
                 {#if $formData.potentialWitnesses.length > 0}
                   <div>
-                    <label class="mx-auto px-4 max-w-7xl">Potential Witnesses</label>
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <label class="container mx-auto px-4">Potential Witnesses</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.potentialWitnesses as witness}
-                        <span class="mx-auto px-4 max-w-7xl">👁️ {witness}</span>
+                        <span class="container mx-auto px-4">👁️ {witness}</span>
                       {/each}
                     </div>
                   </div>
@@ -997,10 +975,10 @@
                 
                 {#if $formData.relatedCases.length > 0}
                   <div>
-                    <label class="mx-auto px-4 max-w-7xl">Related Cases</label>
-                    <div class="mx-auto px-4 max-w-7xl">
+                    <label class="container mx-auto px-4">Related Cases</label>
+                    <div class="container mx-auto px-4">
                       {#each $formData.relatedCases as case_ref}
-                        <span class="mx-auto px-4 max-w-7xl">📁 {case_ref}</span>
+                        <span class="container mx-auto px-4">📁 {case_ref}</span>
                       {/each}
                     </div>
                   </div>
@@ -1012,14 +990,14 @@
         
         <!-- Save button -->
         {#if !readOnly}
-          <div class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
             <button 
               on:click={handleSave}
               disabled={isSaving || !hasUnsavedChanges}
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
             >
               {#if isSaving}
-                <div class="mx-auto px-4 max-w-7xl"></div>
+                <div class="container mx-auto px-4"></div>
                 Saving...
               {:else}
                 💾 Save Evidence
@@ -1031,19 +1009,20 @@
     </div>
   {:else}
     <!-- No selection state -->
-    <div class="mx-auto px-4 max-w-7xl">
-      <div class="mx-auto px-4 max-w-7xl">📋</div>
-      <div class="mx-auto px-4 max-w-7xl">Enhanced Inspector</div>
-      <div class="mx-auto px-4 max-w-7xl">Select evidence to view AI-powered analysis and auto-populated fields</div>
-      <div class="mx-auto px-4 max-w-7xl">Powered by advanced natural language processing</div>
+    <div class="container mx-auto px-4">
+      <div class="container mx-auto px-4">📋</div>
+      <div class="container mx-auto px-4">Enhanced Inspector</div>
+      <div class="container mx-auto px-4">Select evidence to view AI-powered analysis and auto-populated fields</div>
+      <div class="container mx-auto px-4">Powered by advanced natural language processing</div>
     </div>
   {/if}
 </div>
 
 <style>
+  /* @unocss-include */
   .enhanced-inspector-panel {
     min-height: 100%;
     max-height: 100vh;
     overflow-y: auto;
-  }
+}
 </style>

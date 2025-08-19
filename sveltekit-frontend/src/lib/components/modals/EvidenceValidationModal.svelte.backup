@@ -10,7 +10,7 @@
     XCircle,
   } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
-  import type { Evidence } from "../../../lib/stores/evidence-store";
+  import type { Evidence } from '$lib/stores/evidence-store';
 
   export let open: boolean = false;
   export let evidence: Evidence | null = null;
@@ -37,26 +37,21 @@
       evidenceType: evidence.evidenceType || "",
       analysis: evidence.aiAnalysis?.analysis || "",
     };
-  }
-
+}
   function handleValidationChoice(choice: "approve" | "reject") {
     validationChoice = choice;
     showCorrections = choice === "reject";
-  }
-
+}
   function addTag() {
     const tagInput = document.getElementById("new-tag") as HTMLInputElement;
     const newTag = tagInput?.value.trim();
     if (newTag && !corrections.tags.includes(newTag)) {
       corrections.tags = [...corrections.tags, newTag];
       tagInput.value = "";
-    }
-  }
-
+}}
   function removeTag(tagToRemove: string) {
     corrections.tags = corrections.tags.filter((tag) => tag !== tagToRemove);
-  }
-
+}
   async function submitValidation() {
     if (!evidence || !validationChoice) return;
 
@@ -94,7 +89,7 @@
       } else {
         console.error("Validation failed:", result.error);
         alert("Failed to submit validation. Please try again.");
-      }
+}
     } catch (error) {
       console.error("Validation submission error:", error);
       alert(
@@ -102,29 +97,27 @@
       );
     } finally {
       isSubmitting = false;
-    }
-  }
-
+}}
   function closeModal() {
     validationChoice = null;
     feedback = "";
     showCorrections = false;
     open = false;
-  }
+}
 </script>
 
 <DialogPrimitive.Root bind:open>
   <DialogPrimitive.Content
-    class="mx-auto px-4 max-w-7xl"
+    class="container mx-auto px-4"
   >
-    <div class="mx-auto px-4 max-w-7xl">
+    <div class="container mx-auto px-4">
       <!-- Header -->
-      <div class="mx-auto px-4 max-w-7xl">
+      <div class="container mx-auto px-4">
         <div>
-          <DialogPrimitive.Title class="mx-auto px-4 max-w-7xl">
+          <DialogPrimitive.Title class="container mx-auto px-4">
             Validate AI Analysis
           </DialogPrimitive.Title>
-          <DialogPrimitive.Description class="mx-auto px-4 max-w-7xl">
+          <DialogPrimitive.Description class="container mx-auto px-4">
             Review and validate the AI-generated analysis for this evidence
           </DialogPrimitive.Description>
         </div>
@@ -141,36 +134,36 @@
       </div>
 
       {#if evidence}
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <!-- Evidence Info -->
-          <div class="mx-auto px-4 max-w-7xl">
-            <h3 class="mx-auto px-4 max-w-7xl">Evidence: {evidence.title}</h3>
-            <p class="mx-auto px-4 max-w-7xl">
+          <div class="container mx-auto px-4">
+            <h3 class="container mx-auto px-4">Evidence: {evidence.title}</h3>
+            <p class="container mx-auto px-4">
               {evidence.description || "No description"}
             </p>
           </div>
 
           <!-- AI Analysis to Validate -->
-          <div class="mx-auto px-4 max-w-7xl">
-            <h4 class="mx-auto px-4 max-w-7xl">
-              <AlertTriangle class="mx-auto px-4 max-w-7xl" />
+          <div class="container mx-auto px-4">
+            <h4 class="container mx-auto px-4">
+              <AlertTriangle class="container mx-auto px-4" />
               AI Analysis
             </h4>
 
             {#if evidence.aiSummary}
-              <div class="mx-auto px-4 max-w-7xl">
-                <p class="mx-auto px-4 max-w-7xl">Summary:</p>
-                <p class="mx-auto px-4 max-w-7xl">{evidence.aiSummary}</p>
+              <div class="container mx-auto px-4">
+                <p class="container mx-auto px-4">Summary:</p>
+                <p class="container mx-auto px-4">{evidence.aiSummary}</p>
               </div>
             {/if}
 
             {#if evidence.aiTags && evidence.aiTags.length > 0}
-              <div class="mx-auto px-4 max-w-7xl">
-                <p class="mx-auto px-4 max-w-7xl">Suggested Tags:</p>
-                <div class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
+                <p class="container mx-auto px-4">Suggested Tags:</p>
+                <div class="container mx-auto px-4">
                   {#each evidence.aiTags as tag}
                     <span
-                      class="mx-auto px-4 max-w-7xl"
+                      class="container mx-auto px-4"
                     >
                       {tag}
                     </span>
@@ -180,18 +173,18 @@
             {/if}
 
             <div>
-              <p class="mx-auto px-4 max-w-7xl">Evidence Type:</p>
-              <p class="mx-auto px-4 max-w-7xl">{evidence.evidenceType}</p>
+              <p class="container mx-auto px-4">Evidence Type:</p>
+              <p class="container mx-auto px-4">{evidence.evidenceType}</p>
             </div>
 
             {#if aiEvent}
-              <div class="mx-auto px-4 max-w-7xl">
-                <p class="mx-auto px-4 max-w-7xl">Specific Event:</p>
-                <p class="mx-auto px-4 max-w-7xl">
+              <div class="container mx-auto px-4">
+                <p class="container mx-auto px-4">Specific Event:</p>
+                <p class="container mx-auto px-4">
                   {aiEvent.analysis || aiEvent.text}
                 </p>
                 {#if aiEvent.timestamp}
-                  <p class="mx-auto px-4 max-w-7xl">
+                  <p class="container mx-auto px-4">
                     Timestamp: {aiEvent.timestamp}
                   </p>
                 {/if}
@@ -200,25 +193,25 @@
           </div>
 
           <!-- Validation Question -->
-          <div class="mx-auto px-4 max-w-7xl">
-            <h4 class="mx-auto px-4 max-w-7xl">Is this AI analysis accurate?</h4>
+          <div class="container mx-auto px-4">
+            <h4 class="container mx-auto px-4">Is this AI analysis accurate?</h4>
 
-            <div class="mx-auto px-4 max-w-7xl">
+            <div class="container mx-auto px-4">
               <Button
                 variant={validationChoice === "approve" ? "default" : "outline"}
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
                 on:click={() => handleValidationChoice("approve")}
               >
-                <CheckCircle class="mx-auto px-4 max-w-7xl" />
+                <CheckCircle class="container mx-auto px-4" />
                 Yes, it's accurate
               </Button>
 
               <Button
                 variant={validationChoice === "reject" ? "danger" : "outline"}
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
                 on:click={() => handleValidationChoice("reject")}
               >
-                <XCircle class="mx-auto px-4 max-w-7xl" />
+                <XCircle class="container mx-auto px-4" />
                 No, needs correction
               </Button>
             </div>
@@ -226,17 +219,17 @@
 
           <!-- Feedback Section -->
           {#if validationChoice}
-            <div class="mx-auto px-4 max-w-7xl">
+            <div class="container mx-auto px-4">
               <div>
-                <label for="feedback" class="mx-auto px-4 max-w-7xl">
+                <label for="feedback" class="container mx-auto px-4">
                   Additional Feedback (Optional)
                 </label>
                 <textarea
                   id="feedback"
                   bind:value={feedback}
                   placeholder="Add any additional comments or context..."
-                  class="mx-auto px-4 max-w-7xl"
-                  rows={${1"
+                  class="container mx-auto px-4"
+                  rows={4}
                 ></textarea>
               </div>
             </div>
@@ -245,10 +238,10 @@
           <!-- Corrections Section -->
           {#if showCorrections}
             <div
-              class="mx-auto px-4 max-w-7xl"
+              class="container mx-auto px-4"
             >
-              <h4 class="mx-auto px-4 max-w-7xl">
-                <Edit3 class="mx-auto px-4 max-w-7xl" />
+              <h4 class="container mx-auto px-4">
+                <Edit3 class="container mx-auto px-4" />
                 Provide Corrections
               </h4>
 
@@ -256,7 +249,7 @@
               <div>
                 <label
                   for="corrected-summary"
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 >
                   Corrected Summary
                 </label>
@@ -264,7 +257,7 @@
                   id="corrected-summary"
                   bind:value={corrections.summary}
                   placeholder="Enter the correct summary..."
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                   rows={${1"
                 ></textarea>
               </div>
@@ -273,14 +266,14 @@
               <div>
                 <label
                   for="corrected-type"
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 >
                   Corrected Evidence Type
                 </label>
                 <select
                   id="corrected-type"
                   bind:value={corrections.evidenceType}
-                  class="mx-auto px-4 max-w-7xl"
+                  class="container mx-auto px-4"
                 >
                   <option value="document">Document</option>
                   <option value="image">Image</option>
@@ -293,22 +286,22 @@
 
               <!-- Tags Correction -->
               <div>
-                <label for="new-tag" class="mx-auto px-4 max-w-7xl"
+                <label for="new-tag" class="container mx-auto px-4"
                   >Corrected Tags</label
                 >
 
                 <!-- Current tags -->
                 {#if corrections.tags.length > 0}
-                  <div class="mx-auto px-4 max-w-7xl">
+                  <div class="container mx-auto px-4">
                     {#each corrections.tags as tag}
                       <span
-                        class="mx-auto px-4 max-w-7xl"
+                        class="container mx-auto px-4"
                       >
                         {tag}
                         <button
                           type="button"
                           on:click={() => removeTag(tag)}
-                          class="mx-auto px-4 max-w-7xl"
+                          class="container mx-auto px-4"
                         >
                           ×
                         </button>
@@ -318,12 +311,12 @@
                 {/if}
 
                 <!-- Add new tag -->
-                <div class="mx-auto px-4 max-w-7xl">
+                <div class="container mx-auto px-4">
                   <input
                     id="new-tag"
                     type="text"
                     placeholder="Add a tag..."
-                    class="mx-auto px-4 max-w-7xl"
+                    class="container mx-auto px-4"
                     on:keydown={(e) =>
                       e.key === "Enter" && (e.preventDefault(), addTag())}
                   />
@@ -333,7 +326,7 @@
                     size="sm"
                     on:click={() => addTag()}
                   >
-                    <Tag class="mx-auto px-4 max-w-7xl" />
+                    <Tag class="container mx-auto px-4" />
                   </Button>
                 </div>
               </div>
@@ -342,7 +335,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="mx-auto px-4 max-w-7xl">
+        <div class="container mx-auto px-4">
           <Button
             variant="ghost"
             on:click={() => closeModal()}
@@ -354,15 +347,15 @@
           <Button
             on:click={() => submitValidation()}
             disabled={!validationChoice || isSubmitting}
-            class="mx-auto px-4 max-w-7xl"
+            class="container mx-auto px-4"
           >
             {#if isSubmitting}
               <div
-                class="mx-auto px-4 max-w-7xl"
+                class="container mx-auto px-4"
               ></div>
               Submitting...
             {:else}
-              <Save class="mx-auto px-4 max-w-7xl" />
+              <Save class="container mx-auto px-4" />
               Submit Validation
             {/if}
           </Button>
