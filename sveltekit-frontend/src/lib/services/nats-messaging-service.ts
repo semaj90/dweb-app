@@ -1,7 +1,7 @@
 /**
  * NATS Messaging Service for Legal AI Platform
  * Real-time messaging integration with NATS Server
- * 
+ *
  * Features:
  * - WebSocket connection to NATS
  * - Legal AI subject patterns
@@ -48,7 +48,21 @@ interface NATSCodec {
   decode(data: Uint8Array): any;
 }
 
-export class NATSMessagingService {
+// Lightweight EventEmitter (browser + Node)
+class EventEmitter {
+  private listeners = new Map<string, Set<(...args: any[]) => void>>();
+  on(evt: string, fn: (...a: any[]) => void) { if (!this.listeners.has(evt)) this.listeners.set(evt, new Set()); this.listeners.get(evt)!.add(fn); }
+  off(evt: string, fn: (...a: any[]) => void) { this.listeners.get(evt)?.delete(fn); }
+  once(evt: string, fn: (...a: any[]) => void) { const wrap = (...x: any[]) => { fn(...x); this.off(evt, wrap); }; this.on(evt, wrap); }
+  emit(evt: string, ...a: any[]) { this.listeners.get(evt)?.forEach(fn => { try { fn(...a); } catch { } }); }
+}
+
+interface NATSMetricsSnapshot {
+  connection: { status: 'connected' | 'disconnected'; since: number | null; reconnectAttempts: number };
+  messaging: { published: number; received: number; subjects: Record<string, string[]> };
+}
+
+export class NATSMessagingService extends EventEmitter {
   private connection: NATSConnection | null = null;
   private subscriptions: Map<string, NATSSubscription> = new Map();
   private messageHandlers: Map<string, Set<MessageHandler>> = new Map();
@@ -60,7 +74,7 @@ export class NATSMessagingService {
     encode: (data: any) => new TextEncoder().encode(JSON.stringify(data)),
     decode: (data: Uint8Array) => JSON.parse(new TextDecoder().decode(data))
   };
-  
+
   // NATS configuration for Legal AI
   private readonly config = {
     servers: ['ws://localhost:4223'], // WebSocket endpoint
@@ -70,6 +84,11 @@ export class NATSMessagingService {
     maxReconnectAttempts: 10,
     reconnectTimeWait: 2000,
   };
+  private connectedAt: number | null = null;
+  private reconnectAttempts = 0;
+  private publishedCount = 0;
+  private receivedCount = 0;
+  private subjectSamples: Map<string, string[]> = new Map();
 
   // Legal AI subject patterns
   public readonly subjects = {
@@ -77,32 +96,32 @@ export class NATSMessagingService {
     CASE_CREATED: 'legal.case.created',
     CASE_UPDATED: 'legal.case.updated',
     CASE_DELETED: 'legal.case.deleted',
-    
+
     // Document processing
     DOCUMENT_UPLOADED: 'legal.document.uploaded',
     DOCUMENT_PROCESSED: 'legal.document.processed',
     DOCUMENT_ANALYZED: 'legal.document.analyzed',
-    
+
     // AI analysis
     AI_ANALYSIS_STARTED: 'legal.ai.analysis.started',
     AI_ANALYSIS_COMPLETED: 'legal.ai.analysis.completed',
     AI_SUMMARY_GENERATED: 'legal.ai.summary.generated',
-    
+
     // Search and chat
     SEARCH_QUERY: 'legal.search.query',
     SEARCH_RESULTS: 'legal.search.results',
     CHAT_MESSAGE: 'legal.chat.message',
     CHAT_RESPONSE: 'legal.chat.response',
-    
+
     // System events
     SYSTEM_HEALTH: 'system.health',
     SYSTEM_STATUS: 'system.status',
-    
+
     // Evidence processing
     EVIDENCE_UPLOADED: 'legal.evidence.uploaded',
     EVIDENCE_VALIDATED: 'legal.evidence.validated',
     EVIDENCE_CHAIN_UPDATED: 'legal.evidence.chain.updated',
-    
+
     // Real-time collaboration
     USER_JOINED: 'legal.collaboration.user.joined',
     USER_LEFT: 'legal.collaboration.user.left',
@@ -136,13 +155,16 @@ export class NATSMessagingService {
         isClosed: () => false,
         info: { server_name: 'mock-nats' }
       };
-      
+
       console.log('✅ Connected to NATS Server (Mock)');
+      this.connectedAt = Date.now();
+      this.emit('connected');
       this.setupConnectionEvents();
-      
+
       return true;
     } catch (error) {
       console.error('❌ Failed to connect to NATS Server:', error);
+      this.emit('error', error);
       return false;
     }
   }
@@ -158,7 +180,7 @@ export class NATSMessagingService {
       }
       this.subscriptions.clear();
       this.messageHandlers.clear();
-      
+
       await this.connection.drain();
       this.connection = null;
       console.log('🔌 Disconnected from NATS Server');
@@ -182,9 +204,13 @@ export class NATSMessagingService {
 
     try {
       this.connection.publish(subject, this.jsonCodec.encode(message));
+      this.publishedCount++;
+      this.sampleSubject(subject, message);
       console.log(`📤 Published message to ${subject}:`, message);
+      this.emit('publish', { subject, message });
     } catch (error) {
       console.error(`❌ Failed to publish to ${subject}:`, error);
+      this.emit('error', error);
       throw error;
     }
   }
@@ -202,7 +228,7 @@ export class NATSMessagingService {
       if (!this.subscriptions.has(subject)) {
         const subscription = this.connection.subscribe(subject);
         this.subscriptions.set(subject, subscription);
-        
+
         // Process messages
         this.processMessages(subscription, subject);
         console.log(`📥 Subscribed to ${subject}`);
@@ -213,7 +239,7 @@ export class NATSMessagingService {
         this.messageHandlers.set(subject, new Set());
       }
       this.messageHandlers.get(subject)!.add(handler);
-      
+
     } catch (error) {
       console.error(`❌ Failed to subscribe to ${subject}:`, error);
       throw error;
@@ -256,11 +282,11 @@ export class NATSMessagingService {
 
     try {
       const response = await this.connection.request(
-        subject, 
+        subject,
         this.jsonCodec.encode(requestMessage),
         { timeout }
       );
-      
+
       return this.jsonCodec.decode(response.data) as LegalAIMessage;
     } catch (error) {
       console.error(`❌ Request to ${subject} failed:`, error);
@@ -285,7 +311,7 @@ export class NATSMessagingService {
   /**
    * High-level API for Legal AI operations
    */
-  
+
   // Case management
   async notifyCaseCreated(caseData: any): Promise<void> {
     await this.publish(this.subjects.CASE_CREATED, caseData);
@@ -344,7 +370,7 @@ export class NATSMessagingService {
   /**
    * Private helper methods
    */
-  
+
   private setupConnectionEvents(): void {
     if (!this.connection) return;
 
@@ -365,7 +391,7 @@ export class NATSMessagingService {
       try {
         const message = this.jsonCodec.decode(msg.data) as LegalAIMessage;
         console.log(`📨 Received message on ${subject}:`, message);
-        
+
         // Call all handlers for this subject
         const handlers = this.messageHandlers.get(subject);
         if (handlers) {
@@ -395,6 +421,26 @@ export class NATSMessagingService {
 
   private generateSessionId(): string {
     return `session_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+  }
+
+  private sampleSubject(subject: string, payload: any) {
+    const arr = this.subjectSamples.get(subject) || [];
+    const hash = this.hashPayload(payload);
+    if (!arr.includes(hash)) {
+      if (arr.length < 5) arr.push(hash); else arr[Math.floor(Math.random() * arr.length)] = hash;
+      this.subjectSamples.set(subject, arr);
+    }
+  }
+
+  private hashPayload(obj: any): string {
+    try { const s = typeof obj === 'string' ? obj : JSON.stringify(obj); let h = 0; for (let i = 0; i < s.length; i++) { h = (h << 5) - h + s.charCodeAt(i); h |= 0; } return h.toString(16); } catch { return '0'; }
+  }
+
+  getMetrics(): NATSMetricsSnapshot {
+    return {
+      connection: { status: this.isConnected() ? 'connected' : 'disconnected', since: this.connectedAt, reconnectAttempts: this.reconnectAttempts },
+      messaging: { published: this.publishedCount, received: this.receivedCount, subjects: Object.fromEntries([...this.subjectSamples.entries()]) }
+    };
   }
 }
 
