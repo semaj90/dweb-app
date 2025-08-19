@@ -556,8 +556,8 @@ self.addEventListener('install', (event) => {
             return cache.addAll([
                 '/',
                 '/manifest.json',
-                '/static/js/gpu-worker.js',
-                '/static/css/main.css'
+                '/js/gpu-worker.js',
+                '/css/main.css'
             ]);
         })
     );

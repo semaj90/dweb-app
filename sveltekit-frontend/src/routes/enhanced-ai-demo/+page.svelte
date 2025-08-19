@@ -131,8 +131,9 @@
         <!-- Input Section -->
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-2">Legal Query or Document Content</label>
+            <label for="test-query" class="block text-sm font-medium mb-2">Legal Query or Document Content</label>
             <Input
+              id="test-query"
               bind:value={testQuery}
               placeholder="Enter legal question, paste contract text, or describe evidence to analyze..."
               class="w-full h-24 bg-slate-800 border-slate-600 text-white placeholder-slate-400 resize-none" />
@@ -140,8 +141,9 @@
 
           <div class="flex items-center gap-4">
             <div class="flex-1">
-              <label class="block text-sm font-medium mb-2">AI Model</label>
+              <label for="ai-model" class="block text-sm font-medium mb-2">AI Model</label>
               <select
+                id="ai-model"
                 bind:value={selectedModel}
                 class="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-md text-white">
                 {#each modelOptions as option}

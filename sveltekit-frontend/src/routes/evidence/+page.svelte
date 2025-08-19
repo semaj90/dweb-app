@@ -794,14 +794,14 @@
         <Button
           variant="outline"
           size="sm"
-          on:click={() => {
+          onclick={() => {
             selectedType = "";
             selectedStatus = "";
             selectedCollector = "";
             dateFrom = "";
             dateTo = "";
             searchQuery = "";
-          "
+          }
         >
           Clear Filters
         </Button>

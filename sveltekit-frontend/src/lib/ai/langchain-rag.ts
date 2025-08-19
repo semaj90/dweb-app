@@ -1,9 +1,9 @@
 // @ts-nocheck
 // LangChain.js RAG Implementation for Legal AI Platform
 // Advanced RAG with Ollama integration and legal domain specialization
-import { LLMChainExtractor } from "@langchain/community/document_compressors/chain_extract";
-import { ContextualCompressionRetriever } from "@langchain/community/retrievers/contextual_compression";
-import { MultiQueryRetriever } from "@langchain/community/retrievers/multi_query";
+// import { LLMChainExtractor } from "@langchain/community/document_compressors";
+// import { ContextualCompressionRetriever } from "@langchain/community/retrievers/contextual_compression";
+// import { MultiQueryRetriever } from "@langchain/community/retrievers/multi_query";
 import { QdrantVectorStore } from "@langchain/community/vectorstores/qdrant";
 import type { Document } from "@langchain/core/documents";
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -246,27 +246,29 @@ Only return the queries, one per line.`),
       });
 
       // Use MultiQueryRetriever for thinking mode
-      if (thinkingMode) {
-        const multiQueryRetriever = MultiQueryRetriever.fromLLM({
-          llm: this.llm,
-          retriever,
-          prompt: this.LEGAL_PROMPTS.QUERY_GENERATION,
-          verbose: true,
-        });
-        // Use MultiQueryRetriever directly
-        retriever = multiQueryRetriever;
-      }
+      // TODO: Fix MultiQueryRetriever import issue
+      // if (thinkingMode) {
+      //   const multiQueryRetriever = MultiQueryRetriever.fromLLM({
+      //     llm: this.llm,
+      //     retriever,
+      //     prompt: this.LEGAL_PROMPTS.QUERY_GENERATION,
+      //     verbose: true,
+      //   });
+      //   // Use MultiQueryRetriever directly
+      //   retriever = multiQueryRetriever;
+      // }
 
       // Add contextual compression for better relevance
-      if (useCompression) {
-        const compressor = LLMChainExtractor.fromLLM(this.llm);
-        const compressionRetriever = new ContextualCompressionRetriever({
-          baseCompressor: compressor,
-          baseRetriever: retriever,
-        });
-        // Use ContextualCompressionRetriever directly
-        retriever = compressionRetriever;
-      }
+      // TODO: Fix LLMChainExtractor import issue
+      // if (useCompression) {
+      //   const compressor = LLMChainExtractor.fromLLM(this.llm);
+      //   const compressionRetriever = new ContextualCompressionRetriever({
+      //     baseCompressor: compressor,
+      //     baseRetriever: retriever,
+      //   });
+      //   // Use ContextualCompressionRetriever directly
+      //   retriever = compressionRetriever;
+      // }
 
       // Select appropriate prompt template
       let promptTemplate = this.LEGAL_PROMPTS.STANDARD_RAG;

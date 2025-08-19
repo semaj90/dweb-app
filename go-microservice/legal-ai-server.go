@@ -182,7 +182,7 @@ func main() {
 	}
 
 	log.Printf("🚀 Legal AI GPU Server starting on port %s", port)
-	log.Printf("🧠 AI Model: gemma3-legal via Ollama")
+	log.Printf("🧠 AI Model: gemma3-legal:latest via Ollama")
 	log.Printf("💻 CPU Cores: %d", runtime.NumCPU())
 	log.Printf("💾 Database: PostgreSQL + pgvector")
 	
@@ -246,7 +246,7 @@ func testOllamaConnection() bool {
 // Call Ollama API for text generation and analysis
 func callOllama(prompt string, model string) (string, error) {
 	if model == "" {
-		model = "gemma3-legal" // Default to legal-specific model
+		model = "gemma3-legal:latest" // Default to legal-specific model
 	}
 
 	requestBody := OllamaRequest{
@@ -404,7 +404,7 @@ Please provide a structured summary covering:
 
 Summary:`, content)
 
-	return callOllama(prompt, "gemma3-legal")
+	return callOllama(prompt, "gemma3-legal:latest")
 }
 
 // Extract legal entities using Ollama
@@ -423,7 +423,7 @@ Please extract entities in the following categories:
 
 Respond with valid JSON only:`, content)
 
-	response, err := callOllama(prompt, "gemma3-legal")
+	response, err := callOllama(prompt, "gemma3-legal:latest")
 	if err != nil {
 		return nil, err
 	}
@@ -471,7 +471,7 @@ Respond with valid JSON only in this format:
   "confidence": 0.85
 }`, content)
 
-	response, err := callOllama(prompt, "gemma3-legal")
+	response, err := callOllama(prompt, "gemma3-legal:latest")
 	if err != nil {
 		return RiskAssessment{}, err
 	}

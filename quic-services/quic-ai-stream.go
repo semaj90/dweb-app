@@ -1,4 +1,4 @@
-// QUIC AI Stream - Port 8643/8644
+// QUIC AI Stream - Port 8643/8546
 // High-performance HTTP/3 AI streaming service
 
 package main
@@ -67,7 +67,7 @@ func main() {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"service": "QUIC AI Stream",
-			"port": "8643/8644",
+			"port": "8643/8546",
 			"status": "healthy",
 			"protocol": "HTTP/3",
 			"features": []string{
@@ -89,7 +89,7 @@ func main() {
 		}
 
 		// Set QUIC streaming headers
-		c.Header("Alt-Svc", `h3=":8644"; ma=86400`)
+		c.Header("Alt-Svc", `h3=":8546"; ma=86400`)
 		c.Header("Content-Type", "application/json")
 
 		if !req.Stream {
@@ -191,7 +191,7 @@ func main() {
 			return
 		}
 
-		c.Header("Alt-Svc", `h3=":8644"; ma=86400`)
+		c.Header("Alt-Svc", `h3=":8546"; ma=86400`)
 
 		// Simulate legal document analysis
 		analysis := map[string]interface{}{
@@ -226,7 +226,7 @@ func main() {
 	})
 
 	router.GET("/ai/models", func(c *gin.Context) {
-		c.Header("Alt-Svc", `h3=":8644"; ma=86400`)
+		c.Header("Alt-Svc", `h3=":8546"; ma=86400`)
 		
 		models := []map[string]interface{}{
 			{
@@ -269,13 +269,13 @@ func main() {
 	server := &http3.Server{
 		Handler:   router,
 		TLSConfig: tlsConfig,
-		Addr:      ":8644",
+		Addr:      ":8546",
 	}
 
-	log.Printf("🚀 QUIC AI Stream starting on :8643 (QUIC) and :8644 (HTTP/3)")
+	log.Printf("🚀 QUIC AI Stream starting on :8643 (QUIC) and :8546 (HTTP/3)")
 	log.Printf("🤖 AI streaming with legal document optimization")
 	log.Printf("⚡ 0-RTT connection resumption for faster AI responses")
-	log.Printf("🔗 Health check: https://localhost:8644/health")
+	log.Printf("🔗 Health check: https://localhost:8546/health")
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("QUIC AI Stream failed: %v", err)

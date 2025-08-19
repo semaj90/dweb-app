@@ -10,7 +10,7 @@ import type {
 export class OllamaService {
   private baseUrl: string;
   private embedModel = "nomic-embed-text";
-  private llmModel = "gemma3-legal";
+  private llmModel = "gemma3-legal:latest";
 
   constructor(
     baseUrl: string = env.OLLAMA_API_URL || "http://localhost:11434"

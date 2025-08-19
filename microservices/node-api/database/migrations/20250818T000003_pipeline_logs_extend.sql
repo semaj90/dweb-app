@@ -1,0 +1,3 @@
+ALTER TABLE pipeline_logs ADD COLUMN IF NOT EXISTS embedding TEXT;
+ALTER TABLE pipeline_logs ADD COLUMN IF NOT EXISTS retrieval TEXT;
+ALTER TABLE pipeline_logs ADD COLUMN IF NOT EXISTS context TEXT;

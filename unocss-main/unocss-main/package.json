@@ -139,14 +139,6 @@
     "vue": "catalog:",
     "vue-router": "catalog:"
   },
-  "resolutions": {
-    "@typescript-eslint/utils": "catalog:",
-    "magic-string": "catalog:",
-    "nuxt": "catalog:",
-    "prettier": "catalog:",
-    "rollup": "catalog:",
-    "vite": "catalog:"
-  },
   "simple-git-hooks": {
     "pre-commit": "npx esno scripts/prepare.ts && npx lint-staged"
   },

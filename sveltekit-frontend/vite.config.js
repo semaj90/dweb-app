@@ -1,6 +1,7 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 import UnoCSS from "@unocss/vite";
+import path from 'path';
 
 export default defineConfig({
   plugins: [
@@ -21,13 +22,17 @@ export default defineConfig({
       }
     }
   ],
-  
+
   server: {
     port: 5173,
     host: true,
     hmr: {
       port: 5174,
       overlay: true
+    },
+    // Allow static file serving
+    fs: {
+      allow: ['..', 'static']
     },
     // Proxy configuration for backend services
     proxy: {
@@ -61,7 +66,7 @@ export default defineConfig({
       }
     }
   },
-  
+
   preview: {
     port: 4173,
     host: true,
@@ -73,11 +78,11 @@ export default defineConfig({
       }
     }
   },
-  
+
   css: {
     postcss: "./postcss.config.js",
   },
-  
+
   // Enhanced optimization for production builds
   optimizeDeps: {
     include: [
@@ -104,50 +109,54 @@ export default defineConfig({
       splitting: true
     }
   },
-  
+
   build: {
     // Enable CSS code splitting for better performance
     cssCodeSplit: true,
-    
+
     // Increase chunk size warning limit for AI models
     chunkSizeWarningLimit: 1000,
-    
+
     // Use Terser for better minification in production
     minify: process.env.NODE_ENV === 'production' ? 'terser' : 'esbuild',
-    
+
     terserOptions: {
       compress: {
         drop_console: process.env.NODE_ENV === 'production',
         drop_debugger: true
       }
     },
-    
+
     // Rollup configuration for optimal chunking
     rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.message && /gpu-worker\.js|main\.css/.test(warning.message)) return; // suppress known static precache warnings
+        warn(warning);
+      },
       output: {
         manualChunks: {
           // UI frameworks
           "ui-framework": ["bits-ui", "@melt-ui/svelte"],
-          
+
           // CSS and styling
           "css-engine": ["unocss", "tailwindcss", "tailwind-merge"],
-          
+
           // Icons
           "icons": ["lucide-svelte"],
-          
+
           // State management
           "state-management": ["xstate", "@xstate/svelte", "svelte/store"],
-          
+
           // AI and processing
           "ai-processing": ["bullmq", "ioredis", "socket.io-client"],
-          
+
           // Client-side data
           "client-data": ["lokijs", "fuse.js"],
-          
+
           // Validation
           "validation": ["zod", "sveltekit-superforms"]
         },
-        
+
         // Asset file naming for cache busting
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
@@ -159,31 +168,31 @@ export default defineConfig({
           }
           return `assets/[name]-[hash][extname]`;
         },
-        
+
         chunkFileNames: 'chunks/[name]-[hash].js',
         entryFileNames: 'entries/[name]-[hash].js'
       },
-      
+
       // External dependencies (if using CDN)
       external: [],
-      
+
       // Plugins for additional optimizations
       plugins: []
     },
-    
+
     // Source maps for debugging
     sourcemap: process.env.NODE_ENV === 'development',
-    
+
     // Report compressed size
     reportCompressedSize: true,
-    
+
     // Target modern browsers for better performance
     target: 'esnext',
-    
+
     // Asset inlining threshold
     assetsInlineLimit: 4096
   },
-  
+
   // Worker configuration for Web Workers
   worker: {
     format: 'es',
@@ -193,7 +202,7 @@ export default defineConfig({
       }
     }
   },
-  
+
   // Environment variables
   define: {
     '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
@@ -202,7 +211,7 @@ export default defineConfig({
     '__REDIS_URL__': JSON.stringify(process.env.VITE_REDIS_URL || 'localhost:6379'),
     '__USE_GPU__': JSON.stringify(process.env.VITE_USE_GPU !== 'false')
   },
-  
+
   // Performance optimizations
   esbuild: {
     // Use Go's esbuild for faster builds
@@ -210,13 +219,13 @@ export default defineConfig({
     logLimit: 10,
     legalComments: 'none'
   },
-  
+
   // JSON handling optimization
   json: {
     namedExports: true,
     stringify: false
   },
-  
+
   // Resolve configuration
   resolve: {
     alias: {
@@ -225,7 +234,8 @@ export default defineConfig({
       '$stores': '/src/lib/stores',
       '$machines': '/src/lib/machines',
       '$utils': '/src/lib/utils',
-      '$types': '/src/lib/types'
+      '$types': '/src/lib/types',
+      '$static': path.resolve('./static')
     }
   }
 });

@@ -28,7 +28,7 @@ function createAIService() {
         summary: null,
         error: null,
         lastSummarizedContent: null,
-        model: 'gemma3-legal'
+        model: 'gemma3-legal:latest'
     });
 
     return {
@@ -67,7 +67,7 @@ function createAIService() {
                         type: request.type || 'general',
                         caseId: request.caseId,
                         sourceId: request.sourceId,
-                        model: 'gemma3-legal' // Use our custom legal model
+                        model: 'gemma3-legal:latest' // Use our custom legal model
                     })
                 });
 
@@ -168,7 +168,7 @@ function createAIService() {
                 summary: null,
                 error: null,
                 lastSummarizedContent: null,
-                model: 'gemma3-legal'
+                model: 'gemma3-legal:latest'
             });
         },
 

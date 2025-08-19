@@ -15,7 +15,7 @@ export const fullSchema = {
 };
 
 // Create the connection
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/prosecutor_db';
+const connectionString = process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db';
 
 // For query purposes
 const queryClient = postgres(connectionString);

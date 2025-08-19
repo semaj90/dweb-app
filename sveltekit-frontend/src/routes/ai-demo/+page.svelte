@@ -134,8 +134,10 @@ https://svelte.dev/e/const_tag_invalid_placement -->
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <!-- Ollama Status -->
         <div class="flex items-center gap-2">
-          {@const Icon = healthIcon}
-          <Icon class={`h-5 w-5 ${healthColor}`} />
+          {#if healthIcon}
+            {@const Icon = healthIcon}
+            <Icon class={`h-5 w-5 ${healthColor}`} />
+          {/if}
           <div>
             <p class="font-medium">Ollama Service</p>
             <p class="text-sm text-gray-500 capitalize">{ollamaStatus}</p>

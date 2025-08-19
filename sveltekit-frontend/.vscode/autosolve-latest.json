@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-08-19T02:45:17.516Z",
-  "baseline": 0,
-  "after": 0,
+  "timestamp": "2025-08-19T04:40:30.978Z",
+  "baseline": 3,
+  "after": 3,
   "reduction": 0,
-  "threshold": 50
+  "threshold": 100
 }

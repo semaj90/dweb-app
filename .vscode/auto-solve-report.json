@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-08-19T04:39:57.533Z",
+  "durationMs": 6,
+  "contextLog": {
+    "path": "C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\all-errors-complete.log",
+    "bytes": 4547
+  },
+  "clusterMetrics": {
+    "present": true,
+    "workers": 10,
+    "deferred": 0,
+    "spawned": {
+      "legal": 3,
+      "ai": 2,
+      "vector": 2,
+      "database": 3
+    },
+    "lastAllocation": {
+      "type": "database",
+      "port": 3042,
+      "time": 1755577316736
+    }
+  },
+  "actions": [],
+  "status": "noop"
+}

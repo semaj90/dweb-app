@@ -138,7 +138,7 @@ ollama:
   host: "http://localhost:11434"
   models:
     embeddings: "nomic-embed-text"
-    inference: "gemma3-legal"
+    inference: "gemma3-legal:latest"
     chat: "llama3"
   timeout: 30s
   max_retries: 3

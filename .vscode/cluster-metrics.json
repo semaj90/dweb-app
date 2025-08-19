@@ -1,0 +1,71 @@
+{
+  "timestamp": 1755583175286,
+  "uptimeSec": 21,
+  "startTime": 1755583154162,
+  "spawned": {
+    "legal": 1,
+    "ai": 1,
+    "vector": 1,
+    "database": 1
+  },
+  "deferredTotal": 0,
+  "deferredActive": 0,
+  "portSearches": {
+    "successes": 4,
+    "failures": 0
+  },
+  "lastAllocation": {
+    "type": "database",
+    "port": 3040,
+    "time": 1755583154208
+  },
+  "events": [
+    {
+      "e": "spawn:legal@3010",
+      "t": 1755583154188
+    },
+    {
+      "e": "spawn:ai@3020",
+      "t": 1755583154196
+    },
+    {
+      "e": "spawn:vector@3030",
+      "t": 1755583154202
+    },
+    {
+      "e": "spawn:database@3040",
+      "t": 1755583154208
+    }
+  ],
+  "workers": [
+    {
+      "type": "legal",
+      "pid": 42528,
+      "port": 3010,
+      "status": "online",
+      "uptimeSec": 21
+    },
+    {
+      "type": "ai",
+      "pid": 61160,
+      "port": 3020,
+      "status": "online",
+      "uptimeSec": 21
+    },
+    {
+      "type": "vector",
+      "pid": 44388,
+      "port": 3030,
+      "status": "online",
+      "uptimeSec": 21
+    },
+    {
+      "type": "database",
+      "pid": 51404,
+      "port": 3040,
+      "status": "online",
+      "uptimeSec": 21
+    }
+  ],
+  "deferredQueue": []
+}

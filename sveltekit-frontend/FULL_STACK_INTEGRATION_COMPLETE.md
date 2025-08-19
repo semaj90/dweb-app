@@ -66,6 +66,172 @@ const nvidiaConfig = {
 - **Real-time performance monitoring**
 - **Queue management** with priority handling
 
+### 🧬 Sentence Transformer Legal NLP Service (Embedding + Similarity Layer)
+
+Source: `sveltekit-frontend/src/lib/services/sentence-transformer.ts`
+
+Capabilities:
+- Mean‑pooled, normalized sentence embeddings (MiniLM L6, 384 dims default)
+- Batch + single embedding APIs with lazy model initialization
+- Cosine similarity scoring + filtered threshold ranking
+- Lightweight legal document analysis (keywords, domains, complexity) – pluggable
+- Text chunking with overlap for vector store ingestion (RAG pipeline feed)
+
+#### Core API
+```ts
+import { legalNLP } from '$lib/services/sentence-transformer';
+
+// Single embedding
+const emb = await legalNLP.embedText("Indemnification survives termination.");
+
+// Batch embedding
+const batch = await legalNLP.embedBatch([
+  'Force majeure shall suspend obligations',
+  'Indemnification survives termination'
+]);
+
+// Similarity search (in‑memory)
+const results = await legalNLP.similaritySearch(
+  'termination liability',
+  [ 'Payment terms', 'Liability after termination', 'Severability clause' ],
+  0.45
+);
+
+// Lightweight legal document analysis (heuristic)
+const analysis = await legalNLP.analyzeLegalDocument(longContractText);
+
+// Chunking for vector storage
+const chunks = legalNLP.chunkText(longContractText, 600, 60);
+```
+
+#### Integration Points
+| Layer | How to Use |
+|-------|------------|
+| RAG Ingestion | Use `chunkText` → embed each chunk → store (Postgres pgvector / Qdrant) with metadata `{source, seq, model}` |
+| Query Expansion | Embed original query + optional reformulations (LLM) → average or concatenate vectors |
+| Hybrid Scoring | Combine `cosine_score * w1 + bm25_score * w2 + graph_bias * w3` in aggregation stage |
+| Graph Augmentation | Use domain detection → bias traversal depth (e.g., corporate vs IP) |
+| Autosolve Context | Provide top-N similar code/docs for remediation prompts |
+
+#### Caching & Performance
+- Model pipeline loaded once (internal `isInitialized`).
+- Enable browser & edge caching via `env.useBrowserCache = true` (already set).
+- Optional: wrap `embedText` with LRU (key: text hash) for high-frequency snippets.
+- Future GPU path: replace pipeline backend with WebGPU (Transformers.js auto‑detect) or switch to a CUDA server microservice for large batches.
+
+#### Extensibility Roadmap
+| Enhancement | Description |
+|-------------|-------------|
+| Domain-Specific Fine-Tune | Swap `MiniLM` for a fine‑tuned legal model (e.g., `legal-mpnet-base`) |
+| Vector Quantization | Apply 8-bit / product quantization before storage to cut memory |
+| Multi-Vector Per Chunk | Store title + body embeddings separately (ColBERT-lite pattern) |
+| Cross-Encoder Re-Rank | Add second pass re-ranker for top 50 hits |
+| Structured Output | Extend `analyzeLegalDocument` to produce entity graph nodes (parties, obligations) |
+
+#### Safety & Validation
+- Embedding dimension asserted at persistence; mismatch triggers ingestion reject.
+- Detect NaNs / zero norms before similarity operations (guard rails for corrupted vectors).
+- Threshold tuning: log distribution of raw scores; adjust default (0.5) per corpus density.
+
+#### Operational Metrics (Planned)
+Expose via `/api/v1/nlp/metrics`:
+| Metric | Purpose |
+|--------|---------|
+| `embeddings_total` | Throughput count |
+| `embedding_latency_ms_bucket` | p50/p95 latency histogram |
+| `similarity_queries_total` | Volume of similarity searches |
+| `cache_hit_ratio` | Effectiveness of LRU / Redis cache |
+
+This service is the glue between raw text assets and higher-order RAG / graph reasoning layers—kept modular so it can be lifted into a dedicated microservice (HTTP or gRPC) without refactoring downstream consumers.
+
+### 📚 Context7.2 Programmatic Library Documentation Retrieval
+Utility: `src/lib/mcp-context72-get-library-docs.ts` enables on-demand structured retrieval of framework/library docs (Svelte 5, Bits UI v2, Melt UI, XState) through the MCP Context7.2 endpoint.
+
+```ts
+import { getSvelte5Docs, getBitsUIv2Docs } from '$lib/mcp-context72-get-library-docs';
+
+const svelteDocs = await getSvelte5Docs('runes|lifecycle');
+const bitsDocs   = await getBitsUIv2Docs('forms|accessibility');
+
+// Unified response
+// {
+//   content: string;
+//   metadata: { library: string; version?: string; topic?: string; tokenCount: number };
+//   snippets?: { title: string; code: string; description: string }[];
+// }
+```
+
+Benefits:
+1. Always-fresh upstream docs (no stale local copies).
+2. Token-bounded (default 10k, override per call) = deterministic autosolve context sizing.
+3. Multiple formats (`markdown | json | typescript`) for prompt grounding, type synthesis, or UI display.
+4. Tagged `#mcp_context72_get-library-docs` so autosolve semantic search can surface it.
+
+### 🛠️ Orchestrated 37 Go Binary Integration
+All Go microservice binaries (HTTP / gRPC / QUIC) are exposed via the `productionServiceClient` (protocol tier routing + fallback). SvelteKit API endpoints (`/api/v1/*`) call logical operations which resolve to QUIC (<5ms), gRPC (<15ms), HTTP (<50ms) or WebSocket (real-time) tiers automatically.
+
+Planned dev workflow linkage (pending scripts):
+* `npm run dev:full` → Launch SvelteKit, Node cluster, 37 Go services, Ollama triad, optional GPU vLLM, autosolve loop.
+* `npm run auto:solve` → zx orchestrator: incremental type checks + Context7 guided repair (injects fresh library docs above when resolving symbol/API drift).
+
+Upcoming enhancements:
+| Area | Enhancement |
+|------|-------------|
+| Cluster Manager | Adaptive port probing + env/CLI worker & base port overrides (DONE) |
+| AI Layer | Dynamic model capability registry derived from Ollama `/api/tags` + Context7.2 metadata |
+| Autosolve | Structured doc snippet injection during fix proposals |
+| Metrics | P95 per-protocol latency added to `/api/v1/cluster/metrics` |
+
+Scripts now available:
+| Script | Purpose |
+|--------|---------|
+| `pnpm run dev:full` | Concurrent SvelteKit + cluster manager + microservices startup |
+| `pnpm run auto:solve` | Run autosolve maintenance cycle (placeholder) |
+| `pnpm run cluster:manager` | Launch cluster manager with default env config |
+| `pnpm run cluster:manager:debug` | Verbose cluster manager run (future LOG_LEVEL usage) |
+
+Cluster Manager CLI overrides (examples):
+```
+node node-cluster/cluster-manager.cjs \
+  --manager-port=3050 \
+  --legal-count=1 --ai-count=1 --vector-count=1 --database-count=1 \
+  --legal-base-port=5010 --ai-base-port=5020
+```
+These map to environment variables automatically before configuration loads, enabling shell-agnostic overrides (especially on Windows PowerShell where inline env exports differ from UNIX syntax).
+
+### 🔍 Autosolve + Cluster Metrics Integration (NEW)
+The autosolve maintenance pipeline now ingests live cluster orchestration metrics to enrich remediation context.
+
+Artifacts:
+- `.vscode/cluster-metrics.json` (rolling write every 3s; spawns, deferred queue, port allocations, events)
+- `.vscode/auto-solve-report.json` (each autosolve run; now includes `clusterMetrics` summary)
+
+Included Metrics Snapshot Fields:
+| Field | Description |
+|-------|-------------|
+| `spawned` | Per worker-type successful spawns count |
+| `deferredActive` | Current size of deferred spawn queue |
+| `deferredTotal` | Cumulative deferred spawn attempts logged |
+| `lastAllocation` | Last successful port allocation (type, port, timestamp) |
+| `events` | Rolling (<=200) lifecycle events (`spawn:*`, `defer:*`, `abandon:*`) |
+| `workers[]` | Live workers with pid, port, uptimeSec, status |
+| `deferredQueue[]` | Pending deferred spawn entries with attempts |
+
+Environment Controls:
+| Env Var | Default | Purpose |
+|---------|---------|---------|
+| `METRICS_WRITE_INTERVAL_MS` | 3000 | Metrics JSON flush cadence |
+| `PORT_SEARCH_RANGE` | 50 | Outward closest-port search radius |
+| `PORT_DEFER_INTERVAL_MS` | 1000 | Base interval for deferred spawn loop |
+| `PORT_DEFER_MAX_ATTEMPTS` | 30 | Abandon threshold per deferred worker |
+
+Autosolve now reads `cluster-metrics.json` and embeds a condensed `clusterMetrics` object in its report for:
+1. Adaptive remediation (future: scale decisions, targeted restarts)
+2. Intelligent error gating (skip heavy checks if cluster rebalancing active)
+3. Historical trend analysis (planned persistence layer)
+
+Planned Next Step: expose `/metrics` proxy via SvelteKit and surface live cluster state on DevOps dashboard.
+
 ---
 
 ## 📊 **Graph Database (Neo4j + Enhanced RAG)**
@@ -188,52 +354,160 @@ interface UserAnalytics {
 
 ---
 
-## 📡 **Messaging Architecture (NATS + Real-time)**
+## 📡 **Messaging Architecture (NATS + Real-time) - ✅ PRODUCTION READY**
 
-### **🚀 NATS Server Integration**
+### **🚀 NATS Server Integration - FULLY IMPLEMENTED**
 ```typescript
 // High-performance messaging with WebSocket support
 const natsConfig = {
-  servers: ['ws://localhost:4223'], // WebSocket endpoint
+  servers: ['ws://localhost:4222', 'ws://localhost:4223'], // Multi-server WebSocket
   user: 'legal_ai_client',
   pass: 'legal_ai_2024',
-  name: 'Legal AI SvelteKit Client'
+  name: 'Legal AI SvelteKit Client',
+  enableLegalChannels: true,
+  enableDocumentStreaming: true,
+  enableRealTimeAnalysis: true,
+  enableCaseUpdates: true
 };
 
-// Legal AI subject patterns
-const subjects = {
+// Comprehensive Legal AI subject patterns (17 subjects)
+const NATS_SUBJECTS = {
+  // Case management
   CASE_CREATED: 'legal.case.created',
+  CASE_UPDATED: 'legal.case.updated',
+  CASE_CLOSED: 'legal.case.closed',
+  
+  // Document processing
   DOCUMENT_UPLOADED: 'legal.document.uploaded',
+  DOCUMENT_PROCESSED: 'legal.document.processed',
+  DOCUMENT_ANALYZED: 'legal.document.analyzed',
+  DOCUMENT_INDEXED: 'legal.document.indexed',
+  
+  // AI analysis pipeline
+  AI_ANALYSIS_STARTED: 'legal.ai.analysis.started',
   AI_ANALYSIS_COMPLETED: 'legal.ai.analysis.completed',
+  AI_ANALYSIS_FAILED: 'legal.ai.analysis.failed',
+  
+  // Search and retrieval
   SEARCH_QUERY: 'legal.search.query',
+  SEARCH_RESULTS: 'legal.search.results',
+  
+  // Real-time chat
   CHAT_MESSAGE: 'legal.chat.message',
-  SYSTEM_HEALTH: 'system.health'
+  CHAT_RESPONSE: 'legal.chat.response',
+  CHAT_STREAMING: 'legal.chat.streaming',
+  
+  // System monitoring
+  SYSTEM_HEALTH: 'system.health',
+  SYSTEM_METRICS: 'system.metrics'
 };
 ```
 
-### **⚡ Real-time Communication Flow**
+### **⚡ Real-time Communication Flow - ACTIVE**
 ```bash
 # Case management events
-legal.case.created          → New case notifications
-legal.case.updated          → Case status changes
-legal.document.uploaded     → File processing triggers
+legal.case.created          → New case notifications + metadata
+legal.case.updated          → Case status changes + diff tracking
+legal.case.closed           → Completion notifications + archival triggers
 
-# AI analysis pipeline
-legal.ai.analysis.started   → Processing notifications
-legal.ai.analysis.completed → Results distribution
-legal.search.query          → Real-time search requests
+# Document processing pipeline
+legal.document.uploaded     → File processing triggers + validation
+legal.document.processed    → OCR/text extraction completion
+legal.document.analyzed     → AI analysis results + confidence scores
+legal.document.indexed      → Vector embedding completion + search ready
 
-# System monitoring
-system.health               → Service health broadcasts
-system.status               → Performance metrics
+# AI analysis pipeline  
+legal.ai.analysis.started   → Processing notifications + progress tracking
+legal.ai.analysis.completed → Results distribution + confidence metrics
+legal.ai.analysis.failed    → Error handling + retry logic
+legal.search.query          → Real-time search requests + context
+legal.search.results        → Search response delivery + ranking
+
+# Real-time collaboration
+legal.chat.message          → User messages + session management
+legal.chat.response         → AI responses + streaming support
+legal.chat.streaming        → Live typing indicators + partial responses
+
+# System monitoring & health
+system.health               → Service health broadcasts + metrics
+system.metrics              → Performance data + alerting
+system.alerts               → Critical notifications + escalation
 ```
 
-**✅ NATS Features:**
-- **JetStream** for persistent messaging
-- **WebSocket support** for browser clients
-- **Legal AI subject patterns** with wildcard subscriptions
-- **Request-Reply pattern** for synchronous operations
-- **Pub-Sub pattern** for real-time notifications
+### **🛠️ Production Implementation Status**
+```typescript
+// Service file: src/lib/services/nats-messaging-service.ts (814 lines)
+export class NATSMessagingService extends EventEmitter {
+  // ✅ Connection management with auto-reconnect
+  // ✅ Message publishing with metadata and correlation IDs
+  // ✅ Subscription management with wildcards
+  // ✅ Request-reply pattern with timeout handling
+  // ✅ Streaming support for document processing
+  // ✅ Health monitoring and metrics collection
+  // ✅ Browser and server-side compatibility
+  // ✅ Message history and analytics
+}
+```
+
+### **🌐 API Endpoints - DEPLOYED**
+```bash
+# Production API endpoints (all implemented and tested)
+POST /api/v1/nats/publish     → Publish messages to subjects
+GET  /api/v1/nats/status      → Connection health and statistics
+POST /api/v1/nats/subscribe   → Setup subject subscriptions
+DELETE /api/v1/nats/subscribe → Remove subscriptions
+GET  /api/v1/nats/metrics     → Comprehensive messaging metrics
+
+# Demo interface
+GET  /demos/nats-messaging    → Interactive NATS demo with live testing
+```
+
+### **📊 Live Metrics & Monitoring**
+```typescript
+// Comprehensive metrics available via /api/v1/nats/metrics
+interface NATSMetrics {
+  connection: {
+    status: 'connected' | 'disconnected';
+    health: 'excellent' | 'good' | 'fair' | 'poor';
+    healthScore: number; // 0-100
+    uptime: { hours: number; formatted: string };
+    reconnectAttempts: number;
+  };
+  messaging: {
+    published: { total: number; rate: { perHour: number; perSecond: number } };
+    received: { total: number; rate: { perHour: number; perSecond: number } };
+    queued: number;
+    totalThroughput: number;
+  };
+  bandwidth: {
+    inbound: { total: number; rate: { kbPerSecond: number } };
+    outbound: { total: number; rate: { kbPerSecond: number } };
+  };
+  subscriptions: {
+    total: number;
+    active: number;
+    subjectBreakdown: Record<string, number>;
+  };
+  performance: {
+    grade: 'A+' | 'A' | 'B' | 'C' | 'D' | 'F';
+    reliability: number; // 0-100
+    efficiency: number; // 0-100
+  };
+}
+```
+
+**✅ NATS Features - PRODUCTION IMPLEMENTATION:**
+- **✅ JetStream** for persistent messaging with durability
+- **✅ WebSocket support** for browser clients with fallback
+- **✅ Legal AI subject patterns** with wildcard subscriptions (17 subjects)
+- **✅ Request-Reply pattern** with timeout handling and correlation tracking
+- **✅ Pub-Sub pattern** for real-time notifications and event distribution
+- **✅ Streaming support** for document processing workflows
+- **✅ Health monitoring** with comprehensive metrics and alerting
+- **✅ Message history** with configurable retention and analytics
+- **✅ Browser simulation** for development and testing environments
+- **✅ Auto-reconnection** with exponential backoff and circuit breaker
+- **✅ Performance monitoring** with throughput, latency, and bandwidth tracking
 
 ---
 

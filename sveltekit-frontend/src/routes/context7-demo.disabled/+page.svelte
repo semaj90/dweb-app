@@ -15,7 +15,7 @@
     data
   }: Props = $props();
 
-let query = $state('');
+  let query = $state('');
 let results = writable([]);
 let loading = writable(false);
 let orchestrationResult = writable(data.orchestrationResult);

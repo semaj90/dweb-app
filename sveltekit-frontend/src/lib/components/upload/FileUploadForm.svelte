@@ -195,10 +195,10 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <Button type="button" variant="secondary" size="sm" on:click|stopPropagation={openFilePicker}>
+                    <Button type="button" variant="secondary" size="sm" onclick={(e) => { e.stopPropagation(); openFilePicker(); }}>
                       Change
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" on:click|stopPropagation={removeFile} aria-label="Remove file">
+                    <Button type="button" variant="ghost" size="sm" onclick={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
                       <X class="h-4 w-4" />
                     </Button>
                   </div>

@@ -127,7 +127,7 @@
 				<div class="flex items-center justify-between mb-4">
 					<h2 class="text-2xl font-semibold">System Health Dashboard</h2>
 					<button 
-						on:click={checkSystemHealth}
+						onclick={checkSystemHealth}
 						class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
 					>
 						{isLoadingHealth ? '🔄 Checking...' : '🔄 Refresh'}
@@ -240,7 +240,7 @@
 				<h2 class="text-2xl font-semibold mb-4">🧪 API Testing</h2>
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 					<button 
-						on:click={() => testAPI('/api/ocr/langextract')}
+						onclick={() => testAPI('/api/ocr/langextract')}
 						class="p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 text-left"
 					>
 						<h3 class="font-semibold text-blue-800">Test OCR Health</h3>
@@ -248,7 +248,7 @@
 					</button>
 
 					<button 
-						on:click={() => testAPI('/api/embeddings/generate')}
+						onclick={() => testAPI('/api/embeddings/generate')}
 						class="p-4 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 text-left"
 					>
 						<h3 class="font-semibold text-green-800">Test Embeddings</h3>
@@ -256,7 +256,7 @@
 					</button>
 
 					<button 
-						on:click={() => testAPI('/api/documents/search')}
+						onclick={() => testAPI('/api/documents/search')}
 						class="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg border border-purple-200 text-left"
 					>
 						<h3 class="font-semibold text-purple-800">Test Search</h3>
@@ -264,7 +264,7 @@
 					</button>
 
 					<button 
-						on:click={() => testAPI('/api/embeddings/generate', 'POST', { text: 'Test legal document about contracts', model: 'nomic-embed-text' })}
+						onclick={() => testAPI('/api/embeddings/generate', 'POST', { text: 'Test legal document about contracts', model: 'nomic-embed-text' })}
 						class="p-4 bg-orange-50 hover:bg-orange-100 rounded-lg border border-orange-200 text-left"
 					>
 						<h3 class="font-semibold text-orange-800">Generate Embedding</h3>

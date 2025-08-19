@@ -4,14 +4,12 @@
 package main
 
 import (
-	"context"
 	"crypto/tls"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
 )
 
@@ -25,7 +23,7 @@ func main() {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"service": "QUIC Legal Gateway",
-			"port": "8443/8444",
+			"port": "8443/8445",
 			"status": "healthy",
 			"protocol": "HTTP/3",
 			"performance": "80% faster streaming",
@@ -34,7 +32,7 @@ func main() {
 	})
 
 	router.POST("/legal/analyze", func(c *gin.Context) {
-		c.Header("Alt-Svc", `h3=":8444"; ma=86400`)
+		c.Header("Alt-Svc", `h3=":8445"; ma=86400`)
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Legal document analysis via QUIC",
 			"latency_improvement": "80%",
@@ -64,12 +62,12 @@ func main() {
 	server := &http3.Server{
 		Handler:   router,
 		TLSConfig: tlsConfig,
-		Addr:      ":8444",
+		Addr:      ":8447",
 	}
 
-	log.Printf("🚀 QUIC Legal Gateway starting on :8443 (QUIC) and :8444 (HTTP/3)")
+	log.Printf("🚀 QUIC Legal Gateway starting on :8443 (QUIC) and :8447 (HTTP/3)")
 	log.Printf("📄 Legal document processing with 80%% faster streaming")
-	log.Printf("🔗 Health check: https://localhost:8444/health")
+	log.Printf("🔗 Health check: https://localhost:8447/health")
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("QUIC Legal Gateway failed: %v", err)

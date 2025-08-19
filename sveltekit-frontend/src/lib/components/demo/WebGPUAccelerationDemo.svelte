@@ -412,16 +412,17 @@
         <CardContent>
           <div class="space-y-3">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="vector-dimensions" class="block text-sm font-medium text-gray-700 mb-1">
                 Vector Dimensions: {vectorDimensions}
               </label>
               <input
+                id="vector-dimensions"
                 type="range"
                 min="128"
                 max="1024"
                 step="128"
                 bind:value={vectorDimensions}
-                on:input={generateTestData}
+                oninput={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>
@@ -447,30 +448,32 @@
         <CardContent>
           <div class="space-y-3">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="data-points" class="block text-sm font-medium text-gray-700 mb-1">
                 Data Points: {numDataPoints}
               </label>
               <input
+                id="data-points"
                 type="range"
                 min="100"
                 max="5000"
                 step="100"
                 bind:value={numDataPoints}
-                on:input={generateTestData}
+                oninput={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="clusters" class="block text-sm font-medium text-gray-700 mb-1">
                 Clusters: {numClusters}
               </label>
               <input
+                id="clusters"
                 type="range"
                 min="2"
                 max="20"
                 bind:value={numClusters}
-                on:input={generateTestData}
+                oninput={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>
@@ -496,16 +499,17 @@
         <CardContent>
           <div class="space-y-3">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="matrix-size" class="block text-sm font-medium text-gray-700 mb-1">
                 Matrix Size: {matrixSize}x{matrixSize}
               </label>
               <input
+                id="matrix-size"
                 type="range"
                 min="64"
                 max="512"
                 step="64"
                 bind:value={matrixSize}
-                on:input={generateTestData}
+                oninput={generateTestData}
                 class="w-full"
                 disabled={isProcessing} />
             </div>

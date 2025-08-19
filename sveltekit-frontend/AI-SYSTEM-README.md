@@ -180,6 +180,7 @@ LEGAL_MODEL_TEMPERATURE=0.5
 LEGAL_MODEL_TOP_P=0.85
 LEGAL_CONTEXT_WINDOW=8192
 LEGAL_BERT_CONTEXT=512
+VITE_WS_FANOUT_URL=ws://localhost:8080 # points to the ws-fanout-service broadcasting pipeline events.
 ```
 
 ## 📊 System Status

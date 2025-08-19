@@ -12,6 +12,9 @@
   "scripts": {
   "cluster:orchestrate": "zx scripts/orchestrate-cluster.mjs",
   "dev": "pnpm -r run dev",
+  "node-api:dev": "pnpm --filter @yorha/node-api run dev",
+  "dev:full+nodeapi": "concurrently --restart-tries 3 --restart-after 4000 -n FRONTEND,CLUSTER,LB,MS,NODEAPI \"pnpm --filter yorha-legal-ai-frontend run dev\" \"pnpm run cluster:manager\" \"pnpm run lb:dev\" \"pnpm run microservices\" \"pnpm run node-api:dev\"",
+  "dev:full": "concurrently --restart-tries 3 --restart-after 4000 -n FRONTEND,CLUSTER,LB,MS \"pnpm --filter yorha-legal-ai-frontend run dev\" \"pnpm run cluster:manager\" \"pnpm run lb:dev\" \"pnpm run microservices\"",
   "build": "pnpm -r run build",
   "test": "pnpm -r run test",
   "test:frontend": "pnpm --filter sveltekit-frontend run test",
@@ -23,13 +26,29 @@
   "detect": "node scripts/detect-services.mjs",
   "gpu-test": "node scripts/gpu-diagnostics.mjs",
   "microservices": "node scripts/start-microservices.mjs",
+  "cluster:status": "node scripts/cluster-status.mjs",
+  "ws:health": "powershell -NoProfile -Command \"Test-NetConnection -ComputerName localhost -Port 8080 | ConvertTo-Json\"",
+  "bench:quic": "node scripts/quic-http-benchmark.mjs",
+  "assets:validate": "node scripts/service-worker-asset-validator.mjs",
+  "metrics:writer": "node scripts/metrics-writer.mjs",
   "demo": "node scripts/demo-optimized.mjs",
   "restoration:scan": "node scripts/restoration/cleanup-backups.mjs --dry-run",
   "restoration:apply": "node scripts/restoration/cleanup-backups.mjs --apply",
   "tasks:split": "node scripts/split-tasks.mjs",
   "tasks:merge": "node scripts/merge-tasks.mjs",
   "tasks:verify": "node scripts/verify-tasks-fragments.mjs",
-  "prepare-hooks": "git config core.hooksPath .githooks"
+  "prepare-hooks": "git config core.hooksPath .githooks",
+  "cluster:manager": "node scripts/run-cluster-manager.mjs",
+  "cluster:manager:debug": "LOG_LEVEL=debug node node-cluster/cluster-manager.cjs",
+  "cluster:single": "node -e \"process.env.LOG_LEVEL='debug'; process.env.MANAGER_PORT_AUTO='1'; process.env.MANAGER_PORT='3099'; require('./node-cluster/cluster-manager.cjs')\" -- --manager-port=3099 --legal-count=1 --ai-count=1 --vector-count=1 --database-count=1",
+  "db:retry": "node scripts/db-retry-wrapper.mjs",
+  "lb:postcheck": "node scripts/lb-test.mjs",
+  "lb:dev": "node scripts/run-load-balancer.mjs",
+  "lb:test": "node scripts/test-load-balancer.mjs",
+  "lb:status": "curl -s http://localhost:8099/status",
+  "lb:prom": "curl -s http://localhost:8099/prometheus",
+  "auto:solve": "node scripts/auto-solve.mjs",
+  "auto:solve:watch": "nodemon -e js,mjs,ts --watch scripts --exec 'node scripts/auto-solve.mjs'"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.9.14",
@@ -61,6 +80,13 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
+  },
+  "resolutions": {
+    "@typescript-eslint/utils": "^6.21.0",
+    "magic-string": "^0.30.0",
+    "vite": "^5.4.19",
+    "rollup": "^4.0.0",
+    "prettier": "^3.1.1"
   },
   "packageManager": "pnpm@8.15.1"
 }

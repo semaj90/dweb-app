@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build",
+    "baseUrl": "src",
+    "paths": {"$lib/*": ["lib/*"]},
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ES2022",
+    "types": ["node"],
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules","build"]
+}

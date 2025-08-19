@@ -359,9 +359,19 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\schema-consolidation-phase14.sql\")",
       "Bash(time curl:*)",
       "Bash(do echo \"Test $i:\")",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT table_name FROM information_schema.tables WHERE table_schema = ''public'' AND table_name IN (''evidence_items'', ''legal_documents'', ''document_chunks'');\" -t)"
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT table_name FROM information_schema.tables WHERE table_schema = ''public'' AND table_name IN (''evidence_items'', ''legal_documents'', ''document_chunks'');\" -t)",
+      "Bash(./start-nats-server.bat)",
+      "Bash(nc:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(pnpm install:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")"
     ],
     "deny": [],
-    "defaultMode": "acceptEdits"
+    "defaultMode": "acceptEdits",
+    "additionalDirectories": [
+      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+    ]
   }
 }

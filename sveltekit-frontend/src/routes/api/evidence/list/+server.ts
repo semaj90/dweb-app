@@ -1,6 +1,6 @@
 // Endpoint to list evidence including summaryType field
 import type { RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/server/db/client';
+import { db } from '$lib/server/db/index';
 import { evidence } from '$lib/server/db/schema-postgres-enhanced';
 import { desc } from 'drizzle-orm';
 

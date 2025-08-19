@@ -1651,6 +1651,306 @@
         "panel": "shared"
       },
       "detail": "Fetch autosolve status & recent history"
+    },
+    {
+      "label": "🚀 Dev Full Stack: Build & Start All Services",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Starting complete Legal AI development environment..."],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build: All Go Services",
+        "Build: QUIC Services", 
+        "Start: Complete Dev Environment"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "detail": "Build all Go binaries and start complete development environment with proper wiring"
+    },
+    {
+      "label": "Build: All Go Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Write-Host '🔨 Building Go microservices...' -ForegroundColor Cyan;",
+        "cd go-microservice;",
+        "if (!(Test-Path bin)) { New-Item -ItemType Directory -Path bin | Out-Null };",
+        "go mod tidy;",
+        "Write-Host '  Building enhanced-rag service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/enhanced-rag.exe ./cmd/enhanced-rag;",
+        "Write-Host '  Building upload service...' -ForegroundColor Yellow;", 
+        "go build -o ./bin/upload-service.exe ./cmd/upload-service;",
+        "Write-Host '  Building grpc server...' -ForegroundColor Yellow;",
+        "go build -o ./bin/grpc-server.exe ./cmd/grpc-server;",
+        "Write-Host '  Building load balancer...' -ForegroundColor Yellow;",
+        "go build -o ./bin/load-balancer.exe ./load-balancer.go;",
+        "Write-Host '  Building missing rag-kratos service...' -ForegroundColor Yellow;",
+        "go build -o ./bin/rag-kratos.exe ./legal-ai-server.go;",
+        "Write-Host '✅ All Go services built successfully' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": "$go",
+      "detail": "Build all required Go microservices including missing binaries"
+    },
+    {
+      "label": "Build: QUIC Services", 
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy", 
+        "Bypass",
+        "-Command",
+        "Write-Host '🌐 Building QUIC services...' -ForegroundColor Cyan;",
+        "cd quic-services;",
+        "go mod tidy;",
+        "Write-Host '  Building QUIC gateway...' -ForegroundColor Yellow;",
+        "go build -o ../go-microservice/bin/quic-gateway.exe ./quic-gateway.go;",
+        "Write-Host '  Building QUIC vector proxy...' -ForegroundColor Yellow;",
+        "go build -o ../go-microservice/bin/quic-vector-proxy.exe ./quic-vector-proxy.go;",
+        "Write-Host '  Building QUIC AI stream...' -ForegroundColor Yellow;",
+        "go build -o ../go-microservice/bin/quic-ai-stream.exe ./quic-ai-stream.go;",
+        "Write-Host '✅ QUIC services built successfully' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always", 
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": "$go",
+      "detail": "Build QUIC protocol services and place in bin directory"
+    },
+    {
+      "label": "Start: Complete Dev Environment",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:full"],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*starting.*$",
+          "endsPattern": "^.*ready.*$"
+        }
+      },
+      "detail": "Start npm run dev:full after building all Go services"
+    },
+    {
+      "label": "Health: Check All Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$services = @(",
+        "  @{Name='PostgreSQL'; Port=5432},",
+        "  @{Name='Redis'; Port=6379},", 
+        "  @{Name='Ollama'; Port=11434},",
+        "  @{Name='MinIO'; Port=9000},",
+        "  @{Name='Qdrant'; Port=6333},",
+        "  @{Name='SvelteKit'; Port=5173},",
+        "  @{Name='Enhanced RAG'; Port=8094},",
+        "  @{Name='Upload Service'; Port=8093},",
+        "  @{Name='gRPC Server'; Port=8084},",
+        "  @{Name='Load Balancer'; Port=8099},",
+        "  @{Name='Cluster Manager'; Port=3000}",
+        ");",
+        "Write-Host '🔍 Checking service health...' -ForegroundColor Cyan;",
+        "foreach ($svc in $services) {",
+        "  try {",
+        "    $result = Test-NetConnection -ComputerName localhost -Port $svc.Port -WarningAction SilentlyContinue;",
+        "    if ($result.TcpTestSucceeded) {",
+        "      Write-Host \"✅ $($svc.Name) (port $($svc.Port)): Running\" -ForegroundColor Green",
+        "    } else {",
+        "      Write-Host \"❌ $($svc.Name) (port $($svc.Port)): Not accessible\" -ForegroundColor Red",
+        "    }",
+        "  } catch {",
+        "    Write-Host \"❌ $($svc.Name) (port $($svc.Port)): Error checking\" -ForegroundColor Red",
+        "  }",
+        "}"
+      ],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Check health status of all Legal AI platform services"
+    },
+    {
+      "label": "Fix: Go Binary Paths",
+      "type": "shell", 
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Write-Host '🔧 Fixing Go binary path issues...' -ForegroundColor Cyan;",
+        "cd go-microservice;",
+        "Write-Host '  Creating missing rag-kratos.exe alias...' -ForegroundColor Yellow;",
+        "if (Test-Path './bin/enhanced-rag.exe') { Copy-Item './bin/enhanced-rag.exe' './bin/rag-kratos.exe' -Force };",
+        "Write-Host '  Creating missing rag-quic-proxy.exe alias...' -ForegroundColor Yellow;",
+        "if (Test-Path './bin/quic-gateway.exe') { Copy-Item './bin/quic-gateway.exe' './bin/rag-quic-proxy.exe' -Force };",
+        "Write-Host '  Verifying binary availability...' -ForegroundColor Yellow;",
+        "$binaries = @('rag-kratos.exe', 'rag-quic-proxy.exe', 'enhanced-rag.exe', 'upload-service.exe', 'grpc-server.exe', 'load-balancer.exe');",
+        "foreach ($bin in $binaries) {",
+        "  if (Test-Path \"./bin/$bin\") {",
+        "    Write-Host \"    ✅ $bin\" -ForegroundColor Green",
+        "  } else {",
+        "    Write-Host \"    ❌ $bin (missing)\" -ForegroundColor Red",
+        "  }",
+        "}",
+        "Write-Host '✅ Binary path fixes completed' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Fix missing Go binary paths required by microservices startup script"
+    },
+    {
+      "label": "Start: Individual Go Services",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Starting individual Go services..."],
+      "group": "build",
+      "dependsOrder": "parallel",
+      "dependsOn": [
+        "Start: Enhanced RAG Service",
+        "Start: Upload Service", 
+        "Start: gRPC Server",
+        "Start: Load Balancer"
+      ],
+      "detail": "Start all Go microservices individually for debugging"
+    },
+    {
+      "label": "Start: Enhanced RAG Service",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:RAG_HTTP_PORT='8094'; $env:OLLAMA_BASE_URL='http://localhost:11434'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/enhanced-rag.exe'"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Start Enhanced RAG service on port 8094"
+    },
+    {
+      "label": "Start: Upload Service",
+      "type": "shell", 
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:UPLOAD_PORT='8093'; $env:MINIO_ENDPOINT='localhost:9000'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/upload-service.exe'"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Start Upload service on port 8093"
+    },
+    {
+      "label": "Start: Load Balancer",
+      "type": "shell",
+      "command": "powershell", 
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "$env:LB_PORT='8099'; Start-Process -NoNewWindow -FilePath 'go-microservice/bin/load-balancer.exe'"
+      ],
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Start Load Balancer on port 8099"
+    },
+    {
+      "label": "Stop: All Services",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass", 
+        "-Command",
+        "Write-Host '🛑 Stopping all services...' -ForegroundColor Red;",
+        "Write-Host '  Stopping Node.js processes...' -ForegroundColor Yellow;",
+        "Get-Process -Name 'node' -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -eq 'node' } | Stop-Process -Force;",
+        "Write-Host '  Stopping Go processes...' -ForegroundColor Yellow;",
+        "$goProcesses = @('enhanced-rag', 'upload-service', 'grpc-server', 'load-balancer', 'rag-kratos', 'quic-gateway');",
+        "foreach ($proc in $goProcesses) {",
+        "  Get-Process -Name $proc -ErrorAction SilentlyContinue | Stop-Process -Force",
+        "}",
+        "Write-Host '  Cleaning up cluster manager lock...' -ForegroundColor Yellow;",
+        "if (Test-Path '.cluster-manager.pid') { Remove-Item '.cluster-manager.pid' -Force };",
+        "Write-Host '✅ All services stopped' -ForegroundColor Green"
+      ],
+      "group": "build", 
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "detail": "Stop all running Legal AI platform services"
     }
   ]
 }

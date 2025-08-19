@@ -30,7 +30,7 @@ npm run dev                         # SvelteKit development server
 ```bash
 # Quick status verification
 curl http://localhost:8095/api/status    # GPU Orchestrator
-curl http://localhost:8094/health        # Enhanced RAG Service  
+curl http://localhost:8094/health        # Enhanced RAG Service
 curl http://localhost:11434/api/tags     # Ollama AI Models
 ```
 
@@ -67,15 +67,15 @@ Development Tools:
 graph TB
     VSCode[VS Code Extension<br/>28 Commands] --> MCP[Context7 MCP Server<br/>8 Tools]
     VSCode --> GPU[GPU Orchestrator<br/>Port 8095]
-    
+
     GPU --> RAG[Enhanced RAG Service<br/>Port 8094]
     GPU --> Ollama[Ollama AI Service<br/>Port 11434]
-    
+
     RAG --> PG[PostgreSQL + pgvector<br/>Vector Database]
     RAG --> Redis[Redis Cache<br/>High Performance]
-    
+
     MCP --> Context7[Context7 Documentation<br/>Enhanced Context]
-    
+
     Frontend[SvelteKit Frontend<br/>Port 5173] --> GPU
     Frontend --> RAG
 ```
@@ -95,7 +95,7 @@ Hardware Requirements:
 Software Requirements:
   - Node.js 18+ with npm
   - PostgreSQL 15+ with pgvector extension
-  - Redis 6+ 
+  - Redis 6+
   - Git for version control
   - VS Code for extension integration
 ```
@@ -266,7 +266,7 @@ Tools Available: 8
 
 Core Tools:
   - analyze_codebase            # Project structure analysis
-  - check_services              # Service health monitoring  
+  - check_services              # Service health monitoring
   - generate_recommendations    # Error pattern analysis
   - get_context7_status         # System status overview
 
@@ -279,7 +279,7 @@ Advanced Tools:
 Resources:
   - context7://codebase-structure
   - context7://service-status
-  - context7://error-patterns  
+  - context7://error-patterns
   - context7://best-practices
 ```
 
@@ -321,7 +321,7 @@ curl -X POST http://localhost:8095/api/enhanced-rag \
       "confidence": 0.95
     },
     {
-      "type": "syntax_fix", 
+      "type": "syntax_fix",
       "content": "Use: let { value = $bindable('') } = $props();",
       "confidence": 0.9
     }
@@ -334,7 +334,7 @@ curl -X POST http://localhost:8095/api/enhanced-rag \
 1. **Open VS Code in project directory**
 2. **Access Command Palette** (`Ctrl+Shift+P`)
 3. **Available AutoSolve Commands:**
-   - `Context7 MCP: AutoSolve TypeScript Errors` 
+   - `Context7 MCP: AutoSolve TypeScript Errors`
    - `Context7 MCP: Run Comprehensive System Check`
    - `Context7 MCP: Test All AutoSolve Commands`
    - `Context7 MCP: Enhanced RAG Query`
@@ -354,7 +354,7 @@ npm run autosolve:demo
 
 # Check individual services
 curl http://localhost:8095/api/status    # GPU status
-curl http://localhost:8094/health        # RAG health  
+curl http://localhost:8094/health        # RAG health
 curl http://localhost:11434/api/tags     # Available models
 
 # MCP server status
@@ -370,7 +370,7 @@ node mcp-servers/mcp-context7-wrapper.js --test
 # Database
 DATABASE_URL=postgresql://legal_admin:password@localhost:5432/legal_ai_db
 
-# AI Services  
+# AI Services
 OLLAMA_URL=http://localhost:11434
 OLLAMA_ENDPOINT=http://localhost:11434
 
@@ -389,6 +389,18 @@ REDIS_URL=redis://localhost:6379
 # Development
 NODE_ENV=development
 PORT=5173
+```
+
+#### Load Balancer Specific
+```bash
+# Adaptive routing & health management
+LB_PORT=8099
+LOAD_BALANCER_STRATEGY=gpu_aware   # round_robin|least_connections|random|gpu_aware
+UPSTREAM_SERVICES=http://localhost:8094,http://localhost:8095
+HEALTH_CHECK_INTERVAL=30s          # periodic upstream health probe
+QUARANTINE_BASE=30s                # base backoff before retry (exponential up to 5m)
+ENABLE_PROMETHEUS=true             # exposes /prometheus metrics
+LB_ADMIN_TOKEN=change_me           # required header X-LB-Admin-Token for /admin/upstreams
 ```
 
 ### **VS Code Extension Settings**
@@ -416,6 +428,24 @@ PORT=5173
         "DATABASE_URL": "postgresql://legal_admin:password@localhost:5432/legal_ai_db"
       }
     }
+
+      ### **Load Balancer API (Port 8099)**
+
+      | Endpoint | Method | Description |
+      |----------|--------|-------------|
+      | `/` | *varies* | Proxy to selected upstream (adds X-Upstream-Server, X-Request-ID) |
+      | `/status` | GET | Basic status: strategy, alive_servers, total_servers |
+      | `/metrics` | GET | JSON metrics snapshot with per-upstream latency & failures |
+      | `/prometheus` | GET | Prometheus exposition (ENABLE_PROMETHEUS=true) |
+      | `/admin/upstreams` | GET/POST | List or modify upstream set (auth header) |
+      | `/health` | GET | Static balancer health response |
+
+      Admin modify body example:
+      ```json
+      { "add": ["http://localhost:8096"], "remove": ["http://localhost:8094"] }
+      ```
+
+      Selection order fallback: strategy → least_connections → round_robin → random.
   }
 }
 ```
@@ -451,7 +481,7 @@ npm run dev                      # Development server test
 **2. Service Integration Tests**
 - ✅ GPU Orchestrator connectivity
 - ✅ Enhanced RAG service health
-- ✅ Ollama model availability  
+- ✅ Ollama model availability
 - ✅ Database connectivity
 - ✅ Redis cache functionality
 
@@ -490,7 +520,7 @@ GPU Processing:
 
 Service Response Times:
   - Enhanced RAG: 5-30ms
-  - GPU Orchestrator: 8-50ms  
+  - GPU Orchestrator: 8-50ms
   - Ollama API: 100-500ms
   - Database Queries: 1-5ms
 
@@ -499,6 +529,12 @@ VS Code Extension:
   - Context Analysis: 2-5s
   - Error Resolution: 5-10s
   - Documentation Lookup: 1-3s
+
+Load Balancer:
+  - Routing Overhead: 0.3-1.2ms
+  - Strategy: gpu_aware (EMA latency + connection weight)
+  - Health Interval: 30s (HEALTH_CHECK_INTERVAL)
+  - Quarantine Backoff: QUARANTINE_BASE * failures (cap 5m)
 ```
 
 ### **Scalability Metrics**
@@ -508,6 +544,7 @@ Parallel Queries: 32 GPU workers
 Service Uptime: 99.9% target
 Error Resolution Rate: 85-90%
 Developer Productivity Increase: 40-60%
+Adaptive Routing Strategies: 4 (round_robin | least_connections | random | gpu_aware)
 ```
 
 ---
@@ -586,6 +623,25 @@ psql -d legal_ai_db -c "SELECT * FROM pg_extension WHERE extname = 'vector';"
 # Recreate if needed
 createdb legal_ai_db
 psql -d legal_ai_db -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
+#### **6. Load Balancer: No Available Servers**
+Message: `No available servers`
+
+Fix Steps:
+1. Curl each upstream `/health` endpoint.
+2. Verify `UPSTREAM_SERVICES` env value.
+3. Inspect `/metrics` for `alive=false` or far future `quarantine_until`.
+4. Restart or fix upstream process ports.
+
+#### **7. Load Balancer: Invalid Strategy**
+Process exits with `invalid strategy`.
+Use one of: `round_robin|least_connections|random|gpu_aware`.
+
+#### **8. Prometheus Endpoint 404**
+Set `ENABLE_PROMETHEUS=true` then restart. Access `/prometheus`.
+
+#### **9. Dynamic Upstream Update Unauthorized**
+Include header: `X-LB-Admin-Token: <LB_ADMIN_TOKEN>` when calling `/admin/upstreams`.
 ```
 
 ### **Service Restart Commands**
@@ -597,7 +653,7 @@ npm run dev:full
 # GPU Orchestrator
 cd go-microservice && ./bin/mcp-gpu-orchestrator.exe
 
-# Enhanced RAG  
+# Enhanced RAG
 cd go-microservice && ./bin/enhanced-rag.exe
 
 # Ollama
@@ -621,7 +677,7 @@ const ws = new WebSocket('ws://localhost:8095/autosolve');
 
 ws.addEventListener('message', (event) => {
   const update = JSON.parse(event.data);
-  
+
   switch (update.type) {
     case 'autosolve_progress':
       updateProgressBar(update.progress);
@@ -659,7 +715,7 @@ interface AutoSolvePlugin {
   name: string;
   description: string;
   errorPatterns: RegExp[];
-  
+
   analyze(error: TypeScriptError): Promise<AnalysisResult>;
   suggest(context: CodeContext): Promise<Suggestion[]>;
   apply(solution: Solution): Promise<ApplyResult>;
@@ -682,7 +738,7 @@ Process AutoSolve queries with GPU acceleration.
 ```json
 {
   "query": "string",
-  "context": "string", 
+  "context": "string",
   "enable_som": boolean,
   "enable_attention": boolean,
   "priority": "low|medium|high"
@@ -783,7 +839,7 @@ Error Resolution Time:
 
 Development Velocity:
   - Code Quality: 40% improvement
-  - Debug Time: 60% reduction  
+  - Debug Time: 60% reduction
   - Feature Delivery: 25% faster
   - Knowledge Transfer: 70% faster onboarding
 
@@ -897,7 +953,7 @@ Performance Issues:
 The AutoSolve system represents a breakthrough in AI-powered development assistance, providing:
 
 - **🚀 Real-time Error Resolution**: GPU-accelerated TypeScript error analysis
-- **🧠 Intelligent Assistance**: 28 VS Code commands with AI recommendations  
+- **🧠 Intelligent Assistance**: 28 VS Code commands with AI recommendations
 - **⚡ High Performance**: 8-16ms response times with RTX 3060 Ti acceleration
 - **🔗 Seamless Integration**: Complete service mesh with 6 microservices
 - **📈 Proven Results**: 80%+ reduction in error resolution time
@@ -915,6 +971,6 @@ npm run autosolve:demo       # Interactive showcase
 
 ---
 
-*Last Updated: August 16, 2025*  
-*Version: 1.0.0 - Production Release*  
+*Last Updated: August 16, 2025*
+*Version: 1.0.0 - Production Release*
 *Generated by AutoSolve System Documentation Engine*

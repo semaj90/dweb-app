@@ -24,7 +24,7 @@ var ModelConfig = struct {
 	MaxTokens   int
 	NumCtx      int
 }{
-	LegalModel:     getEnv("LEGAL_MODEL", "gemma3-legal"),
+	LegalModel:     getEnv("LEGAL_MODEL", "gemma3-legal:latest"),
 	EmbeddingModel: getEnv("EMBEDDING_MODEL", "nomic-embed-text"),
 	VisionModel:    getEnv("VISION_MODEL", "llava:7b"),
 	Temperature:    0.3, // Lower temperature for more consistent legal analysis

@@ -1,0 +1,28 @@
+{
+  "name": "@yorha/node-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/app.js",
+    "build": "vite build",
+    "start": "node src/app.js",
+  "nats:test": "tsx src/lib/services/nats-messaging-service.ts --selftest",
+    "nats:metrics": "curl -s http://localhost:5173/api/v1/nats/metrics || true",
+    "nats:health": "curl -s http://localhost:5173/healthz || true"
+  },
+  "dependencies": {
+    "nats": "^2.25.0",
+    "drizzle-orm": "^0.31.0",
+    "pg": "^8.11.5",
+    "pino": "^8.16.2",
+    "zod": "^3.23.8",
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.16.2",
+    "vite": "^5.4.19",
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.0"
+  }
+}

@@ -1,10 +1,9 @@
-// QUIC Vector Proxy - Port 8543/8544
+// QUIC Vector Proxy - Port 8543/8545
 // High-performance HTTP/3 vector search proxy
 
 package main
 
 import (
-	"context"
 	"crypto/tls"
 	"encoding/json"
 	"log"
@@ -12,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
 )
 
@@ -39,7 +37,7 @@ func main() {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"service": "QUIC Vector Proxy",
-			"port": "8543/8544",
+			"port": "8543/8545",
 			"status": "healthy",
 			"protocol": "HTTP/3",
 			"performance": "90% faster vector search",
@@ -56,7 +54,7 @@ func main() {
 		}
 
 		// Set QUIC optimization headers
-		c.Header("Alt-Svc", `h3=":8544"; ma=86400`)
+		c.Header("Alt-Svc", `h3=":8545"; ma=86400`)
 		c.Header("Content-Type", "application/json")
 
 		// Simulate vector search results
@@ -98,7 +96,7 @@ func main() {
 		
 		c.Header("Content-Type", "text/plain; charset=utf-8")
 		c.Header("Cache-Control", "no-cache")
-		c.Header("Alt-Svc", `h3=":8544"; ma=86400`)
+		c.Header("Alt-Svc", `h3=":8545"; ma=86400`)
 
 		flusher, ok := c.Writer.(http.Flusher)
 		if !ok {
@@ -141,7 +139,7 @@ func main() {
 			return
 		}
 
-		c.Header("Alt-Svc", `h3=":8544"; ma=86400`)
+		c.Header("Alt-Svc", `h3=":8545"; ma=86400`)
 
 		// Process multiple queries in parallel using QUIC multiplexing
 		results := make(map[string][]VectorSearchResult)
@@ -173,13 +171,13 @@ func main() {
 	server := &http3.Server{
 		Handler:   router,
 		TLSConfig: tlsConfig,
-		Addr:      ":8544",
+		Addr:      ":8545",
 	}
 
-	log.Printf("🚀 QUIC Vector Proxy starting on :8543 (QUIC) and :8544 (HTTP/3)")
+	log.Printf("🚀 QUIC Vector Proxy starting on :8543 (QUIC) and :8545 (HTTP/3)")
 	log.Printf("🔍 Vector search with 90%% faster response times")
 	log.Printf("⚡ 0-RTT connection resumption enabled")
-	log.Printf("🔗 Health check: https://localhost:8544/health")
+	log.Printf("🔗 Health check: https://localhost:8545/health")
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("QUIC Vector Proxy failed: %v", err)
