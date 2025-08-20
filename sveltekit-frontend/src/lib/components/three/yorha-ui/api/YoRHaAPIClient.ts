@@ -105,7 +105,7 @@ export class YoRHaAPIClient {
 
   constructor(config: Partial<YoRHaAPIConfig> = {}) {
     this.config = {
-      baseURL: config.baseURL || 'http://localhost:5173/api/yorha',
+      baseURL: config.baseURL || 'http://localhost:8443/api/yorha',
       timeout: config.timeout || 5000,
       retryAttempts: config.retryAttempts || 3,
       enableWebSocket: config.enableWebSocket ?? true,
@@ -338,9 +338,15 @@ export class YoRHaAPIClient {
     }
   }
 
-  // WebSocket Integration
+  // WebSocket Integration with QUIC fallback
   private initWebSocket(): void {
-    const wsUrl = this.config.baseURL.replace(/^https?/, 'ws') + '/ws';
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof WebSocket === 'undefined') {
+      console.warn('WebSocket not available in SSR environment');
+      return;
+    }
+
+    const wsUrl = this.config.baseURL.replace(/^https?/, 'wss') + '/ws';
 
     this.websocket = new WebSocket(wsUrl);
 
@@ -385,12 +391,23 @@ export class YoRHaAPIClient {
 
   // Server-Sent Events
   private initServerSentEvents(): void {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof EventSource === 'undefined') {
+      console.warn('EventSource not available in SSR environment');
+      return;
+    }
+
     this.eventSource = new EventSource(`${this.config.baseURL}/events/stream`);
 
     this.eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         this.notifySubscribers('sse:message', data);
+        if (data && typeof data === 'object' && 'type' in data) {
+          const evtType = (data as any).type;
+          const payload = (data as any).data ?? data;
+          this.notifySubscribers(evtType, payload);
+        }
       } catch (error) {
         console.error('Failed to parse SSE message:', error);
       }
@@ -454,7 +471,7 @@ export class YoRHaAPIClient {
       this.eventSource.close();
     }
 
-  this.stopDataStreams();
+    this.stopDataStreams();
 
     this.cache.clear();
     this.subscribers.clear();
@@ -487,4 +504,4 @@ export const YoRHaValidators = {
   }
 };
 
-export { YoRHaAPIClient };
+// YoRHaAPIClient is already exported above as a class
