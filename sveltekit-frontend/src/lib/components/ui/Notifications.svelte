@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import { quintOut } from "svelte/easing";
   import { fly } from "svelte/transition";
@@ -85,7 +87,7 @@
                 <Button
                   size="sm"
                   variant={action.variant || "secondary"}
-                  on:click={() => handleAction(notification, action)}
+                  onclick={() => handleAction(notification, action)}
                 >
                   {action.label}
                 </Button>
@@ -132,3 +134,8 @@
       width: 0%;
 }}
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

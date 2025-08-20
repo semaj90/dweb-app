@@ -1,9 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Logout API endpoint using Lucia v3
 import { json, redirect } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-lucia } from "$lib/auth/session";
+import { lucia } from "$lib/auth/session";
 
 export const POST: RequestHandler = async ({ cookies, locals }) => {
   try {

@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "GPU: Process TypeScript Errors",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "scripts/deploy-gpu-processing.mjs"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      },
+      "problemMatcher": [
+        "$tsc"
+      ]
+    },
+    {
+      "label": "AI: Full Pipeline Test",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "test:ai-pipeline"
+      ],
+      "group": "test",
+      "dependsOn": [
+        "GPU: Process TypeScript Errors"
+      ]
+    },
+    {
+      "label": "Deploy: GPU Error Processing",
+      "type": "shell",
+      "command": "node",
+      "args": [
+        "scripts/final-gpu-deployment.mjs"
+      ],
+      "group": "build",
+      "presentation": {
+        "clear": true,
+        "reveal": "always"
+      }
+    }
+  ]
+}

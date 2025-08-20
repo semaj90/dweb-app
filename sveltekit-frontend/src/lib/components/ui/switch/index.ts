@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 // Switch Component Barrel Export
 import { Switch } from "bits-ui";
 
@@ -8,7 +9,7 @@ export const SwitchThumb = Switch.Thumb;
 export { Switch };
 
 // TypeScript interface for Switch props
-export interface SwitchProps {
+export interface SwitchProps extends CommonProps {
   checked?: boolean;
   disabled?: boolean;
   onCheckedChange?: (checked: boolean) => void;

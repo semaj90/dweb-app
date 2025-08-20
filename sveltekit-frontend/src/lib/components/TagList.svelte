@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { debounce } from "$lib/utils/debounce";
   import { Plus, Tag, X } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
@@ -371,3 +373,5 @@
     border-color: #e5e7eb;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

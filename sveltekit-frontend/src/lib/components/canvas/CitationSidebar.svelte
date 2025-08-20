@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import type { Citation } from "$lib/types/api";
   import { Copy, Search, Star, Tag, Trash2 } from "lucide-svelte";
@@ -105,7 +107,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => toggleFavorite(citation)}
+                onclick={() => toggleFavorite(citation)}
                 class="container mx-auto px-4"
               >
                 <Star class="container mx-auto px-4" />
@@ -114,7 +116,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => copyCitation(citation)}
+                onclick={() => copyCitation(citation)}
                 title="Copy citation"
               >
                 <Copy class="container mx-auto px-4" />
@@ -123,7 +125,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => deleteCitation(citation)}
+                onclick={() => deleteCitation(citation)}
                 title="Delete citation"
                 class="container mx-auto px-4"
               >
@@ -195,7 +197,7 @@
           <Button
             variant="secondary"
             size="sm"
-            on:click={() => {
+            onclick={() => {
               searchQuery = "";
               selectedCategory = "all";
             "
@@ -409,3 +411,5 @@
     line-height: 1.4;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

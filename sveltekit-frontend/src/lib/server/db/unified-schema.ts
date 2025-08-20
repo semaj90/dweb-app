@@ -1,261 +1,116 @@
-// @ts-nocheck
-// Production PostgreSQL schema with pgvector for vector search
-import { createId } from "@paralleldrive/cuid2";
-import { relations, {,   boolean,,   decimal,,   index,,   integer,,   jsonb,,   pgTable,,   serial,,   text,,   timestamp,,   uuid,,   varchar, } from
-// Orphaned content: import { vector
-import {
-z } from "zod";
+import { pgTable, uuid, varchar, text, timestamp, integer, decimal, boolean, jsonb, serial, index, vector } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { createId } from '@paralleldrive/cuid2';
 
-// Zod schemas for type-safe JSON fields
-export const UserSettingsExtSchema = z.object({
-  theme: z.enum(["light", "dark", "system"]).default("system"),
-  notifications: z.boolean().default(true),
-  language: z.string().default("en"),
-  timezone: z.string().default("UTC"),
-  preferences: z.record(z.string(), z.any()).default({}),
+// Type definitions for complex JSON fields
+export interface DocumentMetadataExt {
+  keywords: string[];
+  customFields: Record<string, unknown>;
+  confidentialityLevel: 'public' | 'restricted' | 'confidential' | 'top_secret';
+}
+
+export interface Citation {
+  id: string;
+  text: string;
+  source: string;
+  page?: number;
+  url?: string;
+}
+
+export interface AutoSaveData {
+  content: string;
+  citations: Citation[];
+  autoSavedAt: string;
+  isDirty: boolean;
+}
+
+export interface Collaborator {
+  userId: string;
+  role: 'viewer' | 'editor' | 'owner';
+  addedAt: string;
+}
+
+// === USER MANAGEMENT ===
+
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  username: varchar('username', { length: 100 }),
+  firstName: varchar('first_name', { length: 100 }),
+  lastName: varchar('last_name', { length: 100 }),
+  role: varchar('role', { length: 50 }).default('user').notNull(),
+  department: varchar('department', { length: 100 }),
+  isActive: boolean('is_active').default(true).notNull(),
+  lastLoginAt: timestamp('last_login_at', { mode: 'date' }),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });
 
-export const DocumentMetadataSchema = z.object({
-  author: z.string().optional(),
-  version: z.string().default("1.0"),
-  status: z.enum(["draft", "review", "final"]).default("draft"),
-  tags: z.array(z.string()).default([]),
-  lastModified: z.string().datetime().optional(),
-  wordCount: z.number().optional(),
-  estimatedReadTime: z.number().optional(),
+export const sessions = pgTable('sessions', {
+  id: varchar('id', { length: 255 }).primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
 });
 
-export const EvidenceMetadataSchema = z.object({
-  size: z.number().optional(),
-  mimeType: z.string().optional(),
-  checksum: z.string().optional(),
-  source: z.string().optional(),
-  collectionDate: z.string().datetime().optional(),
-  chainOfCustody: z.array(z.string()).default([]),
+// === CRIMINALS ===
+
+export const criminals = pgTable('criminals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  firstName: varchar('first_name', { length: 100 }).notNull(),
+  lastName: varchar('last_name', { length: 100 }).notNull(),
+  aliases: jsonb('aliases').default([]).notNull(),
+  dateOfBirth: timestamp('date_of_birth', { mode: 'date' }),
+  placeOfBirth: varchar('place_of_birth', { length: 255 }),
+  gender: varchar('gender', { length: 20 }),
+  height: varchar('height', { length: 20 }),
+  weight: varchar('weight', { length: 20 }),
+  eyeColor: varchar('eye_color', { length: 20 }),
+  hairColor: varchar('hair_color', { length: 20 }),
+  distinguishingMarks: text('distinguishing_marks'),
+  lastKnownAddress: text('last_known_address'),
+  phoneNumbers: jsonb('phone_numbers').default([]).notNull(),
+  email: varchar('email', { length: 255 }),
+  socialSecurityNumber: varchar('social_security_number', { length: 20 }),
+  driverLicenseNumber: varchar('driver_license_number', { length: 50 }),
+  fingerprints: text('fingerprints'),
+  dnaProfile: text('dna_profile'),
+  mugshots: jsonb('mugshots').default([]).notNull(),
+  knownAssociates: jsonb('known_associates').default([]).notNull(),
+  criminalHistory: jsonb('criminal_history').default([]).notNull(),
+  riskLevel: varchar('risk_level', { length: 20 }).default('low').notNull(),
+  status: varchar('status', { length: 50 }).default('active').notNull(),
+  notes: text('notes'),
+  aiAnalysis: jsonb('ai_analysis').default({}).notNull(),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });
 
-export const CaseMetadataSchema = z.object({
-  jurisdiction: z.string().optional(),
-  caseNumber: z.string().optional(),
-  status: z.enum(["active", "closed", "pending"]).default("active"),
-  priority: z.enum(["low", "medium", "high"]).default("medium"),
-  assignedTo: z.array(z.string()).default([]),
-  dueDate: z.string().datetime().optional(),
+// === THEMES ===
+
+export const themes = pgTable('themes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 100 }).notNull().unique(),
+  colors: jsonb('colors').notNull(),
+  fonts: jsonb('fonts').default({}).notNull(),
+  isDefault: boolean('is_default').default(false).notNull(),
+  isPublic: boolean('is_public').default(true).notNull(),
+  createdBy: uuid('created_by').references(() => users.id),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });
 
-// Type definitions from Zod schemas
-export type UserSettingsExtType = z.infer<typeof UserSettingsExtSchema>;
-export type DocumentMetadataType = z.infer<typeof DocumentMetadataSchema>;
-export type EvidenceMetadataType = z.infer<typeof EvidenceMetadataSchema>;
-export type CaseMetadataType = z.infer<typeof CaseMetadataSchema>;
-
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(), // Let Lucia handle ID generation in app code
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: timestamp("email_verified", { mode: "date" }),
-  hashedPassword: text("hashed_password"),
-  name: text("name"), // Full name
-  firstName: varchar("first_name", { length: 100 }),
-  lastName: varchar("last_name", { length: 100 }),
-  avatarUrl: text("avatar_url"),
-  role: varchar("role", { length: 50 }).default("prosecutor").notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
-
-  // Enhanced settings with proper typing
-  settings: jsonb("settings")
-    .$type<UserSettingsExtType>()
-    .default({
-      theme: "system",
-      notifications: true,
-      language: "en",
-      timezone: "UTC",
-      preferences: {
-        defaultDocumentType: "brief",
-        dateFormat: "US",
-      },
-    }),
-
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+export const userThemes = pgTable('user_themes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  themeId: uuid('theme_id').notNull().references(() => themes.id, { onDelete: 'cascade' }),
+  isActive: boolean('is_active').default(false).notNull(),
+  customizations: jsonb('customizations').default({}).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
 });
 
-// Type definitions from Zod schemas (duplicates removed)
-
-// === ADDITIONAL SCHEMA DEFINITIONS ===
-
-export const citationSchema = z.object({
-  id: z.string(),
-  text: z.string(),
-  source: z.string(),
-  type: z.enum(["case", "statute", "regulation"]),
-  page: z.number().optional(),
-  relevanceScore: z.number().min(0).max(1).optional(),
-});
-
-export const documentMetadataSchema = z.object({
-  template: z.string().optional(),
-  jurisdiction: z.string().optional(),
-  courtLevel: z.string().optional(),
-  confidentialityLevel: z
-    .enum(["public", "restricted", "confidential"])
-    .default("restricted"),
-  keywords: z.array(z.string()).default([]),
-  customFields: z.record(z.string(), z.unknown()).default({}),
-});
-
-export const autoSaveDataSchema = z.object({
-  content: z.string(),
-  title: z.string().optional(),
-  citations: z.array(citationSchema).default([]),
-  autoSavedAt: z.string(),
-  isDirty: z.boolean().default(false),
-});
-
-export const collaboratorSchema = z.object({
-  userId: z.string(),
-  role: z.enum(["editor", "reviewer", "viewer"]),
-  joinedAt: z.string(),
-  lastActive: z.string().optional(),
-});
-
-export const themeConfigSchema = z.object({
-  primaryColor: z.string().default("#2563eb"),
-  secondaryColor: z.string().default("#64748b"),
-  fontFamily: z.string().default("Inter"),
-  fontSize: z.enum(["sm", "md", "lg"]).default("md"),
-  spacing: z.enum(["compact", "normal", "spacious"]).default("normal"),
-});
-
-export const userSettingsSchema = z.object({
-  theme: z.enum(["light", "dark", "system"]).default("system"),
-  notifications: z.object({
-    email: z.boolean().default(true),
-  }),
-  defaultDocumentType: z.string().default("brief"),
-  timezone: z.string().default("UTC"),
-  dateFormat: z.string().default("US"),
-});
-
-// Type exports for use in components (avoiding duplicates)
-export type Citation = z.infer<typeof citationSchema>;
-export type DocumentMetadataExt = z.infer<typeof documentMetadataSchema>;
-export type AutoSaveData = z.infer<typeof autoSaveDataSchema>;
-export type Collaborator = z.infer<typeof collaboratorSchema>;
-export type ThemeConfig = z.infer<typeof themeConfigSchema>;
-export type UserSettingsExt = z.infer<typeof userSettingsSchema>;
-
-// === LUCIA v3 SESSION MANAGEMENT ===
-
-export const sessions = pgTable("sessions", {
-  id: text("id").primaryKey(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
-});
-
-// === THEMES & UI CUSTOMIZATION ===
-
-export const themes = pgTable("themes", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 100 }).notNull(),
-  description: text("description"),
-  cssVariables: jsonb("css_variables").notNull(), // CSS custom properties as JSON
-  fontConfig: jsonb("font_config").notNull(), // Font family, sizes, weights
-  colorPalette: jsonb("color_palette").notNull(), // Primary, secondary, accent colors
-  spacing: jsonb("spacing").notNull(), // Padding, margin scales
-  borderRadius: jsonb("border_radius").notNull(), // Border radius values
-  shadows: jsonb("shadows").notNull(), // Box shadow definitions
-  isSystem: boolean("is_system").default(false).notNull(), // Built-in vs user themes
-  isPublic: boolean("is_public").default(false).notNull(), // Shareable themes
-  createdBy: uuid("created_by").references(() => users.id, {
-    onDelete: "cascade",
-  }),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-});
-
-export const userThemes = pgTable("user_themes", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  themeId: uuid("theme_id")
-    .notNull()
-    .references(() => themes.id, { onDelete: "cascade" }),
-  isActive: boolean("is_active").default(false).notNull(),
-  customOverrides: jsonb("custom_overrides").default({}), // User-specific theme overrides
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-});
-
-export const layoutComponents = pgTable("layout_components", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 100 }).notNull(),
-  type: varchar("type", { length: 50 }).notNull(), // 'button', 'card', 'header', etc.
-  htmlContent: text("html_content").notNull(),
-  cssStyles: text("css_styles"),
-  jsInteractions: text("js_interactions"), // Optional JavaScript for interactions
-  position: jsonb("position").notNull(), // { x, y, width, height, zIndex }
-  themeId: uuid("theme_id").references(() => themes.id, {
-    onDelete: "cascade",
-  }),
-  isPublic: boolean("is_public").default(false).notNull(),
-  createdBy: uuid("created_by").references(() => users.id, {
-    onDelete: "cascade",
-  }),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-});
-
-export const canvasLayouts = pgTable("canvas_layouts", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  caseId: uuid("case_id").references(() => cases.id, { onDelete: "cascade" }),
-  themeId: uuid("theme_id").references(() => themes.id, {
-    onDelete: "set null",
-  }),
-  layoutData: jsonb("layout_data").notNull(), // Complete layout configuration
-  components: jsonb("components").notNull(), // Array of component IDs and positions
-  metadata: jsonb("metadata").default({}),
-  isTemplate: boolean("is_template").default(false).notNull(),
-  createdBy: uuid("created_by").references(() => users.id, {
-    onDelete: "cascade",
-  }),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-});
-
-// === CRIMINAL RECORDS ===
-
-export const criminals = pgTable("criminals", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  firstName: varchar("first_name", { length: 100 }).notNull(),
-  lastName: varchar("last_name", { length: 100 }).notNull(),
-  middleName: varchar("middle_name", { length: 100 }),
-  aliases: jsonb("aliases").default([]).notNull(), // string[]
-  dateOfBirth: timestamp("date_of_birth", { mode: "date" }),
-  placeOfBirth: varchar("place_of_birth", { length: 200 }),
-  address: text("address"),
-  phone: varchar("phone", { length: 20 }),
-  email: varchar("email", { length: 255 }),
-  socialSecurityNumber: varchar("ssn", { length: 11 }), // encrypted
-  driversLicense: varchar("drivers_license", { length: 50 }),
-  height: integer("height"), // in cm
-  weight: integer("weight"), // in kg
-  eyeColor: varchar("eye_color", { length: 20 }),
-  hairColor: varchar("hair_color", { length: 20 }),
-  distinguishingMarks: text("distinguishing_marks"),
-  photoUrl: text("photo_url"),
-  fingerprints: jsonb("fingerprints").default({}),
-  threatLevel: varchar("threat_level", { length: 20 }).default("low").notNull(), // low, medium, high, extreme
-  status: varchar("status", { length: 20 }).default("active").notNull(), // active, deceased, incarcerated
-  notes: text("notes"),
-  aiSummary: text("ai_summary"),
-  aiTags: jsonb("ai_tags").default([]).notNull(),
-  createdBy: uuid("created_by").references(() => users.id),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
-});
+export type MinimalSchemaNames = 'users' | 'sessions' | 'cases' | 'criminals' | 'evidence' | 'themes' | 'userThemes';
 
 // === CASE MANAGEMENT ===
 
@@ -296,7 +151,7 @@ export const cases = pgTable(
   (table) => ({
     // Vector similarity search indexes
     titleEmbeddingIdx: index("cases_title_embedding_idx").on(table.titleEmbedding),
-    descriptionEmbeddingIdx: index("cases_description_embedding_idx").on(table.descriptionEmbedding),  
+    descriptionEmbeddingIdx: index("cases_description_embedding_idx").on(table.descriptionEmbedding),
     fullTextEmbeddingIdx: index("cases_fulltext_embedding_idx").on(table.fullTextEmbedding),
 
     // Traditional indexes for fast filtering

@@ -2,8 +2,8 @@
 // Context7 + Phase 8 Unified Recommendation System
 // Integrates MCP tools with AI-aware matrix UI and XState machines
 
-import { type StateValue } from "xstate";
-// Orphaned content: import {
+import { type StateValue } from "$lib/utils/xstate";
+
 type LegalFormContext
 import { type MatrixUINode } from "$lib/ui/matrix-compiler";
 import { type UserContext, type RerankResult, , export interface Context7Phase8Query {,   component: string;,   context: "legal-ai" | "gaming-ui" | "performance";,   area?: "performance" | "security" | "ui-ux";,   feature?: string;,   requirements?: string;,   xstateContext?: LegalFormContext;,   currentState?: StateValue;,   matrixNodes?: MatrixUINode[]; } from

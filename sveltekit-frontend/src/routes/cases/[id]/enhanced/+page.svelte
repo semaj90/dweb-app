@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
   import { writable } from "svelte/store";
   import type { PageData } from "./$types";
 // Import our enhanced components

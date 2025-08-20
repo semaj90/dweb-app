@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import type { ButtonVariant, ButtonSize } from '$lib/types';
   import { createEventDispatcher } from 'svelte';

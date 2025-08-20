@@ -3,7 +3,7 @@
 // Direct processing of live TypeScript errors with GPU acceleration
 // ======================================================================
 
-import { json } from '@sveltejs/kit';
+import { type RequestHandler,  json } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 import type { RequestHandler } from './$types.js';
 
@@ -225,55 +225,4 @@ export const POST: RequestHandler = async ({ request, url }) => {
     const breakdown = {
       syntax: errors.filter(e => e.category === 'syntax').length,
       type: errors.filter(e => e.category === 'type').length,
-      import: errors.filter(e => e.category === 'import').length,
-      semantic: errors.filter(e => e.category === 'semantic').length
-    };
-    
-    console.log(`✅ GPU processing completed: ${fixes.length} fixes generated`);
-    
-    return json({
-      success: true,
-      stats,
-      breakdown,
-      fixes: fixes.slice(0, 20), // Return first 20 fixes
-      totalFixes: fixes.length,
-      recommendations: [
-        'Run fixes in priority order (highest confidence first)',
-        `Focus on ${breakdown.syntax} syntax errors for quick wins`,
-        `${breakdown.import} import errors need manual module resolution`,
-        'GPU acceleration available for batches > 50 errors'
-      ],
-      gpuProcessing: {
-        enabled: errors.length >= 50,
-        batchSize: batchSize,
-        batches: batches.length,
-        estimatedSpeedup: errors.length >= 50 ? '10-50x faster' : 'CPU processing'
-      }
-    });
-    
-  } catch (error) {
-    console.error('Live GPU processing failed:', error);
-    return json(
-      { 
-        success: false,
-        error: 'Processing failed',
-        details: error instanceof Error ? error.message : String(error)
-      },
-      { status: 500 }
-    );
-  }
-};
-
-export const GET: RequestHandler = async () => {
-  return json({
-    status: 'GPU Live Error Processor Ready',
-    models: {
-      llm: 'gemma3-legal:latest',
-      embedding: 'nomic-embed-text:latest'
-    },
-    endpoints: [
-      'POST /api/gpu-process-live - Process live TypeScript errors',
-      'GET /api/gpu-process-live - Get status'
-    ]
-  });
-};
+import: errors.filter(e => e.category === 'import').length, semantic: errors.filter(e => e.category === 'semantic').length }; console.log(`✅ GPU processing completed: ${fixes.length} fixes generated`); return json({ success: true, stats, breakdown, fixes: fixes.slice(0, 20), // Return first 20 fixes totalFixes: fixes.length, recommendations: [ 'Run fixes in priority order (highest confidence first)', `Focus on ${breakdown.syntax} syntax errors for quick wins`, `${breakdown.import} import errors need manual module resolution`, 'GPU acceleration available for batches > 50 errors' ], gpuProcessing: { enabled: errors.length >= 50, batchSize: batchSize, batches: batches.length, estimatedSpeedup: errors.length >= 50 ? '10-50x faster' : 'CPU processing' } }); } catch (error) { console.error('Live GPU processing failed:', error); return json( { success: false, error: 'Processing failed', details: error instanceof Error ? error.message : String(error) }, { status: 500 } ); } }; export const GET: RequestHandler = async () => { return json({ status: 'GPU Live Error Processor Ready', models: { llm: 'gemma3-legal:latest', embedding: 'nomic-embed-text:latest' }, endpoints: [ 'POST /api/gpu-process-live - Process live TypeScript errors', 'GET /api/gpu-process-live - Get status' ] }); };

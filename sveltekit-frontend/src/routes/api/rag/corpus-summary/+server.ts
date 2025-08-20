@@ -1,9 +1,6 @@
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-db } from "$lib/server/db";
-// Orphaned content: import { sql
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { db } from "$lib/server/db";
 
 // Fallback raw query (table created dynamically by summarization script)
 export const GET: RequestHandler = async () => {

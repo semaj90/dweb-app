@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { speak } from "./speak";
 
@@ -94,3 +96,8 @@
   /* @unocss-include */
   /* Add your styles here */
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+import { type RequestHandler,  json } from '@sveltejs/kit';
 import { completeErrorPipeline } from '$lib/services/complete-gpu-error-pipeline';
 import type { RequestHandler } from './$types';
 

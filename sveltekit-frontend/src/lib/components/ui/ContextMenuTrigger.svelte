@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createContextMenu, melt } from "@melt-ui/svelte";
   import { setContext } from "svelte";
-  interface Props {
+  interface Props extends CommonProps {
     children?: import('svelte').Snippet;
   }
 

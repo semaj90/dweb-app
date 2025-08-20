@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
@@ -85,7 +87,7 @@
       </div>
     </div>
 
-    <Button on:click={handleUpload} disabled={isUploading} class="w-full">
+    <Button onclick={handleUpload} disabled={isUploading} class="w-full">
       {#if isUploading}
         <Loader2 class="mr-2 h-4 w-4 animate-spin" />
         Uploading...
@@ -118,3 +120,8 @@
     {/if}
   </CardContent>
 </Card>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

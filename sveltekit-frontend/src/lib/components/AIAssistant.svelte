@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Textarea } from '$lib/components/ui/textarea';
@@ -46,7 +48,7 @@
       placeholder="Ask a legal question..."
       rows={3}
     />
-    <Button on:click={queryAI} disabled={isLoading}>
+    <Button onclick={queryAI} disabled={isLoading}>
       {isLoading ? 'Thinking...' : 'Ask AI'}
     </Button>
     {#if response}
@@ -56,3 +58,8 @@
     {/if}
   </CardContent>
 </Card>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { aiHistory } from "$lib/stores/aiHistoryStore";
   import Fuse from "fuse.js";
   import { onMount } from "svelte";
@@ -36,3 +38,8 @@
     {/each}
   </ul>
 </div>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

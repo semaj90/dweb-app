@@ -1,16 +1,18 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Dialog, Button, Select, AlertDialog } from 'bits-ui';
   import { fade } from 'svelte/transition';
   import { createToaster, melt } from '@melt-ui/svelte';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
   
-  export let caseTypes = [
+  let { caseTypes = [
     { value: 'criminal', label: 'Criminal Cases' },
     { value: 'civil', label: 'Civil Cases' },
     { value: 'family', label: 'Family Law' },
     { value: 'corporate', label: 'Corporate Law' }
-  ];
+  ] } = $props();
   
   interface ToastData {
     title?: string;
@@ -94,7 +96,7 @@
   </div>
   
   <!-- Bits UI Button -->
-  <Button.Root class="mx-auto px-4 max-w-7xl" on:click={showSuccessNotification}>
+  <Button.Root class="mx-auto px-4 max-w-7xl" onclick={showSuccessNotification}>
     Create New Case
   </Button.Root>
   
@@ -179,7 +181,7 @@
           <AlertDialog.Cancel class="mx-auto px-4 max-w-7xl">
             Cancel
           </AlertDialog.Cancel>
-          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" on:click={showErrorNotification}>
+          <AlertDialog.Action class="mx-auto px-4 max-w-7xl" onclick={showErrorNotification}>
             Delete Permanently
           </AlertDialog.Action>
         </div>
@@ -492,3 +494,4 @@
     border-radius: var(--radius-md);
   }
 </style>
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

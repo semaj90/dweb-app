@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
   import type { GPUChatMessage, GPUProcessingStatus } from '$lib/types/search';
@@ -1172,3 +1174,8 @@ Type your legal question or upload a document to begin!`,
     background: linear-gradient(135deg, #00ff88 20%, #00ccff 80%);
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

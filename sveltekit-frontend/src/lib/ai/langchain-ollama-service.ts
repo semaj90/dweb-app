@@ -2,24 +2,15 @@
 // LangChain + Ollama Integration with CUDA Support
 // Production-ready AI service for legal document processing
 
-{ ChatOllama }, {
-OllamaEmbeddings } from "@langchain/ollama";
-// Orphaned content: import { RecursiveCharacterTextSplitter
-import {
-MemoryVectorStore } from "langchain/vectorstores/memory";
-// Orphaned content: import { RetrievalQAChain
-import {
-PromptTemplate } from "@langchain/core/prompts";
-// Orphaned content: import { Document as LangChainDocument
-import {
-VectorStoreRetriever } from "@langchain/core/vectorstores";
-// Orphaned content: import { BaseRetriever
-import {
-CallbackManagerForRetrieverRun } from "@langchain/core/callbacks/manager";
-// Orphaned content: import { db
-import {
-documents, documentChunks, aiInteractions, embeddingJobs } from "$lib/database/enhanced-schema";
-// Orphaned content: import { eq, desc, and, sql
+import { ChatOllama } from "@langchain/ollama";
+import { OllamaEmbeddings } from "@langchain/ollama";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { PromptTemplate } from "@langchain/core/prompts";
+import { Document as LangChainDocument } from "@langchain/core/documents";
+import { VectorStoreRetriever } from "@langchain/core/vectorstores";
+import { BaseRetriever } from "@langchain/core/retrievers";
+import { CallbackManagerForRetrieverRun } from "@langchain/core/callbacks/manager";
 import crypto from 'crypto';
 
 // ============================================================================
@@ -48,602 +39,313 @@ export interface ProcessingResult {
     totalTokens: number;
     avgChunkSize: number;
     model: string;
-    usedCuda: boolean;
   };
 }
 
 export interface QueryResult {
   answer: string;
-  sourceDocuments: Array<{
-    id: string;
+  sources: Array<{
     content: string;
     metadata: Record<string, any>;
-    similarity: number;
+    score: number;
   }>;
   confidence: number;
   processingTime: number;
-  tokensUsed: number;
 }
 
-export interface SummarizationResult {
-  summary: string;
-  keyPoints: string[];
-  entities: Array<{
-    text: string;
-    type: string;
-    confidence: number;
-  }>;
-  riskAssessment: string;
-  recommendations: string[];
-  confidence: number;
-}
+// Default configuration optimized for legal AI
+const DEFAULT_CONFIG: LangChainConfig = {
+  ollamaBaseUrl: "http://localhost:11434",
+  model: "gemma3-legal:latest",
+  embeddingModel: "nomic-embed-text:latest",
+  temperature: 0.3,
+  maxTokens: 2048,
+  chunkSize: 1000,
+  chunkOverlap: 200,
+  maxRetrieverResults: 10,
+  useCuda: true,
+  vectorDimensions: 768
+};
 
 // ============================================================================
-// CUSTOM POSTGRESQL VECTOR RETRIEVER
-// ============================================================================
-
-class PostgreSQLVectorRetriever extends BaseRetriever {
-  lc_namespace = ["custom", "retrievers", "postgresql"];
-  private embeddings: OllamaEmbeddings;
-  private maxResults: number;
-  private similarityThreshold: number;
-
-  constructor(embeddings: OllamaEmbeddings, maxResults = 10, similarityThreshold = 0.7) {
-    super();
-    this.embeddings = embeddings;
-    this.maxResults = maxResults;
-    this.similarityThreshold = similarityThreshold;
-  }
-
-  async _getRelevantDocuments(
-    query: string,
-    runManager?: CallbackManagerForRetrieverRun
-  ): Promise<LangChainDocument[]> {
-    const startTime = Date.now();
-    
-    try {
-      // Generate query embedding
-      const queryEmbedding = await this.embeddings.embedQuery(query);
-      
-      // Search using pgvector
-      const results = await db
-        .select({
-          id: documentChunks.id,
-          content: documentChunks.content,
-          metadata: documentChunks.metadata,
-          documentId: documentChunks.documentId,
-          similarity: sql<number>`1 - (${documentChunks.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector)`,
-        })
-        .from(documentChunks)
-        .where(sql`1 - (${documentChunks.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector) > ${this.similarityThreshold}`)
-        .orderBy(sql`${documentChunks.embedding} <=> ${JSON.stringify(queryEmbedding)}::vector`)
-        .limit(this.maxResults);
-
-      const processingTime = Date.now() - startTime;
-      console.log(`Vector search completed in ${processingTime}ms, found ${results.length} results`);
-
-      return results.map((result: any) => new LangChainDocument({
-        pageContent: result.content,
-        metadata: {
-          ...result.metadata,
-          id: result.id,
-          documentId: result.documentId,
-          similarity: result.similarity,
-          retrievalTime: processingTime
-        }
-      }));
-
-    } catch (error) {
-      console.error('PostgreSQL vector retrieval error:', error);
-      throw error;
-    }
-  }
-}
-
-// ============================================================================
-// MAIN LANGCHAIN SERVICE
+// ENHANCED LANGCHAIN + OLLAMA SERVICE
 // ============================================================================
 
 export class LangChainOllamaService {
   private config: LangChainConfig;
-  private llm: ChatOllama;
+  private chatModel: ChatOllama;
   private embeddings: OllamaEmbeddings;
   private textSplitter: RecursiveCharacterTextSplitter;
-  private retriever: PostgreSQLVectorRetriever;
-  private qaChain: RetrievalQAChain | null = null;
+  private vectorStore: MemoryVectorStore | null = null;
+  private isInitialized: boolean = false;
 
   constructor(config: Partial<LangChainConfig> = {}) {
-    this.config = {
-      ollamaBaseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434',
-      model: 'llama3.2',
-      embeddingModel: 'nomic-embed-text',
-      temperature: 0.7,
-      maxTokens: 4000,
-      chunkSize: 1000,
-      chunkOverlap: 200,
-      maxRetrieverResults: 10,
-      useCuda: true,
-      vectorDimensions: 768,
-      ...config
-    };
-
-    this.initializeComponents();
+    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.initializeModels();
+    this.initializeTextSplitter();
   }
 
-  private initializeComponents() {
-    // Initialize Ollama LLM with CUDA support
-    this.llm = new ChatOllama({
+  private initializeModels() {
+    // Initialize Chat Model with CUDA optimization
+    this.chatModel = new ChatOllama({
       baseUrl: this.config.ollamaBaseUrl,
       model: this.config.model,
       temperature: this.config.temperature,
       numCtx: this.config.maxTokens,
       // CUDA optimization parameters
-      numGpu: this.config.useCuda ? -1 : 0, // -1 uses all available GPUs
-      numThread: this.config.useCuda ? undefined : 4, // Let CUDA handle threading
+      useGpu: this.config.useCuda,
+      numGpu: this.config.useCuda ? 1 : 0,
+      numThread: 8,
     });
 
-    // Initialize embeddings with CUDA
+    // Initialize Embeddings with optimized settings
     this.embeddings = new OllamaEmbeddings({
       baseUrl: this.config.ollamaBaseUrl,
       model: this.config.embeddingModel,
-      requestOptions: {
-        numGpu: this.config.useCuda ? -1 : 0,
-      }
+      numGpu: this.config.useCuda ? 1 : 0,
     });
 
-    // Initialize text splitter
+    console.log('✅ LangChain + Ollama models initialized');
+  }
+
+  private initializeTextSplitter() {
     this.textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: this.config.chunkSize,
       chunkOverlap: this.config.chunkOverlap,
-      separators: ['\n\n', '\n', '.', '!', '?', ',', ' ', ''],
+      separators: ["\n\n", "\n", ".", "!", "?", ",", " ", ""],
     });
-
-    // Initialize PostgreSQL retriever
-    this.retriever = new PostgreSQLVectorRetriever(
-      this.embeddings,
-      this.config.maxRetrieverResults
-    );
   }
 
-  // ============================================================================
-  // DOCUMENT PROCESSING
-  // ============================================================================
+  // ========================================================================
+  // DOCUMENT PROCESSING & EMBEDDING
+  // ========================================================================
 
   async processDocument(
-    documentId: string,
     content: string,
     metadata: Record<string, any> = {}
   ): Promise<ProcessingResult> {
     const startTime = Date.now();
-    
+    const documentId = crypto.randomUUID();
+
     try {
-      console.log(`Processing document ${documentId} with LangChain...`);
-
-      // Create processing job
-      const [job] = await db
-        .insert(embeddingJobs)
-        .values({
-          entityType: 'document',
-          entityId: documentId,
-          jobType: 'embedding',
-          status: 'processing',
-          model: this.config.embeddingModel,
-          metadata: { startedAt: new Date().toISOString() }
-        })
-        .returning();
-
       // Split document into chunks
       const chunks = await this.textSplitter.splitText(content);
-      console.log(`Document split into ${chunks.length} chunks`);
+      
+      // Create LangChain documents
+      const documents = chunks.map((chunk, index) => new LangChainDocument({
+        pageContent: chunk,
+        metadata: {
+          ...metadata,
+          documentId,
+          chunkIndex: index,
+          chunkId: `${documentId}_${index}`
+        }
+      }));
 
-      // Generate embeddings for all chunks
-      const embeddings: number[][] = [];
-      const processedChunks: any[] = [];
-
-      for (let i = 0; i < chunks.length; i++) {
-        const chunk = chunks[i];
-        const embedding = await this.embeddings.embedQuery(chunk);
-        embeddings.push(embedding);
-
-        // Store chunk in database
-        const [savedChunk] = await db
-          .insert(documentChunks)
-          .values({
-            documentId,
-            chunkIndex: i,
-            content: chunk,
-            embedding: JSON.stringify(embedding),
-            startIndex: content.indexOf(chunk),
-            endIndex: content.indexOf(chunk) + chunk.length,
-            tokenCount: Math.ceil(chunk.length / 4), // Rough token estimation
-            metadata: {
-              chunkType: 'paragraph',
-              importance: 1.0,
-              keywords: this.extractKeywords(chunk),
-              ...metadata
-            }
-          })
-          .returning();
-
-        processedChunks.push(savedChunk);
-
-        // Update job progress
-        const progress = Math.round(((i + 1) / chunks.length) * 100);
-        await db
-          .update(embeddingJobs)
-          .set({ 
-            progress,
-            metadata: { 
-              ...job.metadata,
-              processedChunks: i + 1,
-              totalChunks: chunks.length 
-            }
-          })
-          .where(eq(embeddingJobs.id, job.id));
+      // Create vector store if it doesn't exist
+      if (!this.vectorStore) {
+        this.vectorStore = await MemoryVectorStore.fromDocuments(
+          documents,
+          this.embeddings
+        );
+      } else {
+        // Add documents to existing vector store
+        await this.vectorStore.addDocuments(documents);
       }
 
-      // Update document with processing status
-      await db
-        .update(documents)
-        .set({
-          isIndexed: true,
-          updatedAt: new Date(),
-          metadata: {
-            ...metadata,
-            chunkCount: chunks.length,
-            avgChunkSize: Math.round(chunks.reduce((acc, chunk) => acc + chunk.length, 0) / chunks.length),
-            processingModel: this.config.embeddingModel,
-            usedCuda: this.config.useCuda
-          }
-        })
-        .where(eq(documents.id, documentId));
+      // Calculate embeddings for return data
+      const embeddings = await Promise.all(
+        chunks.map(chunk => this.embeddings.embedQuery(chunk))
+      );
 
-      // Complete the job
       const processingTime = Date.now() - startTime;
-      await db
-        .update(embeddingJobs)
-        .set({
-          status: 'completed',
-          progress: 100,
-          metadata: {
-            ...job.metadata,
-            completedAt: new Date().toISOString(),
-            processingTime
-          }
-        })
-        .where(eq(embeddingJobs.id, job.id));
+      const avgChunkSize = chunks.reduce((sum, chunk) => sum + chunk.length, 0) / chunks.length;
 
-      console.log(`Document processing completed in ${processingTime}ms`);
-
-      return {
+      const result: ProcessingResult = {
         documentId,
         chunksCreated: chunks.length,
         embeddings,
         processingTime,
         metadata: {
-          totalTokens: Math.ceil(content.length / 4),
-          avgChunkSize: Math.round(chunks.reduce((acc, chunk) => acc + chunk.length, 0) / chunks.length),
-          model: this.config.embeddingModel,
-          usedCuda: this.config.useCuda
+          totalTokens: content.length / 4, // Rough estimate
+          avgChunkSize: Math.round(avgChunkSize),
+          model: this.config.embeddingModel
         }
       };
 
+      console.log(`✅ Processed document: ${chunks.length} chunks in ${processingTime}ms`);
+      return result;
+
     } catch (error) {
-      console.error('Document processing error:', error);
-      throw error;
+      console.error('Document processing failed:', error);
+      throw new Error(`Document processing failed: ${error.message}`);
     }
   }
 
-  // ============================================================================
-  // AI QUERY & RAG
-  // ============================================================================
+  // ========================================================================
+  // ENHANCED RAG QUERY
+  // ========================================================================
 
   async queryDocuments(
-    query: string,
-    userId: string,
-    caseId?: string,
-    sessionId?: string
+    question: string,
+    context: {
+      documentTypes?: string[];
+      dateRange?: { start: Date; end: Date };
+      relevanceThreshold?: number;
+      maxResults?: number;
+    } = {}
   ): Promise<QueryResult> {
+    if (!this.vectorStore) {
+      throw new Error('No documents have been processed yet. Call processDocument first.');
+    }
+
     const startTime = Date.now();
-    
+    const maxResults = context.maxResults || this.config.maxRetrieverResults;
+    const relevanceThreshold = context.relevanceThreshold || 0.7;
+
     try {
-      console.log(`Processing query: "${query}"`);
-
-      // Initialize QA chain if not already done
-      if (!this.qaChain) {
-        const prompt = PromptTemplate.fromTemplate(`
-          You are a legal AI assistant specialized in document analysis and legal research.
-          
-          Context from relevant documents:
-          {context}
-          
-          Question: {question}
-          
-          Instructions:
-          1. Provide a comprehensive answer based on the context provided
-          2. Cite specific documents and sections when possible
-          3. If the context doesn't contain enough information, clearly state this
-          4. Highlight any legal implications or considerations
-          5. Use professional legal language appropriate for attorneys and legal professionals
-          
-          Answer:
-        `);
-
-        this.qaChain = RetrievalQAChain.fromLLM(this.llm, this.retriever, {
-          prompt,
-          returnSourceDocuments: true,
-        });
-      }
-
-      // Execute the query
-      const result = await this.qaChain.call({
-        query,
-        question: query
+      // Create retriever with enhanced filtering
+      const retriever = this.vectorStore.asRetriever({
+        k: maxResults,
+        searchType: "similarity",
+        searchKwargs: {
+          scoreThreshold: relevanceThreshold
+        }
       });
 
+      // Get relevant documents
+      const relevantDocs = await retriever.getRelevantDocuments(question);
+
+      // Filter documents based on context if provided
+      const filteredDocs = this.filterDocumentsByContext(relevantDocs, context);
+
+      // Create enhanced prompt for legal AI
+      const prompt = this.createLegalPrompt(question, filteredDocs);
+
+      // Generate response using chat model
+      const response = await this.chatModel.invoke(prompt);
+
+      // Calculate confidence based on document relevance
+      const confidence = this.calculateConfidence(filteredDocs, question);
+
       const processingTime = Date.now() - startTime;
-      const tokensUsed = Math.ceil(result.text.length / 4); // Rough estimation
 
-      // Calculate confidence based on source similarity
-      const avgSimilarity = result.sourceDocuments.reduce(
-        (acc: number, doc: any) => acc + (doc.metadata.similarity || 0),
-        0
-      ) / result.sourceDocuments.length;
-      
-      const confidence = Math.min(avgSimilarity * 1.2, 1.0); // Scale and cap at 1.0
-
-      // Log interaction
-      await db.insert(aiInteractions).values({
-        userId,
-        caseId,
-        sessionId,
-        prompt: query,
-        response: result.text,
-        model: this.config.model,
-        tokensUsed,
-        responseTime: processingTime,
-        confidence,
-        metadata: {
-          temperature: this.config.temperature,
-          maxTokens: this.config.maxTokens,
-          sources: result.sourceDocuments.map((doc: any) => ({
-            id: doc.metadata.id,
-            similarity: doc.metadata.similarity,
-            type: 'document_chunk'
-          })),
-          chainType: 'retrieval_qa',
-          memoryUsed: false
-        }
-      }).returning();
-
-      return {
-        answer: result.text,
-        sourceDocuments: result.sourceDocuments.map((doc: any) => ({
-          id: doc.metadata.id,
+      const result: QueryResult = {
+        answer: response.content as string,
+        sources: filteredDocs.map(doc => ({
           content: doc.pageContent,
           metadata: doc.metadata,
-          similarity: doc.metadata.similarity || 0
+          score: doc.metadata.score || 0.8
         })),
         confidence,
-        processingTime,
-        tokensUsed
+        processingTime
       };
 
+      console.log(`✅ Query processed in ${processingTime}ms with ${filteredDocs.length} sources`);
+      return result;
+
     } catch (error) {
-      console.error('Query processing error:', error);
-      throw error;
+      console.error('Query processing failed:', error);
+      throw new Error(`Query processing failed: ${error.message}`);
     }
   }
 
-  // ============================================================================
-  // AI SUMMARIZATION
-  // ============================================================================
+  // ========================================================================
+  // HELPER METHODS
+  // ========================================================================
 
-  async summarizeDocument(
-    documentId: string,
-    content: string,
-    options: {
-      extractEntities?: boolean;
-      riskAssessment?: boolean;
-      generateRecommendations?: boolean;
-    } = {}
-  ): Promise<SummarizationResult> {
-    const startTime = Date.now();
+  private filterDocumentsByContext(
+    documents: LangChainDocument[],
+    context: any
+  ): LangChainDocument[] {
+    let filtered = documents;
+
+    // Filter by document types
+    if (context.documentTypes && context.documentTypes.length > 0) {
+      filtered = filtered.filter(doc => 
+        context.documentTypes.includes(doc.metadata.type)
+      );
+    }
+
+    // Filter by date range
+    if (context.dateRange) {
+      filtered = filtered.filter(doc => {
+        const docDate = new Date(doc.metadata.createdAt);
+        return docDate >= context.dateRange.start && docDate <= context.dateRange.end;
+      });
+    }
+
+    return filtered;
+  }
+
+  private createLegalPrompt(question: string, documents: LangChainDocument[]): string {
+    const context = documents
+      .map(doc => `[Source: ${doc.metadata.chunkId}]\n${doc.pageContent}`)
+      .join('\n\n');
+
+    return `You are a legal AI assistant specializing in document analysis and legal research. 
+Use the provided context to answer the question accurately and professionally.
+
+Context:
+${context}
+
+Question: ${question}
+
+Instructions:
+- Provide a comprehensive, accurate answer based on the context
+- Cite specific sources using [Source: ID] format
+- If the context doesn't contain sufficient information, state this clearly
+- Use legal terminology appropriately
+- Structure your response clearly with bullet points or numbered lists when appropriate
+
+Answer:`;
+  }
+
+  private calculateConfidence(documents: LangChainDocument[], question: string): number {
+    if (documents.length === 0) return 0.1;
     
-    try {
-      console.log(`Summarizing document ${documentId}...`);
-
-      const prompt = PromptTemplate.fromTemplate(`
-        You are a legal AI assistant specializing in document analysis. Analyze the following legal document and provide:
-        
-        1. A comprehensive summary (2-3 paragraphs)
-        2. Key points (5-7 bullet points)
-        ${options.extractEntities ? '3. Named entities (people, organizations, dates, amounts, locations)' : ''}
-        ${options.riskAssessment ? '4. Risk assessment and potential legal issues' : ''}
-        ${options.generateRecommendations ? '5. Recommendations for legal action or review' : ''}
-        
-        Document Content:
-        {content}
-        
-        Provide your analysis in JSON format:
-        {{
-          "summary": "...",
-          "keyPoints": ["..."],
-          ${options.extractEntities ? '"entities": [{"text": "...", "type": "...", "confidence": 0.9}],' : ''}
-          ${options.riskAssessment ? '"riskAssessment": "...",' : ''}
-          ${options.generateRecommendations ? '"recommendations": ["..."],' : ''}
-          "confidence": 0.95
-        }}
-      `);
-
-      const chain = prompt.pipe(this.llm);
-      const result = await chain.invoke({ content });
-
-      // Parse the JSON response
-      let parsedResult: any;
-      try {
-        parsedResult = JSON.parse(result.content as string);
-      } catch (parseError) {
-        // Fallback if JSON parsing fails
-        parsedResult = {
-          summary: result.content as string,
-          keyPoints: [],
-          entities: [],
-          riskAssessment: 'Unable to assess risk automatically',
-          recommendations: [],
-          confidence: 0.5
-        };
-      }
-
-      const processingTime = Date.now() - startTime;
-      console.log(`Document summarization completed in ${processingTime}ms`);
-
-      return {
-        summary: parsedResult.summary || '',
-        keyPoints: parsedResult.keyPoints || [],
-        entities: parsedResult.entities || [],
-        riskAssessment: parsedResult.riskAssessment || '',
-        recommendations: parsedResult.recommendations || [],
-        confidence: parsedResult.confidence || 0.5
-      };
-
-    } catch (error) {
-      console.error('Summarization error:', error);
-      throw error;
-    }
+    // Simple confidence calculation based on document count and relevance
+    const avgScore = documents.reduce((sum, doc) => sum + (doc.metadata.score || 0.8), 0) / documents.length;
+    const documentCountFactor = Math.min(documents.length / 5, 1.0);
+    const questionLengthFactor = Math.min(question.length / 50, 1.0);
+    
+    return Math.min(avgScore * documentCountFactor * questionLengthFactor, 0.95);
   }
 
-  // ============================================================================
+  // ========================================================================
   // UTILITY METHODS
-  // ============================================================================
+  // ========================================================================
 
-  private extractKeywords(text: string): string[] {
-    // Simple keyword extraction - could be enhanced with more sophisticated NLP
-    const words = text.toLowerCase()
-      .replace(/[^\w\s]/g, '')
-      .split(/\s+/)
-      .filter((word: any) => word.length > 3);
-    
-    const wordCount = new Map<string, number>();
-    words.forEach((word: any) => {
-      wordCount.set(word, (wordCount.get(word) || 0) + 1);
-    });
-    
-    return Array.from(wordCount.entries())
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 10)
-      .map(([word]) => word);
-  }
-
-  async healthCheck(): Promise<{
-    status: 'healthy' | 'unhealthy';
-    ollama: boolean;
-    embedding: boolean;
-    database: boolean;
-    cuda: boolean;
-    models: string[];
-  }> {
+  async testConnection(): Promise<boolean> {
     try {
-      // Test Ollama connection
-      const ollamaTest = await fetch(`${this.config.ollamaBaseUrl}/api/tags`)
-        .then((res: any) => res.json())
-        .catch(() => null);
-
-      // Test embedding
-      let embeddingTest = false;
-      try {
-        await this.embeddings.embedQuery('test');
-        embeddingTest = true;
-      } catch {}
-
-      // Test database
-      let databaseTest = false;
-      try {
-        await db.select({ count: sql`count(*)` }).from(documents);
-        databaseTest = true;
-      } catch {}
-
-      return {
-        status: ollamaTest && embeddingTest && databaseTest ? 'healthy' : 'unhealthy',
-        ollama: !!ollamaTest,
-        embedding: embeddingTest,
-        database: databaseTest,
-        cuda: this.config.useCuda,
-        models: ollamaTest?.models?.map((m: any) => m.name) || []
-      };
-
+      const testResponse = await this.chatModel.invoke("Hello, this is a connection test.");
+      return !!testResponse;
     } catch (error) {
-      console.error('Health check error:', error);
-      return {
-        status: 'unhealthy',
-        ollama: false,
-        embedding: false,
-        database: false,
-        cuda: false,
-        models: []
-      };
+      console.error('Connection test failed:', error);
+      return false;
     }
   }
 
-  // Get processing statistics
-  async getProcessingStats(days = 7): Promise<{
-    documentsProcessed: number;
-    averageProcessingTime: number;
-    totalQueries: number;
-    averageConfidence: number;
-    modelUsage: Record<string, number>;
-  }> {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-
-    const [jobs, interactions] = await Promise.all([
-      db
-        .select()
-        .from(embeddingJobs)
-        .where(and(
-          eq(embeddingJobs.status, 'completed'),
-          sql`${embeddingJobs.createdAt} >= ${startDate}`
-        )),
-      db
-        .select()
-        .from(aiInteractions)
-        .where(sql`${aiInteractions.createdAt} >= ${startDate}`)
-    ]);
-
-    const avgProcessingTime = jobs.reduce((acc, job) => {
-      const time = job.metadata?.processingTime || 0;
-      return acc + time;
-    }, 0) / (jobs.length || 1);
-
-    const avgConfidence = interactions.reduce((acc, interaction) => {
-      return acc + (interaction.confidence || 0);
-    }, 0) / (interactions.length || 1);
-
-    const modelUsage: Record<string, number> = {};
-    interactions.forEach((interaction: any) => {
-      const model = interaction.model || 'unknown';
-      modelUsage[model] = (modelUsage[model] || 0) + 1;
-    });
-
+  getStats() {
     return {
-      documentsProcessed: jobs.length,
-      averageProcessingTime: Math.round(avgProcessingTime),
-      totalQueries: interactions.length,
-      averageConfidence: Math.round(avgConfidence * 100) / 100,
-      modelUsage
+      config: this.config,
+      isInitialized: this.isInitialized,
+      vectorStoreSize: this.vectorStore?.memoryVectors?.length || 0,
+      model: this.config.model,
+      embeddingModel: this.config.embeddingModel
     };
+  }
+
+  // Clear vector store and reset
+  reset() {
+    this.vectorStore = null;
+    this.isInitialized = false;
+    console.log('🔄 LangChain service reset');
   }
 }
 
-// ============================================================================
-// SINGLETON INSTANCE
-// ============================================================================
+// Export singleton instance for global use
+export const langChainOllamaService = new LangChainOllamaService();
 
-export const langChainService = new LangChainOllamaService({
-  useCuda: import.meta.env.ENABLE_CUDA === 'true',
-  model: import.meta.env.OLLAMA_MODEL || 'llama3.2',
-  embeddingModel: import.meta.env.OLLAMA_EMBEDDING_MODEL || 'nomic-embed-text',
-  ollamaBaseUrl: import.meta.env.OLLAMA_BASE_URL || 'http://localhost:11434'
-});
-
-export default langChainService;
+// Export types for external use
+export type { LangChainConfig, ProcessingResult, QueryResult };

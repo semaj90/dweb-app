@@ -1,6 +1,5 @@
-import { ollamaService } from "$lib/server/services/OllamaService";
-import type { RequestHandler }, {
-json } from "@sveltejs/kit";
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { ollamaService } from '$lib/server/services/OllamaService';
 
 const GO_BASE = import.meta.env.GO_SERVICE_URL || "http://localhost:8084";
 

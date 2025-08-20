@@ -3,6 +3,8 @@ Enhanced AI Chat Assistant for Prosecutors
 Features: Self-prompting, elemental awareness (YOLO), enhanced RAG, local LLM
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -289,7 +291,7 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
             <Button 
               variant="outline" 
               size="sm"
-              on:click={() => useSelfPrompt(suggestion)}
+              onclick={() => useSelfPrompt(suggestion)}
               disabled={isTyping}
             >
               {suggestion}
@@ -397,12 +399,12 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
           <Input
             bind:value={currentMessage}
             placeholder="Ask about evidence, legal precedents, case strategy..."
-            on:keydown={handleKeyDown}
+            onkeydown={handleKeyDown}
             disabled={isTyping}
           />
         </div>
         <Button 
-          on:click={sendMessage}
+          onclick={sendMessage}
           disabled={isTyping || !currentMessage.trim()}
         >
           <Send class="w-4 h-4" />
@@ -471,3 +473,8 @@ ${caseId ? `I'm ready to assist with Case ${caseId}.` : 'Select a case to get st
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

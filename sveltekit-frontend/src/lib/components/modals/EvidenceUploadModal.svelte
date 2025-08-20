@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import Button from "$lib/components/ui/Button.svelte";
   import { uploadActions, uploadModal } from "$lib/stores/evidence-store";
   import { formatFileSize } from "$lib/utils/file-utils";
@@ -64,7 +66,7 @@
           <Upload class="container mx-auto px-4" />
           <h2 class="container mx-auto px-4">Upload Evidence</h2>
         </div>
-        <Button variant="ghost" size="sm" on:click={() => closeModal()}>
+        <Button variant="ghost" size="sm" onclick={() => closeModal()}>
           <X class="container mx-auto px-4" />
         </Button>
       </div>
@@ -92,7 +94,7 @@
           <p id="evidence-dropzone-instructions" class="container mx-auto px-4">
             Support for images, documents, audio, and video files
           </p>
-          <Button variant="outline" on:click={() => fileInput?.click()}>
+          <Button variant="outline" onclick={() => fileInput?.click()}>
             Choose Files
           </Button>
           <input
@@ -167,7 +169,7 @@
                       <Button
                         variant="ghost"
                         size="sm"
-                        on:click={() => removeFile(file.id)}
+                        onclick={() => removeFile(file.id)}
                       >
                         <X class="container mx-auto px-4" />
                       </Button>
@@ -197,12 +199,12 @@
         </div>
 
         <div class="container mx-auto px-4">
-          <Button variant="outline" on:click={() => closeModal()}>
+          <Button variant="outline" onclick={() => closeModal()}>
             {activeUploads.length > 0 ? "Continue in Background" : "Close"}
           </Button>
 
           {#if completedUploads.length > 0}
-            <Button on:click={() => dispatch("viewEvidence", completedUploads)}>
+            <Button onclick={() => dispatch("viewEvidence", completedUploads)}>
               View Evidence
             </Button>
           {/if}
@@ -211,3 +213,8 @@
     </div>
   </div>
 {/if}
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

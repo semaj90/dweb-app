@@ -1,12 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-db } from "$lib/server/db/index";
-// Orphaned content: import { cases, reports, evidence
-import {
-eq, and } from "drizzle-orm";
-// Orphaned content: import { randomUUID
+import { db } from "$lib/server/db/index";
+import { eq, and } from "drizzle-orm";
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
   if (!locals.user) {

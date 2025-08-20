@@ -5,6 +5,8 @@ Vector Search Widget
 Compact searchable component for embedding in other interfaces
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from "$lib/components/ui/badge";
@@ -23,7 +25,7 @@ Compact searchable component for embedding in other interfaces
   import { vectorIntelligenceService } from '$lib/services/vector-intelligence-service.js';
   import type { VectorSearchResult } from '$lib/services/vector-intelligence-service.js';
 
-  interface Props {
+  interface Props extends CommonProps {
     placeholder?: string;
     maxResults?: number;
     threshold?: number;

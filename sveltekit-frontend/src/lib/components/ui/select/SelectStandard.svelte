@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Select } from "bits-ui";
   
   interface SelectOption {
@@ -7,7 +9,7 @@
     disabled?: boolean;
   }
   
-  interface Props {
+  interface Props extends CommonProps {
     value?: string;
     options: SelectOption[];
     placeholder?: string;

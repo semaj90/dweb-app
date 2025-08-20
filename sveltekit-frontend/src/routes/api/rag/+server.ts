@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 /**
  * Enhanced RAG API Endpoints - Backend Integration
  * Integrates with Enhanced RAG Backend (localhost:8000)
@@ -11,12 +12,9 @@
  */
 
 import { summarizeWithQueue } from "$lib/server/pgai";
-// Orphaned content: import {
 
 import { error, json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-crypto from "crypto";
-// Orphaned content: import {
+import crypto from "crypto";
 
 // Enhanced RAG Backend Configuration
 const RAG_BACKEND_URL = import.meta.env.RAG_BACKEND_URL || "http://localhost:8000";

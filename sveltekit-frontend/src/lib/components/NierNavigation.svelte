@@ -1,5 +1,7 @@
 <!-- YoRHa Terminal Navigation Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { page } from '$app/state';
 
   interface NavigationProps {
@@ -265,3 +267,8 @@
   }
 }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

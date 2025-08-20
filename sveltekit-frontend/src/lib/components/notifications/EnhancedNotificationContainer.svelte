@@ -1,4 +1,6 @@
 mcp<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import { notifications, type Notification } from "$lib/stores/notification";
   import { FocusManager } from "$lib/utils/accessibility";
@@ -192,7 +194,7 @@ mcp<script lang="ts">
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => (maxVisible += 5)}
+        onclick={() => (maxVisible += 5)}
         class="container mx-auto px-4"
       >
         +{hiddenCount} more notifications
@@ -269,7 +271,7 @@ mcp<script lang="ts">
                           variant={action.variant === "primary"
                             ? "default"
                             : "ghost"}
-                          on:click={() =>
+                          onclick={() =>
                             handleNotificationAction(notification, action)}
                           class="container mx-auto px-4"
                         >
@@ -285,7 +287,7 @@ mcp<script lang="ts">
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => dismissNotification(notification.id)}
+                    onclick={() => dismissNotification(notification.id)}
                     class="container mx-auto px-4"
                     aria-label="Dismiss notification"
                   >
@@ -306,7 +308,7 @@ mcp<script lang="ts">
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => dismissAll()}
+        onclick={() => dismissAll()}
         class="container mx-auto px-4"
       >
         Clear all ({$notifications.notifications.length})
@@ -434,3 +436,8 @@ mcp<script lang="ts">
     border: 0;
 }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

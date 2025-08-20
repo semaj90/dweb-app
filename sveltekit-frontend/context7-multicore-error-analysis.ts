@@ -178,7 +178,7 @@ function generateAutomationPlan(analysisResults: any[]) {
 }
 
 // Execute analysis if run directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   analyzeCurrentErrors()
     .then(report => {
       console.log('🎉 Context7 Multicore Error Analysis Complete!');

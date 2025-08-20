@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Input } from '$lib/components/ui/input/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -221,12 +223,12 @@
             <Input
               placeholder="Ask AI to find laws..."
               bind:value={aiSearchQuery}
-              on:keydown={handleAISearchKeydown}
+              onkeydown={handleAISearchKeydown}
               {disabled}
               class="pl-10" />
           </div>
           <Button
-            on:click={performAISearch}
+            onclick={performAISearch}
             disabled={disabled || isAISearching || !aiSearchQuery.trim()}
             size="sm">
             {#if isAISearching}
@@ -268,12 +270,12 @@
           <Textarea
             placeholder="Ask a legal question..."
             bind:value={aiChatMessage}
-            on:keydown={handleAIChatKeydown}
+            onkeydown={handleAIChatKeydown}
             {disabled}
             rows="2"
             class="resize-none" />
           <Button
-            on:click={performAIChat}
+            onclick={performAIChat}
             disabled={disabled || isAIChatting || !aiChatMessage.trim()}
             size="sm"
             class="w-full">
@@ -315,7 +317,7 @@
             rows="2"
             class="resize-none" />
           <Button
-            on:click={performAISummarization}
+            onclick={performAISummarization}
             disabled={disabled || isSummarizing || !summarizeText.trim()}
             size="sm"
             class="w-full">
@@ -343,7 +345,7 @@
   <!-- Clear Results Button -->
   {#if aiSearchResults.length > 0 || aiChatResponse || summaryResult}
     <div class="text-center">
-      <Button variant="outline" on:click={clearResults} size="sm">Clear All Results</Button>
+      <Button variant="outline" onclick={clearResults} size="sm">Clear All Results</Button>
     </div>
   {/if}
 
@@ -352,7 +354,7 @@
     <Button
       variant="outline"
       size="sm"
-      on:click={() => {
+      onclick={() => {
         aiSearchQuery = 'California murder laws';
         performAISearch();
       }}
@@ -363,7 +365,7 @@
     <Button
       variant="outline"
       size="sm"
-      on:click={() => {
+      onclick={() => {
         aiChatMessage = 'What are the elements of a valid contract?';
         performAIChat();
       }}
@@ -374,7 +376,7 @@
     <Button
       variant="outline"
       size="sm"
-      on:click={() => {
+      onclick={() => {
         aiSearchQuery = 'evidence admissibility rules';
         performAISearch();
       }}
@@ -390,3 +392,8 @@
     @apply text-sm leading-relaxed mb-2 last:mb-0;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

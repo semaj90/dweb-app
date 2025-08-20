@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher } from "svelte";
   import { draggable } from '$lib/actions/draggable';
   import { aiService } from '$lib/services/aiService';
@@ -469,3 +471,5 @@ import Input from "$lib/components/ui/Input.svelte";
   font-style: italic;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

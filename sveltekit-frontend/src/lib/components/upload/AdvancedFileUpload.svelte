@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { browser } from "$app/environment";
   import Button from "$lib/components/ui/Button.svelte";
   import { notifications } from "$lib/stores/notification";
@@ -16,8 +18,8 @@
     Trash2,
     Upload,
     Video,
-  } from "lucide-svelte";
-  import { createEventDispatcher, onMount } from "svelte";
+  } from 'lucide-svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -569,7 +571,7 @@
         {#if enableCameraCapture}
           <Button
             variant="secondary"
-            on:click={handleCameraCaptureClick}
+            onclick={handleCameraCaptureClick}
             {disabled}
           >
             <Camera class="container mx-auto px-4" />
@@ -580,7 +582,7 @@
         {#if enableAudioRecording}
           <Button
             variant="secondary"
-            on:click={handleAudioRecordingClick}
+            onclick={handleAudioRecordingClick}
             {disabled}
             class={isRecording ? "bg-red-100 text-red-700" : ""}
           >
@@ -616,7 +618,7 @@
           {#if !autoUpload && files.some((f) => f.status === "pending")}
             <Button
               size="sm"
-              on:click={() => uploadFiles()}
+              onclick={() => uploadFiles()}
               disabled={isUploading}
             >
               {#if isUploading}
@@ -631,7 +633,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (files = [])}
+            onclick={() => (files = [])}
             disabled={isUploading}
           >
             Clear All
@@ -705,7 +707,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => window.open(file.url, "_blank")}
+                  onclick={() => window.open(file.url, "_blank")}
                   aria-label="View {file.name}"
                 >
                   <Eye class="container mx-auto px-4" />
@@ -716,7 +718,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => retryUpload(file.id)}
+                  onclick={() => retryUpload(file.id)}
                   aria-label="Retry upload of {file.name}"
                 >
                   <Upload class="container mx-auto px-4" />
@@ -726,7 +728,7 @@
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => removeFile(file.id)}
+                onclick={() => removeFile(file.id)}
                 disabled={file.status === "uploading"}
                 aria-label="Remove {file.name}"
               >
@@ -954,3 +956,5 @@
       transform: none;
 }}
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

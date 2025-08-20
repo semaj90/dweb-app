@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { afterUpdate, createEventDispatcher, onMount, tick } from "svelte";
   import { elasticOut, quintOut } from "svelte/easing";
   import { writable } from "svelte/store";
@@ -1081,3 +1083,5 @@
     }
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

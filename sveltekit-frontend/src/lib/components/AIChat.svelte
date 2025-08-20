@@ -1,6 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { useMachine } from '@xstate/svelte';
 	import { onMount } from 'svelte';
 	import { chatMachine } from '$lib/machines/chatMachine';
@@ -140,3 +142,8 @@ https://svelte.dev/e/js_parse_error -->
 	.typing-indicator { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background-color: currentColor; animation: typing 1s infinite steps(4, end); margin-left: 8px; vertical-align: bottom; }
 	@keyframes typing { to { transform: translateY(-0.25rem); } }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

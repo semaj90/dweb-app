@@ -1,9 +1,7 @@
 // Test login endpoint to debug authentication
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 
 import { users } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
 verifyPassword, createUserSession, setSessionCookie
 import { eq } from 'drizzle-orm';
 

@@ -4,10 +4,8 @@
  * Comprehensive system integration management with Context7 MCP guidance
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { URL } from "url";
 
 // Temporary fallback for service health checking
 async function getSystemHealth() {

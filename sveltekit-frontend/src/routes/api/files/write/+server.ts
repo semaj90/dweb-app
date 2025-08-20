@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+import { type RequestHandler,  json } from '@sveltejs/kit';
 import { writeFile, mkdir } from 'fs/promises';
 import { dirname, extname } from 'path';
 import { existsSync } from 'fs';

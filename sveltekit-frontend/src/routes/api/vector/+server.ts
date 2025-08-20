@@ -1,10 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // API endpoint for vector search operations
-VectorService from "$lib/server/services/vector-service";
-// Orphaned content: import {
+import VectorService from "$lib/server/services/vector-service";
 
 import { z } from "zod";
-// Orphaned content: import type { RequestHandler
 
 // Request validation schemas
 const searchSchema = z.object({

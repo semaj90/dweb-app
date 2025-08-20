@@ -1,9 +1,11 @@
-crypto from "crypto";
-// Orphaned content: // @ts-nocheck
+// @ts-nocheck
 // Enhanced Svelte 5 + UnoCSS Component Library
 // Optimized for legal AI application with NieR theming
 
-export { default as Button
+import type { CommonProps } from '$lib/types/common-props';
+import crypto from "crypto";
+
+export { default as Button } from "./Button.svelte";
 export { default as Card } from "./Card.svelte";
 export { default as Input } from "./Input.svelte";
 export { buttonVariants, type ButtonVariants } from "./button-variants";

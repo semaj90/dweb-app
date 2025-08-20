@@ -4,11 +4,8 @@
  * Generates legal boilerplate text based on high-performing phrase patterns
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-Pool } from "pg";
-// Orphaned content: import { z
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { Pool } from "pg";
 
 // Configuration
 const CONFIG = {

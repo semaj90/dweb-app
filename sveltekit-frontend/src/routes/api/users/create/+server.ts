@@ -1,10 +1,6 @@
-import type { NewUser } from "$lib/server/db/schema-postgres";
-// @ts-nocheck
-import { db } from "$lib/server/db";
-// Orphaned content: import {
-
-import type { RequestHandler }, {
-json } from "@sveltejs/kit";
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { users } from '$lib/server/db/schema-postgres';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
@@ -36,8 +32,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       password: userData.password || "password123",
       avatarUrl: userData.avatarUrl,
     } as const;
-    
-    const result = await db.insert(users).values(newUser).returning();
+
+    const result = await db.insert(users).values(newUser as any).returning();
 
     if (result.length > 0) {
       return json({

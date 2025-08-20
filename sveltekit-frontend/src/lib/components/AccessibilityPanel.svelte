@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { browser } from "$app/environment";
   import { Button } from "$lib/components/ui/button";
   import { notifications } from "$lib/stores/notification";
@@ -493,7 +495,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (showPanel = false)}
+            onclick={() => (showPanel = false)}
             aria-label="Close accessibility panel"
           >
             ✕
@@ -563,7 +565,7 @@
             <h3 class="mx-auto px-4 max-w-7xl">Accessibility Audit</h3>
             <Button
               size="sm"
-              on:click={() => runAccessibilityAudit()}
+              onclick={() => runAccessibilityAudit()}
               disabled={isAuditing}
               class="mx-auto px-4 max-w-7xl"
             >
@@ -618,7 +620,7 @@
                 variant="outline"
                 size="sm"
                 class="mx-auto px-4 max-w-7xl"
-                on:click={() => exportAuditResults()}
+                onclick={() => exportAuditResults()}
               >
                 <Download class="mx-auto px-4 max-w-7xl" />
                 Export Report
@@ -700,3 +702,5 @@
     white-space: normal !important;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -1,7 +1,5 @@
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-healthCheck } from "$lib/server/db/index.js";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { healthCheck } from "$lib/server/db/index.js";
 
 // Environment variables for Ollama configuration
 const OLLAMA_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';

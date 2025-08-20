@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "bits-ui";
   import { onMount } from "svelte";
 
@@ -15,7 +17,7 @@
     lastUpdated: string;
   }
 
-  interface Props {
+  interface Props extends CommonProps {
     caseId: string;
     evidenceId?: string;
     content: string;
@@ -87,7 +89,7 @@
     <h3 class="text-lg font-semibold text-white">Case AI Scoring</h3>
     <Button.Root
       size="sm"
-      on:click={calculateScore}
+      onclick={calculateScore}
       disabled={loading}
       class="text-xs border border-slate-600 hover:bg-slate-700"
     >
@@ -219,7 +221,7 @@
   {:else}
     <div class="text-slate-400 text-center py-8">
       <Button.Root
-        on:click={calculateScore}
+        onclick={calculateScore}
         class="text-sm border border-slate-600 hover:bg-slate-700"
       >
         Calculate AI Score

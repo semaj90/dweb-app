@@ -1,5 +1,7 @@
 <!-- YoRHa Notification Manager Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import YoRHaNotification from './YoRHaNotification.svelte';
   import { notificationStore as notificationStoreExport } from '$lib/stores/notifications';
 
@@ -124,3 +126,7 @@
     }
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

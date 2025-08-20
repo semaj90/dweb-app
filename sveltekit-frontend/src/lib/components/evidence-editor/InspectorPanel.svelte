@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher, onMount } from 'svelte';
   import { writable } from 'svelte/store';
   
@@ -1026,3 +1028,5 @@
     overflow-y: auto;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

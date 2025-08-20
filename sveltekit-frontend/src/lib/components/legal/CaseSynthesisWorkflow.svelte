@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { useMachine } from '@xstate/svelte';
   import { createMachine, assign } from 'xstate';
   import AISummaryReader from './AISummaryReader.svelte';
@@ -814,3 +816,4 @@ ${synthesis.nextSteps.map(step => `- ${step}`).join('\n')}
     </div>
   {/if}
 </div>
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

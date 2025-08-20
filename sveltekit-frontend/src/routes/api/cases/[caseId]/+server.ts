@@ -1,10 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { cases } from "$lib/server/db/schema-postgres";
 // @ts-nocheck
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { eq
-import {
-db } from "$lib/server/db/drizzle";
+import { db } from "$lib/server/db/drizzle";
 
 export const GET: RequestHandler = async ({ params, locals }) => {
   try {

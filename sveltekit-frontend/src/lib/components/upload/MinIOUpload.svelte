@@ -1,13 +1,18 @@
 <!-- MinIO Upload Component with SvelteKit 2 + Superforms + PostgreSQL Integration -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { superForm } from 'sveltekit-superforms/client';
   import { fileUploadSchema, type FileUploadData } from '$lib/schemas/upload';
   import { page } from '$app/state';
   import { invalidateAll } from '$app/navigation';
   import type { PageData } from './$types';
+  import { createActor } from 'xstate';
+  import { evidenceProcessingMachine } from '$lib/state/evidenceProcessingMachine';
+  import { documentApiService } from '$lib/services/documentApi';
   
   // Props
-  interface Props {
+  interface Props extends CommonProps {
     data: PageData;
     caseId?: string;
     onUploadComplete?: (result: UploadResult) => void;
@@ -90,6 +95,11 @@
   let dragOver = $state(false);
   let previewUrl = $state<string | null>(null);
 
+  // XState evidence processing actor
+  let evidenceActor = $state<ReturnType<typeof createActor> | null>(null);
+  let processingStage = $state('');
+  let processingError = $state<string | null>(null);
+
   // Set default caseId if provided
   $effect(() => {
     if (caseId && !$form.caseId) {
@@ -147,68 +157,126 @@
     }
   }
 
-  // Enhanced form submission with integrated processing pipeline
+  // Enhanced form submission with XState evidence processing
   function handleSubmit() {
     uploadStatus = 'uploading';
     uploadProgress = 0;
+    processingError = null;
     
     return async ({ formData }: { formData: FormData }) => {
       try {
-        // Add processing configuration
-        formData.append('enableOCR', 'true');
-        formData.append('enableLegalBERT', 'true');
-        formData.append('enableEmbeddings', 'true');
-        formData.append('enableSummarization', 'true');
-        formData.append('enableMinIOStorage', 'true');
+        // Initial upload to MinIO/storage
+        uploadProgress = 10;
+        
+        // First upload the file and get basic document info
+        const file = formData.get('file') as File;
+        if (!file) {
+          throw new Error('No file selected');
+        }
+
+        // Read file content for processing
+        const fileContent = await file.text();
+        const evidenceId = `evidence_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         uploadProgress = 20;
         uploadStatus = 'processing';
         
-        // Call unified document processor
-        const response = await fetch('/api/documents/process', {
-          method: 'POST',
-          body: formData
+        // Create and start evidence processing actor
+        evidenceActor = createActor(evidenceProcessingMachine);
+        evidenceActor.start();
+        
+        // Subscribe to state changes
+        evidenceActor.subscribe((state) => {
+          processingStage = state.context.stage;
+          uploadProgress = state.context.progress;
+          
+          if (state.context.error) {
+            processingError = state.context.error;
+            uploadStatus = 'error';
+          }
+          
+          if (state.matches('completed')) {
+            uploadStatus = 'completed';
+            uploadProgress = 100;
+            
+            // Trigger success callback
+            const enhancedResult = {
+              success: true,
+              documentId: evidenceId,
+              url: '',
+              objectName: evidenceId,
+              message: 'Evidence processed successfully through XState pipeline',
+              processing: {
+                extractedText: state.context.extractedText,
+                embeddings: state.context.embeddings,
+                analysis: state.context.analysis,
+                chunks: state.context.chunks
+              }
+            };
+            
+            onUploadComplete?.(enhancedResult);
+            
+            // Reset after delay
+            setTimeout(() => {
+              uploadProgress = 0;
+              uploadStatus = 'idle';
+              processingStage = '';
+              evidenceActor?.stop();
+              evidenceActor = null;
+            }, 3000);
+          }
+          
+          if (state.matches('failed')) {
+            uploadStatus = 'error';
+            processingError = state.context.error || 'Processing failed';
+            onUploadError?.(processingError);
+            evidenceActor?.stop();
+            evidenceActor = null;
+          }
         });
         
-        uploadProgress = 60;
+        // Start the evidence processing workflow
+        evidenceActor.send({
+          type: 'START_PROCESSING',
+          evidenceId,
+          caseId: $form.caseId || 'default',
+          userId: 'current-user', // TODO: Get from auth
+          filename: file.name,
+          content: fileContent,
+          metadata: {
+            documentType: $form.documentType,
+            description: $form.description,
+            priority: $form.priority,
+            tags: $form.tags?.split(',').map(t => t.trim()) || [],
+            isConfidential: $form.isConfidential,
+            fileSize: file.size,
+            mimeType: file.type
+          }
+        });
         
-        const result = await response.json();
-        
-        if (result.success) {
-          uploadProgress = 100;
-          uploadStatus = 'completed';
-          
-          // Trigger callbacks with enhanced result
-          const enhancedResult = {
-            success: true,
-            documentId: result.results.documentId,
-            url: result.results.storage.minioUrl || '',
-            objectName: result.results.documentId,
-            message: `Document processed successfully: ${result.results.metadata.stagesCompleted.join(', ')}`,
-            processing: {
-              ocr: result.results.ocr,
-              embeddings: result.results.embeddings,
-              analysis: result.results.analysis,
-              summarization: result.results.summarization
-            }
-          };
-          
-          onUploadComplete?.(enhancedResult);
-          
-          // Reset form after delay
-          setTimeout(() => {
-            uploadProgress = 0;
-            uploadStatus = 'idle';
-          }, 2000);
-        } else {
-          throw new Error(result.error || 'Processing failed');
+        // Also process through legal ingest API if it's a legal document
+        if ($form.documentType === 'evidence' || $form.documentType === 'contract') {
+          try {
+            const legalResult = await documentApiService.processLegalDocuments([file], {
+              caseId: $form.caseId || 'default',
+              jurisdiction: 'federal',
+              enhanceRAG: true
+            });
+            
+            console.log('Legal processing result:', legalResult);
+          } catch (legalError) {
+            console.warn('Legal processing failed (non-critical):', legalError);
+          }
         }
         
       } catch (error) {
         console.error('Upload/processing failed:', error);
         uploadStatus = 'error';
         uploadProgress = 0;
-        onUploadError?.(error.message || 'Upload failed');
+        processingError = error instanceof Error ? error.message : 'Upload failed';
+        onUploadError?.(processingError);
+        evidenceActor?.stop();
+        evidenceActor = null;
       }
     };
   }
@@ -406,11 +474,19 @@
           {#if uploadStatus === 'uploading'}
             Uploading... {Math.round(uploadProgress)}%
           {:else if uploadStatus === 'processing'}
-            Processing document...
+            {#if processingStage}
+              Processing: {processingStage} ({Math.round(uploadProgress)}%)
+            {:else}
+              Processing document... ({Math.round(uploadProgress)}%)
+            {/if}
           {:else if uploadStatus === 'completed'}
-            Upload completed ✅
+            Processing completed ✅
           {:else if uploadStatus === 'error'}
-            Upload failed ❌
+            {#if processingError}
+              Error: {processingError} ❌
+            {:else}
+              Upload failed ❌
+            {/if}
           {/if}
         </div>
       </div>
@@ -429,6 +505,23 @@
           Upload Document
         {/if}
       </button>
+      
+      <!-- Retry button for failed processing -->
+      {#if uploadStatus === 'error' && evidenceActor && processingError}
+        <button
+          type="button"
+          class="retry-button"
+          onclick={() => {
+            if (evidenceActor) {
+              processingError = null;
+              uploadStatus = 'processing';
+              evidenceActor.send({ type: 'RETRY' });
+            }
+          }}
+        >
+          Retry Processing
+        </button>
+      {/if}
     </div>
 
     <!-- Messages -->
@@ -638,6 +731,22 @@
   .submit-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  .retry-button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--warning-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .retry-button:hover {
+    background: var(--warning-color-dark);
   }
 
   .error-message {

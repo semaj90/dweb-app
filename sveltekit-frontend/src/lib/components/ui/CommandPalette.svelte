@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { User } from '$lib/types';
   import { onMount, createEventDispatcher } from 'svelte';
   import { Search, File, Briefcase, User as UserIcon, Settings, Command } from "lucide-svelte";
@@ -317,3 +319,5 @@
     opacity: 0.4;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

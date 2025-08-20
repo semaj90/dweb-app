@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 // Slider Component Barrel Export
 import { Slider } from "bits-ui";
 
@@ -10,7 +11,7 @@ export const SliderTick = Slider.Tick;
 export { Slider };
 
 // TypeScript interface for Slider props
-export interface SliderProps {
+export interface SliderProps extends CommonProps {
   value?: number[];
   min?: number;
   max?: number;

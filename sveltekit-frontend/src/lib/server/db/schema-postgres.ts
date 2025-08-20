@@ -1,3 +1,9 @@
+// Alias schema for Drizzle config & legacy imports.
+// drizzle.config.ts points here; we re-export the enhanced schema to avoid
+// widespread refactors while keeping a single authoritative definition.
+// If you add new tables, prefer editing schema-postgres-enhanced.ts.
+// This wrapper ensures tools expecting schema-postgres.ts continue to work.
+export * from './schema-postgres-enhanced';
 // @ts-nocheck
 // PostgreSQL schema for production
 import { relations } from "drizzle-orm";

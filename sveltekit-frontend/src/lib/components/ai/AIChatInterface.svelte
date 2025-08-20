@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { onMount, createEventDispatcher, tick } from 'svelte';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut, elasticOut } from 'svelte/easing';
@@ -636,3 +638,8 @@ How can I assist you with your legal needs today?`);
 		animation: scan 3s linear infinite;
 	}
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

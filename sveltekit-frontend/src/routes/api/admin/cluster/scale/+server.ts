@@ -5,8 +5,7 @@ import cluster from "node:cluster";
  * Handles dynamic scaling of worker processes
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

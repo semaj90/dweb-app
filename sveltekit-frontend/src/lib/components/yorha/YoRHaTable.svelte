@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   interface TableColumn {
     key: string;
     title: string;
@@ -40,7 +42,7 @@
     pagination = false,
     pageSize = 10,
     totalItems = 0,
-    class = '',
+    class: className = '',
     dense = false,
     hover = true,
     striped = true,
@@ -387,7 +389,7 @@
 
   .yorha-search-input {
     @apply w-full bg-black border border-amber-400 text-amber-400 px-3 py-2 pr-10 font-mono text-sm;
-    @apply focus:outline-none focus:border-amber-300 focus:shadow-0 focus:shadow-amber-400;
+    @apply focus:outline-none focus:border-amber-300 focus:shadow-none;
   }
 
   .yorha-search-icon {

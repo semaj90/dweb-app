@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { browser } from '$app/environment';
   import { autoTaggingMachine } from '$lib/stores/autoTaggingMachine';
   import { useMachine } from '@xstate/svelte';
@@ -813,3 +815,5 @@
     background-position: 0 0, 0 0, 0 0, 0 20px, 20px -20px, -20px 0px;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -3,11 +3,8 @@
  * Routes to: ai-enhanced.exe:8096, enhanced-legal-ai.exe:8202, live-agent-enhanced.exe:8200
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-productionServiceClient } from "$lib/services/productionServiceClient";
-// Orphaned content: import { URL
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { productionServiceClient } from "$lib/services/productionServiceClient";
 
 interface AIRequest {
   type: 'summary' | 'legal' | 'live' | 'analysis';

@@ -2,16 +2,10 @@
 // Uses Neo4j, PostgreSQL/pgvector, XState, Redis, Ollama with gemma3:legal-latest
 // TypeScript-safe with Drizzle ORM and MCP Context7 best practices
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-aiOrchestrator } from "$lib/server/ai/enhanced-ai-synthesis-orchestrator";
-// Orphaned content: import { logger
-import {
-monitoringService } from "$lib/server/ai/monitoring-service";
-// Orphaned content: import { cachingLayer
-stream from "stream";
-// Orphaned content: import {
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { aiOrchestrator } from "$lib/server/ai/enhanced-ai-synthesis-orchestrator";
+import { monitoringService } from "$lib/server/ai/monitoring-service";
+import stream from "stream";
 
 // SSE stream storage for real-time updates
 const activeStreams = new Map<string, any>();

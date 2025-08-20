@@ -1,5 +1,5 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 
 // Expose in-process NATS client metrics (mock or real) as JSON
 export const GET: RequestHandler = async () => {

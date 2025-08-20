@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { browser } from "$app/environment";
   import { Button } from "$lib/components/ui/button";
   import {
@@ -12,7 +14,7 @@
     SkipForward,
     Target,
     X,
-  } from "lucide-svelte";
+  } from 'lucide-svelte';
   
   
   interface OnboardingStep {
@@ -30,7 +32,7 @@
     video?: string;
   }
 
-  interface Props {
+  interface Props extends CommonProps {
     open?: boolean;
     currentStep?: number;
     steps?: OnboardingStep[];
@@ -291,7 +293,7 @@
             <Button
               variant="ghost"
               size="sm"
-              on:click={() => toggleAutoProgress()}
+              onclick={() => toggleAutoProgress()}
               class="w-4 h-4"
               aria-label={isPlaying
                 ? "Pause auto-progress"
@@ -308,7 +310,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => closeOnboarding()}
+            onclick={() => closeOnboarding()}
             aria-label="Close onboarding"
           >
             <X class="w-4 h-4" />
@@ -377,7 +379,7 @@
       <div class="w-4 h-4">
         <div class="w-4 h-4">
           {#if allowSkip}
-            <Button variant="ghost" size="sm" on:click={() => skipOnboarding()}>
+            <Button variant="ghost" size="sm" onclick={() => skipOnboarding()}>
               <SkipForward class="w-4 h-4" />
               Skip Tour
             </Button>
@@ -410,14 +412,14 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => previousStep()}
+            onclick={() => previousStep()}
             disabled={currentStep === 0}
           >
             <ArrowLeft class="w-4 h-4" />
             Back
           </Button>
 
-          <Button on:click={() => nextStep()} size="sm">
+          <Button onclick={() => nextStep()} size="sm">
             {#if currentStep === steps.length - 1}
               <Check class="w-4 h-4" />
               Complete

@@ -1,6 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { useChatActor, chatActions } from '$lib/stores/chatStore';
   import { Card } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -56,7 +58,7 @@ https://svelte.dev/e/js_parse_error -->
         {/if}
       </p>
     </div>
-    <Button variant="outline" size="sm" on:click={handleClear}>
+    <Button variant="outline" size="sm" onclick={handleClear}>
       Clear Chat
     </Button>
   </div>
@@ -166,3 +168,8 @@ https://svelte.dev/e/js_parse_error -->
     }
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

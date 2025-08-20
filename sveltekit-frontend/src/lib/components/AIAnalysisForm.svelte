@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -26,7 +28,7 @@
     content?: string;
   }
 
-  interface Props {
+  interface Props extends CommonProps {
     formData?: FormData;
     evidenceData?: EvidenceData;
   }
@@ -114,7 +116,7 @@
   
   <div class="mb-6">
     <Button
-      on:click={startAnalysis}
+      onclick={startAnalysis}
       disabled={isAnalyzing}
       class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
     >

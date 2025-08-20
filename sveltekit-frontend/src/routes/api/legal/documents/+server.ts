@@ -1,11 +1,10 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Legal Documents API - SvelteKit Server Endpoint
 import { db } from "$lib/server/db/index";
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { and, desc, eq, like, or
-import {
-URL } from "url";
+import { URL } from "url";
 
 // Import with fallback for different schema files
 let schema: any = {};

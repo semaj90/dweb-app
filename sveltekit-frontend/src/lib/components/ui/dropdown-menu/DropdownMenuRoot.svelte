@@ -1,6 +1,8 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createDropdownMenu } from '@melt-ui/svelte';
-  interface Props {
+  interface Props extends CommonProps {
     children?: import('svelte').Snippet<[any]>;
   }
 

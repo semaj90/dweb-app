@@ -1,5 +1,7 @@
 <!-- Real-time Evidence Grid with WebSocket and local sync -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button/index.js";
   import { evidenceStore, type Evidence } from "$lib/stores/evidenceStore";
   import { lokiEvidenceService } from "$lib/utils/loki-evidence";
@@ -349,7 +351,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => evidenceStore.undo()}
+      onclick={() => evidenceStore.undo()}
       disabled={!evidenceStore.canUndo()}
       title="Undo (Ctrl+Z)"
     >
@@ -359,7 +361,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => evidenceStore.redo()}
+      onclick={() => evidenceStore.redo()}
       disabled={!evidenceStore.canRedo()}
       title="Redo (Ctrl+Y)"
     >
@@ -369,7 +371,7 @@
     <Button
       variant="ghost"
       size="sm"
-      on:click={() => syncWithServer()}
+      onclick={() => syncWithServer()}
       disabled={isLoading}
       title="Sync with server"
     >
@@ -447,7 +449,7 @@
         <Button
           variant="ghost"
           size="sm"
-          on:click={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
+          onclick={() => (sortOrder = sortOrder === "asc" ? "desc" : "asc")}
         >
           {#if sortOrder === "asc"}
             <SortAsc class="mx-auto px-4 max-w-7xl" />
@@ -464,7 +466,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
+        onclick={() => (viewMode = viewMode === "grid" ? "list" : "grid")}
       >
         {#if viewMode === "grid"}
           <List class="mx-auto px-4 max-w-7xl" />
@@ -475,14 +477,14 @@
 
       <!-- Selection Actions -->
       {#if selectedEvidence.size > 0}
-        <Button variant="outline" size="sm" on:click={() => clearSelection()}>
+        <Button variant="outline" size="sm" onclick={() => clearSelection()}>
           Clear ({selectedEvidence.size})
         </Button>
 
         <Button
           variant="danger"
           size="sm"
-          on:click={() => {
+          onclick={() => {
             if (confirm(`Delete ${selectedEvidence.size} selected items?`)) {
               selectedEvidence.forEach((id) => deleteEvidence(id));
             }
@@ -492,13 +494,13 @@
           Delete
         </Button>
       {:else}
-        <Button variant="ghost" size="sm" on:click={() => selectAll()}>
+        <Button variant="ghost" size="sm" onclick={() => selectAll()}>
           Select All
         </Button>
       {/if}
 
       <!-- Add Evidence -->
-      <Button on:click={() => createEvidence()}>
+      <Button onclick={() => createEvidence()}>
         <span class="mx-auto px-4 max-w-7xl">+</span>
         Add Evidence
       </Button>
@@ -529,7 +531,7 @@
             ? "No evidence matches your current filters."
             : "No evidence has been added yet."}
         </p>
-        <Button on:click={() => createEvidence()}>Add First Evidence</Button>
+        <Button onclick={() => createEvidence()}>Add First Evidence</Button>
       </div>
     </div>
   {:else}
@@ -569,7 +571,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => (editingEvidence = item.id)}
+                  onclick={() => (editingEvidence = item.id)}
                 >
                   <Eye class="mx-auto px-4 max-w-7xl" />
                 </Button>
@@ -577,7 +579,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => deleteEvidence(item.id)}
+                  onclick={() => deleteEvidence(item.id)}
                 >
                   <Trash2 class="mx-auto px-4 max-w-7xl" />
                 </Button>
@@ -601,7 +603,7 @@
                 <div class="mx-auto px-4 max-w-7xl">
                   <Button
                     size="sm"
-                    on:click={() =>
+                    onclick={() =>
                       updateEvidence(item.id, {
                         title: item.title,
                         description: item.description,
@@ -612,7 +614,7 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => (editingEvidence = null)}
+                    onclick={() => (editingEvidence = null)}
                   >
                     Cancel
                   </Button>
@@ -754,14 +756,14 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => (editingEvidence = item.id)}
+                      onclick={() => (editingEvidence = item.id)}
                     >
                       <Eye class="mx-auto px-4 max-w-7xl" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => deleteEvidence(item.id)}
+                      onclick={() => deleteEvidence(item.id)}
                     >
                       <Trash2 class="mx-auto px-4 max-w-7xl" />
                     </Button>
@@ -789,7 +791,7 @@
             variant="outline"
             size="sm"
             disabled={currentPage === 0}
-            on:click={() => currentPage--}
+            onclick={() => currentPage--}
           >
             Previous
           </Button>
@@ -829,3 +831,5 @@
     overflow: hidden;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

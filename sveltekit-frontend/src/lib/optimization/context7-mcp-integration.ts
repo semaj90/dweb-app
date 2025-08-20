@@ -5,8 +5,8 @@
  */
 
 import { EventEmitter } from "events";
-import type { OptimizationSuite, PerformanceMetrics }, {
-createOptimizationSuite } from "./index.js";
+import type { OptimizationSuite, PerformanceMetrics } from "./index.js";
+import { createOptimizationSuite } from "./index.js";
 
 // === Context7 MCP Tool Integration Types ===
 interface Context7MCPRequest {

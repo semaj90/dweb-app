@@ -5,14 +5,11 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export default defineConfig({
-  schema: [
-    './src/lib/database/schema/*.ts',
-    './sveltekit-frontend/src/lib/server/db/schema.ts'
-  ],
+  schema: './src/schema.ts',
   out: './database/migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL || 'postgresql://legalai:password@localhost:5432/legalai_db',
+    connectionString: process.env.DATABASE_URL || 'postgresql://legal_admin:123456@localhost:5432/legal_ai_db',
   },
   verbose: true,
   strict: true,

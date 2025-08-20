@@ -269,18 +269,18 @@
     <!-- Controls -->
     <div class="flex gap-4 mb-8 justify-center">
       <Button
-        on:click={startMonitoring}
+        onclick={startMonitoring}
         disabled={!systemInitialized || isMonitoring}
         class="bg-green-600 hover:bg-green-700">
         Start Monitoring
       </Button>
 
-      <Button on:click={stopMonitoring} disabled={!isMonitoring} class="bg-red-600 hover:bg-red-700">
+      <Button onclick={stopMonitoring} disabled={!isMonitoring} class="bg-red-600 hover:bg-red-700">
         Stop Monitoring
       </Button>
 
       <Button
-        on:click={addTestError}
+        onclick={addTestError}
         disabled={!systemInitialized}
         class="bg-orange-600 hover:bg-orange-700">
         Add Test Error

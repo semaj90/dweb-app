@@ -1,12 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-vectorSearchService } from "$lib/services/vector-search";
-// Orphaned content: import { db
-import {
-legalDocuments as documents } from "$lib/server/db/schema-postgres";
-// Orphaned content: import { eq
+import { vectorSearchService } from "$lib/services/vector-search";
+import { legalDocuments as documents } from "$lib/server/db/schema-postgres";
 
 // Real-time document indexing endpoint
 export const POST: RequestHandler = async ({ request }) => {

@@ -1,5 +1,7 @@
 <!-- Advanced Rich Text Editor with Google Slides/Photoshop-like Features -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Editor } from "@tiptap/core";
   import Color from "@tiptap/extension-color";
   import FontFamily from "@tiptap/extension-font-family";
@@ -968,3 +970,5 @@
     border-radius: 0.5rem;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

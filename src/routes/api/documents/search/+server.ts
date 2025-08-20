@@ -1,606 +1,451 @@
-// Documents Search API
-// Provides comprehensive document search capabilities
-
 import { json } from "@sveltejs/kit";
-import { db } from "$lib/database/postgres.js";
-import { serializeEmbedding } from "$lib/utils/embeddings.js"; // future use
-import {
-  legalDocuments,
-  searchSessions,
-  embeddings,
-} from "$lib/database/schema/legal-documents.js";
 import type { RequestHandler } from "./$types";
-import type { SearchParams, SearchResult } from "$lib/types/search-types";
+import { db } from "$lib/database/postgres-enhanced.js";
+import { legalDocuments } from "$lib/database/schema/legal-documents.js";
+import { vectorSearchService, embeddingUtils } from "$lib/database/vector-operations.js";
+import { sql, desc, asc, and, or, eq, ilike, inArray, count } from "drizzle-orm";
+import { z } from 'zod';
 
+// Search parameters schema
+const searchParamsSchema = z.object({
+  query: z.string().min(1).max(1000),
+  searchType: z.enum(['semantic', 'text', 'hybrid']).default('hybrid'),
+  documentTypes: z.array(z.enum(['contract', 'motion', 'evidence', 'correspondence', 'brief', 'regulation', 'case_law'])).optional(),
+  jurisdictions: z.array(z.string()).optional(),
+  practiceAreas: z.array(z.enum(['corporate', 'litigation', 'intellectual_property', 'employment', 'real_estate', 'criminal', 'family', 'tax', 'immigration', 'environmental'])).optional(),
+  isConfidential: z.boolean().optional(),
+  dateRange: z.object({
+    start: z.string().pipe(z.coerce.date()),
+    end: z.string().pipe(z.coerce.date())
+  }).optional(),
+  limit: z.number().min(1).max(100).default(20),
+  offset: z.number().min(0).default(0),
+  threshold: z.number().min(0).max(1).default(0.7),
+  includeContent: z.boolean().default(false),
+  includeAnalysis: z.boolean().default(false),
+  sortBy: z.enum(['relevance', 'date', 'title', 'size']).default('relevance'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+});
+
+/**
+ * Document Search API Endpoint
+ * Supports semantic search, text search, and hybrid search with advanced filtering
+ */
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const searchParams: SearchParams = await request.json();
+    const body = await request.json();
+    const searchParams = searchParamsSchema.parse(body);
 
     const {
       query,
-      searchType = "semantic",
-      limit = 10,
-      offset = 0,
-      filters = {},
+      searchType,
+      documentTypes,
+      jurisdictions,
+      practiceAreas,
+      isConfidential,
+      dateRange,
+      limit,
+      offset,
+      threshold,
+      includeContent,
+      includeAnalysis,
+      sortBy,
+      sortOrder
     } = searchParams;
 
-    if (!query) {
-      return json({ error: "Query is required" }, { status: 400 });
-    }
+    let results: any[] = [];
+    let totalCount = 0;
 
-    const startTime = Date.now();
+    if (searchType === 'semantic' || searchType === 'hybrid') {
+      // Generate embedding for the search query
+      const queryEmbedding = await generateSearchEmbedding(query);
 
-    // Generate query embedding for semantic search
-    let queryEmbedding: number[] = [];
-    if (searchType === "semantic" || searchType === "hybrid") {
-      queryEmbedding = await generateQueryEmbedding(query);
-    }
+      // Prepare filter options
+      const filterOptions = {
+        limit: limit + offset, // Get more for pagination
+        threshold,
+        filter: {
+          documentType: documentTypes,
+          jurisdiction: jurisdictions,
+          practiceArea: practiceAreas,
+          isConfidential,
+          dateRange
+        }
+      };
 
-    // Perform search based on type
-    let searchResults: SearchResult[] = [];
-
-    switch (searchType) {
-      case "semantic":
-        searchResults = await performSemanticSearch(
-          query,
+      if (searchType === 'semantic') {
+        // Pure semantic search
+        const semanticResults = await vectorSearchService.searchDocuments(queryEmbedding, filterOptions);
+        results = semanticResults.slice(offset, offset + limit);
+        totalCount = semanticResults.length;
+      } else {
+        // Hybrid search (semantic + text)
+        const titleEmbedding = await generateSearchEmbedding(query.split(' ').slice(0, 10).join(' ')); // Shorter query for title
+        const hybridResults = await vectorSearchService.hybridSearch(
           queryEmbedding,
-          filters,
-          limit,
-          offset
+          titleEmbedding,
+          { ...filterOptions, contentWeight: 0.7, titleWeight: 0.3 }
         );
-        break;
-      case "full-text":
-        searchResults = await performFullTextSearch(
-          query,
-          filters,
-          limit,
-          offset
-        );
-        break;
-      case "hybrid":
-        searchResults = await performHybridSearch(
-          query,
-          queryEmbedding,
-          filters,
-          limit,
-          offset
-        );
-        break;
-      default:
-        throw new Error(`Unknown search type: ${searchType}`);
+        results = hybridResults.slice(offset, offset + limit);
+        totalCount = hybridResults.length;
+      }
+
+      // Convert to standard format
+      results = results.map(result => ({
+        ...result.item,
+        similarity: result.similarity,
+        rank: result.rank
+      }));
+
+    } else {
+      // Text-based search using PostgreSQL full-text search
+      const textResults = await performTextSearch(searchParams);
+      results = textResults.documents;
+      totalCount = textResults.total;
     }
 
-    const processingTime = Date.now() - startTime;
+    // Apply sorting if not using relevance (semantic results are already sorted by relevance)
+    if (sortBy !== 'relevance') {
+      results = applySorting(results, sortBy, sortOrder);
+    }
 
-    // Save search session
-    await db.insert(searchSessions).values({
-      query: searchParams.query,
-      searchType: searchParams.searchType || "semantic",
-      queryEmbedding: JSON.stringify(queryEmbedding) as any,
-      results: searchResults as any,
-      resultCount: searchResults.length,
-    } as any);
+    // Format response
+    const formattedResults = results.map(doc => ({
+      id: doc.id,
+      title: doc.title,
+      documentType: doc.documentType,
+      jurisdiction: doc.jurisdiction,
+      practiceArea: doc.practiceArea,
+      fileName: doc.fileName,
+      fileSize: doc.fileSize,
+      mimeType: doc.mimeType,
+      processingStatus: doc.processingStatus,
+      isConfidential: doc.isConfidential,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+      similarity: doc.similarity || null,
+      rank: doc.rank || null,
+      // Conditionally include content and analysis
+      content: includeContent ? doc.content : null,
+      analysisResults: includeAnalysis ? doc.analysisResults : null,
+      // Add snippet for text search
+      snippet: searchType !== 'semantic' ? generateSnippet(doc.content, query) : null,
+    }));
 
     return json({
       success: true,
-      results: searchResults,
-      metadata: {
+      results: formattedResults,
+      pagination: {
+        total: totalCount,
+        limit,
+        offset,
+        hasMore: offset + limit < totalCount,
+        page: Math.floor(offset / limit) + 1,
+        totalPages: Math.ceil(totalCount / limit)
+      },
+      searchMetadata: {
         query,
         searchType,
-        totalResults: searchResults.length,
-        offset,
-        limit,
-        processingTime,
-        filters: filters,
-      },
-      pagination: {
-        hasMore: searchResults.length === limit,
-        nextOffset: offset + limit,
-      },
+        threshold: searchType === 'text' ? null : threshold,
+        filters: {
+          documentTypes,
+          jurisdictions,
+          practiceAreas,
+          isConfidential,
+          dateRange
+        },
+        executionTime: Date.now() - Date.now(), // Would track actual execution time
+      }
     });
+
   } catch (error: any) {
-    console.error("Document search error:", error);
-    return json(
-      { error: "Search failed", details: error.message },
-      { status: 500 }
-    );
+    console.error("Search error:", error);
+
+    if (error instanceof z.ZodError) {
+      return json({
+        success: false,
+        error: "Invalid search parameters",
+        details: error.errors,
+      }, { status: 400 });
+    }
+
+    return json({
+      success: false,
+      error: error?.message || "Search failed",
+      details: process.env.NODE_ENV === "development" ? error : undefined,
+    }, { status: 500 });
   }
 };
 
+/**
+ * Get search suggestions and autocomplete
+ */
 export const GET: RequestHandler = async ({ url }) => {
   try {
-    const sessionId = url.searchParams.get("sessionId");
-    const recent = url.searchParams.get("recent");
-    const limit = parseInt(url.searchParams.get("limit") || "10");
+    const query = url.searchParams.get("q");
+    const type = url.searchParams.get("type") || "suggestions";
 
-    if (sessionId) {
-      // Get specific search session
-      const session = await db.query.searchSessions.findFirst({
-        where: (sessions, { eq }) => eq(sessions.id, Number(sessionId)),
-      });
-
-      if (!session) {
-        return json({ error: "Search session not found" }, { status: 404 });
-      }
-
+    if (!query || query.length < 2) {
       return json({
-        session: {
-          id: session.id,
-          query: session.query,
-          searchType: session.searchType,
-          resultCount: session.resultCount,
-          results: session.results,
-          createdAt: session.createdAt,
-        },
+        success: true,
+        suggestions: [],
+        message: "Query too short for suggestions"
       });
     }
 
-    if (recent === "true") {
-      // Get recent search sessions
-      const recentSessions = await db
+    if (type === "suggestions") {
+      // Get title suggestions based on partial text match
+      const suggestions = await db
         .select({
-          id: searchSessions.id,
-          query: searchSessions.query,
-          searchType: searchSessions.searchType,
-          resultCount: searchSessions.resultCount,
-          createdAt: searchSessions.createdAt,
+          id: legalDocuments.id,
+          title: legalDocuments.title,
+          documentType: legalDocuments.documentType
         })
-        .from(searchSessions)
-        .orderBy((session) => session.createdAt)
-        .limit(limit);
+        .from(legalDocuments)
+        .where(
+          and(
+            ilike(legalDocuments.title, `%${query}%`),
+            eq(legalDocuments.processingStatus, 'completed')
+          )
+        )
+        .limit(10)
+        .orderBy(desc(legalDocuments.updatedAt));
 
       return json({
-        recentSessions,
-        count: recentSessions.length,
+        success: true,
+        suggestions: suggestions.map(s => ({
+          id: s.id,
+          title: s.title,
+          type: s.documentType
+        }))
       });
+
+    } else if (type === "filters") {
+      // Get available filter values
+      const filters = await getFilterOptions();
+      
+      return json({
+        success: true,
+        filters
+      });
+
+    } else {
+      return json({
+        success: false,
+        error: "Invalid suggestion type"
+      }, { status: 400 });
     }
 
-    // Get search statistics
-    const stats = await getSearchStatistics();
-    return json(stats);
   } catch (error: any) {
-    console.error("Search retrieval error:", error);
-    return json(
-      { error: "Failed to retrieve search data", details: error.message },
-      { status: 500 }
-    );
+    console.error("Search suggestions error:", error);
+
+    return json({
+      success: false,
+      error: "Failed to get search suggestions",
+    }, { status: 500 });
   }
 };
 
-// Search implementation functions
+/**
+ * Perform text-based search using PostgreSQL full-text search
+ */
+async function performTextSearch(params: z.infer<typeof searchParamsSchema>) {
+  const {
+    query,
+    documentTypes,
+    jurisdictions,
+    practiceAreas,
+    isConfidential,
+    dateRange,
+    limit,
+    offset,
+    includeContent
+  } = params;
 
-async function performSemanticSearch(
-  query: string,
-  queryEmbedding: number[],
-  filters: any,
-  limit: number,
-  offset: number
-): Promise<SearchResult[]> {
-  try {
-    // In a real implementation, this would use vector similarity search
-    // For now, we'll simulate with a basic document search
-
-    let dbQuery = db
-      .select({
-        id: legalDocuments.id,
-        title: legalDocuments.title,
-        content: legalDocuments.content,
-        documentType: legalDocuments.documentType,
-        jurisdiction: legalDocuments.jurisdiction,
-        practiceArea: legalDocuments.practiceArea,
-        createdAt: legalDocuments.createdAt,
-        updatedAt: legalDocuments.updatedAt,
-      })
-      .from(legalDocuments);
-
-    // Apply filters
-    dbQuery = applyFilters(dbQuery, filters);
-
-    const documents = await dbQuery.limit(limit).offset(offset);
-
-    return documents.map((doc, index) => ({
-      score: calculateSemanticScore(query, queryEmbedding, doc),
-      rank: offset + index + 1,
-      id: String(doc.id),
-      title: doc.title,
-      content: doc.content,
-      excerpt: extractExcerpt(query, doc.content),
-      type: doc.documentType,
-      metadata: {
-        jurisdiction: doc.jurisdiction,
-        practiceArea: doc.practiceArea,
-      },
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-      document: {
-        id: String(doc.id),
-        title: doc.title,
-        content: doc.content,
-        documentType: doc.documentType,
-        jurisdiction: doc.jurisdiction,
-        practiceArea: doc.practiceArea || "general",
-        processingStatus: "completed",
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt,
-      },
-    }));
-  } catch (error: any) {
-    console.error("Semantic search error:", error);
-    return [];
-  }
-}
-
-async function performFullTextSearch(
-  query: string,
-  filters: any,
-  limit: number,
-  offset: number
-): Promise<SearchResult[]> {
-  try {
-    let dbQuery = db
-      .select({
-        id: legalDocuments.id,
-        title: legalDocuments.title,
-        content: legalDocuments.content,
-        documentType: legalDocuments.documentType,
-        jurisdiction: legalDocuments.jurisdiction,
-        practiceArea: legalDocuments.practiceArea,
-        createdAt: legalDocuments.createdAt,
-        updatedAt: legalDocuments.updatedAt,
-      })
-      .from(legalDocuments);
-
-    // Apply text search filter
-    const queryTerms = query.toLowerCase().split(/\s+/);
-    // TODO: Implement proper full-text search; currently not supported via JS predicate
-
-    // Apply additional filters
-    dbQuery = applyFilters(dbQuery, filters);
-
-    const documents = await dbQuery.limit(limit).offset(offset);
-
-    return documents.map((doc, index) => ({
-      score: calculateTextScore(query, doc),
-      rank: offset + index + 1,
-      id: String(doc.id),
-      title: doc.title,
-      content: doc.content,
-      excerpt: extractExcerpt(query, doc.content),
-      type: doc.documentType,
-      metadata: {
-        jurisdiction: doc.jurisdiction,
-        practiceArea: doc.practiceArea,
-      },
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-      document: {
-        id: String(doc.id),
-        title: doc.title,
-        content: doc.content,
-        documentType: doc.documentType,
-        jurisdiction: doc.jurisdiction,
-        practiceArea: doc.practiceArea || "general",
-        processingStatus: "completed",
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt,
-      },
-    }));
-  } catch (error: any) {
-    console.error("Full-text search error:", error);
-    return [];
-  }
-}
-
-async function performHybridSearch(
-  query: string,
-  queryEmbedding: number[],
-  filters: any,
-  limit: number,
-  offset: number
-): Promise<SearchResult[]> {
-  try {
-    // Combine semantic and full-text search results
-    const semanticResults = await performSemanticSearch(
-      query,
-      queryEmbedding,
-      filters,
-      limit,
-      offset
-    );
-    const textResults = await performFullTextSearch(
-      query,
-      filters,
-      limit,
-      offset
-    );
-
-    // Merge and deduplicate results
-    const combinedResults = new Map<string, SearchResult>();
-
-    // Add semantic results
-    semanticResults.forEach((result) => {
-      combinedResults.set(result.id, {
-        ...result,
-        score: result.score * 0.6, // Weight semantic score
-      });
-    });
-
-    // Add or merge text results
-    textResults.forEach((result) => {
-      const existing = combinedResults.get(result.id);
-      if (existing) {
-        // Combine scores
-        existing.score = existing.score + result.score * 0.4;
-      } else {
-        combinedResults.set(result.id, {
-          ...result,
-          score: result.score * 0.4, // Weight text score
-        });
-      }
-    });
-
-    // Sort by combined score and re-rank
-    const finalResults = Array.from(combinedResults.values())
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit)
-      .map((result, index) => ({
-        ...result,
-        rank: index + 1,
-      }));
-
-    return finalResults;
-  } catch (error: any) {
-    console.error("Hybrid search error:", error);
-    return [];
-  }
-}
-
-// Helper functions
-
-function applyFilters(query: any, filters: any): any {
-  if (filters.documentType) {
-    query = query.where(
-      (doc: any) => doc.documentType === filters.documentType
-    );
-  }
-
-  if (filters.jurisdiction) {
-    query = query.where(
-      (doc: any) => doc.jurisdiction === filters.jurisdiction
-    );
-  }
-
-  if (filters.practiceArea) {
-    query = query.where(
-      (doc: any) => doc.practiceArea === filters.practiceArea
-    );
-  }
-
-  if (filters.dateRange) {
-    if (filters.dateRange.start) {
-      query = query.where(
-        (doc: any) => doc.createdAt >= new Date(filters.dateRange.start)
-      );
-    }
-    if (filters.dateRange.end) {
-      query = query.where(
-        (doc: any) => doc.createdAt <= new Date(filters.dateRange.end)
-      );
-    }
-  }
-
-  return query;
-}
-
-async function generateQueryEmbedding(query: string): Promise<number[]> {
-  try {
-    const response = await fetch("/api/ai/embeddings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: query }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return data.embedding;
-    }
-  } catch (error) {
-    console.warn("Failed to generate query embedding, using mock");
-  }
-
-  // Return mock embedding
-  return Array.from({ length: 384 }, () => Math.random() - 0.5);
-}
-
-function calculateSemanticScore(
-  query: string,
-  queryEmbedding: number[],
-  document: any
-): number {
-  // In a real implementation, this would calculate cosine similarity
-  // between query embedding and document embedding
-
-  // For now, use a combination of text matching and mock semantic similarity
-  const textScore = calculateTextScore(query, document);
-  const mockSemanticScore = Math.random() * 0.5 + 0.3; // 0.3 to 0.8
-
-  return textScore * 0.4 + mockSemanticScore * 0.6;
-}
-
-function calculateTextScore(query: string, document: any): number {
-  const queryTerms = query.toLowerCase().split(/\s+/);
-  const docText = (document.title + " " + document.content).toLowerCase();
-
-  let matches = 0;
-  let totalOccurrences = 0;
-
-  for (const term of queryTerms) {
-    const occurrences = (docText.match(new RegExp(term, "g")) || []).length;
-    if (occurrences > 0) {
-      matches++;
-      totalOccurrences += occurrences;
-    }
-  }
-
-  const termCoverage = matches / queryTerms.length;
-  const termDensity = Math.min(1.0, totalOccurrences / 100);
-
-  return termCoverage * 0.7 + termDensity * 0.3;
-}
-
-function extractExcerpt(query: string, content: string): string {
-  if (!content) return "";
-
-  const queryTerms = query.toLowerCase().split(/\s+/);
-  const sentences = content.split(/[.!?]+/);
-
-  // Find the sentence with the most query term matches
-  let bestSentence = "";
-  let bestScore = 0;
-
-  for (const sentence of sentences) {
-    const sentenceLower = sentence.toLowerCase();
-    let score = 0;
-
-    for (const term of queryTerms) {
-      if (sentenceLower.includes(term)) {
-        score++;
-      }
-    }
-
-    if (score > bestScore && sentence.trim().length > 20) {
-      bestScore = score;
-      bestSentence = sentence.trim();
-    }
-  }
-
-  if (!bestSentence && sentences.length > 0) {
-    bestSentence = sentences[0].trim();
-  }
-
-  return (
-    bestSentence.substring(0, 300) + (bestSentence.length > 300 ? "..." : "")
+  // Build filter conditions
+  const filterConditions = [];
+  
+  // Add text search condition
+  filterConditions.push(
+    or(
+      sql`to_tsvector('english', ${legalDocuments.content}) @@ plainto_tsquery('english', ${query})`,
+      sql`to_tsvector('english', ${legalDocuments.title}) @@ plainto_tsquery('english', ${query})`
+    )
   );
-}
 
-async function getSearchStatistics(): Promise<any> {
-  try {
-    const totalSessions = await db
-      // TODO: Add proper aggregate counts using sql`count(*)`
-      .from(searchSessions);
-
-    return {
-      totalSearches: totalSessions[0]?.count || 0,
-      popularQueries: [
-        { query: "contract breach", count: 45 },
-        { query: "employment law", count: 38 },
-        { query: "intellectual property", count: 32 },
-      ],
-      averageResultsPerSearch: 12.5,
-      searchTypes: {
-        semantic: 60,
-        fullText: 30,
-        hybrid: 10,
-      },
-    };
-  } catch (error) {
-    console.error("Failed to get search statistics:", error);
-    return {
-      totalSearches: 0,
-      popularQueries: [],
-      averageResultsPerSearch: 0,
-      searchTypes: { semantic: 0, fullText: 0, hybrid: 0 },
-    };
+  // Add other filters
+  if (documentTypes && documentTypes.length > 0) {
+    filterConditions.push(inArray(legalDocuments.documentType, documentTypes));
   }
-}
-
-// Bulk operations endpoint
-export const PUT: RequestHandler = async ({ request }) => {
-  try {
-    const { action, ...params } = await request.json();
-
-    switch (action) {
-      case "reindex_embeddings":
-        // Trigger reindexing of document embeddings
-        const reindexResult = await reindexDocumentEmbeddings(
-          params.documentIds
-        );
-        return json({
-          success: true,
-          message: `Reindexed ${reindexResult.count} documents`,
-          ...reindexResult,
-        });
-
-      case "bulk_search":
-        // Perform multiple searches
-        const { queries } = params;
-        if (!Array.isArray(queries)) {
-          return json({ error: "Queries must be an array" }, { status: 400 });
-        }
-
-        const bulkResults = await Promise.all(
-          queries.map(async (query: string) => {
-            const embedding = await generateQueryEmbedding(query);
-            return {
-              query,
-              results: await performSemanticSearch(query, embedding, {}, 5, 0),
-            };
-          })
-        );
-
-        return json({
-          success: true,
-          bulkResults,
-          totalQueries: queries.length,
-        });
-
-      default:
-        return json(
-          {
-            error: "Unknown action",
-            availableActions: ["reindex_embeddings", "bulk_search"],
-          },
-          { status: 400 }
-        );
-    }
-  } catch (error: any) {
-    console.error("Bulk operation error:", error);
-    return json(
-      { error: "Bulk operation failed", details: error.message },
-      { status: 500 }
+  
+  if (jurisdictions && jurisdictions.length > 0) {
+    filterConditions.push(inArray(legalDocuments.jurisdiction, jurisdictions));
+  }
+  
+  if (practiceAreas && practiceAreas.length > 0) {
+    filterConditions.push(inArray(legalDocuments.practiceArea, practiceAreas));
+  }
+  
+  if (isConfidential !== undefined) {
+    filterConditions.push(eq(legalDocuments.isConfidential, isConfidential));
+  }
+  
+  if (dateRange) {
+    filterConditions.push(
+      and(
+        sql`${legalDocuments.createdAt} >= ${dateRange.start}`,
+        sql`${legalDocuments.createdAt} <= ${dateRange.end}`
+      )
     );
   }
-};
 
-async function reindexDocumentEmbeddings(
-  documentIds?: string[]
-): Promise<{ count: number; updated: string[] }> {
-  try {
-    // This would trigger embedding regeneration for specified documents
-    const updated: string[] = [];
+  // Get total count
+  const [countResult] = await db
+    .select({ count: count() })
+    .from(legalDocuments)
+    .where(and(...filterConditions));
 
-    // Mock implementation
-    if (documentIds && documentIds.length > 0) {
-      for (const docId of documentIds) {
-        // Generate new embeddings for each document
-        await db.insert(embeddings).values({
-          content: `Document ${docId} content`,
-          embedding: JSON.stringify(
-            Array.from({ length: 384 }, () => Math.random() - 0.5)
-          ),
-          metadata: { reindexed: true, timestamp: new Date() },
-          createdAt: new Date(),
-        });
-        updated.push(docId);
-      }
+  // Get documents
+  const documents = await db
+    .select({
+      id: legalDocuments.id,
+      title: legalDocuments.title,
+      content: includeContent ? legalDocuments.content : sql`''`.as('content'),
+      documentType: legalDocuments.documentType,
+      jurisdiction: legalDocuments.jurisdiction,
+      practiceArea: legalDocuments.practiceArea,
+      fileName: legalDocuments.fileName,
+      fileSize: legalDocuments.fileSize,
+      mimeType: legalDocuments.mimeType,
+      processingStatus: legalDocuments.processingStatus,
+      isConfidential: legalDocuments.isConfidential,
+      analysisResults: legalDocuments.analysisResults,
+      createdAt: legalDocuments.createdAt,
+      updatedAt: legalDocuments.updatedAt,
+      // Calculate text search rank
+      rank: sql`ts_rank(to_tsvector('english', ${legalDocuments.content}), plainto_tsquery('english', ${query}))`.as('rank')
+    })
+    .from(legalDocuments)
+    .where(and(...filterConditions))
+    .orderBy(desc(sql`ts_rank(to_tsvector('english', ${legalDocuments.content}), plainto_tsquery('english', ${query}))`))
+    .limit(limit)
+    .offset(offset);
+
+  return {
+    documents,
+    total: countResult.count
+  };
+}
+
+/**
+ * Apply sorting to search results
+ */
+function applySorting(results: any[], sortBy: string, sortOrder: string) {
+  const sortFn = (a: any, b: any) => {
+    let valueA, valueB;
+
+    switch (sortBy) {
+      case 'date':
+        valueA = new Date(a.createdAt).getTime();
+        valueB = new Date(b.createdAt).getTime();
+        break;
+      case 'title':
+        valueA = a.title.toLowerCase();
+        valueB = b.title.toLowerCase();
+        break;
+      case 'size':
+        valueA = a.fileSize || 0;
+        valueB = b.fileSize || 0;
+        break;
+      default:
+        return 0;
     }
 
-    return {
-      count: updated.length,
-      updated,
-    };
-  } catch (error: any) {
-    console.error("Reindexing error:", error);
-    return { count: 0, updated: [] };
+    if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
+    if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  };
+
+  return [...results].sort(sortFn);
+}
+
+/**
+ * Generate a snippet from content around the search query
+ */
+function generateSnippet(content: string, query: string, maxLength: number = 200): string {
+  if (!content) return '';
+
+  const queryWords = query.toLowerCase().split(/\s+/);
+  const contentLower = content.toLowerCase();
+  
+  // Find the first occurrence of any query word
+  let earliestIndex = content.length;
+  for (const word of queryWords) {
+    const index = contentLower.indexOf(word);
+    if (index !== -1 && index < earliestIndex) {
+      earliestIndex = index;
+    }
   }
+
+  if (earliestIndex === content.length) {
+    // No query words found, return beginning of content
+    return content.substring(0, maxLength) + (content.length > maxLength ? '...' : '');
+  }
+
+  // Extract snippet around the found word
+  const start = Math.max(0, earliestIndex - maxLength / 2);
+  const end = Math.min(content.length, start + maxLength);
+  
+  let snippet = content.substring(start, end);
+  
+  if (start > 0) snippet = '...' + snippet;
+  if (end < content.length) snippet = snippet + '...';
+  
+  return snippet;
+}
+
+/**
+ * Get available filter options for the search interface
+ */
+async function getFilterOptions() {
+  const [documentTypes, jurisdictions, practiceAreas] = await Promise.all([
+    // Get distinct document types
+    db
+      .selectDistinct({ value: legalDocuments.documentType })
+      .from(legalDocuments)
+      .where(eq(legalDocuments.processingStatus, 'completed')),
+    
+    // Get distinct jurisdictions
+    db
+      .selectDistinct({ value: legalDocuments.jurisdiction })
+      .from(legalDocuments)
+      .where(eq(legalDocuments.processingStatus, 'completed')),
+    
+    // Get distinct practice areas
+    db
+      .selectDistinct({ value: legalDocuments.practiceArea })
+      .from(legalDocuments)
+      .where(
+        and(
+          eq(legalDocuments.processingStatus, 'completed'),
+          sql`${legalDocuments.practiceArea} IS NOT NULL`
+        )
+      )
+  ]);
+
+  return {
+    documentTypes: documentTypes.map(d => d.value).filter(Boolean),
+    jurisdictions: jurisdictions.map(j => j.value).filter(Boolean),
+    practiceAreas: practiceAreas.map(p => p.value).filter(Boolean)
+  };
+}
+
+/**
+ * Generate search embedding using your embedding service
+ */
+async function generateSearchEmbedding(text: string): Promise<number[]> {
+  // This would integrate with your embedding service (Ollama, OpenAI, etc.)
+  // For now, return a placeholder 384-dimensional vector
+  // In production, this would call your actual embedding service
+  return Array(384).fill(0).map(() => Math.random() - 0.5);
 }

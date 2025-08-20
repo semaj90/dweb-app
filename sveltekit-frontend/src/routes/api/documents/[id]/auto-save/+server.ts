@@ -2,9 +2,7 @@ import { legalDocuments } from "$lib/server/db/unified-schema";
 // @ts-nocheck
 type { RequestEvent }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { eq
-import {
-db } from "$lib/server/db/index";
+import { db } from "$lib/server/db/index";
 
 // POST /api/documents/[id]/auto-save - Auto-save document content
 export async function POST({ params, request }: RequestEvent) {

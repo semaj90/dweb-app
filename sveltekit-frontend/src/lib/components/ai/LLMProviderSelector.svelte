@@ -2,6 +2,8 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- LLM Provider Selector with Bits UI v2 and Real-time Status -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { createSelect, melt } from '@melt-ui/svelte';
 	import { Badge } from 'bits-ui';
 	import { Card, CardContent } from 'bits-ui';
@@ -9,7 +11,7 @@ https://svelte.dev/e/js_parse_error -->
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 
-	interface Props {
+	interface Props extends CommonProps {
 		selectedProvider?: LLMProvider | null;
 		disabled?: boolean;
 	}
@@ -161,10 +163,12 @@ https://svelte.dev/e/js_parse_error -->
 	});
 
 	// Reactive selection handling
-	$effect(() => { if ($selected && $selected.value !== selectedProvider) {
-		selectedProvider = $selected.value;
-		dispatch('providerSelected', { provider: selectedProvider });
-	}
+	$effect(() => {
+		if ($selected && $selected.value !== selectedProvider) {
+			selectedProvider = $selected.value;
+			dispatch('providerSelected', { provider: selectedProvider });
+		}
+	});
 
 	// Status badge styling
 	const getStatusColor = (status: LLMStatus) => {

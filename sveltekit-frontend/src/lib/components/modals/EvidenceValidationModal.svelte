@@ -1,7 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Identifier 'aiEvent' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     open?: boolean;
     evidence?: any;
     aiEvent?: any;
@@ -42,28 +44,34 @@ https://svelte.dev/e/js_parse_error -->
   let showCorrections = false;
 
   // Initialize corrections with current AI analysis
-  $effect(() => { if (evidence && open) {
-    corrections = {
-      summary: evidence.aiSummary || "",
-      tags: evidence.aiTags || [],
-      evidenceType: evidence.evidenceType || "",
-      analysis: evidence.aiAnalysis?.analysis || "",
-    };
-}
+  $effect(() => { 
+    if (evidence && open) {
+      corrections = {
+        summary: evidence.aiSummary || "",
+        tags: evidence.aiTags || [],
+        evidenceType: evidence.evidenceType || "",
+        analysis: evidence.aiAnalysis?.analysis || "",
+      };
+    }
+  });
+
   function handleValidationChoice(choice: "approve" | "reject") {
     validationChoice = choice;
     showCorrections = choice === "reject";
-}
+  }
+
   function addTag() {
     const tagInput = document.getElementById("new-tag") as HTMLInputElement;
     const newTag = tagInput?.value.trim();
     if (newTag && !corrections.tags.includes(newTag)) {
       corrections.tags = [...corrections.tags, newTag];
       tagInput.value = "";
-}}
+    }
+  }
+
   function removeTag(tagToRemove: string) {
     corrections.tags = corrections.tags.filter((tag) => tag !== tagToRemove);
-}
+  }
   async function submitValidation() {
     if (!evidence || !validationChoice) return;
 
@@ -97,7 +105,7 @@ https://svelte.dev/e/js_parse_error -->
       } else {
         console.error("Validation failed:", result.error);
         alert("Failed to submit validation. Please try again.");
-}
+      }
     } catch (error) {
       console.error("Validation submission error:", error);
       alert(
@@ -113,7 +121,7 @@ https://svelte.dev/e/js_parse_error -->
     feedback = "";
     showCorrections = false;
     open = false;
-}
+  }
 </script>
 
 <DialogPrimitive.Root bind:open>
@@ -136,7 +144,7 @@ https://svelte.dev/e/js_parse_error -->
             {...builder}
             variant="ghost"
             size="sm"
-            on:click={() => closeModal()}
+            onclick={() => closeModal()}
           >
             ×
           </Button>
@@ -210,7 +218,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={validationChoice === "approve" ? "default" : "outline"}
                 class="space-y-4"
-                on:click={() => handleValidationChoice("approve")}
+                onclick={() => handleValidationChoice("approve")}
               >
                 <CheckCircle class="space-y-4" />
                 Yes, it's accurate
@@ -219,7 +227,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={validationChoice === "reject" ? "danger" : "outline"}
                 class="space-y-4"
-                on:click={() => handleValidationChoice("reject")}
+                onclick={() => handleValidationChoice("reject")}
               >
                 <XCircle class="space-y-4" />
                 No, needs correction
@@ -268,7 +276,7 @@ https://svelte.dev/e/js_parse_error -->
                   bind:value={corrections.summary}
                   placeholder="Enter the correct summary..."
                   class="space-y-4"
-                  rows={${1"
+                  rows="3"
                 ></textarea>
               </div>
 
@@ -334,7 +342,7 @@ https://svelte.dev/e/js_parse_error -->
                     type="button"
                     variant="secondary"
                     size="sm"
-                    on:click={() => addTag()}
+                    onclick={() => addTag()}
                   >
                     <Tag class="space-y-4" />
                   </Button>
@@ -348,14 +356,14 @@ https://svelte.dev/e/js_parse_error -->
         <div class="space-y-4">
           <Button
             variant="ghost"
-            on:click={() => closeModal()}
+            onclick={() => closeModal()}
             disabled={isSubmitting}
           >
             Cancel
           </Button>
 
           <Button
-            on:click={() => submitValidation()}
+            onclick={() => submitValidation()}
             disabled={!validationChoice || isSubmitting}
             class="space-y-4"
           >

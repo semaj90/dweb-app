@@ -1,9 +1,7 @@
 // Debug endpoint to check and create users
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 
 import { users } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
 
 import { eq } from 'drizzle-orm';
 

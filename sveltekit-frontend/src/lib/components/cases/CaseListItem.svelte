@@ -4,7 +4,9 @@ import type { Case } from '$lib/types';
 
 
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     onclick?: (event?: any) => void;
     onstatusChange?: (event?: any) => void;
   }

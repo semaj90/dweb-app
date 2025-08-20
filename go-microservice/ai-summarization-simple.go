@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // AI Summarization Microservice with go-llama integration
 // Simplified version focusing on local routing and Qdrant integration
 // No Redis dependency, uses local file caching

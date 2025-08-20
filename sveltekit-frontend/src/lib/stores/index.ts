@@ -12,8 +12,23 @@ export { notifications as notificationStore } from "./notification";
 
 // Authentication & User stores  
 export { default as authStore } from "./auth";
+export { authService } from "./auth.svelte";
 export { default as userStore } from "./user";
 export { avatarStore } from "./avatarStore";
+
+// Session Management with XState
+export {
+  sessionManager,
+  isSessionActive,
+  currentUser,
+  sessionPermissions,
+  sessionHealth,
+  sessionAnalytics,
+  securityLevel,
+  hasPermission,
+  requirePermission,
+  recordActivity
+} from "./sessionManager.svelte";
 
 // Data stores
 export { default as casesStore } from "./cases";
@@ -33,6 +48,26 @@ export {
 export { aiHistory as aiHistoryStore } from "./aiHistoryStore";
 export { chatStore } from "./chatStore";
 export { enhancedRAGStore } from "./enhanced-rag-store";
+
+// AI Assistant with Ollama Cluster + Context7
+export {
+  aiAssistantManager,
+  isAIActive as isAIAssistantActive,
+  isProcessing as isAIProcessing,
+  currentResponse,
+  conversationHistory,
+  currentModel,
+  currentTemperature,
+  aiError,
+  clusterHealth,
+  context7Analysis,
+  aiUsage,
+  sendAIMessage,
+  setAIModel,
+  setAITemperature,
+  clearAIConversation,
+  checkAIClusterHealth
+} from "./aiAssistant.svelte";
 
 // Evidence & Document stores
 export {
@@ -57,6 +92,23 @@ export {
   streamingStore,
 } from "./enhancedStateMachines";
 export { aiCommandMachine } from "./ai-command-machine";
+
+// Production XState Machines
+export { 
+  sessionMachine, 
+  sessionServices, 
+  sessionActions 
+} from "../machines/sessionMachine";
+export { 
+  agentShellMachine, 
+  agentShellServices, 
+  agentShellActions 
+} from "../machines/agentShellMachine";
+export { 
+  aiAssistantMachine, 
+  aiAssistantServices, 
+  aiAssistantActions 
+} from "../machines/aiAssistantMachine";
 
 // New XState + Go microservice integration
 export * from "./machines";

@@ -1,14 +1,9 @@
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-db } from "$lib/server/db/drizzle";
-// Orphaned content: import { evidence, cases
-import {
-eq, and, or, ilike, count, desc, asc } from "drizzle-orm";
-// Orphaned content: import type { Evidence
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { getEmbeddingRepository } from '$lib/server/embedding/embedding-repository';
+import { db } from "$lib/server/db/drizzle";
+import { eq, and, or, ilike, count, desc, asc } from "drizzle-orm";
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {
   try {
@@ -18,18 +13,18 @@ export const GET: RequestHandler = async ({ url }) => {
     const page = parseInt(url.searchParams.get('page') || '1');
     const limit = parseInt(url.searchParams.get('limit') || '20');
     const offset = (page - 1) * limit;
-    
+
     // Build where conditions
     const whereConditions = [];
-    
+
     if (caseId) {
       whereConditions.push(eq(evidence.caseId, caseId));
     }
-    
+
     if (type) {
       whereConditions.push(eq(evidence.evidenceType, type));
     }
-    
+
     if (search) {
       whereConditions.push(
         or(
@@ -84,16 +79,16 @@ export const GET: RequestHandler = async ({ url }) => {
     }
 
     const evidenceResults = await evidenceQuery;
-    
+
     // Get total count for pagination
     const totalQuery = db
       .select({ count: count() })
       .from(evidence);
-      
+
     if (whereConditions.length > 0) {
       totalQuery.where(and(...whereConditions));
     }
-    
+
     const [{ count: totalCount }] = await totalQuery;
 
     return json({
@@ -116,7 +111,7 @@ export const GET: RequestHandler = async ({ url }) => {
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const data = await request.json();
-    const { 
+    const {
       caseId,
       criminalId,
       title,
@@ -144,7 +139,7 @@ export const POST: RequestHandler = async ({ request }) => {
       canvasPosition = {},
       uploadedBy
     } = data;
-    
+
     if (!caseId || !title || !evidenceType) {
       return json(
         { error: 'Case ID, title, and evidence type are required' },
@@ -158,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
       .from(cases)
       .where(eq(cases.id, caseId))
       .limit(1);
-      
+
     if (caseExists.length === 0) {
       return json(
         { error: 'Case not found' },
@@ -198,8 +193,27 @@ export const POST: RequestHandler = async ({ request }) => {
         uploadedBy
       })
       .returning();
-    
-    return json(newEvidence, { status: 201 });
+
+    // Optional immediate embedding ingestion if text provided
+    let ingestionJobId: string | undefined;
+    if (description) {
+      try {
+        const repo = getEmbeddingRepository();
+        const jobStatus = await repo.enqueueIngestion({
+          evidenceId: newEvidence.id,
+          caseId: newEvidence.caseId,
+          filename: newEvidence.fileName,
+          mimeType: newEvidence.mimeType,
+          textContent: description,
+          metadata: { evidenceType: newEvidence.evidenceType }
+        });
+        ingestionJobId = jobStatus?.jobId;
+      } catch (e) {
+        console.warn('Failed to enqueue embedding ingestion:', e);
+      }
+    }
+
+    return json({ ...newEvidence, ingestionJobId }, { status: 201 });
   } catch (error) {
     console.error('Error creating evidence:', error);
     return json(

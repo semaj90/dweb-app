@@ -1,5 +1,5 @@
-//go:build loadbalancer
-// +build loadbalancer
+//go:build legacy
+// +build legacy
 
 package main
 

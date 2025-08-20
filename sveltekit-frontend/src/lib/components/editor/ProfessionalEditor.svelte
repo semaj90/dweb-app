@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, createEventDispatcher } from 'svelte';
   import { writable } from 'svelte/store';
   import { Save, Maximize, Minimize, Eye, EyeOff, FileText, Keyboard } from 'lucide-svelte';
@@ -655,3 +657,4 @@
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
 </style>
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

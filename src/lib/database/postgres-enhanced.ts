@@ -4,18 +4,54 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import * as schema from './schema/legal-documents.js';
+import * as schema from './schema/legal-documents.ts';
+import { getSvelte5Docs, mcpContext72GetLibraryDocs } from '../../sveltekit-frontend/src/lib/mcp-context72-get-library-docs';
 
 // Database configuration
-const connectionString = process.env.DATABASE_URL || 
+// Uses postgres-js and drizzle-orm for type-safe PostgreSQL access in SvelteKit 2
+// Compatible with MCP Context7.2 library docs utility
+
+// Example: Get docs for postgres-js and drizzle-orm (for developer reference)
+
+// Optionally fetch docs at runtime for developer tooling
+// (Remove or comment out in production)
+(async () => {
+  try {
+    const drizzleDocs = await mcpContext72GetLibraryDocs('drizzle-orm/postgres-js', 'usage', { format: 'typescript', tokens: 4000 });
+    const postgresJsDocs = await mcpContext72GetLibraryDocs('postgres-js', 'usage', { format: 'typescript', tokens: 4000 });
+    console.log('Drizzle ORM Docs:', drizzleDocs.content.slice(0, 200));
+    console.log('Postgres-js Docs:', postgresJsDocs.content.slice(0, 200));
+  } catch (err) {
+    // Ignore errors in docs fetch
+  }
+})();
+const connectionString = process.env.DATABASE_URL ||
   `postgresql://${process.env.DB_USER || 'postgres'}:${process.env.DB_PASSWORD || 'postgres'}@${process.env.DB_HOST || 'localhost'}:${process.env.DB_PORT || 5432}/${process.env.DB_NAME || 'legal_ai'}`;
 
-// Create postgres client
+// Create postgres client with production-optimized settings
 const queryClient = postgres(connectionString, {
-  max: 20,
-  idle_timeout: 30,
-  connect_timeout: 10,
-  ssl: process.env.NODE_ENV === 'production' ? 'require' : false
+  max: 20,                    // Maximum pool connections
+  idle_timeout: 30,           // Idle timeout in seconds
+  connect_timeout: 10,        // Connect timeout in seconds
+  socket_timeout: 0,          // Disable socket timeout for long-running queries
+  max_lifetime: 60 * 30,      // 30 minutes max connection lifetime
+  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
+  transform: {
+    undefined: null,          // Convert undefined to null
+    column: {
+      from: postgres.camel,   // Convert snake_case to camelCase
+      to: postgres.snake      // Convert camelCase to snake_case
+    }
+  },
+  onnotice: process.env.NODE_ENV === 'development' ? console.log : () => {},
+  debug: process.env.DEBUG_SQL === 'true',
+  // Enable prepared statements for better performance
+  prepare: true,
+  // Connection validation
+  connection: {
+    application_name: 'legal-ai-system',
+    search_path: 'public'
+  }
 });
 
 // Create Drizzle database instance
@@ -25,17 +61,17 @@ export const db = drizzle(queryClient, { schema });
 export { schema };
 
 // Re-export specific tables for easier imports
-export const { 
-  legalDocuments, 
-  contentEmbeddings, 
-  searchSessions, 
-  embeddings 
+export const {
+  legalDocuments,
+  contentEmbeddings,
+  searchSessions,
+  embeddings
 } = schema;
 
 // Database connection management
 class DatabaseManager {
   private connected = false;
-  
+
   async connect(): Promise<boolean> {
     try {
       // Test connection
@@ -84,7 +120,7 @@ class DatabaseManager {
       const start = Date.now();
       await queryClient`SELECT 1`;
       const responseTime = Date.now() - start;
-      
+
       return {
         connected: true,
         responseTime
@@ -143,8 +179,8 @@ export const dbUtils = {
     try {
       const result = await queryClient`
         SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = 'public' 
+          SELECT FROM information_schema.tables
+          WHERE table_schema = 'public'
           AND table_name = ${tableName}
         )
       `;
@@ -187,7 +223,7 @@ export const dbUtils = {
   async createBackup(): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupName = `backup_${timestamp}`;
-    
+
     try {
       // This would typically use pg_dump in a real implementation
       console.log(`Creating backup: ${backupName}`);

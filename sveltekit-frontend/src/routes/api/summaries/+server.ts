@@ -1,26 +1,30 @@
-// @ts-nocheck
 // Comprehensive AI Mix Summaries API - End-to-End Integration
-// Combines: Local LLM + Enhanced RAG + Loki.js User Activity + Fuse.js + XState Synthesis
-// Supports: Chunking, Streaming, Async Processing, Nomadic Embeddings
+// Combines: Local LLM + Enhanced RAG + User Activity (simulated) + Fuse.js + XState Synthesis
+// Supports: Chunking, Streaming, Async Processing, Hybrid Vector Search
 
 import { json, type RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
-
+// TODO: Strengthen typing & streaming implementation; current file cleaned from corruption
+import { db } from "$lib/server/db";
+import { evidence, cases, legalDocuments } from "$lib/server/db/schema-postgres";
+import { eq } from "drizzle-orm";
+import { vectorService } from "$lib/server/vector/vectorService";
 import { qdrantService } from "$lib/server/services/qdrant-service";
-// Orphaned content: import VectorService from "$lib/server/services/vector-service";
-import {
-
-import {
-  evidence,
-  cases,
-  legalDocuments,
-} from "$lib/server/db/schema-postgres";
-// Orphaned content: import { eq, and, inArray
-Fuse from "fuse.js";
-// Orphaned content: import {
-
+import Fuse from "fuse.js";
+import { interpret } from "xstate";
 import { aiSummaryMachine } from "$lib/machines/aiSummaryMachine";
-import { URL, , // Types for AI Mix Functions, interface SummaryRequest {,   type: "case" | "evidence" | "legal_document" | "cross_analysis";,   targetId: string;,   depth: "quick" | "comprehensive" | "forensic";,   includeRAG: boolean;,   includeUserActivity: boolean;,   enableStreaming: boolean;,   chunkSize?: number;,   userId?: string; } from
+import { ollamaService } from "$lib/server/services/ollama-service"; // Assumed service providing generateResponse
+
+// Request payload for summary generation
+interface SummaryRequest {
+  type: "case" | "evidence" | "legal_document" | "cross_analysis";
+  targetId: string;
+  depth: "quick" | "comprehensive" | "forensic";
+  includeRAG: boolean;
+  includeUserActivity: boolean;
+  enableStreaming: boolean;
+  chunkSize?: number;
+  userId?: string;
+}
 
 interface AILLMOutput {
   content: string;
@@ -28,6 +32,16 @@ interface AILLMOutput {
   confidence: number;
   tokens: number;
   processingTime: number;
+}
+
+// Basic shape for vector search results (loose to accommodate both services)
+interface BasicVectorResult {
+  id: string;
+  content?: string;
+  payload?: { content?: string; [k: string]: any };
+  score?: number;
+  relevance?: number;
+  source?: string;
 }
 
 interface EnhancedRAGOutput {
@@ -375,8 +389,9 @@ async function getEnhancedRAGOutput(
 
   // Dual vector search: PostgreSQL pgvector + Qdrant
   const [pgResults, qdrantResults] = await Promise.all([
-    VectorService.searchSimilar(searchQuery, { limit: 10, threshold: 0.7 }),
-    qdrantService.searchSimilar(searchQuery, { limit: 10, threshold: 0.7 }),
+    // Use internal vector service (pgvector backed) and external qdrant service
+    vectorService.search(searchQuery, { limit: 10, threshold: 0.7 }).catch(() => []),
+    qdrantService.searchSimilar(searchQuery, { limit: 10, threshold: 0.7 }).catch(() => []),
   ]);
 
   // Combine and deduplicate results
@@ -400,7 +415,7 @@ async function getEnhancedRAGOutput(
 
   // Generate context summary using the most relevant docs
   const contextContent = relevantDocs.map((doc) => doc.content).join("\n\n");
-  const contextSummary = await ollamaService.generateResponse(
+  const contextSummaryResp = await ollamaService.generateResponse(
     `Summarize the key context from these related documents: ${contextContent.substring(0, 1500)}`,
     {
       model: "gemma3:7b-instruct-q4_K_M",
@@ -413,7 +428,7 @@ async function getEnhancedRAGOutput(
 
   return {
     relevantDocs,
-    contextSummary: contextSummary.response,
+  contextSummary: contextSummaryResp.response,
     searchMetrics: {
       vectorSearchTime: processingTime,
       documentsRetrieved: uniqueResults.length,

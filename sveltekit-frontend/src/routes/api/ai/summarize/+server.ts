@@ -1,5 +1,5 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
 
 // AI Summarization endpoint using local Ollama
 const OLLAMA_BASE_URL = import.meta.env.OLLAMA_BASE_URL || "http://localhost:11434";

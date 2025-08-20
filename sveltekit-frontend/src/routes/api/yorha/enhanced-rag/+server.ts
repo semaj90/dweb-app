@@ -1,12 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
-// Orphaned content: import { db
-import {
-legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
-// Orphaned content: import { sql, like, or
+import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
+import { legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
 
 // YoRHa Enhanced RAG API
 // Integrated AI-powered legal analysis for YoRHa interface

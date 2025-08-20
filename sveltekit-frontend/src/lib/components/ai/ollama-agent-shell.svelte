@@ -2,6 +2,8 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- Ollama Agent Shell - Real-time Terminal Modal with Streaming Support -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { agentShellMachine } from "$lib/machines/agentShellMachine";
   import { cn } from "$lib/utils";
   import { useMachine } from "@xstate/svelte";
@@ -435,3 +437,8 @@ Type /help for commands`,
     font-family: "Cascadia Code", "SF Mono", Consolas, monospace;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

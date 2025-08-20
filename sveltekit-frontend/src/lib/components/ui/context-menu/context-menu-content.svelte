@@ -1,17 +1,19 @@
 <script lang="ts">
-  interface Props {
-    class: string ;
-  }
-  let {
-    class = ''
-  }: Props = $props();
-
-
+import type { CommonProps } from '$lib/types/common-props';
 
   import { getContext, onDestroy, onMount } from 'svelte';
-  import type { Writable } from 'svelte/store'; children,
+  import type { Writable } from 'svelte/store';
+
+  interface Props extends CommonProps {
+    class?: string;
+    children?: any;
+  }
+
+  let { 
+    class: className = '',
+    children
+  }: Props = $props();
   
-    
   const { isOpen, position, close } = getContext<{
     isOpen: Writable<boolean>;
     position: Writable<{ x: number; y: number }>;

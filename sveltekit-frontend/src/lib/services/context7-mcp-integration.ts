@@ -1,7 +1,7 @@
-import { aiRecommendationEngine, type RecommendationContext } from "./ai-recommendation-engine";
+import { aiRecommendationEngine, type RecommendationContext } from "$lib/utils/./ai-recommendation-engine";
 // @ts-nocheck
-import { writable, derived, get } from "svelte/store";
-import { advancedCache, , export interface Context7BestPractice {,   id: string;,   category: 'performance' | 'security' | 'ui-ux' | 'architecture' | 'testing';,   title: string;,   description: string;,   implementation: string;,   codeExample?: string;,   priority: 'low' | 'medium' | 'high' | 'critical';,   estimatedEffort: string;,   dependencies: string[];,   tags: string[];,   legalSpecific: boolean; } from
+import { writable, derived, get } from "$lib/utils/svelte/store";
+import { advancedCache, export interface Context7BestPractice {,   id: string;,   category: 'performance' | 'security' | 'ui-ux' | 'architecture' | 'testing';,   title: string;,   description: string;,   implementation: string;,   codeExample?: string;,   priority: 'low' | 'medium' | 'high' | 'critical';,   estimatedEffort: string;,   dependencies: string[];,   tags: string[];,   legalSpecific: boolean; } from
 
 export interface Context7Integration {
   component: string;

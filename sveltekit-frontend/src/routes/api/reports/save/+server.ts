@@ -1,13 +1,8 @@
-// @ts-nocheck
-import { aiReports } from "$lib/server/db/schema-postgres";
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { randomUUID
-import {
-and, eq } from "drizzle-orm";
-// Orphaned content: import { db
-import {
-URL } from "url";
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { aiReports } from '$lib/server/db/schema-postgres';
+import { db } from '$lib/server/db/index';
+import { and, eq } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -50,10 +45,7 @@ export const POST: RequestHandler = async ({ request }) => {
       updatedAt: new Date(),
     };
 
-    const [savedReport] = await db
-      .insert(aiReports)
-      .values(reportData)
-      .returning();
+    const [savedReport] = await db.insert(aiReports).values(reportData).returning();
 
     return json({
       success: true,
@@ -86,11 +78,11 @@ export const GET: RequestHandler = async ({ url }) => {
     if (reportType) {
       conditions.push(eq(aiReports.reportType, reportType));
     }
-    
-    const finalQuery = conditions.length > 0 
+
+    const finalQuery = conditions.length > 0
       ? query.where(and(...conditions))
       : query;
-    
+
     const reports = await finalQuery.orderBy(aiReports.createdAt);
 
     return json({

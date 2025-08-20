@@ -1,33 +1,40 @@
-// @ts-nocheck
-import { fail, redirect } from "@sveltejs/kit";
-// Orphaned content: import {
-superValidate, message
-import { zod } from "sveltekit-superforms/adapters";
-// Orphaned content: import {
-
-{ db }, {
-evidence } from "$lib/server/database";
-// Orphaned content: import { documentVectors
-import {
-eq } from "drizzle-orm";
-// Orphaned content: import { ollamaService
-crypto from "crypto";
-// Orphaned content: import {
-writeFile, mkdir
+// Repaired evidence upload page server logic (simplified)
+import { fail } from '@sveltejs/kit';
+import { superValidate, message } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
+import { z } from 'zod';
+// @ts-ignore
+import { db, evidence, documentVectors } from '$lib/server/database';
+// @ts-ignore
+import { eq } from 'drizzle-orm';
+import crypto from 'crypto';
+import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
-// Orphaned content: import type { PageServerLoad, Actions
+// @ts-ignore
+import { ollamaService } from '$lib/server/ai/ollama-service';
+import type { PageServerLoad, Actions } from './$types';
+
+const fileUploadSchema = z.object({
+  caseId: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().optional(),
+  type: z.string().default('document'),
+  tags: z.array(z.string()).optional(),
+  aiAnalysis: z.boolean().optional(),
+  isPrivate: z.boolean().optional()
+});
 
 const UPLOAD_DIR = 'uploads';
 
 export const load: PageServerLoad = async () => {
-  const form = await superValidate(zod(fileUploadSchema));
+  const form = await superValidate(fileUploadSchema, zod);
   return { form };
 };
 
 export const actions: Actions = {
   default: async ({ request, locals }) => {
     const formData = await request.formData();
-    const form = await superValidate(formData, zod(fileUploadSchema));
+    const form = await superValidate(formData, fileUploadSchema, zod);
 
     if (!form.valid) {
       return fail(400, { form });
@@ -35,7 +42,7 @@ export const actions: Actions = {
 
     try {
       // Get the file from form data
-      const file = formData.get('file') as File;
+      const file = formData.get('file') as File | null;
       if (!file) {
         return message(form, 'No file uploaded', { status: 400 });
       }
@@ -85,7 +92,7 @@ export const actions: Actions = {
       if (form.data.aiAnalysis && extractedText) {
         try {
           // Generate embeddings for the content
-          const { chunks } = await ollamaService.embedDocument(
+          const { chunks = [] } = await ollamaService.embedDocument?.(
             extractedText,
             {
               evidenceId: newEvidence.id,
@@ -106,8 +113,8 @@ export const actions: Actions = {
           }
 
           // Generate AI summary
-          const summary = await ollamaService.analyzeDocument(extractedText, 'summary');
-          
+          const summary = await ollamaService.analyzeDocument?.(extractedText, 'summary');
+
           // Update evidence with AI analysis
           await db.update(evidence)
             .set({

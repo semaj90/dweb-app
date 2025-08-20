@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 // @ts-nocheck
 // Enhanced Bits UI Component Types
 // Production-ready TypeScript definitions for legal AI UI components

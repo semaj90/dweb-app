@@ -1,7 +1,6 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { Server } from 'socket.io';
-// Orphaned content: import type { RequestHandler
-import {
-dev } from "$app/environment";
+import { dev } from "$app/environment";
 import Redis from 'ioredis';
 
 // WebSocket server for real-time updates

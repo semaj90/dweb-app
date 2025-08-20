@@ -1,20 +1,16 @@
 <script lang="ts">
-  import { superForm } from 'sveltekit-superforms';
+  import { goto } from '$app/navigation';
+  import { browser } from '$app/environment';
+  import { authService } from '$lib/stores/auth.svelte.js';
+  import ModernAuthForm from '$lib/components/auth/ModernAuthForm.svelte';
+  import { Button } from '$lib/components/ui/button/index.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
-  // Use server-provided SuperValidated form
-  const { form, errors, enhance, submitting } = superForm(data.form, {
-    resetForm: false,
-    scrollToError: 'smooth',
-    errorSelector: '[data-invalid]',
-    onUpdated: ({ form: f }) => {
-      if (f.message) {
-        console.log('Form message:', f.message);
-      }
-    }
-  });
+  // Modern authentication state management
+  let showAuthDialog = $state(true);
+  let authMode = $state<'login' | 'register'>('login');
 
   // Demo users for quick testing
   interface DemoUser {
@@ -25,16 +21,36 @@
   }
 
   const demoUsers: DemoUser[] = [
+    { email: 'admin@prosecutor.com', password: 'password', name: 'Demo Admin', role: 'admin' },
     { email: 'prosecutor@legal.ai', password: 'password123', name: 'John Prosecutor', role: 'prosecutor' },
     { email: 'detective@legal.ai', password: 'password123', name: 'Jane Detective', role: 'investigator' },
-    { email: 'admin@legal.ai', password: 'password123', name: 'Admin User', role: 'admin' },
     { email: 'analyst@legal.ai', password: 'password123', name: 'Legal Analyst', role: 'analyst' }
   ];
 
-  // Quick demo login function
-  function quickLogin(demoUser: DemoUser) {
-    $form.email = demoUser.email;
-    $form.password = demoUser.password;
+  // Quick demo login function using modern auth service
+  async function quickLogin(demoUser: DemoUser) {
+    const result = await authService.login(demoUser.email, demoUser.password);
+    if (result.success) {
+      await goto('/dashboard');
+    }
+  }
+
+  // Handle successful authentication
+  function handleAuthSuccess(user: any) {
+    console.log('Authentication successful:', user);
+    showAuthDialog = false;
+    
+    // Record authentication activity in session
+    const { recordActivity } = import('$lib/stores/sessionManager.svelte.js').then(module => {
+      module.recordActivity('/login', 'authentication_success', 'modern_auth_form');
+    });
+    
+    goto('/dashboard');
+  }
+
+  // Check if already authenticated
+  if (browser && authService.state.isAuthenticated) {
+    goto('/dashboard');
   }
 </script>
 
@@ -47,71 +63,15 @@
     <div class="login-header">
       <div class="logo">⚖️</div>
       <h1>Legal Case Management</h1>
-      <p>Administrator Login</p>
+      <p>AI-Powered Legal Analysis System</p>
     </div>
 
-    <form method="POST" use:enhance class="login-form">
-      {#if data.registrationSuccess}
-        <div class="success-message">
-          {data.registrationSuccess}
-        </div>
-      {/if}
-
-      {#if data.form?.message}
-        <div class="error-message">
-          {data.form.message}
-        </div>
-      {/if}
-
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          bind:value={$form.email}
-          data-invalid={$errors.email}
-          placeholder="Enter your email"
-          required
-          class="form-input"
-          class:error={$errors.email}
-        />
-        {#if $errors.email}
-          <div class="field-error">{$errors.email}</div>
-        {/if}
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          bind:value={$form.password}
-          data-invalid={$errors.password}
-          placeholder="Enter your password"
-          required
-          class="form-input"
-          class:error={$errors.password}
-        />
-        {#if $errors.password}
-          <div class="field-error">{$errors.password}</div>
-        {/if}
-      </div>
-
-      <button
-        type="submit"
-        disabled={$submitting}
-        class="login-button"
-      >
-        {#if $submitting}
-          <div class="spinner"></div>
-          Signing in...
-        {:else}
-          Sign In
-        {/if}
-      </button>
-    </form>
+    <!-- Modern Authentication Dialog Component -->
+    <ModernAuthForm 
+      bind:mode={authMode}
+      open={showAuthDialog} onOpenChange={(open) => showAuthDialog = open}
+      onSuccess={handleAuthSuccess}
+    />
 
     <div class="login-footer">
       <div class="divider">
@@ -120,24 +80,33 @@
 
       <div class="demo-users">
         {#each demoUsers as demoUser}
-          <button
-            type="button"
+          <Button
+            variant="outline"
             onclick={() => quickLogin(demoUser)}
-            class="demo-user-button"
-            title="Click to fill login form with {demoUser.name} credentials"
+            class="demo-user-button w-full justify-start"
+            title="Click to login as {demoUser.name}"
           >
             <div class="demo-user-info">
               <span class="demo-name">{demoUser.name}</span>
               <span class="demo-role">{demoUser.role}</span>
             </div>
             <span class="demo-email">{demoUser.email}</span>
-          </button>
+          </Button>
         {/each}
+      </div>
+
+      <div class="auth-mode-toggle">
+        <Button 
+          variant="ghost" 
+          onclick={() => { authMode = authMode === 'login' ? 'register' : 'login'; showAuthDialog = true; }}
+        >
+          {authMode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+        </Button>
       </div>
 
       <p class="login-links">
         <a href="/">← Back to Home</a>
-        <a href="/register">Create Account</a>
+        <a href="/dashboard">Go to Dashboard</a>
       </p>
     </div>
   </div>
@@ -184,28 +153,7 @@
     color: #6b7280;
     font-size: 0.875rem;
   }
-
-  .error-message {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-  }
-
-  .success-message {
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    color: #166534;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-  }
-
-  .form-group {
+.form-group {
     margin-bottom: 1rem;
   }
 
@@ -302,27 +250,24 @@
   .demo-users {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
   }
 
-  .demo-user-button {
-    width: 100%;
-    background: #f8fafc;
-    color: #374151;
-    border: 1px solid #e2e8f0;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
+  :global(.demo-user-button) {
+    text-align: left !important;
+    height: auto !important;
+    padding: 1rem !important;
+    justify-content: flex-start !important;
   }
 
-  .demo-user-button:hover {
-    background: #e2e8f0;
-    border-color: #3b82f6;
+  :global(.demo-user-button:hover) {
     transform: translateY(-1px);
+  }
+
+  .auth-mode-toggle {
+    text-align: center;
+    margin: 1rem 0;
   }
 
   .demo-user-info {

@@ -2,7 +2,9 @@
 https://svelte.dev/e/js_parse_error -->
 
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     onauditResults?: (event?: any) => void;
     onauditError?: (event?: any) => void;
     onagentReviewResult?: (event?: any) => void;
@@ -134,7 +136,7 @@ https://svelte.dev/e/js_parse_error -->
       menu={menuOpen}
       class="space-y-4"
       style="position:fixed;left:{x}px;top:{y}px;"
-      on:keydown={(e) => {
+      onkeydown={(e) => {
         if (e.detail && e.detail.key === "Escape") closeMenu();
       }}
       aria-label="Evidence context menu"

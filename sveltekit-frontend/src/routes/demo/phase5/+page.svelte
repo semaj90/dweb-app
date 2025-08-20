@@ -293,7 +293,7 @@
           <CardContent>
             <Button 
               class="w-full" 
-              on:click={() => activeTab = 'vector-demo'}
+              onclick={() => activeTab = 'vector-demo'}
             >
               <Search class="h-4 w-4 mr-2" />
               Launch Vector Demo
@@ -313,7 +313,7 @@
             <Button 
               variant="outline" 
               class="w-full"
-              on:click={() => activeTab = 'fabric-canvas'}
+              onclick={() => activeTab = 'fabric-canvas'}
             >
               <Canvas class="h-4 w-4 mr-2" />
               Open Canvas

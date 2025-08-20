@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import type { Document } from "$lib/types/global";
 
@@ -199,3 +201,8 @@
   {/if}
 </div>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

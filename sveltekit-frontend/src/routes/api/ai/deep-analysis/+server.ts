@@ -3,10 +3,8 @@
  * Provides comprehensive legal text analysis using LegalBERT and enhanced processing
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-analyzeLegalText } from "$lib/services/comprehensive-database-orchestrator";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { analyzeLegalText } from "$lib/services/comprehensive-database-orchestrator";
 
 interface DeepAnalysisRequest {
   text: string;

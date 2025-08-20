@@ -3,10 +3,8 @@
  * Comprehensive system status for all services
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { URL } from "url";
 
 interface ServiceStatus {
   name: string;

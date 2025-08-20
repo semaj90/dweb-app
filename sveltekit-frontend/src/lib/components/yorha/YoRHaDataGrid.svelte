@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   interface GridColumn {
     key: string;
     title: string;
@@ -624,4 +626,8 @@
   // Mark file as a module for TypeScript without self-import recursion
   // (Previous self-import caused TS to still report 'is not a module')
   export {};
+</script>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
 </script>

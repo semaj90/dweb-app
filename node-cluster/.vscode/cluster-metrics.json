@@ -1,0 +1,137 @@
+{
+  "timestamp": 1755668254155,
+  "uptimeSec": 4518,
+  "startTime": 1755663735898,
+  "spawned": {
+    "legal": 3,
+    "ai": 2,
+    "vector": 2,
+    "database": 3
+  },
+  "deferredTotal": 0,
+  "deferredActive": 0,
+  "portSearches": {
+    "successes": 10,
+    "failures": 0
+  },
+  "lastAllocation": {
+    "type": "database",
+    "port": 3042,
+    "time": 1755663735997
+  },
+  "events": [
+    {
+      "e": "spawn:legal@3010",
+      "t": 1755663735934
+    },
+    {
+      "e": "spawn:legal@3011",
+      "t": 1755663735942
+    },
+    {
+      "e": "spawn:legal@3012",
+      "t": 1755663735947
+    },
+    {
+      "e": "spawn:ai@3020",
+      "t": 1755663735953
+    },
+    {
+      "e": "spawn:ai@3021",
+      "t": 1755663735961
+    },
+    {
+      "e": "spawn:vector@3030",
+      "t": 1755663735968
+    },
+    {
+      "e": "spawn:vector@3031",
+      "t": 1755663735975
+    },
+    {
+      "e": "spawn:database@3040",
+      "t": 1755663735982
+    },
+    {
+      "e": "spawn:database@3041",
+      "t": 1755663735990
+    },
+    {
+      "e": "spawn:database@3042",
+      "t": 1755663735997
+    }
+  ],
+  "workers": [
+    {
+      "type": "legal",
+      "pid": 27136,
+      "port": 3010,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "legal",
+      "pid": 28324,
+      "port": 3011,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "legal",
+      "pid": 40340,
+      "port": 3012,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "ai",
+      "pid": 60824,
+      "port": 3020,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "ai",
+      "pid": 18000,
+      "port": 3021,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "vector",
+      "pid": 24780,
+      "port": 3030,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "vector",
+      "pid": 14024,
+      "port": 3031,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "database",
+      "pid": 29132,
+      "port": 3040,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "database",
+      "pid": 20376,
+      "port": 3041,
+      "status": "online",
+      "uptimeSec": 4518
+    },
+    {
+      "type": "database",
+      "pid": 12312,
+      "port": 3042,
+      "status": "online",
+      "uptimeSec": 4518
+    }
+  ],
+  "deferredQueue": []
+}

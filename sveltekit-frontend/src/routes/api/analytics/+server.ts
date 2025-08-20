@@ -1,6 +1,6 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
 
 // Placeholder for user analytics logging
 // TODO: Integrate with Loki.js, database, or analytics service

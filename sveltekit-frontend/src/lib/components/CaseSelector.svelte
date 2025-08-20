@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { user } from "$lib/stores/user";
   import { Button } from "$lib/components/ui/button";
   import Modal from "$lib/components/ui/Modal.svelte";
@@ -16,7 +18,7 @@
 }
 </script>
 
-<Button on:click={() => showModal = true}>Select Case</Button>
+<Button onclick={() => showModal = true}>Select Case</Button>
 
 <Modal bind:open={showModal} title="Select a Case">
   {#snippet description()}
@@ -27,9 +29,14 @@
 
   <div class="space-y-4">
     {#each cases as caseItem}
-      <Button on:click={() => selectCase(caseItem.id)} variant="secondary">
+      <Button onclick={() => selectCase(caseItem.id)} variant="secondary">
         {caseItem.name}
       </Button>
     {/each}
   </div>
 </Modal>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

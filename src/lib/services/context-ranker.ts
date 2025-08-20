@@ -1,12 +1,11 @@
 /**
  * Context Ranker Service - Modular context selection for AI models
- * 
+ *
  * This service decides what context to provide to AI models (like Gemma)
  * by ranking and selecting the most relevant content based on query embeddings.
  */
 
-import { OllamaEmbedding } from '$lib/ai/types';
-import type { Document } from '$lib/ai/types';
+import type { OllamaEmbedding } from '$lib/ai/types';
 import { postgres } from '$lib/database/postgres';
 
 export interface ContextRankerConfig {
@@ -56,12 +55,12 @@ class ContextRanker {
    * Decides what context the AI model should see based on query relevance
    */
   async context_ranker(
-    query: string, 
+    query: string,
     options: Partial<ContextRankerConfig> = {}
   ): Promise<ContextRankingResult> {
     const startTime = performance.now();
     const mergedConfig = { ...this.config, ...options };
-    
+
     // Check cache first
     const cacheKey = this.generateCacheKey(query, mergedConfig);
     const cached = this.getFromCache(cacheKey);
@@ -77,7 +76,7 @@ class ContextRanker {
       // Step 2: Perform ANN search (pgvector)
       console.log(`🎯 Searching for top ${mergedConfig.topK} most relevant contexts`);
       const rankedContexts = await this.searchSimilarContent(
-        queryEmbedding, 
+        queryEmbedding,
         mergedConfig
       );
 
@@ -103,7 +102,7 @@ class ContextRanker {
       this.setInCache(cacheKey, result);
 
       console.log(`✅ Context ranking complete: ${result.contexts.length} contexts, ${result.totalTokens} tokens, ${result.processingTime.toFixed(2)}ms`);
-      
+
       return result;
 
     } catch (error) {
@@ -149,9 +148,9 @@ class ContextRanker {
     try {
       // Use pgvector for efficient similarity search
       const embeddingVector = `[${queryEmbedding.join(',')}]`;
-      
+
       const query = `
-        SELECT 
+        SELECT
           content,
           title,
           document_type,
@@ -159,7 +158,7 @@ class ContextRanker {
           file_name,
           practice_area,
           1 - (content_embedding <=> $1::vector) AS similarity
-        FROM legal_documents 
+        FROM legal_documents
         WHERE content_embedding IS NOT NULL
           AND content IS NOT NULL
           AND length(content) > 50
@@ -200,7 +199,7 @@ class ContextRanker {
 
     for (const context of contexts) {
       const contextLength = context.content.length;
-      
+
       if (currentLength + contextLength <= maxLength) {
         optimized.push(context);
         currentLength += contextLength;
@@ -240,17 +239,17 @@ class ContextRanker {
     return result.contexts
       .map((ctx, index) => {
         let formatted = `--- Context ${index + 1} (similarity: ${ctx.similarity.toFixed(3)}) ---\n`;
-        
+
         if (ctx.metadata?.title) {
           formatted += `Title: ${ctx.metadata.title}\n`;
         }
-        
+
         if (ctx.source) {
           formatted += `Source: ${ctx.source}\n`;
         }
-        
+
         formatted += `Content:\n${ctx.content}\n`;
-        
+
         return formatted;
       })
       .join('\n');
@@ -328,7 +327,7 @@ export { ContextRanker };
 
 // Export utility functions for use in other modules
 export async function rankContext(
-  query: string, 
+  query: string,
   options?: Partial<ContextRankerConfig>
 ): Promise<ContextRankingResult> {
   return contextRanker.context_ranker(query, options);

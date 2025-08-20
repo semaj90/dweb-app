@@ -1,8 +1,10 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { fade, fly } from 'svelte/transition';
   
-  interface Props {
+  interface Props extends CommonProps {
     open?: boolean;
     title?: string;
     size?: 'sm' | 'md' | 'lg' | 'xl';

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { aiStore } from "$lib/stores/canvas";
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { quintOut } from 'svelte/easing';
@@ -687,3 +689,5 @@
 		}
 	}
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -1,5 +1,7 @@
 // Enhanced Evidence Processing Component
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createActor } from 'xstate';
   import { uploadMachine, getFileProgress, getAllFilesStatus, getOverallProgress } from '$lib/machines/uploadMachine';
   import type { ProgressMsg } from '$lib/types/progress';
@@ -414,3 +416,5 @@
     /* Custom styles if needed */
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

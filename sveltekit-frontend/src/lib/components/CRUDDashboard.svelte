@@ -1,5 +1,7 @@
 <!-- Comprehensive CRUD Dashboard showing all entities working together -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { notifications } from "$lib/stores/notification";
   import {
     Activity,
@@ -645,3 +647,8 @@
     }
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

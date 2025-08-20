@@ -1,7 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Identifier 'caseId' has already been declared
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     caseId?: string | null;
   }
   let {
@@ -439,7 +441,7 @@ https://svelte.dev/e/js_parse_error -->
         <ReviewSubmitForm
           bind:data={$formData.review}
           fullCaseData={$formData}
-          on:submit={submitForm}
+          onsubmit={submitForm}
           on:prev={prevStep}
           isValid={$stepValidation}
         />

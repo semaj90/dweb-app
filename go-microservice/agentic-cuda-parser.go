@@ -1,5 +1,5 @@
-//go:build !legacy && cuda
-// +build !legacy,cuda
+//go:build legacy
+// +build legacy
 
 package main
 

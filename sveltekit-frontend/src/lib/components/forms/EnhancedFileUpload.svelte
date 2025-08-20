@@ -5,7 +5,9 @@ https://svelte.dev/e/js_parse_error -->
   Features: Drag & drop, progress tracking, AI processing, validation, preview
 -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     caseId: string | undefined ;
     multiple?: any;
     compact?: any;
@@ -74,20 +76,7 @@ https://svelte.dev/e/js_parse_error -->
     progress: { progress: number; file: string };
   }>();
 
-  // Props
-  // NOTE: Removed duplicated $bindable prop declarations introduced by migration.
-  // The initial typed destructuring above already defines the runtime props.
-  // If future two‑way binding is required, selectively reintroduce $bindable on needed fields only.
-  let {
-    caseId = undefined,
-    multiple = false,
-    compact = false,
-    initialData = undefined,
-    disabled = false,
-    maxFiles = multiple ? 10 : 1,
-    maxSizeMB = 100,
-    acceptedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt', 'image/*', 'video/*', 'audio/*', '.csv', '.zip', '.rar'],
-  }: Props = $props();
+  // Props already defined above - no duplicate declarations needed
 
   // State
   let fileInput: HTMLInputElement;
@@ -448,7 +437,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => removeFile(file.name)}
+                onclick={() => removeFile(file.name)}
                 disabled={isUploading}
                 class="flex-shrink-0"
               >
@@ -562,13 +551,13 @@ https://svelte.dev/e/js_parse_error -->
               bind:value={tagInput}
               placeholder="Add a tag"
               disabled={isUploading}
-              on:keydown={(e) =>
+              onkeydown={(e) =>
                 e.key === "Enter" && (e.preventDefault(), addTag())}
             />
             <Button
               type="button"
               variant="outline"
-              on:click={addTag}
+              onclick={addTag}
               disabled={isUploading}
             >
               Add
@@ -583,7 +572,7 @@ https://svelte.dev/e/js_parse_error -->
                     variant="ghost"
                     size="sm"
                     class="h-auto p-0 hover:bg-transparent"
-                    on:click={() => removeTag(tag)}
+                    onclick={() => removeTag(tag)}
                     disabled={isUploading}
                   >
                     <X class="h-3 w-3" />
@@ -661,14 +650,14 @@ https://svelte.dev/e/js_parse_error -->
       <div class="flex gap-2">
         <Button
           variant="outline"
-          on:click={() => dispatch("cancel")}
+          onclick={() => dispatch("cancel")}
           disabled={isUploading}
         >
           Cancel
         </Button>
 
         <Button
-          on:click={handleFormSubmit}
+          onclick={handleFormSubmit}
           disabled={selectedFiles.length === 0 ||
             isUploading ||
             Object.keys($errors).length > 0}

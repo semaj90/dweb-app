@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * SvelteKit 2 API Route: K-Means Clustering
@@ -5,19 +6,10 @@
  */
 
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-LegalKMeansClusterer } from "$lib/services/kmeans-clustering";
-// Orphaned content: import { wasmClusteringService
-import {
-Redis } from "ioredis";
-// Orphaned content: import { QdrantClient
-import {
-db } from "$lib/server/db";
-// Orphaned content: import { legalDocuments
-import {
-inArray } from "drizzle-orm";
-// Orphaned content: import { URL
+import { LegalKMeansClusterer } from "$lib/services/kmeans-clustering";
+import { Redis } from "ioredis";
+import { db } from "$lib/server/db";
+import { inArray } from "drizzle-orm";
 // Optional amqp for message queue integration
 
 // Initialize connections

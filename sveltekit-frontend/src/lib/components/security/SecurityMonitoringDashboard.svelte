@@ -3,6 +3,8 @@
   Displays security events, system health, and security metrics
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import { notifications } from "$lib/stores/notification";
   import { getSecurityEvents, type SecurityEvent } from "$lib/utils/security";
@@ -230,20 +232,20 @@
       <Button
         variant="outline"
         size="sm"
-        on:click={() => loadSecurityEvents()}
+        onclick={() => loadSecurityEvents()}
         disabled={loading}
       >
         <RefreshCw class={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         Refresh
       </Button>
-      <Button variant="outline" size="sm" on:click={() => exportEvents()}>
+      <Button variant="outline" size="sm" onclick={() => exportEvents()}>
         <Download class="container mx-auto px-4" />
         Export
       </Button>
       <Button
         variant="outline"
         size="sm"
-        on:click={() => clearAllEvents()}
+        onclick={() => clearAllEvents()}
         class="container mx-auto px-4"
       >
         <Trash2 class="container mx-auto px-4" />
@@ -471,7 +473,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => toggleEventDetails(index)}
+                  onclick={() => toggleEventDetails(index)}
                   class="container mx-auto px-4"
                 >
                   <Eye class="container mx-auto px-4" />
@@ -484,3 +486,8 @@
     </div>
   </div>
 </div>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

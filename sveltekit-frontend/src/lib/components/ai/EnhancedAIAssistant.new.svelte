@@ -1,5 +1,7 @@
 <!-- Enhanced AI Assistant - Simplified Version -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import {
     Brain,
     Loader2,
@@ -560,3 +562,5 @@ I can provide more specific guidance if you share additional details about your 
     background: #e5e7eb;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

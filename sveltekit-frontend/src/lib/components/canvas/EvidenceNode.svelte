@@ -1,5 +1,7 @@
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     title: string ;
     fileUrl: string ;
     position?: any;

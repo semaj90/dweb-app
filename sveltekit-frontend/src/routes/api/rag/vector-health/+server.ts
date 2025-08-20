@@ -1,5 +1,4 @@
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 db, documents, embeddings
 import { sql } from 'drizzle-orm';
 

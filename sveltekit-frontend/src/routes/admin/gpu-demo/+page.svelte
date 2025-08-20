@@ -609,7 +609,7 @@
         <!-- Visualization Controls -->
         <div class="grid grid-cols-2 gap-2">
           <Button
-            on:click={() => startVisualization('attentionHeatmap')}
+            onclick={() => startVisualization('attentionHeatmap')}
             disabled={!isInitialized}
             variant={activeVisualization === 'attentionHeatmap' ? 'default' : 'outline'}
             class="text-sm">
@@ -617,7 +617,7 @@
           </Button>
 
           <Button
-            on:click={() => startVisualization('documentNetwork')}
+            onclick={() => startVisualization('documentNetwork')}
             disabled={!isInitialized}
             variant={activeVisualization === 'documentNetwork' ? 'default' : 'outline'}
             class="text-sm">
@@ -625,7 +625,7 @@
           </Button>
 
           <Button
-            on:click={() => startVisualization('evidenceTimeline')}
+            onclick={() => startVisualization('evidenceTimeline')}
             disabled={!isInitialized}
             variant={activeVisualization === 'evidenceTimeline' ? 'default' : 'outline'}
             class="text-sm">
@@ -633,7 +633,7 @@
           </Button>
 
           <Button
-            on:click={() => startVisualization('textFlow')}
+            onclick={() => startVisualization('textFlow')}
             disabled={!isInitialized}
             variant={activeVisualization === 'textFlow' ? 'default' : 'outline'}
             class="text-sm">
@@ -644,13 +644,13 @@
         <!-- Render Controls -->
         <div class="flex gap-2">
           {#if isRendering}
-            <Button on:click={stopVisualization} class="bg-red-600 hover:bg-red-700">
+            <Button onclick={stopVisualization} class="bg-red-600 hover:bg-red-700">
               Stop Rendering
             </Button>
           {/if}
 
           <Button
-            on:click={executeGPUWorkload}
+            onclick={executeGPUWorkload}
             disabled={!isInitialized}
             variant="outline"
             class="text-white border-slate-600 hover:bg-slate-700">

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { ScrollArea as ScrollAreaPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
 	import type { ScrollAreaRootProps } from "bits-ui";
@@ -21,3 +23,8 @@
 	<ScrollAreaPrimitive.Scrollbar orientation="horizontal" />
 	<ScrollAreaPrimitive.Corner />
 </ScrollAreaPrimitive.Root>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

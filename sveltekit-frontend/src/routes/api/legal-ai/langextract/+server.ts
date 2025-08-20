@@ -1,7 +1,5 @@
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-langExtractService, type LegalExtractionRequest } from "$lib/services/langextract-ollama-service";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { langExtractService, type LegalExtractionRequest } from "$lib/services/langextract-ollama-service";
 
 /**
  * LangExtract + Ollama API Endpoint

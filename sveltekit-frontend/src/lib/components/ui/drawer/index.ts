@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 // Drawer component barrel export
 export { default as Drawer } from './drawer/drawer.svelte';
 export { default as DrawerContent } from './drawer/drawer-content.svelte';

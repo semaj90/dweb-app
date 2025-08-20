@@ -298,7 +298,7 @@ import type { Case } from '$lib/types';
               <CaseListItem
                 caseData={caseItem}
                 isActive={caseItem.id === activeCaseId}
-                on:click={() => openCase(caseItem.id)}
+                onclick={() => openCase(caseItem.id)}
                 onstatuschange={(event) => updateCaseStatus(caseItem.id, event.detail)}
                 disabled={isLoading}
               />

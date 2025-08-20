@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	// Using standard button element instead of melt-ui Button
 	import { cva, type VariantProps } from 'class-variance-authority';
 	import { cn } from '$lib/utils/cn';
@@ -165,3 +167,5 @@
 		{/if}
 	</button>
 {/if}
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

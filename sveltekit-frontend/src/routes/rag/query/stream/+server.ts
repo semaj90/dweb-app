@@ -1,13 +1,6 @@
 import stream from "stream";
 // SSE streaming endpoint with streamId + interrupt + optional summary
-import {
-  createStream,
-  recordToken,
-  removeStream,
-  generateSummary,
-  getStream,
-  cachedSummary,
-} from '$lib/server/ragStreamRegistry';
+import { createStream, recordToken, removeStream, generateSummary, getStream, cachedSummary } from '$lib/server/ragStreamRegistry';
 import type { RequestHandler } from '@sveltejs/kit';
 // Use process.env directly (avoids type issues if $env modules not generated)
 const privateEnv: Record<string, string | undefined> = (process as any).env || {};

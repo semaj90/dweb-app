@@ -1,4 +1,6 @@
 <script context="module">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { slide } from "svelte/transition";
 </script>
 
@@ -470,3 +472,8 @@
     }
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

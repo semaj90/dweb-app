@@ -5,10 +5,18 @@ import { page } from "$app/stores";
  */
 
 import type { SessionUser } from "$lib/types/auth";
-// Orphaned content: import {
-createMachine, assign, fromPromise
+import { createMachine, assign, fromPromise } from "xstate";
 import { browser } from "$app/environment";
-import { goto, , // Authentication context, interface AuthContext {,   user: SessionUser | null;,   isAuthenticated: boolean;,   isLoading: boolean;,   error: string | null;,   redirectPath: string | null; } from
+import { goto } from "$app/navigation";
+
+// Authentication context
+interface AuthContext {
+  user: SessionUser | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  redirectPath: string | null;
+}
 
 // Authentication events
 type AuthEvents =

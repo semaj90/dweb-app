@@ -21,11 +21,11 @@ interface ModelConfig {
   healthCheck: () => Promise<boolean>;
 }
 
-type ModelCapability = 
-  | 'text_generation' 
-  | 'legal_analysis' 
-  | 'contract_review' 
-  | 'case_analysis' 
+type ModelCapability =
+  | 'text_generation'
+  | 'legal_analysis'
+  | 'contract_review'
+  | 'case_analysis'
   | 'document_processing'
   | 'property_law'
   | 'deed_analysis';
@@ -78,7 +78,7 @@ export class AIModelOrchestrator {
     this.models = new Map();
     this.modelStatus = new Map();
     this.circuitBreaker = new Map();
-    
+
     this.initializeModels();
     this.startHealthMonitoring();
   }
@@ -119,14 +119,14 @@ export class AIModelOrchestrator {
    * Main orchestration method - intelligently routes requests
    */
   async processWithBestModel(
-    prompt: string, 
+    prompt: string,
     context: ProcessingContext
   ): Promise<AIResponse> {
     console.log(`🧠 AI Orchestrator: Processing ${context.task} with priority ${context.priority}`);
-    
+
     // Step 1: Select optimal model based on context
     const selectedModel = await this.selectOptimalModel(context);
-    
+
     if (!selectedModel) {
       throw new Error('No suitable AI model available');
     }
@@ -150,17 +150,17 @@ export class AIModelOrchestrator {
 
       // Step 4: Update model performance metrics
       this.updateModelMetrics(selectedModel, true, Date.now() - result.responseTime);
-      
+
       return result;
 
     } catch (error) {
       console.error(`❌ Model ${selectedModel} failed:`, error);
-      
+
       // Step 5: Try fallback if enabled
       if (this.config.enableAutoFallback) {
         return await this.tryFallbackModels(prompt, context, selectedModel);
       }
-      
+
       throw error;
     }
   }
@@ -172,16 +172,16 @@ export class AIModelOrchestrator {
     const availableModels = Array.from(this.models.values())
       .filter(model => {
         // Check if model supports required capabilities
-        const hasCapabilities = context.requiredCapabilities.every(cap => 
+        const hasCapabilities = context.requiredCapabilities.every(cap =>
           model.capabilities.includes(cap)
         );
-        
+
         // Check memory constraints
         const memoryOk = model.memoryRequirement <= this.config.memoryThreshold;
-        
+
         // Check circuit breaker
         const circuitOk = !this.isCircuitBreakerOpen(model.name);
-        
+
         return hasCapabilities && memoryOk && circuitOk;
       })
       .sort((a, b) => a.priority - b.priority);
@@ -203,8 +203,8 @@ export class AIModelOrchestrator {
    * Process with multi-agent systems (AutoGen/CrewAI)
    */
   private async processWithMultiAgent(
-    prompt: string, 
-    context: ProcessingContext, 
+    prompt: string,
+    context: ProcessingContext,
     modelName: string
   ): Promise<AIResponse> {
     console.log(`🤖 Using multi-agent processing with ${modelName}`);
@@ -212,13 +212,13 @@ export class AIModelOrchestrator {
     try {
       // Determine which multi-agent system to use
       const useCrewAI = context.task.includes('investigation') || context.task.includes('contract');
-      
+
       if (useCrewAI) {
         // Use CrewAI for complex workflows
-        const crew = context.task.includes('contract') 
+        const crew = context.task.includes('contract')
           ? crewAIService.createContractAnalysisCrew()
           : crewAIService.createLegalInvestigationCrew();
-        
+
         const execution = await crewAIService.executeCrew(crew, {
           primaryQuery: prompt,
           context: context,
@@ -242,7 +242,7 @@ export class AIModelOrchestrator {
         // Use AutoGen for conversational analysis
         const team = autoGenService.createLegalAgentTeam();
         const agents = [team.prosecutor, team.legalResearcher, team.coordinator];
-        
+
         const conversation = await autoGenService.startConversation(
           agents,
           prompt,
@@ -287,8 +287,27 @@ export class AIModelOrchestrator {
     try {
       // Note: This would typically receive a file, but for demonstration
       // we'll assume the prompt contains instructions about a document
-      
-      // Extract OCR results (simulated - would be from actual file upload)
+
+      // Extract OCR results using uploaded evidence file (integrate with EvidenceUpload API)
+      // In production, you would receive a file from the frontend (see +EvidenceUpload.svelte)
+      // Example: POST /api/evidence with FormData containing files
+      // Here, simulate the API call and OCR extraction:
+
+      // Simulate evidence upload and OCR extraction
+      // (Replace with actual fetch to /api/evidence if integrating)
+      // const formData = new FormData();
+      // formData.append("files", file);
+      // const response = await fetch("/api/evidence", { method: "POST", body: formData });
+      // const evidence = await response.json();
+      // const ocrResults: OCRResult = evidence.ocrResults;
+
+      // For demo, continue with static OCRResult below
+      // In production, integrate with the document processing pipeline:
+      // - Upload triggers NATS: legal.document.uploaded
+      // - OCR service processes and publishes: legal.document.processed
+      // - AI analysis pipeline listens for: legal.document.analyzed
+      // Here, you would subscribe to NATS for document events and fetch OCR results.
+      // For demo, we use a static OCRResult object.
       const ocrResults: OCRResult = {
         id: 'demo-ocr',
         text: 'Sample extracted text from document...',
@@ -336,7 +355,7 @@ Please analyze this document considering the OCR extraction results.
     modelName: string
   ): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     try {
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
@@ -394,17 +413,17 @@ Please analyze this document considering the OCR extraction results.
   ): Promise<AIResponse> {
     try {
       console.log('🧠 Enhancing with Legal-BERT analysis...');
-      
+
       const [embedding, analysis] = await Promise.all([
         legalBERT.generateLegalEmbedding(response.content),
         legalBERT.analyzeLegalText(response.content)
       ]);
 
       // Calculate confidence boost based on legal analysis
-      const legalTerms = analysis.entities.filter(e => 
+      const legalTerms = analysis.entities.filter(e =>
         ['CASE_CITATION', 'STATUTE', 'COURT', 'LEGAL_CONCEPT'].includes(e.type)
       ).length;
-      
+
       const confidenceBoost = Math.min(0.2, legalTerms * 0.03);
 
       return {
@@ -436,29 +455,29 @@ Please analyze this document considering the OCR extraction results.
     failedModel: string
   ): Promise<AIResponse> {
     console.log(`🔄 Trying fallback models after ${failedModel} failed`);
-    
+
     this.recordModelFailure(failedModel);
-    
+
     // Get fallback models excluding the failed one
     const fallbackModels = this.config.fallbackModels.filter(model => model !== failedModel);
-    
+
     for (const modelName of fallbackModels) {
       try {
         const model = this.models.get(modelName);
         if (!model) continue;
-        
+
         const isHealthy = await model.healthCheck();
         if (!isHealthy) continue;
-        
+
         console.log(`🔄 Trying fallback model: ${modelName}`);
         return await this.processWithDirectModel(prompt, context, modelName);
-        
+
       } catch (error) {
         console.warn(`Fallback model ${modelName} also failed:`, error);
         continue;
       }
     }
-    
+
     throw new Error('All models failed, including fallbacks');
   }
 
@@ -467,17 +486,17 @@ Please analyze this document considering the OCR extraction results.
    */
   private getSystemPrompt(context: ProcessingContext, modelName: string): string {
     const basePrompt = "You are a specialized legal AI assistant with expertise in";
-    
+
     if (modelName === 'deeds-web') {
-      return `${basePrompt} property law, real estate transactions, and deed analysis. 
+      return `${basePrompt} property law, real estate transactions, and deed analysis.
 Focus on property-specific legal concepts, title issues, and real estate documentation.`;
     }
-    
+
     if (modelName === 'gemma3-legal') {
-      return `${basePrompt} comprehensive legal analysis, case law research, and legal document review. 
+      return `${basePrompt} comprehensive legal analysis, case law research, and legal document review.
 Provide thorough, accurate legal guidance across all practice areas.`;
     }
-    
+
     return `${basePrompt} legal document analysis and general legal assistance.`;
   }
 
@@ -489,9 +508,9 @@ Provide thorough, accurate legal guidance across all practice areas.`;
       const response = await fetch('http://localhost:11434/api/tags', {
         signal: AbortSignal.timeout(5000)
       });
-      
+
       if (!response.ok) return false;
-      
+
       const data = await response.json();
       const models = data.models || [];
       return models.some((model: any) => model.name.includes(modelName));
@@ -512,7 +531,7 @@ Provide thorough, accurate legal guidance across all practice areas.`;
         const startTime = Date.now();
         const isHealthy = await model.healthCheck();
         const responseTime = Date.now() - startTime;
-        
+
         this.modelStatus.set(name, {
           name,
           available: isHealthy,
@@ -535,7 +554,7 @@ Provide thorough, accurate legal guidance across all practice areas.`;
   private isCircuitBreakerOpen(modelName: string): boolean {
     const breaker = this.circuitBreaker.get(modelName);
     if (!breaker) return false;
-    
+
     // Open circuit if 3+ failures in last 5 minutes
     const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
     return breaker.failures >= 3 && breaker.lastFailure > fiveMinutesAgo;
@@ -554,18 +573,18 @@ Provide thorough, accurate legal guidance across all practice areas.`;
   /**
    * Public API methods
    */
-  
+
   async getModelStatus(): Promise<ModelStatus[]> {
     return Array.from(this.modelStatus.values());
   }
 
   async testAllModels(): Promise<Record<string, boolean>> {
     const results: Record<string, boolean> = {};
-    
+
     for (const [name, model] of this.models) {
       results[name] = await model.healthCheck();
     }
-    
+
     return results;
   }
 
@@ -573,7 +592,7 @@ Provide thorough, accurate legal guidance across all practice areas.`;
     // Synchronous version of selectOptimalModel for quick recommendations
     const models = Array.from(this.models.values())
       .filter(model => {
-        const hasCapabilities = context.requiredCapabilities.every(cap => 
+        const hasCapabilities = context.requiredCapabilities.every(cap =>
           model.capabilities.includes(cap)
         );
         const memoryOk = model.memoryRequirement <= this.config.memoryThreshold;
@@ -616,7 +635,7 @@ export async function analyzePropertyDeed(
     task: 'deed_analysis',
     documentType: 'property_deed',
     priority: 'high',
-    requiredCapabilities: useSpecializedModel 
+    requiredCapabilities: useSpecializedModel
       ? ['property_law', 'deed_analysis', 'legal_analysis']
       : ['legal_analysis', 'document_processing'],
     useMultiAgent: false

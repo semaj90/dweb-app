@@ -1,5 +1,7 @@
 <!-- Enhanced YoRHa AI Assistant with RAG Integration & Evidence Mode -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
   import { onMount, onDestroy } from 'svelte';
   import { fly, fade, scale } from 'svelte/transition';
@@ -1081,3 +1083,8 @@
   }
 </style>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

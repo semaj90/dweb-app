@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 
 export const GET = async () => {
   try {

@@ -1,6 +1,6 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
-import type { RequestHandler }, {
-json, error } from "@sveltejs/kit";
+import type { RequestHandler }, { json, error } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

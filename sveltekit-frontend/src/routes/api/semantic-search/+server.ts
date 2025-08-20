@@ -1,27 +1,15 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-db } from "$lib/server/db/pg";
-// Orphaned content: import { legalDocuments
-import {
-sql } from "drizzle-orm";
-// Orphaned content: import { nomicEmbeddings
+import { db } from "$lib/server/db/pg";
+import { sql } from "drizzle-orm";
 
 // Use Nomic embeddings with 768 dimensions (Nomic's default)
 const EMBEDDING_DIMENSION = 768;
 
-import {
-  enhancedSearchWithNeo4j,
-  type UserContext,
-  type Neo4jPathContext,
-} from "$lib/ai/custom-reranker";
-// Orphaned content: import { accessMemoryMCP
-import {
-mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
-// Orphaned content: import { json as analyticsLog
-import {
-URL } from "url";
+import { enhancedSearchWithNeo4j, type UserContext, type Neo4jPathContext } from "$lib/ai/custom-reranker";
+import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request }) => {
   const {

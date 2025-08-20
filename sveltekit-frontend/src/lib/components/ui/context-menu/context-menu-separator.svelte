@@ -8,3 +8,8 @@
     margin: 0.25rem -0.25rem;
 }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,9 +1,7 @@
 // @ts-nocheck
 import { error, json } from "@sveltejs/kit";
-// Orphaned content: import {
 appendFile, mkdir
 import { tmpdir } from "os";
-// Orphaned content: import {
 
 const UPLOAD_DIR = join(tmpdir(), "chunked-uploads");
 

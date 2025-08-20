@@ -1,9 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { ollamaService
-import {
-logger } from "$lib/server/logger";
+import { logger } from "$lib/server/logger";
 
 export const GET: RequestHandler = async () => {
   try {

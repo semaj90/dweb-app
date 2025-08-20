@@ -1,5 +1,7 @@
 <!-- Enhanced Document Uploader with Bits UI v2, AI Processing, and Real-time Status -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import {
     Badge,
     Button,
@@ -563,7 +565,7 @@
                     <Button
                       variant="ghost"
                       size="sm"
-                      on:click={() => openMetadataDialog(file)}
+                      onclick={() => openMetadataDialog(file)}
                     >
                       Edit
                     </Button>
@@ -572,7 +574,7 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => removeFile(file.id)}
+                    onclick={() => removeFile(file.id)}
                     disabled={file.status === "uploading" ||
                       file.status === "processing"}
                   >
@@ -589,7 +591,7 @@
     <!-- Upload Actions -->
     <div class="upload-actions mt-6">
       <Button
-        on:click={uploadFiles}
+        onclick={uploadFiles}
         disabled={$isProcessing || $files.every((f) => f.status !== "pending")}
         class="mr-4"
       >
@@ -605,7 +607,7 @@
 
       <Button
         variant="outline"
-        on:click={() => files.set([])}
+        onclick={() => files.set([])}
         disabled={$isProcessing}
       >
         Clear All
@@ -684,11 +686,11 @@
           </div>
 
           <div class="dialog-actions">
-            <Button variant="outline" on:click={() => showMetadata.set(false)}>
+            <Button variant="outline" onclick={() => showMetadata.set(false)}>
               Cancel
             </Button>
             <Button
-              on:click={() => {
+              onclick={() => {
                 if ($selectedFile) {
                   updateFileMetadata($selectedFile.id, $selectedFile.metadata);
                 }
@@ -801,3 +803,8 @@
     @apply flex justify-end space-x-2 mt-6;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

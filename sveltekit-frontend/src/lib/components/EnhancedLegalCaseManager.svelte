@@ -1,5 +1,7 @@
 <!-- Enhanced Legal Case Manager with Production Features -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
     import { onMount, tick } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
@@ -759,3 +761,8 @@
         transition: all 0.2s ease-in-out;
     }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

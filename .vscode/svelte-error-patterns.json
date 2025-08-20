@@ -1,0 +1,626 @@
+{
+  "generatedAt": "2025-08-20T05:24:05.090Z",
+  "totalGroups": 1147,
+  "top": [
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\+page.svelte",
+      "count": 101,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\+page.svelte",
+          "line": 459,
+          "col": 18,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Quoted attributes on components and custom elements will be stringified in a future version of Svelte. If this isn't what you want, remove the quotes"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\+page.svelte",
+          "line": 537,
+          "col": 13,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`<svelte:component>` is deprecated in runes mode — components are dynamic by default"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\+page.svelte",
+          "line": 546,
+          "col": 9,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type=\"button\">` or `<a>` might be more appropriate. See https://svelte.dev/docs/accessibility-warnings#a11y-click-events-have-key-events for more details"
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\machines\\legalAIMachine.ts",
+      "count": 97,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\machines\\legalAIMachine.ts",
+          "line": 15,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Property or signature expected."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\machines\\legalAIMachine.ts",
+          "line": 49,
+          "col": 3,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Property or signature expected."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\machines\\legalAIMachine.ts",
+          "line": 64,
+          "col": 28,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "An element access expression should take an argument."
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demos\\+page.svelte",
+      "count": 82,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demos\\+page.svelte",
+          "line": 417,
+          "col": 13,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`<svelte:component>` is deprecated in runes mode — components are dynamic by default"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demos\\+page.svelte",
+          "line": 444,
+          "col": 13,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type=\"button\">` or `<a>` might be more appropriate. See https://svelte.dev/docs/accessibility-warnings#a11y-click-events-have-key-events for more details"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demos\\+page.svelte",
+          "line": 444,
+          "col": 13,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`<div>` with a click handler must have an ARIA role"
+        }
+      ]
+    },
+    {
+      "category": "import",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\multiStepFormMachine.ts",
+      "count": 80,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\multiStepFormMachine.ts",
+          "line": 11,
+          "col": 31,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'z'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\multiStepFormMachine.ts",
+          "line": 13,
+          "col": 10,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'z'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\multiStepFormMachine.ts",
+          "line": 14,
+          "col": 15,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'z'."
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\enhanced\\+page.svelte",
+      "count": 80,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\enhanced\\+page.svelte",
+          "line": 594,
+          "col": 8,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".case-workspace\""
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\enhanced\\+page.svelte",
+          "line": 594,
+          "col": 8,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".notification-bar\""
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\enhanced\\+page.svelte",
+          "line": 594,
+          "col": 8,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".notification\""
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\ComprehensiveSummaryEngine.svelte",
+      "count": 64,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\ComprehensiveSummaryEngine.svelte",
+          "line": 453,
+          "col": 11,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "A form label must be associated with a control"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\ComprehensiveSummaryEngine.svelte",
+          "line": 458,
+          "col": 11,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "A form label must be associated with a control"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\ComprehensiveSummaryEngine.svelte",
+          "line": 464,
+          "col": 11,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "A form label must be associated with a control"
+        }
+      ]
+    },
+    {
+      "category": "import",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\server\\ai\\rag-pipeline-enhanced.ts",
+      "count": 59,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\server\\ai\\rag-pipeline-enhanced.ts",
+          "line": 15,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'RunnableSequence'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\server\\ai\\rag-pipeline-enhanced.ts",
+          "line": 15,
+          "col": 19,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'RunnablePassthrough'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\server\\ai\\rag-pipeline-enhanced.ts",
+          "line": 20,
+          "col": 51,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'from'."
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaDataGrid.svelte",
+      "count": 52,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaDataGrid.svelte",
+          "line": 56,
+          "col": 5,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Unexpected keyword 'class'"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaDataGrid.svelte",
+          "line": 401,
+          "col": 5,
+          "sev": "warning",
+          "code": "CSS",
+          "msg": "Unknown at rule @apply"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaDataGrid.svelte",
+          "line": 439,
+          "col": 5,
+          "sev": "warning",
+          "code": "CSS",
+          "msg": "Unknown at rule @apply"
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaTable.svelte",
+      "count": 49,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaTable.svelte",
+          "line": 349,
+          "col": 5,
+          "sev": "warning",
+          "code": "CSS",
+          "msg": "Unknown at rule @apply"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaTable.svelte",
+          "line": 383,
+          "col": 5,
+          "sev": "warning",
+          "code": "CSS",
+          "msg": "Unknown at rule @apply"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaTable.svelte",
+          "line": 387,
+          "col": 5,
+          "sev": "warning",
+          "code": "CSS",
+          "msg": "Unknown at rule @apply"
+        }
+      ]
+    },
+    {
+      "category": "import",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\evidence\\upload\\+server.ts",
+      "count": 48,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\evidence\\upload\\+server.ts",
+          "line": 22,
+          "col": 32,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'from'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\evidence\\upload\\+server.ts",
+          "line": 24,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'fileUploadSchema'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\evidence\\upload\\+server.ts",
+          "line": 24,
+          "col": 24,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'FileUpload'."
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\yorha-home\\+page.svelte",
+      "count": 48,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\yorha-home\\+page.svelte",
+          "line": 58,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type=\"button\">` or `<a>` might be more appropriate. See https://svelte.dev/docs/accessibility-warnings#a11y-click-events-have-key-events for more details"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\yorha-home\\+page.svelte",
+          "line": 58,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`<div>` with a click handler must have an ARIA role"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\yorha-home\\+page.svelte",
+          "line": 77,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type=\"button\">` or `<a>` might be more appropriate. See https://svelte.dev/docs/accessibility-warnings#a11y-click-events-have-key-events for more details"
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\onboarding\\OnboardingOverlay.svelte",
+      "count": 46,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\onboarding\\OnboardingOverlay.svelte",
+          "line": 59,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`overlayEl` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\onboarding\\OnboardingOverlay.svelte",
+          "line": 61,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`isPlaying` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\onboarding\\OnboardingOverlay.svelte",
+          "line": 63,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`highlightBox` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates"
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\upload\\AdvancedFileUpload.svelte",
+      "count": 46,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\upload\\AdvancedFileUpload.svelte",
+          "line": 747,
+          "col": 3,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".advanced-file-upload\""
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\upload\\AdvancedFileUpload.svelte",
+          "line": 750,
+          "col": 3,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".drop-zone\""
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\upload\\AdvancedFileUpload.svelte",
+          "line": 759,
+          "col": 3,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".drop-zone:hover:not(.disabled)\""
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\auth\\test\\+page.svelte",
+      "count": 46,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\auth\\test\\+page.svelte",
+          "line": 240,
+          "col": 11,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`<svelte:component>` is deprecated in runes mode — components are dynamic by default"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\auth\\test\\+page.svelte",
+          "line": 254,
+          "col": 11,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`<svelte:component>` is deprecated in runes mode — components are dynamic by default"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\auth\\test\\+page.svelte",
+          "line": 268,
+          "col": 11,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`<svelte:component>` is deprecated in runes mode — components are dynamic by default"
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\realtime.ts",
+      "count": 45,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\realtime.ts",
+          "line": 5,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Identifier expected."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\realtime.ts",
+          "line": 6,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Identifier expected."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\realtime.ts",
+          "line": 6,
+          "col": 3,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Identifier expected."
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ReportEditor.svelte",
+      "count": 45,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ReportEditor.svelte",
+          "line": 538,
+          "col": 3,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".report-editor-container\""
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ReportEditor.svelte",
+          "line": 548,
+          "col": 3,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".editor-header\""
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ReportEditor.svelte",
+          "line": 555,
+          "col": 3,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "Unused CSS selector \".report-title-input\""
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\canvas\\+page.svelte",
+      "count": 43,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\canvas\\+page.svelte",
+          "line": 196,
+          "col": 9,
+          "sev": "error",
+          "code": "SVELTE",
+          "msg": "Mixing old (on:contextmenu) and new syntaxes for event handling is not allowed. Use only the oncontextmenu syntax"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\canvas\\+page.svelte",
+          "line": 222,
+          "col": 43,
+          "sev": "error",
+          "code": "TS",
+          "msg": "Property 'id' does not exist on type 'unknown'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\canvas\\+page.svelte",
+          "line": 225,
+          "col": 15,
+          "sev": "error",
+          "code": "TS",
+          "msg": "Spread types may only be created from object types."
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\editor\\WysiwygEditor.svelte",
+      "count": 42,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\editor\\WysiwygEditor.svelte",
+          "line": 77,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`aiQuery` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\editor\\WysiwygEditor.svelte",
+          "line": 78,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`aiResults` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates"
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\editor\\WysiwygEditor.svelte",
+          "line": 79,
+          "col": 7,
+          "sev": "warning",
+          "code": "SVELTE",
+          "msg": "`isProcessingAI` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates"
+        }
+      ]
+    },
+    {
+      "category": "import",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\export\\+server.ts",
+      "count": 41,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\export\\+server.ts",
+          "line": 4,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'cases'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\export\\+server.ts",
+          "line": 4,
+          "col": 8,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'evidence'."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\export\\+server.ts",
+          "line": 6,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Cannot find name 'count'."
+        }
+      ]
+    },
+    {
+      "category": "other",
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\analyze\\+server.ts",
+      "count": 39,
+      "sample": [
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\analyze\\+server.ts",
+          "line": 13,
+          "col": 1,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Expression expected."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\analyze\\+server.ts",
+          "line": 14,
+          "col": 23,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "Identifier expected."
+        },
+        {
+          "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\analyze\\+server.ts",
+          "line": 14,
+          "col": 35,
+          "sev": "error",
+          "code": "GEN",
+          "msg": "',' expected."
+        }
+      ]
+    }
+  ]
+}

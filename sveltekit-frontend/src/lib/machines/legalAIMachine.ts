@@ -1,0 +1,630 @@
+import { createMachine, assign, interpret } from 'xstate';
+import { writable } from 'svelte/store';
+
+// Legal AI Application State Machine
+export interface Case {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+  category: string;
+  [key: string]: any;
+}
+
+export interface LegalAIContext {
+export interface Evidence {
+  id: string;
+  caseId: string;
+  type: string;
+  description?: string;
+  fileUrl?: string;
+  metadata?: Record<string, any>;
+  [key: string]: any;
+}
+
+export interface LegalAIContext {
+  user: {
+    id: string | null;
+    email: string | null;
+    role: string | null;
+    permissions: string[];
+    isAuthenticated: boolean;
+  };
+  cases: {
+    items: Case[];
+    currentCase: Case | null;
+    filters: {
+      search: string;
+      status: string;
+      priority: string;
+      category: string;
+    };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+    };
+    loading: boolean;
+    error: string | null;
+  export interface Evidence {
+    id: string;
+    caseId: string;
+    type: string;
+    data: any;
+    [key: string]: any;
+  }
+  ai: {
+    isProcessing: boolean;
+    lastQuery: string | null;
+    lastResponse: any | null;
+    error: string | null;
+    models: {
+      primary: ModelName;
+      embedding: EmbeddingModelName;
+      available: ModelName[];
+    };
+  };
+    lastResponse: any | null;
+    error: string | null;
+    models: {
+      primary: string;
+      embedding: string;
+      available: string[];
+    };
+  };
+  system: {
+    connected: boolean;
+    services: {
+      database: boolean;
+      redis: boolean;
+      ollama: boolean;
+      gpu: boolean;
+    };
+    metrics: {
+      errorCount: number;
+      performanceScore: number;
+      uptime: number;
+    };
+  };
+}
+      gpu: boolean;
+    };
+    metrics: {
+      errorCount: number;
+      performanceScore: number;
+      uptime: number;
+    };
+  };
+}
+
+export type LegalAIEvent =
+  | { type: 'AUTH.LOGIN'; email: string; password: string }
+  | { type: 'AUTH.LOGOUT' }
+  | { type: 'AUTH.REGISTER'; userData: any }
+  | { type: 'CASES.LOAD'; filters?: any }
+  | { type: 'CASES.CREATE'; caseData: any }
+  | { type: 'CASES.UPDATE'; id: string; updates: any }
+  | { type: 'CASES.DELETE'; id: string }
+  | { type: 'CASES.SELECT'; case: any }
+  | { type: 'CASES.SEARCH'; query: string }
+  | { type: 'EVIDENCE.LOAD'; caseId: string }
+  | { type: 'EVIDENCE.UPLOAD'; file: File; metadata: any }
+  | { type: 'EVIDENCE.ANALYZE'; evidenceId: string }
+  | { type: 'AI.QUERY'; prompt: string; context?: any }
+export enum ModelName {
+  GEMMA3_LEGAL = 'gemma3-legal',
+  GPT4_LEGAL = 'gpt4-legal',
+  LLAMA2_LEGAL = 'llama2-legal'
+}
+
+export enum EmbeddingModelName {
+  NOMIC_EMBED_TEXT = 'nomic-embed-text',
+  OPENAI_EMBED = 'openai-embed'
+}
+
+const initialContext: LegalAIContext = {
+  user: {
+    id: null,
+    email: null,
+    role: null,
+    permissions: [],
+    isAuthenticated: false
+  },
+  cases: {
+    items: [],
+    currentCase: null,
+    filters: {
+      search: '',
+      status: '',
+      priority: '',
+      category: ''
+    },
+    pagination: {
+      page: 1,
+      limit: 50,
+      total: 0
+    },
+    loading: false,
+    error: null
+  },
+  evidence: {
+    items: [],
+    currentEvidence: null,
+    loading: false,
+    error: null
+  },
+  ai: {
+    isProcessing: false,
+    lastQuery: null,
+    lastResponse: null,
+    error: null,
+    models: {
+      primary: ModelName.GEMMA3_LEGAL,
+      embedding: EmbeddingModelName.NOMIC_EMBED_TEXT,
+      available: [ModelName.GEMMA3_LEGAL, ModelName.GPT4_LEGAL, ModelName.LLAMA2_LEGAL]
+    }
+  },
+  system: {
+    connected: false,
+    services: {
+      database: false,
+      redis: false,
+      ollama: false,
+      gpu: false
+    },
+    metrics: {
+      errorCount: 0,
+      performanceScore: 0,
+      uptime: 0
+    }
+  }
+};
+    },
+    metrics: {
+      errorCount: 0,
+      performanceScore: 0,
+      uptime: 0
+    }
+  }
+};
+
+export const legalAIMachine = createMachine<LegalAIContext, LegalAIEvent>({
+  id: 'legalAI',
+  initial: 'initializing',
+  context: initialContext,
+  states: {
+    initializing: {
+      invoke: {
+        src: 'checkSystemStatus',
+        onDone: {
+          target: 'idle',
+          actions: assign({
+            system: (_, event) => event.data
+          })
+        },
+        onError: {
+          target: 'error',
+          actions: assign({
+            system: (context) => ({
+              ...context.system,
+              connected: false
+            })
+          })
+        }
+      }
+    },
+
+    idle: {
+      on: {
+        'AUTH.LOGIN': 'authenticating',
+        'AUTH.REGISTER': 'registering',
+        'CASES.LOAD': 'loadingCases',
+        'CASES.CREATE': 'creatingCase',
+        'AI.QUERY': 'processingAI',
+        'SYSTEM.CHECK_STATUS': 'checkingStatus'
+      }
+    },
+
+    authenticating: {
+      invoke: {
+        src: 'authenticateUser',
+        onDone: {
+          target: 'authenticated',
+          actions: assign({
+            user: (_, event) => ({
+              ...event.data,
+              isAuthenticated: true
+            })
+          })
+        },
+        onError: {
+          target: 'idle',
+          actions: assign({
+            user: (context) => ({
+              ...context.user,
+              isAuthenticated: false
+            })
+          })
+        }
+      }
+    },
+
+    registering: {
+      invoke: {
+        src: 'registerUser',
+        onDone: {
+          target: 'authenticated',
+          actions: assign({
+            user: (_, event) => ({
+              ...event.data,
+              isAuthenticated: true
+            })
+          })
+        },
+        onError: 'idle'
+      }
+    },
+
+    authenticated: {
+      initial: 'managingCases',
+      on: {
+        'AUTH.LOGOUT': {
+          target: 'idle',
+          actions: assign({
+            user: initialContext.user,
+            cases: initialContext.cases,
+            evidence: initialContext.evidence
+          })
+        }
+      },
+      states: {
+        managingCases: {
+          on: {
+            'CASES.LOAD': 'loadingCases',
+            'CASES.CREATE': 'creatingCase',
+            'CASES.UPDATE': 'updatingCase',
+            'CASES.DELETE': 'deletingCase',
+            'CASES.SELECT': {
+              actions: assign({
+                cases: (context, event) => ({
+                  ...context.cases,
+                  currentCase: event.case
+                })
+              })
+            },
+            'CASES.SEARCH': {
+              target: 'loadingCases',
+              actions: assign({
+                cases: (context, event) => ({
+                  ...context.cases,
+                  filters: {
+                    ...context.cases.filters,
+                    search: event.query
+                  }
+                })
+              })
+            },
+            'EVIDENCE.LOAD': 'loadingEvidence',
+            'AI.QUERY': 'processingAI'
+          }
+        },
+
+        loadingCases: {
+          entry: assign({
+            cases: (context) => ({
+              ...context.cases,
+              loading: true,
+              error: null
+            })
+          }),
+          invoke: {
+            src: 'loadCases',
+            onDone: {
+              target: 'managingCases',
+              actions: assign({
+                cases: (context, event) => ({
+                  ...context.cases,
+                  items: event.data.data,
+                  pagination: event.data.pagination,
+                  loading: false
+                })
+              })
+            },
+            onError: {
+              target: 'managingCases',
+              actions: assign({
+                cases: (context, event) => ({
+                  ...context.cases,
+                  loading: false,
+                  error: event.data.message || 'Failed to load cases'
+                })
+              })
+            }
+          }
+        },
+
+        creatingCase: {
+          invoke: {
+            src: 'createCase',
+            onDone: {
+              target: 'managingCases',
+              actions: [
+                assign({
+                  cases: (context, event) => ({
+                    ...context.cases,
+                    items: [event.data.data, ...context.cases.items]
+                  })
+                }),
+                'notifySuccess'
+              ]
+            },
+            onError: {
+              target: 'managingCases',
+              actions: assign({
+                cases: (context, event) => ({
+                  ...context.cases,
+                  error: event.data.message || 'Failed to create case'
+                })
+              })
+            }
+          }
+        },
+
+        updatingCase: {
+          invoke: {
+            src: 'updateCase',
+            onDone: {
+              target: 'managingCases',
+              actions: [
+                assign({
+                  cases: (context, event) => ({
+                    ...context.cases,
+                    items: context.cases.items.map(c =>
+                      c.id === event.data.data.id ? event.data.data : c
+                    ),
+                    currentCase: event.data.data
+                  })
+                }),
+                'notifySuccess'
+              ]
+            },
+            onError: {
+              target: 'managingCases',
+              actions: assign({
+                cases: (context, event) => ({
+                  ...context.cases,
+                  error: event.data.message || 'Failed to update case'
+                })
+              })
+            }
+          }
+        },
+
+        deletingCase: {
+          invoke: {
+            src: 'deleteCase',
+            onDone: {
+              target: 'managingCases',
+              actions: [
+                assign({
+                  cases: (context, event) => ({
+                    ...context.cases,
+                    items: context.cases.items.filter(c => c.id !== event.data.id),
+                    currentCase: context.cases.currentCase?.id === event.data.id ? null : context.cases.currentCase
+                  })
+                }),
+                'notifySuccess'
+              ]
+            },
+            onError: {
+              target: 'managingCases',
+              actions: assign({
+                cases: (context, event) => ({
+                  ...context.cases,
+                  error: event.data.message || 'Failed to delete case'
+                })
+              })
+            }
+          }
+        },
+
+        loadingEvidence: {
+          entry: assign({
+            evidence: (context) => ({
+              ...context.evidence,
+              loading: true,
+              error: null
+            })
+          }),
+          invoke: {
+            src: 'loadEvidence',
+            onDone: {
+              target: 'managingCases',
+              actions: assign({
+                evidence: (context, event) => ({
+                  ...context.evidence,
+                  items: event.data.data,
+                  loading: false
+                })
+              })
+            },
+            onError: {
+              target: 'managingCases',
+              actions: assign({
+                evidence: (context, event) => ({
+                  ...context.evidence,
+                  loading: false,
+                  error: event.data.message || 'Failed to load evidence'
+                })
+              })
+            }
+          }
+        },
+
+        processingAI: {
+          entry: assign({
+            ai: (context, event) => ({
+              ...context.ai,
+              isProcessing: true,
+              lastQuery: event.prompt,
+              error: null
+            })
+          }),
+          invoke: {
+            src: 'processAIQuery',
+            onDone: {
+              target: 'managingCases',
+              actions: assign({
+                ai: (context, event) => ({
+                  ...context.ai,
+                  isProcessing: false,
+                  lastResponse: event.data
+                })
+              })
+            },
+            onError: {
+              target: 'managingCases',
+              actions: assign({
+                ai: (context, event) => ({
+                  ...context.ai,
+                  isProcessing: false,
+                  error: event.data.message || 'AI processing failed'
+                })
+              })
+            }
+          }
+        }
+      }
+    },
+
+    checkingStatus: {
+      invoke: {
+        src: 'checkSystemStatus',
+        onDone: {
+          target: 'idle',
+          actions: assign({
+            system: (_, event) => event.data
+          })
+        },
+        onError: 'idle'
+      }
+    },
+
+    error: {
+      on: {
+        'SYSTEM.CONNECT': 'initializing'
+      }
+    }
+  }
+}, {
+  services: {
+    checkSystemStatus: async () => {
+      // Check system services
+      const response = await fetch('/api/system/status');
+      return response.json();
+    },
+
+    authenticateUser: async (_, event) => {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event)
+      });
+      if (!response.ok) throw new Error('Authentication failed');
+      return response.json();
+    },
+
+    registerUser: async (_, event) => {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event.userData)
+      });
+      if (!response.ok) throw new Error('Registration failed');
+      return response.json();
+    },
+
+    loadCases: async (context) => {
+      const params = new URLSearchParams();
+      if (context.cases.filters.search) params.append('search', context.cases.filters.search);
+      if (context.cases.filters.status) params.append('status', context.cases.filters.status);
+      if (context.cases.filters.priority) params.append('priority', context.cases.filters.priority);
+      if (context.cases.filters.category) params.append('category', context.cases.filters.category);
+      params.append('limit', context.cases.pagination.limit.toString());
+      params.append('offset', ((context.cases.pagination.page - 1) * context.cases.pagination.limit).toString());
+
+      const response = await fetch(`/api/cases?${params}`);
+      if (!response.ok) throw new Error('Failed to load cases');
+      return response.json();
+    },
+
+    createCase: async (_, event) => {
+      const response = await fetch('/api/cases', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event.caseData)
+      });
+      if (!response.ok) throw new Error('Failed to create case');
+      return response.json();
+    },
+
+    updateCase: async (_, event) => {
+      const response = await fetch(`/api/cases/${event.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event.updates)
+      });
+      if (!response.ok) throw new Error('Failed to update case');
+      return response.json();
+    },
+
+    deleteCase: async (_, event) => {
+      const response = await fetch(`/api/cases/${event.id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) throw new Error('Failed to delete case');
+      return { id: event.id };
+    },
+
+    loadEvidence: async (_, event) => {
+      const response = await fetch(`/api/evidence?caseId=${event.caseId}`);
+      if (!response.ok) throw new Error('Failed to load evidence');
+      return response.json();
+    },
+
+    processAIQuery: async (_, event) => {
+      const response = await fetch('/api/ai/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: event.prompt,
+          context: event.context
+        })
+      });
+      if (!response.ok) throw new Error('AI query failed');
+      return response.json();
+    }
+  },
+
+  actions: {
+    notifySuccess: () => {
+      console.log('Operation completed successfully');
+    }
+  }
+});
+
+// Create the service
+export const legalAIService = interpret(legalAIMachine);
+
+// Create Svelte store for reactive state
+export const legalAIState = writable(legalAIMachine.initialState);
+
+// Update store when state changes
+legalAIService.onTransition((state) => {
+  legalAIState.set(state);
+});
+
+// Start the service
+legalAIService.start();
+
+export default legalAIService;

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import Dialog from 'bits-ui/Dialog.svelte';
   import Button from 'bits-ui/Button.svelte';
   import { onMount } from 'svelte';
@@ -86,7 +88,7 @@
         <!-- Add other view-only fields as needed -->
       </div>
       <div class="flex gap-2 mt-2">
-        <Button on:click={handleEdit}>Edit</Button>
+        <Button onclick={handleEdit}>Edit</Button>
       </div>
     {:else}
       <form class="flex flex-col gap-2" onsubmit|preventDefault={handleSave}>
@@ -96,12 +98,12 @@
         <input name="jsonData.type" bind:value={type} placeholder="Type" class="input input-bordered" />
         <div class="flex gap-2 mt-2">
           <Button type="submit" class="uno-bg-green-600 uno-text-white uno-px-3 uno-py-1 uno-rounded">Save</Button>
-          <Button variant="outline" on:click={handleCancel}>Cancel</Button>
+          <Button variant="outline" onclick={handleCancel}>Cancel</Button>
         </div>
       </form>
     {/if}
     <div class="mt-4 flex justify-end">
-      <Button on:click={() => (open = false)} variant="ghost">Close</Button>
+      <Button onclick={() => (open = false)} variant="ghost">Close</Button>
     </div>
   </div>
 </Dialog>
@@ -118,3 +120,8 @@
     font-size: 1rem;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

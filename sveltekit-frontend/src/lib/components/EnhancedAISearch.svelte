@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   // Enhanced AI Search Component with Bits UI and UnoCSS
   // Svelte 5 + Go Microservice + Gemma3-Legal Integration
 
@@ -12,7 +14,7 @@
   import { Button, Select } from "bits-ui";
 
   // Props
-  interface Props {
+  interface Props extends CommonProps {
     initialQuery?: string;
     practiceArea?: PracticeArea;
     jurisdiction?: Jurisdiction;
@@ -181,7 +183,7 @@
       </h2>
 
       <Button.Root
-        on:click={() => (showAdvanced = !showAdvanced)}
+        onclick={() => (showAdvanced = !showAdvanced)}
         class="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
       >
         <span class="i-tabler-settings w-4 h-4"></span>
@@ -213,7 +215,7 @@
       </div>
 
       <Button.Root
-        on:click={performSearch}
+        onclick={performSearch}
         disabled={loading || !query.trim()}
         class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg
                disabled:opacity-50 disabled:cursor-not-allowed

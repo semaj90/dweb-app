@@ -3,6 +3,8 @@ Enhanced Legal AI Chat with Input Synthesis and LegalBERT Integration
 Combines all advanced services: input synthesis, LegalBERT analysis, RAG pipeline, and streaming
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { SystemStatus } from "$lib/types/global";
   import type { Props } from "$lib/types/global";
   import { onMount, tick } from 'svelte';
@@ -28,7 +30,7 @@ Combines all advanced services: input synthesis, LegalBERT analysis, RAG pipelin
   import * as Tooltip from '$lib/components/ui/tooltip';
 
   // Props
-  interface Props {
+  interface Props extends CommonProps {
     caseId?: string;
     userRole?: 'prosecutor' | 'defense' | 'judge' | 'paralegal' | 'student' | 'client';
     documentIds?: string[];
@@ -557,7 +559,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
           </div>
 
           <!-- Settings Toggle -->
-          <Button variant="ghost" size="sm" on:click={() => (showSettings = !showSettings)}>
+          <Button variant="ghost" size="sm" onclick={() => (showSettings = !showSettings)}>
             <Settings class="w-4 h-4" />
           </Button>
         </div>
@@ -718,7 +720,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
 
           <!-- Message Actions -->
           <div class="flex-shrink-0 flex flex-col gap-1">
-            <Button variant="ghost" size="sm" on:click={() => copyToClipboard(message.content)}>
+            <Button variant="ghost" size="sm" onclick={() => copyToClipboard(message.content)}>
               <FileText class="w-3 h-3" />
             </Button>
           </div>
@@ -742,10 +744,10 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
       bind:this={inputElement}
       bind:value={currentInput}
       placeholder="Ask about legal matters, analyze documents, or use commands like /analyze..."
-      on:keydown={handleKeyDown}
+      onkeydown={handleKeyDown}
       disabled={isProcessing}
       class="flex-1" />
-    <Button on:click={sendMessage} disabled={!currentInput.trim() || isProcessing}>
+    <Button onclick={sendMessage} disabled={!currentInput.trim() || isProcessing}>
       {#if isProcessing}
         <Loader2 class="w-4 h-4 animate-spin" />
       {:else}
@@ -760,7 +762,7 @@ ${caseId ? `• **Case Context:** ${caseId}` : ''}
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           Detailed Analysis
-          <Button variant="ghost" size="sm" on:click={() => (showAdvancedAnalysis = false)}>
+          <Button variant="ghost" size="sm" onclick={() => (showAdvancedAnalysis = false)}>
             ×
           </Button>
         </CardTitle>

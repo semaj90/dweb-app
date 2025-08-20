@@ -1,22 +1,31 @@
-// @ts-nocheck
-import { json } from "@sveltejs/kit";
-// Orphaned content: import {
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { evidence } from '$lib/server/db/schema';
+import { sql } from 'drizzle-orm';
 
-import { evidence } from "$lib/server/db/schema";
-import { eq, , // Example vector similarity function (replace with actual pgvector logic), async function vectorSearch(queryVector: number[], topK: number) {,   // TODO: Use pgvector extension for similarity search,   // This is a placeholder for demonstration,   const results = await db.select().from(evidence).limit(topK);,   return results; } from
+// Assumes pgvector extension is enabled and evidence table has a 'embedding' vector column
+async function vectorSearch(queryVector: number[], topK: number) {
+    // Use raw SQL for pgvector similarity search
+    const results = await db
+        .select()
+        .from(evidence)
+        .where(sql`embedding <-> ${sql.raw(`ARRAY[${queryVector.join(",")}]::vector`)}`)
+        .orderBy(sql`embedding <-> ${sql.raw(`ARRAY[${queryVector.join(",")}]::vector`)}`)
+        .limit(topK);
 
-export async function POST({ request, locals }) {
-  if (!locals.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-    });
-  }
-  const { queryVector, topK = 10 } = await request.json();
-  if (!queryVector) {
-    return new Response(JSON.stringify({ error: "Missing queryVector" }), {
-      status: 400,
-    });
-  }
-  const results = await vectorSearch(queryVector, topK);
-  return new Response(JSON.stringify({ results }), { status: 200 });
+    return results;
 }
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+    if (!locals.user) {
+        return json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const { queryVector, topK = 10 } = await request.json();
+    if (!Array.isArray(queryVector) || queryVector.length === 0) {
+        return json({ error: "Missing or invalid queryVector" }, { status: 400 });
+    }
+    const results = await vectorSearch(queryVector, Math.min(topK, 50));
+    return json({ results, count: results.length }, { status: 200 });
+};
+
+export const GET: RequestHandler = async () => json({ service: 'search-similarity', status: 'ok' });

@@ -204,7 +204,7 @@ Features: Case management, evidence upload, AI chat, vector search
             <Button
               variant={selectedCaseId === caseItem.id ? 'default' : 'outline'}
               size="sm"
-              on:click={() => selectCase(caseItem.id)}
+              onclick={() => selectCase(caseItem.id)}
             >
               {caseItem.caseNumber} - {caseItem.title}
               <Badge variant="secondary" class="ml-2">
@@ -243,7 +243,7 @@ Features: Case management, evidence upload, AI chat, vector search
                 placeholder="Search evidence, cases, precedents..."
                 class="flex-1"
               />
-              <Button on:click={performVectorSearch} disabled={!searchQuery.trim()}>
+              <Button onclick={performVectorSearch} disabled={!searchQuery.trim()}>
                 <Search class="w-4 h-4" />
               </Button>
             </div>

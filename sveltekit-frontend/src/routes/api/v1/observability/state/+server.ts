@@ -1,9 +1,5 @@
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { getBudgetCounters
-import {
-getSustainedP99Info } from "$lib/services/alert-center";
-// Orphaned content: import { loadObservabilityState, saveObservabilityState, initializeObservabilityPersistence
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { getSustainedP99Info } from "$lib/services/alert-center";
 import fs from 'fs';
 import path from 'path';
 
@@ -12,7 +8,7 @@ export const GET: RequestHandler = async () => {
   try {
     // Load enhanced persistent state
     const persistedState = await loadObservabilityState();
-    
+
     // Get legacy runtime data
     const runtimeDir = path.resolve(process.cwd(), '.runtime');
     const file = path.join(runtimeDir, 'observability-state.json');
@@ -20,7 +16,7 @@ export const GET: RequestHandler = async () => {
     if(fs.existsSync(file)){
       try { legacyPersisted = JSON.parse(fs.readFileSync(file,'utf8')); } catch {}
     }
-    
+
     return json({
       ok: true,
       // Enhanced structured state
@@ -38,12 +34,12 @@ export const GET: RequestHandler = async () => {
   }
 };
 
-// POST /api/v1/observability/state - Update observability state  
+// POST /api/v1/observability/state - Update observability state
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const updates = await request.json();
     const currentState = await loadObservabilityState();
-    
+
     // Merge updates with current state
     const newState = {
       ...currentState,
@@ -56,11 +52,11 @@ export const POST: RequestHandler = async ({ request }) => {
         last_updated: new Date().toISOString()
       }
     };
-    
+
     await saveObservabilityState(newState);
-    
-    return json({ 
-      success: true, 
+
+    return json({
+      success: true,
       state: newState,
       timestamp: new Date().toISOString()
     });

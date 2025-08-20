@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte'
   import { createSelect, melt } from '@melt-ui/svelte'
   import { fade, fly } from 'svelte/transition'
@@ -33,7 +35,7 @@
     endpoint: string
   }
   
-  interface Props {
+  interface Props extends CommonProps {
     selectedModel?: LLMModel
     onModelChange?: (model: LLMModel) => void
     showMetrics?: boolean

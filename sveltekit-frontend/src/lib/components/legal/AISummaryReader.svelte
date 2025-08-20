@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import {
     aiSummaryMachine,
     type SummarySection,
@@ -678,3 +680,5 @@
     margin-bottom: 0;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

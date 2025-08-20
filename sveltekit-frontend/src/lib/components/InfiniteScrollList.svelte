@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher, onMount } from "svelte";
   import { quintOut } from "svelte/easing";
   import { fade, slide } from "svelte/transition";
@@ -348,3 +350,5 @@
     background: var(--pico-primary);
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   interface FileUpload {
     id: string;
     file: File;
@@ -386,7 +388,7 @@
                 {availableTags}
                 placeholder="Add tags for this file..."
                 maxTags={5}
-                on:change={(e) => updateFileTags(upload.id, e.detail)} />
+                onchange={(e) => updateFileTags(upload.id, e.detail)} />
             </div>
           {/if}
 
@@ -642,3 +644,8 @@
     background-color: #d1d5db;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

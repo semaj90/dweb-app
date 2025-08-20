@@ -1,5 +1,7 @@
 <!-- Rust WASM Bridge Demo Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { 
     initRustBridge, 
@@ -489,3 +491,7 @@
     color: #f39c12;
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

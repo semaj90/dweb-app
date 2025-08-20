@@ -1,5 +1,7 @@
 <!-- Demo Navigation Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   
@@ -206,3 +208,7 @@
     animation: slideIn 0.3s ease-out;
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

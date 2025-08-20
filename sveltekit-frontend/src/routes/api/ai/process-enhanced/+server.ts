@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // ======================================================================
 // ENHANCED AI PROCESSING API ENDPOINT
@@ -5,7 +6,6 @@
 // ======================================================================
 
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
 
 // Import AI services
 interface ProcessingPipeline {

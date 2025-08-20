@@ -1,6 +1,8 @@
 <!-- YorhaAI Assistant - Advanced Chat Interface with SvelteKit 5 + Bits UI + Melt UI -->
 <!-- Integrates with go-llama, MCP orchestrator, and tensor transport services -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { createDialog } from '@melt-ui/svelte';
@@ -669,7 +671,7 @@
 	<!-- Trigger Button -->
 	<Button.Root
 		{...$trigger}
-		on:click={openDialog}
+		onclick={openDialog}
 		variant="default"
 		size="lg"
 		class={cn(
@@ -745,7 +747,7 @@
 							{...$close}
 							variant="ghost"
 							size="sm"
-							on:click={closeDialog}
+							onclick={closeDialog}
 							class="h-6 w-6 p-0"
 						>
 							<span class="sr-only">Close</span>
@@ -881,13 +883,13 @@
 							bind:value={currentMessage}
 							placeholder={streamingResponse ? "AI is responding..." : "Type your message..."}
 							disabled={!isConnected || streamingResponse}
-							on:keydown={handleKeydown}
+							onkeydown={handleKeydown}
 							data-yorha-input
 							class="flex-1"
 						/>
 						
 						<Button.Root
-							on:click={sendMessage}
+							onclick={sendMessage}
 							disabled={!canSendMessage}
 							variant="default"
 							size="sm"
@@ -912,7 +914,7 @@
 							<Button.Root
 								variant="ghost"
 								size="sm"
-								on:click={clearChat}
+								onclick={clearChat}
 								disabled={!hasMessages}
 								class="text-xs h-6 px-2"
 							>
@@ -1020,3 +1022,7 @@
 		animation: var(--animation-pulse);
 	}
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

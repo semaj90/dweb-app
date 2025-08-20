@@ -1,15 +1,7 @@
 {
-  "timestamp": "2025-08-19T19:13:22.974Z",
-  "deployment": {
-    "version": "2.0.0",
-    "status": "deployed",
-    "orchestratorConfigured": true,
-    "mcpConfigured": true,
-    "flashAttentionEnabled": true,
-    "modelEnforcement": "active"
-  },
+  "timestamp": "2025-08-20T01:50:07.709Z",
   "performance": {
-    "totalTimeSeconds": 0.27,
+    "totalTimeSeconds": 0.49,
     "workers": 16,
     "filesProcessed": 20,
     "successRate": "100.0"
@@ -17,34 +9,12 @@
   "mcp": {
     "helpersLoaded": 0,
     "cachingEnabled": true,
-    "integrationStatus": "active",
-    "modelConstraints": "enforced",
-    "allowedModels": ["gemma3-legal", "nomic-embed-text"],
-    "blockedModels": ["gemma3:2b", "gemma3:8b", "gemma3:27b", "gemma2*", "gemma*"]
+    "integrationStatus": "active"
   },
   "gpu": {
     "enabled": true,
     "contexts": 16,
-    "rtx3060ti": "optimized",
-    "flashAttention2": "active",
-    "errorProcessing": "configured",
-    "memoryOptimization": "balanced"
-  },
-  "orchestration": {
-    "nodeJSOrchestrator": "configured",
-    "mcpIntegration": "active",
-    "gpuErrorProcessor": "active",
-    "services": {
-      "enhancedRAG": "running",
-      "uploadService": "configured",
-      "errorProcessor": "embedded"
-    }
-  },
-  "models": {
-    "primary": "gemma3-legal",
-    "embedding": "nomic-embed-text",
-    "validated": true,
-    "ggufOnly": true
+    "rtx3060ti": "optimized"
   },
   "results": [
     {
@@ -53,7 +23,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 489,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -64,7 +34,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 489,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -75,7 +45,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 489,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -86,7 +56,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 489,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -97,7 +67,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 490,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -108,7 +78,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 490,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -119,7 +89,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 490,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -130,7 +100,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 272,
+        "processingTime": 490,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -141,7 +111,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 490,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -152,7 +122,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 490,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -163,7 +133,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 491,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -174,7 +144,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 491,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -185,7 +155,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 491,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -196,7 +166,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 491,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -207,7 +177,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 491,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -218,7 +188,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 491,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -229,7 +199,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 492,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -240,7 +210,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 273,
+        "processingTime": 492,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -251,7 +221,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 274,
+        "processingTime": 492,
         "cacheHit": false,
         "agentCount": 0
       }
@@ -262,7 +232,7 @@
       "status": "completed",
       "fixes": {},
       "performance": {
-        "processingTime": 274,
+        "processingTime": 492,
         "cacheHit": false,
         "agentCount": 0
       }

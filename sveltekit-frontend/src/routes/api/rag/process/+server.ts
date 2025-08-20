@@ -1,20 +1,14 @@
-import pdf from "pdf-parse";
-/**
- * RAG Process API - Native Windows file processing pipeline
- * Integrates with local file storage, PostgreSQL vectors, Qdrant, and OCR
- */
-import { db, documents, embeddings } from "$lib/server/database";
-// Orphaned content: import {
-
-import { v4 as uuidv4 } from "uuid";
-// Orphaned content: import {
-writeFile, mkdir
+// RAG Process API - Cleaned imports (previously corrupted)
+import pdf from 'pdf-parse';
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { db, documents, embeddings } from '$lib/server/database';
+import { v4 as uuidv4 } from 'uuid';
+import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
-// Orphaned content: import path from 'path';
-import {
-
+import path from 'path';
 import { qdrantService } from '$lib/services/qdrantService';
-// Orphaned content: import type { RequestHandler
+
+// NOTE: This route intentionally uses local filesystem instead of MinIO for native Windows pipeline.
 
 // Local file storage setup
 const UPLOADS_DIR = path.join(process.cwd(), 'uploads', 'documents');

@@ -1,5 +1,7 @@
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     class?: string;
     children?: import('svelte').Snippet;
   }
@@ -284,7 +286,7 @@
         variant="primary"
         legal
         loading={isSearching}
-        on:click={performVectorSearch}
+        onclick={performVectorSearch}
         disabled={!searchQuery.trim()}
       >
         {#if isSearching}
@@ -299,7 +301,7 @@
       {#if searchResults.length > 0}
         <Button
           variant="outline"
-          on:click={clearResults}
+          onclick={clearResults}
         >
           Clear
         </Button>
@@ -450,7 +452,7 @@
       <div class="flex justify-center gap-2">
         <Button
           variant="outline"
-          on:click={() => searchQuery = 'contract breach non-disclosure agreement'}
+          onclick={() => searchQuery = 'contract breach non-disclosure agreement'}
         >
           Try Sample Query
         </Button>

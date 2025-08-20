@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { apiFetch } from "$lib/api/clients/api-client";
   import { onMount } from "svelte";
   let canvasEl: HTMLCanvasElement = $state();
@@ -208,3 +210,8 @@
     color: #555;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -48,7 +48,7 @@ class PostgresDB {
    */
   async query(text, params = []) {
     if (!this.connected) await this.connect();
-    
+
     try {
       const result = await this.pool.query(text, params);
       return result;
@@ -72,7 +72,7 @@ class PostgresDB {
    */
   async transaction(callback) {
     const client = await this.getClient();
-    
+
     try {
       await client.query('BEGIN');
       const result = await callback(client);
@@ -95,13 +95,13 @@ class PostgresDB {
     const keys = Object.keys(data);
     const values = Object.values(data);
     const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-    
+
     const query = `
       INSERT INTO ${table} (${keys.join(', ')})
       VALUES (${placeholders})
       RETURNING *
     `;
-    
+
     const result = await this.query(query, values);
     return result.rows[0];
   }
@@ -117,22 +117,22 @@ class PostgresDB {
     const dataValues = Object.values(data);
     const whereKeys = Object.keys(where);
     const whereValues = Object.values(where);
-    
+
     const setClause = dataKeys
       .map((key, i) => `${key} = $${i + 1}`)
       .join(', ');
-    
+
     const whereClause = whereKeys
       .map((key, i) => `${key} = $${dataValues.length + i + 1}`)
       .join(' AND ');
-    
+
     const query = `
       UPDATE ${table}
       SET ${setClause}
       WHERE ${whereClause}
       RETURNING *
     `;
-    
+
     const result = await this.query(query, [...dataValues, ...whereValues]);
     return result.rows;
   }
@@ -145,17 +145,17 @@ class PostgresDB {
   async delete(table, where) {
     const keys = Object.keys(where);
     const values = Object.values(where);
-    
+
     const whereClause = keys
       .map((key, i) => `${key} = $${i + 1}`)
       .join(' AND ');
-    
+
     const query = `
       DELETE FROM ${table}
       WHERE ${whereClause}
       RETURNING *
     `;
-    
+
     const result = await this.query(query, values);
     return result.rows;
   }
@@ -167,10 +167,10 @@ class PostgresDB {
    */
   async select(table, options = {}) {
     const { where = {}, orderBy = null, limit = null, offset = null } = options;
-    
+
     let query = `SELECT * FROM ${table}`;
     const values = [];
-    
+
     // Add WHERE clause
     const whereKeys = Object.keys(where);
     if (whereKeys.length > 0) {
@@ -180,22 +180,22 @@ class PostgresDB {
       query += ` WHERE ${whereClause}`;
       values.push(...Object.values(where));
     }
-    
+
     // Add ORDER BY
     if (orderBy) {
       query += ` ORDER BY ${orderBy}`;
     }
-    
+
     // Add LIMIT
     if (limit) {
       query += ` LIMIT ${limit}`;
     }
-    
+
     // Add OFFSET
     if (offset) {
       query += ` OFFSET ${offset}`;
     }
-    
+
     const result = await this.query(query, values);
     return result.rows;
   }
@@ -280,9 +280,65 @@ class PostgresDB {
 export const db = new PostgresDB();
 
 // Also export for drizzle compatibility
+/**
+ * Query object for interacting with legal documents in the database.
+ * Provides production-ready methods for compatibility with Drizzle ORM patterns.
+ * Uses PostgresDB for PostgreSQL operations.
+ * Compatible with Drizzle ORM and postgres-js style usage.
+ */
 export const query = {
   legalDocuments: {
-    findFirst: async (options) => {
+    /**
+     * Finds the first legal document in the database.
+     * @returns {Promise<Object|null>} Resolves to the first legal document or null if none found.
+     */
+    findFirst: async () => {
+      const rows = await db.select('legal_documents', { limit: 1, orderBy: 'id ASC' });
+      return rows.length > 0 ? rows[0] : null;
+    },
+
+    /**
+     * Finds legal documents by criteria.
+     * @param {Object} where - Filter conditions.
+     * @param {Object} options - Additional query options (orderBy, limit, offset).
+     * @returns {Promise<Array>} Array of matching legal documents.
+     */
+    findMany: async (where = {}, options = {}) => {
+      return await db.select('legal_documents', { where, ...options });
+    },
+
+    /**
+     * Inserts a new legal document.
+     * @param {Object} data - Document data.
+     * @returns {Promise<Object>} Inserted document.
+     */
+    create: async (data) => {
+      return await db.insert('legal_documents', data);
+    },
+
+    /**
+     * Updates legal documents by criteria.
+     * @param {Object} where - Filter conditions.
+     * @param {Object} data - Fields to update.
+     * @returns {Promise<Array>} Updated documents.
+     */
+    update: async (where, data) => {
+      return await db.update('legal_documents', data, where);
+    },
+
+    /**
+     * Deletes legal documents by criteria.
+     * @param {Object} where - Filter conditions.
+     * @returns {Promise<Array>} Deleted documents.
+     */
+    delete: async (where) => {
+      return await db.delete('legal_documents', where);
+    }
+  }
+};
+export const query = {
+  legalDocuments: {
+    findFirst: async () => {
       // Stub implementation for compatibility
       return null;
     }

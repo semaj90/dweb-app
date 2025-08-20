@@ -1,9 +1,7 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import VectorService from "$lib/server/services/vector-service";
-import type { RequestHandler
-import {
-URL } from "url";
+import type { RequestHandler import { URL } from "url";
 
 const vectorService = new VectorService();
 

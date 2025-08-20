@@ -5,7 +5,6 @@ import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs"
 const createServer = null as any;
 const makeExecutableSchema = null as any;
 import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
-// Orphaned content: import {
 
 const typeDefs = /* GraphQL */ `
   type Recommendation {

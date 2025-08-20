@@ -1,11 +1,10 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // Enhanced API Route for Go Microservice Integration
 // Connects SvelteKit frontend with enhanced legal AI processing
 // Supports local Gemma3-legal GGUF model with CUDA acceleration
 
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-URL } from "url";
+import { URL } from "url";
 
 interface GoMicroserviceConfig {
   baseUrl: string;

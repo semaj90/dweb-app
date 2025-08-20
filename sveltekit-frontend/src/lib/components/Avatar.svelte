@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { onMount } from 'svelte';
 	import { avatarStore } from "../stores/avatarStore";
 	
@@ -276,3 +278,4 @@
 		margin-left: 8px;
 	}
 </style>
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

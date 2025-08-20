@@ -1,5 +1,7 @@
 <!-- Progress Indicator Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
     import { createEventDispatcher } from 'svelte';
 
     export let steps: Array<{
@@ -189,3 +191,5 @@
         position: relative;
     }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

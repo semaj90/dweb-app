@@ -1,17 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json, error } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-parseStringPromise } from "xml2js";
-// Orphaned content: import pdf from "pdf-parse";
-import {
-writeFile, mkdir
-import { randomUUID } from 'crypto';
-// Orphaned content: import path from "path";
-import {
-
-import { enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";
-// Orphaned content: import {
+import { parseStringPromise } from "xml2js";
+import { writeFile, mkdir import { randomUUID } from 'crypto';
+import { import { enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";
 
 // @ts-ignore
 import xss from "xss"; // XSS protection
@@ -20,7 +12,6 @@ import xss from "xss"; // XSS protection
 const TEMP_DIR = path.join(process.cwd(), 'temp-uploads');
 
 import { ollamaService } from "$lib/services/ollamaService";
-// Orphaned content: import {
 
 // XSS-safe text extraction from XML
 async function processXml(buffer: Buffer): Promise<string> {

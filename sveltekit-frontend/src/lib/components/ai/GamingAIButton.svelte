@@ -1,6 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: Expected token >
 https://svelte.dev/e/expected_token -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte'
   import { scale, fly } from 'svelte/transition'
   import { 
@@ -13,7 +15,7 @@ https://svelte.dev/e/expected_token -->
     Power
   } from 'lucide-svelte'
   
-  interface Props {
+  interface Props extends CommonProps {
     isVisible?: boolean
     onToggle?: () => void
     onSettingsClick?: () => void

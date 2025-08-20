@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
   let {
     value = $bindable([0.5]),
@@ -37,3 +39,8 @@
 </style>
 
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,10 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { cases, evidence } from "$lib/server/db/schema-postgres";
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { eq, inArray
-import {
-db } from "$lib/server/db/index";
+import { db } from "$lib/server/db/index";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const userId = locals.user?.id;

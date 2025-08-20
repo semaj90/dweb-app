@@ -1,11 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { criminals } from "$lib/server/db/schema-postgres";
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { and, desc, eq, like, or, sql
-import {
-db } from "$lib/server/db/index";
-// Orphaned content: import { URL
+import { db } from "$lib/server/db/index";
 
 export const GET: RequestHandler = async ({ locals, url }) => {
   try {

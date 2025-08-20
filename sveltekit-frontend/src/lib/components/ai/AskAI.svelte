@@ -1,6 +1,8 @@
 <!-- Ask AI Component with Vector Search Integration -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     caseId: string | undefined ;
     evidenceIds: string[] ;
     placeholder?: any;

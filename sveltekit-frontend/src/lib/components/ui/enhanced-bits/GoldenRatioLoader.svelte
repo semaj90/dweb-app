@@ -1,11 +1,13 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { tweened } from 'svelte/motion';
 	import { cubicInOut, elasticOut } from 'svelte/easing';
 	import { createProgress } from '@melt-ui/svelte';
 	import { onMount } from 'svelte';
 
 	// Props
-	interface Props {
+	interface Props extends CommonProps {
 		status?: 'loading' | 'processing' | 'success' | 'error';
 		loadingText?: string;
 		successContent?: string;

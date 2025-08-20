@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * Agent Orchestrator API Endpoint
@@ -5,13 +6,10 @@
  */
 
 import { json, type RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 
 import { autoGenAgent } from "../../../../../agents/autogen-agent.js";
-// Orphaned content: import {
 
 import { enhancedRAGService } from "../../../../../rag/enhanced-rag-service.js";
-// Orphaned content: import {
 
 export interface AgentOrchestrationRequest {
   prompt: string;

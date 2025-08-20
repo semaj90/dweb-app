@@ -3,6 +3,8 @@ Collaboration Panel Component
 Real-time collaboration interface for multiple investigators working on evidence custody
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
@@ -289,7 +291,7 @@ Real-time collaboration interface for multiple investigators working on evidence
               bind:value={newMessage}
               placeholder="Type your message..."
               class="flex-1 resize-none min-h-[40px] max-h-[120px]"
-              on:keydown={(e) => {
+              onkeydown={(e) => {
                 handleTyping();
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -298,7 +300,7 @@ Real-time collaboration interface for multiple investigators working on evidence
               }}
             />
             <Button 
-              on:click={sendMessage}
+              onclick={sendMessage}
               disabled={!newMessage.trim()}
               size="sm"
               class="self-end"
@@ -321,7 +323,7 @@ Real-time collaboration interface for multiple investigators working on evidence
           <Button
             variant="outline"
             size="sm"
-            on:click={() => showAnnotationInput = !showAnnotationInput}
+            onclick={() => showAnnotationInput = !showAnnotationInput}
           >
             Add Note
           </Button>
@@ -336,10 +338,10 @@ Real-time collaboration interface for multiple investigators working on evidence
               class="mb-3"
             />
             <div class="flex space-x-2">
-              <Button on:click={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
+              <Button onclick={addAnnotation} size="sm" disabled={!newAnnotation.trim()}>
                 Add Annotation
               </Button>
-              <Button on:click={() => showAnnotationInput = false} variant="outline" size="sm">
+              <Button onclick={() => showAnnotationInput = false} variant="outline" size="sm">
                 Cancel
               </Button>
             </div>
@@ -458,3 +460,4 @@ Real-time collaboration interface for multiple investigators working on evidence
     background: #a8a8a8;
   }
 </style>
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

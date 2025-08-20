@@ -1,5 +1,5 @@
-import Redis from "ioredis";
-import crypto from "crypto";
+import Redis from 'ioredis';
+import crypto from 'crypto';
 // @ts-nocheck
 // lib/server/ai/rag-pipeline-enhanced.ts
 // Enhanced RAG Pipeline integrating best practices while maintaining compatibility
@@ -14,10 +14,10 @@ import { PromptTemplate } from "@langchain/core/prompts";
 // Orphaned content: import {
 RunnableSequence, RunnablePassthrough
 import { StringOutputParser } from '@langchain/core/output_parsers';
-// Orphaned content: import postgres from "postgres";
+// Orphaned content: import postgres from 'postgres';
 import {
 
-import { eq, sql as drizzleSql, and, gte, desc  } from "drizzle-orm";
+import { eq, sql as drizzleSql, and, gte, desc  } from 'drizzle-orm';
 // Orphaned content: import * as schema from './db/schema-postgres.js';
 import {
 

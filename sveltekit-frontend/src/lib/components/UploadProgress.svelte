@@ -1,11 +1,13 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, onDestroy } from 'svelte';
   import { io, type Socket } from 'socket.io-client';
   import { uploadStore } from '$lib/stores/upload-machine';
   import { writable } from 'svelte/store';
   
   // Props
-  interface Props {
+  interface Props extends CommonProps {
     caseId?: string;
     uploadId?: string;
     showTensorMetrics?: boolean;

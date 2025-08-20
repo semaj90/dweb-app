@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
 
   let {
@@ -107,7 +109,7 @@
   </div>
 
   <div class="space-y-4">
-    <Button type="button" variant="ghost" on:click={() => dispatch("cancel")}
+    <Button type="button" variant="ghost" onclick={() => dispatch("cancel")}
       >Cancel</Button
     >
     <Button type="submit" disabled={$submitting}>
@@ -163,3 +165,8 @@
 }
 </style>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

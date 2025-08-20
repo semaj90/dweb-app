@@ -3,10 +3,8 @@
  * Handles streaming and non-streaming chat requests with legal context
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-ollamaChatStream } from "$lib/services/ollamaChatStream";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { ollamaChatStream } from "$lib/services/ollamaChatStream";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

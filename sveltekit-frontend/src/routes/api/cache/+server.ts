@@ -2,13 +2,9 @@
 // Cache Management API - Production-ready endpoints for multi-layer cache system
 // Provides REST interface for cache operations, health checks, and statistics
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-cachingService, getCacheStats, getCacheHealth } from "$lib/services/caching-service";
-// Orphaned content: import { z
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { cachingService, getCacheStats, getCacheHealth } from "$lib/services/caching-service";
+import { URL } from "url";
 
 // ============================================================================
 // VALIDATION SCHEMAS

@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 // @ts-nocheck
 // JSON UI Compiler with Matrix Transforms
 // Builds on UnoCSS + Svelte 5 for GPU-accelerated layouts

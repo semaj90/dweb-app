@@ -1,5 +1,7 @@
 <!-- AI Status Indicator Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   export let isReady = false;
   export let isLoading = false;
   export let provider: "local" | "cloud" | "hybrid" | null = null;
@@ -356,3 +358,5 @@
     }
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

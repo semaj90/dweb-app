@@ -1,5 +1,7 @@
 <!-- YoRHa System Status Bar Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { SystemStatus } from "$lib/types/global";
   import type { Props } from "$lib/types/global";
   import { onMount, onDestroy } from 'svelte';
@@ -301,3 +303,8 @@
     animation: pulse-critical 1s infinite;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

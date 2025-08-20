@@ -3,11 +3,8 @@
  * Routes to: xstate-manager.exe:8212
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-productionServiceClient } from "$lib/services/productionServiceClient";
-// Orphaned content: import { URL
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { productionServiceClient } from "$lib/services/productionServiceClient";
 
 interface XStateEvent {
   type: string;

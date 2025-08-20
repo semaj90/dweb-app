@@ -585,7 +585,7 @@
         title="{modalType === 'create' ? 'Create New' : 'Edit'} {activeTab.toUpperCase().slice(0, -1)}"
         fields={currentFormFields}
         submitLabel={modalType === 'create' ? 'Create' : 'Update'}
-        on:submit={(data) => {
+        onsubmit={(data) => {
           if (modalType === 'create') {
             createItem(activeTab, data);
           } else {

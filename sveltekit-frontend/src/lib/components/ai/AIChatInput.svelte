@@ -1,5 +1,7 @@
 <!-- AI Chat Input Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { browser } from "$app/environment";
   import { createEventDispatcher, onMount } from "svelte";
 
@@ -343,3 +345,8 @@
     }
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

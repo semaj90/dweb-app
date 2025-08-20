@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { preventDefault } from 'svelte/legacy';
 
-  interface Props {
+  interface Props extends CommonProps {
     onsuccess?: (event?: any) => void;
   }
 

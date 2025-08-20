@@ -1,8 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { json, type RequestHandler } from "@sveltejs/kit";
 import orchestrator from "$lib/services/comprehensive-database-orchestrator";
 // Orchestrator Startup API - Initialize and manage the comprehensive system
 // Handles startup, monitoring, and coordination of all services
-
 
 // GET /api/orchestrator-startup - Get startup status and system readiness
 export const GET: RequestHandler = async () => {

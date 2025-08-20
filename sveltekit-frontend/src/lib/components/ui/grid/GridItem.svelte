@@ -2,7 +2,9 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- Grid Item Component -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     colSpan: number ;
     rowSpan: number ;
     colStart: number | undefined ;

@@ -14,7 +14,7 @@ try {
   vscode = null;
 }
 
-import { EventEmitter } from "events";
+import { EventEmitter } from "$lib/utils/events";
 import { NeuralMemoryManager,,   MemoryPrediction,,   LODLevel,, , export interface CommandMetrics {,   commandId: string;,   executionTime: number;,   memoryUsed: number;,   timestamp: number;,   success: boolean;,   resourceType: "json" | "wasm" | "vector" | "cache"; } from
 
 export interface ExtensionConfig {

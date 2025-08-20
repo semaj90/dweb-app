@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import UploadArea from './UploadArea.svelte';
 
   let uploadComponent: UploadArea = $state();
@@ -245,3 +247,8 @@
     right: 0.5rem;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

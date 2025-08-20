@@ -2,6 +2,8 @@
 https://svelte.dev/e/element_invalid_closing_tag -->
 <!-- Legal Case Analysis Dialog - Bits UI Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Dialog } from 'bits-ui/components/dialog';
 import { Select } from 'bits-ui/components/select';
 import { Button } from 'bits-ui/components/button';
@@ -10,7 +12,7 @@ import { Progress } from 'bits-ui/components/progress';
   import { legalCaseStore } from '$lib/stores/legal-case.store.svelte';
   import type { LegalCase } from '$lib/types/legal';
 
-  interface Props {
+  interface Props extends CommonProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
   }
@@ -230,13 +232,13 @@ import { Progress } from 'bits-ui/components/progress';
     <Dialog.Footer class="border-t border-gray-100 p-6 flex justify-end space-x-3">
       <Button 
         variant="outline" 
-        on:click={() => onOpenChange(false)}
+        onclick={() => onOpenChange(false)}
         disabled={loading.analysis}
       >
         Cancel
       </Button>
       <Button 
-        on:click={handleAnalysis}
+        onclick={handleAnalysis}
         disabled={!selectedCaseForAnalysis || loading.analysis || analysisStatus === 'analyzing'}
         class="bg-blue-600 hover:bg-blue-700 text-white"
       >

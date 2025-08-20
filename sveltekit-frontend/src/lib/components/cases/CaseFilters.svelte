@@ -1,7 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     cases: Case[] ;
     filteredCases: Case[] ;
     searchQuery: string ;
@@ -52,7 +54,7 @@ https://svelte.dev/e/js_parse_error -->
   // }
   
               
-  $effect(() => { {
+  $effect(() => {
     // TODO: IMPLEMENT ADVANCED FILTERING LOGIC
     // =======================================
     // 1. Debounced search with fuzzy matching
@@ -90,7 +92,7 @@ https://svelte.dev/e/js_parse_error -->
       const compare = aVal > bVal ? 1 : -1;
       return sortOrder === 'asc' ? compare : -compare;
     });
-}
+  });
 </script>
 
 <div class="space-y-4">

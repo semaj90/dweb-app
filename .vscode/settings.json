@@ -59,7 +59,7 @@
   "extensions.experimental.affinity": {
     "mcp-context7-assistant": 1
   },
-  
+
   // Editor Configuration
   "editor.codeActionsOnSave": {
     "source.organizeImports": "never",
@@ -73,7 +73,7 @@
     "editor.defaultFormatter": "golang.go"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"

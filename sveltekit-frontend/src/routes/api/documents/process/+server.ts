@@ -3,11 +3,8 @@
  * Endpoint for complete document processing pipeline
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-unifiedDocumentProcessor, type DocumentProcessingConfig } from "$lib/services/unified-document-processor.js";
-// Orphaned content: import { URL
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { unifiedDocumentProcessor, type DocumentProcessingConfig } from "$lib/services/unified-document-processor.js";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

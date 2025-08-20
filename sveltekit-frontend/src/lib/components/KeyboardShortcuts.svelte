@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { browser } from "$app/environment";
   import { Button } from "$lib/components/ui/button";
   import Tooltip from "$lib/components/ui/Tooltip.svelte";
@@ -228,7 +230,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      on:click={() => (showAccessibilityPanel = !showAccessibilityPanel)}
+      onclick={() => (showAccessibilityPanel = !showAccessibilityPanel)}
       aria-label="Toggle accessibility panel"
     >
       <Accessibility class="mx-auto px-4 max-w-7xl" />
@@ -241,7 +243,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      on:click={() => (showShortcuts = !showShortcuts)}
+      onclick={() => (showShortcuts = !showShortcuts)}
       aria-label="Show keyboard shortcuts"
     >
       <Keyboard class="mx-auto px-4 max-w-7xl" />
@@ -257,7 +259,7 @@
       variant="outline"
       size="sm"
       class="mx-auto px-4 max-w-7xl"
-      on:click={() => toggleFullscreen()}
+      onclick={() => toggleFullscreen()}
       aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
     >
       {#if isFullscreen}
@@ -287,3 +289,8 @@
       0 1px 2px rgba(0, 0, 0, 0.24);
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

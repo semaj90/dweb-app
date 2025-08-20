@@ -1,5 +1,7 @@
 <!-- Enhanced Case Form with proper schema mapping -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { notifications } from "$lib/stores/notification";
   import type { User } from "$lib/types/user";
   import { createEventDispatcher } from "svelte";
@@ -573,3 +575,5 @@
 }
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   type NLPQuantiles = { p50:number; p90:number; p99:number };
   interface NLPStats { embeddings_total:number; cache_hits:number; cache_misses:number; latency: NLPQuantiles; similarity_queries_total:number; hit_ratio:number; dedupe_hits?:number; dedupe_misses?:number; dedupe_ratio?:number }
@@ -234,3 +236,8 @@
 <style>
   .metrics-widget { font-family: system-ui, sans-serif; }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

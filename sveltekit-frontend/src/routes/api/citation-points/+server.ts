@@ -1,13 +1,11 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { URL } from "url";
 // @ts-nocheck
 import { reports } from "$lib/server/db/schema";
-// Orphaned content: import {
 
 import { db } from "$lib/server/db/index";
-// Orphaned content: // TODO: Implement citationPoints table in schema
 // import { citationPoints
 import type { RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 and, eq
 
 export const GET: RequestHandler = async ({ url, locals }) => {

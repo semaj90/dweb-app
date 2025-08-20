@@ -3,6 +3,8 @@
   Demonstrates the validation utilities in practice
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import {
     FormValidator,
     type FormFieldConfig,
@@ -330,3 +332,5 @@
     border-color: #10b981;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -1,5 +1,7 @@
 <!-- YoRHa Modal Manager Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import YoRHaModal from './YoRHaModal.svelte';
   import { modalStore, type Modal } from '$lib/stores/dialogs';
 
@@ -54,3 +56,7 @@
     {/snippet}
   </YoRHaModal>
 {/each}
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

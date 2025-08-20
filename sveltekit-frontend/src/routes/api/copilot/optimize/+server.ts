@@ -3,10 +3,8 @@
  * Simple Copilot Optimization API for Testing
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-URL } from "url";
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { URL } from "url";
 
 export const GET: RequestHandler = async ({ url }) => {
   const action = url.searchParams.get('action');

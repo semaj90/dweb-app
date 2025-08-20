@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * Vector Intelligence Search API Endpoint
@@ -5,12 +6,8 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-vectorIntelligenceService } from "$lib/services/vector-intelligence-service.js";
-// Orphaned content: import type { VectorSearchOptions
-import {
-URL } from "url";
+import { vectorIntelligenceService } from "$lib/services/vector-intelligence-service.js";
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request, url }) => {
   try {

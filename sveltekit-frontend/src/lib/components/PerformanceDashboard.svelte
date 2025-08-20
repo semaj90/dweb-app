@@ -4,6 +4,8 @@
 -->
 
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
 
@@ -453,3 +455,8 @@
   .text-red-600 { color: #dc2626; }
   .text-gray-600 { color: #6b7280; }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

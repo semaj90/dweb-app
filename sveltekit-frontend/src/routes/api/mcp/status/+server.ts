@@ -4,8 +4,7 @@
  * Provides status information about the enhanced MCP integration
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ url, request }) => {
 	try {

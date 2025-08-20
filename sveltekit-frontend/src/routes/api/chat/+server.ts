@@ -1,5 +1,4 @@
-import { error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  error } from '@sveltejs/kit';
 
 const OLLAMA_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = import.meta.env.OLLAMA_MODEL || 'gemma3-legal';

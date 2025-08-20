@@ -2,6 +2,8 @@
 <!-- Shows real-time updates for document re-embedding and re-ranking -->
 
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import {
     documentUpdateNotifications,
     formatNotificationTime,
@@ -340,3 +342,8 @@
     background-color: #a0aec0;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

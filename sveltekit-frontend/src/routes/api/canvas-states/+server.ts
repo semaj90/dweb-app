@@ -2,10 +2,7 @@
 import { canvasLayouts } from "$lib/server/db/schema-canvas";
 type { RequestEvent }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { and, desc, eq, like, sql
-import {
-db } from "$lib/server/db/index";
-// Orphaned content: import { URL
+import { db } from "$lib/server/db/index";
 
 export async function GET({ url, locals }: RequestEvent) {
   try {

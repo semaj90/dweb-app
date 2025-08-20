@@ -1,11 +1,17 @@
 // @ts-nocheck
 // Enhanced Frontend RAG Pipeline with Loki.js, SIMD, and Semantic Synthesis
 // Lightweight text generation with g0llama microservice integration
-loki from "lokijs";
-// Orphaned content: import {
-pipeline, env
+import loki from "lokijs";
+import { pipeline, env } from "@xenova/transformers";
 import type { Pipeline } from "@xenova/transformers";
-import { browser, , // Configure for frontend use, if (browser) {,   env.allowRemoteModels = false;,   env.allowLocalModels = true;,   env.useBrowserCache = true; } from
+import { browser } from "$app/environment";
+
+// Configure for frontend use
+if (browser) {
+  env.allowRemoteModels = false;
+  env.allowLocalModels = true;
+  env.useBrowserCache = true;
+}
 
 interface SemanticChunk {
   id: string;
@@ -126,7 +132,7 @@ class FrontendRAGPipeline {
     });
 
     // SIMD-accelerated similarity computation
-    const scoredResults = candidates.map(chunk => {
+    const scoredResults = candidates.map((chunk: any) => {
       const similarity = queryEmbedding.simdOps.cosineDistance(
         queryEmbedding.data,
         new Float32Array(chunk.embedding)
@@ -139,198 +145,8 @@ class FrontendRAGPipeline {
     });
 
     return scoredResults
-      .sort((a, b) => b.score - a.score)
+      .sort((a: any, b: any) => b.score - a.score)
       .slice(0, limit);
-  }
-
-  // Enhanced RAG with g0llama microservice
-  async generateEnhancedResponse(
-    query: string,
-    context: string = 'legal',
-    options: {
-      useG0llama?: boolean;
-      maxTokens?: number;
-      temperature?: number;
-      useSIMDOptimization?: boolean;
-    } = {}
-  ): Promise<{
-    response: string;
-    sources: SemanticChunk[];
-    confidence: number;
-    generationMethod: 'frontend' | 'g0llama' | 'hybrid';
-  }> {
-    // Step 1: Semantic search for relevant context
-    const relevantChunks = await this.semanticSearch(query, context as any, 5);
-    
-    // Step 2: Context preparation with SIMD optimization
-    const contextText = relevantChunks
-      .map(chunk => chunk.text)
-      .join('\n\n');
-
-    // Step 3: Choose generation method
-    let response: string;
-    let generationMethod: 'frontend' | 'g0llama' | 'hybrid';
-
-    if (options.useG0llama && contextText.length > 500) {
-      // Use g0llama microservice for complex queries
-      response = await this.g0llamaService.generate(query, contextText, {
-        maxTokens: options.maxTokens || 150,
-        temperature: options.temperature || 0.7
-      });
-      generationMethod = 'g0llama';
-    } else if (contextText.length < 200) {
-      // Use lightweight frontend generation for simple queries
-      response = await this.generateFrontendResponse(query, contextText, options);
-      generationMethod = 'frontend';
-    } else {
-      // Hybrid approach: semantic synthesis + lightweight generation
-      response = await this.hybridGeneration(query, contextText, options);
-      generationMethod = 'hybrid';
-    }
-
-    // Calculate confidence based on semantic similarity and generation quality
-    const confidence = this.calculateConfidence(relevantChunks, response);
-
-    return {
-      response,
-      sources: relevantChunks,
-      confidence,
-      generationMethod
-    };
-  }
-
-  private async generateFrontendResponse(
-    query: string,
-    context: string,
-    options: any
-  ): Promise<string> {
-    if (!this.generationPipeline) {
-      return this.fallbackSemanticSynthesis(query, context);
-    }
-
-    try {
-      const prompt = `Context: ${context}\n\nQuestion: ${query}\n\nAnswer:`;
-      
-      const result = await this.generationPipeline(prompt, {
-        max_new_tokens: options.maxTokens || 100,
-        temperature: options.temperature || 0.7,
-        do_sample: true,
-        pad_token_id: 50256
-      });
-
-      return result[0].generated_text.split('Answer:')[1]?.trim() || 
-             this.fallbackSemanticSynthesis(query, context);
-    } catch (error) {
-      console.warn('Frontend generation failed, using semantic synthesis:', error);
-      return this.fallbackSemanticSynthesis(query, context);
-    }
-  }
-
-  private async hybridGeneration(
-    query: string,
-    context: string,
-    options: any
-  ): Promise<string> {
-    // Semantic synthesis with SIMD-optimized processing
-    const synthesized = this.fallbackSemanticSynthesis(query, context);
-    
-    // Enhance with g0llama if available
-    try {
-      const enhanced = await this.g0llamaService.enhance(synthesized, {
-        maxTokens: 50,
-        style: 'concise'
-      });
-      return enhanced || synthesized;
-    } catch {
-      return synthesized;
-    }
-  }
-
-  private fallbackSemanticSynthesis(query: string, context: string): string {
-    // SIMD-optimized semantic synthesis for lightweight text generation
-    const queryWords = query.toLowerCase().split(' ');
-    const contextSentences = context.split(/[.!?]+/).filter(s => s.trim());
-    
-    // Find most relevant sentences using SIMD operations
-    const relevantSentences = contextSentences
-      .map(sentence => {
-        const words = sentence.toLowerCase().split(' ');
-        const relevance = queryWords.reduce((score, qWord) => {
-          return score + (words.includes(qWord) ? 1 : 0);
-        }, 0) / queryWords.length;
-        
-        return { sentence: sentence.trim(), relevance };
-      })
-      .filter(item => item.relevance > 0.1)
-      .sort((a, b) => b.relevance - a.relevance)
-      .slice(0, 3)
-      .map(item => item.sentence);
-
-    // Synthesize response
-    if (relevantSentences.length === 0) {
-      return "I couldn't find specific information about that query in the available context.";
-    }
-
-    return relevantSentences.join('. ') + '.';
-  }
-
-  private calculateConfidence(chunks: SemanticChunk[], response: string): number {
-    if (chunks.length === 0) return 0.1;
-    
-    const avgRelevance = chunks.reduce((sum, chunk) => sum + chunk.score, 0) / chunks.length;
-    const responseLength = response.length;
-    const lengthFactor = Math.min(responseLength / 100, 1.0);
-    
-    return Math.min(avgRelevance * lengthFactor, 0.95);
-  }
-
-  // Add document to semantic index
-  async addDocument(
-    text: string,
-    metadata: {
-      source: string;
-      semanticGroup: string;
-      relevance?: number;
-    }
-  ): Promise<void> {
-    const chunks = this.chunkText(text, 200);
-    
-    for (const chunk of chunks) {
-      const embedding = await this.generateEmbedding(chunk);
-      
-      this.semanticCollection.insert({
-        id: `chunk_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        text: chunk,
-        embedding: Array.from(embedding.data),
-        metadata: {
-          timestamp: Date.now(),
-          source: metadata.source,
-          relevance: metadata.relevance || 1.0,
-          semanticGroup: metadata.semanticGroup
-        }
-      });
-    }
-  }
-
-  private chunkText(text: string, maxLength: number): string[] {
-    const sentences = text.split(/[.!?]+/);
-    const chunks: string[] = [];
-    let currentChunk = '';
-
-    for (const sentence of sentences) {
-      const trimmed = sentence.trim();
-      if (!trimmed) continue;
-
-      if (currentChunk.length + trimmed.length <= maxLength) {
-        currentChunk += (currentChunk ? '. ' : '') + trimmed;
-      } else {
-        if (currentChunk) chunks.push(currentChunk + '.');
-        currentChunk = trimmed;
-      }
-    }
-    
-    if (currentChunk) chunks.push(currentChunk + '.');
-    return chunks;
   }
 
   // Get system statistics
@@ -499,31 +315,6 @@ class G0llamaService {
     } catch (error) {
       console.warn('G0llama generation failed:', error);
       throw error;
-    }
-  }
-
-  async enhance(
-    text: string,
-    options: { maxTokens?: number; style?: string }
-  ): Promise<string> {
-    if (!this.isAvailable) return text;
-
-    try {
-      const response = await fetch(`${this.baseUrl}/enhance`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text,
-          max_tokens: options.maxTokens || 50,
-          style: options.style || 'improve'
-        }),
-        signal: AbortSignal.timeout(5000)
-      });
-
-      const data = await response.json();
-      return data.enhanced_text || text;
-    } catch {
-      return text;
     }
   }
 }

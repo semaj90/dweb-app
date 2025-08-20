@@ -5,19 +5,11 @@
  * Provides real-time AI analysis for document uploads
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-aiAutoTaggingService } from "$lib/services/aiAutoTagging";
-// Orphaned content: import { enhancedRAGPipeline
-import {
-goMicroservice } from "$lib/services/goMicroservice";
-// Orphaned content: import { db
-import {
-enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";
-// Orphaned content: import { eq
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { aiAutoTaggingService } from "$lib/services/aiAutoTagging";
+import { goMicroservice } from "$lib/services/goMicroservice";
+import { enhancedEvidence } from "$lib/server/db/enhanced-legal-schema";
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {

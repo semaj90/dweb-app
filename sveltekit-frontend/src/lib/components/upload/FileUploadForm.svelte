@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Alert, AlertDescription } from '$lib/components/ui/alert';
   import { Button } from '$lib/components/ui/button';
   import {
@@ -195,10 +197,10 @@
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <Button type="button" variant="secondary" size="sm" on:click={(e) => { e.stopPropagation(); openFilePicker(); }}>
+                    <Button type="button" variant="secondary" size="sm" onclick={(e) => { e.stopPropagation(); openFilePicker(); }}>
                       Change
                     </Button>
-                    <Button type="button" variant="ghost" size="sm" on:click={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
+                    <Button type="button" variant="ghost" size="sm" onclick={(e) => { e.stopPropagation(); removeFile(); }} aria-label="Remove file">
                       <X class="h-4 w-4" />
                     </Button>
                   </div>
@@ -353,3 +355,5 @@
     </form>
   </CardContent>
 </Card>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

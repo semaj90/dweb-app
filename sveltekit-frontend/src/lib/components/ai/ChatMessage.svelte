@@ -1,7 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     message: any;
   }
   let {
@@ -136,7 +138,7 @@ https://svelte.dev/e/js_parse_error -->
             variant="ghost"
             size="sm"
             class="space-y-4"
-            on:click={() => copyToClipboard()}
+            onclick={() => copyToClipboard()}
             title="Copy message"
           >
             <Copy class="space-y-4" />
@@ -147,7 +149,7 @@ https://svelte.dev/e/js_parse_error -->
             variant="ghost"
             size="sm"
             class="space-y-4"
-            on:click={() => toggleSaved()}
+            onclick={() => toggleSaved()}
             title={message.saved ? "Remove from saved" : "Save message"}
           >
             {#if message.saved}

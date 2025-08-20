@@ -1,20 +1,31 @@
-// @ts-nocheck
 /**
  * XState State Machine for Evidence Processing Workflow
  * Handles the complete lifecycle of evidence from upload to AI analysis
  */
 
 import { createMachine, assign, fromPromise } from "xstate";
-// Orphaned content: import {
-
 import { bullmqService } from "../services/bullmqService";
-// Orphaned content: import {
-
 import { langChainService } from "../ai/langchain-ollama-service";
-// Orphaned content: import type {
-  DocumentProcessingJob,
-  EmbeddingGenerationJob,
-  AIAnalysisJob,
+import { ollamaService } from "../services/ollama-service";
+import { multiLayerCache } from "../services/multiLayerCache";
+
+interface DocumentProcessingJob {
+  documentId: string;
+  content: string;
+  options: any;
+  metadata: any;
+}
+
+interface EmbeddingGenerationJob {
+  documentId: string;
+  chunks: any[];
+}
+
+interface AIAnalysisJob {
+  documentId: string;
+  content: string;
+  type: string;
+}
 
 // Types for the state machine
 export interface EvidenceProcessingContext {

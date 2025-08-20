@@ -5,10 +5,8 @@
  * Features: Semantic search, jurisdiction filtering, fact-checking integration
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-v4 as uuidv4 } from "uuid";
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { v4 as uuidv4 } from "uuid";
 
 interface RAGQueryRequest {
     query: string;

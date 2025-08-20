@@ -1,6 +1,6 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
 
 // Placeholder for text-to-voice (TTS) integration
 // TODO: Integrate with Google Cloud Text-to-Speech, Azure Speech, or browser Web Speech API

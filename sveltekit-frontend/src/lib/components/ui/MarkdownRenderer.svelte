@@ -1,8 +1,10 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { marked } from "marked";
   import { onMount } from "svelte";
 
-  interface Props {
+  interface Props extends CommonProps {
     markdown?: string;
     class?: string;
     unsafe?: boolean; // Allow raw HTML in markdown

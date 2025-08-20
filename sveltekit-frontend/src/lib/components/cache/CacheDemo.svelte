@@ -2,6 +2,8 @@
 <!-- Demonstrates Loki.js + Redis + PostgreSQL caching with real-time statistics -->
 
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { Button } from 'bits-ui';
@@ -435,22 +437,22 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-              <Button on:click={setCacheValue} disabled={$isLoading}>
+              <Button onclick={setCacheValue} disabled={$isLoading}>
                 <Database class="mr-2" size={16} />
                 Set Value
               </Button>
               
-              <Button variant="outline" on:click={getCacheValue} disabled={$isLoading}>
+              <Button variant="outline" onclick={getCacheValue} disabled={$isLoading}>
                 <RefreshCw class="mr-2" size={16} />
                 Get Value
               </Button>
               
-              <Button variant="destructive" on:click={deleteCacheValue} disabled={$isLoading}>
+              <Button variant="destructive" onclick={deleteCacheValue} disabled={$isLoading}>
                 <Trash2 class="mr-2" size={16} />
                 Delete
               </Button>
               
-              <Button variant="destructive" on:click={clearCache} disabled={$isLoading}>
+              <Button variant="destructive" onclick={clearCache} disabled={$isLoading}>
                 <XCircle class="mr-2" size={16} />
                 Clear All
               </Button>
@@ -466,7 +468,7 @@
               <Button 
                 variant="ghost" 
                 size="sm" 
-                on:click={() => testResults.set([])}
+                onclick={() => testResults.set([])}
               >
                 Clear
               </Button>
@@ -685,7 +687,7 @@
           <CardContent class="space-y-4">
             <div class="space-y-2">
               <Button 
-                on:click={runPerformanceTest} 
+                onclick={runPerformanceTest} 
                 disabled={$isLoading}
                 class="w-full"
               >
@@ -700,7 +702,7 @@
             <div class="space-y-2">
               <Button 
                 variant="outline"
-                on:click={testCacheHitMiss} 
+                onclick={testCacheHitMiss} 
                 disabled={$isLoading}
                 class="w-full"
               >
@@ -715,7 +717,7 @@
             <div class="space-y-2">
               <Button 
                 variant="outline"
-                on:click={refreshStats} 
+                onclick={refreshStats} 
                 disabled={$isLoading}
                 class="w-full"
               >
@@ -775,3 +777,7 @@
     @apply max-w-7xl mx-auto p-4;
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

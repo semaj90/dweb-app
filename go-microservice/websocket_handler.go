@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // WebSocket/SSE handler for real-time agent orchestration
 // Part of Phase 3: Live Agent Integration
 

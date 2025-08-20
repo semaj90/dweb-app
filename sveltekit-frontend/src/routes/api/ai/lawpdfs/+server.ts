@@ -3,8 +3,7 @@
  * Handles local model processing for law PDFs with gemma3-legal and nomic-embed-text
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 
 interface LawPdfRequest {
   content: string;

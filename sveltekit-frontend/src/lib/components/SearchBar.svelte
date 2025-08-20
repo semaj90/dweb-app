@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { createEventDispatcher } from 'svelte';
 	import SearchInput from './SearchInput.svelte';
 	
@@ -329,3 +331,5 @@
 			align-items: stretch;
 }}
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

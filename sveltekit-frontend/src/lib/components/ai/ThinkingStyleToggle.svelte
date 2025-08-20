@@ -1,5 +1,7 @@
 <!-- Enhanced ThinkingStyleToggle with Nier Automata + Harvard Crimson Theme -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
 
   let {
@@ -73,7 +75,7 @@
       variant={enabled ? "crimson" : "nier"}
       size={size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'default'}
       disabled={loading || (!premium && !enabled)}
-      on:click={handleToggle}
+      onclick={handleToggle}
       class={cn(
         "thinking-toggle-btn transition-all duration-300",
         enabled && "animate-crimson-glow",
@@ -110,7 +112,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={handleConfigure}
+        onclick={handleConfigure}
         class="config-btn ml-2"
         disabled={loading}
       >
@@ -123,7 +125,7 @@
       <Button
         variant="ghost"
         size="sm"
-        on:click={handleUpgrade}
+        onclick={handleUpgrade}
         class="upgrade-btn ml-2"
       >
         <Info size={14} class="text-harvard-gold" />
@@ -246,7 +248,7 @@
       </div>
 
       <div class="config-actions">
-        <Button variant="ghost" size="sm" on:click={() => showConfig = false}>
+        <Button variant="ghost" size="sm" onclick={() => showConfig = false}>
           Cancel
         </Button>
         <Button variant="crimson" size="sm">
@@ -268,7 +270,7 @@
           <strong>Unlock Advanced AI Reasoning</strong>
           <p>Get step-by-step legal analysis with transparent thinking process</p>
         </div>
-        <Button variant="gold" size="sm" on:click={handleUpgrade}>
+        <Button variant="gold" size="sm" onclick={handleUpgrade}>
           Upgrade Now
         </Button>
       </div>
@@ -461,3 +463,8 @@
 }
 </style>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

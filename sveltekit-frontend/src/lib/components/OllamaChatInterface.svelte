@@ -1,5 +1,7 @@
 <!-- OllamaChatInterface.svelte - Svelte 5 + SvelteKit 2.0 Enhanced AI Chat -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import TokenUsageManager from "$lib/components/TokenUsageManager.svelte";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
@@ -26,7 +28,7 @@
   import { onMount, tick } from "svelte";
 
   // Props
-  interface Props {
+  interface Props extends CommonProps {
     caseId?: string;
     model?: string;
     useRAG?: boolean;
@@ -314,7 +316,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (showSettings = !showSettings)}
+            onclick={() => (showSettings = !showSettings)}
           >
             <Settings class="w-4 h-4" />
           </Button>
@@ -323,7 +325,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={checkOllamaHealth}
+            onclick={checkOllamaHealth}
             disabled={isLoading}
           >
             <RefreshCw class="w-4 h-4" />
@@ -448,7 +450,7 @@
                   <Button
                     variant="outline"
                     size="sm"
-                    on:click={() => selectSuggestion(suggestion)}
+                    onclick={() => selectSuggestion(suggestion)}
                     class="text-xs"
                   >
                     {suggestion}
@@ -498,7 +500,7 @@
     </div>
 
     <Button
-      on:click={sendMessage}
+      onclick={sendMessage}
       disabled={!canSend || ollamaStatus !== "healthy"}
       class="px-3"
       data-testid="send-button"
@@ -513,7 +515,7 @@
     <!-- Additional Actions -->
     <Button
       variant="outline"
-      on:click={clearChat}
+      onclick={clearChat}
       disabled={chatHistory.length === 0}
     >
       Clear
@@ -521,7 +523,7 @@
 
     <Button
       variant="outline"
-      on:click={exportChat}
+      onclick={exportChat}
       disabled={chatHistory.length === 0}
     >
       Export

@@ -87,10 +87,13 @@ export class LegalSearchTool implements BaseTool {
         ...searchOptions
       });
 
+      // Type assertion to ensure searchResult has the expected properties
+      const resultObj = searchResult as { total?: number; results?: any[] };
+
       return JSON.stringify({
         query,
-        totalResults: searchResult.total || 0,
-        results: searchResult.results || [],
+        totalResults: resultObj.total || 0,
+        results: resultObj.results || [],
         source: 'traditional_search'
       });
 
@@ -115,8 +118,8 @@ export class LegalCaseAnalysisTool implements BaseTool {
     type: 'object',
     properties: {
       caseText: { type: 'string', description: 'Full text of the legal case' },
-      analysisType: { 
-        type: 'string', 
+      analysisType: {
+        type: 'string',
         enum: ['summary', 'precedents', 'facts', 'holding', 'reasoning'],
         default: 'summary'
       },
@@ -166,7 +169,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
   private async performCaseAnalysis(caseText: string, analysisType: string, jurisdiction: string): Promise<any> {
     // Simplified analysis - in production, this would use advanced NLP/LLM processing
     const text = caseText.toLowerCase();
-    
+
     switch (analysisType) {
       case 'summary':
         return {
@@ -175,35 +178,35 @@ export class LegalCaseAnalysisTool implements BaseTool {
           parties: this.extractParties(text),
           jurisdiction
         };
-        
+
       case 'precedents':
         return {
           citedCases: this.extractCitations(text),
           precedents: this.extractPrecedents(text),
           applicableLaw: this.extractApplicableLaw(text)
         };
-        
+
       case 'facts':
         return {
           keyFacts: this.extractKeyFacts(text),
           timeline: this.extractTimeline(text),
           evidence: this.extractEvidence(text)
         };
-        
+
       case 'holding':
         return {
           holding: this.extractHolding(text),
           reasoning: this.extractReasoning(text),
           outcome: this.extractOutcome(text)
         };
-        
+
       case 'reasoning':
         return {
           legalReasoning: this.extractLegalReasoning(text),
           analysis: this.extractAnalysis(text),
           rationale: this.extractRationale(text)
         };
-        
+
       default:
         return { error: `Unknown analysis type: ${analysisType}` };
     }
@@ -221,7 +224,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
       'defendant', 'plaintiff', 'evidence', 'burden of proof', 'precedent',
       'statute', 'regulation', 'due process', 'jurisdiction', 'appeal'
     ];
-    
+
     return legalTerms.filter(term => text.includes(term));
   }
 
@@ -229,7 +232,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
     // Simple regex patterns to identify parties
     const plaintiffMatch = text.match(/plaintiff[s]?:?\s+([^,.\n]+)/i);
     const defendantMatch = text.match(/defendant[s]?:?\s+([^,.\n]+)/i);
-    
+
     return {
       plaintiff: plaintiffMatch?.[1]?.trim() || 'Not identified',
       defendant: defendantMatch?.[1]?.trim() || 'Not identified'
@@ -245,7 +248,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
   private extractPrecedents(text: string): string[] {
     const precedentKeywords = ['established in', 'pursuant to', 'following', 'in accordance with'];
     const precedents: string[] = [];
-    
+
     precedentKeywords.forEach(keyword => {
       const regex = new RegExp(`${keyword}\\s+([^.]+)`, 'gi');
       const matches = text.match(regex);
@@ -253,7 +256,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
         precedents.push(...matches);
       }
     });
-    
+
     return precedents;
   }
 
@@ -264,7 +267,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
       /code\s+section\s+\d+/gi,
       /statute\s+\d+/gi
     ];
-    
+
     const laws: string[] = [];
     lawPatterns.forEach(pattern => {
       const matches = text.match(pattern);
@@ -272,7 +275,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
         laws.push(...matches);
       }
     });
-    
+
     return laws;
   }
 
@@ -280,7 +283,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
     // Look for fact patterns
     const factIndicators = ['the facts show', 'it is undisputed', 'the evidence reveals', 'plaintiff alleges'];
     const facts: string[] = [];
-    
+
     factIndicators.forEach(indicator => {
       const index = text.indexOf(indicator);
       if (index !== -1) {
@@ -288,7 +291,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
         facts.push(sentence);
       }
     });
-    
+
     return facts;
   }
 
@@ -296,7 +299,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
     // Simple date extraction
     const datePattern = /\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},?\s+\d{4}\b/gi;
     const dates = text.match(datePattern) || [];
-    
+
     return dates.map(date => ({
       date,
       context: 'Date mentioned in case'
@@ -306,20 +309,20 @@ export class LegalCaseAnalysisTool implements BaseTool {
   private extractEvidence(text: string): string[] {
     const evidenceKeywords = ['exhibit', 'testimony', 'witness', 'document', 'record'];
     const evidence: string[] = [];
-    
+
     evidenceKeywords.forEach(keyword => {
       if (text.includes(keyword)) {
         evidence.push(`${keyword} mentioned`);
       }
     });
-    
+
     return evidence;
   }
 
   private extractHolding(text: string): string {
     // Look for holding indicators
     const holdingIndicators = ['we hold', 'the court holds', 'it is held', 'holding'];
-    
+
     for (const indicator of holdingIndicators) {
       const index = text.indexOf(indicator);
       if (index !== -1) {
@@ -327,14 +330,14 @@ export class LegalCaseAnalysisTool implements BaseTool {
         return sentence;
       }
     }
-    
+
     return 'Holding not clearly identified';
   }
 
   private extractReasoning(text: string): string {
     // Look for reasoning indicators
     const reasoningIndicators = ['because', 'therefore', 'consequently', 'as a result'];
-    
+
     for (const indicator of reasoningIndicators) {
       const index = text.indexOf(indicator);
       if (index !== -1) {
@@ -342,19 +345,19 @@ export class LegalCaseAnalysisTool implements BaseTool {
         return sentence;
       }
     }
-    
+
     return 'Reasoning not clearly identified';
   }
 
   private extractOutcome(text: string): string {
     const outcomeKeywords = ['granted', 'denied', 'reversed', 'affirmed', 'dismissed'];
-    
+
     for (const keyword of outcomeKeywords) {
       if (text.includes(keyword)) {
         return `Case ${keyword}`;
       }
     }
-    
+
     return 'Outcome not clearly identified';
   }
 
@@ -381,7 +384,7 @@ export class LegalDraftingTool implements BaseTool {
   schema = {
     type: 'object',
     properties: {
-      documentType: { 
+      documentType: {
         type: 'string',
         enum: ['contract', 'motion', 'brief', 'agreement', 'notice', 'pleading'],
         description: 'Type of legal document to draft'
@@ -448,21 +451,21 @@ export class LegalDraftingTool implements BaseTool {
 
   private extractDocumentType(input: string): string {
     const text = input.toLowerCase();
-    
+
     if (text.includes('contract') || text.includes('agreement')) return 'contract';
     if (text.includes('motion')) return 'motion';
     if (text.includes('brief')) return 'brief';
     if (text.includes('notice')) return 'notice';
     if (text.includes('pleading')) return 'pleading';
-    
+
     return 'contract'; // default
   }
 
   private async generateDocumentTemplate(
-    documentType: string, 
-    parties: any, 
-    terms: any, 
-    jurisdiction: string, 
+    documentType: string,
+    parties: any,
+    terms: any,
+    jurisdiction: string,
     purpose: string
   ): Promise<string> {
     const templates = {
@@ -680,8 +683,8 @@ export class LegalCitationTool implements BaseTool {
   schema = {
     type: 'object',
     properties: {
-      citations: { 
-        type: 'array', 
+      citations: {
+        type: 'array',
         items: { type: 'string' },
         description: 'List of citations to check'
       },
@@ -742,13 +745,13 @@ export class LegalCitationTool implements BaseTool {
 
     // Detect citation type
     result.type = this.detectCitationType(citation);
-    
+
     // Basic validation
     const validation = this.validateCitation(citation, result.type, format);
     result.isValid = validation.isValid;
     result.errors = validation.errors;
     result.suggestions = validation.suggestions;
-    
+
     // Format citation
     result.formatted = this.formatCitation(citation, result.type, format);
 
@@ -757,30 +760,30 @@ export class LegalCitationTool implements BaseTool {
 
   private detectCitationType(citation: string): string {
     const text = citation.toLowerCase();
-    
+
     if (text.includes('u.s.') || text.includes('supreme court')) return 'case';
     if (text.includes('f.2d') || text.includes('f.3d')) return 'federal_case';
     if (text.includes('§') || text.includes('section')) return 'statute';
     if (text.includes('vol.') || text.includes('law review')) return 'law_review';
     if (text.includes('restatement')) return 'restatement';
-    
+
     return 'case'; // default assumption
   }
 
   private validateCitation(citation: string, type: string, format: string): any {
     const result = { isValid: true, errors: [], suggestions: [] };
-    
+
     // Basic validation rules
     if (citation.length < 10) {
       result.isValid = false;
       result.errors.push('Citation appears too short');
     }
-    
+
     if (!citation.includes(' ')) {
       result.isValid = false;
       result.errors.push('Citation should contain spaces');
     }
-    
+
     // Type-specific validation
     switch (type) {
       case 'case':
@@ -789,14 +792,14 @@ export class LegalCitationTool implements BaseTool {
           result.isValid = false;
         }
         break;
-        
+
       case 'statute':
         if (!citation.includes('§') && !citation.includes('section')) {
           result.suggestions.push('Consider using § symbol for statute citations');
         }
         break;
     }
-    
+
     return result;
   }
 

@@ -1,5 +1,7 @@
 <!-- Enhanced Legal Document Editor with UnoCSS + Melt UI -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import {
     createDialog,
     createDropdownMenu,
@@ -759,3 +761,5 @@
     background-color: #dbeafe;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

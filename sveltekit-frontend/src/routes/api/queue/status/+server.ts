@@ -1,13 +1,7 @@
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
-import {
-	getQueueStats, 
-	getJobStatus, 
-	cancelJob, 
-	clearCompletedJobs 
-} from "$lib/services/queue-service";
+import { getQueueStats, getJobStatus, cancelJob, clearCompletedJobs } from "$lib/services/queue-service";
 
 /**
  * Get overall queue statistics

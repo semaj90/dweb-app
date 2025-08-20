@@ -1,5 +1,7 @@
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     onaccept?: (event?: any) => void;
     ondismiss?: (event?: any) => void;
     onquickResponse?: (event?: any) => void;
@@ -77,7 +79,7 @@
           variant="outline"
           size="sm"
           class="space-y-4"
-          on:click={() => handleAccept()}
+          onclick={() => handleAccept()}
         >
           <MessageCircle class="space-y-4" />
           Yes, help me
@@ -88,7 +90,7 @@
           variant="ghost"
           size="sm"
           class="space-y-4"
-          on:click={() => onquickResponse?.()}
+          onclick={() => onquickResponse?.()}
         >
           <Lightbulb class="space-y-4" />
           Summarize
@@ -99,7 +101,7 @@
           variant="ghost"
           size="sm"
           class="space-y-4"
-          on:click={() => handleDismiss()}
+          onclick={() => handleDismiss()}
           title="Not now"
         >
           <X class="space-y-4" />

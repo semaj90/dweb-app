@@ -1,5 +1,7 @@
 <!-- YoRHa Command Center Dashboard Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
   import { onMount } from 'svelte';
   import { goto } from "$app/navigation";
@@ -351,3 +353,8 @@
   }
 </style>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

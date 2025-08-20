@@ -53,7 +53,7 @@ class RabbitMQService {
       if (!this.queues.has(queue)) {
         this.queues.set(queue, []);
       }
-      
+
       this.queues.get(queue).push({
         message,
         timestamp: new Date().toISOString()

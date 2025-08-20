@@ -4,8 +4,8 @@
  * Enhanced for Gemma3 Legal AI Integration
  */
 
-import { writable, derived, readonly } from "svelte/store";
-// Orphaned content: crypto from "crypto";
+import { writable, derived, readonly } from "$lib/utils/svelte/store";
+
 import type {
   ChatMessage,
   Conversation,

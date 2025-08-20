@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { json } from '@sveltejs/kit';
-// Orphaned content: // import { logQueue // Temporarily disabled
 
 // Simple stub for logQueue
 const logQueue = {

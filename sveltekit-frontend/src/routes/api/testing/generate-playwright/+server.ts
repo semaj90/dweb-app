@@ -1,8 +1,5 @@
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-writeFileSync } from "fs";
-// Orphaned content: import { join
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { writeFileSync } from "fs";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -288,7 +285,6 @@ Remaining: ${countRemainingItems()}
 
 function generatePlaywrightTestFile(testResults: any): string {
   return `{ test, expect, Page } from "@playwright/test";
-// Orphaned content: import {
 
 /**
  * Generated Playwright Tests for Legal AI Processing Pipeline

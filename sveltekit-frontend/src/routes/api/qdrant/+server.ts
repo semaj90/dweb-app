@@ -1,11 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Qdrant Vector Database Management API
 // Handles syncing between PostgreSQL and Qdrant vector database
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-qdrant } from "$lib/server/vector/qdrant";
-// Orphaned content: import { URL
+import { qdrant } from "$lib/server/vector/qdrant";
 
 // Sync request interface
 interface QdrantSyncRequest {

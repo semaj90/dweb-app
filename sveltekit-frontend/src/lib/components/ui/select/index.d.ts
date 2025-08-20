@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 export { default as Select } from './Select.svelte';
 export { default as SelectRoot } from './SelectRoot.svelte';
 export { default as SelectTrigger } from './SelectTrigger.svelte';

@@ -1,10 +1,11 @@
-// @ts-nocheck
-// Ollama service for Gemma3 Q4_K_M integration
-// Handles local LLM inference with proper error handling and streaming support
+// DEPRECATED: Frontend Ollama service (kept temporarily for backwards compatibility)
+// Prefer using: `import { ollamaClient } from '$lib/services/ollama-client'` which
+// calls unified server routes backed by the server-side OllamaService with
+// intelligent fallback & caching. This file will be removed in a later cleanup phase.
+// (Original implementation retained below.)
 
 import { browser } from "$app/environment";
-// Orphaned content: import {
-LOCAL_LLM_PATHS, checkLocalInstallations
+import { LOCAL_LLM_PATHS, checkLocalInstallations } from "$lib/config/local-llm-config";
 
 export interface OllamaModelInfo {
   name: string;
@@ -439,7 +440,7 @@ SYSTEM """You are a specialized legal AI assistant with expertise in case law an
           }
         }),
       });
-      
+
       const data = await response.json();
       return {
         response: data.response,

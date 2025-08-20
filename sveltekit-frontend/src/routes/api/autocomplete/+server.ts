@@ -4,13 +4,9 @@
  * Provides real-time legal phrase suggestions using semantic search
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-Redis } from "ioredis";
-// Orphaned content: import { Pool
-import {
-z } from "zod";
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { Redis } from "ioredis";
+import { z } from "zod";
 
 // Configuration
 const CONFIG = {

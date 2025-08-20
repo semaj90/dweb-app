@@ -1,7 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
     show?: boolean;
   }

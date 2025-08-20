@@ -1,13 +1,9 @@
 // Enhanced Legal AI Search API with LangChain.js, Nomic Embed, and Vector Search
 // Provides advanced semantic search with multiple strategies and intelligent ranking
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-enhancedLegalSearch, type LegalSearchResult } from "$lib/server/ai/enhanced-legal-search";
-// Orphaned content: import { rateLimit
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { enhancedLegalSearch, type LegalSearchResult } from "$lib/server/ai/enhanced-legal-search";
+import { URL } from "url";
 
 // Rate limiting configuration
 const rateLimiter = rateLimit({

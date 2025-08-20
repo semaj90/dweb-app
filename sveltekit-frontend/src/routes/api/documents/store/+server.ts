@@ -1,7 +1,7 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "./$types";
 // Document storage API endpoint
 import { db, documents, embeddings } from "$lib/server/database";
-// Orphaned content: import {
 error, json
 
 export const POST: RequestHandler = async ({ request }) => {

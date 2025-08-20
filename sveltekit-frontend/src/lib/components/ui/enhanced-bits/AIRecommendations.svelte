@@ -1,9 +1,11 @@
 <!-- AI Recommendations: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { UiCard as Card, UiCardHeader as CardHeader, UiCardTitle as CardTitle, UiCardContent as CardContent } from '../index.js';
 
-  interface Props {
+  interface Props extends CommonProps {
     userContext?: any;
     neo4jContext?: any;
     analyticsLog?: (event: any) => void;

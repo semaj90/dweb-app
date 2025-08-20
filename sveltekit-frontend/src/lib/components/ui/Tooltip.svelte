@@ -1,5 +1,7 @@
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     content?: string;
     placement?: "top" | "bottom" | "left" | "right";
     disabled?: boolean;

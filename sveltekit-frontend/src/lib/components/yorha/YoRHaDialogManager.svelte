@@ -1,5 +1,7 @@
 <!-- YoRHa Dialog Manager Component -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import YoRHaDialog from './YoRHaDialog.svelte';
   import { dialogStore, type Dialog } from '$lib/stores/dialogs';
 
@@ -43,3 +45,7 @@
     on:cancel={() => handleDialogCancel(dialog)}
   />
 {/each}
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

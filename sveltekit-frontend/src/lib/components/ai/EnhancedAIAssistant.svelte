@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Bot, Download, Loader2, MessageSquare, Quote, Search, Settings, User as UserIcon } from "lucide-svelte";
   import { createEventDispatcher } from "svelte";
 
@@ -611,3 +613,8 @@
     background: #e5e7eb;
 }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

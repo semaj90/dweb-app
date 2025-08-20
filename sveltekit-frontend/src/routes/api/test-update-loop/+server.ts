@@ -2,21 +2,10 @@
 // Test Full Re-embed + Re-rank Loop
 // End-to-end testing of document changes, re-embedding, and re-ranking
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-documentUpdateLoop } from "$lib/services/documentUpdateLoop";
-// Orphaned content: import { db
-import {
-documents, 
-  documentVectors, 
-  queryVectors,
-  cases,
-  users 
-} from "$lib/db/schema";
-// Orphaned content: import { eq, sql
-import {
-URL } from "url";
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { documentUpdateLoop } from "$lib/services/documentUpdateLoop";
+import { documents, documentVectors, queryVectors, cases, users } from "$lib/db/schema";
+import { URL } from "url";
 
 // ============================================================================
 // TEST SCENARIOS

@@ -2,6 +2,8 @@
 <!-- Features: Local LLM + Enhanced RAG + Loki.js + Fuse.js + XState + Service Workers -->
 
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, onDestroy } from 'svelte';
   import { writable } from 'svelte/store';
   import { useMachine } from '@xstate/svelte';
@@ -901,3 +903,4 @@
     @apply text-2xl font-bold text-gray-900;
   }
 </style>
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -2,8 +2,7 @@
  * Self-Prompting AI System for Prosecutors
  * Generates contextual suggestions based on case data and workflow
  */
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

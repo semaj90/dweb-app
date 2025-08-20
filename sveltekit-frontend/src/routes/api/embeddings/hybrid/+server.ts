@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * Hybrid Vector Embedding API - PGVector + Qdrant + Local LLM Integration
@@ -5,13 +6,8 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-db } from "$lib/server/db/drizzle";
-// Orphaned content: // Note: Using generic documents table instead of legalDocuments
-import { eq, sql
-import {
-URL } from "url";
+import { db } from "$lib/server/db/drizzle";
+import { eq, sql import { URL } from "url";
 
 // Embedding models configuration
 interface EmbeddingModel {

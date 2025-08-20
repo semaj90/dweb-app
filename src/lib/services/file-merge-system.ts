@@ -97,7 +97,7 @@ export class FileMergeSystem {
     this.postgresConfig = postgresConfig;
     this.vectorConfig = vectorConfig;
     this.ragConfig = ragConfig;
-    
+
     this.initializeClients();
   }
 
@@ -142,10 +142,10 @@ export class FileMergeSystem {
       // Generate unique filename
       const fileId = this.generateFileId();
       const filename = `${fileId}_${file.name}`;
-      
+
       // Calculate checksum
       const checksum = await this.calculateChecksum(file);
-      
+
       // Upload to MinIO
       const uploadStream = file.stream();
       await this.s3Client.putObject(
@@ -183,33 +183,33 @@ export class FileMergeSystem {
       if (this.isTextFile(file.type)) {
         const content = await this.extractTextContent(file);
         const embedding = await this.generateEmbedding(content);
-        
+
         // Store in pgVector
         await this.storeInPgVector(fileMetadata, embedding, content);
-        
+
         // Store in Qdrant
         const vectorId = await this.storeInQdrant(fileMetadata, embedding, content);
-        
+
         fileMetadata.embedding = embedding;
         fileMetadata.vectorId = vectorId;
-        
+
         // Update metadata with vector information
         await this.updateFileMetadata(fileMetadata);
       }
 
-      fileMergeStore.update(state => ({ 
-        ...state, 
-        uploading: false, 
+      fileMergeStore.update(state => ({
+        ...state,
+        uploading: false,
         progress: 100,
-        error: null 
+        error: null
       }));
 
       return fileMetadata;
     } catch (error) {
-      fileMergeStore.update(state => ({ 
-        ...state, 
-        uploading: false, 
-        error: error.message 
+      fileMergeStore.update(state => ({
+        ...state,
+        uploading: false,
+        error: error.message
       }));
       throw error;
     }
@@ -227,7 +227,7 @@ export class FileMergeSystem {
     }
   ): Promise<MergeOperation> {
     const operationId = this.generateFileId();
-    
+
     const operation: MergeOperation = {
       id: operationId,
       sourceFiles: sourceFileIds,
@@ -250,31 +250,31 @@ export class FileMergeSystem {
 
       // Get source files metadata
       const sourceFiles = await this.getFilesMetadata(sourceFileIds);
-      
+
       let mergedContent: Buffer;
       let mergedMetadata: Partial<FileMetadata>;
 
       switch (mergeType) {
         case 'concatenate':
-          ({ content: mergedContent, metadata: mergedMetadata } = 
+          ({ content: mergedContent, metadata: mergedMetadata } =
             await this.concatenateFiles(sourceFiles));
           break;
-          
+
         case 'overlay':
-          ({ content: mergedContent, metadata: mergedMetadata } = 
+          ({ content: mergedContent, metadata: mergedMetadata } =
             await this.overlayFiles(sourceFiles));
           break;
-          
+
         case 'archive':
-          ({ content: mergedContent, metadata: mergedMetadata } = 
+          ({ content: mergedContent, metadata: mergedMetadata } =
             await this.archiveFiles(sourceFiles));
           break;
-          
+
         case 'legal-discovery':
-          ({ content: mergedContent, metadata: mergedMetadata } = 
+          ({ content: mergedContent, metadata: mergedMetadata } =
             await this.legalDiscoveryMerge(sourceFiles));
           break;
-          
+
         default:
           throw new Error(`Unsupported merge type: ${mergeType}`);
       }
@@ -282,7 +282,7 @@ export class FileMergeSystem {
       // Upload merged file
       const mergedFileId = this.generateFileId();
       const mergedFilename = `${mergedFileId}_${targetFilename}`;
-      
+
       await this.s3Client.putObject(
         this.s3Config.bucket,
         mergedFilename,
@@ -303,9 +303,9 @@ export class FileMergeSystem {
         originalPath: targetFilename,
         size: mergedContent.length,
         mimeType: mergedMetadata.mimeType || 'application/octet-stream',
-        checksum: await this.calculateChecksum(new Blob([mergedContent])),
+        checksum: await this.calculateChecksum(new Blob([mergedContent.buffer])),
         uploadedAt: new Date(),
-        tags: { 
+        tags: {
           ...options.tags,
           mergeType,
           sourceFiles: sourceFileIds,
@@ -322,10 +322,10 @@ export class FileMergeSystem {
       if (this.isTextFile(finalMetadata.mimeType)) {
         const textContent = mergedContent.toString('utf-8');
         const embedding = await this.generateEmbedding(textContent);
-        
+
         await this.storeInPgVector(finalMetadata, embedding, textContent);
         const vectorId = await this.storeInQdrant(finalMetadata, embedding, textContent);
-        
+
         finalMetadata.embedding = embedding;
         finalMetadata.vectorId = vectorId;
         await this.updateFileMetadata(finalMetadata);
@@ -365,7 +365,7 @@ export class FileMergeSystem {
     try {
       // Generate query embedding
       const queryEmbedding = await this.generateEmbedding(query);
-      
+
       // Search in Qdrant
       const qdrantResults = await this.qdrantClient.search(this.vectorConfig.collectionName, {
         vector: queryEmbedding,
@@ -378,7 +378,7 @@ export class FileMergeSystem {
 
       // Get full metadata for results
       const results = await Promise.all(
-        qdrantResults.points.map(async (point) => {
+        qdrantResults.points.map(async (point: { payload?: { file_id?: string }, score?: number }) => {
           const metadata = await this.getFileMetadata(point.payload!.file_id as string);
           return {
             ...metadata,
@@ -389,10 +389,10 @@ export class FileMergeSystem {
 
       // Also search in pgVector for comparison
       const pgResults = await this.searchInPgVector(queryEmbedding, options);
-      
+
       // Merge and deduplicate results
       const mergedResults = this.mergeSearchResults(results, pgResults);
-      
+
       return mergedResults.slice(0, options.limit || 10);
     } catch (error) {
       console.error('Similarity search failed:', error);
@@ -408,19 +408,19 @@ export class FileMergeSystem {
 
   async deleteFile(fileId: string): Promise<void> {
     const metadata = await this.getFileMetadata(fileId);
-    
+
     // Delete from MinIO
     await this.s3Client.removeObject(this.s3Config.bucket, metadata.filename);
-    
+
     // Delete from vector stores
     if (metadata.vectorId) {
       await this.qdrantClient.delete(this.vectorConfig.collectionName, {
         points: [metadata.vectorId]
       });
     }
-    
+
     await this.deleteFromPgVector(fileId);
-    
+
     // Delete metadata
     await this.pgClient.query('DELETE FROM file_metadata WHERE id = $1', [fileId]);
   }
@@ -432,22 +432,22 @@ export class FileMergeSystem {
   }> {
     const contents: Buffer[] = [];
     let totalSize = 0;
-    
+
     for (const file of files) {
       const stream = await this.s3Client.getObject(this.s3Config.bucket, file.filename);
       const chunks: Buffer[] = [];
-      
+
       for await (const chunk of stream) {
         chunks.push(chunk);
       }
-      
+
       const content = Buffer.concat(chunks);
       contents.push(content);
       totalSize += content.length;
     }
 
     const mergedContent = Buffer.concat(contents);
-    
+
     return {
       content: mergedContent,
       metadata: {
@@ -476,20 +476,20 @@ export class FileMergeSystem {
   }> {
     const archiver = await import('archiver');
     const archive = archiver.default('zip', { zlib: { level: 9 } });
-    
+
     const chunks: Buffer[] = [];
-    
+
     archive.on('data', (chunk: Buffer) => chunks.push(chunk));
-    
+
     for (const file of files) {
       const stream = await this.s3Client.getObject(this.s3Config.bucket, file.filename);
       archive.append(stream, { name: file.originalPath });
     }
-    
+
     await archive.finalize();
-    
+
     const content = Buffer.concat(chunks);
-    
+
     return {
       content,
       metadata: {
@@ -543,7 +543,7 @@ export class FileMergeSystem {
 
   // 6. Utility Methods
   private generateFileId(): string {
-    return `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `file_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   private async calculateChecksum(file: File | Blob): Promise<string> {
@@ -553,7 +553,7 @@ export class FileMergeSystem {
   }
 
   private isTextFile(mimeType: string): boolean {
-    return mimeType.startsWith('text/') || 
+    return mimeType.startsWith('text/') ||
            mimeType === 'application/json' ||
            mimeType === 'application/pdf' ||
            mimeType.includes('document');
@@ -590,12 +590,12 @@ export class FileMergeSystem {
   private async saveFileMetadata(metadata: FileMetadata): Promise<void> {
     await this.pgClient.query(`
       INSERT INTO file_metadata (
-        id, filename, original_path, size, mime_type, checksum, 
+        id, filename, original_path, size, mime_type, checksum,
         uploaded_at, tags, case_id, user_id, embedding, vector_id
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
     `, [
       metadata.id, metadata.filename, metadata.originalPath, metadata.size,
-      metadata.mimeType, metadata.checksum, metadata.uploadedAt, 
+      metadata.mimeType, metadata.checksum, metadata.uploadedAt,
       JSON.stringify(metadata.tags), metadata.caseId, metadata.userId,
       metadata.embedding ? JSON.stringify(metadata.embedding) : null,
       metadata.vectorId
@@ -607,7 +607,7 @@ export class FileMergeSystem {
       'SELECT * FROM file_metadata WHERE id = $1',
       [fileId]
     );
-    
+
     if (result.rows.length === 0) {
       throw new Error(`File not found: ${fileId}`);
     }
@@ -636,7 +636,7 @@ export class FileMergeSystem {
       fileIds
     );
 
-    return result.rows.map(row => ({
+    return result.rows.map((row: any) => ({
       id: row.id,
       filename: row.filename,
       originalPath: row.original_path,
@@ -654,7 +654,7 @@ export class FileMergeSystem {
 
   private async updateFileMetadata(metadata: FileMetadata): Promise<void> {
     await this.pgClient.query(`
-      UPDATE file_metadata SET 
+      UPDATE file_metadata SET
         embedding = $1, vector_id = $2, tags = $3
       WHERE id = $4
     `, [
@@ -666,8 +666,8 @@ export class FileMergeSystem {
   }
 
   private async storeInPgVector(
-    metadata: FileMetadata, 
-    embedding: number[], 
+    metadata: FileMetadata,
+    embedding: number[],
     content: string
   ): Promise<void> {
     await this.pgClient.query(`
@@ -696,7 +696,7 @@ export class FileMergeSystem {
     content: string
   ): Promise<string> {
     const vectorId = `${metadata.id}_${Date.now()}`;
-    
+
     await this.qdrantClient.upsert(this.vectorConfig.collectionName, {
       points: [{
         id: vectorId,
@@ -721,7 +721,7 @@ export class FileMergeSystem {
     options: any
   ): Promise<Array<FileMetadata & { similarity: number }>> {
     const result = await this.pgClient.query(`
-      SELECT 
+      SELECT
         fm.*,
         de.content,
         1 - (de.embedding <-> $1::vector) as similarity
@@ -738,7 +738,7 @@ export class FileMergeSystem {
       options.limit || 10
     ]);
 
-    return result.rows.map(row => ({
+    return result.rows.map((row: any) => ({
       id: row.id,
       filename: row.filename,
       originalPath: row.original_path,
@@ -762,12 +762,12 @@ export class FileMergeSystem {
     pgResults: Array<FileMetadata & { similarity: number }>
   ): Array<FileMetadata & { similarity: number }> {
     const merged = new Map<string, FileMetadata & { similarity: number }>();
-    
+
     // Add Qdrant results
     qdrantResults.forEach(result => {
       merged.set(result.id, result);
     });
-    
+
     // Add pgVector results, taking higher similarity if duplicate
     pgResults.forEach(result => {
       const existing = merged.get(result.id);
@@ -775,14 +775,14 @@ export class FileMergeSystem {
         merged.set(result.id, result);
       }
     });
-    
+
     return Array.from(merged.values()).sort((a, b) => b.similarity - a.similarity);
   }
 
   private updateOperationStatus(operation: MergeOperation): void {
     fileMergeStore.update(state => ({
       ...state,
-      operations: state.operations.map(op => 
+      operations: state.operations.map(op =>
         op.id === operation.id ? operation : op
       )
     }));

@@ -1,8 +1,5 @@
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-randomUUID } from "crypto";
-// Orphaned content: import { createHash
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { randomUUID } from "crypto";
 
 // Types for upload handling
 interface PresignRequest {

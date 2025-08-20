@@ -2,7 +2,9 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- Production-level AI Dropdown using Melt UI with keyboard shortcuts -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     disabled?: any;
     onReportGenerate: (reportType: string) => void;
     onSummarize: () => void;

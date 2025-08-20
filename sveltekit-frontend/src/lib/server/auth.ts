@@ -1,9 +1,8 @@
 import { sessions, users } from "./db/schema-postgres";
 import { dev } from "$app/environment";
-// Orphaned content: import {
-
+import { db } from "./db/index";
 import { Lucia } from "lucia";
-// Orphaned content: import {
+import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 

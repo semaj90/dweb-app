@@ -1,7 +1,9 @@
 <!-- @migration-task Error while migrating Svelte code: 'import' and 'export' may only appear at the top level
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     height?: any;
     disabled?: any;
     placeholder?: any;
@@ -192,7 +194,7 @@ https://svelte.dev/e/js_parse_error -->
     {disabled}
     bind:value={$report.content}
     conf={editorConfig}
-    on:change={(e: any) => reportActions.updateContent(e.detail.level.content)}
+    onchange={(e: any) => reportActions.updateContent(e.detail.level.content)}
   />
 </div>
 

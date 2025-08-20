@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 declare module '$lib/components/*' {
   import type { SvelteComponentTyped } from 'svelte';
   const Component: SvelteComponentTyped<Record<string, any>, Record<string, any>, Record<string, any>>;

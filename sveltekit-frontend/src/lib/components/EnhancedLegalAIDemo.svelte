@@ -1,6 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   // ======================================================================
   // ENHANCED LEGAL AI DEMO COMPONENT
   // Demonstrating real-time AI processing with XState + Loki.js integration
@@ -285,7 +287,7 @@ https://svelte.dev/e/js_parse_error -->
               class="w-full"
             />
             <Button
-              on:click={() => addCustomEvidence()}
+              onclick={() => addCustomEvidence()}
               disabled={!evidenceText.trim() || processingActive}
               class="w-full"
             >
@@ -312,7 +314,7 @@ https://svelte.dev/e/js_parse_error -->
                 <Button
                   size="sm"
                   variant="outline"
-                  on:click={() => addDemoEvidence(demo)}
+                  onclick={() => addDemoEvidence(demo)}
                   disabled={processingActive}
                   class="w-full"
                 >
@@ -329,16 +331,16 @@ https://svelte.dev/e/js_parse_error -->
             <CardTitle>System Controls</CardTitle>
           </CardHeader>
           <CardContent class="space-y-3">
-            <Button variant="outline" on:click={() => checkSystemHealth()} class="w-full">
+            <Button variant="outline" onclick={() => checkSystemHealth()} class="w-full">
               Health Check
             </Button>
-            <Button variant="outline" on:click={() => syncCache()} class="w-full">
+            <Button variant="outline" onclick={() => syncCache()} class="w-full">
               Sync Cache
             </Button>
-            <Button variant="outline" on:click={() => clearErrors()} class="w-full">
+            <Button variant="outline" onclick={() => clearErrors()} class="w-full">
               Clear Errors
             </Button>
-            <Button variant="destructive" on:click={() => clearCache()} class="w-full">
+            <Button variant="destructive" onclick={() => clearCache()} class="w-full">
               Clear Cache
             </Button>
           </CardContent>
@@ -595,3 +597,8 @@ https://svelte.dev/e/js_parse_error -->
     background: #555;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -11,5 +11,3 @@ declare namespace svelteHTML {
     [attr: string]: any; // TODO: Narrow after remediation batches
   }
 }
-
-export {};

@@ -1,9 +1,11 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import { createFormStore, type FormOptions } from '$lib/stores/form';
   import { notifications } from '$lib/stores/notification';
 
-  interface Props {
+  interface Props extends CommonProps {
     options?: FormOptions;
     class?: string;
     novalidate?: boolean;

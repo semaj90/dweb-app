@@ -1,11 +1,11 @@
-import { beforeAll, vi }, { expect } from "vitest";
+import { beforeAll, vi, expect } from 'vitest';
 // @ts-nocheck
 
 // Mock browser environment
 beforeAll(() => {
   // Mock global fetch
   global.fetch = vi.fn();
-  
+
   // Mock performance if not available
   if (typeof global.performance === 'undefined') {
     global.performance = {

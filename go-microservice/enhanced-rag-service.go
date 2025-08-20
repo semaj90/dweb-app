@@ -1,6 +1,6 @@
 // Deprecated: moved to pkg/enhancedrag and cmd/enhanced-rag. Keeping file for reference but not compiled.
-//go:build ignore
-// +build ignore
+//go:build legacy
+// +build legacy
 
 package ignored
 

@@ -1,9 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { aiHistory } from "$lib/db/schema/aiHistory";
-// Orphaned content: import {
 
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 
 import type { RequestHandler } from "./$types";
 

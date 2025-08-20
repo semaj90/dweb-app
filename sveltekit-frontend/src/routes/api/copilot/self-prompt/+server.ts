@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * Copilot Self-Prompt API Endpoint
@@ -5,12 +6,8 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-copilotSelfPrompt } from "$lib/utils/copilot-self-prompt.js";
-// Orphaned content: import type { CopilotSelfPromptOptions
-import {
-URL } from "url";
+import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt.js";
+import { URL } from "url";
 
 export const POST: RequestHandler = async ({ request, url }) => {
   try {

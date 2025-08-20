@@ -273,12 +273,6 @@ public:
         processed.push_back(1.0f);
         return processed;
     }
-
-    std::vector<float> trainSOM(const std::vector<float>& flatPoints, int n_points, int dim, int k, int epochs){
-#ifndef __CUDACC__
-        if (dim != somDim || k != somK || !somCentroids){ initSOM(k, dim); }
-        float* d_points = nullptr; cudaMalloc((void**)&d_points, n_points * dim * sizeof(float));
-        cudaMemcpy(d_points, flatPoints.data(), n_points*dim*sizeof(float), cudaMemcpyHostToDevice);
     std::vector<float> trainSOM(const std::vector<float>& flatPoints, int n_points, int dim, int k, int epochs){
 #ifdef __CUDACC__
         if (dim != somDim || k != somK || !somCentroids){ initSOM(k, dim); }
@@ -312,64 +306,38 @@ public:
         return {};
 #endif
     }
+}; // end class CudaWorker
 
+int main(){
+    try {
+        CudaWorker worker;
         // Read entire stdin
-        std::string input;
-        std::string line;
-        while (std::getline(std::cin, line)) {
-            input += line;
-        }
+        std::string input; std::string line;
+        while (std::getline(std::cin, line)) input += line;
+        if (input.empty()) { std::cerr << "No input received" << std::endl; return 1; }
 
-        if (input.empty()) {
-            std::cerr << "No input received" << std::endl;
-            return 1;
-        }
-
-        // Parse JSON request
         std::string jobId = JsonParser::parseString(input, "jobId");
         std::string type = JsonParser::parseString(input, "type");
         std::vector<float> data = JsonParser::parseFloatArray(input, "data");
-
         if (jobId.empty()) jobId = "unknown";
         if (type.empty()) type = "embedding";
-        if (data.empty()) data = {1.0f, 2.0f, 3.0f, 4.0f}; // default test data
+        if (data.empty()) data = {1.0f,2.0f,3.0f,4.0f};
+        std::cerr << "Processing job " << jobId << " type=" << type << " elements=" << data.size() << std::endl;
 
-        std::cerr << "Processing job " << jobId << " type " << type << " with " << data.size() << " elements" << std::endl;
-
-        // Process based on type
         std::vector<float> result;
-    if (type == "embedding") {
-            result = worker.processEmbedding(data);
-        } else if (type == "similarity") {
-            // For similarity, expect data to be [vec1..., separator, vec2...]
-            // Simple split at midpoint for demo
-            size_t mid = data.size() / 2;
-            std::vector<float> vec1(data.begin(), data.begin() + mid);
-            std::vector<float> vec2(data.begin() + mid, data.end());
-            result = worker.processSimilarity(vec1, vec2);
-        } else if (type == "autoindex") {
-            result = worker.processAutoIndex(data);
-        } else if (type == "som_train") {
-            if (data.size() < 3) {
-                result = { -1.f };
-            } else {
-                int k = (int)data[0];
-                int dim = (int)data[1];
-                std::vector<float> points(data.begin()+2, data.end());
-                int n_points = (int)(points.size()/dim);
-                result = worker.trainSOM(points, n_points, dim, k, 5);
-            }
-        } else {
-            result = worker.processEmbedding(data); // fallback
-        }
+        if (type == "embedding")      result = worker.processEmbedding(data);
+        else if (type == "similarity") {
+            size_t mid = data.size()/2; std::vector<float> a(data.begin(), data.begin()+mid); std::vector<float> b(data.begin()+mid, data.end());
+            result = worker.processSimilarity(a,b);
+        } else if (type == "autoindex") result = worker.processAutoIndex(data);
+        else if (type == "som_train") {
+            if (data.size() < 3) { result = { -1.f }; }
+            else { int k=(int)data[0]; int dim=(int)data[1]; std::vector<float> points(data.begin()+2,data.end()); int n_points=(int)(points.size()/dim); result = worker.trainSOM(points,n_points,dim,k,5); }
+        } else result = worker.processEmbedding(data);
 
-        // Output JSON response
-        std::string response = JsonParser::createResponse(jobId, result, type);
-        std::cout << response << std::endl;
-
+        std::cout << JsonParser::createResponse(jobId, result, type) << std::endl;
         return 0;
-
-    } catch (const std::exception& e) {
+    } catch(const std::exception& e){
         std::cerr << "Error: " << e.what() << std::endl;
         std::cout << "{\"jobId\":\"error\",\"error\":\"" << e.what() << "\",\"status\":\"failed\"}" << std::endl;
         return 1;

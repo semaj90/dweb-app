@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // CUDA 12.8/13.0 GPU Acceleration with cuBLAS for Legal AI
 package main
 

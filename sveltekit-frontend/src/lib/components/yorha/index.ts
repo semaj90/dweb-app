@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 // YoRHa Table and Grid Components
 export { default as YoRHaTable } from './YoRHaTable.svelte';
 export { default as YoRHaDataGrid } from './YoRHaDataGrid.svelte';

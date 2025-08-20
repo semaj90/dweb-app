@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   export let currentStep: number;
   export let totalSteps: number;
   export let stepLabels: string[] = [];
@@ -102,3 +104,5 @@
     }
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

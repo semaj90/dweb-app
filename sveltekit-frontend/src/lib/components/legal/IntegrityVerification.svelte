@@ -1,48 +1,51 @@
-<!-- @migration-task Error while migrating Svelte code: Unexpected token
-https://svelte.dev/e/js_parse_error -->
 <!--
 Integrity Verification Component
 Displays detailed integrity verification results with AI analysis
 -->
 <script lang="ts">
-  interface Props {
-    integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';
-    verificationResults: {
-    originalHash: string;
-    currentHash: string | undefined;
-    aiAnalysis: any;
-    };
-    showDetails: boolean;
-  }
-  let {
-    integrityStatus,
-    verificationResults,
-    originalHash,
-    currentHash,
-    aiAnalysis,
-    showDetails = false
-  }: Props = $props();
-
-
+import type { CommonProps } from '$lib/types/common-props';
 
   import { Badge } from '$lib/components/ui/badge';
   import { Progress } from '$lib/components/ui/progress';
   import { CheckCircle, XCircle, AlertTriangle, Shield, Hash, Clock, Brain } from 'lucide-svelte';
 
-        hashMatch: boolean;
+  interface VerificationResults {
+    hashMatch: boolean;
     metadataIntact: boolean;
     timestampValid: boolean;
     digitalSignatureValid: boolean;
     aiAnalysisScore: number;
     riskAssessment: string;
-  } | undefined;
-          authenticity: number;
+    originalHash: string;
+    currentHash: string | undefined;
+  }
+
+  interface AIAnalysis {
+    authenticity: number;
     completeness: number;
     relevance: number;
     riskLevel: 'low' | 'medium' | 'high' | 'critical';
     recommendations: string[];
     flaggedAnomalies: string[];
-  } | undefined;
+  }
+
+  interface Props extends CommonProps {
+    integrityStatus: 'pending' | 'verified' | 'compromised' | 'requires-attention';
+    verificationResults: VerificationResults | undefined;
+    aiAnalysis: AIAnalysis | undefined;
+    showDetails: boolean;
+  }
+
+  let {
+    integrityStatus,
+    verificationResults,
+    aiAnalysis,
+    showDetails = false
+  }: Props = $props();
+
+  // Extract values for backwards compatibility
+  const originalHash = verificationResults?.originalHash || '';
+  const currentHash = verificationResults?.currentHash;
   
   function getStatusIcon(status: string) {
     switch (status) {

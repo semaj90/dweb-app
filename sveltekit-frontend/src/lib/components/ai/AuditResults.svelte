@@ -2,6 +2,8 @@
 This Svelte component displays semantic audit results and TODOs from the backend.
 TODO: After initial test, wire up real Context7 audit API, agent triggers, and live updates. -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import type { SemanticAuditResult } from '$lib/ai/types';
 
@@ -69,3 +71,8 @@ TODO: After initial test, wire up real Context7 audit API, agent triggers, and l
 /* Uses Yorha/Phase10/Context7 design system classes */
 </style>
 <!-- #context7 #Phase10 #todo: Wire up agent trigger, improve UI, connect to real backend after test -->
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

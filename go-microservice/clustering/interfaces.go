@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 package clustering
 
 // Algorithm is the interface for pluggable clustering algorithms.

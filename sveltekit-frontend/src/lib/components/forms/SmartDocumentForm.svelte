@@ -1,5 +1,7 @@
 <!-- Smart Document Form with OCR Auto-Population -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { Button } from 'bits-ui';
 	import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
@@ -292,7 +294,7 @@
 						<Button 
 							variant="outline" 
 							class="mt-4"
-							on:click={() => fileInput.click()}
+							onclick={() => fileInput.click()}
 						>
 							Browse Files
 						</Button>
@@ -375,7 +377,7 @@
 									bind:value={field.value}
 									placeholder={`Enter ${field.label.toLowerCase()}...`}
 									class="min-h-[80px] bg-yorha-bg-secondary border-yorha-border text-yorha-text-primary"
-									on:input={(e) => handleFieldChange(field.name, e.target.value)}
+									oninput={(e) => handleFieldChange(field.name, e.target.value)}
 								/>
 							{:else}
 								<Input
@@ -406,7 +408,7 @@
 												variant="outline"
 												size="sm"
 												class="text-xs h-6 px-2"
-												on:click={() => applySuggestion(field.name, suggestion)}
+												onclick={() => applySuggestion(field.name, suggestion)}
 											>
 												{suggestion}
 											</Button>
@@ -443,7 +445,7 @@
 					<div class="flex items-center space-x-3">
 						<Button 
 							variant="outline"
-							on:click={() => {
+							onclick={() => {
 								populatedFields = populatedFields.map(f => ({ ...f, value: '' }));
 								formErrors.set({});
 							}}
@@ -474,7 +476,7 @@
 					<Button
 						variant="ghost"
 						size="sm"
-						on:click={() => showPreview = !showPreview}
+						onclick={() => showPreview = !showPreview}
 					>
 						{showPreview ? 'Hide' : 'Show'}
 					</Button>
@@ -517,3 +519,4 @@
 		min-height: 100vh;
 	}
 </style>
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

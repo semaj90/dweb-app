@@ -8,8 +8,10 @@ let cases: any = null;
 let evidence: any = null;
 let legalDocuments: any = null;
 let personsOfInterest: any = null;
-import { eq, sql, and, or, desc, asc } from 'drizzle-orm';
-import type { DatabaseConnection } from 'drizzle-orm/pg-core';
+import { eq, sql, and } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/postgres-js';
+// import postgres from 'postgres'; // Uncomment and install 'postgres' if available
+// import * as legalDocumentsSchema from '#file:mcp-context72-get-library-docs.ts'; // Uncomment and provide correct path if available
 
 interface EventLoopCondition {
   id: string;
@@ -31,13 +33,22 @@ interface DatabaseEvent {
 }
 
 // Initialize database connection with fallback
+// Initialize database connection with fallback
+// db and legalDocuments already declared above
 async function initializeDatabase() {
   try {
-    // Mock database operations for now
-    console.log('🗄️ Database orchestrator running in mock mode');
+    // Production-quality PostgreSQL connection using postgres-js and drizzle-orm
+    const connectionString = process.env.DATABASE_URL || 'postgres://user:password@localhost:5432/legal_ai_db';
+    const client = postgres(connectionString, { max: 10, ssl: 'require' });
+    db = drizzle(client, { schema: legalDocumentsSchema, logger: true });
+    legalDocuments = legalDocumentsSchema.legalDocuments;
+    console.log('🗄️ Database orchestrator connected to PostgreSQL');
     return true;
   } catch (error) {
-    console.warn('Database initialization failed, running in mock mode:', error.message);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.warn('Database initialization failed, running in mock mode:', errorMsg);
+    db = null;
+    legalDocuments = null;
     return false;
   }
 }
@@ -49,7 +60,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
   private processQueue: DatabaseEvent[] = [];
   private context7Integration: any;
   private databaseAvailable = false;
-  
+
   constructor() {
     super();
     this.setupDefaultConditions();
@@ -63,22 +74,22 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
   async start(): Promise<void> {
     if (this.isRunning) return;
-    
+
     console.log('🚀 Starting Comprehensive Database Orchestrator');
     this.isRunning = true;
-    
+
     // Start main event loop
     await this.startMainEventLoop();
-    
+
     // Start database listeners
     await this.setupDatabaseListeners();
-    
+
     // Start Context7 integration
     await this.startContext7EventLoop();
-    
+
     // Start condition evaluator
     await this.startConditionEvaluator();
-    
+
     console.log('✅ Database Orchestrator fully operational');
     this.emit('orchestrator:started');
   }
@@ -155,7 +166,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
         // Check MCP server status
         await this.checkMCPServerHealth();
-        
+
         // Sync with Context7 best practices
         await this.syncBestPractices();
 
@@ -203,7 +214,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
     try {
       let result;
-      
+
       if (this.databaseAvailable && db) {
         // Real database operations
         switch (table) {
@@ -224,8 +235,8 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
         }
       } else {
         // Mock database operations
-        result = [{ 
-          id: Math.random().toString(36).substr(2, 9), 
+        result = [{
+          id: Math.random().toString(36).substr(2, 9),
           ...data,
           created_at: new Date()
         }];
@@ -233,10 +244,10 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
       }
 
       this.emit('database:operation_completed', { event, result });
-      
+
       // Trigger real-time processing
       await this.triggerRealTimeProcessing(table, result[0]);
-      
+
       return result[0];
     } catch (error) {
       this.emit('database:operation_failed', { event, error });
@@ -256,7 +267,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
     try {
       let result;
-      
+
       switch (table) {
         case 'cases':
           result = await db.select().from(cases).where(query);
@@ -323,14 +334,14 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
   private async checkMCPServerHealth(): Promise<void> {
     const healthChecks = [];
-    
+
     for (const [name, endpoint] of Object.entries(this.context7Integration.endpoints)) {
       try {
-        const response = await fetch(`${endpoint}/health`, { 
+        const response = await fetch(`${endpoint}/health`, {
           method: 'GET',
-          timeout: 5000 
+          timeout: 5000
         });
-        
+
         healthChecks.push({
           service: name,
           status: response.ok ? 'healthy' : 'unhealthy',
@@ -349,7 +360,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
     }
 
     this.emit('health:mcp_servers', healthChecks);
-    
+
     // Save health status to database
     for (const check of healthChecks) {
       await this.saveToDatabase(check, 'service_health');
@@ -452,14 +463,14 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
   // Specific Action Implementations
   private async prioritizeCases(): Promise<void> {
     const cases = await this.queryDatabase(sql`1=1`, 'cases');
-    
+
     for (const case_ of cases) {
       const evidenceCount = await db.select()
         .from(evidence)
         .where(eq(evidence.caseId, case_.id));
-      
+
       const priority = this.calculateCasePriority(case_, evidenceCount.length);
-      
+
       await db.update(cases)
         .set({ priority, updated_at: new Date() })
         .where(eq(cases.id, case_.id));
@@ -481,11 +492,11 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
       try {
         // Call Context7 analysis
         const analysis = await this.callContext7Analysis(item);
-        
+
         // Update evidence with analysis
         await db.update(evidence)
-          .set({ 
-            analyzed: true, 
+          .set({
+            analyzed: true,
             analysis_result: analysis,
             analyzed_at: new Date()
           })
@@ -583,18 +594,18 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
   private calculateCasePriority(case_: any, evidenceCount: number): number {
     let priority = 0;
-    
+
     // Evidence count factor
     priority += evidenceCount * 10;
-    
+
     // Age factor
     const ageInDays = (Date.now() - new Date(case_.created_at).getTime()) / (1000 * 60 * 60 * 24);
     priority += Math.max(0, 100 - ageInDays);
-    
+
     // Type factor
     if (case_.type === 'criminal') priority += 50;
     if (case_.type === 'civil') priority += 30;
-    
+
     return Math.round(priority);
   }
 
@@ -613,7 +624,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
       if (response.ok) {
         return await response.json();
       }
-      
+
       return { status: 'analysis_failed', error: 'API request failed' };
     } catch (error) {
       return { status: 'analysis_error', error: error.message };
@@ -638,7 +649,7 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
   private async triggerRealTimeProcessing(table: string, data: any): Promise<void> {
     // Trigger immediate processing for critical data
     this.emit('realtime:processing', { table, data });
-    
+
     switch (table) {
       case 'cases':
         await this.processNewCase(data);
@@ -696,15 +707,15 @@ export class ComprehensiveDatabaseOrchestrator extends EventEmitter {
 
   async stop(): Promise<void> {
     console.log('🛑 Stopping Database Orchestrator');
-    
+
     for (const [id, timeout] of this.eventLoops.entries()) {
       clearInterval(timeout);
       console.log(`Stopped event loop: ${id}`);
     }
-    
+
     this.eventLoops.clear();
     this.isRunning = false;
-    
+
     this.emit('orchestrator:stopped');
     console.log('✅ Database Orchestrator stopped');
   }

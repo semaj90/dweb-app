@@ -1,11 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Legal AI Chat API - Context7 Enhanced with Gemma3 Legal
 import { db } from "$lib/server/db/index";
-import { type RequestHandler, json, {,   legalAnalysisSessions,,   legalDocuments,,   legalPrecedents, } from
-// Orphaned content: import { eq, desc, and, like
-import {
-type InsertLegalAnalysisSession } from "$lib/server/db/types";
-// Orphaned content: import { URL
+import { type RequestHandler, json , { , legalAnalysisSessions, , legalDocuments, , legalPrecedents } from import { type InsertLegalAnalysisSession } from "$lib/server/db/types";
 
 interface LegalChatRequest {
   prompt: string;

@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';
 
 const SUMMARIZER_BASE =

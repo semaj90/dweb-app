@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte'
   import { scale, fly, fade } from 'svelte/transition'
   import { spring } from 'svelte/motion'
@@ -36,7 +38,7 @@ import NierAIAssistant from './NierAIAssistant.svelte';
     }
   }
 
-  interface Props {
+  interface Props extends CommonProps {
     caseContext?: {
       id: string
       title: string

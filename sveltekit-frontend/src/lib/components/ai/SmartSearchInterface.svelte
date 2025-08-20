@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { onMount } from 'svelte';
 	import { frontendRAG } from '$lib/ai/frontend-rag-pipeline';
 	import type { SemanticChunk } from '$lib/ai/frontend-rag-pipeline';
@@ -206,7 +208,7 @@
 			disabled={isSearching}
 		/>
 		<Button 
-			on:click={performSearch}
+			onclick={performSearch}
 			disabled={isSearching || !query.trim()}
 			class="px-6"
 		>
@@ -310,3 +312,7 @@
 		border-radius: 2px;
 	}
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

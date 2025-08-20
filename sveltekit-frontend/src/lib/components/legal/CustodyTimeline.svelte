@@ -5,6 +5,8 @@ Custody Timeline Component
 Displays the chronological chain of custody events with detailed audit trail
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Badge } from '$lib/components/ui/badge';
   import { CheckCircle, AlertTriangle, Clock, FileCheck, Users, Shield, UserCheck } from 'lucide-svelte';
 
@@ -17,7 +19,7 @@ Displays the chronological chain of custody events with detailed audit trail
     signature?: string;
   }
 
-  interface Props {
+  interface Props extends CommonProps {
     events: Array<CustodyEvent>;
     currentStage: string;
   }

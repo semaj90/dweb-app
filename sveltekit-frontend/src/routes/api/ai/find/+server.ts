@@ -4,15 +4,8 @@
  * Advanced semantic search with LLM enhancement and memory graph updates
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-copilotOrchestrator, 
-  generateMCPPrompt,
-  commonMCPQueries,
-  semanticSearch,
-  mcpMemoryReadGraph
-} from "$lib/utils/mcp-helpers";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { copilotOrchestrator, generateMCPPrompt, commonMCPQueries, semanticSearch, mcpMemoryReadGraph } from "$lib/utils/mcp-helpers";
 
 // Define the types locally since they're not exported from mcp-helpers
 interface MCPContextAnalysis {
@@ -40,10 +33,7 @@ interface AutoMCPSuggestion {
 }
 // Mock database imports for testing without DB connection
 // { db } from '$lib/server/db';
-// Orphaned content: // import { cases, evidence, legalDocuments
-import {
-or, like, desc, sql, and, gte } from "drizzle-orm";
-// Orphaned content: import { URL
+import { or, like, desc, sql, and, gte } from "drizzle-orm";
 // Mock Redis for testing without Redis connection
 // import { Redis } from 'ioredis';
 

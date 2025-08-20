@@ -2,6 +2,8 @@
 https://svelte.dev/e/expected_token -->
 <!-- Document Upload Simulator with AI Processing -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   
   interface DocumentUpload {
@@ -410,3 +412,7 @@ https://svelte.dev/e/expected_token -->
     }
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

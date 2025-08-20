@@ -5,6 +5,8 @@
   - Backend: expects /api/ai/process-evidence (LangChain, Ollama, pg_vector, Neo4j, Redis, Docker)
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { getContext, onMount } from 'svelte';
 
   // UI components
@@ -32,7 +34,7 @@
   const getUser = getContext('user');
   const user = typeof getUser === 'function' ? getUser() : undefined;
 
-  interface Props {
+  interface Props extends CommonProps {
     contextItems?: any[];
     caseId?: string;
   }
@@ -74,7 +76,7 @@
       <h3 class="nier-title text-lg font-bold mb-2">AI Evidence Summary</h3>
     <div class="flex gap-2">
       <Button
-        on:click={handleSummarize}
+        onclick={handleSummarize}
         disabled={!user || $aiGlobalStore.context.loading}
         variant="primary"
         class="relative overflow-hidden transition-all duration-300 hover:translate-y--0.5 hover:shadow-lg"
@@ -82,7 +84,7 @@
         {!user ? 'Sign in to Summarize' : ($aiGlobalStore.context.loading ? 'Summarizing...' : 'Summarize Evidence')}
       </Button>
       <Button
-        on:click={saveSummary}
+        onclick={saveSummary}
         disabled={!$aiGlobalStore.context.summary || $aiGlobalStore.context.loading}
         variant="primary"
         class="relative overflow-hidden transition-all duration-300 hover:translate-y--0.5 hover:shadow-lg"

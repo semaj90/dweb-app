@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // Self-Organizing Map (SOM) Implementation for Legal Document Clustering
 // Real-time clustering and pattern recognition for legal document embeddings
 // Integrates with tensor tiling system for efficient processing

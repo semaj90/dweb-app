@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { getContext } from 'svelte';
 
-  interface Props {
+  interface Props extends CommonProps {
     value: string;
     class?: string;
   }

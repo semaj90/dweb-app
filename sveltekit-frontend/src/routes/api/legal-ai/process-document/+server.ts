@@ -1,13 +1,7 @@
 // @ts-nocheck
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 import { URL } from "url";
-import {
-	queueDocumentProcessing, 
-	getJobStatus, 
-	getQueueStats,
-	type DocumentProcessingJobData 
-} from "$lib/services/queue-service";
+import { queueDocumentProcessing, getJobStatus, getQueueStats, type DocumentProcessingJobData } from "$lib/services/queue-service";
 
 // Types for Go server integration (kept for compatibility)
 interface DocumentProcessRequest {

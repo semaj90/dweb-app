@@ -1,9 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { db } from "$lib/server/db/index";
-// Orphaned content: import {
 cases, criminals, evidence
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 
 import type { RequestHandler } from "./$types";
 

@@ -1,6 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: Unexpected token
 https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onDestroy, onMount } from "svelte";
   import { quintOut } from "svelte/easing";
   import { fly } from "svelte/transition";
@@ -692,3 +694,8 @@ https://svelte.dev/e/js_parse_error -->
     }
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,6 +1,8 @@
 <!-- Enhanced Dialog component with custom implementation -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     onclose?: (event?: any) => void;
   }
   let {

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import Label from '../Label.svelte';
   import type { HTMLAttributes } from 'svelte/elements';
 

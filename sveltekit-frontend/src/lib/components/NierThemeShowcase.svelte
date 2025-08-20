@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from 'bits-ui'
   import { createDialog, melt } from '@melt-ui/svelte'
   import { fly, fade } from 'svelte/transition'
@@ -439,3 +441,8 @@
     color-scheme: dark;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 import { type VariantProps, tv } from "tailwind-variants";
 // @ts-nocheck
 

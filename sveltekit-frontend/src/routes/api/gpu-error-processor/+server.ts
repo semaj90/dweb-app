@@ -3,7 +3,7 @@
 // Deploy and test the complete error resolution system
 // ======================================================================
 
-import { json } from '@sveltejs/kit';
+import { type RequestHandler,  json } from '@sveltejs/kit';
 import { spawn } from 'child_process';
 import type { RequestHandler } from './$types.js';
 

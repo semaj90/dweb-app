@@ -1,6 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: `$evidenceStore` is an illegal variable name. To reference a global variable called `$evidenceStore`, use `globalThis.$evidenceStore`
 https://svelte.dev/e/global_reference_invalid -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import Badge from "$lib/components/ui/Badge.svelte";
   import Button from "$lib/components/ui/button/Button.svelte";
   import {
@@ -199,7 +201,7 @@ https://svelte.dev/e/global_reference_invalid -->
             <Button
               variant={viewMode === "columns" ? "default" : "outline"}
               size="sm"
-              on:click={() => switchViewMode("columns")}
+              onclick={() => switchViewMode("columns")}
             >
               <span class="mr-2">📋</span>
               Columns
@@ -207,7 +209,7 @@ https://svelte.dev/e/global_reference_invalid -->
             <Button
               variant={viewMode === "canvas" ? "default" : "outline"}
               size="sm"
-              on:click={() => switchViewMode("canvas")}
+              onclick={() => switchViewMode("canvas")}
             >
               <span class="mr-2">🎨</span>
               Canvas
@@ -468,10 +470,10 @@ https://svelte.dev/e/global_reference_invalid -->
               />
               <Button
                 size="sm"
-                on:click={runFindSearch}
+                onclick={runFindSearch}
                 disabled={findModal.loading}>Search</Button
               >
-              <Button size="sm" variant="outline" on:click={closeFindModal}
+              <Button size="sm" variant="outline" onclick={closeFindModal}
                 >Close</Button
               >
             </div>
@@ -555,3 +557,8 @@ https://svelte.dev/e/global_reference_invalid -->
     {/if}
   </div>
 {/if}
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

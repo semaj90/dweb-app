@@ -1,48 +1,45 @@
-// @ts-nocheck
-// Registration API endpoint using Lucia v3 and bcrypt
+import type { RequestHandler } from '@sveltejs/kit';
+import { json } from "@sveltejs/kit";
+import type { RequestHandler } from "@sveltejs/kit";
+import { z } from "zod";
 import { users } from "$lib/server/db/schema-postgres";
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { eq
-import {
-hashPassword } from "$lib/auth/password";
-// Orphaned content: import { lucia
-import {
-db } from "$lib/server/db/index";
+import { lucia } from "$lib/server/auth";
+import { db } from "$lib/server/db";
+import { eq } from "drizzle-orm";
+import { Argon2id } from "oslo/password";
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
+const registerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  role: z.enum(["prosecutor", "investigator", "admin", "analyst"]).default("prosecutor"),
+  department: z.string().optional(),
+  badgeNumber: z.string().optional(),
+  jurisdiction: z.string().optional()
+});
+
+export const POST: RequestHandler = async ({ request, getClientAddress, cookies }) => {
+  const startTime = Date.now();
+  const ipAddress = getClientAddress();
+  const userAgent = request.headers.get("user-agent") || "";
+
   try {
     const body = await request.json();
-    const { name, email, password } = body;
-    console.log("[Register API] Received data:", {
-      name,
-      email,
-      password: "***",
-    });
+    console.log("📝 Registration attempt:", { email: body.email, role: body.role });
 
     // Validate input
-    if (!email || !password || !name) {
-      return json({ error: "Missing required fields" }, { status: 400 });
+    const validationResult = registerSchema.safeParse(body);
+    if (!validationResult.success) {
+      return json({
+        success: false,
+        error: "Invalid input data",
+        details: validationResult.error.flatten()
+      }, { status: 400 });
     }
-    if (
-      typeof email !== "string" ||
-      typeof password !== "string" ||
-      typeof name !== "string"
-    ) {
-      return json({ error: "Invalid input format" }, { status: 400 });
-    }
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return json({ error: "Invalid email format" }, { status: 400 });
-    }
-    // Validate password strength
-    if (password.length < 6) {
-      return json(
-        { error: "Password must be at least 6 characters long" },
-        { status: 400 },
-      );
-    }
+
+    const { email, password, firstName, lastName, role, department, badgeNumber, jurisdiction } = validationResult.data;
+
     // Check if user already exists
     const existingUsers = await db
       .select()
@@ -51,28 +48,37 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       .limit(1);
 
     if (existingUsers.length > 0) {
-      return json({ error: "User already exists" }, { status: 400 });
+      return json({
+        success: false,
+        error: "User with this email already exists"
+      }, { status: 409 });
     }
-    // Hash password
-    const hashedPassword = await hashPassword(password);
 
-    // Create user
+    // Hash password
+    const hashedPassword = await new Argon2id().hash(password);
+
+    // Create user in database
     const [newUser] = await db
       .insert(users)
       .values({
         email: email.toLowerCase(),
         hashedPassword,
-        name,
-        firstName: name.split(" ")[0] || "",
-        lastName: name.split(" ").slice(1).join(" ") || "",
-        role: "prosecutor",
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
+        role,
         isActive: true,
       })
       .returning();
 
-    console.log("[Register API] User created successfully:", newUser.id);
+    console.log("✅ User registered successfully:", {
+      id: newUser.id,
+      email: newUser.email,
+      role: newUser.role,
+      processingTime: Date.now() - startTime
+    });
 
-    // Optionally create a session immediately after registration
+    // Create session for new user
     const session = await lucia.createSession(newUser.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
 
@@ -87,17 +93,60 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
     return json({
       success: true,
-      message: "Registration successful",
+      message: "User registered successfully",
       user: {
         ...userInfo,
         avatarUrl: userInfo.avatarUrl || "/images/default-avatar.svg",
-      },
-    });
+      }
+    }, { status: 201 });
+
   } catch (error) {
-    console.error("[Register API] Error:", error);
-    return json(
-      { error: "An error occurred during registration" },
-      { status: 500 },
-    );
+    console.error("❌ Registration error:", error);
+
+    return json({
+      success: false,
+      error: "Internal server error during registration"
+    }, { status: 500 });
   }
 };
+
+// Helper function for default permissions
+function getDefaultPermissions(role: string): string[] {
+  const permissions = {
+    prosecutor: [
+      "cases:read",
+      "cases:create", 
+      "cases:update",
+      "evidence:read",
+      "evidence:create",
+      "criminals:read",
+      "ai:analyze"
+    ],
+    investigator: [
+      "cases:read",
+      "evidence:read",
+      "evidence:create",
+      "evidence:update",
+      "criminals:read",
+      "criminals:create",
+      "criminals:update"
+    ],
+    analyst: [
+      "cases:read",
+      "evidence:read",
+      "criminals:read",
+      "ai:analyze",
+      "reports:create"
+    ],
+    admin: [
+      "cases:*",
+      "evidence:*", 
+      "criminals:*",
+      "users:*",
+      "system:*",
+      "ai:*"
+    ]
+  };
+
+  return permissions[role as keyof typeof permissions] || permissions.prosecutor;
+}

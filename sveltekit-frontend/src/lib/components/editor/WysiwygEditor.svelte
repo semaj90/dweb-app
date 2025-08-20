@@ -2,7 +2,9 @@
 // Combines Hugerte with Melt UI components for legal document editing
 
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     content?: any;
     placeholder?: any;
     readonly?: any;

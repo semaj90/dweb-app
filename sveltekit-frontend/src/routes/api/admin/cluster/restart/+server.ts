@@ -4,10 +4,8 @@
  * Handles graceful rolling restart of worker processes
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-cluster from 'node:cluster';
-// Orphaned content: import type { Worker
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import cluster from 'node:cluster';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

@@ -1,15 +1,8 @@
-// @ts-nocheck
-import {
-  aiReports,
-  canvasStates,
-  reports,
-} from "$lib/server/db/schema-postgres";
-type { RequestEvent }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { and, desc, eq, like, or, sql
-import {
-db } from "$lib/server/db/index";
-// Orphaned content: import { URL
+// Repaired imports (file previously had fragmented 'type { RequestEvent }, { json }')
+import { json, type RequestEvent } from '@sveltejs/kit';
+import { aiReports, canvasStates, reports } from '$lib/server/db/schema-postgres';
+import { db } from '$lib/server/db/index';
+import { eq, and, or, like, desc, sql } from 'drizzle-orm';
 
 export async function GET({ url, locals }: RequestEvent) {
   try {
@@ -104,11 +97,11 @@ export async function GET({ url, locals }: RequestEvent) {
     const baseCountQuery = db
       .select({ count: sql<number>`count(*)` })
       .from(useAiReports ? aiReports : reports);
-    
-    const finalCountQuery = conditions.length > 0 
+
+    const finalCountQuery = conditions.length > 0
       ? baseCountQuery.where(and(...conditions))
       : baseCountQuery;
-    
+
     const totalCountResult = await finalCountQuery;
     const totalCount = totalCountResult[0]?.count || 0;
 

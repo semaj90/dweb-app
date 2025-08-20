@@ -1,10 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { evidence } from "$lib/server/db/schema-postgres";
 // @ts-nocheck
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { eq
-import {
-db } from "$lib/server/db/drizzle";
+import { db } from "$lib/server/db/drizzle";
 
 // GET specific evidence by ID
 export const GET: RequestHandler = async ({ params }) => {

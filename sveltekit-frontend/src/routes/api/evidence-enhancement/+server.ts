@@ -4,13 +4,9 @@
  * Analyzes uploaded evidence and suggests relevant labels and classifications
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-Pool } from "pg";
-// Orphaned content: import { Redis
-import {
-z } from "zod";
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { Pool } from "pg";
+import { z } from "zod";
 
 // Configuration
 const CONFIG = {

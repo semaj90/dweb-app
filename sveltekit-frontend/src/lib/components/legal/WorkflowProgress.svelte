@@ -3,7 +3,9 @@ Workflow Progress Component
 Visual progress indicator for the Evidence Chain of Custody workflow
 -->
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
     progress: number;
     stage: string;
     stageName: string;

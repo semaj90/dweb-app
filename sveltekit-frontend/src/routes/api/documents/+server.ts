@@ -1,9 +1,7 @@
 // @ts-nocheck
 // src/routes/api/documents/+server.ts
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { URL } from "url";
 
 const GO_SERVICE = 'http://localhost:8080';
 

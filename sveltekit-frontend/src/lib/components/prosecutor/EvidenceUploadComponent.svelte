@@ -3,6 +3,8 @@ Enhanced Evidence Upload Component for Prosecutors
 Features: MinIO storage, AI analysis, multi-file support, drag-drop
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -308,7 +310,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
           class="hidden"
           id="file-input"
         />
-        <Button variant="outline" on:click={() => document.getElementById('file-input')?.click()}>
+        <Button variant="outline" onclick={() => document.getElementById('file-input')?.click()}>
           Select Files
         </Button>
       {:else}
@@ -337,7 +339,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  on:click={() => removeFile(index)}
+                  onclick={() => removeFile(index)}
                 >
                   <X class="w-4 h-4" />
                 </Button>
@@ -356,12 +358,12 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
             />
             <Button 
               variant="outline" 
-              on:click={() => document.getElementById('add-more-files')?.click()}
+              onclick={() => document.getElementById('add-more-files')?.click()}
               disabled={selectedFiles.length >= maxFiles}
             >
               Add More Files
             </Button>
-            <Button on:click={uploadEvidence} disabled={uploading || !evidenceTitle.trim()}>
+            <Button onclick={uploadEvidence} disabled={uploading || !evidenceTitle.trim()}>
               {#if uploading}
                 Processing...
               {:else}
@@ -434,7 +436,7 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
         <div class="flex justify-center mt-4">
           <Button 
             variant="outline" 
-            on:click={() => {
+            onclick={() => {
               uploadResults = [];
               selectedFiles = [];
             }}
@@ -476,3 +478,8 @@ Features: MinIO storage, AI analysis, multi-file support, drag-drop
   }
 </style>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

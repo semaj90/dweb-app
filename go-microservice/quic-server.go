@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // QUIC/HTTP3 Server Implementation
 // Eliminates head-of-line blocking for streaming LLM responses
 // Compatible with existing Go microservice architecture

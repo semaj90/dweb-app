@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   // Svelte 5 runes pattern
   let inputText = $state('');
   let result: string | null = $state(null);
@@ -66,3 +68,8 @@
   /* @unocss-include */
   /* UnoCSS utility classes used above, no custom CSS needed. */
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

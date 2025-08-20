@@ -1,5 +1,5 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 updateQUICMetrics, getQUICMetrics, getAggregateAnomaliesLast5m, noteQuicP99Breach, notePipelineAnomalySpike
 import { routeAlerts, maybeTriggerAutosolve, getSustainedP99Info } from '$lib/services/alert-center';
 

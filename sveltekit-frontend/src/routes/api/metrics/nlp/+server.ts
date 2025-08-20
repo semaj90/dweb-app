@@ -1,5 +1,5 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 
 export const GET: RequestHandler = async () => {
   const body = renderNlpMetrics();

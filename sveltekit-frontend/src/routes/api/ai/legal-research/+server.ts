@@ -3,13 +3,8 @@
  * Provides comprehensive legal research capabilities with RAG integration
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-processRAGPipeline,
-  rerankSearchResults,
-} from "$lib/services/comprehensive-database-orchestrator";
-// Orphaned content: import { ollamaService
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { processRAGPipeline, rerankSearchResults } from "$lib/services/comprehensive-database-orchestrator";
 
 interface LegalResearchRequest {
   topic: string;

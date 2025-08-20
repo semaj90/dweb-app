@@ -1,12 +1,11 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * System Health API Endpoint
  */
 
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-rateLimitAPI } from "$lib/server/monitoring/security";
+import { rateLimitAPI } from "$lib/server/monitoring/security";
 
 export const GET: RequestHandler = async ({ locals, request }) => {
   try {

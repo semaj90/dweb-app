@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Props } from "$lib/types/global";
   let { checked = $bindable(false), disabled = false, id, class: klass = '' }: Props = $props();
 </script>
@@ -42,3 +44,8 @@
   }
 </style>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

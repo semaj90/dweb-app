@@ -2,6 +2,8 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- EnhancedRAGInterface.svelte - SvelteKit 2.0 Advanced RAG Interface -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, tick } from 'svelte';
   import { enhancedRAGStore } from '$lib/stores/enhanced-rag-store.js';
   import { Card, CardHeader, CardTitle, CardContent } from '$lib/components/ui/card';
@@ -207,7 +209,7 @@ https://svelte.dev/e/js_parse_error -->
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               bind:value={searchQuery}
-              on:keydown={handleKeyPress}
+              onkeydown={handleKeyPress}
               placeholder="Ask anything about your legal documents..."
               class="pl-10 pr-4 py-3 text-lg"
               disabled={ragState.isLoading}
@@ -222,7 +224,7 @@ https://svelte.dev/e/js_parse_error -->
           </div>
 
           <Button
-            on:click={handleSearch}
+            onclick={handleSearch}
             disabled={!searchQuery.trim() || ragState.isLoading}
             class="px-6"
           >
@@ -231,7 +233,7 @@ https://svelte.dev/e/js_parse_error -->
 
           <Button
             variant="outline"
-            on:click={() => showAdvancedOptions = !showAdvancedOptions}
+            onclick={() => showAdvancedOptions = !showAdvancedOptions}
           >
             <Settings class="h-4 w-4" />
           </Button>
@@ -259,7 +261,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => selectSuggestion(suggestion)}
+                onclick={() => selectSuggestion(suggestion)}
                 class="h-8 px-3 bg-yellow-50 hover:bg-yellow-100 text-yellow-800 border border-yellow-200"
               >
                 <Sparkles class="h-3 w-3 mr-1" />
@@ -322,7 +324,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant="outline"
                 size="sm"
-                on:click={handleOptimization}
+                onclick={handleOptimization}
                 class="mt-2 w-full"
               >
                 <Zap class="h-4 w-4 mr-1" />
@@ -358,14 +360,14 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={visualizationMode === 'list' ? 'default' : 'outline'}
                 size="sm"
-                on:click={() => visualizationMode = 'list'}
+                onclick={() => visualizationMode = 'list'}
               >
                 List
               </Button>
               <Button
                 variant={visualizationMode === 'clusters' ? 'default' : 'outline'}
                 size="sm"
-                on:click={() => visualizationMode = 'clusters'}
+                onclick={() => visualizationMode = 'clusters'}
               >
                 <Target class="h-4 w-4 mr-1" />
                 Clusters
@@ -373,7 +375,7 @@ https://svelte.dev/e/js_parse_error -->
               <Button
                 variant={visualizationMode === 'performance' ? 'default' : 'outline'}
                 size="sm"
-                on:click={() => visualizationMode = 'performance'}
+                onclick={() => visualizationMode = 'performance'}
               >
                 <BarChart3 class="h-4 w-4 mr-1" />
                 Analytics
@@ -452,7 +454,7 @@ https://svelte.dev/e/js_parse_error -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {#each clusterVisualization as cluster}
             <Card class="cursor-pointer transition-all {cluster.isSelected ? 'ring-2 ring-blue-500' : ''}"
-                  on:click={() => handleClusterSelect(cluster.id)}>
+                  onclick={() => handleClusterSelect(cluster.id)}>
               <CardHeader>
                 <CardTitle class="flex items-center justify-between">
                   <span>Cluster {cluster.id}</span>
@@ -565,3 +567,8 @@ https://svelte.dev/e/js_parse_error -->
     animation: pulse-glow 2s infinite;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

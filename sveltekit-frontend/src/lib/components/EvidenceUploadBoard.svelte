@@ -1,5 +1,7 @@
 <!-- Evidence Upload Board Component with AI Analysis -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Textarea } from '$lib/components/ui/textarea';
@@ -69,3 +71,8 @@
     </CardContent>
   </Card>
 </div>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

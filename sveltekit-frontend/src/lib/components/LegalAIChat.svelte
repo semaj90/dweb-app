@@ -1,5 +1,7 @@
 <!-- Updated AI Chat for GPU Ollama -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Input } from '$lib/components/ui/input';
@@ -59,8 +61,13 @@
       {/if}
     </div>
     <div class="flex space-x-2">
-      <Input bind:value={input} placeholder="Legal question..." on:keydown={(e) => e.key === 'Enter' && sendMessage()} />
-      <Button on:click={sendMessage} disabled={isLoading}>Send</Button>
+      <Input bind:value={input} placeholder="Legal question..." onkeydown={(e) => e.key === 'Enter' && sendMessage()} />
+      <Button onclick={sendMessage} disabled={isLoading}>Send</Button>
     </div>
   </CardContent>
 </Card>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

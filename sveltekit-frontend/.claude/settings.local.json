@@ -52,7 +52,19 @@
       "Bash(zx:*)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(dir:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(powershell:*)",
+      "Bash(START-COMPLETE-PRODUCTION-NATIVE.bat)",
+      "Bash(cmd /c:*)",
+      "Bash(touch:*)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "mcp__puppeteer__puppeteer_screenshot"
     ],
     "deny": [],
     "additionalDirectories": [

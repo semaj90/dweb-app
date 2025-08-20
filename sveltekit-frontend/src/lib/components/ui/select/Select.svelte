@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   // Basic Select wrapper that uses enhanced-bits Select
   import EnhancedSelect from '../enhanced-bits/Select.svelte';
   
@@ -24,3 +26,7 @@
 </script>
 
 <EnhancedSelect {value} {options} {placeholder} {...props} />
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

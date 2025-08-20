@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Search, Database, Brain, FileText, AlertCircle, CheckCircle2, Loader2, Star, Clock } from "lucide-svelte";
   import { Button } from "$lib/components/ui/button";
   import Input from "$lib/components/ui/Input.svelte";
@@ -178,7 +180,7 @@
       <form onsubmit={handleSubmit} class="flex gap-2">
         <Input
           bind:value={query}
-          on:keydown={handleKeydown}
+          onkeydown={handleKeydown}
           placeholder="Search legal documents using natural language..."
           class="flex-1"
           disabled={isSearching}
@@ -205,7 +207,7 @@
           <Button
             variant="outline"
             size="sm"
-            on:click={() => { query = example; }}
+            onclick={() => { query = example; }}
             disabled={isSearching}
           >
             {example}
@@ -262,7 +264,7 @@
           {@const typeStyle = getDocumentTypeStyle(result.documentType)}
           <Card
             class="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-purple-500"
-            on:click={() => selectedResult = result}
+            onclick={() => selectedResult = result}
           >
             <CardContent class="pt-6">
               <div class="space-y-3">
@@ -344,7 +346,7 @@
         <div class="flex justify-center">
           <Button
             variant="outline"
-            on:click={() => { results = demoResults; metrics = { totalDocuments: 1250, searchTime: 45, vectorDimensions: 384, similarityThreshold: 0.7 }; }}
+            onclick={() => { results = demoResults; metrics = { totalDocuments: 1250, searchTime: 45, vectorDimensions: 384, similarityThreshold: 0.7 }; }}
           >
             Load Demo Results
           </Button>
@@ -361,7 +363,7 @@
       <CardHeader>
         <CardTitle class="flex items-center justify-between">
           {selectedResult.title}
-          <Button variant="ghost" size="sm" on:click={() => selectedResult = null}>
+          <Button variant="ghost" size="sm" onclick={() => selectedResult = null}>
             ×
           </Button>
         </CardTitle>
@@ -376,3 +378,7 @@
     </Card>
   </div>
 {/if}
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

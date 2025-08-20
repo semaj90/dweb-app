@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { melt } from '@melt-ui/svelte';
   
-  interface Props {
+  interface Props extends CommonProps {
     trigger: any;
     selectedLabel: any;
   }

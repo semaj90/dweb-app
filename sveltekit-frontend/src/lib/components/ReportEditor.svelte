@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { browser } from "$app/environment";
   import type { CitationPoint, Report, ReportSection } from "$lib/data/types";
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy, onMount } from 'svelte';
 
   export let report: Report | null = null;
   export let caseId: string;
@@ -804,3 +806,5 @@
     font-style: italic;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

@@ -1,8 +1,10 @@
 <!-- Dialog Wrapper: Svelte 5, Bits UI, UnoCSS, analytics logging -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createDialog } from '@melt-ui/svelte';
 
-  interface Props {
+  interface Props extends CommonProps {
     open?: boolean;
     title?: string;
     description?: string;

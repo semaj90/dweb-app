@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import { Textarea } from "$lib/components/ui/textarea/index";
   import {
@@ -380,7 +382,7 @@
           <Button 
             variant="outline" 
             size="sm" 
-            on:click={quickAnalyzeEvidence}
+            onclick={quickAnalyzeEvidence}
             disabled={$isLoading}
           >
             🔍 Quick Analysis
@@ -494,8 +496,8 @@
             ? "Ask for detailed analysis... (Enter to send, Shift+Enter for new line)"
             : "Type your message... (Enter to send, Shift+Enter for new line)"}
           class="mx-auto px-4 max-w-7xl"
-          on:keydown={handleKeyDown}
-          on:input={autoResize}
+          onkeydown={handleKeyDown}
+          oninput={autoResize}
           disabled={$isLoading}
         />
       </div>
@@ -504,7 +506,7 @@
         variant="default"
         size="sm"
         class="mx-auto px-4 max-w-7xl"
-        on:click={() => sendMessage()}
+        onclick={() => sendMessage()}
         disabled={$isLoading || !messageInput.trim()}
       >
         {#if $isLoading}
@@ -576,3 +578,8 @@
     font-size: 1rem;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

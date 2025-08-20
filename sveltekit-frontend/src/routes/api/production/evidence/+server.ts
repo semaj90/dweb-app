@@ -3,10 +3,8 @@
  * Smart detection and analysis pipeline
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { URL } from "url";
 
 interface EvidenceItem {
   id: string;

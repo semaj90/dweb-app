@@ -1951,6 +1951,111 @@
         "panel": "shared"
       },
       "detail": "Stop all running Legal AI platform services"
+    },
+    {
+      "label": "🔧 Auto-Solve: TypeScript Check + Fix",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "Set-Location sveltekit-frontend; $env:DRY_RUN='0'; $env:AUTOSOLVE_MIN_REDUCTION='0.5'; node ../scripts/check-auto-solve-extended.mjs --force-continue"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": "$tsc",
+      "detail": "Run TypeScript check with auto-solve integration"
+    },
+    {
+      "label": "🚀 Dev Full: Complete Legal AI Stack",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev:full"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "isBackground": true,
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Starting.*$",
+          "endsPattern": "^.*ready.*$"
+        }
+      },
+      "detail": "Start complete Legal AI development environment"
+    },
+    {
+      "label": "🔄 Auto-Solve: Maintenance Cycle",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "cd sveltekit-frontend; $env:AUTOSOLVE_THRESHOLD='5'; npm run maintenance:cycle"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "detail": "Run maintenance cycle with conditional autosolve"
+    },
+    {
+      "label": "⚡ Quick Fix: Priority Parse Errors", 
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Write-Host '🚨 Running priority error fixes...' -ForegroundColor Yellow;",
+        "cd sveltekit-frontend;",
+        "$env:DRY_RUN='0';",
+        "$env:AUTOSOLVE_MIN_REDUCTION='0.3';",
+        "Write-Host '  Running baseline check...' -ForegroundColor Cyan;",
+        "npm run check:fast 2>&1 | Select-String 'error' | Measure-Object | ForEach-Object { Write-Host \"Baseline errors: $($_.Count)\" };",
+        "Write-Host '  Applying semantic fixes...' -ForegroundColor Cyan;", 
+        "node ../scripts/check-auto-solve-extended.mjs --force-continue;",
+        "Write-Host '  Post-fix verification...' -ForegroundColor Cyan;",
+        "npm run check:fast 2>&1 | Select-String 'error' | Measure-Object | ForEach-Object { Write-Host \"Remaining errors: $($_.Count)\" };",
+        "Write-Host '✅ Priority fixes completed' -ForegroundColor Green"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "detail": "Quick fix for high-priority TypeScript parse errors"
     }
   ]
 }

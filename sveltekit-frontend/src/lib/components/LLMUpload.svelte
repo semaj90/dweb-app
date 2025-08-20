@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { invoke } from '@tauri-apps/api/tauri';
   let uploadResult = $state('');
   let error = $state('');
@@ -73,3 +75,8 @@
   font-weight: 600;
 }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

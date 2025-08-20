@@ -2,10 +2,7 @@
 import { citationPoints } from "$lib/server/db/unified-schema";
 type { RequestEvent }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { and, desc, eq, like
-import {
-db } from "$lib/server/db/index";
-// Orphaned content: import { URL
+import { db } from "$lib/server/db/index";
 
 // Sample citations for when database is not available or for demo data
 const sampleCitations = [

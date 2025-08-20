@@ -3,13 +3,8 @@
  * Provides AI-powered legal document drafting assistance with templates and guidance
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-synthesizeAIInput,
-  processAIAssistantQuery,
-} from "$lib/services/comprehensive-database-orchestrator";
-// Orphaned content: import { ollamaService
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { synthesizeAIInput, processAIAssistantQuery } from "$lib/services/comprehensive-database-orchestrator";
 
 interface DocumentDraftingRequest {
   documentType: string;

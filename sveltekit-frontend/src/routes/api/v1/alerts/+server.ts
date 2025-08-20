@@ -1,6 +1,6 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { URL } from "url";
 import type { RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 getAlertHistory, buildBaseline, diffBaselines
 
 let lastBaseline: any = null;

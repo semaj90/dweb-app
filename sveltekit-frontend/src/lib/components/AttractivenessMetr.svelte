@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher } from 'svelte';
   
   export let score: number = 5; // Current attractiveness score (1-10)
@@ -127,3 +129,5 @@
     opacity: 0.7;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

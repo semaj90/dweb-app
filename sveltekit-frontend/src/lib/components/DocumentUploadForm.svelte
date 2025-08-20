@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -293,7 +295,7 @@
                 {/if}
 
                 <Button.Root
-                  on:click={() => removeFile(index)}
+                  onclick={() => removeFile(index)}
                   class="p-1 text-red-600 hover:text-red-800 focus:outline-none"
                 >
                   🗑️
@@ -379,7 +381,7 @@
   <!-- Form Actions -->
   <div class="flex justify-between pt-6 mt-8 border-t border-gray-200">
     <Button.Root
-      on:click={handlePrevious}
+      onclick={handlePrevious}
       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
       ← Previous
@@ -387,14 +389,14 @@
 
     <div class="flex space-x-3">
       <Button.Root
-        on:click={handleSaveDraft}
+        onclick={handleSaveDraft}
         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         Save Draft
       </Button.Root>
 
       <Button.Root
-        on:click={handleNext}
+        onclick={handleNext}
         disabled={formData.uploaded_files.length === 0 || formData.processing_status === 'processing'}
         class="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
@@ -403,3 +405,5 @@
     </div>
   </div>
 </div>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

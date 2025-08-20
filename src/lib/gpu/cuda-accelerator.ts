@@ -1,6 +1,6 @@
 /**
  * CUDA GPU Acceleration System
- * 
+ *
  * Provides GPU-accelerated computing for AI workloads:
  * - Neural network inference acceleration
  * - Vector embeddings computation
@@ -12,16 +12,86 @@
  */
 
 import { EventEmitter } from 'events';
-import type { 
-    GPUDevice, 
-    GPUWorkload,
-    CUDAContext,
-    TensorOperation,
-    GPUMemoryStats,
-    GPUPerformanceMetrics,
-    BatchProcessingJob,
-    GPUClusterConfig
-} from '$lib/ai/types';
+
+// Minimal type definitions to resolve errors
+export type GPUDevice = {
+    id: number;
+    name: string;
+    computeCapability: { major: number; minor: number };
+    totalMemory: number;
+    availableMemory: number;
+    clockRate: number;
+    multiprocessorCount: number;
+    maxThreadsPerBlock: number;
+    maxThreadsPerMultiprocessor: number;
+    warpSize: number;
+    tensorCores: boolean;
+    rayTracingCores: boolean;
+    cudaCores: number;
+    memoryBandwidth: number;
+    pcieBandwidth: number;
+    powerLimit: number;
+    temperature: number;
+    utilization: { gpu: number; memory: number; encoder: number; decoder: number };
+    processes: any[];
+    isAvailable: boolean;
+    lastActivity: Date;
+};
+
+export type GPUWorkload = {
+    type: string;
+    memoryRequirement: number;
+    inputData: any;
+    parameters?: any;
+    priority?: 'low' | 'normal' | 'high' | 'urgent';
+    estimatedDuration?: number;
+};
+
+export type CUDAContext = any;
+export type TensorOperation = any;
+
+export type GPUMemoryStats = {
+    deviceId: number;
+    totalMemory: number;
+    allocatedMemory: number;
+    freeMemory: number;
+    poolMemory: number;
+    cacheMemory: number;
+    peakUsage: number;
+    allocations: any[];
+    fragmentationRatio: number;
+    allocationCount: number;
+    deallocationCount: number;
+    lastCleanup: Date;
+};
+
+export type GPUPerformanceMetrics = {
+    deviceId: number;
+    timestamp: number;
+    utilization: { gpu: number; memory: number; encoder: number; decoder: number };
+    memoryUsage: { total: number; used: number; free: number; utilization: number };
+    temperature: number;
+    powerUsage: number;
+    clockRates: { gpu: number; memory: number };
+    throughput: { operations: number; memoryBandwidth: number };
+    activeJobs: number;
+};
+
+export type BatchProcessingJob = {
+    id: string;
+    type: string;
+    deviceId: number;
+    memoryAllocation: any;
+    inputData: any;
+    parameters?: any;
+    priority: string;
+    estimatedDuration: number;
+    createdAt: Date;
+    status: string;
+    executionTime?: number;
+};
+
+export type GPUClusterConfig = any;
 
 export interface CUDAAcceleratorConfig {
     deviceCount?: number;
@@ -75,7 +145,7 @@ export class CUDAAccelerator extends EventEmitter {
 
     constructor(config: CUDAAcceleratorConfig = {}) {
         super();
-        
+
         this.config = {
             deviceCount: 1,
             memoryPoolSize: 2 * 1024 * 1024 * 1024, // 2GB default
@@ -111,13 +181,13 @@ export class CUDAAccelerator extends EventEmitter {
 
             // Detect and initialize GPU devices
             await this.detectGPUDevices();
-            
+
             // Initialize memory pools
             await this.initializeMemoryPools();
-            
+
             // Load and compile essential kernels
             await this.loadEssentialKernels();
-            
+
             // Setup performance monitoring
             if (this.config.enableProfiling) {
                 await this.profiler.initialize();
@@ -131,12 +201,12 @@ export class CUDAAccelerator extends EventEmitter {
             }
 
             this.isInitialized = true;
-            
+
             console.log(`✅ CUDA acceleration initialized successfully`);
             console.log(`🎯 GPU devices: ${this.devices.size}`);
             console.log(`💾 Memory pools: ${this.formatBytes(this.config.memoryPoolSize)} per device`);
             console.log(`⚡ Tensor Core support: ${this.config.tensorCoreUtilization}`);
-            
+
             this.emit('cudaInitialized', {
                 deviceCount: this.devices.size,
                 memoryPoolSize: this.config.memoryPoolSize,
@@ -211,10 +281,10 @@ export class CUDAAccelerator extends EventEmitter {
             };
 
             this.memoryPools.set(deviceId, memoryStats);
-            
+
             // Initialize memory pool
             await this.memoryManager.initializePool(deviceId, this.config.memoryPoolSize);
-            
+
             console.log(`💾 Memory pool initialized for GPU ${deviceId}: ${this.formatBytes(this.config.memoryPoolSize)}`);
         }
     }
@@ -237,7 +307,7 @@ export class CUDAAccelerator extends EventEmitter {
         for (const kernel of essentialKernels) {
             await this.compileKernel(kernel);
             this.kernels.set(kernel.id, kernel);
-            
+
             if (this.config.debugMode) {
                 console.log(`🔧 Compiled kernel: ${kernel.name} (${kernel.optimizationLevel} optimization)`);
             }
@@ -259,13 +329,13 @@ export class CUDAAccelerator extends EventEmitter {
 
         try {
             // Select optimal GPU device
-            const deviceId = this.config.enableMultiGPU 
+            const deviceId = this.config.enableMultiGPU
                 ? await this.loadBalancer.selectOptimalDevice(workload)
                 : 0;
 
             // Allocate GPU memory
             const memoryAllocation = await this.memoryManager.allocateMemory(
-                deviceId, 
+                deviceId,
                 workload.memoryRequirement
             );
 
@@ -345,10 +415,10 @@ export class CUDAAccelerator extends EventEmitter {
 
         } catch (error) {
             console.error(`❌ GPU workload execution failed (${jobId}):`, error);
-            
+
             // Clean up failed job
             this.activeJobs.delete(jobId);
-            
+
             this.emit('workloadFailed', {
                 jobId,
                 workloadType: workload.type,
@@ -369,14 +439,14 @@ export class CUDAAccelerator extends EventEmitter {
         }
 
         console.log(`🔄 Executing batch of ${workloads.length} GPU workloads...`);
-        
+
         const startTime = performance.now();
         const batchId = `batch-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
         try {
             // Group workloads by type for optimal batching
             const groupedWorkloads = this.groupWorkloadsByType(workloads);
-            
+
             // Execute workloads in parallel across available GPUs
             const batchResults = await Promise.allSettled(
                 Object.entries(groupedWorkloads).map(async ([type, typeWorkloads]) => {
@@ -422,7 +492,7 @@ export class CUDAAccelerator extends EventEmitter {
     private async executeMatrixMultiplication(job: BatchProcessingJob): Promise<any> {
         const { inputData, parameters } = job;
         const kernel = this.kernels.get('matrix-multiplication');
-        
+
         if (!kernel) {
             throw new Error('Matrix multiplication kernel not available');
         }
@@ -456,17 +526,17 @@ export class CUDAAccelerator extends EventEmitter {
      */
     private async executeNeuralInference(job: BatchProcessingJob): Promise<any> {
         const { inputData, parameters } = job;
-        
+
         // Simulate neural network inference
         const layers = parameters?.layers || [];
         const batchSize = parameters?.batchSize || 1;
-        
+
         let currentInput = inputData.input;
         const layerOutputs = [];
 
         for (let i = 0; i < layers.length; i++) {
             const layer = layers[i];
-            
+
             switch (layer.type) {
                 case 'linear':
                     currentInput = await this.executeLinearLayer(currentInput, layer);
@@ -484,7 +554,7 @@ export class CUDAAccelerator extends EventEmitter {
                     currentInput = await this.executeActivationLayer(currentInput, 'softmax');
                     break;
             }
-            
+
             layerOutputs.push(currentInput);
         }
 
@@ -506,7 +576,7 @@ export class CUDAAccelerator extends EventEmitter {
     private async executeEmbeddingGeneration(job: BatchProcessingJob): Promise<any> {
         const { inputData, parameters } = job;
         const embeddingKernel = this.kernels.get('embedding-generation');
-        
+
         if (!embeddingKernel) {
             throw new Error('Embedding generation kernel not available');
         }
@@ -517,7 +587,7 @@ export class CUDAAccelerator extends EventEmitter {
 
         // Simulate embedding lookup and computation
         const embeddings = tokens.map(token => {
-            return Array.from({ length: embeddingDim }, () => 
+            return Array.from({ length: embeddingDim }, () =>
                 Math.random() * 2 - 1 // Random embedding for simulation
             );
         });
@@ -540,10 +610,10 @@ export class CUDAAccelerator extends EventEmitter {
     private async executeVectorOperations(job: BatchProcessingJob): Promise<any> {
         const { inputData, parameters } = job;
         const operation = parameters?.operation || 'add';
-        
+
         const vectorA = inputData.vectorA;
         const vectorB = inputData.vectorB;
-        
+
         let result;
         switch (operation) {
             case 'add':
@@ -579,7 +649,7 @@ export class CUDAAccelerator extends EventEmitter {
     private async executeConvolution(job: BatchProcessingJob): Promise<any> {
         const { inputData, parameters } = job;
         const convolutionKernel = this.kernels.get('convolution');
-        
+
         if (!convolutionKernel) {
             throw new Error('Convolution kernel not available');
         }
@@ -592,7 +662,7 @@ export class CUDAAccelerator extends EventEmitter {
         // Simulate optimized convolution
         const outputHeight = Math.floor((input.height + 2 * padding - filters.height) / stride) + 1;
         const outputWidth = Math.floor((input.width + 2 * padding - filters.width) / stride) + 1;
-        
+
         const result = {
             height: outputHeight,
             width: outputWidth,
@@ -616,7 +686,7 @@ export class CUDAAccelerator extends EventEmitter {
     private async executeAttentionComputation(job: BatchProcessingJob): Promise<any> {
         const { inputData, parameters } = job;
         const attentionKernel = this.kernels.get('attention');
-        
+
         if (!attentionKernel) {
             throw new Error('Attention kernel not available');
         }
@@ -628,17 +698,17 @@ export class CUDAAccelerator extends EventEmitter {
         const headDim = parameters?.headDim || 64;
 
         // Simulate scaled dot-product attention
-        const attentionScores = queries.map(q => 
+        const attentionScores = queries.map(q =>
             keys.map(k => this.dotProduct(q, k) / Math.sqrt(headDim))
         );
 
-        const attentionWeights = attentionScores.map(scores => 
+        const attentionWeights = attentionScores.map(scores =>
             this.softmax(scores)
         );
 
         const output = attentionWeights.map(weights =>
-            weights.reduce((sum, weight, i) => 
-                sum.map((val, j) => val + weight * values[i][j]), 
+            weights.reduce((sum, weight, i) =>
+                sum.map((val, j) => val + weight * values[i][j]),
                 new Array(headDim).fill(0)
             )
         );
@@ -691,7 +761,7 @@ export class CUDAAccelerator extends EventEmitter {
     private async collectPerformanceMetrics(): Promise<void> {
         for (const [deviceId, device] of this.devices) {
             const memoryStats = this.memoryPools.get(deviceId);
-            
+
             const metrics: GPUPerformanceMetrics = {
                 deviceId,
                 timestamp: Date.now(),
@@ -716,7 +786,7 @@ export class CUDAAccelerator extends EventEmitter {
             };
 
             this.performanceMetrics.push(metrics);
-            
+
             // Keep only last 1000 metrics per device
             if (this.performanceMetrics.length > 1000) {
                 this.performanceMetrics.shift();
@@ -743,7 +813,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Helper Methods
      */
-    
+
     private async compileKernel(kernel: CUDAKernel): Promise<void> {
         // Simulate kernel compilation
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -894,7 +964,7 @@ export class CUDAAccelerator extends EventEmitter {
         // Distribute workloads across multiple GPUs
         const chunkSize = Math.ceil(workloads.length / this.devices.size);
         const chunks = [];
-        
+
         for (let i = 0; i < workloads.length; i += chunkSize) {
             chunks.push(workloads.slice(i, i + chunkSize));
         }
@@ -1012,8 +1082,8 @@ export class CUDAAccelerator extends EventEmitter {
             ),
             performance: {
                 totalExecutions: this.performanceMetrics.length,
-                averageUtilization: this.performanceMetrics.length > 0 
-                    ? this.performanceMetrics.reduce((sum, m) => sum + m.utilization.gpu, 0) / this.performanceMetrics.length 
+                averageUtilization: this.performanceMetrics.length > 0
+                    ? this.performanceMetrics.reduce((sum, m) => sum + m.utilization.gpu, 0) / this.performanceMetrics.length
                     : 0
             }
         };
@@ -1114,7 +1184,7 @@ class GPUMemoryManager {
 
     async allocateMemory(deviceId: number, size: number): Promise<any> {
         const allocationId = `alloc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
+
         const allocation = {
             id: allocationId,
             deviceId,
@@ -1134,7 +1204,7 @@ class GPUMemoryManager {
         // Clean up memory pool for device
         const deviceAllocations = Array.from(this.allocations.values())
             .filter(alloc => alloc.deviceId === deviceId);
-        
+
         for (const allocation of deviceAllocations) {
             this.allocations.delete(allocation.id);
         }

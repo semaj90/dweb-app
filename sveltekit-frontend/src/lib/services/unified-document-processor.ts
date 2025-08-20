@@ -5,13 +5,13 @@
  */
 
 import type { RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 
-import { legalNLP } from "./sentence-transformer.js";
-// Orphaned content: import {
+
+import { legalNLP } from "$lib/utils/./sentence-transformer.js";
+
 goMicroserviceMachine, goMicroserviceServices
-import { createActor } from "xstate";
-import { aiSummaryMachine, , export interface DocumentProcessingConfig {,   enableOCR: boolean;,   enableLegalBERT: boolean;,   enableEmbeddings: boolean;,   enableSummarization: boolean;,   enableMinIOStorage: boolean;,   model: 'gemma3-legal:latest' | 'nomic-embed-text:latest';,   chunkSize: number;,   confidence: number; } from
+import { createActor } from "$lib/utils/xstate";
+import { aiSummaryMachine, export interface DocumentProcessingConfig {,   enableOCR: boolean;,   enableLegalBERT: boolean;,   enableEmbeddings: boolean;,   enableSummarization: boolean;,   enableMinIOStorage: boolean;,   model: 'gemma3-legal:latest' | 'nomic-embed-text:latest';,   chunkSize: number;,   confidence: number; } from
 
 export interface ProcessingResult {
   success: boolean;

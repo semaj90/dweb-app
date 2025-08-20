@@ -3,6 +3,8 @@ Autonomous Engineering Demo Component
 Showcases Copilot self-prompting with comprehensive AI orchestration
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -36,7 +38,7 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
   import { copilotSelfPrompt } from '$lib/utils/copilot-self-prompt.js';
   import type { CopilotSelfPromptResult, NextAction, Recommendation } from '$lib/utils/copilot-self-prompt.js';
 
-  interface Props {
+  interface Props extends CommonProps {
     showAdvancedOptions?: boolean;
     autoExecuteExamples?: boolean;
   }
@@ -348,7 +350,7 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
               <Button
                 size="sm"
                 variant="outline"
-                on:click={() => executeExample(example)}
+                onclick={() => executeExample(example)}
                 disabled={isProcessing}
               >
                 Run
@@ -443,7 +445,7 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
 
       <div class="flex gap-2">
         <Button
-          on:click={executePrompt}
+          onclick={executePrompt}
           disabled={isProcessing || !userPrompt.trim()}
           class="flex-1"
         >
@@ -458,17 +460,17 @@ Showcases Copilot self-prompting with comprehensive AI orchestration
 
         <Button
           variant="outline"
-          on:click={executeViaAPI}
+          onclick={executeViaAPI}
           disabled={isProcessing || !userPrompt.trim()}
         >
           Via API
         </Button>
 
         {#if currentResult}
-          <Button variant="outline" on:click={downloadResult}>
+          <Button variant="outline" onclick={downloadResult}>
             <Download class="h-4 w-4" />
           </Button>
-          <Button variant="outline" on:click={clearResults}>
+          <Button variant="outline" onclick={clearResults}>
             <RefreshCw class="h-4 w-4" />
           </Button>
         {/if}

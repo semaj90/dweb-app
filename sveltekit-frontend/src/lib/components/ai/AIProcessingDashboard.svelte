@@ -2,6 +2,8 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- AI Processing Dashboard - Integration Demo -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { onMount, onDestroy } from 'svelte';
 	import { Badge } from 'bits-ui';
 	import { Card, CardContent, CardHeader, CardTitle } from 'bits-ui';
@@ -307,7 +309,7 @@ https://svelte.dev/e/js_parse_error -->
 					<Button
 						variant="outline"
 						disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-						on:click={() => processTask(task)}
+						onclick={() => processTask(task)}
 						class="h-auto p-3 flex flex-col items-start space-y-1"
 					>
 						<div class="flex items-center space-x-2">
@@ -323,7 +325,7 @@ https://svelte.dev/e/js_parse_error -->
 			<div class="flex items-center justify-center pt-4 border-t border-yorha-border">
 				<Button
 					disabled={!selectedProvider || selectedProvider.status !== 'online' || isProcessing}
-					on:click={processParallelTasks}
+					onclick={processParallelTasks}
 					class="bg-yorha-primary hover:bg-yorha-primary/80"
 				>
 					{#if isProcessing}
@@ -425,3 +427,7 @@ https://svelte.dev/e/js_parse_error -->
 		background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
 	}
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

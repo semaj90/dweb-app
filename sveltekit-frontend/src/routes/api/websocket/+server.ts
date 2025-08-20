@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { URL } from "url";
 // @ts-nocheck
 // ======================================================================
@@ -6,7 +7,22 @@ import { URL } from "url";
 // ======================================================================
 
 import type { RequestHandler } from "./$types.js";
-import { WebSocketServer, , // Enhanced WebSocket message types, interface WebSocketMessage {,   type:,     | "evidence_processing",     | "ai_result",     | "vector_match",     | "graph_update",     | "system_health",     | "cache_update";,   data: any;,   timestamp: Date;,   clientId?: string;,   priority?: number; } from
+import { WebSocketServer } from "ws";
+
+// Enhanced WebSocket message types
+interface WebSocketMessage {
+  type: 
+    | "evidence_processing"
+    | "ai_result"
+    | "vector_match"
+    | "graph_update"
+    | "system_health"
+    | "cache_update";
+  data: any;
+  timestamp: Date;
+  clientId?: string;
+  priority?: number;
+}
 
 interface ConnectedClient {
   id: string;

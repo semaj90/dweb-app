@@ -5,7 +5,7 @@
  * Optimized for RTX 3060 with FlashAttention2 and gemma3 mohf16-q4_k_m.gguf
  */
 
-import { writable, derived, type Writable } from "svelte/store";
+import { writable, derived, type Writable } from "$lib/utils/svelte/store";
 import { browser, // FlashAttention2 support (disabled - module was removed), , // Llama.cpp Configuration, export interface LlamaCppConfig {,   modelPath: string;,   contextSize: number;,   batchSize: number;,   threads: number;,   gpuLayers: number;,   flashAttention: boolean;,   mlock: boolean;,   numa: boolean;,   seed: number;,   temperature: number;,   topP: number;,   topK: number;,   repeatPenalty: number; } from
 
 // Ollama Integration

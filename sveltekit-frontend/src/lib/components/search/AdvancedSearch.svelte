@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createCombobox, melt } from '@melt-ui/svelte';
   import { fly } from 'svelte/transition';
   import Fuse from "fuse.js";
@@ -657,3 +659,5 @@
   border-radius: 0.125rem;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

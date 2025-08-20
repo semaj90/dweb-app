@@ -1,19 +1,10 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // Real Document Search API with PostgreSQL, pgvector, and hybrid search
-import {
-    db,
-    documents,
-    embeddings,
-    initializeDatabase,
-    searchSessions,
-} from '$lib/server/database';
-// Orphaned content: import { error, json
-import {
-sql } from "drizzle-orm";
-// Orphaned content: import type { RequestHandler
+import { db, documents, embeddings, initializeDatabase, searchSessions } from '$lib/server/database';
+import { sql } from "drizzle-orm";
 
 // Redis client for caching search results
 import { createRedisConnection } from "$lib/utils/redis-helper";
-// Orphaned content: import {
 
 // ... other imports ...
 

@@ -1,20 +1,17 @@
-<!-- @migration-task Error while migrating Svelte code: Identifier 'class_' has already been declared
-https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
-  interface Props {
-    class_: string ;
-  }
-  let {
-    class_ = ""
-  }: Props = $props();
-
-
+import type { CommonProps } from '$lib/types/common-props';
 
   import { getContext } from "svelte";
   import { writable } from "svelte/store";
   import type { SelectContext } from "./types";
 
-  let { class_ = $bindable() } = $props(); // string = "";
+  interface Props extends CommonProps {
+    class_?: string;
+  }
+  
+  let {
+    class_ = ""
+  }: Props = $props();
 
   const context =
     getContext<SelectContext>("select") ||

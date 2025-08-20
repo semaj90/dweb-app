@@ -320,7 +320,7 @@
                   <Button
                     variant="outline"
                     size="sm"
-                    on:click={() => clearImport()}
+                    onclick={() => clearImport()}
                   >
                     <X class="space-y-4" />
                     Remove
@@ -337,7 +337,7 @@
                 </p>
                 <p class="space-y-4">or click to browse</p>
               </div>
-              <Button variant="outline" on:click={() => fileInput?.click()}>
+              <Button variant="outline" onclick={() => fileInput?.click()}>
                 Select File
               </Button>
             </div>
@@ -350,7 +350,7 @@
           bind:this={fileInput}
           type="file"
           accept=".json,.csv,.xml"
-          on:change={handleFileInput}
+          onchange={handleFileInput}
           class="space-y-4"
           aria-label="Select import file"
         />
@@ -497,7 +497,7 @@
         <div class="space-y-4">
           <div class="space-y-4">
             <Button
-              on:click={() => performImport()}
+              onclick={() => performImport()}
               disabled={isImporting}
               class="space-y-4"
             >
@@ -512,7 +512,7 @@
               {/if}
             </Button>
             <Tooltip content="Clear current import and start over">
-              <Button variant="outline" on:click={() => clearImport()}>
+              <Button variant="outline" onclick={() => clearImport()}>
                 <X class="space-y-4" />
                 Cancel
               </Button>
@@ -539,7 +539,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => downloadExampleTemplate("cases", "json")}
+                  onclick={() => downloadExampleTemplate("cases", "json")}
                 >
                   JSON
                 </Button>
@@ -548,7 +548,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => downloadExampleTemplate("cases", "csv")}
+                  onclick={() => downloadExampleTemplate("cases", "csv")}
                 >
                   CSV
                 </Button>
@@ -563,7 +563,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => downloadExampleTemplate("evidence", "json")}
+                  onclick={() => downloadExampleTemplate("evidence", "json")}
                 >
                   JSON
                 </Button>
@@ -572,7 +572,7 @@
                 <Button
                   variant="outline"
                   size="sm"
-                  on:click={() => downloadExampleTemplate("evidence", "csv")}
+                  onclick={() => downloadExampleTemplate("evidence", "csv")}
                 >
                   CSV
                 </Button>

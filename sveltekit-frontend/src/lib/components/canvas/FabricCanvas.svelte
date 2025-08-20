@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import Badge from '$lib/components/ui/Badge.svelte';
@@ -8,7 +10,7 @@
     Save, Download, Image as ImageIcon, FileText 
   } from 'lucide-svelte';
 
-  interface Props {
+  interface Props extends CommonProps {
     width?: number;
     height?: number;
     caseId?: string;
@@ -377,26 +379,26 @@
 
         <!-- Add Annotation -->
         {#if !readOnly}
-          <Button variant="outline" on:click={addAnnotation}>
+          <Button variant="outline" onclick={addAnnotation}>
             <FileText class="h-4 w-4 mr-2" />
             Add Note
           </Button>
         {/if}
 
         <!-- Zoom Controls -->
-        <Button variant="outline" on:click={zoomIn}>
+        <Button variant="outline" onclick={zoomIn}>
           <ZoomIn class="h-4 w-4" />
         </Button>
-        <Button variant="outline" on:click={zoomOut}>
+        <Button variant="outline" onclick={zoomOut}>
           <ZoomOut class="h-4 w-4" />
         </Button>
-        <Button variant="outline" on:click={resetZoom}>
+        <Button variant="outline" onclick={resetZoom}>
           <RotateCcw class="h-4 w-4" />
         </Button>
 
         <!-- Object Controls -->
         {#if selectedObject && !readOnly}
-          <Button variant="destructive" on:click={deleteSelected}>
+          <Button variant="destructive" onclick={deleteSelected}>
             <Trash2 class="h-4 w-4 mr-2" />
             Delete
           </Button>
@@ -404,13 +406,13 @@
 
         <!-- Save & Export -->
         {#if !readOnly}
-          <Button variant="default" on:click={saveCanvas}>
+          <Button variant="default" onclick={saveCanvas}>
             <Save class="h-4 w-4 mr-2" />
             Save
           </Button>
         {/if}
         
-        <Button variant="outline" on:click={exportCanvas}>
+        <Button variant="outline" onclick={exportCanvas}>
           <Download class="h-4 w-4 mr-2" />
           Export
         </Button>

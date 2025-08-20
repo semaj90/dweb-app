@@ -1,5 +1,7 @@
 <!-- Real-time RAG Interface Component -->
 <script>
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, onDestroy } from 'svelte';
   import { useMachine } from '@xstate/svelte';
   import { createRealtimeRAGStore, ragQueryMachine, ragQueryServices } from '$lib/stores/realtime-rag.svelte.js';
@@ -446,3 +448,5 @@
     }
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

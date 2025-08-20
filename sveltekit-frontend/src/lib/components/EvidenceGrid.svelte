@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { Evidence } from '$lib/types';
   import { Button } from "$lib/components/ui/button";
   import {
@@ -34,7 +36,7 @@
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  interface Props {
+  interface Props extends CommonProps {
     caseId?: string;
     showHeader?: boolean;
     columns?: number;
@@ -250,7 +252,7 @@
         <Button
           variant="secondary"
           size="sm"
-          on:click={() => toggleSort(sortBy)}
+          onclick={() => toggleSort(sortBy)}
           class="flex items-center gap-2"
         >
           {#if sortOrder === "asc"}
@@ -264,7 +266,7 @@
         <Button
           variant="secondary"
           size="sm"
-          on:click={() => toggleViewMode()}
+          onclick={() => toggleViewMode()}
           class="flex items-center gap-2"
         >
           {#if viewMode === "grid"}
@@ -286,7 +288,7 @@
           <Button
             variant="secondary"
             size="sm"
-            on:click={() => clearSelection()}
+            onclick={() => clearSelection()}
           >
             Clear
           </Button>
@@ -317,7 +319,7 @@
       <Button
         variant="secondary"
         size="sm"
-        on:click={() => evidenceActions.loadEvidence(caseId)}
+        onclick={() => evidenceActions.loadEvidence(caseId)}
       >
         Try Again
       </Button>

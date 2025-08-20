@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher } from 'svelte';
   import { writable } from 'svelte/store';
 
@@ -361,3 +363,5 @@
     margin-top: 0.25rem;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

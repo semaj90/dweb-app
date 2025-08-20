@@ -212,7 +212,7 @@ Priority: High
               content={currentNote.content}
               placeholder="Start writing your note..."
               on:save={handleEditorSave}
-              on:change={handleEditorChange}
+              onchange={handleEditorChange}
               autoSave={true}
               autoSaveDelay={3000}
             />

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { goto } from "$app/navigation";
   import { Button } from "$lib/components/ui/button";
   import Card from '$lib/components/ui/Card.svelte';
@@ -157,8 +159,8 @@
     <Form
       bind:formApi
       options={formOptions}
-      on:submit={handleSubmit}
-      on:change={handleFormChange}
+      onsubmit={handleSubmit}
+      onchange={handleFormChange}
       submitText="Create Case"
       submitVariant="primary"
       showResetButton={true}
@@ -192,7 +194,7 @@
                 error={formErrors.title}
                 data-icon="${1}"
                 clearable
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi?.setField(
                     "title",
                     (e.target as HTMLInputElement)?.value
@@ -263,7 +265,7 @@
                 value={values.dueDate || ""}
                 error={errors.dueDate}
                 data-icon="${1}"
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "dueDate",
                     (e.target as HTMLInputElement)?.value
@@ -290,7 +292,7 @@
                 value={values.assignedTo || ""}
                 error={errors.assignedTo}
                 data-icon="${1}"
-                on:input={(e) =>
+                oninput={(e) =>
                   formApi.setField(
                     "assignedTo",
                     (e.target as HTMLInputElement)?.value
@@ -309,7 +311,7 @@
                     error={errors.tags}
                     data-icon="${1}"
                     clearable
-                    on:input={(e) =>
+                    oninput={(e) =>
                       formApi.setField(
                         "tags",
                         (e.target as HTMLInputElement)?.value
@@ -322,7 +324,7 @@
                   variant="secondary"
                   size="md"
                   data-icon="${1}"
-                  on:click={() => addTag()}
+                  onclick={() => addTag()}
                 >
                   Add
                 </Button>
@@ -368,3 +370,8 @@
     font-size: 0.75rem;
 }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

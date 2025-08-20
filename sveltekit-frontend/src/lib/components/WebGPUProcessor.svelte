@@ -5,6 +5,8 @@ https://svelte.dev/e/js_parse_error -->
 <!-- Integrates with QUIC streaming and attention tracking -->
 
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { onMount, onDestroy } from 'svelte';
 	import { writable, derived } from 'svelte/store';
 	import type { PageData } from './$types';
@@ -1061,3 +1063,7 @@ https://svelte.dev/e/js_parse_error -->
 		@apply text-red-400 mr-1;
 	}
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { goto } from "$app/navigation";
   import { citationStore } from "$lib/stores/citations";
   import { createPopover, melt } from "@melt-ui/svelte";
@@ -397,3 +399,5 @@
     background: #6b7280;
 }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

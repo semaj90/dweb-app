@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import stream from "stream";
 import type { RequestHandler } from "@sveltejs/kit";
 

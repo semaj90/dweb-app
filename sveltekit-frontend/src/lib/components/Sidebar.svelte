@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import Fuse from "fuse.js";
   import { onMount } from "svelte";
   import { quintOut } from "svelte/easing";
@@ -327,3 +329,8 @@
       width: 280px;
 }}
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

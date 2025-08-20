@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher } from 'svelte';
   import { Button } from 'bits-ui';
   import { fade, slide } from 'svelte/transition';
@@ -378,7 +380,7 @@
   <!-- Form Actions -->
   <div class="flex justify-between pt-6 border-t border-gray-200">
     <Button.Root
-      on:click={handlePrevious}
+      onclick={handlePrevious}
       disabled={isSubmitting}
       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
     >
@@ -387,7 +389,7 @@
 
     <div class="flex space-x-3">
       <Button.Root
-        on:click={handleSaveDraft}
+        onclick={handleSaveDraft}
         disabled={isSubmitting}
         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
@@ -395,7 +397,7 @@
       </Button.Root>
 
       <Button.Root
-        on:click={submitCase}
+        onclick={submitCase}
         disabled={!formData.completeness_check || formData.final_review.length < 50 || isSubmitting}
         class="px-8 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
       >
@@ -409,3 +411,5 @@
     </div>
   </div>
 </div>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

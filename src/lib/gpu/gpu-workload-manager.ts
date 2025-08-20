@@ -1,6 +1,6 @@
 /**
  * GPU Workload Manager
- * 
+ *
  * Manages GPU workload scheduling, prioritization, and execution:
  * - Intelligent workload queuing and prioritization
  * - Adaptive batch scheduling for optimal GPU utilization
@@ -13,8 +13,8 @@ import { EventEmitter } from 'events';
 import { cudaAccelerator } from './cuda-accelerator';
 import { mlTaskRouter } from '$lib/routing/ml-task-router';
 import { advancedCacheManager } from '$lib/caching/advanced-cache-manager';
-import type { 
-    GPUWorkload, 
+import type {
+    GPUWorkload,
     GPUWorkloadQueue,
     BatchProcessingJob,
     WorkloadPriority,
@@ -92,7 +92,7 @@ export class GPUWorkloadManager extends EventEmitter {
 
     constructor(config: GPUWorkloadManagerConfig = {}) {
         super();
-        
+
         this.config = {
             maxQueueSize: 1000,
             batchOptimizationEnabled: true,
@@ -114,7 +114,7 @@ export class GPUWorkloadManager extends EventEmitter {
         this.batchProcessor = new BatchProcessor(this.config);
         this.resourceAllocator = new GPUResourceAllocator(this.config);
         this.performanceTracker = new WorkloadPerformanceTracker(this.config);
-        
+
         this.setupEventListeners();
     }
 
@@ -126,7 +126,7 @@ export class GPUWorkloadManager extends EventEmitter {
         priorities.forEach(priority => {
             this.workloadQueues.set(priority, []);
         });
-        
+
         console.log('🎯 GPU workload queues initialized with priority levels:', priorities);
     }
 
@@ -207,7 +207,7 @@ export class GPUWorkloadManager extends EventEmitter {
         // Determine priority and queue
         const priority = workload.priority || 'normal';
         const queue = this.workloadQueues.get(priority);
-        
+
         if (!queue) {
             throw new Error(`Invalid priority: ${priority}`);
         }
@@ -218,7 +218,7 @@ export class GPUWorkloadManager extends EventEmitter {
             cacheResult = await this.checkWorkloadCache(workload);
             if (cacheResult) {
                 console.log(`⚡ Cache hit for workload ${workload.id}`);
-                
+
                 this.emit('workloadCacheHit', {
                     workloadId: workload.id,
                     type: workload.type,
@@ -277,7 +277,7 @@ export class GPUWorkloadManager extends EventEmitter {
             for (const workload of workloads) {
                 // Tag workload as part of batch
                 workload.batchId = batchId;
-                
+
                 const workloadId = await this.submitWorkload(workload);
                 workloadIds.push(workloadId);
             }
@@ -308,9 +308,9 @@ export class GPUWorkloadManager extends EventEmitter {
             const index = queue.findIndex(w => w.id === workloadId);
             if (index !== -1) {
                 const workload = queue.splice(index, 1)[0];
-                
+
                 console.log(`🚫 Workload canceled: ${workloadId} from ${priority} queue`);
-                
+
                 this.emit('workloadCanceled', {
                     workloadId,
                     priority,
@@ -459,13 +459,13 @@ export class GPUWorkloadManager extends EventEmitter {
 
             // Calculate current system load
             const systemLoad = this.calculateSystemLoad();
-            
+
             // Determine optimal batch size based on current load
             const optimalBatchSize = this.calculateOptimalBatchSize(systemLoad);
-            
+
             // Select workloads for execution
             const selectedWorkloads = this.selectWorkloadsForExecution(optimalBatchSize);
-            
+
             if (selectedWorkloads.length === 0) {
                 return;
             }
@@ -510,7 +510,7 @@ export class GPUWorkloadManager extends EventEmitter {
 
         } catch (error) {
             console.error('❌ Error executing selected workloads:', error);
-            
+
             // Move failed workloads to failed status
             workloads.forEach(workload => {
                 this.handleWorkloadFailure(workload, error);
@@ -530,7 +530,7 @@ export class GPUWorkloadManager extends EventEmitter {
 
             // Execute on CUDA accelerator
             const result = await cudaAccelerator.executeWorkload(workload);
-            
+
             return {
                 workloadId: workload.id,
                 success: true,
@@ -553,7 +553,7 @@ export class GPUWorkloadManager extends EventEmitter {
     private async executeBatchOptimized(workloads: GPUWorkload[]): Promise<any[]> {
         // Group workloads by type for optimal batching
         const groupedWorkloads = this.batchProcessor.groupWorkloadsByType(workloads);
-        
+
         const results = [];
         for (const [type, typeWorkloads] of Object.entries(groupedWorkloads)) {
             const batchResult = await cudaAccelerator.executeBatch(typeWorkloads);
@@ -569,7 +569,7 @@ export class GPUWorkloadManager extends EventEmitter {
     private processExecutionResults(workloads: GPUWorkload[], results: any[]): void {
         results.forEach((result, index) => {
             const workload = workloads[index];
-            
+
             if (result.status === 'fulfilled' && result.value.success) {
                 this.handleWorkloadSuccess(workload, result.value);
             } else {
@@ -642,7 +642,7 @@ export class GPUWorkloadManager extends EventEmitter {
         if (!workload.type) {
             throw new Error('Workload type is required');
         }
-        
+
         if (!workload.inputData) {
             throw new Error('Workload input data is required');
         }
@@ -658,9 +658,9 @@ export class GPUWorkloadManager extends EventEmitter {
     }
 
     private getTotalWorkloads(): number {
-        return this.getTotalQueuedWorkloads() + 
-               this.activeWorkloads.size + 
-               this.completedWorkloads.size + 
+        return this.getTotalQueuedWorkloads() +
+            this.activeWorkloads.size +
+            this.completedWorkloads.size +
                this.failedWorkloads.size;
     }
 
@@ -679,11 +679,11 @@ export class GPUWorkloadManager extends EventEmitter {
     private estimateCompletionTime(workloadId: string): Date {
         const workload = this.activeWorkloads.get(workloadId);
         if (!workload) return new Date();
-        
+
         const averageExecutionTime = this.performanceTracker.getAverageExecutionTime(workload.type);
         const elapsedTime = Date.now() - (workload.startedAt?.getTime() || Date.now());
         const remainingTime = Math.max(0, averageExecutionTime - elapsedTime);
-        
+
         return new Date(Date.now() + remainingTime);
     }
 
@@ -707,7 +707,7 @@ export class GPUWorkloadManager extends EventEmitter {
     private calculateOptimalBatchSize(systemLoad: number): number {
         // Adjust batch size based on system load
         const baseBatchSize = this.config.maxBatchSize;
-        
+
         if (systemLoad > 0.8) {
             return Math.max(1, Math.floor(baseBatchSize * 0.5));
         } else if (systemLoad > 0.6) {
@@ -719,18 +719,18 @@ export class GPUWorkloadManager extends EventEmitter {
 
     private selectWorkloadsForExecution(batchSize: number): GPUWorkload[] {
         const selected: GPUWorkload[] = [];
-        
+
         // Priority order: urgent, high, normal, low
         const priorities: WorkloadPriority[] = ['urgent', 'high', 'normal', 'low'];
-        
+
         for (const priority of priorities) {
             const queue = this.workloadQueues.get(priority) || [];
-            
+
             while (queue.length > 0 && selected.length < batchSize) {
                 selected.push(queue[0]);
                 if (selected.length >= batchSize) break;
             }
-            
+
             if (selected.length >= batchSize) break;
         }
 
@@ -747,7 +747,7 @@ export class GPUWorkloadManager extends EventEmitter {
     private getDeviceUtilization(): Record<number, number> {
         const cudaStatus = cudaAccelerator.getStatus();
         const deviceUtilization: Record<number, number> = {};
-        
+
         if (cudaStatus.devices) {
             Object.entries(cudaStatus.devices).forEach(([deviceId, device]) => {
                 deviceUtilization[parseInt(deviceId)] = device.utilization?.gpu || 0;
@@ -759,7 +759,7 @@ export class GPUWorkloadManager extends EventEmitter {
 
     private getQueueMetrics(priority: WorkloadPriority): WorkloadMetrics {
         const queue = this.workloadQueues.get(priority) || [];
-        
+
         return {
             totalWorkloads: queue.length,
             queuedWorkloads: queue.length,
@@ -972,12 +972,12 @@ class WorkloadPerformanceTracker {
         const type = workload.type;
         const times = this.executionTimes.get(type) || [];
         times.push(result.executionTime);
-        
+
         // Keep only last 100 times
         if (times.length > 100) {
             times.shift();
         }
-        
+
         this.executionTimes.set(type, times);
     }
 
@@ -990,7 +990,7 @@ class WorkloadPerformanceTracker {
             const times = this.executionTimes.get(type) || [];
             return times.length > 0 ? times.reduce((sum, time) => sum + time, 0) / times.length : 1000;
         }
-        
+
         // Overall average
         const allTimes = Array.from(this.executionTimes.values()).flat();
         return allTimes.length > 0 ? allTimes.reduce((sum, time) => sum + time, 0) / allTimes.length : 1000;

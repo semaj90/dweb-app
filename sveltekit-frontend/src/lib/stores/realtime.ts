@@ -1,5 +1,5 @@
 // Lightweight realtime pipeline store subscribing to ws-fanout events
-import { writable, derived } from "svelte/store";
+import { writable, derived } from "$lib/utils/svelte/store";
 import { recordStageLatency, type PipelineStage, , // ---- Types ----, export interface StageStatus {, 	id: string;, 	gpu?: boolean;, 	wasm?: boolean;, 	embedding?: boolean;, 	retrieval?: boolean;, 	llm?: boolean;, 	final?: boolean;, 	receivedAt?: number;, 	completedAt?: number;, 	stageTimestamps?: Partial<Record<PipelineStage, number>>; // per-stage arrival timestamps, 	// Allow additional dynamic stage flags without TS complaints, 	[key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any } from
 
 export interface FinalResultEntry {

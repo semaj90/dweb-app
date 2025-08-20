@@ -1,9 +1,11 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { createSOMRAGSystem, type SOMConfig } from '$lib/ai/som-rag-system';
   import { createEnhancedIngestionPipeline, type IngestionStats } from '$lib/ai/enhanced-ingestion-pipeline';
 
-  interface Props {
+  interface Props extends CommonProps {
     class?: string;
     width?: number;
     height?: number;

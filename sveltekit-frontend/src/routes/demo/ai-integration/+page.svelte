@@ -382,7 +382,7 @@
               <Badge variant="outline" class="bg-green-500/10 text-green-400 border-green-500/30">
                 WebGPU Enabled
               </Badge>
-              <Button on:click={generateDemoEmbeddings} size="sm">
+              <Button onclick={generateDemoEmbeddings} size="sm">
                 Regenerate Embeddings
               </Button>
             </div>
@@ -419,7 +419,7 @@
               <Badge variant="outline" class="bg-orange-500/10 text-orange-400 border-orange-500/30">
                 Streaming: Enabled
               </Badge>
-              <Button on:click={openAgentShell} size="sm">
+              <Button onclick={openAgentShell} size="sm">
                 <Terminal class="h-4 w-4 mr-2" />
                 Open Agent Shell
               </Button>
@@ -427,13 +427,13 @@
 
             <!-- Integration Test Buttons -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <Button on:click={testOllamaIntegration} class="bg-blue-600 hover:bg-blue-700">
+              <Button onclick={testOllamaIntegration} class="bg-blue-600 hover:bg-blue-700">
                 Test AI Analysis
               </Button>
-              <Button on:click={testEmbeddingGeneration} class="bg-green-600 hover:bg-green-700">
+              <Button onclick={testEmbeddingGeneration} class="bg-green-600 hover:bg-green-700">
                 Generate Embeddings
               </Button>
-              <Button on:click={testVectorSimilarity} class="bg-purple-600 hover:bg-purple-700">
+              <Button onclick={testVectorSimilarity} class="bg-purple-600 hover:bg-purple-700">
                 Vector Similarity
               </Button>
             </div>
@@ -474,7 +474,7 @@
                   </div>
                 {/if}
               </div>
-              <Button on:click={() => prefetchSend({ type: 'PREDICT_INTENT' })} size="sm">
+              <Button onclick={() => prefetchSend({ type: 'PREDICT_INTENT' })} size="sm">
                 Trigger Prediction
               </Button>
             </div>
@@ -501,13 +501,13 @@
 
             <!-- Control Buttons -->
             <div class="flex gap-4">
-              <Button on:click={() => prefetchSend({ type: 'CACHE_HIT', resource: 'demo' })} size="sm" class="bg-green-600 hover:bg-green-700">
+              <Button onclick={() => prefetchSend({ type: 'CACHE_HIT', resource: 'demo' })} size="sm" class="bg-green-600 hover:bg-green-700">
                 Simulate Cache Hit
               </Button>
-              <Button on:click={() => prefetchSend({ type: 'CACHE_MISS', resource: 'demo' })} size="sm" class="bg-red-600 hover:bg-red-700">
+              <Button onclick={() => prefetchSend({ type: 'CACHE_MISS', resource: 'demo' })} size="sm" class="bg-red-600 hover:bg-red-700">
                 Simulate Cache Miss
               </Button>
-              <Button on:click={() => prefetchSend({ type: 'RESET_METRICS' })} size="sm" variant="outline">
+              <Button onclick={() => prefetchSend({ type: 'RESET_METRICS' })} size="sm" variant="outline">
                 Reset Metrics
               </Button>
             </div>
@@ -528,7 +528,7 @@
               </CardDescription>
             </div>
             <Button
-              on:click={isMonitoring ? stopPerformanceMonitoring : startPerformanceMonitoring}
+              onclick={isMonitoring ? stopPerformanceMonitoring : startPerformanceMonitoring}
               class={isMonitoring ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
             >
               {#if isMonitoring}

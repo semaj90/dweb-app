@@ -2,6 +2,8 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- WebGPU Embedding Visualization - 3D Vector Space with Real-time Updates -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 import { onMount, onDestroy } from 'svelte';
 import { Play, Pause, RotateCw, ZoomIn, ZoomOut, Layers } from 'lucide-svelte';
 
@@ -503,3 +505,7 @@ $effect(() => {
     backdrop-filter: blur(10px);
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

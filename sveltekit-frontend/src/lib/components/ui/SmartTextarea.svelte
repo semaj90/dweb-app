@@ -1,7 +1,9 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import CommandMenu from "./CommandMenu.svelte";
 
-  interface Props {
+  interface Props extends CommonProps {
     value?: string;
     placeholder?: string;
     rows?: number;

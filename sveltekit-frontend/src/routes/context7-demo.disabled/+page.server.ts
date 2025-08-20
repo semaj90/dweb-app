@@ -1,11 +1,9 @@
-import path from "path";
-// @ts-nocheck
-import type { PageServerLoad } from "./$types.js";
-// Orphaned content: import {
-resolveLibraryId, getLibraryDocs
-import { copilotSelfPrompt } from "$lib/utils/copilot-self-prompt";
-// Orphaned content: import fs from "fs/promises";
-import {
+import path from 'path';
+import type { PageServerLoad } from './$types';
+import { copilotSelfPrompt } from '$lib/utils/copilot-self-prompt';
+// @ts-ignore
+import { resolveLibraryId, getLibraryDocs } from '$lib/services/context7-lib-resolver';
+import fs from 'fs/promises';
 
 // Load Copilot architecture context for enhanced prompting
 async function loadCopilotContext(): Promise<Record<string, string | null>> {

@@ -1,7 +1,7 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Enhanced local TTS / (legacy) STT endpoint
 import type { RequestHandler } from "./$types";
-// Orphaned content: import {
 
 // Lazy require (keeps optional deps from breaking build)
 const nodeCrypto = () => {

@@ -3,10 +3,8 @@
  * Routes to: enhanced-rag.exe:8094 (HTTP) or rag-quic-proxy.exe:8216 (QUIC)
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-productionServiceClient, ServiceTier } from "$lib/services/productionServiceClient";
+import { json, error, type RequestHandler } from '@sveltejs/kit';
+import { productionServiceClient, ServiceTier } from '$lib/services/productionServiceClient';
 
 interface RAGRequest {
   query: string;
@@ -23,7 +21,7 @@ interface RAGRequest {
 export const POST: RequestHandler = async ({ request, url }) => {
   try {
     const data: RAGRequest = await request.json();
-    
+
     if (!data.query) {
       return error(400, 'Query is required');
     }
@@ -68,7 +66,7 @@ export const GET: RequestHandler = async ({ url }) => {
   // Health check and service status
   try {
     const health = await productionServiceClient.checkAllServicesHealth();
-    
+
     return json({
       service: 'rag',
       status: 'operational',

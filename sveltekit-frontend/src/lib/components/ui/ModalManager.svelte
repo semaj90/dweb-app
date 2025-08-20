@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 	import { Button } from "$lib/components/ui/button";
 	import { quintOut } from 'svelte/easing';
 	import { fade, fly } from 'svelte/transition';
@@ -177,7 +179,7 @@
 							{#each builtInModal.actions as action}
 								<Button
 									variant={action.variant}
-									on:click={() => action.action()}
+									onclick={() => action.action()}
 								>
 									{action.label}
 								</Button>
@@ -224,3 +226,8 @@
 }
 </style>
 
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

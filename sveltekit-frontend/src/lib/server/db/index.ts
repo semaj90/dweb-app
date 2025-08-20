@@ -2,8 +2,11 @@ import * as vectorSchema from "../database/vector-schema-simple.js";
 import * as schema from "./unified-schema.js";
 // Database connection and schema exports
 import { drizzle } from 'drizzle-orm/postgres-js';
-// Orphaned content: import postgres from 'postgres';
-export { sql
+import postgres from 'postgres';
+import { sql } from 'drizzle-orm';
+
+// Re-export sql helper for convenience
+export { sql };
 
 // Database type helper - exported first to avoid temporal dead zone
 export const isPostgreSQL = true;
@@ -34,14 +37,14 @@ export async function testConnection() {
   try {
     await queryClient`SELECT 1`;
     console.log('✅ Database connection successful');
-    
+
     // Check for pgvector extension
     const result = await queryClient`
       SELECT EXISTS (
         SELECT 1 FROM pg_extension WHERE extname = 'vector'
       ) as has_vector
     `;
-    
+
     if (result[0].has_vector) {
       console.log('✅ pgvector extension is installed');
     } else {
@@ -49,7 +52,7 @@ export async function testConnection() {
       await queryClient`CREATE EXTENSION IF NOT EXISTS vector`;
       console.log('✅ pgvector extension installed');
     }
-    
+
     return true;
   } catch (error) {
     console.error('❌ Database connection failed:', error);
@@ -66,24 +69,24 @@ if (import.meta.env.NODE_ENV !== 'production') {
 export async function healthCheck() {
   try {
     await queryClient`SELECT 1`;
-    
+
     // Check if tables are accessible
     const tables = await queryClient`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public'
       LIMIT 5
     `;
-    
-    return { 
-      status: 'healthy', 
+
+    return {
+      status: 'healthy',
       database: 'connected',
       tablesAccessible: tables.length > 0
     };
   } catch (error) {
-    return { 
-      status: 'unhealthy', 
-      database: 'disconnected', 
+    return {
+      status: 'unhealthy',
+      database: 'disconnected',
       error: error.message,
       tablesAccessible: false
     };

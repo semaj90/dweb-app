@@ -420,7 +420,7 @@ export class UnifiedAIService {
     };
   }
 
-  async ragStream(query: string, options: any = {}): AsyncGenerator<any> {
+  async *ragStream(query: string, options: any = {}): AsyncGenerator<any> {
     // Get context first
     const queryEmbedding = await this.embedSingle(query);
     const relevantDocs = await db.hybridSearch(

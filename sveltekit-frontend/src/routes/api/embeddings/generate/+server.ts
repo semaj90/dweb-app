@@ -1,9 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // src/routes/api/embeddings/generate/+server.ts
 import { json, error } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-vectorService } from "$lib/server/vector/vectorService.js";
+import { vectorService } from "$lib/server/vector/vectorService.js";
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

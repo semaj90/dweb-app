@@ -1,12 +1,13 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import { createDialog, melt } from "@melt-ui/svelte";
   import { createEventDispatcher } from "svelte";
   import { writable } from "svelte/store";
   import { superForm } from "sveltekit-superforms";
 
-  export let data: any;
-  export let open = false;
+  let { data, open = false } = $props();
 
   const dispatch = createEventDispatcher();
 
@@ -89,7 +90,7 @@ const {
         <Button
           type="button"
           variant="ghost"
-          on:click={() => ($isMeltOpen = false)}
+          onclick={() => ($isMeltOpen = false)}
         >
           Cancel
         </Button>
@@ -131,3 +132,5 @@ const {
       transform: translate(-50%, -50%) scale(1);
 }}
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

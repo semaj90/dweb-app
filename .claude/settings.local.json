@@ -368,7 +368,10 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
       "Bash(./start-nats.bat)",
-      "Bash(./nats-server.exe:*)"
+      "Bash(./nats-server.exe:*)",
+      "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\")",
+      "Bash(.build.bat)",
+      "Bash(./build.bat)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",

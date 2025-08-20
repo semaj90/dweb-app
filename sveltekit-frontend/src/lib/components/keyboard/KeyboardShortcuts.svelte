@@ -1,5 +1,7 @@
 <script lang="ts">
-  interface Props {
+import type { CommonProps } from '$lib/types/common-props';
+
+  interface Props extends CommonProps {
 
   }
 
@@ -556,7 +558,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={() => (open = false)}
+            onclick={() => (open = false)}
             class="close-button"
             aria-label="Close command palette"
           >

@@ -29,7 +29,7 @@ Comprehensive showcase of Phase 4 capabilities
     <div class="max-w-7xl mx-auto px-6 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
-          <Button variant="ghost" size="sm" on:click="history.back()">
+          <Button variant="ghost" size="sm" onclick="history.back()">
             <ArrowLeft class="h-4 w-4 mr-2" />
             Back
           </Button>

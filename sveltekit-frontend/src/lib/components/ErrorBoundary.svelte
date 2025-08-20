@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button } from "$lib/components/ui/button";
   import {
     errorHandler,
@@ -18,9 +20,11 @@
   } from "lucide-svelte";
   import { onMount } from "svelte";
 
-  export let showInline = false; // Show as inline alert vs modal
-  export let autoHide = true; // Auto-hide non-critical errors
-  export let maxWidth = "max-w-lg"; // Maximum width class
+  let { 
+    showInline = false, // Show as inline alert vs modal
+    autoHide = true, // Auto-hide non-critical errors
+    maxWidth = "max-w-lg" // Maximum width class
+  } = $props();
 
   let currentError: UserFriendlyError | null = null;
   let showDetails = false;
@@ -195,7 +199,7 @@ Timestamp: ${new Date().toISOString()}`;
               <Button
                 variant="ghost"
                 size="sm"
-                on:click={() => copyErrorDetails()}
+                onclick={() => copyErrorDetails()}
                 class="mx-auto px-4 max-w-7xl"
                 aria-label="Copy error details"
               >
@@ -216,7 +220,7 @@ Timestamp: ${new Date().toISOString()}`;
             size="sm"
             variant="outline"
             class={getButtonClass(currentError.severity)}
-            on:click={() => retryAction()}
+            onclick={() => retryAction()}
             disabled={retryInProgress}
             aria-label="Retry action"
           >
@@ -233,7 +237,7 @@ Timestamp: ${new Date().toISOString()}`;
           <Button
             size="sm"
             variant="ghost"
-            on:click={() => (showDetails = !showDetails)}
+            onclick={() => (showDetails = !showDetails)}
             aria-label="Toggle error details"
           >
             {#if showDetails}
@@ -247,7 +251,7 @@ Timestamp: ${new Date().toISOString()}`;
         <Button
           size="sm"
           variant="ghost"
-          on:click={() => clearError()}
+          onclick={() => clearError()}
           aria-label="Dismiss error"
         >
           <X class="mx-auto px-4 max-w-7xl" />
@@ -289,7 +293,7 @@ Timestamp: ${new Date().toISOString()}`;
                   <Button
                     variant="ghost"
                     size="sm"
-                    on:click={() => copyErrorDetails()}
+                    onclick={() => copyErrorDetails()}
                     class="mx-auto px-4 max-w-7xl"
                     aria-label="Copy error details"
                   >
@@ -312,7 +316,7 @@ Timestamp: ${new Date().toISOString()}`;
             <Button
               variant="outline"
               size="sm"
-              on:click={() => reportError()}
+              onclick={() => reportError()}
               class="mx-auto px-4 max-w-7xl"
             >
               <Bug class="mx-auto px-4 max-w-7xl" />
@@ -324,7 +328,7 @@ Timestamp: ${new Date().toISOString()}`;
             <Button
               variant="outline"
               size="sm"
-              on:click={() => (showDetails = !showDetails)}
+              onclick={() => (showDetails = !showDetails)}
               class="mx-auto px-4 max-w-7xl"
             >
               {#if showDetails}
@@ -340,7 +344,7 @@ Timestamp: ${new Date().toISOString()}`;
           {#if currentError.canRetry}
             <Button
               class={`gap-2 ${getButtonClass(currentError.severity)}`}
-              on:click={() => retryAction()}
+              onclick={() => retryAction()}
               disabled={retryInProgress}
             >
               {#if retryInProgress}
@@ -355,7 +359,7 @@ Timestamp: ${new Date().toISOString()}`;
 
           <Button
             variant={currentError.canRetry ? "outline" : "default"}
-            on:click={() => clearError()}
+            onclick={() => clearError()}
           >
             {currentError.canRetry ? "Cancel" : "Close"}
           </Button>
@@ -364,3 +368,5 @@ Timestamp: ${new Date().toISOString()}`;
     </div>
   {/if}
 {/if}
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

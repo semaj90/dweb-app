@@ -2,6 +2,8 @@
 https://svelte.dev/e/js_parse_error -->
 <!-- Evidence Analysis Modal with LLM integration -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   interface Evidence {
     id: string;
     content: string;
@@ -19,7 +21,7 @@ https://svelte.dev/e/js_parse_error -->
     tags?: string[];
   }
 
-  interface Props {
+  interface Props extends CommonProps {
     open?: boolean;
     evidence?: Evidence;
     onevidenceUpdated?: (event?: any) => void;
@@ -153,7 +155,7 @@ https://svelte.dev/e/js_parse_error -->
           <Button 
             variant="primary" 
             size="sm" 
-            on:click={() => analyzeEvidence()}
+            onclick={() => analyzeEvidence()}
             disabled={isAnalyzing}
           >
             {#if isAnalyzing}
@@ -287,7 +289,7 @@ https://svelte.dev/e/js_parse_error -->
                 placeholder="Add tags (comma-separated)"
                 class="space-y-4"
               />
-              <Button size="sm" on:click={() => updateTags()} disabled={!newTags.trim()}>
+              <Button size="sm" onclick={() => updateTags()} disabled={!newTags.trim()}>
                 Add
               </Button>
             </div>
@@ -315,10 +317,10 @@ https://svelte.dev/e/js_parse_error -->
   {/if}
 
   <svelte:fragment slot="footer" let:close>
-    <Button variant="secondary" on:click={() => close()}>
+    <Button variant="secondary" onclick={() => close()}>
       Close
     </Button>
-    <Button variant="primary" on:click={() => onsaveAnalysis?.()}>
+    <Button variant="primary" onclick={() => onsaveAnalysis?.()}>
       Save Analysis
     </Button>
   </svelte:fragment>

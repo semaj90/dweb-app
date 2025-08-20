@@ -1,12 +1,10 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-db } from "$lib/server/db/index";
-// Orphaned content: import { legalDocuments, cases, evidence
-import {
-eq, desc, sql, like, and, or } from "drizzle-orm";
-// Orphaned content: import crypto from "crypto";
-import {
+import type { RequestHandler } from "./$types.js";
+import { db } from "$lib/server/db/index";
+import { legalDocuments, cases, evidence } from "$lib/server/db/schema-postgres";
+import { eq, desc, sql, like, and, or } from "drizzle-orm";
+import crypto from "crypto";
 
 // YoRHa Legal Data Management API - Production Ready
 // Enhanced CRUD operations with AI integration, vector search, and production logging

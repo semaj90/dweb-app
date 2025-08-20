@@ -1,8 +1,7 @@
 /**
  * RAG Status API - Returns system status for file processing pipeline
  */
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 
 async function checkServiceHealth(url: string, timeout = 5000): Promise<boolean> {
   try {

@@ -91,8 +91,8 @@ export const OLLAMA_CONFIG = {
   endpoint: "http://localhost:11434",
   models: {
     primary: "gemma3-legal-ai",
-    fallback: "gemma2:9b",
-    alternatives: ["llama3.1:8b", "mistral:7b"],
+    fallback: "",
+    alternatives: [""],
   },
   parameters: {
     temperature: 0.7,
@@ -209,7 +209,7 @@ export const RAG_CONFIG = {
     dimension: 384,
   },
   embedding: {
-    model: "all-MiniLM-L6-v2",
+    model: "nomic-embed, all-MiniLM-L6-v2",
     endpoint: "http://localhost:11434/api/embeddings",
   },
   retrieval: {

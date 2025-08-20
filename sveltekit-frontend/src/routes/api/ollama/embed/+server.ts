@@ -4,8 +4,7 @@ import type { EmbeddingResponse } from "$lib/types/ollama";
  * Handles text embedding generation for legal documents
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json } from '@sveltejs/kit';
 
 const OLLAMA_BASE_URL = import.meta.env.OLLAMA_URL || 'http://localhost:11434';
 

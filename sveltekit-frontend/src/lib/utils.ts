@@ -1,5 +1,12 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge, , /**,  * Utility function to merge Tailwind CSS classes,  */, export function cn(...inputs: ClassValue[]) {,   return twMerge(clsx(inputs)); } from
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Utility function to merge Tailwind CSS classes
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 /**
  * Format file size in human readable format
  */

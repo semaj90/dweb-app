@@ -1,9 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Server-Sent Events API route for SSR-safe real-time updates
 import { createClient } from "redis";
-// Orphaned content: import type { RequestHandler
-import {
-URL } from "url";
+import { URL } from "url";
 
 // SSE connection manager
 class SSEConnectionManager {

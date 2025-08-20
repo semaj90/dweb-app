@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { SearchResults } from "$lib/types/global";
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
@@ -125,10 +127,10 @@
           bind:value={searchQuery}
           placeholder="Enter your legal research question..."
           class="flex-1"
-          on:keydown={(e) => e.key === 'Enter' && performSearch()}
+          onkeydown={(e) => e.key === 'Enter' && performSearch()}
         />
         <Button
-          on:click={performSearch}
+          onclick={performSearch}
           disabled={$isAnalyzing || !searchQuery.trim()}
           class="px-6"
         >
@@ -150,7 +152,7 @@
             <Badge
               variant={selectedFilters.includes(filter) ? 'default' : 'outline'}
               class="cursor-pointer hover:bg-blue-100 transition-colors"
-              on:click={() => toggleFilter(filter)}
+              onclick={() => toggleFilter(filter)}
             >
               {filter}
             </Badge>
@@ -167,7 +169,7 @@
               variant="outline"
               size="sm"
               class="text-xs"
-              on:click={() => useSampleQuery(query)}
+              onclick={() => useSampleQuery(query)}
             >
               {query}
             </Button>
@@ -280,7 +282,7 @@
           <CardHeader>
             <div class="flex items-center justify-between">
               <CardTitle class="text-lg">Recent Searches</CardTitle>
-              <Button variant="ghost" size="sm" on:click={clearHistory}>
+              <Button variant="ghost" size="sm" onclick={clearHistory}>
                 Clear
               </Button>
             </div>
@@ -338,4 +340,9 @@
     overflow: hidden;
   }
 </style>
+</script>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
 </script>

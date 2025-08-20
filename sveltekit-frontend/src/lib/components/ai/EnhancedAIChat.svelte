@@ -1,6 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: Cannot use `$props()` more than once
 https://svelte.dev/e/props_duplicate -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, onDestroy, tick } from 'svelte';
   import { browser } from '$app/environment';
   import { writable, derived } from 'svelte/store';
@@ -551,7 +553,7 @@ https://svelte.dev/e/props_duplicate -->
                 variant="ghost"
                 size="sm"
                 class="h-8 w-8 p-0"
-                on:click={() => showAnalysisPanel = !showAnalysisPanel}
+                onclick={() => showAnalysisPanel = !showAnalysisPanel}
               >
                 <MagnifyingGlassIcon class="h-4 w-4" />
               </Button.Root>
@@ -562,7 +564,7 @@ https://svelte.dev/e/props_duplicate -->
           </Tooltip.Root>
 
           <!-- Generate Report -->
-          <Button.Root variant="outline" size="sm" on:click={generateReport}>
+          <Button.Root variant="outline" size="sm" onclick={generateReport}>
             <DocumentTextIcon class="mr-2 h-4 w-4" />
             Report
           </Button.Root>
@@ -680,7 +682,7 @@ https://svelte.dev/e/props_duplicate -->
                   variant="outline"
                   size="sm"
                   class="h-auto p-2 text-left"
-                  on:click={() => applyRecommendation(rec)}
+                  onclick={() => applyRecommendation(rec)}
                 >
                   <div>
                     <div class="font-medium text-xs">{rec.title}</div>
@@ -701,7 +703,7 @@ https://svelte.dev/e/props_duplicate -->
                 <Button.Root
                   variant="ghost"
                   size="sm"
-                  on:click={() => applyDidYouMean(suggestion)}
+                  onclick={() => applyDidYouMean(suggestion)}
                 >
                   "{suggestion}"
                 </Button.Root>
@@ -720,15 +722,15 @@ https://svelte.dev/e/props_duplicate -->
           bind:value={inputText}
           placeholder="Ask your legal AI assistant..."
           class="flex-1 min-h-[40px] max-h-32 resize-none"
-          on:keydown={handleKeyPress}
-          on:input={handleInput}
+          onkeydown={handleKeyPress}
+          oninput={handleInput}
           disabled={$isLoading}
         />
         
         <Button.Root
           size="sm"
           disabled={!inputText.trim() || $isLoading}
-          on:click={sendMessage}
+          onclick={sendMessage}
           class="h-10 w-10 p-0"
         >
           <PaperPlaneIcon class="h-4 w-4" />
@@ -985,7 +987,7 @@ https://svelte.dev/e/props_duplicate -->
       </div>
 
       <Dialog.Footer>
-        <Button.Root variant="outline" on:click={() => showAnalysisDetails = false}>
+        <Button.Root variant="outline" onclick={() => showAnalysisDetails = false}>
           Close
         </Button.Root>
       </Dialog.Footer>
@@ -1002,7 +1004,7 @@ https://svelte.dev/e/props_duplicate -->
       variant="ghost" 
       size="sm" 
       class="mt-2"
-      on:click={() => error.set(null)}
+      onclick={() => error.set(null)}
     >
       Dismiss
     </Button.Root>
@@ -1038,3 +1040,7 @@ https://svelte.dev/e/props_duplicate -->
     @apply text-primary hover:underline;
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -1,15 +1,23 @@
 // Enhanced Multi-Protocol RAG Service with QUIC, protobuf, and semantic analysis
 import { writable, derived, type Writable } from 'svelte/store';
-import type { 
-  Document, 
-  Evidence, 
-  Case, 
-  LegalAnalysis,
+import type {
+  Document,
+  Evidence,
+  Case,
   SemanticChunk,
   IntentClassification,
   RagResponse,
   ProcessingPipeline
 } from '$lib/types/legal-ai';
+
+// Define LegalAnalysis type if not already defined in $lib/types/legal-ai
+export interface LegalAnalysis {
+  confidence: number;
+  legalDomain: string;
+  complexity: string;
+  keyTerms: string[];
+  suggestedActions: string[];
+}
 
 // ==========================================
 // MULTI-PROTOCOL RAG CONFIGURATION
@@ -154,7 +162,7 @@ export class SemanticAnalyzer {
   private async chunkDocument(content: string, metadata: Record<string, any>): Promise<SemanticChunk[]> {
     // Implementation of semantic chunking with legal section awareness
     const strategy = metadata.chunkingStrategy || 'semantic';
-    
+
     switch (strategy) {
       case 'legal_section':
         return this.chunkByLegalSections(content);
@@ -184,16 +192,16 @@ export class SemanticAnalyzer {
     const chunks: SemanticChunk[] = [];
     let currentChunk = '';
     let chunkIndex = 0;
-    
+
     const lines = content.split('\n');
-    
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-      
+
       if (line === '') continue;
-      
+
       const isSectionBreak = sectionPatterns.some(pattern => pattern.test(line));
-      
+
       if (isSectionBreak && currentChunk.length > 100) {
         chunks.push({
           id: `chunk_${chunkIndex++}`,
@@ -233,7 +241,7 @@ export class SemanticAnalyzer {
 
   private detectSectionType(content: string): string {
     const lowerContent = content.toLowerCase();
-    
+
     if (lowerContent.includes('whereas')) return 'recital';
     if (lowerContent.includes('liability') || lowerContent.includes('indemnif')) return 'liability';
     if (lowerContent.includes('payment') || lowerContent.includes('invoice')) return 'payment';
@@ -242,7 +250,7 @@ export class SemanticAnalyzer {
     if (lowerContent.includes('intellectual property') || lowerContent.includes('copyright')) return 'ip';
     if (lowerContent.includes('governing law') || lowerContent.includes('jurisdiction')) return 'governing_law';
     if (lowerContent.includes('dispute') || lowerContent.includes('arbitration')) return 'dispute_resolution';
-    
+
     return 'general';
   }
 
@@ -253,7 +261,7 @@ export class SemanticAnalyzer {
       'indemnification', 'confidential', 'proprietary', 'jurisdiction',
       'governing law', 'force majeure', 'termination', 'default'
     ];
-    
+
     const lowerContent = content.toLowerCase();
     return legalTerms.some(term => lowerContent.includes(term));
   }
@@ -268,7 +276,7 @@ export class SemanticAnalyzer {
     for (let i = 0; i < sentences.length; i++) {
       const sentence = sentences[i].trim();
       const testChunk = currentChunk + (currentChunk ? '. ' : '') + sentence;
-      
+
       if (testChunk.length > defaultConfig.chunkSize && currentChunk.length > 0) {
         chunks.push({
           id: `semantic_chunk_${chunkIndex++}`,
@@ -338,7 +346,7 @@ export class SemanticAnalyzer {
     const chunks: SemanticChunk[] = [];
     const chunkSize = defaultConfig.chunkSize;
     const overlap = defaultConfig.overlapSize;
-    
+
     for (let i = 0; i < content.length; i += chunkSize - overlap) {
       const chunk = content.slice(i, i + chunkSize);
       chunks.push({
@@ -353,14 +361,14 @@ export class SemanticAnalyzer {
         }
       });
     }
-    
+
     return chunks;
   }
 
   private async generateEmbeddings(chunks: SemanticChunk[]): Promise<number[][]> {
     // Generate embeddings using the embedding service
     const embeddings: number[][] = [];
-    
+
     for (const chunk of chunks) {
       try {
         const embedding = await this.callEmbeddingService(chunk.content);
@@ -371,7 +379,7 @@ export class SemanticAnalyzer {
         embeddings.push(new Array(defaultConfig.embeddingDimensions).fill(0));
       }
     }
-    
+
     return embeddings;
   }
 
@@ -429,11 +437,11 @@ export class IntentClassifier {
 
   async classify(text: string): Promise<IntentClassification> {
     await this.ensureModelLoaded();
-    
+
     // Legal-BERT intent classification
     const intents = this.classifyLegalIntent(text);
     const entities = this.extractNamedEntities(text);
-    
+
     return {
       intent: intents.primary,
       confidence: intents.confidence,
@@ -457,35 +465,35 @@ export class IntentClassifier {
 
   private classifyLegalIntent(text: string): { primary: string; confidence: number; alternatives: string[] } {
     const lowerText = text.toLowerCase();
-    
+
     // Legal intent patterns
     if (lowerText.includes('risk') || lowerText.includes('liability') || lowerText.includes('danger')) {
       return { primary: 'risk_assessment', confidence: 0.92, alternatives: ['legal_analysis', 'contract_review'] };
     }
-    
+
     if (lowerText.includes('contract') || lowerText.includes('agreement') || lowerText.includes('terms')) {
       return { primary: 'contract_review', confidence: 0.89, alternatives: ['legal_analysis', 'compliance_check'] };
     }
-    
+
     if (lowerText.includes('analyze') || lowerText.includes('analysis') || lowerText.includes('review')) {
       return { primary: 'legal_analysis', confidence: 0.86, alternatives: ['document_review', 'case_research'] };
     }
-    
+
     if (lowerText.includes('precedent') || lowerText.includes('case') || lowerText.includes('ruling')) {
       return { primary: 'case_research', confidence: 0.88, alternatives: ['legal_analysis', 'precedent_search'] };
     }
-    
+
     if (lowerText.includes('compliance') || lowerText.includes('regulation') || lowerText.includes('statute')) {
       return { primary: 'compliance_check', confidence: 0.85, alternatives: ['legal_analysis', 'regulatory_review'] };
     }
-    
+
     return { primary: 'general_inquiry', confidence: 0.70, alternatives: ['legal_analysis'] };
   }
 
   private extractNamedEntities(text: string): LegalEntity[] {
     // Simple regex-based NER for demonstration
     const entities: LegalEntity[] = [];
-    
+
     // Date patterns
     const datePattern = /\d{1,2}\/\d{1,2}\/\d{4}|\d{4}-\d{2}-\d{2}|[A-Z][a-z]+ \d{1,2}, \d{4}/g;
     let match;
@@ -500,7 +508,7 @@ export class IntentClassifier {
         attributes: {}
       });
     }
-    
+
     // Money patterns
     const moneyPattern = /\$[\d,]+\.?\d*/g;
     while ((match = moneyPattern.exec(text)) !== null) {
@@ -514,14 +522,14 @@ export class IntentClassifier {
         attributes: {}
       });
     }
-    
+
     return entities;
   }
 
   private assessComplexity(text: string): 'low' | 'medium' | 'high' {
     const complexTerms = ['indemnification', 'jurisdiction', 'arbitration', 'liquidated damages', 'force majeure'];
     const count = complexTerms.filter(term => text.toLowerCase().includes(term)).length;
-    
+
     if (count >= 3) return 'high';
     if (count >= 1) return 'medium';
     return 'low';
@@ -530,7 +538,7 @@ export class IntentClassifier {
   private assessUrgency(text: string): 'low' | 'medium' | 'high' | 'critical' {
     const urgentTerms = ['urgent', 'immediate', 'asap', 'emergency', 'critical', 'deadline'];
     const hasUrgentTerms = urgentTerms.some(term => text.toLowerCase().includes(term));
-    
+
     if (hasUrgentTerms) return 'high';
     return 'medium';
   }
@@ -572,7 +580,7 @@ export class GemmaGenerator {
     // Call Gemma3-legal model via Ollama
     const contextText = context.map(chunk => chunk.content).join('\n\n');
     const fullPrompt = this.buildPrompt(prompt, contextText, intent);
-    
+
     try {
       const response = await fetch(`${defaultConfig.httpEndpoint}/api/generate`, {
         method: 'POST',
@@ -583,7 +591,7 @@ export class GemmaGenerator {
           stream: false
         })
       });
-      
+
       const result = await response.json();
       return result.response || 'Failed to generate response';
     } catch (error) {
@@ -603,7 +611,7 @@ export class GemmaGenerator {
     };
 
     const systemPrompt = intentPrompts[intent as keyof typeof intentPrompts] || intentPrompts.general_inquiry;
-    
+
     return `${systemPrompt}
 
 Context Documents:
@@ -637,7 +645,7 @@ export class MultiProtocolRagClient {
 
   async ingestDocument(request: DocumentIngestionRequest): Promise<IngestionResponse> {
     // Multi-protocol document ingestion with QUIC, HTTP, and gRPC
-    
+
     // Step 1: Try QUIC for high-performance upload
     try {
       return await this.ingestViaQuic(request);
@@ -659,20 +667,20 @@ export class MultiProtocolRagClient {
   async queryRag(query: string, options: QueryOptions = {}): Promise<RagResponse> {
     // Step 1: Analyze query intent and extract entities
     const analysis = await this.semanticAnalyzer.analyzeQuery(query, options.context || {});
-    
+
     // Step 2: Perform vector search
     const searchResults = await this.performVectorSearch(query, options, analysis);
-    
+
     // Step 3: Enrich with graph data
     const enrichedResults = await this.enrichWithGraphData(searchResults, options.caseId);
-    
+
     // Step 4: Rerank using legal-specific scoring
     const rerankedResults = await this.rerankResults(enrichedResults, analysis);
-    
+
     // Step 5: Generate response using Gemma3-legal
     const generator = new GemmaGenerator();
     const answer = await generator.generate(query, rerankedResults, analysis.intent.intent);
-    
+
     return {
       query,
       answer,
@@ -780,10 +788,10 @@ export class MultiProtocolRagClient {
       }
 
       // Boost based on entity overlap
-      const entitiesInA = analysis.entities.filter(entity => 
+      const entitiesInA = analysis.entities.filter(entity =>
         a.content.toLowerCase().includes(entity.name.toLowerCase())
       ).length;
-      const entitiesInB = analysis.entities.filter(entity => 
+      const entitiesInB = analysis.entities.filter(entity =>
         b.content.toLowerCase().includes(entity.name.toLowerCase())
       ).length;
 
@@ -871,8 +879,8 @@ export const processingPipeline = writable<ProcessingPipeline>({
 // REACTIVE HELPERS
 // ==========================================
 
-export const activeIngestions = derived(ragState, $ragState => 
-  Array.from($ragState.ingestionStatus.values()).filter(status => 
+export const activeIngestions = derived(ragState, $ragState =>
+  Array.from($ragState.ingestionStatus.values()).filter(status =>
     status.status === 'processing' || status.status === 'pending'
   )
 );
@@ -894,15 +902,15 @@ export const failedIngestions = derived(ragState, $ragState =>
 // ==========================================
 
 export async function ingestDocument(request: DocumentIngestionRequest): Promise<string> {
-  ragState.update(state => ({ 
-    ...state, 
-    isProcessing: true, 
-    error: null 
+  ragState.update(state => ({
+    ...state,
+    isProcessing: true,
+    error: null
   }));
 
   try {
     const response = await ragClient.ingestDocument(request);
-    
+
     ragState.update(state => {
       const newStatus = new Map(state.ingestionStatus);
       newStatus.set(request.documentId, response);
@@ -915,38 +923,38 @@ export async function ingestDocument(request: DocumentIngestionRequest): Promise
 
     return response.documentId;
   } catch (error) {
-    ragState.update(state => ({ 
-      ...state, 
-      isProcessing: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    ragState.update(state => ({
+      ...state,
+      isProcessing: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }));
     throw error;
   }
 }
 
 export async function queryRag(query: string, options: QueryOptions = {}): Promise<RagResponse> {
-  ragState.update(state => ({ 
-    ...state, 
-    isProcessing: true, 
+  ragState.update(state => ({
+    ...state,
+    isProcessing: true,
     error: null,
     lastQuery: query
   }));
 
   try {
     const response = await ragClient.queryRag(query, options);
-    
-    ragState.update(state => ({ 
-      ...state, 
+
+    ragState.update(state => ({
+      ...state,
       isProcessing: false,
       lastResponse: response
     }));
 
     return response;
   } catch (error) {
-    ragState.update(state => ({ 
-      ...state, 
-      isProcessing: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    ragState.update(state => ({
+      ...state,
+      isProcessing: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }));
     throw error;
   }

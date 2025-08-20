@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import * as Dialog from '$lib/components/ui/dialog/index.js';
   import * as Card from '$lib/components/ui/card';
@@ -258,19 +260,19 @@
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => copyToClipboard(message.content)}>
+                            onclick={() => copyToClipboard(message.content)}>
                             <Copy class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => provideFeedback(message.id, 'positive')}>
+                            onclick={() => provideFeedback(message.id, 'positive')}>
                             <ThumbsUp class="h-3 w-3" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="sm"
-                            on:click={() => provideFeedback(message.id, 'negative')}>
+                            onclick={() => provideFeedback(message.id, 'negative')}>
                             <ThumbsDown class="h-3 w-3" />
                           </Button>
                         </div>
@@ -287,7 +289,7 @@
                         variant="outline"
                         size="sm"
                         class="text-xs h-auto py-1 px-2"
-                        on:click={() => handleSuggestionClick(suggestion)}>
+                        onclick={() => handleSuggestionClick(suggestion)}>
                         {suggestion}
                       </Button>
                     {/each}
@@ -336,17 +338,17 @@
           bind:element={inputElement}
           bind:value={currentMessage}
           {placeholder}
-          on:keydown={handleKeydown}
+          onkeydown={handleKeydown}
           disabled={isLoading}
           class="flex-1" />
-        <Button on:click={sendMessage} disabled={isLoading || !currentMessage.trim()}>
+        <Button onclick={sendMessage} disabled={isLoading || !currentMessage.trim()}>
           {#if isLoading}
             <Loader2 class="h-4 w-4 animate-spin" />
           {:else}
             <Send class="h-4 w-4" />
           {/if}
         </Button>
-        <Button variant="outline" on:click={clearChat}>
+        <Button variant="outline" onclick={clearChat}>
           <X class="h-4 w-4" />
         </Button>
       </div>
@@ -371,3 +373,8 @@
     @apply text-sm leading-relaxed mb-2 last:mb-0;
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

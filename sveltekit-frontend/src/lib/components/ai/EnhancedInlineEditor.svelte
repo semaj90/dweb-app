@@ -3,6 +3,8 @@
   Real-time AI-powered editing with mini text box suggestions
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount, onDestroy, tick } from 'svelte';
   import { createActor } from 'xstate';
   import { aiProcessingMachine, createAITask, aiTaskCreators } from '$lib/stores/machines';
@@ -591,3 +593,7 @@
     }
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

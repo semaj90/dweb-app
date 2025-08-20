@@ -1,14 +1,12 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Optimized case search API endpoint
 // Supports multiple search strategies with automatic fallbacks
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 and, desc, ilike, or, sql
 import { db, isPostgreSQL } from "$lib/server/db/index";
-// Orphaned content: import {
 
 import type { RequestHandler } from "./$types.js";
-// Orphaned content: import {
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

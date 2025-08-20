@@ -1,5 +1,5 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
 import net from "node:net";
 
 type HttpCheck = {

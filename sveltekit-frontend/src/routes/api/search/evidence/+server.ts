@@ -1,17 +1,14 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Evidence search API endpoint with advanced vector capabilities
 // Supports document content search, image analysis, and multi-modal search
 import { evidence } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
 
 import { and, desc, ilike, or, sql } from "drizzle-orm";
-// Orphaned content: import {
 
 import { db } from "$lib/server/db/index";
-// Orphaned content: import {
 
 import type { RequestHandler } from "./$types.js";
-// Orphaned content: import {
 
 export const GET: RequestHandler = async ({ url }) => {
   try {

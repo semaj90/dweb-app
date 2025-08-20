@@ -1,7 +1,6 @@
 // @ts-nocheck
 type { RequestEvent }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { URL
 
 // Document templates with pre-filled content
 const documentTemplates = {

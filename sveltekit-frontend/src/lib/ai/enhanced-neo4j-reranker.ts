@@ -3,7 +3,17 @@
 // Provides 95% accuracy search with boolean pattern matching and audit trails
 
 import { QdrantService } from "./qdrant-service.js";
-import { createSOMRAGSystem, type DocumentEmbedding, , export interface Neo4jPathContext {,   document_id: string;,   case_id: string;,   evidence_chain: string[];,   legal_precedents: string[];,   entity_relationships: EntityRelationship[];,   confidence_scores: ConfidenceScores;,   audit_trail: AuditEntry[]; } from
+import { createSOMRAGSystem, type DocumentEmbedding } from "./som-rag-system.js";
+
+export interface Neo4jPathContext {
+  document_id: string;
+  case_id: string;
+  evidence_chain: string[];
+  legal_precedents: string[];
+  entity_relationships: EntityRelationship[];
+  confidence_scores: ConfidenceScores;
+  audit_trail: AuditEntry[];
+}
 
 export interface EntityRelationship {
   source_entity: string;

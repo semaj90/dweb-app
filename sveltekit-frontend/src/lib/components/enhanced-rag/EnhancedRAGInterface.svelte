@@ -1,5 +1,7 @@
 <!-- Enhanced RAG Interface Component for SvelteKit 2 + Svelte 5 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import Fuse from 'fuse.js';
   
@@ -463,3 +465,7 @@
     border-radius: 4px;
   }
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

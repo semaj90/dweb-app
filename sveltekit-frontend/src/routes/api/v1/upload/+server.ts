@@ -3,11 +3,8 @@
  * Routes to: upload-service.exe:8093 (Primary) or gin-upload.exe:8207 (Alternative)
  */
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-productionServiceClient } from "$lib/services/productionServiceClient";
-// Orphaned content: import { URL
+import { json, error, type RequestHandler } from '@sveltejs/kit';
+import { productionServiceClient } from '$lib/services/productionServiceClient';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
@@ -63,7 +60,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const GET: RequestHandler = async ({ url }) => {
   const fileId = url.searchParams.get('fileId');
-  
+
   if (fileId) {
     // Get file metadata
     try {
@@ -77,7 +74,7 @@ export const GET: RequestHandler = async ({ url }) => {
   // Service health check
   try {
     const health = await productionServiceClient.checkAllServicesHealth();
-    
+
     return json({
       service: 'upload',
       status: 'operational',

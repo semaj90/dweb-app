@@ -2,6 +2,8 @@
 <!-- Production-ready form with state management, validation, and progress tracking -->
 
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import {
     createDocumentUploadForm,
     FORM_STORAGE_KEYS,
@@ -265,7 +267,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={handleSaveDraft}
+            onclick={handleSaveDraft}
             disabled={$isSubmitting}
           >
             <Save size={16} />
@@ -273,7 +275,7 @@
           <Button
             variant="ghost"
             size="sm"
-            on:click={handleReset}
+            onclick={handleReset}
             disabled={$isSubmitting}
           >
             <RotateCcw size={16} />
@@ -449,7 +451,7 @@
             <Input
               id="tags"
               value={$formData.tags.join(", ")}
-              on:input={(e) => {
+              oninput={(e) => {
                 const value = e.currentTarget.value;
                 $formData.tags = value
                   .split(",")
@@ -539,7 +541,7 @@
               <Button
                 variant="outline"
                 size="sm"
-                on:click={() => actor.send({ type: "RETRY" })}
+                onclick={() => actor.send({ type: "RETRY" })}
                 disabled={contextValue.retryCount >= contextValue.maxRetries}
               >
                 Retry ({contextValue.maxRetries - contextValue.retryCount} attempts
@@ -550,7 +552,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  on:click={() => actor.send({ type: "SKIP_PROCESSING" })}
+                  onclick={() => actor.send({ type: "SKIP_PROCESSING" })}
                   class="ml-2"
                 >
                   Skip AI Processing
@@ -592,7 +594,7 @@
       <div class="flex gap-3">
         <Button
           variant="outline"
-          on:click={handleReset}
+          onclick={handleReset}
           disabled={$isSubmitting}
         >
           Reset Form
@@ -626,7 +628,7 @@
   }
 
   .file-upload-card {
-    @apply border-2 border-dashed border-muted-foreground border-opacity-25 transition-colors;
+    @apply border-2 border-dashed border-gray-300 border-opacity-25 transition-colors;
   }
 
   .file-upload-card:hover {
@@ -669,3 +671,5 @@
     @apply text-sm text-muted-foreground;
   }
 </style>
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

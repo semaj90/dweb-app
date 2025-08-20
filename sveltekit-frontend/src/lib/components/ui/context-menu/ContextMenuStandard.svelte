@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { ContextMenu } from "bits-ui";
   import type { Snippet } from "svelte";
   import type { WithoutChild } from "bits-ui";

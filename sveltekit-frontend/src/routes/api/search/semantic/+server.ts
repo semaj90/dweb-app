@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * SvelteKit 2 API Route: Semantic Search with Clustering Integration
@@ -5,19 +6,10 @@
  */
 
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-LegalDocumentSOM } from "$lib/services/som-clustering";
-// Orphaned content: import { LegalKMeansClusterer
-import {
-Redis } from "ioredis";
-// Orphaned content: import { QdrantClient
-import {
-db } from "$lib/server/db";
-// Orphaned content: import { legalDocuments as documents
-import {
-sql, desc, and, eq } from "drizzle-orm";
-// Orphaned content: import type { DocumentCluster
+import { LegalDocumentSOM } from "$lib/services/som-clustering";
+import { Redis } from "ioredis";
+import { db } from "$lib/server/db";
+import { sql, desc, and, eq } from "drizzle-orm";
 
 // Initialize connections
 const redis = new Redis({

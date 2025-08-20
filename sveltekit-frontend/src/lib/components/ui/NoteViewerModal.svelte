@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createDialog, melt } from "@melt-ui/svelte";
   import { Bookmark, BookmarkCheck, Calendar, Edit3, Eye, Tag, User as UserIcon, X } from "lucide-svelte";
   import { marked } from "marked";
@@ -309,3 +311,5 @@
     </div>
   </div>
 {/if}
+
+<!-- TODO: migrate export lets to $props(); CommonProps assumed. -->

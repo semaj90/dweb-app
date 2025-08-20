@@ -1,0 +1,107 @@
+{
+  "generatedAt": "2025-08-20T05:24:35.843Z",
+  "concurrency": 8,
+  "totalInput": 59,
+  "suggestions": [
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\+page.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\machines\\legalAIMachine.ts",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\demos\\+page.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\multiStepFormMachine.ts",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\enhanced\\+page.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ai\\ComprehensiveSummaryEngine.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\server\\ai\\rag-pipeline-enhanced.ts",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaDataGrid.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\yorha\\YoRHaTable.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\evidence\\upload\\+server.ts",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\yorha-home\\+page.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\onboarding\\OnboardingOverlay.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\upload\\AdvancedFileUpload.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\auth\\test\\+page.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\stores\\realtime.ts",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\ReportEditor.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\cases\\[id]\\canvas\\+page.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\lib\\components\\editor\\WysiwygEditor.svelte",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\export\\+server.ts",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    },
+    {
+      "file": "c:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\src\\routes\\api\\analyze\\+server.ts",
+      "action": "normalize-imports",
+      "note": "Normalize/verify module specifiers (prefix ./, remove duplicate type, merge imports)."
+    }
+  ]
+}

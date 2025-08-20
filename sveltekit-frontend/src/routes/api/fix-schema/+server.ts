@@ -1,6 +1,5 @@
 // Fix database schema to match Drizzle schema
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 db, sql
 
 export async function POST() {

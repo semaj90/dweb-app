@@ -2,14 +2,9 @@
 // End-to-End Vector Pipeline Test
 // Tests: Document Upload → Embedding → Search → Results
 
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-db } from "$lib/server/database";
-// Orphaned content: import { documents, documentVectors, cases, users
-import {
-eq, sql } from "drizzle-orm";
-// Orphaned content: import { OllamaEmbeddings
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
+import { db } from "$lib/server/database";
+import { eq, sql } from "drizzle-orm";
 
 // ============================================================================
 // TEST CONFIGURATION

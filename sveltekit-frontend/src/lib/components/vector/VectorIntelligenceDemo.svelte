@@ -3,6 +3,8 @@ Vector Intelligence Demo Component
 Comprehensive showcase of Phase 4 Vector Intelligence capabilities
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -418,7 +420,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'search' ? 'default' : 'ghost'}
       size="sm"
-      on:click={() => activeTab = 'search'}
+      onclick={() => activeTab = 'search'}
       class="flex items-center gap-2"
     >
       <Search class="h-4 w-4" />
@@ -427,7 +429,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'recommendations' ? 'default' : 'ghost'}
       size="sm"
-      on:click={() => activeTab = 'recommendations'}
+      onclick={() => activeTab = 'recommendations'}
       class="flex items-center gap-2"
     >
       <Lightbulb class="h-4 w-4" />
@@ -436,7 +438,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'analysis' ? 'default' : 'ghost'}
       size="sm"
-      on:click={() => activeTab = 'analysis'}
+      onclick={() => activeTab = 'analysis'}
       class="flex items-center gap-2"
     >
       <BarChart3 class="h-4 w-4" />
@@ -445,7 +447,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
     <Button
       variant={activeTab === 'health' ? 'default' : 'ghost'}
       size="sm"
-      on:click={() => activeTab = 'health'}
+      onclick={() => activeTab = 'health'}
       class="flex items-center gap-2"
     >
       <Activity class="h-4 w-4" />
@@ -507,7 +509,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
 
           <div class="flex items-center gap-2">
             <Button
-              on:click={performSearch}
+              onclick={performSearch}
               disabled={isProcessing || !searchQuery.trim()}
               class="bits-btn-default"
             >
@@ -522,7 +524,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
             <Button
               variant="outline"
               size="sm"
-              on:click={() => showAdvancedOptions = !showAdvancedOptions}
+              onclick={() => showAdvancedOptions = !showAdvancedOptions}
             >
               <Settings class="h-4 w-4" />
             </Button>
@@ -640,7 +642,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
           </div>
 
           <Button
-            on:click={generateRecommendations}
+            onclick={generateRecommendations}
             disabled={isProcessing || !recommendationContext.trim()}
             class="bits-btn-default"
           >
@@ -745,7 +747,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
           </div>
 
           <Button
-            on:click={performSemanticAnalysis}
+            onclick={performSemanticAnalysis}
             disabled={isProcessing || !analysisContent.trim()}
             class="bits-btn-default"
           >
@@ -923,7 +925,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
               <Activity class="h-5 w-5" />
               Vector Intelligence System Health
             </span>
-            <Button variant="outline" size="sm" on:click={loadSystemHealth}>
+            <Button variant="outline" size="sm" onclick={loadSystemHealth}>
               <RefreshCw class="h-4 w-4" />
             </Button>
           </CardTitle>
@@ -1035,3 +1037,7 @@ Investigation ongoing. Similar pattern matches recent break-ins in the area.`,
 <style>
   /* @unocss-include */
 </style>
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

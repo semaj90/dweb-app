@@ -1,5 +1,4 @@
-import { json, error } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
+import { type RequestHandler,  json, error } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request }) => {
   try {

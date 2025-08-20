@@ -1,6 +1,6 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
 
 export const GET: RequestHandler = async () => {
   try {
@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Mock response - replace with actual database insertion
     const newStatute = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: Math.random().toString(36).substring(2, 11),
       ...data,
       updatedAt: new Date().toISOString(),
     };

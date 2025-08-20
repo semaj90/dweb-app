@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -32,7 +33,7 @@ type ChatService struct {
 	mu          sync.RWMutex
 	wsUpgrader  websocket.Upgrader
 	activeChats map[string]*ChatSession
-	
+
 	// User activity tracking
 	userActivity map[string]UserActivity
 	contextStore map[string]ChatContext
@@ -130,7 +131,7 @@ type StreamResponse struct {
 
 func NewChatService() *ChatService {
 	config := loadChatConfig()
-	
+
 	return &ChatService{
 		config:      config,
 		activeChats: make(map[string]*ChatSession),
@@ -160,36 +161,36 @@ func loadChatConfig() ChatConfig {
 
 func (c *ChatService) Initialize() error {
 	log.Println("🚀 Initializing Go-Llama Chat Service...")
-	
+
 	// Initialize database
 	var err error
 	c.db, err = pgxpool.New(context.Background(), c.config.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("database connection failed: %w", err)
 	}
-	
+
 	// Initialize Redis
 	opt, err := redis.ParseURL(c.config.RedisURL)
 	if err != nil {
 		return fmt.Errorf("redis URL parsing failed: %w", err)
 	}
 	c.redis = redis.NewClient(opt)
-	
+
 	// Initialize llama.cpp process
 	if err := c.initializeLlama(); err != nil {
 		return fmt.Errorf("llama.cpp initialization failed: %w", err)
 	}
-	
+
 	// Start user activity monitoring
 	go c.monitorUserActivity()
-	
+
 	log.Println("✅ Go-Llama Chat Service initialized")
 	return nil
 }
 
 func (c *ChatService) initializeLlama() error {
 	log.Printf("🦙 Starting llama.cpp with model: %s", c.config.ModelPath)
-	
+
 	args := []string{
 		"-m", c.config.ModelPath,
 		"-c", fmt.Sprintf("%d", c.config.ContextSize),
@@ -202,27 +203,27 @@ func (c *ChatService) initializeLlama() error {
 		"--color",
 		"--verbose-prompt",
 	}
-	
+
 	c.llamaCmd = exec.Command(c.config.LlamaCppPath, args...)
-	
+
 	// Setup stdin/stdout pipes
 	stdin, err := c.llamaCmd.StdinPipe()
 	if err != nil {
 		return err
 	}
 	c.llamaStdin = bufio.NewWriter(stdin)
-	
+
 	stdout, err := c.llamaCmd.StdoutPipe()
 	if err != nil {
 		return err
 	}
 	c.llamaStdout = bufio.NewScanner(stdout)
-	
+
 	// Start the process
 	if err := c.llamaCmd.Start(); err != nil {
 		return fmt.Errorf("failed to start llama.cpp: %w", err)
 	}
-	
+
 	log.Println("✅ llama.cpp process started successfully")
 	return nil
 }
@@ -233,24 +234,24 @@ func (c *ChatService) HandleChat(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	start := time.Now()
-	
+
 	// Get or create chat session
 	session := c.getOrCreateSession(req.UserID, req.SessionID)
-	
+
 	// Update user activity
 	c.updateUserActivity(req.UserID, map[string]interface{}{
 		"action": "chat",
 		"message_length": len(req.Message),
 	})
-	
+
 	// Analyze user intent
 	userIntent := c.analyzeUserIntent(req.Message, session.Context)
-	
+
 	// Build enhanced context
 	enhancedContext := c.buildEnhancedContext(req, session)
-	
+
 	if req.Stream {
 		c.handleStreamingChat(ctx, req, session, enhancedContext)
 	} else {
@@ -265,7 +266,7 @@ func (c *ChatService) handleStandardChat(ctx *gin.Context, req ChatRequest, sess
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	// Add messages to session
 	userMsg := ChatMessage{
 		ID:        fmt.Sprintf("msg_%d", time.Now().UnixNano()),
@@ -274,7 +275,7 @@ func (c *ChatService) handleStandardChat(ctx *gin.Context, req ChatRequest, sess
 		Timestamp: time.Now(),
 		Metadata:  map[string]interface{}{"user_intent": userIntent},
 	}
-	
+
 	assistantMsg := ChatMessage{
 		ID:        fmt.Sprintf("msg_%d", time.Now().UnixNano()+1),
 		Role:      "assistant",
@@ -282,19 +283,19 @@ func (c *ChatService) handleStandardChat(ctx *gin.Context, req ChatRequest, sess
 		Timestamp: time.Now(),
 		Metadata:  map[string]interface{}{"token_count": tokenCount},
 	}
-	
+
 	session.Messages = append(session.Messages, userMsg, assistantMsg)
 	session.UpdatedAt = time.Now()
-	
+
 	// Update context
 	session.Context = c.updateChatContext(session.Context, req.Message, response, userIntent)
-	
+
 	// Store session
 	c.storeSession(session)
-	
+
 	// Generate suggestions
 	suggestions := c.generateSuggestions(response, session.Context)
-	
+
 	chatResponse := ChatResponse{
 		Response:       response,
 		SessionID:      session.ID,
@@ -307,7 +308,7 @@ func (c *ChatService) handleStandardChat(ctx *gin.Context, req ChatRequest, sess
 		Context:        session.Context,
 		Streaming:      false,
 	}
-	
+
 	ctx.JSON(http.StatusOK, chatResponse)
 }
 
@@ -319,33 +320,33 @@ func (c *ChatService) handleStreamingChat(ctx *gin.Context, req ChatRequest, ses
 		return
 	}
 	defer conn.Close()
-	
+
 	// Start streaming response
 	responseChan := make(chan string, 100)
 	doneChan := make(chan bool, 1)
-	
+
 	go c.generateStreamingResponse(req.Message, enhancedContext, responseChan, doneChan)
-	
+
 	fullResponse := ""
 	tokenCount := 0
-	
+
 	for {
 		select {
 		case token := <-responseChan:
 			fullResponse += token
 			tokenCount++
-			
+
 			streamResp := StreamResponse{
 				Token:     token,
 				Done:      false,
 				SessionID: session.ID,
 				Progress:  float64(tokenCount) / float64(req.MaxTokens),
 			}
-			
+
 			if err := conn.WriteJSON(streamResp); err != nil {
 				return
 			}
-			
+
 		case <-doneChan:
 			// Send final message
 			finalResp := StreamResponse{
@@ -354,9 +355,9 @@ func (c *ChatService) handleStreamingChat(ctx *gin.Context, req ChatRequest, ses
 				SessionID: session.ID,
 				Progress:  1.0,
 			}
-			
+
 			conn.WriteJSON(finalResp)
-			
+
 			// Update session with complete response
 			c.updateSessionWithResponse(session, req.Message, fullResponse, tokenCount)
 			return
@@ -367,37 +368,37 @@ func (c *ChatService) handleStreamingChat(ctx *gin.Context, req ChatRequest, ses
 func (c *ChatService) generateResponse(message, context string) (string, int, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	// Build prompt with context
 	prompt := c.buildPrompt(message, context)
-	
+
 	// Send to llama.cpp
 	if _, err := c.llamaStdin.WriteString(prompt + "\n"); err != nil {
 		return "", 0, err
 	}
 	c.llamaStdin.Flush()
-	
+
 	// Read response
 	var response strings.Builder
 	tokenCount := 0
-	
+
 	for c.llamaStdout.Scan() {
 		line := c.llamaStdout.Text()
-		
+
 		// Check for end of response
 		if strings.Contains(line, "<|end|>") || strings.Contains(line, "###") {
 			break
 		}
-		
+
 		response.WriteString(line)
 		tokenCount++
-		
+
 		// Prevent infinite loops
 		if tokenCount > 1000 {
 			break
 		}
 	}
-	
+
 	return response.String(), tokenCount, nil
 }
 
@@ -405,21 +406,21 @@ func (c *ChatService) generateStreamingResponse(message, context string, respons
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	defer func() { doneChan <- true }()
-	
+
 	prompt := c.buildPrompt(message, context)
-	
+
 	if _, err := c.llamaStdin.WriteString(prompt + "\n"); err != nil {
 		return
 	}
 	c.llamaStdin.Flush()
-	
+
 	for c.llamaStdout.Scan() {
 		line := c.llamaStdout.Text()
-		
+
 		if strings.Contains(line, "<|end|>") || strings.Contains(line, "###") {
 			break
 		}
-		
+
 		// Split line into tokens and stream them
 		tokens := strings.Fields(line)
 		for _, token := range tokens {
@@ -431,11 +432,11 @@ func (c *ChatService) generateStreamingResponse(message, context string, respons
 
 func (c *ChatService) buildPrompt(message, context string) string {
 	systemPrompt := `You are a helpful AI legal assistant. You have access to legal documents and case information. Provide accurate, helpful responses based on the available context.`
-	
+
 	if context != "" {
 		systemPrompt += "\n\nContext: " + context
 	}
-	
+
 	return fmt.Sprintf(`<|system|>%s<|end|>
 <|user|>%s<|end|>
 <|assistant|>`, systemPrompt, message)
@@ -443,11 +444,11 @@ func (c *ChatService) buildPrompt(message, context string) string {
 
 func (c *ChatService) buildEnhancedContext(req ChatRequest, session *ChatSession) string {
 	context := fmt.Sprintf("User: %s, Session: %s", req.UserID, req.SessionID)
-	
+
 	if req.CaseID != "" {
 		context += fmt.Sprintf(", Case: %s", req.CaseID)
 	}
-	
+
 	// Add recent conversation history
 	if len(session.Messages) > 0 {
 		context += "\n\nRecent conversation:"
@@ -458,18 +459,18 @@ func (c *ChatService) buildEnhancedContext(req ChatRequest, session *ChatSession
 			}
 		}
 	}
-	
+
 	// Add legal context if available
 	if len(session.Context.DocumentRefs) > 0 {
 		context += "\n\nRelevant documents: " + strings.Join(session.Context.DocumentRefs, ", ")
 	}
-	
+
 	return context
 }
 
 func (c *ChatService) analyzeUserIntent(message string, context ChatContext) string {
 	message = strings.ToLower(message)
-	
+
 	if strings.Contains(message, "search") || strings.Contains(message, "find") {
 		return "search"
 	} else if strings.Contains(message, "summarize") || strings.Contains(message, "summary") {
@@ -481,7 +482,7 @@ func (c *ChatService) analyzeUserIntent(message string, context ChatContext) str
 	} else if strings.Contains(message, "explain") || strings.Contains(message, "what is") {
 		return "explain"
 	}
-	
+
 	return "general"
 }
 
@@ -489,14 +490,14 @@ func (c *ChatService) getOrCreateSession(userID, sessionID string) *ChatSession 
 	if sessionID == "" {
 		sessionID = fmt.Sprintf("session_%d", time.Now().UnixNano())
 	}
-	
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	if session, exists := c.activeChats[sessionID]; exists {
 		return session
 	}
-	
+
 	session := &ChatSession{
 		ID:        sessionID,
 		UserID:    userID,
@@ -506,7 +507,7 @@ func (c *ChatService) getOrCreateSession(userID, sessionID string) *ChatSession 
 		UpdatedAt: time.Now(),
 		IsActive:  true,
 	}
-	
+
 	c.activeChats[sessionID] = session
 	return session
 }
@@ -514,7 +515,7 @@ func (c *ChatService) getOrCreateSession(userID, sessionID string) *ChatSession 
 func (c *ChatService) updateChatContext(context ChatContext, userMessage, response, intent string) ChatContext {
 	context.UserIntent = intent
 	context.Confidence = 0.8
-	
+
 	// Extract keywords from messages
 	words := strings.Fields(strings.ToLower(userMessage + " " + response))
 	for _, word := range words {
@@ -522,25 +523,25 @@ func (c *ChatService) updateChatContext(context ChatContext, userMessage, respon
 			context.Keywords = append(context.Keywords, word)
 		}
 	}
-	
+
 	// Add user action
 	context.RecentActions = append(context.RecentActions, UserAction{
 		Type:      "chat_message",
 		Details:   map[string]interface{}{"intent": intent, "length": len(userMessage)},
 		Timestamp: time.Now(),
 	})
-	
+
 	// Keep only recent actions
 	if len(context.RecentActions) > 10 {
 		context.RecentActions = context.RecentActions[len(context.RecentActions)-10:]
 	}
-	
+
 	return context
 }
 
 func (c *ChatService) generateSuggestions(response string, context ChatContext) []string {
 	suggestions := []string{}
-	
+
 	switch context.UserIntent {
 	case "search":
 		suggestions = append(suggestions, "Refine search criteria", "Search in specific documents")
@@ -553,18 +554,18 @@ func (c *ChatService) generateSuggestions(response string, context ChatContext) 
 	default:
 		suggestions = append(suggestions, "Get more details", "Search related topics")
 	}
-	
+
 	return suggestions
 }
 
 func (c *ChatService) updateUserActivity(userID string, activity map[string]interface{}) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	current := c.userActivity[userID]
 	current.UserID = userID
 	current.LastActivity = time.Now()
-	
+
 	if action, ok := activity["action"].(string); ok {
 		current.RecentActions = append(current.RecentActions, UserAction{
 			Type:      action,
@@ -572,7 +573,7 @@ func (c *ChatService) updateUserActivity(userID string, activity map[string]inte
 			Timestamp: time.Now(),
 		})
 	}
-	
+
 	// Determine attention level based on activity
 	if time.Since(current.LastActivity) < 30*time.Second {
 		current.AttentionLevel = "high"
@@ -581,14 +582,14 @@ func (c *ChatService) updateUserActivity(userID string, activity map[string]inte
 	} else {
 		current.AttentionLevel = "low"
 	}
-	
+
 	c.userActivity[userID] = current
 }
 
 func (c *ChatService) monitorUserActivity() {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		c.mu.Lock()
 		for userID, activity := range c.userActivity {
@@ -597,7 +598,7 @@ func (c *ChatService) monitorUserActivity() {
 				activity.AttentionLevel = "low"
 				c.userActivity[userID] = activity
 			}
-			
+
 			// Clean up old sessions
 			for sessionID, session := range c.activeChats {
 				if time.Since(session.UpdatedAt) > 30*time.Minute {
@@ -623,7 +624,7 @@ func (c *ChatService) updateSessionWithResponse(session *ChatSession, userMessag
 		Content:   userMessage,
 		Timestamp: time.Now(),
 	}
-	
+
 	assistantMsg := ChatMessage{
 		ID:        fmt.Sprintf("msg_%d", time.Now().UnixNano()+1),
 		Role:      "assistant",
@@ -631,10 +632,10 @@ func (c *ChatService) updateSessionWithResponse(session *ChatSession, userMessag
 		Timestamp: time.Now(),
 		Metadata:  map[string]interface{}{"token_count": tokenCount},
 	}
-	
+
 	session.Messages = append(session.Messages, userMsg, assistantMsg)
 	session.UpdatedAt = time.Now()
-	
+
 	c.storeSession(session)
 }
 
@@ -646,20 +647,20 @@ func (c *ChatService) HandleActivityWebSocket(ctx *gin.Context) {
 		return
 	}
 	defer conn.Close()
-	
+
 	userID := ctx.Query("user_id")
 	if userID == "" {
 		return
 	}
-	
+
 	for {
 		var activity map[string]interface{}
 		if err := conn.ReadJSON(&activity); err != nil {
 			break
 		}
-		
+
 		c.updateUserActivity(userID, activity)
-		
+
 		// Send back activity status
 		current := c.userActivity[userID]
 		conn.WriteJSON(map[string]interface{}{
@@ -673,7 +674,7 @@ func (c *ChatService) HandleActivityWebSocket(ctx *gin.Context) {
 
 func (c *ChatService) getActivityBasedSuggestions(activity UserActivity) []string {
 	suggestions := []string{}
-	
+
 	switch activity.AttentionLevel {
 	case "low":
 		suggestions = append(suggestions, "Take a break", "Review recent work")
@@ -682,7 +683,7 @@ func (c *ChatService) getActivityBasedSuggestions(activity UserActivity) []strin
 	case "high":
 		suggestions = append(suggestions, "Deep focus session", "Tackle complex tasks")
 	}
-	
+
 	return suggestions
 }
 
@@ -698,7 +699,7 @@ func (c *ChatService) HandleStatus(ctx *gin.Context) {
 		"gpu_layers":    c.config.GPULayers,
 		"timestamp":     time.Now(),
 	}
-	
+
 	ctx.JSON(http.StatusOK, status)
 }
 
@@ -706,21 +707,21 @@ func (c *ChatService) setupRoutes() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Logger(), gin.Recovery())
-	
+
 	// CORS middleware
 	router.Use(func(ctx *gin.Context) {
 		ctx.Header("Access-Control-Allow-Origin", "*")
 		ctx.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		ctx.Header("Access-Control-Allow-Headers", "Content-Type")
-		
+
 		if ctx.Request.Method == "OPTIONS" {
 			ctx.AbortWithStatus(204)
 			return
 		}
-		
+
 		ctx.Next()
 	})
-	
+
 	// API routes
 	api := router.Group("/api")
 	{
@@ -729,21 +730,21 @@ func (c *ChatService) setupRoutes() *gin.Engine {
 		api.GET("/sessions/:user_id", func(ctx *gin.Context) {
 			userID := ctx.Param("user_id")
 			sessions := []ChatSession{}
-			
+
 			for _, session := range c.activeChats {
 				if session.UserID == userID {
 					sessions = append(sessions, *session)
 				}
 			}
-			
+
 			ctx.JSON(http.StatusOK, sessions)
 		})
 	}
-	
+
 	// WebSocket endpoints
 	router.GET("/ws/chat", c.HandleChat)
 	router.GET("/ws/activity", c.HandleActivityWebSocket)
-	
+
 	// Root endpoint
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -757,7 +758,7 @@ func (c *ChatService) setupRoutes() *gin.Engine {
 			},
 		})
 	})
-	
+
 	return router
 }
 
@@ -765,14 +766,14 @@ func (c *ChatService) Run() error {
 	if err := c.Initialize(); err != nil {
 		return err
 	}
-	
+
 	router := c.setupRoutes()
-	
+
 	log.Printf("🚀 Go-Llama Chat Service starting on port %s", c.config.Port)
 	log.Printf("🦙 Model: %s", c.config.ModelPath)
 	log.Printf("🔧 Context: %d, GPU Layers: %d", c.config.ContextSize, c.config.GPULayers)
 	log.Printf("💬 WebSocket: ws://localhost:%s/ws/chat", c.config.Port)
-	
+
 	return router.Run(":" + c.config.Port)
 }
 
@@ -780,17 +781,16 @@ func (c *ChatService) Cleanup() {
 	if c.llamaCmd != nil && c.llamaCmd.Process != nil {
 		c.llamaCmd.Process.Kill()
 	}
-	
+
 	if c.db != nil {
 		c.db.Close()
 	}
-	
+
 	if c.redis != nil {
 		c.redis.Close()
 	}
 }
 
-// Utility functions
 func contains(slice []string, item string) bool {
 	for _, s := range slice {
 		if s == item {
@@ -798,6 +798,22 @@ func contains(slice []string, item string) bool {
 		}
 	}
 	return false
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+func getEnvInt(key string, defaultValue int) int {
+	if value := os.Getenv(key); value != "" {
+		if i, err := strconv.Atoi(value); err == nil {
+			return i
+		}
+	}
+	return defaultValue
 }
 
 func getEnvFloat(key string, defaultValue float64) float64 {
@@ -812,8 +828,9 @@ func getEnvFloat(key string, defaultValue float64) float64 {
 func main() {
 	service := NewChatService()
 	defer service.Cleanup()
-	
+
 	if err := service.Run(); err != nil {
 		log.Fatalf("💥 Chat service failed: %v", err)
 	}
+}}
 }

@@ -18,7 +18,7 @@ const hasCUDA = (() => {
     try {
         const { execSync } = require('child_process');
         if (process.env.FORCE_NO_GPU === '1') return false;
-        const out = execSync(process.platform === 'win32' ? 'nvidia-smi -L' : 'nvidia-smi -L', 
+        const out = execSync(process.platform === 'win32' ? 'nvidia-smi -L' : 'nvidia-smi -L',
                            { stdio: ['ignore','pipe','ignore'] }).toString();
         return /GPU \d+/.test(out);
     } catch { return false; }
@@ -32,7 +32,32 @@ const optimalWorkerCount = Math.min(os.cpus().length, Math.floor(totalMemory / (
 console.log(`🚀 Multi-Core Auto-Solver initializing...`);
 console.log(`💻 CPUs: ${os.cpus().length}, Memory: ${(totalMemory/1024/1024/1024).toFixed(2)}GB`);
 console.log(`🎯 Optimal workers: ${optimalWorkerCount}, GPU: ${hasCUDA ? 'Available' : 'Not Available'}`);
-
+/**
+ * Service Worker Event Listener for Autosolve Concurrency
+ * Enables autosolve-loop.cjs to trigger multi-core-solver.js processing via events.
+ */
+// Service Worker Event Listener for Autosolve Concurrency
+if (typeof self !== 'undefined' && typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope) {
+    self.addEventListener('message', async (event) => {
+        if (event.data && event.data.type === 'AUTOSOLVE_REQUEST') {
+            // Extract problems from event
+            const problems = event.data.problems || [];
+            // Dynamically import solver
+            const { MultiCoreClusterManager } = await import('./multi-core-solver.js');
+            const solver = new MultiCoreClusterManager();
+            await solver.initializeCluster();
+            const results = await solver.processProblemBatch(problems);
+            // Respond with results
+            if (event.ports && event.ports[0]) {
+                event.ports[0].postMessage({ type: 'AUTOSOLVE_RESULT', results });
+            } else if (typeof event.respondWith === 'function') {
+                event.respondWith(new Response(JSON.stringify({ type: 'AUTOSOLVE_RESULT', results }), {
+                    headers: { 'Content-Type': 'application/json' }
+                }));
+            }
+        }
+    });
+}
 // Configuration
 const CONFIG = {
     maxWorkers: optimalWorkerCount,
@@ -49,7 +74,11 @@ const CONFIG = {
 class PostgreSQLSemanticStore {
     constructor() {
         this.pool = null;
-        this.initializeDB();
+        // Begin async initialization immediately but capture promise so callers can await readiness
+        this.readyPromise = this.initializeDB().catch(err => {
+            console.error('❌ PostgreSQL initialization failed:', err.message);
+            return null;
+        });
     }
 
     async initializeDB() {
@@ -128,7 +157,7 @@ class PostgreSQLSemanticStore {
         CREATE INDEX IF NOT EXISTS idx_semantic_hash ON semantic_cache(content_hash);
         CREATE INDEX IF NOT EXISTS idx_semantic_analysis ON semantic_cache USING GIN (semantic_analysis);
         CREATE INDEX IF NOT EXISTS idx_patterns_type ON solution_patterns(problem_type);
-        
+
         -- Enable pg_vector if available
         CREATE EXTENSION IF NOT EXISTS vector;
         `;
@@ -142,13 +171,20 @@ class PostgreSQLSemanticStore {
     }
 
     async storeProblemAnalysis(problemData) {
+        // Ensure DB ready (handles race where constructor not finished async init)
+        if (!this.pool) {
+            await this.readyPromise;
+        }
+        if (!this.pool) {
+            throw new Error('PostgreSQL pool not initialized');
+        }
         const problemHash = createHash('sha256').update(JSON.stringify(problemData)).digest('hex');
-        
+
         const query = `
         INSERT INTO vscode_problems (file_path, problem_hash, problem_data, semantic_features, worker_id, processing_time_ms)
         VALUES ($1, $2, $3, $4, $5, $6)
-        ON CONFLICT (problem_hash) 
-        DO UPDATE SET 
+        ON CONFLICT (problem_hash)
+        DO UPDATE SET
             problem_data = EXCLUDED.problem_data,
             semantic_features = EXCLUDED.semantic_features,
             updated_at = NOW()
@@ -166,19 +202,23 @@ class PostgreSQLSemanticStore {
     }
 
     async getSemanticContext(contentHash, embeddings = null) {
+        if (!this.pool) {
+            await this.readyPromise;
+        }
+        if (!this.pool) return null;
         let query = `
         SELECT content_text, semantic_analysis, entities, relationships
-        FROM semantic_cache 
+        FROM semantic_cache
         WHERE content_hash = $1;
         `;
-        
+
         let params = [contentHash];
-        
+
         if (embeddings && embeddings.length > 0) {
             query = `
             SELECT content_text, semantic_analysis, entities, relationships,
                    (embeddings <=> $2::vector) as similarity
-            FROM semantic_cache 
+            FROM semantic_cache
             WHERE content_hash = $1 OR (embeddings <=> $2::vector) < 0.3
             ORDER BY similarity
             LIMIT 5;
@@ -190,11 +230,15 @@ class PostgreSQLSemanticStore {
     }
 
     async storeSolutionPattern(problemType, patternData, solutionTemplate) {
+        if (!this.pool) {
+            await this.readyPromise;
+        }
+        if (!this.pool) return null;
         const query = `
         INSERT INTO solution_patterns (problem_type, pattern_data, solution_template, usage_count)
         VALUES ($1, $2, $3, 1)
-        ON CONFLICT (problem_type) 
-        DO UPDATE SET 
+        ON CONFLICT (problem_type)
+        DO UPDATE SET
             pattern_data = EXCLUDED.pattern_data,
             solution_template = EXCLUDED.solution_template,
             usage_count = solution_patterns.usage_count + 1,
@@ -227,9 +271,9 @@ class GPUSemanticProcessor {
         try {
             // Try to initialize ONNX Runtime with CUDA provider
             this.ort = await import('onnxruntime-node');
-            
+
             const modelPath = process.env.SEMANTIC_MODEL_PATH || './models/sentence-transformers.onnx';
-            
+
             if (await fs.access(modelPath).then(() => true).catch(() => false)) {
                 this.session = await this.ort.InferenceSession.create(modelPath, {
                     executionProviders: ['CUDAExecutionProvider', 'CPUExecutionProvider']
@@ -251,12 +295,12 @@ class GPUSemanticProcessor {
         try {
             // Tokenize and process batch
             const embeddings = [];
-            
+
             for (const text of textBatch) {
                 // Simplified tokenization - in production, use proper tokenizer
                 const tokens = this.tokenizeText(text);
                 const inputTensor = new this.ort.Tensor('int64', tokens, [1, tokens.length]);
-                
+
                 const results = await this.session.run({ input_ids: inputTensor });
                 const embedding = Array.from(results.last_hidden_state.data);
                 embeddings.push(embedding);
@@ -296,7 +340,7 @@ class LanguageExtractor {
             rust: /\.rs$/,
             sql: /\.sql$/
         };
-        
+
         this.sentenceSplitters = {
             code: /(?:\r?\n\s*){2,}/, // Code blocks separated by blank lines
             text: /[.!?]+\s+/, // Natural language sentences
@@ -307,7 +351,7 @@ class LanguageExtractor {
     extractLanguageFeatures(filePath, content) {
         const language = this.detectLanguage(filePath);
         const sentences = this.splitIntoSentences(content, language);
-        
+
         return {
             language,
             sentences,
@@ -326,9 +370,9 @@ class LanguageExtractor {
 
     splitIntoSentences(content, language) {
         const splitter = language === 'json' ? this.sentenceSplitters.json :
-                        ['typescript', 'javascript', 'svelte', 'python', 'go', 'rust'].includes(language) ? 
+            ['typescript', 'javascript', 'svelte', 'python', 'go', 'rust'].includes(language) ?
                         this.sentenceSplitters.code : this.sentenceSplitters.text;
-        
+
         return content.split(splitter)
                      .map(s => s.trim())
                      .filter(s => s.length > 0)
@@ -420,11 +464,11 @@ class LanguageExtractor {
 
     extractRelationships(sentences) {
         const relationships = [];
-        
+
         for (let i = 0; i < sentences.length - 1; i++) {
             const current = sentences[i];
             const next = sentences[i + 1];
-            
+
             // Simple relationship detection
             if (this.hasCallRelationship(current, next)) {
                 relationships.push({
@@ -443,7 +487,7 @@ class LanguageExtractor {
         // Check if sentence2 might be calling something from sentence1
         const words1 = sentence1.split(/\W+/).filter(Boolean);
         const words2 = sentence2.split(/\W+/).filter(Boolean);
-        
+
         return words1.some(word => words2.includes(word) && word.length > 3);
     }
 }
@@ -461,7 +505,7 @@ class MultiCoreClusterManager {
             memoryUsage: [],
             gpuUtilization: []
         };
-        
+
         this.dbStore = new PostgreSQLSemanticStore();
         this.gpuProcessor = new GPUSemanticProcessor();
         this.languageExtractor = new LanguageExtractor();
@@ -473,14 +517,14 @@ class MultiCoreClusterManager {
         }
 
         console.log(`🚀 Starting cluster with ${CONFIG.maxWorkers} workers`);
-        
+
         // Fork cluster workers
         for (let i = 0; i < CONFIG.maxWorkers; i++) {
-            const worker = cluster.fork({ 
+            const worker = cluster.fork({
                 WORKER_ID: i,
                 WORKER_TYPE: 'cluster'
             });
-            
+
             this.workers.set(i, {
                 id: i,
                 process: worker,
@@ -505,7 +549,7 @@ class MultiCoreClusterManager {
 
     async initializeWorkerThreads() {
         console.log(`🧵 Starting worker threads: ${CONFIG.maxWorkers}`);
-        
+
         for (let i = 0; i < CONFIG.maxWorkers; i++) {
             this.workers.set(i, {
                 id: i,
@@ -525,7 +569,7 @@ class MultiCoreClusterManager {
 
         // Split problems into chunks for parallel processing
         const chunks = this.createOptimalChunks(problems);
-        
+
         console.log(`📦 Processing ${problems.length} problems in ${chunks.length} chunks`);
 
         // Process chunks in parallel
@@ -535,18 +579,18 @@ class MultiCoreClusterManager {
         });
 
         const chunkResults = await Promise.all(chunkPromises);
-        
+
         // Flatten results
         for (const chunkResult of chunkResults) {
             results.push(...chunkResult);
         }
 
         const processingTime = performance.now() - startTime;
-        
+
         // Update metrics
         this.performanceMetrics.totalTasks += problems.length;
         this.performanceMetrics.completedTasks += results.length;
-        this.performanceMetrics.averageProcessingTime = 
+        this.performanceMetrics.averageProcessingTime =
             (this.performanceMetrics.averageProcessingTime + processingTime) / 2;
 
         console.log(`✅ Processed ${results.length} problems in ${processingTime.toFixed(2)}ms`);
@@ -561,7 +605,7 @@ class MultiCoreClusterManager {
     createOptimalChunks(problems) {
         const chunks = [];
         const chunkSize = Math.ceil(problems.length / CONFIG.maxWorkers);
-        
+
         for (let i = 0; i < problems.length; i += chunkSize) {
             chunks.push(problems.slice(i, i + chunkSize));
         }
@@ -592,11 +636,11 @@ class MultiCoreClusterManager {
 
         for (const problem of problems) {
             const startTime = performance.now();
-            
+
             try {
                 // Extract language features
                 const languageFeatures = this.languageExtractor.extractLanguageFeatures(
-                    problem.filePath, 
+                    problem.filePath,
                     problem.content
                 );
 
@@ -614,7 +658,16 @@ class MultiCoreClusterManager {
                 });
 
                 // Store in PostgreSQL
-                await this.dbStore.storeProblemAnalysis(analysis);
+                try {
+                    if (this.dbStore && this.dbStore.pool) {
+                        await this.dbStore.storeProblemAnalysis(analysis);
+                    }
+                } catch (dbErr) {
+                    if (CONFIG.debug) {
+                        console.error(`⚠️ DB store failed (worker ${workerId}):`, dbErr.message);
+                    }
+                    analysis.dbStoreError = dbErr.message;
+                }
 
                 results.push(analysis);
 
@@ -634,7 +687,7 @@ class MultiCoreClusterManager {
     async processChunkInClusterWorker(workerId, problems) {
         return new Promise((resolve, reject) => {
             const worker = this.workers.get(workerId);
-            
+
             worker.process.send({
                 type: 'PROCESS_PROBLEMS',
                 problems,
@@ -659,7 +712,7 @@ class MultiCoreClusterManager {
 
     async analyzeProblem(problemData) {
         const { content, filePath, languageFeatures, embeddings, workerId, processingTime } = problemData;
-        
+
         // Basic problem analysis
         const analysis = {
             filePath,
@@ -709,9 +762,8 @@ class MultiCoreClusterManager {
 
     async generateSolutions(problemData) {
         const solutions = [];
-        const { problemTypes } = this.classifyProblemTypes(problemData.content, problemData.languageFeatures);
-
-        for (const problemType of problemTypes || []) {
+        const problemTypes = this.classifyProblemTypes(problemData.content || '', problemData.languageFeatures || { features: {} });
+        for (const problemType of problemTypes) {
             const solutionTemplate = await this.getSolutionTemplate(problemType);
             if (solutionTemplate) {
                 solutions.push({
@@ -733,7 +785,7 @@ class MultiCoreClusterManager {
                 actions: ['Check for missing brackets', 'Verify semicolons', 'Check quotes']
             },
             'type-error': {
-                description: 'Fix type error', 
+                description: 'Fix type error',
                 actions: ['Add type annotations', 'Check property names', 'Verify imports']
             },
             'import-error': {
@@ -792,10 +844,10 @@ if (isMainThread && process.argv[1] === new URL(import.meta.url).pathname) {
     async function main() {
         const solver = new MultiCoreClusterManager();
         await solver.initializeCluster();
-        
+
         console.log('🎯 Multi-Core VS Code Auto-Solver ready!');
         console.log('📊 Configuration:', CONFIG);
-        
+
         // Example usage
         const testProblems = [
             {
@@ -803,7 +855,7 @@ if (isMainThread && process.argv[1] === new URL(import.meta.url).pathname) {
                 content: 'const x: string = 123; // Type error'
             },
             {
-                filePath: 'test2.js', 
+                filePath: 'test2.js',
                 content: 'import missing from "nonexistent"; // Import error'
             }
         ];

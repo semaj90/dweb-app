@@ -1,11 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
-// Orphaned content: import { accessMemoryMCP
-import {
-mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
+import { enhancedSearchWithNeo4j } from "$lib/ai/custom-reranker";
+import { mcpContext72GetLibraryDocs } from "$lib/mcp-context72-get-library-docs";
 
 // Recommendation endpoint using enhanced reranker, Neo4j, and memory
 export const POST: RequestHandler = async ({ request }) => {

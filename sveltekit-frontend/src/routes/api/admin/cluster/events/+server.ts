@@ -1,3 +1,4 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 /**
  * Cluster Events API Endpoint (Server-Sent Events)
@@ -5,10 +6,7 @@
  */
 
 import type { RequestHandler } from './$types.js';
-// Orphaned content: import cluster from 'node:cluster';
-import type { Worker
-import {
-EventEmitter } from "events";
+import type { Worker import { EventEmitter } from "events";
 
 export const GET: RequestHandler = async ({ request }) => {
   // Check if client accepts text/event-stream

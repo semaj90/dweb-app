@@ -1,18 +1,11 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Environment variables fallback
 const env = process.env || {};
-import {
-  caseActivities,
-  cases,
-  evidence,
-  statutes,
-} from "$lib/server/db/index";
-// Orphaned content: import { QdrantClient
+import { caseActivities, cases, evidence, statutes } from "$lib/server/db/index";
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { eq, ilike, sql
-import {
-db } from "$lib/server/db/index";
+import { db } from "$lib/server/db/index";
 
 const qdrantClient = new QdrantClient({
   url: env.QDRANT_URL || "http://localhost:6333",

@@ -1,3 +1,6 @@
+//go:build legacy
+// +build legacy
+
 // 4D Tensor Tiling System with Redis for Legal Document Embeddings
 // Optimized for legal document processing with halo zones and tricubic interpolation
 // Supports real-time tensor operations with Redis Streams

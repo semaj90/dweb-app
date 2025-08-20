@@ -1,16 +1,13 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Multi-Agent AI Orchestration API
 // Unified endpoint for Autogen, CrewAI, and vLLM integration
 
 import { json, type RequestHandler } from "@sveltejs/kit";
-// Orphaned content: import {
 AutogenLegalTeam,
   type LegalAnalysisRequest as AutogenRequest,
 import { URL } from "url";
-import {
-  CrewAILegalTeam,
-  type WorkflowResult,
-} from "$lib/ai/crewai-legal-team";
+import { CrewAILegalTeam, type WorkflowResult } from "$lib/ai/crewai-legal-team";
 
 interface MultiAgentRequest {
   query: string;

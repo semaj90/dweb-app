@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Button, Dialog, Select } from "bits-ui";
   import { onMount } from "svelte";
 
@@ -405,7 +407,7 @@
 
         <!-- Process Button -->
         <Button.Root
-          on:click={processDocument}
+          onclick={processDocument}
           disabled={processing || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >
@@ -461,7 +463,7 @@
 
         <!-- Search Button -->
         <Button.Root
-          on:click={performVectorSearch}
+          onclick={performVectorSearch}
           disabled={searching || !serviceStatus.healthy}
           class="w-full mt-4 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white font-semibold rounded-lg transition-colors"
         >
@@ -482,7 +484,7 @@
 </div>
 
 <!-- Process Results Dialog -->
-<Dialog.Root bind:open={showProcessDialog}>
+<Dialog.Root open={showProcessDialog} onOpenChange={(open) => showProcessDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content
@@ -591,7 +593,7 @@
 </Dialog.Root>
 
 <!-- Search Results Dialog -->
-<Dialog.Root bind:open={showSearchDialog}>
+<Dialog.Root open={showSearchDialog} onOpenChange={(open) => showSearchDialog = open}>
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 bg-black/50 z-40" />
     <Dialog.Content
@@ -654,3 +656,8 @@
     }
   }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

@@ -6,7 +6,17 @@ import type { RAGSearchResult } from "$lib/types/rag";
  */
 
 import { simdIndexProcessor, type CopilotIndex, type CopilotIndexEntry } from "./simd-json-index-processor";
-import { enhancedRAGStore, , // Context7 MCP integration patterns, interface Context7Pattern {,   id: string;,   pattern: string;,   priority: 'high' | 'medium' | 'low';,   category: 'svelte5' | 'sveltekit' | 'typescript' | 'drizzle' | 'ui' | 'ai';,   boostFactor: number;,   keywords: string[]; } from
+import { enhancedRAGStore } from "$lib/stores/enhanced-rag";
+
+// Context7 MCP integration patterns
+interface Context7Pattern {
+  id: string;
+  pattern: string;
+  priority: 'high' | 'medium' | 'low';
+  category: 'svelte5' | 'sveltekit' | 'typescript' | 'drizzle' | 'ui' | 'ai';
+  boostFactor: number;
+  keywords: string[];
+}
 
 // Enhanced index optimization configuration
 interface OptimizationConfig {

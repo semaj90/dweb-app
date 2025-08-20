@@ -1,9 +1,9 @@
+import type { RequestHandler } from '@sveltejs/kit';
 import { db } from "$lib/server/db/index";
 // @ts-nocheck
 // Case Canvas API - Save and load canvas data
 type { RequestHandler }, {
 json } from "@sveltejs/kit";
-// Orphaned content: import { eq
 
 // Import with fallback for different schema files
 let schema: any = {};

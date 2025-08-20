@@ -1,5 +1,7 @@
 <!-- Replace the Card component file -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import type { HTMLAttributes } from 'svelte/elements';
 
   interface Props extends HTMLAttributes<HTMLDivElement> {

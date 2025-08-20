@@ -1,4 +1,6 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
 import * as monaco from 'monaco-editor';
 import { onDestroy, onMount } from 'svelte';
 let editorContainer: HTMLDivElement = $state();
@@ -32,3 +34,8 @@ onDestroy(() => {
   border-radius: 0.5rem;
 }
 </style>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
+</script>

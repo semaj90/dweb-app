@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 // Barrel exports to match usage in forms
 export { default as Select } from "./Select.svelte";
 export { default as SelectValue } from "./SelectValue.svelte";

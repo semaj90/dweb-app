@@ -1,9 +1,11 @@
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { Dialog } from "bits-ui";
   import { X } from "lucide-svelte";
   import { fade, fly } from "svelte/transition";
   
-  interface Props {
+  interface Props extends CommonProps {
     open?: boolean;
     title?: string;
     description?: string;

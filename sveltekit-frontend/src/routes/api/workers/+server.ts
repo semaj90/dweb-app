@@ -4,13 +4,9 @@
  * Endpoints for submitting jobs to the worker "hive"
  */
 
-import { json } from '@sveltejs/kit';
-// Orphaned content: import type { RequestHandler
-import {
-z } from "zod";
-// Orphaned content: import { createSpecializedWorkerSystem, type SpecializedJob
-import {
-URL } from "url";
+import { type RequestHandler,  json } from '@sveltejs/kit';
+import { z } from "zod";
+import { URL } from "url";
 
 // Job submission schemas
 const summarizationJobSchema = z.object({

@@ -274,7 +274,7 @@ The Plaintiff filed a complaint alleging breach of contract. However, the compla
                 enableAI={true}
                 enableCitation={true}
                 height="400px"
-                on:change={(e) => console.log("Content changed:", e.detail)}
+                onchange={(e) => console.log("Content changed:", e.detail)}
               />
             </div>
           </div>

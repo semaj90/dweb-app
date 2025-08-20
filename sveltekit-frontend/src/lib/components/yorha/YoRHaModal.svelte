@@ -2,6 +2,8 @@
 https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <!-- YoRHa Modal Component with Terminal Styling -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createEventDispatcher } from "svelte";
   import { quintOut } from "svelte/easing";
   import { fade, scale } from "svelte/transition";
@@ -541,4 +543,9 @@ https://svelte.dev/e/mixed_event_handler_syntaxes -->
 <script context="module" lang="ts">
   import Component from './YoRHaModal.svelte';
   export default Component;
+</script>
+
+<script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+interface Props extends CommonProps {}
 </script>

@@ -3,6 +3,8 @@ Vector Recommendations Widget
 Compact AI recommendations component for sidebar/dashboard use
 -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
@@ -24,7 +26,7 @@ Compact AI recommendations component for sidebar/dashboard use
   import { vectorIntelligenceService } from '$lib/services/vector-intelligence-service.js';
   import type { IntelligenceRecommendation } from '$lib/services/vector-intelligence-service.js';
 
-  interface Props {
+  interface Props extends CommonProps {
     context?: string;
     userRole?: 'prosecutor' | 'detective' | 'admin' | 'user';
     currentCaseId?: string;
@@ -172,7 +174,7 @@ Compact AI recommendations component for sidebar/dashboard use
       <Button
         variant="ghost"
         size="sm"
-        on:click={loadRecommendations}
+        onclick={loadRecommendations}
         disabled={isLoading}
         class="h-7 w-7 p-0"
       >

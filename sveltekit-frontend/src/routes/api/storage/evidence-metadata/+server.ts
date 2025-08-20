@@ -1,9 +1,7 @@
 // @ts-nocheck
 import { json } from "@sveltejs/kit";
-// Orphaned content: import {
 
 import { evidence } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
 
 export async function POST({ request }) {
   try {

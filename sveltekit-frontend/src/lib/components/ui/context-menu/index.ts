@@ -1,3 +1,4 @@
+import type { CommonProps } from '$lib/types/common-props';
 import Root from "./context-menu-root.svelte";
 import Trigger from "./context-menu-trigger.svelte";
 import Content from "./context-menu-content.svelte";

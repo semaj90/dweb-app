@@ -1,5 +1,7 @@
 <!-- Enhanced File Upload with Real OCR, Embeddings, and Database Integration -->
 <script lang="ts">
+import type { CommonProps } from '$lib/types/common-props';
+
   import { createUploadMachine } from '$lib/machines/uploadMachine';
   import type { ProcessingPipeline } from '$lib/types/upload';
   import { toast } from '$lib/utils/toast';
@@ -8,7 +10,7 @@
   import { createActor } from 'xstate';
 
   // Props interface
-  interface Props {
+  interface Props extends CommonProps {
     onUploadComplete?: (doc: any) => void;
     accept?: string;
     maxSize?: number;

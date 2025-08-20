@@ -1,10 +1,7 @@
-import { users } from "$lib/server/db/schema-postgres";
-// @ts-nocheck
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { eq
-import {
-db } from "$lib/server/db/index";
+import { json, type RequestHandler } from '@sveltejs/kit';
+import { users } from '$lib/server/db/schema-postgres';
+import { db } from '$lib/server/db/index';
+import { eq } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
   try {

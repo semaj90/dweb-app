@@ -1,9 +1,8 @@
+import type { RequestHandler } from '@sveltejs/kit';
 // @ts-nocheck
 // Local AI health check endpoint for Gemma3 Ollama integration
 import { json } from "@sveltejs/kit";
-// Orphaned content: import type { RequestHandler
-import {
-ollamaService } from "$lib/services/ollama-service";
+import { ollamaService } from "$lib/services/ollama-service";
 
 // Test Ollama connection directly
 async function testOllamaConnection(): Promise<{

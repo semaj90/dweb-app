@@ -1,3 +1,5 @@
+// Unified Ollama configuration module (consolidated)
+// Provides model registry, fallback chains, and helper utilities used by server AI services.
 import type { OllamaConfig, ModelConfig } from "./types.js";
 /**
  * Ollama Configuration for High-Performance AI Assistant
@@ -16,7 +18,7 @@ export const MODELS: Record<string, ModelConfig> = {
     temperature: 0.7,
     topP: 0.9,
     topK: 40,
-    systemPrompt: `You are a sophisticated legal AI assistant powered by Gemma3, specialized in legal document analysis, contract review, and case law research. 
+    systemPrompt: `You are a sophisticated legal AI assistant powered by Gemma3, specialized in legal document analysis, contract review, and case law research.
     You provide accurate, context-aware legal insights while maintaining strict confidentiality and professional standards.
     Your responses are based on deep understanding of legal terminology, precedents, and regulatory frameworks.`,
     options: {
@@ -68,7 +70,7 @@ export const OLLAMA_CONFIG: OllamaConfig = {
   timeout: 60000, // 60 seconds for complex legal analysis
   maxRetries: 3,
   streamEnabled: true,
-  
+
   // GPU acceleration settings
   gpu: {
     enabled: true,
@@ -76,7 +78,7 @@ export const OLLAMA_CONFIG: OllamaConfig = {
     mainGpu: 0,
     tensorSplit: null
   },
-  
+
   // Performance optimization
   performance: {
     batchSize: 32,
@@ -84,7 +86,7 @@ export const OLLAMA_CONFIG: OllamaConfig = {
     cacheEnabled: true,
     cacheTTL: 3600 // 1 hour cache
   },
-  
+
   // Advanced features from blueprint
   features: {
     som: true, // Self-Organizing Map for topic modeling
@@ -120,7 +122,7 @@ export function getOptimalModel(task: 'embedding' | 'generation' | 'legal-analys
     'generation': FALLBACK_CHAIN['text-generation'],
     'legal-analysis': FALLBACK_CHAIN['legal-analysis']
   };
-  
+
   return taskMap[task] || [OLLAMA_CONFIG.defaultModel];
 }
 
@@ -138,17 +140,17 @@ export function selectBestAvailableModel(
     if (availableModels.includes(model)) {
       return model;
     }
-    
+
     // Check partial match for variants (e.g., legal-bert:latest)
-    const matchingModel = availableModels.find(available => 
+    const matchingModel = availableModels.find(available =>
       available.includes(model.split(':')[0])
     );
-    
+
     if (matchingModel) {
       return matchingModel;
     }
   }
-  
+
   // If no preferred models available, return first available or null
   return availableModels[0] || null;
 }
@@ -167,7 +169,7 @@ export function isLegalTask(prompt: string): boolean {
     'deed', 'title', 'evidence', 'testimony', 'witness',
     'prosecutor', 'defense', 'attorney', 'counsel', 'judge'
   ];
-  
+
   const lowerPrompt = prompt.toLowerCase();
   return legalKeywords.some(keyword => lowerPrompt.includes(keyword));
 }

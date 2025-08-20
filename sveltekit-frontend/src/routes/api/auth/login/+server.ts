@@ -1,14 +1,12 @@
-// @ts-nocheck
+import type { RequestHandler } from '@sveltejs/kit';
 // Login API endpoint using Lucia v3 and bcrypt
 import { users } from "$lib/server/db/schema-postgres";
-type { RequestHandler }, {
-json } from "@sveltejs/kit";
-// Orphaned content: import { eq
-import {
-hashPassword, verifyPassword } from "$lib/auth/password";
-// Orphaned content: import { lucia
-import {
-db } from "$lib/server/db";
+import type { RequestHandler } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
+import { lucia } from "$lib/server/auth";
+import { db } from "$lib/server/db";
+import { Argon2id } from "oslo/password";
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
@@ -61,7 +59,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       const demoUser = demoUsers.find((du) => du.email === email);
       if (demoUser) {
         console.log("[Login API] Creating demo user:", email);
-        const hashedPassword = await hashPassword(demoUser.password);
+        const hashedPassword = await new Argon2id().hash(demoUser.password);
 
         const [newUser] = await db
           .insert(users)
@@ -84,7 +82,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       return json({ error: "Invalid credentials" }, { status: 401 });
     }
     // Verify password
-    const validPassword = await verifyPassword(password, user.hashedPassword);
+    const validPassword = await new Argon2id().verify(user.hashedPassword, password);
     if (!validPassword) {
       return json({ error: "Invalid credentials" }, { status: 401 });
     }
