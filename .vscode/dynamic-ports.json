@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-08-20T06:25:51.409Z",
+  "ports": {
+    "upload_service": 8096,
+    "simple_upload": 8097,
+    "quic_gateway": 8098
+  },
+  "metadata": {
+    "generator": "start-microservices.mjs",
+    "viteLike": true
+  }
+}

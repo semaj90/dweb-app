@@ -11,10 +11,11 @@
   ],
   "scripts": {
     "check": "tsc --noEmit",
+    "check:auto:solve": "tsx autosolve-intelligent.ts",
+    "check:auto:solve:iterative": "tsx autosolve-intelligent.ts",
     "capture:svelte-errors": "node scripts/capture-svelte-errors.mjs",
     "errors:patterns": "node scripts/extract-svelte-errors.mjs",
     "ci:svelte-gate": "node scripts/ci-svelte-gate.mjs",
-    "check:auto:solve": "node scripts/check-auto-solve-extended.mjs",
     "solve:svelte:semantic": "node scripts/semantic-solve-svelte-errors.mjs",
     "solve:svelte:full": "npm run capture:svelte-errors && npm run errors:patterns && npm run solve:svelte:semantic",
     "solve:svelte:suggest": "npm run solve:svelte:full && npm run generate:suggestions && npm run apply:suggestions",
@@ -70,11 +71,13 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.9.14",
     "@grpc/proto-loader": "^0.7.10",
+    "@msgpack/msgpack": "^3.1.2",
     "@qdrant/js-client-rest": "^1.15.1",
     "amqplib": "^0.10.3",
     "archiver": "^7.0.1",
     "boxen": "^7.1.1",
     "bullmq": "^4.15.4",
+    "cbor": "^10.0.10",
     "chalk": "^5.3.0",
     "dotenv": "^17.2.1",
     "fastify": "^4.28.1",
@@ -105,7 +108,7 @@
     "drizzle-kit": "^0.31.4",
     "nodemon": "^3.0.2",
     "svelte-check": "^3.8.4",
-    "typescript": "^5.3.3"
+    "typescript": "^5.9.2"
   },
   "engines": {
     "node": ">=18.0.0",

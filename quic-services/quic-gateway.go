@@ -5,15 +5,41 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/quic-go/quic-go/http3"
 )
 
+func getenvDefault(key, def string) string {
+	if v := os.Getenv(key); v != "" { return v }
+	return def
+}
+
+func incrementPort(port string, delta int) string {
+	// naive parse
+	var p int
+	_, err := fmt.Sscan(port, &p)
+	if err != nil { return port }
+	return fmt.Sprintf("%d", p+delta)
+}
+
+// mainGateway separated from other mains to avoid collision during multi-file builds.
 func main() {
+	// Resolve ports with environment overrides to avoid conflicts
+	quicPort := getenvDefault("QUIC_PORT", "8443")
+	http3Port := getenvDefault("QUIC_HTTP3_PORT", "8445")
+
+	if quicPort == http3Port {
+		log.Printf("⚠️  QUIC_PORT (%s) == QUIC_HTTP3_PORT (%s); shifting HTTP/3 port +2", quicPort, http3Port)
+		// naive shift
+		http3Port = incrementPort(http3Port, 2)
+	}
+
 	// Initialize Gin router
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -23,7 +49,8 @@ func main() {
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"service": "QUIC Legal Gateway",
-			"port": "8443/8445",
+			"quic_port": quicPort,
+			"http3_port": http3Port,
 			"status": "healthy",
 			"protocol": "HTTP/3",
 			"performance": "80% faster streaming",
@@ -32,7 +59,7 @@ func main() {
 	})
 
 	router.POST("/legal/analyze", func(c *gin.Context) {
-		c.Header("Alt-Svc", `h3=":8445"; ma=86400`)
+		c.Header("Alt-Svc", fmt.Sprintf("h3=\":%s\"; ma=86400", http3Port))
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Legal document analysis via QUIC",
 			"latency_improvement": "80%",
@@ -43,7 +70,7 @@ func main() {
 	router.GET("/legal/stream/:id", func(c *gin.Context) {
 		c.Header("Content-Type", "text/plain; charset=utf-8")
 		c.Header("Cache-Control", "no-cache")
-		
+
 		// Simulate streaming legal analysis
 		for i := 0; i < 5; i++ {
 			c.Writer.WriteString("data: Legal analysis chunk " + string(rune(i+'1')) + "\n\n")
@@ -54,33 +81,33 @@ func main() {
 
 	// Create TLS config for QUIC
 	tlsConfig := &tls.Config{
-		Certificates: generateSelfSignedCert(),
+		Certificates: generateSelfSignedCertGateway(),
 		NextProtos:   []string{"h3"},
 	}
 
-	// Start HTTP/3 server
+	// Start HTTP/3 server on configurable port
 	server := &http3.Server{
 		Handler:   router,
 		TLSConfig: tlsConfig,
-		Addr:      ":8447",
+		Addr:      ":" + http3Port,
 	}
 
-	log.Printf("🚀 QUIC Legal Gateway starting on :8443 (QUIC) and :8447 (HTTP/3)")
+	log.Printf("🚀 QUIC Legal Gateway starting (QUIC handshake port %s, HTTP/3 port %s)", quicPort, http3Port)
 	log.Printf("📄 Legal document processing with 80%% faster streaming")
-	log.Printf("🔗 Health check: https://localhost:8447/health")
+	log.Printf("🔗 Health check: https://localhost:%s/health", http3Port)
 
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("QUIC Legal Gateway failed: %v", err)
 	}
 }
 
-func generateSelfSignedCert() []tls.Certificate {
+func generateSelfSignedCertGateway() []tls.Certificate {
 	// For development only - use proper certs in production
-	cert, _ := tls.X509KeyPair([]byte(devCert), []byte(devKey))
+	cert, _ := tls.X509KeyPair([]byte(devCertGateway), []byte(devKeyGateway))
 	return []tls.Certificate{cert}
 }
 
-const devCert = `-----BEGIN CERTIFICATE-----
+const devCertGateway = `-----BEGIN CERTIFICATE-----
 MIIDXTCCAkWgAwIBAgIJAJC1HiIAZAiIMA0GCSqGSIb3DQEBBQUAMEUxCzAJBgNV
 BAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEwHwYDVQQKDBhJbnRlcm5ldCBX
 aWRnaXRzIFB0eSBMdGQwHhcNMjMwMTAxMDAwMDAwWhcNMjQwMTAxMDAwMDAwWjBF
@@ -98,7 +125,7 @@ JUSL9z8UGJ5zQgEKUyOhMvQhQ6bLMfM5JVHyGJ3tE3ZvEn2OBz5ZgG4Bk8t9Fhov
 F7lXUfL/W8hcC6IeWrBhG7V5tOA1HzLuT8QZHhIXVjF2DdHzI7WrGpQ3M8T9K4Et
 -----END CERTIFICATE-----`
 
-const devKey = `-----BEGIN PRIVATE KEY-----
+const devKeyGateway = `-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDh/rCDg+JP2EWV
 9cCyxWcfuT2TViscYYZ8iBf4dJBBiAeEDIXMYc8VjIE8coqArrPwz/AeMJhCDPm0
 k8sn0VZOIkBhHd8lAFwo+AohQ08qHpPoXoysrpg9QOdPEybUcYobq0YnsndmYmEa

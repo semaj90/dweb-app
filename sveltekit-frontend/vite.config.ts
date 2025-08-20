@@ -31,6 +31,24 @@ async function findAvailablePort(startPort: number, maxAttempts: number = 10): P
   throw new Error(`No available port found starting from ${startPort}`);
 }
 
+// Load dynamic port configuration
+async function loadDynamicPorts(): Promise<Record<string, number>> {
+  try {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    
+    const configPath = path.resolve('../.vscode/dynamic-ports.json');
+    const data = await fs.readFile(configPath, 'utf8');
+    const config = JSON.parse(data);
+    
+    console.log('📡 Loaded dynamic port configuration:', config.ports);
+    return config.ports || {};
+  } catch (error) {
+    console.log('ℹ️  No dynamic port configuration found, using defaults');
+    return {};
+  }
+}
+
 export default defineConfig(async ({ mode }) => {
   // Smart port discovery - prefer 5173, fallback to next available
   const preferredPort = 5173;
@@ -45,6 +63,9 @@ export default defineConfig(async ({ mode }) => {
     console.error(`❌ Failed to find available port: ${error}`);
     availablePort = preferredPort; // Fallback to default
   }
+
+  // Load dynamic port configuration for proxy
+  const dynamicPorts = await loadDynamicPorts();
 
   return {
   plugins: [
@@ -88,26 +109,56 @@ export default defineConfig(async ({ mode }) => {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/qdrant/, '')
       },
-      // Production Go microservices proxy (multi-tier)
+      // Production Go microservices proxy (dynamic ports)
       '/api/go/enhanced-rag': {
-        target: 'http://localhost:8094',
+        target: `http://localhost:${dynamicPorts['enhanced-rag'] || 8094}`,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/go\/enhanced-rag/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log(`Enhanced RAG proxy error (port ${dynamicPorts['enhanced-rag'] || 8094}):`, err.message);
+          });
+        }
       },
       '/api/go/upload': {
-        target: 'http://localhost:8093',
+        target: `http://localhost:${dynamicPorts['upload-service'] || 8093}`,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/go\/upload/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log(`Upload Service proxy error (port ${dynamicPorts['upload-service'] || 8093}):`, err.message);
+          });
+        }
       },
       '/api/go/cluster': {
-        target: 'http://localhost:8213',
+        target: `http://localhost:${dynamicPorts['cluster-manager'] || 8213}`,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/go\/cluster/, ''),
       },
       '/api/go/xstate': {
-        target: 'http://localhost:8212',
+        target: `http://localhost:${dynamicPorts['xstate-manager'] || 8212}`,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/go\/xstate/, ''),
+      },
+      '/api/quic': {
+        target: `http://localhost:${dynamicPorts['quic-gateway'] || 8447}`,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/quic/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log(`QUIC Gateway proxy error (port ${dynamicPorts['quic-gateway'] || 8447}):`, err.message);
+          });
+        }
+      },
+      '/api/grpc': {
+        target: `http://localhost:${dynamicPorts['kratos-server'] || 50051}`,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/grpc/, ''),
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log(`Kratos gRPC proxy error (port ${dynamicPorts['kratos-server'] || 50051}):`, err.message);
+          });
+        }
       },
       // Multi-core Ollama cluster (load balanced)
       '/api/ollama': {

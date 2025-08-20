@@ -9,39 +9,21 @@
  *  - Optional AI summarization with selectable summaryType
  *  - Return consistent JSON envelope (data, meta, error)
  */
-import { json, error } from "@sveltejs/kit";
-// Orphaned content: import {
-
-import { authorize } from "$lib/server/authPolicy";
-// Orphaned content: import {
-
+import { json, error, type RequestHandler } from '@sveltejs/kit';
+import { authorize } from '$lib/server/authPolicy';
 import { logger } from '$lib/server/logger';
-// Orphaned content: import Busboy from 'busboy';
-import {
-
-import type { RequestHandler } from "./$types.js";
-// Orphaned content: import {
-fileUploadSchema, type FileUpload, type AiAnalysisResult
-import { db } from "$lib/server/db";
-// Orphaned content: import {
-evidence, embeddingCache
-import { ollamaCudaService } from "$lib/services/ollama-cuda-service";
-// Orphaned content: import {
-
-import { mkdir } from "fs/promises";
-// Orphaned content: import {
-
+import { fileUploadSchema, type FileUpload, type AiAnalysisResult } from '$lib/server/validation/fileUploadSchema';
+import { db } from '$lib/server/db';
+import { evidence, embeddingCache } from '$lib/server/db/enhanced-legal-schema';
+import { ollamaCudaService } from '$lib/services/ollama-cuda-service';
+import { mkdir } from 'fs/promises';
 import { join } from 'path';
-// Orphaned content: import {
-v4 as uuidv4
-sharp from 'sharp';
-// Orphaned content: import {
-SystemMessage, HumanMessage
-import { eq  } from 'drizzle-orm';
-// Orphaned content: // MinIO client for object storage
-import { Client as MinioClient
-import {
-URL } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+import sharp from 'sharp';
+import { SystemMessage, HumanMessage } from 'langchain/schema';
+import { eq } from 'drizzle-orm';
+import { Client as MinioClient } from 'minio';
+import { URL } from 'url';
 const minioClient = new MinioClient({
   endPoint: 'localhost',
   port: 9000,

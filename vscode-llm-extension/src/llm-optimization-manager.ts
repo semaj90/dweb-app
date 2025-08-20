@@ -82,7 +82,7 @@ export class LLMOptimizationManager extends EventEmitter {
   /**
    * 4. Minimize JSON Payload Size - Token-by-token streaming
    */
-  async processStreamingTokens(tokens: any[]): Promise<any[]> {
+  async processStreamingTokens(tokens: any[]): Promise<any[]> { // TODO-AUTO: Define StreamingToken interface - type { id: string, text: string, metadata?: TokenMetadata }
     const startTime = Date.now();
     
     if (!this.isInitialized) {
@@ -173,7 +173,7 @@ export class LLMOptimizationManager extends EventEmitter {
   /**
    * Stream response token by token for real-time UI updates
    */
-  async *streamTokenResponse(prompt: string, options: any = {}): AsyncGenerator<any, void, unknown> {
+  async *streamTokenResponse(prompt: string, options: any = {}): AsyncGenerator<any, void, unknown> { // TODO-AUTO: Replace any with StreamOptions interface and StreamToken return type
     const chunks = this.chunkPrompt(prompt);
     
     for (const chunk of chunks) {

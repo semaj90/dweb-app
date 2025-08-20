@@ -371,7 +371,10 @@
       "Bash(./nats-server.exe:*)",
       "Bash(\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\")",
       "Bash(.build.bat)",
-      "Bash(./build.bat)"
+      "Bash(./build.bat)",
+      "Bash(set WEBASM_GPU_PORT=8092)",
+      "Bash(.webasm-gpu-middleware.exe)",
+      "Bash(./webasm-gpu-middleware.exe)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",

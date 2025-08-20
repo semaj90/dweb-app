@@ -132,8 +132,8 @@ async function findRelevantEvidences(queryText: string, topK: number): Promise<A
 async function getRelatedEntities(evidenceId: string): Promise<Array<{
   type: string;
   name: string;
-  properties: any;
-  relationships: any[];
+  properties: any; // TODO-AUTO: Create EntityProperties interface with specific property types
+  relationships: any[]; // TODO-AUTO: Define Relationship interface - type { type: string, target: string, properties?: Record<string, unknown> }
 }>> {
   const session = neo4jDriver.session();
   

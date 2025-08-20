@@ -1,0 +1,101 @@
+{
+  "// Auto-Solve Intelligent Error Resolution Settings": "VS Code Configuration",
+  
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  
+  "svelte.enable-ts-plugin": true,
+  "svelte.plugin.svelte.compilerWarnings": {
+    "css-unused-selector": "ignore"
+  },
+  
+  "files.associations": {
+    "*.ts": "typescript",
+    "81925errorssum.txt": "plaintext",
+    "autosolve-report.md": "markdown"
+  },
+  
+  "search.include": {
+    "**/*.ts": true,
+    "**/*.svelte": true,
+    "**/*.js": true,
+    "81925errorssum.txt": true,
+    "autosolve-intelligent.ts": true
+  },
+  
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.svelte-kit": true,
+    "**/build": true,
+    "**/dist": true
+  },
+  
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  
+  "editor.quickSuggestions": {
+    "comments": true,
+    "strings": true,
+    "other": true
+  },
+  
+  "problems.decorations.enabled": true,
+  "problems.showCurrentInStatus": true,
+  
+  "terminal.integrated.profiles.windows": {
+    "Auto-Solve PowerShell": {
+      "source": "PowerShell",
+      "args": ["-NoProfile", "-Command", "Write-Host 'Auto-Solve Terminal Ready' -ForegroundColor Green"]
+    }
+  },
+  
+  "tasks.showDecorations": true,
+  "tasks.problemMatchers.neverPrompt": false,
+  
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "81925errorssum.txt": "autosolve-report.md,autosolve-intelligent.ts",
+    "autosolve-intelligent.ts": "autosolve-*.ts,autosolve-*.md"
+  },
+  
+  "emmet.includeLanguages": {
+    "svelte": "html"
+  },
+  
+  "// Auto-Solve Comment Highlighting": {
+    "editor.tokenColorCustomizations": {
+      "comments": {
+        "TODO-AUTO": "#ff6b35"
+      }
+    }
+  },
+  
+  "todo-tree.regex.regex": "((//|#|<!--|;|/\\*|^)\\s*($TAGS)|^\\s*- \\[ \\])",
+  "todo-tree.regex.regexCaseSensitive": false,
+  "todo-tree.general.tags": [
+    "TODO-AUTO",
+    "FIXME-AUTO", 
+    "NOTE-AUTO",
+    "HACK-AUTO",
+    "XXX-AUTO"
+  ],
+  "todo-tree.highlights.customHighlight": {
+    "TODO-AUTO": {
+      "icon": "tools",
+      "iconColour": "#ff6b35",
+      "foreground": "#ff6b35",
+      "background": "#1e1e1e"
+    }
+  },
+  
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#2d3748",
+    "statusBar.foreground": "#ffffff",
+    "statusBar.debuggingBackground": "#ff6b35",
+    "statusBar.debuggingForeground": "#ffffff"
+  }
+}

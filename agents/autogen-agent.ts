@@ -146,7 +146,7 @@ export class AutoGenAgent {
     return Math.min(1.0, score);
   }
 
-  private extractAgentCount(conversations: any[]): number {
+  private extractAgentCount(conversations: any[]): number { // TODO-AUTO: Replace any[] with proper Conversation interface - create type { agent: string, message: string, timestamp: Date }
     const agents = new Set();
     conversations.forEach(conv => {
       if (conv.agent) agents.add(conv.agent);

@@ -1116,16 +1116,52 @@ func (service *EnhancedLegalAIService) startHTTPServer() error {
 }
 
 func main() {
+	// Read from environment variables with fallback to defaults
+	httpPort := os.Getenv("RAG_HTTP_PORT")
+	if httpPort == "" {
+		httpPort = "8094"
+	}
+	
+	grpcPort := os.Getenv("RAG_GRPC_PORT")
+	if grpcPort == "" {
+		grpcPort = "50051"
+	}
+	
+	quicPort := os.Getenv("RAG_QUIC_PORT")
+	if quicPort == "" {
+		quicPort = "8443"
+	}
+	
+	wsPort := os.Getenv("RAG_WS_PORT")
+	if wsPort == "" {
+		wsPort = "8095"
+	}
+	
+	rabbitmqURL := os.Getenv("RABBITMQ_URL")
+	if rabbitmqURL == "" {
+		rabbitmqURL = "amqp://guest:guest@localhost:5672/"
+	}
+	
+	postgresURL := os.Getenv("POSTGRES_URL")
+	if postgresURL == "" {
+		postgresURL = "postgresql://legal_admin:123456@localhost:5432/legal_ai_db"
+	}
+	
 	config := &ServiceConfig{
-		HTTPPort:    "8094",
-		GRPCPort:    "50051",
-		QUICPort:    "8443",
-		WSPort:      "8095",
-		RabbitMQURL: "amqp://guest:guest@localhost:5672/",
-		PostgresURL: "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+		HTTPPort:    httpPort,
+		GRPCPort:    grpcPort,
+		QUICPort:    quicPort,
+		WSPort:      wsPort,
+		RabbitMQURL: rabbitmqURL,
+		PostgresURL: postgresURL,
 		GPUEnabled:  true,
 		Debug:       true,
 	}
+
+	log.Printf("🚀 Starting Enhanced RAG Service with Context7 Integration")
+	log.Printf("🚀 Enhanced RAG Service starting on port %s", httpPort)
+	log.Printf("📡 Context7 integration: %s", os.Getenv("CONTEXT7_URL"))
+	log.Printf("🔗 WebSocket endpoint: ws://localhost:%s/ws/{userId}", httpPort)
 
 	service, err := NewEnhancedLegalAIService(config)
 	if err != nil {

@@ -1,41 +1,34 @@
-// Alias schema for Drizzle config & legacy imports.
-// drizzle.config.ts points here; we re-export the enhanced schema to avoid
-// widespread refactors while keeping a single authoritative definition.
-// If you add new tables, prefer editing schema-postgres-enhanced.ts.
-// This wrapper ensures tools expecting schema-postgres.ts continue to work.
-export * from './schema-postgres-enhanced';
-// @ts-nocheck
-// PostgreSQL schema for production
-import { relations } from "drizzle-orm";
+// Unified schema (temporary consolidated version)
+// NOTE: Originally this file re-exported from `schema-postgres-enhanced`.
+// It has accumulated direct table definitions. We add the proper Drizzle imports
+// and ensure foundational tables (e.g. users) appear before dependents.
+// A later refactor can move all definitions back into the enhanced file and
+// restore a pure `export *` alias to avoid duplication.
+
 import {
-  boolean,
-  decimal,
-  integer,
-  jsonb,
   pgTable,
-  serial,
   text,
-  timestamp,
   uuid,
+  timestamp,
+  serial,
   varchar,
-} from "drizzle-orm/pg-core";
-import { vector } from "pgvector/drizzle-orm";
+  integer,
+  boolean,
+  jsonb,
+  decimal
+} from 'drizzle-orm/pg-core';
+import { vector } from 'drizzle-orm/pg-vector';
+import { relations } from 'drizzle-orm';
 
-// === AUTHENTICATION & USER MANAGEMENT ===
-
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  emailVerified: timestamp("email_verified", { mode: "date" }),
-  hashedPassword: text("hashed_password"),
-  name: text("name"),
-  firstName: varchar("first_name", { length: 100 }),
-  lastName: varchar("last_name", { length: 100 }),
-  avatarUrl: text("avatar_url"),
-  role: varchar("role", { length: 50 }).default("prosecutor").notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+// --- Foundational tables (must precede references) ---
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  passwordHash: varchar('password_hash', { length: 255 }),
+  role: varchar('role', { length: 50 }).default('user').notNull(),
+  displayName: varchar('display_name', { length: 255 }),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });
 
 // === LUCIA v3 AUTHENTICATION TABLES ===
@@ -905,6 +898,9 @@ export const embeddingCache = pgTable("embedding_cache", {
   textHash: text("text_hash").notNull().unique(),
   embedding: vector("embedding", { dimensions: 768 }).notNull(), // Re-enabled - pgvector working
   model: varchar("model", { length: 100 }).notNull(),
+  // Optional packed (quantized) representation stored as base64 text for portability (consider bytea later)
+  packedEmbedding: text("packed_embedding"),
+  embeddingScale: decimal("embedding_scale", { precision: 10, scale: 6 }), // scale for symmetric int8 quantization
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
 });
 

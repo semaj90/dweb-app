@@ -1,0 +1,115 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Auto-Solve: Intelligent Error Resolution",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check:auto:solve"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        {
+          "owner": "typescript",
+          "fileLocation": "absolute",
+          "pattern": {
+            "regexp": "^(.+?)(?:\\((\\d+),(\\d+)\\))?: (error|warning) (TS\\d+): (.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "code": 5,
+            "message": 6
+          }
+        }
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "Auto-Solve: Check Error Count",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "check"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        {
+          "owner": "typescript",
+          "fileLocation": "absolute",
+          "pattern": {
+            "regexp": "^(.+?)(?:\\((\\d+),(\\d+)\\))?: (error|warning) (TS\\d+): (.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "code": 5,
+            "message": 6
+          }
+        }
+      ]
+    },
+    {
+      "label": "Auto-Solve: Context7 Integration Test",
+      "type": "shell",
+      "command": "tsx",
+      "args": ["sveltekit-frontend/context7-multicore-error-analysis.ts"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Auto-Solve: Generate Error Summary",
+      "type": "shell",
+      "command": "echo",
+      "args": ["'Error summary already generated: 81925errorssum.txt'"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Auto-Solve: Full Pipeline",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Auto-Solve: Check Error Count",
+        "Auto-Solve: Intelligent Error Resolution",
+        "Auto-Solve: Check Error Count"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated"
+      }
+    }
+  ]
+}

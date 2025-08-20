@@ -26,7 +26,7 @@ const activeJobs = new Map<string, { cancelled: boolean; paused: boolean }>();
 
 async function updateProcessStatus(sessionId: string, status: string, error?: string) {
   try {
-    const updates: any = {
+    const updates: any = { // TODO-AUTO: Create ProcessStatusUpdate interface - type { status: string, updated_at: Date, error?: string, progress?: number }
       status,
       updated_at: new Date()
     };
