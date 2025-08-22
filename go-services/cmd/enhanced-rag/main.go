@@ -161,7 +161,7 @@ func (r *RAGService) searchSimilarDocuments(query string, limit int, caseID stri
 			dm.id,
 			dm.original_filename,
 			de.chunk_text,
-			dm.summary,
+			COALESCE(dm.extracted_text, dm.filename) as summary,
 			dm.created_at,
 			1 - (de.embedding <=> $1) as similarity
 		FROM document_embeddings de

@@ -6,15 +6,7 @@ import type {
   AIInsights,
   AuditLogEntry,
 } from "$lib/types/legal";
-// Orphaned content: import { LegalAuditService
-
-interface User {
-  id: string;
-  clearanceLevel: number;
-  role: string;
-}
-
-export function createLegalCaseStore() {
+// TODO: Fix import - // Orphaned content: import { LegalAuditService  interface User {   id: string;   clearanceLevel: number;   role: string; }  export function createLegalCaseStore() {
   // State using Svelte 5 runes
   const cases = $state<LegalCase[]>([]);
   const selectedCase = $state<LegalCase | null>(null);

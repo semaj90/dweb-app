@@ -5,7 +5,7 @@ https://svelte.dev/e/store_invalid_scoped_subscription -->
 
   import { onMount } from 'svelte';
   import { useMachine } from '@xstate/svelte';
-  import { Accordion } from '@melt-ui/svelte';
+  import { Accordion } from 'melt';
   import { 
     legalFormMachine, 
     getStateDescription, 

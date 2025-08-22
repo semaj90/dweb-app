@@ -1,6 +1,6 @@
 import type MagicString from 'magic-string'
 
-interface Theme { [key: string]: any }
+interface Theme { [key: string]: unknown }
 
 export const themeRE = /theme\((.+?)\)/g
 

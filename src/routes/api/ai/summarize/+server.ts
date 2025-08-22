@@ -1,6 +1,6 @@
 // DISABLED: legacy summarization endpoint superseded by sveltekit-frontend/api/ai/summarize/+server.js
 // File kept for reference. To re-enable, move its logic into the current endpoint and delete this file.
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { langchain } from "$lib/ai/langchain.js";
@@ -90,7 +90,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     }
 
-    let result: any = {};
+    let result: unknown = {};
 
     switch (type) {
       case "summary":
@@ -171,7 +171,7 @@ export const POST: RequestHandler = async ({ request }) => {
         options,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Summarization error:", error);
 
     return json(
@@ -188,13 +188,13 @@ export const POST: RequestHandler = async ({ request }) => {
   }
 };
 
-async function performSummarization(content: string, options: any) {
+async function performSummarization(content: string, options: unknown) {
   const summary = await langchain.summarizeDocument(content, {
     type: content.length > 4000 ? "map_reduce" : "stuff",
     maxTokens: options.maxTokens,
   });
 
-  const result: any = {
+  const result: unknown = {
     summary,
     wordCount: content.split(/\s+/).length,
     characterCount: content.length,
@@ -323,7 +323,7 @@ async function performDocumentComparison(content1: string, content2: string) {
 function generateCacheKey(
   content: string,
   type: string,
-  options: any,
+  options: unknown,
   customPrompt?: string,
   comparisonContent?: string,
   extractionTemplate?: string
@@ -387,7 +387,7 @@ export const GET: RequestHandler = async ({ url }) => {
       summary,
       wordCount: text.split(/\s+/).length,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("GET summarization error:", error);
 
     return json(

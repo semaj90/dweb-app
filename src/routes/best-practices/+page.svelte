@@ -2,10 +2,10 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   
-  let report: any = null;
+  let report: unknown = null;
   let loading = false;
   let error = '';
-  let storedReports: any[] = [];
+  let storedReports: unknown[] = [];
   
   async function generateBestPractices() {
     loading = true;

@@ -40,11 +40,11 @@ test.describe('Development Environment Tests', () => {
     });
 
     let output = '';
-    statusProcess.stdout.on('data', (data: any) => {
+    statusProcess.stdout.on('data', (data: unknown) => {
       output += data.toString();
     });
 
-    await new Promise((resolve: any) => {
+    await new Promise((resolve: unknown) => {
       statusProcess.on('close', resolve);
     });
 

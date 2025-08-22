@@ -20,7 +20,7 @@ export interface ContextRankerConfig {
 export interface RankedContext {
   content: string;
   similarity: number;
-  metadata?: any;
+  metadata?: unknown;
   source?: string;
 }
 

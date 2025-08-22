@@ -21,7 +21,7 @@ export interface Neo4jPath {
 
 export interface Neo4jQueryResult<T = any> {
     records: T[];
-    summary?: any;
+    summary?: unknown;
     paths?: Neo4jPath[];
 }
 
@@ -31,7 +31,7 @@ export interface CaseNode extends Neo4jNode {
         caseId: string;
         title: string;
         embedding?: number[];
-        [key: string]: any;
+        [key: string]: unknown;
     };
 }
 
@@ -39,7 +39,7 @@ export interface EvidenceNode extends Neo4jNode {
     properties: {
         evidenceId: string;
         description: string;
-        [key: string]: any;
+        [key: string]: unknown;
     };
 }
 
@@ -47,6 +47,6 @@ export interface PrecedentNode extends Neo4jNode {
     properties: {
         precedentId: string;
         citation: string;
-        [key: string]: any;
+        [key: string]: unknown;
     };
 }

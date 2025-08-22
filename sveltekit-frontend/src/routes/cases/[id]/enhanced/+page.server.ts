@@ -1,10 +1,8 @@
+import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-
+import { db } from "$lib/server/db/index";
 import { cases, evidence } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
-
 import { eq } from "drizzle-orm";
-// Orphaned content: import {
 
 export const load: PageServerLoad = async ({ params }) => {
   const caseId = params.id;

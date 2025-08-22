@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-
-  // Remove Svelte 5 syntax for compatibility
+  import Button from '$lib/components/ui/Button.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
 
   let systemInfo = {
     uptime: '6 hours, 23 minutes',
@@ -9,9 +9,65 @@
     lastSync: '2 minutes ago'
   };
 
+  let showAuth = false;
+  let isLogin = true;
+  let email = '';
+  let password = '';
+  let firstName = '';
+  let lastName = '';
+  let loading = false;
+  let message = '';
+  let error = '';
+
   onMount(() => {
     console.log('YoRHa Legal AI Platform loaded');
   });
+
+  async function handleAuth(event) {
+    event.preventDefault();
+    if (!email || !password) {
+      error = 'Email and password are required';
+      return;
+    }
+
+    loading = true;
+    error = '';
+    message = '';
+
+    try {
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const body = isLogin 
+        ? { email, password }
+        : { email, password, firstName, lastName };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        message = result.message;
+        if (!isLogin) {
+          // Switch to login after successful registration
+          isLogin = true;
+          message = 'Registration successful! You can now login.';
+        } else {
+          // Redirect after successful login
+          window.location.href = '/dashboard';
+        }
+      } else {
+        error = result.error || 'An error occurred';
+      }
+    } catch (err) {
+      error = 'Network error occurred';
+      console.error(err);
+    }
+
+    loading = false;
+  }
 </script>
 
 <svelte:head>
@@ -23,6 +79,103 @@
     <h1>YoRHa Legal AI Platform</h1>
     <p class="subtitle">Advanced evidence processing with AI-powered analysis</p>
   </div>
+  <!-- Authentication Section -->
+  <div class="auth-section" style="text-align: center; margin: 2rem 0;">
+    <Button variant="legal" onclick={() => showAuth = !showAuth}>
+      {showAuth ? 'Hide' : 'Show'} Authentication
+    </Button>
+  </div>
+
+  {#if showAuth}
+    <Card class="max-w-md mx-auto">
+      <h2 class="text-xl font-bold mb-4">{isLogin ? 'Login' : 'Register'}</h2>
+      
+      <form onsubmit={handleAuth} class="space-y-4">
+        <div>
+          <label for="email" class="block text-sm font-medium mb-1">Email</label>
+          <input
+            id="email"
+            type="email"
+            bind:value={email}
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium mb-1">Password</label>
+          <input
+            id="password"
+            type="password"
+            bind:value={password}
+            required
+            minlength="8"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your password"
+          />
+        </div>
+
+        {#if !isLogin}
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="firstName" class="block text-sm font-medium mb-1">First Name</label>
+              <input
+                id="firstName"
+                type="text"
+                bind:value={firstName}
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="First name"
+              />
+            </div>
+            <div>
+              <label for="lastName" class="block text-sm font-medium mb-1">Last Name</label>
+              <input
+                id="lastName"
+                type="text"
+                bind:value={lastName}
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Last name"
+              />
+            </div>
+          </div>
+        {/if}
+
+        {#if error}
+          <div class="text-red-600 text-sm">{error}</div>
+        {/if}
+
+        {#if message}
+          <div class="text-green-600 text-sm">{message}</div>
+        {/if}
+
+        <Button 
+          type="submit" 
+          variant="legal" 
+          class="w-full"
+          {loading}
+          loadingText={isLogin ? 'Signing in...' : 'Creating account...'}
+        >
+          {isLogin ? 'Sign In' : 'Create Account'}
+        </Button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <button
+          type="button"
+          class="text-blue-600 hover:underline text-sm"
+          onclick={() => {
+            isLogin = !isLogin;
+            error = '';
+            message = '';
+          }}
+        >
+          {isLogin ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
+        </button>
+      </div>
+    </Card>
+  {/if}
+
   <!-- Quick access CTA: All Routes -->
   <div class="home-cta" style="text-align:center; margin: 1.5rem 0;">
     <a href="/all-routes" class="primary-cta">📚 View All Routes</a>

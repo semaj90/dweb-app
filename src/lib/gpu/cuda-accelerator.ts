@@ -33,7 +33,7 @@ export type GPUDevice = {
     powerLimit: number;
     temperature: number;
     utilization: { gpu: number; memory: number; encoder: number; decoder: number };
-    processes: any[];
+    processes: unknown[];
     isAvailable: boolean;
     lastActivity: Date;
 };
@@ -41,8 +41,8 @@ export type GPUDevice = {
 export type GPUWorkload = {
     type: string;
     memoryRequirement: number;
-    inputData: any;
-    parameters?: any;
+    inputData: unknown;
+    parameters?: unknown;
     priority?: 'low' | 'normal' | 'high' | 'urgent';
     estimatedDuration?: number;
 };
@@ -58,7 +58,7 @@ export type GPUMemoryStats = {
     poolMemory: number;
     cacheMemory: number;
     peakUsage: number;
-    allocations: any[];
+    allocations: unknown[];
     fragmentationRatio: number;
     allocationCount: number;
     deallocationCount: number;
@@ -81,9 +81,9 @@ export type BatchProcessingJob = {
     id: string;
     type: string;
     deviceId: number;
-    memoryAllocation: any;
-    inputData: any;
-    parameters?: any;
+    memoryAllocation: unknown;
+    inputData: unknown;
+    parameters?: unknown;
     priority: string;
     estimatedDuration: number;
     createdAt: Date;
@@ -127,7 +127,7 @@ export interface GPUWorkloadQueue {
     memoryRequirement: number;
     preferredDevice?: number;
     dependencies?: string[];
-    callback?: (result: any) => void;
+    callback?: (result: unknown) => void;
 }
 
 export class CUDAAccelerator extends EventEmitter {
@@ -433,7 +433,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Execute batch processing with optimal GPU utilization
      */
-    async executeBatch(workloads: GPUWorkload[]): Promise<any[]> {
+    async executeBatch(workloads: GPUWorkload[]): Promise<unknown[]> {
         if (!this.isInitialized) {
             throw new Error('CUDA accelerator not initialized');
         }
@@ -951,7 +951,7 @@ export class CUDAAccelerator extends EventEmitter {
         }, {} as Record<string, GPUWorkload[]>);
     }
 
-    private async executeBatchSingleGPU(type: string, workloads: GPUWorkload[]): Promise<any[]> {
+    private async executeBatchSingleGPU(type: string, workloads: GPUWorkload[]): Promise<unknown[]> {
         const results = [];
         for (const workload of workloads) {
             const result = await this.executeWorkload(workload);
@@ -960,7 +960,7 @@ export class CUDAAccelerator extends EventEmitter {
         return results;
     }
 
-    private async executeBatchMultiGPU(type: string, workloads: GPUWorkload[]): Promise<any[]> {
+    private async executeBatchMultiGPU(type: string, workloads: GPUWorkload[]): Promise<unknown[]> {
         // Distribute workloads across multiple GPUs
         const chunkSize = Math.ceil(workloads.length / this.devices.size);
         const chunks = [];
@@ -976,7 +976,7 @@ export class CUDAAccelerator extends EventEmitter {
         return results.flat();
     }
 
-    private simulateGEMM(matrixA: any, matrixB: any, alpha: number, beta: number): any {
+    private simulateGEMM(matrixA: unknown, matrixB: unknown, alpha: number, beta: number): unknown {
         // Simulate GEMM operation
         return {
             rows: matrixA.rows,
@@ -985,22 +985,22 @@ export class CUDAAccelerator extends EventEmitter {
         };
     }
 
-    private async executeLinearLayer(input: any, layer: any): Promise<any> {
+    private async executeLinearLayer(input: unknown, layer: unknown): Promise<any> {
         // Simulate linear layer computation
         return input.map(x => x * layer.weight + layer.bias);
     }
 
-    private async executeConvolutionLayer(input: any, layer: any): Promise<any> {
+    private async executeConvolutionLayer(input: unknown, layer: unknown): Promise<any> {
         // Simulate convolution layer
         return input;
     }
 
-    private async executeAttentionLayer(input: any, layer: any): Promise<any> {
+    private async executeAttentionLayer(input: unknown, layer: unknown): Promise<any> {
         // Simulate attention layer
         return input;
     }
 
-    private async executeActivationLayer(input: any, activation: string): Promise<any> {
+    private async executeActivationLayer(input: unknown, activation: string): Promise<any> {
         switch (activation) {
             case 'relu':
                 return input.map(x => Math.max(0, x));
@@ -1053,7 +1053,7 @@ export class CUDAAccelerator extends EventEmitter {
         return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
     }
 
-    private getDeviceMetrics(deviceId: number): any {
+    private getDeviceMetrics(deviceId: number): unknown {
         return this.performanceMetrics
             .filter(m => m.deviceId === deviceId)
             .slice(-10); // Last 10 metrics
@@ -1062,7 +1062,7 @@ export class CUDAAccelerator extends EventEmitter {
     /**
      * Get system status
      */
-    getStatus(): any {
+    getStatus(): unknown {
         return {
             initialized: this.isInitialized,
             deviceCount: this.devices.size,
@@ -1216,7 +1216,7 @@ class GPUMemoryManager {
  */
 class GPUProfiler {
     private config: CUDAAcceleratorConfig;
-    private profileData: any[] = [];
+    private profileData: unknown[] = [];
 
     constructor(config: CUDAAcceleratorConfig) {
         this.config = config;
@@ -1228,7 +1228,7 @@ class GPUProfiler {
         }
     }
 
-    async recordExecution(job: BatchProcessingJob, executionTime: number, result: any): Promise<void> {
+    async recordExecution(job: BatchProcessingJob, executionTime: number, result: unknown): Promise<void> {
         if (!this.config.enableProfiling) return;
 
         const profile = {
@@ -1249,7 +1249,7 @@ class GPUProfiler {
         }
     }
 
-    getProfileData(): any[] {
+    getProfileData(): unknown[] {
         return this.profileData;
     }
 }

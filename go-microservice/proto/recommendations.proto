@@ -1,0 +1,98 @@
+syntax = "proto3";
+package recsys.v1;
+option go_package = "github.com/deeds/recsys/gen;recsysv1";
+
+// Legal AI Recommendations Service - integrates with existing YoRHa architecture
+service Recommend {
+  // Friend-of-a-friend recommendations for legal professionals
+  rpc FOAF(FOAFRequest) returns (FOAFResponse) {}
+  
+  // "Did you mean?" suggestions with legal context
+  rpc Suggest(SuggestRequest) returns (SuggestResponse) {}
+  
+  // Legal document summarization with LangChain + Legal-BERT
+  rpc Summarize(SummarizeRequest) returns (SummarizeResponse) {}
+  
+  // Health check for service monitoring
+  rpc Health(HealthRequest) returns (HealthResponse) {}
+}
+
+message FOAFRequest {
+  string person_id = 1;        // UUID from existing Postgres schema
+  uint32 max_depth = 2;        // typically 2 for friend-of-a-friend
+  uint32 limit = 3;            // max recommendations to return
+  string case_context = 4;     // optional case ID for context-aware suggestions
+  repeated string exclude_ids = 5; // exclude already connected people
+}
+
+message Person {
+  string id = 1;               // UUID matching Postgres users table
+  string name = 2;
+  string handle = 3;
+  string role = 4;             // attorney, paralegal, investigator
+  string specialization = 5;   // legal specialty
+  double confidence = 6;       // recommendation confidence score
+  string relationship_path = 7; // e.g., "Alice -> Bob -> Carol"
+}
+
+message FOAFResponse {
+  repeated Person people = 1;
+  string summary = 2;          // LangChain-generated explanation
+  uint32 total_found = 3;
+  double processing_time_ms = 4;
+}
+
+message SuggestRequest {
+  string query = 1;            // raw user input
+  uint32 limit = 2;            // default 5-10
+  string context_type = 3;     // CASE | DOCUMENT | PERSON | EVIDENCE
+  string user_id = 4;          // for personalized suggestions
+  repeated string recent_queries = 5; // query history for better suggestions
+}
+
+message Suggestion {
+  string label = 1;            // display text
+  string entity_id = 2;        // ID to navigate to
+  string type = 3;             // PERSON | DOCUMENT | CASE | EVIDENCE | TAG
+  double score = 4;            // 0..1 relevance score
+  string description = 5;      // brief explanation why suggested
+  string icon = 6;             // UI icon hint
+  repeated string tags = 7;    // associated tags for filtering
+}
+
+message SuggestResponse {
+  repeated Suggestion suggestions = 1;
+  string corrected_query = 2;  // spell-corrected input
+  string explanation = 3;      // why these suggestions were chosen
+  double processing_time_ms = 4;
+}
+
+message SummarizeRequest {
+  string text = 1;             // document text to summarize
+  string context = 2;          // legal context (contract, case, evidence)
+  string style = 3;            // brief, detailed, technical
+  uint32 max_tokens = 4;       // summary length limit
+}
+
+message SummarizeResponse {
+  string summary = 1;          // generated summary
+  repeated string key_points = 2; // bullet points
+  double confidence = 3;       // summarization confidence
+  string model = 4;            // model used (legal-bert, gemma3-legal)
+  double processing_time_ms = 5;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string status = 1;           // healthy, degraded, unhealthy
+  repeated ServiceStatus services = 2;
+  double uptime_seconds = 3;
+}
+
+message ServiceStatus {
+  string name = 1;             // memgraph, redis, postgres
+  string status = 2;           // up, down, connecting
+  string version = 3;
+  double response_time_ms = 4;
+}

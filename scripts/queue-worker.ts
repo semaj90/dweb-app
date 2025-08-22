@@ -190,7 +190,7 @@ async function processVectorQueue() {
 
 // Helper functions
 
-async function sendWelcomeEmail(data: any) {
+async function sendWelcomeEmail(data: unknown) {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -243,7 +243,7 @@ async function sendWelcomeEmail(data: any) {
   console.log(`Welcome email sent to ${data.to}`);
 }
 
-async function sendPasswordResetEmail(data: any) {
+async function sendPasswordResetEmail(data: unknown) {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -297,12 +297,12 @@ async function sendPasswordResetEmail(data: any) {
   console.log(`Password reset email sent to ${data.to}`);
 }
 
-async function sendAchievementEmail(data: any) {
+async function sendAchievementEmail(data: unknown) {
   // Implementation for achievement unlock emails
   console.log('Sending achievement email:', data);
 }
 
-async function sendMissionCompleteEmail(data: any) {
+async function sendMissionCompleteEmail(data: unknown) {
   // Implementation for mission completion emails
   console.log('Sending mission complete email:', data);
 }
@@ -608,7 +608,7 @@ async function abandonMission(userId: string, missionId: string) {
     ));
 }
 
-async function updateMissionProgress(userId: string, missionId: string, progress: any) {
+async function updateMissionProgress(userId: string, missionId: string, progress: unknown) {
   await db.update(userMissions)
     .set({ progress })
     .where(and(

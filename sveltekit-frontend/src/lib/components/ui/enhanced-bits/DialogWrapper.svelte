@@ -2,7 +2,7 @@
 <script lang="ts">
   import { $props, $effect } from 'svelte';
 
-  import { createDialog } from '@melt-ui/svelte';
+  import { createDialog } from 'melt';
 
   interface Props {
     open?: boolean;

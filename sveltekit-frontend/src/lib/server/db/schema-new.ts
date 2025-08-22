@@ -11,9 +11,7 @@ import {
   serial,
   uuid,
 } from "drizzle-orm/pg-core";
-// Orphaned content: import { relations
-
-// === AUTHENTICATION & USER MANAGEMENT ===
+// TODO: Fix import - // Orphaned content: import { relations  // === AUTHENTICATION & USER MANAGEMENT ===
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),

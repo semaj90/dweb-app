@@ -40,7 +40,7 @@ export interface Document {
     source?: string;
     created_at?: Date;
     tags?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
   embedding?: number[];
 }

@@ -11,9 +11,7 @@ import {
   type Writable,
   type Readable,
 } from "svelte/store";
-// Orphaned content: import { vscodeCache
-
-// Base interfaces for the barrel pattern
+// TODO: Fix import - // Orphaned content: import { vscodeCache  // Base interfaces for the barrel pattern
 export interface StoreMetadata {
   id: string;
   version: string;

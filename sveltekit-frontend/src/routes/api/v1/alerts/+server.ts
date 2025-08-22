@@ -1,8 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { URL } from "url";
 import type { RequestHandler } from "@sveltejs/kit";
-getAlertHistory, buildBaseline, diffBaselines
-
+import { getAlertHistory, buildBaseline, diffBaselines } from "drizzle-orm";
 let lastBaseline: any = null;
 
 export const GET: RequestHandler = async ({ url }) => {

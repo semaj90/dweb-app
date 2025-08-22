@@ -10,7 +10,7 @@ interface RAGContext {
   userId?: string;
   conversationId?: string;
   previousMessages?: Array<{ role: string; content: string }>;
-  filters?: any;
+  filters?: unknown;
   maxTokens?: number;
 }
 
@@ -23,7 +23,7 @@ interface RAGResponse {
     score: number;
   }>;
   confidence: number;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 export class EnhancedRAGService {
@@ -82,7 +82,7 @@ export class EnhancedRAGService {
   }
 
   // Retrieve relevant documents using hybrid search
-  private async retrieve(context: RAGContext): Promise<any[]> {
+  private async retrieve(context: RAGContext): Promise<unknown[]> {
     try {
       // Perform hybrid search
       const searchResults = await this.vectorService.hybridSearch(context.query, {
@@ -119,7 +119,7 @@ export class EnhancedRAGService {
   }
 
   // Build augmented context for generation
-  private async buildContext(context: RAGContext, retrievedChunks: any[]): Promise<string> {
+  private async buildContext(context: RAGContext, retrievedChunks: unknown[]): Promise<string> {
     let augmentedContext = '';
 
     // Add system prompt if configured
@@ -195,8 +195,8 @@ export class EnhancedRAGService {
 
   // Post-process the generated response
   private async postProcess(
-    response: any,
-    retrievedChunks: any[]
+    response: unknown,
+    retrievedChunks: unknown[]
   ): Promise<RAGResponse> {
     // Extract sources from retrieved chunks
     const sources = retrievedChunks.map(chunk => ({
@@ -263,7 +263,7 @@ export class EnhancedRAGService {
   private async searchConversationHistory(
     conversationId: string,
     query: string
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     try {
       const results = await this.vectorService.semanticSearch(
         query,
@@ -280,7 +280,7 @@ export class EnhancedRAGService {
 
       return results.map(r => ({
         ...r,
-        content: r.payload.messages.map((m: any) => m.content).join('\n'),
+        content: r.payload.messages.map((m: unknown) => m.content).join('\n'),
         title: 'Previous Conversation',
         score: r.score * 0.8 // Slightly lower weight for conversation history
       }));
@@ -291,7 +291,7 @@ export class EnhancedRAGService {
   }
 
   // Rank results based on multiple factors
-  private rankResults(results: any[], context: RAGContext): any[] {
+  private rankResults(results: unknown[], context: RAGContext): unknown[] {
     return results.sort((a, b) => {
       // Calculate composite score
       const scoreA = this.calculateCompositeScore(a, context);
@@ -301,7 +301,7 @@ export class EnhancedRAGService {
   }
 
   // Calculate composite score for ranking
-  private calculateCompositeScore(result: any, context: RAGContext): number {
+  private calculateCompositeScore(result: unknown, context: RAGContext): number {
     let score = result.score || 0;
 
     // Boost recent documents
@@ -326,7 +326,7 @@ export class EnhancedRAGService {
   }
 
   // Enrich chunks with document metadata
-  private async enrichChunksWithDocuments(chunks: any[]): Promise<any[]> {
+  private async enrichChunksWithDocuments(chunks: unknown[]): Promise<unknown[]> {
     const enriched = [];
 
     for (const chunk of chunks) {
@@ -400,7 +400,7 @@ export class EnhancedRAGService {
     title: string,
     content: string,
     source: string,
-    metadata: any = {}
+    metadata: unknown = {}
   ): Promise<string> {
     try {
       const documentId = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -436,7 +436,7 @@ export class EnhancedRAGService {
   async updateDocument(
     documentId: string,
     content: string,
-    metadata: any = {}
+    metadata: unknown = {}
   ): Promise<void> {
     try {
       // Delete old chunks
@@ -488,8 +488,8 @@ export class EnhancedRAGService {
       source?: string;
       userId?: string;
     } = {}
-  ): Promise<any[]> {
-    const filters: any = {};
+  ): Promise<unknown[]> {
+    const filters: unknown = {};
     
     if (options.source) {
       filters.must = filters.must || [];

@@ -11,7 +11,7 @@
 
 
 
-  import { melt } from "@melt-ui/svelte";
+  import { melt } from "melt";
   
     
     const contextMenu = (getContext("contextMenu") as any) || {

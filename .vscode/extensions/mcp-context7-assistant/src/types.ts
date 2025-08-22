@@ -112,7 +112,7 @@ export interface StatusBarState {
 
 export interface MCPToolResult {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   executionTime?: number;
 }

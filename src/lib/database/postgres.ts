@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
@@ -293,7 +293,7 @@ export class LegalDatabaseManager {
     entityCount: number;
     cacheHitRate: number;
     avgQueryTime: number;
-    vectorIndexStats: any;
+    vectorIndexStats: unknown;
   }> {
     try {
       const [documentCount] = await sql`SELECT COUNT(*) as count FROM legal_documents`;

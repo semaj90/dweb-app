@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   try {
     const rows = await db.select().from(pipeline_logs).orderBy(desc(pipeline_logs.id)).limit(limit);
     return new Response(JSON.stringify({ ok: true, count: rows.length, rows }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (e: any) {
+  } catch (e: unknown) {
     return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }

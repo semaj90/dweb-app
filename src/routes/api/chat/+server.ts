@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // API route for AI chat interactions
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
     
     let response: string;
-    let sources: any[] = [];
+    let sources: unknown[] = [];
     
     if (useRAG) {
       // Use RAG with vector search
@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
       });
       
       response = result.text;
-      sources = result.sourceDocuments?.map((doc: any) => ({
+      sources = result.sourceDocuments?.map((doc: unknown) => ({
         content: doc.pageContent.substring(0, 200) + '...',
         metadata: doc.metadata
       })) || [];
@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request }) => {
       timestamp: new Date()
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Chat API error:', error);
     return json({ 
       error: 'Failed to generate response' 
@@ -81,7 +81,7 @@ export const GET: RequestHandler = async ({ url }) => {
     
     return json({ history });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Chat history error:', error);
     return json({ 
       error: 'Failed to fetch chat history' 

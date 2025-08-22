@@ -187,7 +187,7 @@ async function getCacheValue(key: string | null) {
     }
 }
 
-async function setCacheValue(data: any) {
+async function setCacheValue(data: unknown) {
     const { key, value, options = {} } = data;
     
     if (!key || value === undefined) {
@@ -249,7 +249,7 @@ async function deleteCacheKey(key: string) {
  * Cache System Management
  */
 
-async function startCacheSystem(config: any) {
+async function startCacheSystem(config: unknown) {
     try {
         await advancedCacheManager.start();
         
@@ -480,7 +480,7 @@ function getColdKeys() {
  * Cache Operations
  */
 
-async function optimizeCache(optimizationData: any) {
+async function optimizeCache(optimizationData: unknown) {
     const { strategy = 'auto', target = 'performance' } = optimizationData;
     
     try {
@@ -515,7 +515,7 @@ async function optimizeCache(optimizationData: any) {
     }
 }
 
-async function warmCache(warmingData: any) {
+async function warmCache(warmingData: unknown) {
     const { keys = [], strategy = 'predictive' } = warmingData;
     
     try {
@@ -544,7 +544,7 @@ async function warmCache(warmingData: any) {
     }
 }
 
-async function preloadCache(preloadData: any) {
+async function preloadCache(preloadData: unknown) {
     const { patterns = [], priority = 'medium' } = preloadData;
     
     try {
@@ -570,7 +570,7 @@ async function preloadCache(preloadData: any) {
     }
 }
 
-async function analyzeCache(analysisData: any) {
+async function analyzeCache(analysisData: unknown) {
     const { timeWindow = '1h', includePredictions = true } = analysisData;
     
     try {
@@ -612,7 +612,7 @@ async function analyzeCache(analysisData: any) {
     }
 }
 
-async function predictCacheNeeds(predictionData: any) {
+async function predictCacheNeeds(predictionData: unknown) {
     const { horizon = '1h', confidence = 0.8 } = predictionData;
     
     try {
@@ -649,7 +649,7 @@ async function predictCacheNeeds(predictionData: any) {
     }
 }
 
-async function testCachePerformance(testData: any) {
+async function testCachePerformance(testData: unknown) {
     const { operations = 1000, concurrency = 10, testType = 'mixed' } = testData;
     
     try {
@@ -695,7 +695,7 @@ async function testCachePerformance(testData: any) {
  * Configuration Management
  */
 
-async function configureLayer(layerData: any) {
+async function configureLayer(layerData: unknown) {
     const { layerName, config } = layerData;
     
     if (!layerName || !config) {
@@ -728,7 +728,7 @@ async function configureLayer(layerData: any) {
     }
 }
 
-async function updateCacheConfiguration(config: any) {
+async function updateCacheConfiguration(config: unknown) {
     console.log('🔧 Updating cache configuration:', config);
     
     return json({
@@ -740,7 +740,7 @@ async function updateCacheConfiguration(config: any) {
     });
 }
 
-async function updateCacheStrategy(strategy: any) {
+async function updateCacheStrategy(strategy: unknown) {
     console.log('📊 Updating cache strategy:', strategy);
     
     return json({
@@ -751,7 +751,7 @@ async function updateCacheStrategy(strategy: any) {
     });
 }
 
-async function updateCachePolicy(policy: any) {
+async function updateCachePolicy(policy: unknown) {
     console.log('📋 Updating cache policy:', policy);
     
     return json({

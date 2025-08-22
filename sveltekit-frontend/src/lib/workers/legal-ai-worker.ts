@@ -5,12 +5,8 @@
  */
 
 import { Worker, type Job } from "bullmq";
-// Orphaned content: import {
-
-import { evidence } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
-
-// Configuration
+// TODO: Fix import - // Orphaned content: import {  import { evidence } from "$lib/server/db/schema-postgres";
+// TODO: Fix import - // Orphaned content: import {  // Configuration
 const GO_SERVER_URL = import.meta.env.GO_SERVER_URL || 'http://localhost:8080';
 const REDIS_URL = import.meta.env.REDIS_URL || 'redis://localhost:6379';
 

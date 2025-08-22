@@ -6,8 +6,7 @@ import { eq, sql, desc  } from "drizzle-orm";
 import { json, type RequestHandler } from "@sveltejs/kit";
 databaseOrchestrator // alias exported in orchestrator stub
 import { db } from "$lib/server/db/drizzle";
-cases, evidence, legalDocuments, personsOfInterest
-
+import { cases, evidence, legalDocuments, personsOfInterest } from "drizzle-orm";
 // GET /api/database-orchestrator - Get orchestrator status
 export const GET: RequestHandler = async () => {
   try {

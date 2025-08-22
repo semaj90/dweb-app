@@ -218,7 +218,7 @@ export class RabbitMQService {
   async publish(
     exchange: string,
     routingKey: string,
-    message: any,
+    message: unknown,
     options: MessageOptions = {}
   ): Promise<boolean> {
     if (!this.channel) throw new Error('Channel not initialized');
@@ -241,7 +241,7 @@ export class RabbitMQService {
    */
   async sendToQueue(
     queueName: string,
-    message: any,
+    message: unknown,
     options: MessageOptions = {}
   ): Promise<boolean> {
     if (!this.channel) throw new Error('Channel not initialized');
@@ -377,7 +377,7 @@ export class RabbitMQService {
    */
   async broadcastUpdate(
     type: 'document_processed' | 'analysis_complete' | 'search_result',
-    data: any,
+    data: unknown,
     userId?: string
   ): Promise<void> {
     const routingKey = userId ? `update.${type}.${userId}` : `update.${type}`;

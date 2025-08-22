@@ -15,7 +15,7 @@ https://svelte.dev/e/js_parse_error -->
 
 
 
-  import { createDialog } from '@melt-ui/svelte';
+  import { createDialog } from 'melt';
   import { writable } from 'svelte/store';
 
 

@@ -19,7 +19,7 @@ export interface ExtensionMemoryMetrics {
 
 export interface CommandExecutionContext {
   commandId: string;
-  args: any[];
+  args: unknown[];
   timestamp: number;
   memoryBefore: number;
   memoryAfter: number;
@@ -30,7 +30,7 @@ export interface CommandExecutionContext {
 
 export interface MLModelCache {
   modelId: string;
-  data: any;
+  data: unknown;
   embeddings: number[];
   lastAccessed: number;
   frequency: number;
@@ -121,7 +121,7 @@ export class EnhancedMCPExtensionMemoryManager {
    */
   async trackCommandExecution(
     commandId: string,
-    args: any[],
+    args: unknown[],
     executor: () => Promise<any>
   ): Promise<any> {
     const startTime = Date.now();
@@ -194,7 +194,7 @@ export class EnhancedMCPExtensionMemoryManager {
    */
   async cacheMLModel(
     modelId: string,
-    data: any,
+    data: unknown,
     embeddings: number[] = []
   ): Promise<void> {
     const size = JSON.stringify(data).length;
@@ -240,7 +240,7 @@ export class EnhancedMCPExtensionMemoryManager {
   /**
    * Retrieve cached model with access tracking
    */
-  getCachedMLModel(modelId: string): any | null {
+  getCachedMLModel(modelId: string): unknown | null {
     const model = this.modelCache.get(modelId);
 
     if (model) {
@@ -556,7 +556,7 @@ export class EnhancedMCPExtensionMemoryManager {
    */
   private generateMemoryStatusHTML(
     metrics: ExtensionMemoryMetrics,
-    optimizerStatus: any
+    optimizerStatus: unknown
   ): string {
     return `
       <!DOCTYPE html>
@@ -605,7 +605,7 @@ export class EnhancedMCPExtensionMemoryManager {
           <h3>Memory Pools</h3>
           ${optimizerStatus.pools
             .map(
-              (pool: any) => `
+              (pool: unknown) => `
             <div class="cluster">
               <strong>${pool.id}</strong>: ${pool.usage} (${pool.percentage.toFixed(1)}%) - ${pool.items} items
             </div>
@@ -618,7 +618,7 @@ export class EnhancedMCPExtensionMemoryManager {
           <h3>Command Clusters</h3>
           ${Array.from(this.commandClusters.values())
             .map(
-              (cluster: any) => `
+              (cluster: unknown) => `
             <div class="cluster">
               <strong>${cluster.id}</strong>: ${cluster.size} commands, Cohesion: ${(cluster.cohesion * 100).toFixed(1)}%
             </div>
@@ -708,7 +708,7 @@ export class EnhancedMCPExtensionMemoryManager {
         size: cluster.size,
         cohesion: cluster.cohesion,
         memoryUsage: cluster.memoryUsage,
-        commands: cluster.commands?.map((cmd: any) => cmd.commandId) || [],
+        commands: cluster.commands?.map((cmd: unknown) => cmd.commandId) || [],
       })
     );
 

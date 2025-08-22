@@ -15,6 +15,6 @@ export function uniqueBy<T>(array: readonly T[], equalFn: (a: T, b: T) => boolea
   }, [])
 }
 
-export function isString(s: any): s is string {
+export function isString(s: unknown): s is string {
   return typeof s === 'string'
 }

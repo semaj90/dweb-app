@@ -19,12 +19,12 @@ export {};
     Activity,
     Gamepad2
   } from 'lucide-svelte';
-
-  import { onMount } from 'svelte';
+  import { onMount, SvelteComponent } from 'svelte';
   import { writable } from 'svelte/store';
+  import { state } from 'svelte/reactivity';
 
   // Production-ready state management with real API integration
-  let systemData = $state({
+  let systemData = state({
     activeCases: 0,
     evidenceItems: 0,
     aiQueries: 0,
@@ -34,9 +34,9 @@ export {};
     networkLatency: 0
   });
 
-  let loading = $state(false);
-  let error = $state<string | null>(null);
-  let lastUpdated = $state<Date>(new Date());
+  let loading = state(false);
+  let error = state<string | null>(null);
+  let lastUpdated = state<Date>(new Date());
 
   // (Removed metricsStore to avoid stale capture; can reintroduce if reactive subscriptions needed)
 

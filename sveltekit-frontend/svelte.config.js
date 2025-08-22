@@ -4,13 +4,7 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   // Context7 MCP Performance Optimization - Svelte 5 + TypeScript support
-  preprocess: vitePreprocess({
-    // Enable script preprocessing for Svelte 5 + TypeScript complex syntax
-    script: true,
-    // Enable style and markup preprocessing
-    style: true,
-    markup: true
-  }),
+  preprocess: vitePreprocess(),
 
   // Optimize compiler options for performance
   compilerOptions: {

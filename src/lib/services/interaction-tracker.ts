@@ -341,7 +341,7 @@ class InteractionTrackerService {
     return predictions;
   }
 
-  private updateUserContext(eventType: string, data: any) {
+  private updateUserContext(eventType: string, data: unknown) {
     this.userContext.update(ctx => {
       const newCtx = { ...ctx };
       

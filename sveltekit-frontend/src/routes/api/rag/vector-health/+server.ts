@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-db, documents, embeddings
+import { db, documents, embeddings } from "drizzle-orm";
 import { sql } from 'drizzle-orm';
 
 export const GET = async () => {

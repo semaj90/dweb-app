@@ -3,9 +3,7 @@
 // Manages local model paths and configurations for the legal AI assistant
 
 import { existsSync } from "fs";
-// Orphaned content: import {
-
-// Base paths for local LLM installations (relative to project root)
+// TODO: Fix import - // Orphaned content: import {  // Base paths for local LLM installations (relative to project root)
 const projectRoot = process.cwd().includes("sveltekit-frontend")
   ? join(process.cwd(), "..", "..") // If running from sveltekit-frontend
   : process.cwd().includes("web-app")

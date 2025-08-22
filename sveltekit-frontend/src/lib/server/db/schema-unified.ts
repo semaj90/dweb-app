@@ -32,9 +32,46 @@ export const users = pgTable('users', {
   passwordHash: varchar('password_hash', { length: 255 }),
   role: varchar('role', { length: 50 }).default('user').notNull(),
   displayName: varchar('display_name', { length: 255 }),
+  firstName: varchar('first_name', { length: 255 }),
+  lastName: varchar('last_name', { length: 255 }),
+  
+  // Profile information
+  bio: text('bio'),
+  avatarUrl: varchar('avatar_url', { length: 512 }),
+  timezone: varchar('timezone', { length: 100 }).default('UTC'),
+  locale: varchar('locale', { length: 10 }).default('en'),
+  
+  // Authentication fields
+  emailVerified: timestamp('email_verified', { mode: 'date' }),
+  lastLoginAt: timestamp('last_login_at', { mode: 'date' }),
+  loginAttempts: integer('login_attempts').default(0),
+  lockedUntil: timestamp('locked_until', { mode: 'date' }),
+  
+  // Account status
+  isActive: boolean('is_active').default(true),
+  isSuspended: boolean('is_suspended').default(false),
+  
+  // Legal AI specific fields
+  legalSpecialties: jsonb('legal_specialties').default([]).notNull(),
+  preferences: jsonb('preferences').default({}).notNull(),
+  
+  // Vector embeddings for RAG and personalization
+  profileEmbedding: vector('profile_embedding', { dimensions: 384 }),
+  preferenceEmbedding: vector('preference_embedding', { dimensions: 384 }),
+  
+  // Audit fields
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
-});
+}, (table) => ({
+  // Indexes for performance
+  emailIdx: index('users_email_idx').on(table.email),
+  roleIdx: index('users_role_idx').on(table.role),
+  activeIdx: index('users_active_idx').on(table.isActive),
+  createdAtIdx: index('users_created_at_idx').on(table.createdAt),
+  // Vector similarity indexes
+  profileEmbeddingIdx: index('users_profile_embedding_idx').using('hnsw', table.profileEmbedding.op('vector_cosine_ops')),
+  preferenceEmbeddingIdx: index('users_preference_embedding_idx').using('hnsw', table.preferenceEmbedding.op('vector_cosine_ops')),
+}));
 
 // === LUCIA v3 AUTHENTICATION ===
 

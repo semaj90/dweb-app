@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
     const includeAchievements = url.searchParams.get('includeAchievements') === 'true';
     const includeEquipment = url.searchParams.get('includeEquipment') === 'true';
     
-    const response: any = {
+    const response: unknown = {
       success: true,
       data: {
         unit: {
@@ -98,7 +98,7 @@ export const GET: RequestHandler = async ({ cookies, url }) => {
     }
     
     return json(response);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get profile error:', error);
     return json({
       success: false,
@@ -147,7 +147,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
     const validated = updateProfileSchema.parse(body);
     
     // Update user profile
-    const updateData: any = {
+    const updateData: unknown = {
       updatedAt: new Date()
     };
     
@@ -211,7 +211,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
         }
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update profile error:', error);
     
     if (error.name === 'ZodError') {

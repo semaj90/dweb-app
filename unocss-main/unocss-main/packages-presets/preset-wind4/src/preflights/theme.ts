@@ -28,7 +28,7 @@ function getThemeVarsMap(theme: Theme, keys: string[]): Map<string, string> {
 
   const normalizeValue = (value: string) => value.replace(alphaPlaceholdersRE, '1')
 
-  function process(obj: any, prefix: string) {
+  function process(obj: unknown, prefix: string) {
     for (const key in obj) {
       if (Array.isArray(obj[key])) {
         themeMap.set(`--${prefix}-${key}`, normalizeValue(obj[key].join(',')))

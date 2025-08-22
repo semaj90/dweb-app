@@ -17,10 +17,10 @@
       let progress = $state(0);
       let analysisResult = $state<any | null>(null);
       let extractedText = $state('');
-      let documentChunks = $state<any[]>([]);
+      let documentChunks = $state<unknown[]>([]);
       let error = $state<string | null>(null);
 
-      export let onAnalysisComplete: ((result: any) => void) | null = null;
+      export let onAnalysisComplete: ((result: unknown) => void) | null = null;
       export let allowedTypes: string[] = ['.pdf', '.txt', '.docx', '.doc'];
       export let maxSizeMB: number = 10;
 
@@ -75,7 +75,7 @@
           analysisResult = { ...analysis, summary, keyInfo, metadata: { filename: file.name, size: fileSizeMB.toFixed(2) + ' MB', analyzedAt: new Date(), chunks: documentChunks.length } };
           progress = 100;
           onAnalysisComplete?.(analysisResult);
-        } catch (err: any) {
+        } catch (err: unknown) {
           error = err?.message || 'Analysis failed';
           console.error('Document analysis error:', err);
         } finally {

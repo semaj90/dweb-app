@@ -21,7 +21,7 @@ test.describe('Legal AI Integration Tests', () => {
       console.log('Available models:', modelsData?.models?.length || 0);
       
       if (modelsData?.models?.length > 0) {
-        const modelNames = modelsData.models.map((m: any) => m.name);
+        const modelNames = modelsData.models.map((m: unknown) => m.name);
         console.log('Model names:', modelNames);
         expect(modelsData.models.length).toBeGreaterThan(0);
       } else {

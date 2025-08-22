@@ -488,7 +488,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Analyze data characteristics for intelligent caching
      */
-    private analyzeDataCharacteristics(key: string, value?: CacheValue): any {
+    private analyzeDataCharacteristics(key: string, value?: CacheValue): unknown {
         const keyLower = key.toLowerCase();
         const valueSize = value ? JSON.stringify(value).length : 0;
 
@@ -755,7 +755,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Analyze performance and trigger optimizations
      */
-    private analyzePerformance(metrics: any): void {
+    private analyzePerformance(metrics: unknown): void {
         // Low hit rate analysis
         if (metrics.hitRate < 0.8) {
             console.log(`⚠️ Low cache hit rate detected: ${(metrics.hitRate * 100).toFixed(1)}%`);
@@ -824,7 +824,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Identify inefficient patterns
      */
-    private identifyInefficientPatterns(): any[] {
+    private identifyInefficientPatterns(): unknown[] {
         const patterns = [];
         
         // Keys with high miss rates
@@ -844,7 +844,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Generate optimization recommendations
      */
-    private generateOptimizationRecommendations(): any[] {
+    private generateOptimizationRecommendations(): unknown[] {
         const recommendations = [];
 
         // Hit rate recommendations
@@ -889,7 +889,7 @@ export class AdvancedCacheManager extends EventEmitter {
     /**
      * Get comprehensive cache status
      */
-    getStatus(): any {
+    getStatus(): unknown {
         return {
             layers: Array.from(this.layers.keys()),
             metrics: this.metrics,
@@ -984,7 +984,7 @@ class CacheCompressionEngine {
  * Cache Predictive Engine
  */
 class CachePredictiveEngine extends EventEmitter {
-    private accessHistory: Map<string, any[]> = new Map();
+    private accessHistory: Map<string, unknown[]> = new Map();
 
     constructor(private config: CacheConfiguration) {
         super();
@@ -1020,7 +1020,7 @@ class CachePredictiveEngine extends EventEmitter {
         // Implement predictive preloading logic
     }
 
-    private findMostUsedLayer(history: any[]): string {
+    private findMostUsedLayer(history: unknown[]): string {
         const layerCounts = history.reduce((counts, h) => {
             counts[h.layer] = (counts[h.layer] || 0) + 1;
             return counts;
@@ -1039,7 +1039,7 @@ class MemoryCacheLayer implements CacheLayerInterface {
     ttl: number;
     private cache: Map<string, { value: CacheValue; expires: number; accessed: number }> = new Map();
 
-    constructor(config: any) {
+    constructor(config: unknown) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1101,7 +1101,7 @@ class RedisCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: any) {
+    constructor(config: unknown) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1142,7 +1142,7 @@ class PostgresCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: any) {
+    constructor(config: unknown) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1162,7 +1162,7 @@ class VectorCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: any) {
+    constructor(config: unknown) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1182,7 +1182,7 @@ class FileSystemCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: any) {
+    constructor(config: unknown) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1202,7 +1202,7 @@ class CDNCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: any) {
+    constructor(config: unknown) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;
@@ -1222,7 +1222,7 @@ class BrowserCacheLayer implements CacheLayerInterface {
     capacity: number;
     ttl: number;
 
-    constructor(config: any) {
+    constructor(config: unknown) {
         this.priority = config.priority;
         this.capacity = config.capacity;
         this.ttl = config.ttl;

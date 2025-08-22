@@ -1,8 +1,7 @@
 
 // Production query builder fix for Drizzle ORM type safety
 import { eq, and, or, like, desc, sql } from "drizzle-orm";
-// Orphaned content: import {
-
+import { db } from "$lib/server/db";
 import { cases, evidence, reports } from "$lib/server/db/schema-postgres";
 
 // Fixed query builder implementation

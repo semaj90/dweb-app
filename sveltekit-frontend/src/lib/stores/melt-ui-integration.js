@@ -68,7 +68,7 @@ function createBasicButton(options = {}) {
 // Enhanced button creation with fallback
 export async function createEnhancedButton(options = {}) {
   try {
-    const meltUI = await import("@melt-ui/svelte");
+    const meltUI = await import("melt");
     const { createButton } = meltUI;
 
     const button = createButton(options);

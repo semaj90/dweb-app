@@ -9,7 +9,7 @@
 
   // Props interface
   interface Props {
-    onUploadComplete?: (doc: any) => void;
+    onUploadComplete?: (doc: unknown) => void;
     accept?: string;
     maxSize?: number;
     enableOCR?: boolean;
@@ -33,7 +33,7 @@
   let files = $state<File[]>([]);
   let fileStates = $state<Map<string, any>>(new Map());
   let searchQuery = $state('');
-  let searchResults = $state<any[]>([]);
+  let searchResults = $state<unknown[]>([]);
   let isSearching = $state(false);
   let systemStatus = $state<any>({});
 
@@ -189,7 +189,7 @@
         toast.success(`Successfully processed ${result.successfulUploads} of ${result.totalFiles} files`);
 
         // Update file states with results
-        result.results.forEach((fileResult: any) => {
+        result.results.forEach((fileResult: unknown) => {
           const fileId = Array.from(fileStates.keys()).find(
             id => fileStates.get(id)?.name === fileResult.filename
           );
@@ -237,7 +237,7 @@
   }
 
   // Update file state
-  function updateFileState(fileId: string, updates: any) {
+  function updateFileState(fileId: string, updates: unknown) {
     const current = fileStates.get(fileId);
     if (current) {
       fileStates.set(fileId, { ...current, ...updates });

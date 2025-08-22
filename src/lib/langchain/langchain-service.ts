@@ -16,7 +16,7 @@ export interface LangChainServiceConfig {
   enableMemory: boolean;
   enableStreaming: boolean;
   enableEventLogging: boolean;
-  customTools?: any[];
+  customTools?: unknown[];
 }
 
 export interface ConversationSession {
@@ -43,7 +43,7 @@ export interface StreamingResponse {
   executionId: string;
   chunk: string;
   isComplete: boolean;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 /**
@@ -190,7 +190,7 @@ export class LangChainService extends EventEmitter {
     options: {
       chainType?: 'simple' | 'conversation' | 'tool' | 'rag';
       enableTools?: boolean;
-      context?: any;
+      context?: unknown;
     } = {}
   ): Promise<{
     response: string;
@@ -269,7 +269,7 @@ export class LangChainService extends EventEmitter {
     options: {
       chainType?: 'simple' | 'conversation' | 'tool' | 'rag';
       enableTools?: boolean;
-      context?: any;
+      context?: unknown;
     } = {}
   ): AsyncGenerator<StreamingResponse, void, unknown> {
     if (!this.isInitialized || !this.manager) {
@@ -363,7 +363,7 @@ export class LangChainService extends EventEmitter {
   async executeTool(
     toolName: string,
     input: string,
-    options: any = {}
+    options: unknown = {}
   ): Promise<{
     toolName: string;
     input: string;
@@ -422,7 +422,7 @@ export class LangChainService extends EventEmitter {
   async analyzeLegalDocument(
     documentContent: string,
     analysisType: 'summary' | 'precedents' | 'facts' | 'holding' | 'reasoning' = 'summary',
-    context: any = {}
+    context: unknown = {}
   ): Promise<any> {
     const toolInput = JSON.stringify({
       caseText: documentContent,
@@ -439,8 +439,8 @@ export class LangChainService extends EventEmitter {
    */
   async searchLegalDatabase(
     query: string,
-    filters: any = {},
-    options: any = {}
+    filters: unknown = {},
+    options: unknown = {}
   ): Promise<any> {
     const toolInput = JSON.stringify({
       query,
@@ -457,9 +457,9 @@ export class LangChainService extends EventEmitter {
    */
   async generateLegalDocument(
     documentType: string,
-    parties: any,
-    terms: any,
-    options: any = {}
+    parties: unknown,
+    terms: unknown,
+    options: unknown = {}
   ): Promise<any> {
     const toolInput = JSON.stringify({
       documentType,
@@ -511,7 +511,7 @@ export class LangChainService extends EventEmitter {
   /**
    * Get service metrics
    */
-  getMetrics(): any {
+  getMetrics(): unknown {
     if (!this.manager) return null;
     
     const managerMetrics = this.manager.getMetrics();

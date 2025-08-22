@@ -98,7 +98,7 @@ export default createRule({
     }
 
     const templateBodyVisitor: RuleListener = {
-      VAttribute(node: any) {
+      VAttribute(node: unknown) {
         if (node.key.name === 'class') {
           if (node.value.type === 'VLiteral')
             checkLiteral(node.value)

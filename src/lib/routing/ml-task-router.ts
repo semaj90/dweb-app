@@ -36,7 +36,7 @@ export interface TaskRequest {
     id: string;
     type: string;
     priority: 'low' | 'medium' | 'high' | 'urgent';
-    payload: any;
+    payload: unknown;
     metadata: {
         userAgent?: string;
         sessionId?: string;
@@ -887,7 +887,7 @@ export class MLTaskRouter extends EventEmitter {
     /**
      * Handle service scaling events
      */
-    private handleServiceScaling(scalingData: any): void {
+    private handleServiceScaling(scalingData: unknown): void {
         console.log('📈 Handling service scaling:', scalingData);
         
         // Update service capacities based on scaling events
@@ -942,7 +942,7 @@ export class MLTaskRouter extends EventEmitter {
         this.analytics.averageRoutingTime = (this.analytics.averageRoutingTime + routingTime) / 2;
     }
 
-    private async updateTaskMetrics(task: TaskRequest, decision: RoutingDecision, metrics: any): Promise<void> {
+    private async updateTaskMetrics(task: TaskRequest, decision: RoutingDecision, metrics: unknown): Promise<void> {
         const serviceMetrics = this.taskHistory.get(decision.selectedService.id) || [];
         serviceMetrics.push({
             taskId: task.id,
@@ -961,7 +961,7 @@ export class MLTaskRouter extends EventEmitter {
         this.taskHistory.set(decision.selectedService.id, serviceMetrics);
     }
 
-    private async updateRoutingModel(task: TaskRequest, decision: RoutingDecision, outcome: any): Promise<void> {
+    private async updateRoutingModel(task: TaskRequest, decision: RoutingDecision, outcome: unknown): Promise<void> {
         const model = this.routingModels.get(decision.routingMetadata?.modelUsed);
         if (model) {
             model.predictions++;
@@ -970,11 +970,11 @@ export class MLTaskRouter extends EventEmitter {
         }
     }
 
-    private estimateResponseSize(result: any): number {
+    private estimateResponseSize(result: unknown): number {
         return JSON.stringify(result).length;
     }
 
-    private handleCacheMetrics(metrics: any): void {
+    private handleCacheMetrics(metrics: unknown): void {
         // Use cache metrics to inform routing decisions
         this.analytics.cacheHitRate = metrics.hitRate;
     }

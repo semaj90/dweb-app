@@ -73,7 +73,7 @@ test.describe('Global Store and State Management', () => {
     
     // Count should reset
     await page.waitForFunction(
-      selector: unknown => {
+      (selector: string) => {
         const el = document.querySelector(selector);
         return !el || el.textContent === '0' || el.style.display === 'none';
       },

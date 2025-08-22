@@ -2,7 +2,7 @@
   import { $props } from 'svelte';
 
   import { Button } from "$lib/components/ui/button";
-  import { createDialog, melt } from "@melt-ui/svelte";
+  import { createDialog, melt } from "melt";
   import { createEventDispatcher } from "svelte";
   import { writable } from "svelte/store";
   import { superForm } from "sveltekit-superforms";

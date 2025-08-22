@@ -10,7 +10,7 @@ export interface ErrorLog {
   timestamp: Date;
   level: 'error' | 'warning' | 'info' | 'debug';
   message: string;
-  details?: any;
+  details?: unknown;
   stack?: string;
   url?: string;
   userAgent?: string;
@@ -46,8 +46,8 @@ export interface ApiError {
   method: string;
   statusCode: number;
   message: string;
-  requestBody?: any;
-  responseBody?: any;
+  requestBody?: unknown;
+  responseBody?: unknown;
   duration: number;
   userAgent?: string;
   ipAddress?: string;
@@ -399,7 +399,7 @@ class ErrorMonitoringService {
 export const errorMonitoring = new ErrorMonitoringService();
 
 // Utility functions for common error patterns
-export const handleApiError = (error: any, context?: Record<string, any>) => {
+export const handleApiError = (error: unknown, context?: Record<string, any>) => {
   errorMonitoring.logError({
     level: 'error',
     message: `API Error: ${error.message || 'Unknown API error'}`,
@@ -414,7 +414,7 @@ export const handleApiError = (error: any, context?: Record<string, any>) => {
   });
 };
 
-export const handleDatabaseError = (error: any, query?: string, context?: Record<string, any>) => {
+export const handleDatabaseError = (error: unknown, query?: string, context?: Record<string, any>) => {
   errorMonitoring.logDatabaseError({
     message: error.message || 'Database operation failed',
     query,
@@ -424,7 +424,7 @@ export const handleDatabaseError = (error: any, query?: string, context?: Record
   });
 };
 
-export const handleValidationError = (error: any, data?: any, context?: Record<string, any>) => {
+export const handleValidationError = (error: unknown, data?: unknown, context?: Record<string, any>) => {
   errorMonitoring.logError({
     level: 'warning',
     message: `Validation Error: ${error.message || 'Invalid data'}`,
@@ -438,7 +438,7 @@ export const handleValidationError = (error: any, data?: any, context?: Record<s
   });
 };
 
-export const logInfo = (message: string, details?: any, context?: Record<string, any>) => {
+export const logInfo = (message: string, details?: unknown, context?: Record<string, any>) => {
   errorMonitoring.logError({
     level: 'info',
     message,
@@ -447,7 +447,7 @@ export const logInfo = (message: string, details?: any, context?: Record<string,
   });
 };
 
-export const logWarning = (message: string, details?: any, context?: Record<string, any>) => {
+export const logWarning = (message: string, details?: unknown, context?: Record<string, any>) => {
   errorMonitoring.logError({
     level: 'warning',
     message,
@@ -456,7 +456,7 @@ export const logWarning = (message: string, details?: any, context?: Record<stri
   });
 };
 
-export const logDebug = (message: string, details?: any, context?: Record<string, any>) => {
+export const logDebug = (message: string, details?: unknown, context?: Record<string, any>) => {
   if (process.env.NODE_ENV === 'development') {
     errorMonitoring.logError({
       level: 'debug',
@@ -468,28 +468,28 @@ export const logDebug = (message: string, details?: any, context?: Record<string
 };
 
 // Performance monitoring decorators and helpers
-export const withPerformanceMonitoring = <T extends (...args: any[]) => Promise<any>>(
+export const withPerformanceMonitoring = <T extends (...args: unknown[]) => Promise<any>>(
   fn: T,
   operationName?: string
 ): T => {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     const operation = operationName || fn.name || 'anonymous';
     return await errorMonitoring.measurePerformance(operation, () => fn(...args));
   }) as T;
 };
 
-export const withErrorBoundary = <T extends (...args: any[]) => any>(
+export const withErrorBoundary = <T extends (...args: unknown[]) => any>(
   fn: T,
-  fallback?: any,
+  fallback?: unknown,
   context?: Record<string, any>
 ): T => {
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     try {
       const result = fn(...args);
       
       // Handle async functions
       if (result && typeof result.catch === 'function') {
-        return result.catch((error: any) => {
+        return result.catch((error: unknown) => {
           errorMonitoring.logError({
             level: 'error',
             message: `Error in ${fn.name || 'anonymous function'}`,

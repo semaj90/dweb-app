@@ -82,7 +82,7 @@ export class LLMOptimizationManager extends EventEmitter {
   /**
    * 4. Minimize JSON Payload Size - Token-by-token streaming
    */
-  async processStreamingTokens(tokens: any[]): Promise<any[]> { // TODO-AUTO: Define StreamingToken interface - type { id: string, text: string, metadata?: TokenMetadata }
+  async processStreamingTokens(tokens: unknown[]): Promise<unknown[]> { // TODO-AUTO: Define StreamingToken interface - type { id: string, text: string, metadata?: TokenMetadata }
     const startTime = Date.now();
     
     if (!this.isInitialized) {
@@ -108,9 +108,9 @@ export class LLMOptimizationManager extends EventEmitter {
   /**
    * Compress token payload for 10x space savings
    */
-  async compressTokens(tokens: any[]): Promise<{ 
+  async compressTokens(tokens: unknown[]): Promise<{ 
     compressed: boolean; 
-    data: any; 
+    data: unknown; 
     originalSize: number; 
     compressedSize: number;
     savings: string;
@@ -173,7 +173,7 @@ export class LLMOptimizationManager extends EventEmitter {
   /**
    * Stream response token by token for real-time UI updates
    */
-  async *streamTokenResponse(prompt: string, options: any = {}): AsyncGenerator<any, void, unknown> { // TODO-AUTO: Replace any with StreamOptions interface and StreamToken return type
+  async *streamTokenResponse(prompt: string, options: unknown = {}): AsyncGenerator<any, void, unknown> { // TODO-AUTO: Replace any with StreamOptions interface and StreamToken return type
     const chunks = this.chunkPrompt(prompt);
     
     for (const chunk of chunks) {
@@ -199,7 +199,7 @@ export class LLMOptimizationManager extends EventEmitter {
    */
   getOptimizationMetrics(): OptimizationMetrics & {
     config: TokenOptimizationConfig;
-    workerStats: any[];
+    workerStats: unknown[];
     cacheStats: {
       size: number;
       hitRate: number;
@@ -321,7 +321,7 @@ export class LLMOptimizationManager extends EventEmitter {
         const worker = {
           id: i,
           status: 'ready',
-          postMessage: (message: any) => {
+          postMessage: (message: unknown) => {
             // Simulate worker message handling
             setTimeout(() => {
               this.emit('workerMessage', {
@@ -357,7 +357,7 @@ export class LLMOptimizationManager extends EventEmitter {
     }, 60000); // Clean every minute
   }
 
-  private async processWithWorker(tokens: any[]): Promise<any[]> {
+  private async processWithWorker(tokens: unknown[]): Promise<unknown[]> {
     return new Promise((resolve, reject) => {
       if (this.workers.length === 0) {
         reject(new Error('No workers available'));
@@ -367,7 +367,7 @@ export class LLMOptimizationManager extends EventEmitter {
       // Select worker (simple round-robin)
       const worker = this.workers[tokens.length % this.workers.length];
       
-      const messageHandler = (event: any) => {
+      const messageHandler = (event: unknown) => {
         if (event.workerId === worker.id) {
           this.removeListener('workerMessage', messageHandler);
           resolve(event.result);
@@ -389,7 +389,7 @@ export class LLMOptimizationManager extends EventEmitter {
     });
   }
 
-  private processTokensMainThread(tokens: any[]): any[] {
+  private processTokensMainThread(tokens: unknown[]): unknown[] {
     return tokens.map(token => ({
       ...token,
       processed: true,
@@ -464,7 +464,7 @@ export class LLMOptimizationManager extends EventEmitter {
     await this.initializeWorkerPool();
   }
 
-  private generateDashboardHTML(metrics: any): string {
+  private generateDashboardHTML(metrics: unknown): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -543,7 +543,7 @@ export class LLMOptimizationManager extends EventEmitter {
     `;
   }
 
-  private generateBenchmarkHTML(results: any): string {
+  private generateBenchmarkHTML(results: unknown): string {
     return `
       <!DOCTYPE html>
       <html>

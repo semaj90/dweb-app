@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ cookies, locals }) => {
       success: true,
       message: 'Logged out successfully'
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Logout error:', error);
     
     // Clear cookie anyway

@@ -38,13 +38,13 @@ const resolvers = {
         neo4jContext,
         limit * 2
       );
-      const memory = await accessMemoryMCP(query, userContext);
+      // const memory = await accessMemoryMCP(query, userContext);
       const docs = await mcpContext72GetLibraryDocs("svelte", "runes");
       return reranked
         .map((result) => {
           let score = result.rerankScore;
-          if (memory.some((m) => m.relatedId === result.id)) score += 1;
-          if (docs && docs.includes(result.intent)) score += 1;
+          // if (memory.some((m) => m.relatedId === result.id)) score += 1;
+          // if (docs && docs.includes(result.intent)) score += 1;
           return {
             id: result.id,
             content: result.content,

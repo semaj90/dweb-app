@@ -7,18 +7,10 @@ import crypto from "crypto";
  */
 
 import { autonomousEngineeringSystem } from "../services/autonomous-engineering-system.js";
-// Orphaned content: import {
-
-import { analyzeLegalCaseWithCrew } from "../services/crewai-service.js";
-// Orphaned content: import {
-
-import type { AITask } from "$lib/types/ai-worker.js";
-// Orphaned content: import {
-
-import { OpenAIEmbeddings } from "@langchain/openai";
-// Orphaned content: import {
-
-import { pool } from "$lib/server/db"; // Use your actual DB config
+// TODO: Fix import - // Orphaned content: import {  import { analyzeLegalCaseWithCrew } from "../services/crewai-service.js";
+// TODO: Fix import - // Orphaned content: import {  import type { AITask } from "$lib/types/ai-worker.js";
+// TODO: Fix import - // Orphaned content: import {  import { OpenAIEmbeddings } from "@langchain/openai";
+// TODO: Fix import - // Orphaned content: import {  import { pool } from "$lib/server/db"; // Use your actual DB config
 
 // Singleton Redis client for connection reuse
 let redisClient: ReturnType<typeof createClient> | null = null;

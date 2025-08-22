@@ -6,11 +6,11 @@
  */
 
 import { ollamaService } from "./ollamaService";
-// Orphaned content: import {
-
-import { evidence } from "$lib/db/schema";
-// Orphaned content: import {
-eq, sql
+// TODO: Fix import - // Orphaned content: import {  import { evidence } from "$lib/db/schema";
+import {
+  eq,
+  sql
+} from "drizzle-orm";
 import type { Evidence } from '$lib/types/legal-types';
 
 interface EvidenceMetadata {

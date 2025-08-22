@@ -49,7 +49,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
       success: true,
       data: response
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('RAG query error:', error);
     
     if (error.name === 'ZodError') {

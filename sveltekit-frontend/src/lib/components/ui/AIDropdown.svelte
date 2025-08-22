@@ -27,7 +27,7 @@ https://svelte.dev/e/js_parse_error -->
     createDropdownMenu,
     melt,
     type CreateDropdownMenuProps,
-  } from "@melt-ui/svelte";
+  } from "melt";
   import {
     Brain,
     ChevronDown,

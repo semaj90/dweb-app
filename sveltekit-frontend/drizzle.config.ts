@@ -1,26 +1,23 @@
-import { defineConfig } from "drizzle-kit";
+import type { Config } from 'drizzle-kit';
+import * as dotenv from 'dotenv';
 
-export default defineConfig({
-  schema: "./src/lib/server/db/schema-unified.ts",
-  out: "./drizzle",
-  dialect: "postgresql",
+// Load environment variables from .env file in the parent directory
+dotenv.config({ path: '../.env' });
+
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is not set in the environment variables. Please ensure it is set in the .env file.');
+}
+
+export default {
+  schema: './src/lib/db/schema.ts',
+  out: './drizzle',
+  driver: 'pg',
   dbCredentials: {
-    url:
-      process.env.DATABASE_URL ||
-      "postgresql://legal_admin:123456@localhost:5432/legal_ai_db",
+    connectionString: databaseUrl
   },
   verbose: true,
-  strict: true,
-  migrations: {
-    prefix: "timestamp",
-    table: "__drizzle_migrations__",
-    schema: "public",
-  },
-  // Enable pgvector extension support
-  extensionsFilters: ["vector"],
+  strict: true
+} satisfies Config;
 
-  // Introspection settings for pgvector
-  introspect: {
-    casing: "snake_case",
-  },
-});

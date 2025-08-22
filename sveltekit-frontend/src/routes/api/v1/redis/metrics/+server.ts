@@ -1,7 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
-pollRedisHealth, getRedisMetrics
-
+import { pollRedisHealth, getRedisMetrics } from "drizzle-orm";
 let lastPoll = 0;
 
 export const GET: RequestHandler = async () => {

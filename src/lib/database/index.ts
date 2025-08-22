@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Enhanced Database Module Index
 // Provides centralized access to all database services with proper TypeScript support
 
@@ -71,7 +71,7 @@ export async function initializeDatabase(): Promise<{
     if (!results.postgres) {
       results.errors.push('PostgreSQL initialization failed');
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     results.errors.push(`PostgreSQL error: ${error.message}`);
   }
 
@@ -82,7 +82,7 @@ export async function initializeDatabase(): Promise<{
     if (!results.qdrant) {
       results.errors.push('Qdrant connection failed');
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     results.errors.push(`Qdrant error: ${error.message}`);
   }
 
@@ -113,14 +113,14 @@ export async function getDatabaseHealth(): Promise<{
   try {
     const { dbManager } = await import('./postgres-enhanced.js');
     health.postgres = await dbManager.healthCheck();
-  } catch (error: any) {
+  } catch (error: unknown) {
     health.postgres = { connected: false, error: error.message };
   }
 
   try {
     const { qdrantManager } = await import('./qdrant-enhanced.js');
     health.qdrant = await qdrantManager.getHealthStatus();
-  } catch (error: any) {
+  } catch (error: unknown) {
     health.qdrant = { connected: false, collection: 'legal_documents', error: error.message };
   }
 
@@ -141,7 +141,7 @@ export const databaseUtils = {
   /**
    * Migrate a document from old schema to new enhanced schema
    */
-  async migrateDocument(oldDocument: any): Promise<NewLegalDocument> {
+  async migrateDocument(oldDocument: unknown): Promise<NewLegalDocument> {
     const { schema } = await import('./schema/legal-documents.js');
     
     return {
@@ -165,7 +165,7 @@ export const databaseUtils = {
   /**
    * Validate embedding dimensions
    */
-  validateEmbedding(embedding: any): embedding is number[] {
+  validateEmbedding(embedding: unknown): embedding is number[] {
     return Array.isArray(embedding) && 
            embedding.length > 0 && 
            embedding.every(val => typeof val === 'number');

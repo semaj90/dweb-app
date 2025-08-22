@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { createCombobox, melt } from '@melt-ui/svelte';
+  import { createCombobox, melt } from 'melt';
   // Global Svelte runes are declared in src/types/svelte-helpers.d.ts
   import { fly } from 'svelte/transition';
   import Fuse from "fuse.js";

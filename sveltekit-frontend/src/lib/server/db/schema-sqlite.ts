@@ -7,9 +7,7 @@ import {
   real,
   blob,
 } from "drizzle-orm/sqlite-core";
-// Orphaned content: import { relations
-
-// === AUTHENTICATION & USER MANAGEMENT ===
+// TODO: Fix import - // Orphaned content: import { relations  // === AUTHENTICATION & USER MANAGEMENT ===
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),

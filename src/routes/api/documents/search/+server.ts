@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request }) => {
       sortOrder
     } = searchParams;
 
-    let results: any[] = [];
+    let results: unknown[] = [];
     let totalCount = 0;
 
     if (searchType === 'semantic' || searchType === 'hybrid') {
@@ -158,7 +158,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Search error:", error);
 
     if (error instanceof z.ZodError) {
@@ -236,7 +236,7 @@ export const GET: RequestHandler = async ({ url }) => {
       }, { status: 400 });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Search suggestions error:", error);
 
     return json({
@@ -340,8 +340,8 @@ async function performTextSearch(params: z.infer<typeof searchParamsSchema>) {
 /**
  * Apply sorting to search results
  */
-function applySorting(results: any[], sortBy: string, sortOrder: string) {
-  const sortFn = (a: any, b: any) => {
+function applySorting(results: unknown[], sortBy: string, sortOrder: string) {
+  const sortFn = (a: unknown, b: unknown) => {
     let valueA, valueB;
 
     switch (sortBy) {

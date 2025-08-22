@@ -31,7 +31,7 @@ export async function queryPgvector(vec: number[], limit = 200, temperature = 0.
 
   // return items shaped for orchestrator
   return {
-    ann: rows.map((r: any) => ({
+    ann: rows.map((r: unknown) => ({
       id: String(r.id),
       text: r.text,
       metadata: r.metadata ?? {},

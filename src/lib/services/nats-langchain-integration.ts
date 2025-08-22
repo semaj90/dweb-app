@@ -51,7 +51,7 @@ export interface ProcessingResult {
   messageId: string;
   success: boolean;
   processingTime: number;
-  result?: any;
+  result?: unknown;
   error?: string;
   serviceUsed: string[];
   timestamp: number;
@@ -81,8 +81,8 @@ export interface IntegrationStats {
  */
 export class NATSLangChainIntegration extends EventEmitter {
   private config: IntegrationConfig;
-  private natsService: any = null;
-  private langchainService: any = null;
+  private natsService: unknown = null;
+  private langchainService: unknown = null;
   private isInitialized = false;
   private processingQueue: Map<string, NATSMessage> = new Map();
   private activeProcessing = new Set<string>();
@@ -101,7 +101,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     activeWorkflows: 0
   };
   private subscriptionIds: string[] = [];
-  private healthCheckTimer: any = null;
+  private healthCheckTimer: unknown = null;
 
   constructor(config: Partial<IntegrationConfig> = {}) {
     super();
@@ -263,7 +263,7 @@ export class NATSLangChainIntegration extends EventEmitter {
     if (!this.langchainService || !this.natsService) return;
 
     // Forward LangChain events to NATS
-    this.langchainService.on('message:received', async (data: any) => {
+    this.langchainService.on('message:received', async (data: unknown) => {
       await this.natsService.publish(NATS_SUBJECTS.CHAT_RESPONSE, {
         sessionId: data.sessionId,
         message: data.message,
@@ -272,7 +272,7 @@ export class NATSLangChainIntegration extends EventEmitter {
       });
     });
 
-    this.langchainService.on('tool:executed', async (data: any) => {
+    this.langchainService.on('tool:executed', async (data: unknown) => {
       await this.natsService.publishAIAnalysisEvent('completed', {
         toolName: data.toolName,
         input: data.input,
@@ -281,7 +281,7 @@ export class NATSLangChainIntegration extends EventEmitter {
       });
     });
 
-    this.langchainService.on('streaming:chunk', async (data: any) => {
+    this.langchainService.on('streaming:chunk', async (data: unknown) => {
       await this.natsService.publish(NATS_SUBJECTS.CHAT_STREAMING, {
         sessionId: data.sessionId,
         chunk: data.chunk,
@@ -338,7 +338,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   private async executeMessageProcessing(message: NATSMessage): Promise<ProcessingResult> {
     const startTime = Date.now();
     const serviceUsed: string[] = [];
-    let result: any = null;
+    let result: unknown = null;
 
     switch (message.subject) {
       case NATS_SUBJECTS.SEARCH_QUERY:
@@ -447,7 +447,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   private async processAIAnalysis(message: NATSMessage): Promise<any> {
     const { documentContent, analysisType, caseId } = message.data;
 
-    let result: any = {};
+    let result: unknown = {};
 
     // Use LangChain for analysis if available
     if (this.langchainService && this.langchainService.isReady) {
@@ -591,11 +591,11 @@ export class NATSLangChainIntegration extends EventEmitter {
       console.log(`✓ Message processed: ${result.messageId} (${result.processingTime}ms)`);
     });
 
-    this.on('workflow:case_created', (caseData: any) => {
+    this.on('workflow:case_created', (caseData: unknown) => {
       console.log(`📋 Case workflow initiated: ${caseData.caseId}`);
     });
 
-    this.on('integration:error', (data: any) => {
+    this.on('integration:error', (data: unknown) => {
       console.error(`❌ Integration error: ${data.error}`);
     });
   }
@@ -605,7 +605,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   /**
    * Send a message through the integration system
    */
-  async sendMessage(subject: string, data: any, options: any = {}): Promise<void> {
+  async sendMessage(subject: string, data: unknown, options: unknown = {}): Promise<void> {
     if (!this.natsService) {
       throw new Error('NATS service not available');
     }
@@ -616,7 +616,7 @@ export class NATSLangChainIntegration extends EventEmitter {
   /**
    * Execute a search query through the integration
    */
-  async executeSearch(query: string, options: any = {}): Promise<any> {
+  async executeSearch(query: string, options: unknown = {}): Promise<any> {
     if (!this.natsService) {
       throw new Error('NATS service not available');
     }

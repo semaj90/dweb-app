@@ -106,7 +106,7 @@ export async function registerAutoComplete(
 
       return result
     }
-    catch (e: any) {
+    catch (e: unknown) {
       throw new Error(e)
     }
   }
@@ -170,7 +170,7 @@ export async function registerAutoComplete(
 
         return new CompletionList(completionItems, true)
       }
-      catch (e: any) {
+      catch (e: unknown) {
         log.appendLine('⚠️ Error on getting autocompletion items')
         log.appendLine(String(e.stack ?? e))
         return null

@@ -37,11 +37,11 @@ export class LegalSearchTool implements BaseTool {
     required: ['query']
   };
 
-  async call(input: string, options: any = {}): Promise<string> {
+  async call(input: string, options: unknown = {}): Promise<string> {
     try {
       let query: string;
-      let filters: any = {};
-      let searchOptions: any = { topK: 5, threshold: 0.7, useGPU: true };
+      let filters: unknown = {};
+      let searchOptions: unknown = { topK: 5, threshold: 0.7, useGPU: true };
 
       // Parse input
       try {
@@ -88,7 +88,7 @@ export class LegalSearchTool implements BaseTool {
       });
 
       // Type assertion to ensure searchResult has the expected properties
-      const resultObj = searchResult as { total?: number; results?: any[] };
+      const resultObj = searchResult as { total?: number; results?: unknown[] };
 
       return JSON.stringify({
         query,
@@ -128,7 +128,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
     required: ['caseText']
   };
 
-  async call(input: string, options: any = {}): Promise<string> {
+  async call(input: string, options: unknown = {}): Promise<string> {
     try {
       let caseText: string;
       let analysisType: string = 'summary';
@@ -228,7 +228,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
     return legalTerms.filter(term => text.includes(term));
   }
 
-  private extractParties(text: string): any {
+  private extractParties(text: string): unknown {
     // Simple regex patterns to identify parties
     const plaintiffMatch = text.match(/plaintiff[s]?:?\s+([^,.\n]+)/i);
     const defendantMatch = text.match(/defendant[s]?:?\s+([^,.\n]+)/i);
@@ -295,7 +295,7 @@ export class LegalCaseAnalysisTool implements BaseTool {
     return facts;
   }
 
-  private extractTimeline(text: string): any[] {
+  private extractTimeline(text: string): unknown[] {
     // Simple date extraction
     const datePattern = /\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2},?\s+\d{4}\b/gi;
     const dates = text.match(datePattern) || [];
@@ -404,11 +404,11 @@ export class LegalDraftingTool implements BaseTool {
     required: ['documentType', 'purpose']
   };
 
-  async call(input: string, options: any = {}): Promise<string> {
+  async call(input: string, options: unknown = {}): Promise<string> {
     try {
       let documentType: string;
-      let parties: any = {};
-      let terms: any = {};
+      let parties: unknown = {};
+      let terms: unknown = {};
       let jurisdiction: string = '';
       let purpose: string = '';
 
@@ -463,8 +463,8 @@ export class LegalDraftingTool implements BaseTool {
 
   private async generateDocumentTemplate(
     documentType: string,
-    parties: any,
-    terms: any,
+    parties: unknown,
+    terms: unknown,
     jurisdiction: string,
     purpose: string
   ): Promise<string> {
@@ -480,7 +480,7 @@ export class LegalDraftingTool implements BaseTool {
     return templates[documentType as keyof typeof templates] || templates.contract;
   }
 
-  private generateContractTemplate(parties: any, terms: any, purpose: string): string {
+  private generateContractTemplate(parties: unknown, terms: unknown, purpose: string): string {
     return `CONTRACT AGREEMENT
 
 This Agreement is entered into on [DATE] between:
@@ -518,7 +518,7 @@ ${parties.party1 || '[PARTY 1]'}                    ${parties.party2 || '[PARTY 
 Date: _______________          Date: _______________`;
   }
 
-  private generateMotionTemplate(parties: any, terms: any, purpose: string): string {
+  private generateMotionTemplate(parties: unknown, terms: unknown, purpose: string): string {
     return `MOTION TO [SPECIFY RELIEF SOUGHT]
 
 TO THE HONORABLE COURT:
@@ -548,7 +548,7 @@ _____________________
 [ATTORNEY INFORMATION]`;
   }
 
-  private generateBriefTemplate(parties: any, terms: any, purpose: string): string {
+  private generateBriefTemplate(parties: unknown, terms: unknown, purpose: string): string {
     return `LEGAL BRIEF
 
 IN THE MATTER OF: ${purpose}
@@ -587,11 +587,11 @@ _____________________
 [ATTORNEY INFORMATION]`;
   }
 
-  private generateAgreementTemplate(parties: any, terms: any, purpose: string): string {
+  private generateAgreementTemplate(parties: unknown, terms: unknown, purpose: string): string {
     return this.generateContractTemplate(parties, terms, purpose); // Similar to contract
   }
 
-  private generateNoticeTemplate(parties: any, terms: any, purpose: string): string {
+  private generateNoticeTemplate(parties: unknown, terms: unknown, purpose: string): string {
     return `NOTICE TO ${parties.party2 || '[RECIPIENT]'}
 
 TO: ${parties.party2 || '[RECIPIENT NAME AND ADDRESS]'}
@@ -610,7 +610,7 @@ _____________________
 ${parties.party1 || '[SENDER]'}`;
   }
 
-  private generatePleadingTemplate(parties: any, terms: any, purpose: string): string {
+  private generatePleadingTemplate(parties: unknown, terms: unknown, purpose: string): string {
     return `[COURT HEADER]
 
 ${parties.party1 || '[PLAINTIFF]'},
@@ -697,7 +697,7 @@ export class LegalCitationTool implements BaseTool {
     required: ['citations']
   };
 
-  async call(input: string, options: any = {}): Promise<string> {
+  async call(input: string, options: unknown = {}): Promise<string> {
     try {
       let citations: string[];
       let format: string = 'bluebook';
@@ -732,7 +732,7 @@ export class LegalCitationTool implements BaseTool {
     }
   }
 
-  private checkCitation(citation: string, format: string): any {
+  private checkCitation(citation: string, format: string): unknown {
     // Simplified citation checking - in production, this would use sophisticated parsing
     const result = {
       original: citation,
@@ -770,7 +770,7 @@ export class LegalCitationTool implements BaseTool {
     return 'case'; // default assumption
   }
 
-  private validateCitation(citation: string, type: string, format: string): any {
+  private validateCitation(citation: string, type: string, format: string): unknown {
     const result = { isValid: true, errors: [], suggestions: [] };
 
     // Basic validation rules

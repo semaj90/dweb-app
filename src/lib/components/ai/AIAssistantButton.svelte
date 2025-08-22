@@ -257,7 +257,7 @@
   });
 
   // XState service
-  let aiService: any;
+  let aiService: unknown;
   let currentState = $state(aiAssistantMachine.initialState);
   let currentInput = $state('');
 
@@ -281,7 +281,7 @@
   onMount(async () => {
     // Initialize XState service
     aiService = interpret(aiAssistantMachine);
-    aiService.subscribe((state: any) => {
+    aiService.subscribe((state: unknown) => {
       currentState = state;
       cacheState(state);
       
@@ -339,7 +339,7 @@
     }
   }
 
-  function cacheState(state: any) {
+  function cacheState(state: unknown) {
     const stateKey = generateStateKey(state);
     stateCache.set(stateKey, {
       value: state.value,
@@ -360,7 +360,7 @@
     }
   }
 
-  function generateStateKey(state: any): string {
+  function generateStateKey(state: unknown): string {
     return `${JSON.stringify(state.value)}_${state.context.isConnected}_${state.context.isProcessing}`;
   }
 
@@ -374,7 +374,7 @@
     }
   }
 
-  function applyStateTransition(transitionData: any) {
+  function applyStateTransition(transitionData: unknown) {
     // Apply smooth state transitions using cached data
     // This creates the "instant sprite switching" effect
     const cachedState = stateCache.get(transitionData.targetStateKey);

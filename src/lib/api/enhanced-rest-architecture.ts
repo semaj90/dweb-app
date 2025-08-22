@@ -19,14 +19,14 @@ export interface KMeansClusterer {
 export interface ClusterResult {
   clusterId: number;
   centroid: number[];
-  members: any[];
+  members: unknown[];
   size: number;
   inertia: number;
 }
 
 export interface DocumentCluster {
   id: string;
-  documents: any[];
+  documents: unknown[];
   centroid: number[];
   keywords: string[];
   summary: string;
@@ -51,15 +51,15 @@ export interface SelfOrganizingMap {
 export interface RESTEndpoint {
   path: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  handler: (req: any, res: any) => Promise<void>;
-  middleware?: any[];
+  handler: (req: unknown, res: unknown) => Promise<void>;
+  middleware?: unknown[];
   rateLimit?: {
     windowMs: number;
     max: number;
   };
   cache?: {
     ttl: number;
-    key: (req: any) => string;
+    key: (req: unknown) => string;
   };
 }
 
@@ -136,7 +136,7 @@ export interface BatchResponse<T = any> {
 export interface WebSocketMessage {
   type: 'subscribe' | 'unsubscribe' | 'message' | 'error' | 'ping' | 'pong';
   channel?: string;
-  data?: any;
+  data?: unknown;
   timestamp: number;
 }
 
@@ -163,7 +163,7 @@ export interface RateLimitConfig {
   statusCode?: number;
   skipSuccessfulRequests?: boolean;
   skipFailedRequests?: boolean;
-  keyGenerator?: (req: any) => string;
+  keyGenerator?: (req: unknown) => string;
 }
 
 export interface SecurityConfig {
@@ -177,7 +177,7 @@ export interface SecurityConfig {
   rateLimit: RateLimitConfig;
   authentication: {
     type: 'jwt' | 'oauth' | 'apikey' | 'basic';
-    config: any;
+    config: unknown;
   };
 }
 
@@ -196,14 +196,14 @@ export interface MonitoringConfig {
 
 export class RESTArchitecture {
   private endpoints: Map<string, RESTEndpoint>;
-  private middleware: any[];
+  private middleware: unknown[];
   private config: {
     security?: SecurityConfig;
     cache?: CacheConfig;
     monitoring?: MonitoringConfig;
   };
 
-  constructor(config?: any) {
+  constructor(config?: unknown) {
     this.endpoints = new Map();
     this.middleware = [];
     this.config = config || {};
@@ -214,11 +214,11 @@ export class RESTArchitecture {
     this.endpoints.set(key, endpoint);
   }
 
-  use(middleware: any): void {
+  use(middleware: unknown): void {
     this.middleware.push(middleware);
   }
 
-  async handleRequest(method: string, path: string, req: any, res: any): Promise<void> {
+  async handleRequest(method: string, path: string, req: unknown, res: unknown): Promise<void> {
     const key = `${method}:${path}`;
     const endpoint = this.endpoints.get(key);
     

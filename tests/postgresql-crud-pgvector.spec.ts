@@ -302,7 +302,7 @@ test.describe('PostgreSQL CRUD with pgvector Tests', () => {
       const results = await Promise.all(insertPromises);
       await dbClient.query('COMMIT');
 
-      results.forEach((result: any) => {
+      results.forEach((result: unknown) => {
         testDocumentIds.push(result.rows[0].id);
       });
 

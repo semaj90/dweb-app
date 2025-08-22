@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $derived, $effect } from 'svelte';
   import { Dialog as DialogPrimitive } from "bits-ui";
-  import { createDialog, melt } from "@melt-ui/svelte";
+  import { createDialog, melt } from "melt";
   import ModernButton from "./ModernButton.svelte";
   
   interface Props {

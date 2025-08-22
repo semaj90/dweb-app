@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import SearchBar from '$lib/components/+SearchBar.svelte';
 
-  export let user: any | undefined; // Made user prop optional
+  export let user: unknown | undefined; // Made user prop optional
   export let title: string = 'WardenNet'; // Default title
 
   // Svelte action for SPA navigation

@@ -111,7 +111,7 @@ class ServiceValidator {
 
       console.log(`✅ PostgreSQL: Connected (${responseTime}ms)`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       console.log(`❌ PostgreSQL: ${error.message}`);
     }
@@ -166,7 +166,7 @@ class ServiceValidator {
 
       console.log(`✅ Qdrant: Connected (${responseTime}ms)`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       console.log(`❌ Qdrant: ${error.message}`);
     }
@@ -214,7 +214,7 @@ class ServiceValidator {
 
       console.log(`✅ Redis: Connected (${responseTime}ms)`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       console.log(`❌ Redis: ${error.message}`);
     }
@@ -245,8 +245,8 @@ class ServiceValidator {
       const models = await response.json();
 
       // Test specific model availability
-      const hasGemma = models.models?.some((m: any) => m.name.includes('gemma'));
-      const hasEmbedding = models.models?.some((m: any) => m.name.includes('embed'));
+      const hasGemma = models.models?.some((m: unknown) => m.name.includes('gemma'));
+      const hasEmbedding = models.models?.some((m: unknown) => m.name.includes('embed'));
 
       service.status = 'healthy';
       service.responseTime = responseTime;
@@ -255,12 +255,12 @@ class ServiceValidator {
         modelsCount: models.models?.length || 0,
         hasLegalModel: hasGemma,
         hasEmbeddingModel: hasEmbedding,
-        models: models.models?.map((m: any) => m.name) || []
+        models: models.models?.map((m: unknown) => m.name) || []
       };
 
       console.log(`✅ Ollama: Connected (${responseTime}ms) - ${models.models?.length || 0} models`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       console.log(`❌ Ollama: ${error.message}`);
     }
@@ -306,7 +306,7 @@ class ServiceValidator {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       service.status = 'degraded'; // Neo4j is optional for core functionality
       console.log(`⚠️ Neo4j: ${error.message} (optional service)`);
@@ -343,7 +343,7 @@ class ServiceValidator {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       service.status = 'degraded'; // MinIO is optional for core functionality
       console.log(`⚠️ MinIO: ${error.message} (optional service)`);
@@ -388,7 +388,7 @@ class ServiceValidator {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       service.status = 'degraded'; // RabbitMQ is optional for core functionality
       console.log(`⚠️ RabbitMQ: ${error.message} (optional service)`);
@@ -445,7 +445,7 @@ class ServiceValidator {
 
       console.log(`${healthyChecks > 0 ? '✅' : '❌'} Web Services: ${healthyChecks}/${checks.length} checks passed`);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       service.error = error.message;
       console.log(`❌ Web Services: ${error.message}`);
     }

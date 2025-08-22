@@ -145,7 +145,7 @@
     }
   }
 
-  function handleWebSocketMessage(data: any) {
+  function handleWebSocketMessage(data: unknown) {
     switch (data.type) {
       case 'welcome':
         console.log(`🎯 Connected to worker ${data.workerId}`);
@@ -162,7 +162,7 @@
     }
   }
 
-  function handleChatResponse(data: any) {
+  function handleChatResponse(data: unknown) {
     isLoading = false;
     lastResponseTime = data.processingTime || 0;
     successfulRequests++;

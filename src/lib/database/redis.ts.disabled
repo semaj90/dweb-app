@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+runimport Redis from 'ioredis';
 import { env } from '$env/dynamic/private';
 
 /**
@@ -80,7 +80,7 @@ const clusterNodes = env.REDIS_CLUSTER_NODES?.split(',').map(node => {
 });
 
 // Create Redis instance
-export const redis = clusterNodes?.length 
+export const redis = clusterNodes?.length
   ? new Redis.Cluster(clusterNodes, {
       redisOptions: redisConfig,
       enableOfflineQueue: false,
@@ -99,15 +99,15 @@ export class LegalAICacheManager {
 
   async cacheTokens(key: string, tokens: any[], ttl: number = 3600): Promise<void> {
     const startTime = Date.now();
-    
+
     try {
       if (env.ENABLE_SIMD_CACHE === 'true') {
         // Use SIMD compression for tokens
         const encodedTokens = this.simdEncoder.encodeTokens(tokens.map(t => t.text || t.toString()));
         const base64Data = Buffer.from(encodedTokens).toString('base64');
-        
+
         await redis.setex(`simd:${key}`, ttl, base64Data);
-        
+
         // Track compression ratio
         const originalSize = JSON.stringify(tokens).length;
         const compressedSize = base64Data.length;
@@ -116,7 +116,7 @@ export class LegalAICacheManager {
         // Standard JSON caching
         await redis.setex(key, ttl, JSON.stringify(tokens));
       }
-      
+
       this.updateMetrics(Date.now() - startTime, true);
     } catch (error) {
       console.error('Redis cache error:', error);
@@ -126,10 +126,10 @@ export class LegalAICacheManager {
 
   async getCachedTokens(key: string): Promise<any[] | null> {
     const startTime = Date.now();
-    
+
     try {
       let data: string | null;
-      
+
       if (env.ENABLE_SIMD_CACHE === 'true') {
         data = await redis.get(`simd:${key}`);
         if (data) {
@@ -139,7 +139,7 @@ export class LegalAICacheManager {
           return tokens.map(text => ({ text }));
         }
       }
-      
+
       // Fallback to standard cache
       data = await redis.get(key);
       if (data) {
@@ -147,7 +147,7 @@ export class LegalAICacheManager {
         this.updateMetrics(Date.now() - startTime, true);
         return tokens;
       }
-      
+
       this.updateMetrics(Date.now() - startTime, false);
       return null;
     } catch (error) {
@@ -164,7 +164,7 @@ export class LegalAICacheManager {
       timestamp: Date.now(),
       version: '1.0'
     };
-    
+
     try {
       await redis.setex(key, ttl, JSON.stringify(data));
     } catch (error) {
@@ -184,12 +184,12 @@ export class LegalAICacheManager {
 
   async cacheEmbeddings(query: string, embeddings: number[], ttl: number = 1800): Promise<void> {
     const key = `embeddings:${this.hashQuery(query)}`;
-    
+
     try {
       // Store embeddings as binary for efficiency
       const buffer = new Float32Array(embeddings);
       const base64Data = Buffer.from(buffer.buffer).toString('base64');
-      
+
       await redis.setex(key, ttl, JSON.stringify({
         embeddings: base64Data,
         query,
@@ -202,15 +202,15 @@ export class LegalAICacheManager {
 
   async getCachedEmbeddings(query: string): Promise<number[] | null> {
     const key = `embeddings:${this.hashQuery(query)}`;
-    
+
     try {
       const data = await redis.get(key);
       if (!data) return null;
-      
+
       const cached = JSON.parse(data);
       const buffer = Buffer.from(cached.embeddings, 'base64');
       const float32Array = new Float32Array(buffer.buffer);
-      
+
       return Array.from(float32Array);
     } catch (error) {
       console.error('Embeddings get error:', error);
@@ -243,7 +243,7 @@ export class LegalAICacheManager {
     } else {
       this.metrics.misses++;
     }
-    
+
     this.metrics.avgResponseTime = (this.metrics.avgResponseTime + responseTime) / 2;
   }
 

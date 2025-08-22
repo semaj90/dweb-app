@@ -46,7 +46,7 @@ export default createRule<[{ prefix: string, enableFix: boolean }], 'missing'>({
       JSXAttribute(_node) {
         // todo: add support | NEED HELP
       },
-      SvelteAttribute(_node: any) {
+      SvelteAttribute(_node: unknown) {
         // todo: add support | NEED HELP
       },
     }

@@ -1,13 +1,7 @@
 import { cacheManager } from "$lib/services/cache-layer-manager";
 
 import { describe, it, expect, beforeAll } from "vitest";
-// Orphaned content: import {
-
-describe('Memory Optimization System', () => {
-  let neuralManager: NeuralMemoryManager;
-
-  beforeAll(async () => {
-    neuralManager = new NeuralMemoryManager(4096); // 4GB for testing
+// TODO: Fix import - // Orphaned content: import {  describe('Memory Optimization System', () => {   let neuralManager: NeuralMemoryManager;    beforeAll(async () => {     neuralManager = new NeuralMemoryManager(4096); // 4GB for testing
   });
 
   it('should initialize neural memory manager', () => {

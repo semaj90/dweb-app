@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         sessionToken: session.token
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
     
     if (error.name === 'ZodError') {

@@ -1,5 +1,5 @@
-// @ts-nocheck
-// @ts-nocheck
+
+
 import { multiLayerCache } from '../cache/multi-layer-cache.js';
 import { rabbitmqService } from '../messaging/rabbitmq-service.js';
 
@@ -523,7 +523,7 @@ export const errorLogger = new ErrorLogger(
 );
 
 // Helper functions for common error patterns
-export function withErrorLogging<T extends any[], R>(
+export function withErrorLogging<T extends unknown[], R>(
   fn: (...args: T) => R,
   context: string,
   tags: string[] = []

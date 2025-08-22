@@ -1,6 +1,6 @@
 /**
  * Performance Optimization API
- * 
+ *
  * RESTful API for managing and monitoring performance optimizations
  * Provides endpoints for:
  * - Performance analysis and metrics processing
@@ -13,10 +13,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { performanceOptimizer } from '$lib/optimization/performance-optimizer';
-import type { 
+import type {
     PerformanceMetrics,
     OptimizationRecommendation,
-    PerformanceAnalysis 
+    PerformanceAnalysis
 } from '$lib/ai/types';
 
 // POST - Process metrics and execute optimizations
@@ -28,22 +28,22 @@ export const POST: RequestHandler = async ({ request, url }) => {
         switch (action) {
             case 'process-metrics':
                 return await processPerformanceMetrics(body);
-            
+
             case 'execute-optimization':
                 return await executeOptimization(body);
-            
+
             case 'force-optimization':
                 return await forceOptimization(body);
-            
+
             case 'analyze-performance':
                 return await analyzePerformance(body);
-            
+
             default:
-                return error(400, 'Invalid action specified');
+                throw error(400, 'Invalid action specified');
         }
     } catch (err) {
         console.error('❌ Performance optimization API error:', err);
-        return error(500, `Server error: ${err.message}`);
+        throw error(500, `Server error: ${err instanceof Error ? err.message : String(err)}`);
     }
 };
 
@@ -51,26 +51,26 @@ export const POST: RequestHandler = async ({ request, url }) => {
 export const GET: RequestHandler = async ({ url }) => {
     try {
         const action = url.searchParams.get('action');
-        
+
         switch (action) {
             case 'status':
                 return getOptimizationStatus();
-            
+
             case 'insights':
                 return getPerformanceInsights();
-            
+
             case 'recommendations':
                 return getRecommendations();
-            
+
             case 'history':
                 return getOptimizationHistory();
-            
+
             case 'metrics':
                 return getCurrentMetrics();
-            
+
             case 'health':
                 return getSystemHealth();
-            
+
             default:
                 return getDashboard();
         }
@@ -84,20 +84,20 @@ export const GET: RequestHandler = async ({ url }) => {
 export const PUT: RequestHandler = async ({ request }) => {
     try {
         const { config, optimization } = await request.json();
-        
+
         if (config) {
             return await updateOptimizationConfig(config);
         }
-        
+
         if (optimization) {
             return await updateOptimization(optimization);
         }
-        
-        return error(400, 'No valid update data provided');
-        
+
+        throw error(400, 'No valid update data provided');
+
     } catch (err) {
         console.error('❌ Update optimization error:', err);
-        return error(500, `Update error: ${err.message}`);
+        throw error(500, `Update error: ${err instanceof Error ? err.message : String(err)}`);
     }
 };
 
@@ -105,13 +105,13 @@ export const PUT: RequestHandler = async ({ request }) => {
 export const DELETE: RequestHandler = async ({ url }) => {
     try {
         const optimizationId = url.searchParams.get('optimizationId');
-        
+
         if (!optimizationId) {
-            return error(400, 'Optimization ID is required');
+            throw error(400, 'Optimization ID is required');
         }
 
         const result = await cancelOptimization(optimizationId);
-        
+
         return json({
             success: true,
             optimizationId,
@@ -120,7 +120,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
         });
     } catch (err) {
         console.error('❌ Cancel optimization error:', err);
-        return error(500, `Cancel error: ${err.message}`);
+        throw error(500, `Cancel error: ${err instanceof Error ? err.message : String(err)}`);
     }
 };
 
@@ -130,10 +130,10 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 async function processPerformanceMetrics(metricsData: any) {
     const startTime = performance.now();
-    
+
     // Validate metrics data
     if (!metricsData || typeof metricsData !== 'object') {
-        return error(400, 'Invalid metrics data');
+        throw error(400, 'Invalid metrics data');
     }
 
     // Enhanced metrics with processing information
@@ -146,9 +146,9 @@ async function processPerformanceMetrics(metricsData: any) {
 
     // Process through performance optimizer
     const analysis = await performanceOptimizer.processMetrics(enhancedMetrics);
-    
+
     const processingTime = performance.now() - startTime;
-    
+
     return json({
         success: true,
         message: 'Performance metrics processed successfully',
@@ -164,14 +164,14 @@ async function processPerformanceMetrics(metricsData: any) {
 }
 
 async function executeOptimization(optimizationData: any) {
-    const { recommendationId, recommendation, parameters = {} } = optimizationData;
-    
+    const { recommendationId, recommendation, parameters = {} } = optimizationData || {};
+
     if (!recommendation && !recommendationId) {
-        return error(400, 'Recommendation or recommendation ID is required');
+        throw error(400, 'Recommendation or recommendation ID is required');
     }
 
     let optimizationRecommendation: OptimizationRecommendation;
-    
+
     if (recommendation) {
         // Use provided recommendation
         optimizationRecommendation = {
@@ -182,11 +182,11 @@ async function executeOptimization(optimizationData: any) {
         };
     } else {
         // Find recommendation by ID (would need to implement recommendation storage)
-        return error(400, 'Recommendation lookup by ID not yet implemented');
+        throw error(400, 'Recommendation lookup by ID not yet implemented');
     }
 
     const result = await performanceOptimizer.executeOptimization(optimizationRecommendation);
-    
+
     return json({
         success: true,
         message: 'Optimization executed successfully',
@@ -202,14 +202,14 @@ async function executeOptimization(optimizationData: any) {
 }
 
 async function forceOptimization(forceData: any) {
-    const { type, target, parameters = {} } = forceData;
-    
+    const { type, target, parameters = {} } = forceData || {};
+
     if (!type || !target) {
-        return error(400, 'Optimization type and target are required');
+        throw error(400, 'Optimization type and target are required');
     }
 
     const result = await performanceOptimizer.forceOptimization(type, target);
-    
+
     return json({
         success: true,
         message: 'Forced optimization executed successfully',
@@ -225,15 +225,15 @@ async function forceOptimization(forceData: any) {
 }
 
 async function analyzePerformance(analysisData: any) {
-    const { metrics, options = {} } = analysisData;
-    
+    const { metrics, options = {} } = analysisData || {};
+
     if (!metrics) {
-        return error(400, 'Performance metrics are required for analysis');
+        throw error(400, 'Performance metrics are required for analysis');
     }
 
     // Create mock performance analysis
     const analysis = await createPerformanceAnalysis(metrics, options);
-    
+
     return json({
         success: true,
         message: 'Performance analysis completed',
@@ -244,7 +244,7 @@ async function analyzePerformance(analysisData: any) {
 
 function getOptimizationStatus() {
     const status = performanceOptimizer.getOptimizationStatus();
-    
+
     return json({
         success: true,
         status,
@@ -254,7 +254,7 @@ function getOptimizationStatus() {
 
 function getPerformanceInsights() {
     const insights = performanceOptimizer.getPerformanceInsights();
-    
+
     return json({
         success: true,
         insights,
@@ -264,7 +264,7 @@ function getPerformanceInsights() {
 
 function getRecommendations() {
     const status = performanceOptimizer.getOptimizationStatus();
-    
+
     // Extract recommendations from recent optimizations
     const recommendations = status.recentOptimizations.map(opt => ({
         id: opt.id,
@@ -275,7 +275,7 @@ function getRecommendations() {
         executedAt: opt.executedAt,
         expectedImpact: opt.expectedImpact
     }));
-    
+
     return json({
         success: true,
         recommendations,
@@ -286,7 +286,7 @@ function getRecommendations() {
 
 function getOptimizationHistory() {
     const status = performanceOptimizer.getOptimizationStatus();
-    
+
     const history = status.recentOptimizations.map(opt => ({
         id: opt.id,
         title: opt.title,
@@ -297,7 +297,7 @@ function getOptimizationHistory() {
         result: opt.result,
         duration: opt.result?.duration || null
     }));
-    
+
     return json({
         success: true,
         history,
@@ -308,7 +308,7 @@ function getOptimizationHistory() {
 
 function getCurrentMetrics() {
     const status = performanceOptimizer.getOptimizationStatus();
-    
+
     // Extract current metrics from status
     const currentMetrics = {
         activeOptimizations: status.activeOptimizations.length,
@@ -317,7 +317,7 @@ function getCurrentMetrics() {
         cacheStrategies: Object.keys(status.cacheStrategies).length,
         lastUpdate: new Date().toISOString()
     };
-    
+
     return json({
         success: true,
         metrics: currentMetrics,
@@ -332,19 +332,19 @@ function getCurrentMetrics() {
 function getSystemHealth() {
     const status = performanceOptimizer.getOptimizationStatus();
     const insights = performanceOptimizer.getPerformanceInsights();
-    
+
     // Calculate health score based on optimization status
-    const activeOptimizationsHealth = status.activeOptimizations.length < 5 ? 100 : 
+    const activeOptimizationsHealth = status.activeOptimizations.length < 5 ? 100 :
                                      status.activeOptimizations.length < 10 ? 75 : 50;
-    
+
     const recentOptimizationsHealth = status.recentOptimizations.length > 0 ? 100 : 80;
-    
+
     const overallHealth = Math.round((activeOptimizationsHealth + recentOptimizationsHealth) / 2);
-    
+
     const healthStatus = overallHealth > 80 ? 'excellent' :
                         overallHealth > 60 ? 'good' :
                         overallHealth > 40 ? 'fair' : 'poor';
-    
+
     return json({
         success: true,
         health: {
@@ -378,7 +378,7 @@ function getSystemHealth() {
 function getDashboard() {
     const status = performanceOptimizer.getOptimizationStatus();
     const insights = performanceOptimizer.getPerformanceInsights();
-    
+
     // Create comprehensive dashboard
     return json({
         success: true,
@@ -427,28 +427,28 @@ function getDashboard() {
 
 async function updateOptimizationConfig(config: any) {
     console.log('🔧 Updating optimization configuration:', config);
-    
+
     // In a real implementation, this would update the optimizer configuration
-    return {
+    return json({
         updated: true,
         config,
         timestamp: new Date().toISOString()
-    };
+    });
 }
 
 async function updateOptimization(optimization: any) {
     console.log('🔧 Updating optimization:', optimization);
-    
-    return {
+
+    return json({
         updated: true,
         optimization,
         timestamp: new Date().toISOString()
-    };
+    });
 }
 
 async function cancelOptimization(optimizationId: string) {
     console.log(`🛑 Cancelling optimization: ${optimizationId}`);
-    
+
     // In a real implementation, this would cancel the running optimization
     return {
         cancelled: true,

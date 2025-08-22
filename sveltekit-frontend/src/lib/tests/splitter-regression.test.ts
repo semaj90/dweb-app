@@ -1,7 +1,5 @@
 import { describe, it, expect } from "vitest";
-// Orphaned content: import {
-
-import { loadBaseline, checkRegression } from '$text/perf-baseline';
+// TODO: Fix import - // Orphaned content: import {  import { loadBaseline, checkRegression } from '$text/perf-baseline';
 
 describe('Sentence splitter performance regression', () => {
   it('does not regress vs hard threshold & rolling mean', async () => {

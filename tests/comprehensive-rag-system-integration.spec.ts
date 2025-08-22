@@ -565,7 +565,7 @@ test.describe("🏛️ Legal AI RAG System - Comprehensive Integration", () => {
       await page.goto("http://localhost:5173/ai-chat");
 
       // Simulate Ollama service interruption
-      await page.route("http://localhost:11434/**", (route: any) => route.abort());
+      await page.route("http://localhost:11434/**", (route: unknown) => route.abort());
 
       // Attempt to send message
       await page.fill(

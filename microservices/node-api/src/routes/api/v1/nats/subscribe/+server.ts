@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
       // TODO: integrate GPU / WASM / RAG pipeline here
     });
     return json({ status: 'subscribed', subject });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Subscribe error:', err);
     return json({ error: 'Internal server error' }, { status: 500 });
   }

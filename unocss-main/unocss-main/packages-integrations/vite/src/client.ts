@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 /// <reference lib="dom" />
 
-function post(data: any, config: any) {
+function post(data: unknown, config: unknown) {
   return fetch('__POST_PATH__', {
     ...config,
     method: 'POST',

@@ -1,13 +1,13 @@
 # PowerShell Script: Automated Event Handler Migration
 # Purpose: Batch fix on: event handlers to modern onclick/onchange patterns
-# Usage: Run from VS Code task "⚡ Batch Fix: Event Handler Deprecations"
+# Usage: Run from VS Code task "Batch Fix: Event Handler Deprecations"
 
 param(
     [string]$ProjectPath = "sveltekit-frontend",
     [switch]$DryRun = $false
 )
 
-Write-Host "🚀 Starting Event Handler Migration..." -ForegroundColor Green
+Write-Host "Starting Event Handler Migration..." -ForegroundColor Green
 Write-Host "Project Path: $ProjectPath" -ForegroundColor Cyan
 Write-Host "Dry Run Mode: $DryRun" -ForegroundColor Cyan
 
@@ -42,8 +42,19 @@ $processedFiles = 0
 
 foreach ($file in $svelteFiles) {
     $fileReplacements = 0
-    $content = Get-Content -Path $file.FullName -Raw
+    
+    # Skip if file doesn't exist
+    if (-not (Test-Path $file.FullName)) {
+        continue
+    }
+    
+    $content = (Get-Content -Path $file.FullName) -join "`n"
     $originalContent = $content
+    
+    # Skip if content is empty or null
+    if ([string]::IsNullOrEmpty($content)) {
+        continue
+    }
     
     # Apply each event handler mapping
     foreach ($oldPattern in $eventMappings.Keys) {
@@ -56,7 +67,7 @@ foreach ($file in $svelteFiles) {
             $replacements = $beforeCount - $afterCount
             
             if ($replacements -gt 0) {
-                Write-Host "  $($file.Name): $oldPattern → $newPattern ($replacements replacements)" -ForegroundColor Green
+                Write-Host "  $($file.Name): $oldPattern to $newPattern ($replacements replacements)" -ForegroundColor Green
                 $fileReplacements += $replacements
             }
         }
@@ -90,23 +101,26 @@ foreach ($file in $svelteFiles) {
         
         if (-not $DryRun) {
             Set-Content -Path $file.FullName -Value $content -NoNewline
-            Write-Host "✅ Updated: $($file.Name) ($fileReplacements changes)" -ForegroundColor Green
+            Write-Host "Updated: $($file.Name) ($fileReplacements changes)" -ForegroundColor Green
         } else {
-            Write-Host "🔍 Would update: $($file.Name) ($fileReplacements changes)" -ForegroundColor Yellow
+            Write-Host "Would update: $($file.Name) ($fileReplacements changes)" -ForegroundColor Yellow
         }
     }
 }
 
-Write-Host "`n📊 Migration Summary:" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Migration Summary:" -ForegroundColor Cyan
 Write-Host "  Files processed: $processedFiles" -ForegroundColor White
 Write-Host "  Total replacements: $totalReplacements" -ForegroundColor White
 Write-Host "  Dry run mode: $DryRun" -ForegroundColor White
 
 if ($DryRun) {
-    Write-Host "`n🔍 This was a dry run. Re-run without -DryRun to apply changes." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "This was a dry run. Re-run without -DryRun to apply changes." -ForegroundColor Yellow
 } else {
-    Write-Host "`n✅ Event handler migration completed!" -ForegroundColor Green
-    Write-Host "🧪 Run 'npm run check:ultra-fast' to validate changes" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "Event handler migration completed!" -ForegroundColor Green
+    Write-Host "Run 'npm run check:ultra-fast' to validate changes" -ForegroundColor Cyan
 }
 
 # Return to original directory

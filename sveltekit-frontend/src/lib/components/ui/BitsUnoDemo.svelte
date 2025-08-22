@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { createDialog, createPopover, createDropdownMenu, melt } from '@melt-ui/svelte';
+  import { createDialog, createPopover, createDropdownMenu, melt } from 'melt';
   import { fade } from 'svelte/transition';
 
   // Create dialog state

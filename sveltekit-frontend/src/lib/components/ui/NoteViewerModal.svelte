@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createDialog, melt } from "@melt-ui/svelte";
+  import { createDialog, melt } from "melt";
   import { $props, $state, $derived, $effect } from 'svelte';
   import { Bookmark, BookmarkCheck, Calendar, Edit3, Eye, Tag, User as UserIcon, X } from "lucide-svelte";
   import { marked } from "marked";

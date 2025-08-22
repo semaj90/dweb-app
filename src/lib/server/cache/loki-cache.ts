@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Advanced LokiJS Caching Layer with Multi-Level Storage
  * Supports real-time caching, background persistence, and intelligent eviction
@@ -12,7 +12,7 @@ import fs from 'fs/promises';
 interface CacheEntry {
   id: string;
   key: string;
-  data: any;
+  data: unknown;
   metadata: {
     sessionId?: string;
     userId?: string;
@@ -132,7 +132,7 @@ export class CacheManager extends EventEmitter {
   }
 
   // Core caching methods
-  public async set(key: string, data: any, options: {
+  public async set(key: string, data: unknown, options: {
     sessionId?: string;
     userId?: string;
     contentType?: string;
@@ -254,7 +254,7 @@ export class CacheManager extends EventEmitter {
   }
 
   // User session management
-  public async setUserSession(userId: string, sessionData: any): Promise<void> {
+  public async setUserSession(userId: string, sessionData: unknown): Promise<void> {
     const existingSession = this.collections.userSessions.findOne({ userId });
     
     if (existingSession) {
@@ -280,7 +280,7 @@ export class CacheManager extends EventEmitter {
   // Recommendation caching
   public async setRecommendations(
     userId: string, 
-    recommendations: any[], 
+    recommendations: unknown[], 
     contentType: string,
     confidence: number = 0.8
   ): Promise<void> {
@@ -300,8 +300,8 @@ export class CacheManager extends EventEmitter {
     });
   }
 
-  public async getRecommendations(userId: string, contentType?: string): Promise<any[]> {
-    const query: any = { userId };
+  public async getRecommendations(userId: string, contentType?: string): Promise<unknown[]> {
+    const query: unknown = { userId };
     if (contentType) query.contentType = contentType;
 
     const results = this.collections.recommendations.find(query);
@@ -312,7 +312,7 @@ export class CacheManager extends EventEmitter {
   public async logAnalytics(
     userId: string, 
     eventType: string, 
-    data: any
+    data: unknown
   ): Promise<void> {
     this.collections.analytics.insert({
       id: this.generateId(),
@@ -327,8 +327,8 @@ export class CacheManager extends EventEmitter {
     userId?: string, 
     eventType?: string, 
     timeRange?: { start: number; end: number }
-  ): Promise<any[]> {
-    let query: any = {};
+  ): Promise<unknown[]> {
+    let query: unknown = {};
     
     if (userId) query.userId = userId;
     if (eventType) query.eventType = eventType;

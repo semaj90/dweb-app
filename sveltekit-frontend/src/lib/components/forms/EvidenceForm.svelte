@@ -19,7 +19,7 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import type { Evidence } from "$lib/types/api";
-  import { createSelect, melt } from "@melt-ui/svelte";
+  import { createSelect, melt } from "melt";
 
   // Bindable props already defined above; redundant redeclarations removed
 

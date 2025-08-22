@@ -41,11 +41,11 @@
   
   // 3D Scene Variables
   let canvas3D: HTMLCanvasElement;
-  let scene3D: any = null;
-  let renderer3D: any = null;
-  let pointCloud: any = null;
-  let camera3D: any = null;
-  let controls3D: any = null;
+  let scene3D: unknown = null;
+  let renderer3D: unknown = null;
+  let pointCloud: unknown = null;
+  let camera3D: unknown = null;
+  let controls3D: unknown = null;
   
   // Processing pipeline state
   let currentLOD = $state(0);
@@ -217,7 +217,7 @@
   }
   
   // Create spatial embeddings from text chunks
-  async function createSpatialEmbeddings(chunks: any[]) {
+  async function createSpatialEmbeddings(chunks: unknown[]) {
     const spatial = [];
     
     for (let i = 0; i < chunks.length; i++) {
@@ -363,7 +363,7 @@
   }
   
   // Apply autocomplete suggestion
-  function applyAutocompleteSuggestion(suggestion: any) {
+  function applyAutocompleteSuggestion(suggestion: unknown) {
     autocompleteInput = suggestion.text;
     autocompleteSuggestions = [];
   }

@@ -94,7 +94,7 @@ export type SearchEvent =
   | { type: 'SAVE_QUERY'; name?: string }
   | { type: 'LOAD_SAVED_QUERY'; query: string }
   | { type: 'UPDATE_SETTINGS'; settings: Partial<SearchContext['settings']> }
-  | { type: 'SEARCH_COMPLETE'; results: any }
+  | { type: 'SEARCH_COMPLETE'; results: unknown }
   | { type: 'SEARCH_ERROR'; error: string };
 
 // Default context
@@ -132,7 +132,7 @@ const defaultContext: SearchContext = {
 
 // Services for search machine
 const searchServices = {
-  performSearch: async (context: SearchContext, event: any) => {
+  performSearch: async (context: SearchContext, event: unknown) => {
     const startTime = performance.now();
     
     try {
@@ -218,7 +218,7 @@ const searchServices = {
     }
   },
 
-  exportResults: async (context: SearchContext, event: any) => {
+  exportResults: async (context: SearchContext, event: unknown) => {
     const { format } = event;
     const selectedResults = context.results.filter(r => 
       context.selectedResults.includes(r.id)
@@ -248,7 +248,7 @@ const searchServices = {
 };
 
 // Helper functions
-async function performLocalDocumentSearch(query: string, options: any) {
+async function performLocalDocumentSearch(query: string, options: unknown) {
   // Simulate local search - in practice this would query your local database
   return {
     documents: [],
@@ -263,7 +263,7 @@ function generateLocalSuggestions(query: string, recentQueries: string[]) {
     .slice(0, 5);
 }
 
-function downloadJSON(data: any, filename: string) {
+function downloadJSON(data: unknown, filename: string) {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: 'application/json'
   });
@@ -289,7 +289,7 @@ function downloadCSV(results: SearchResult[], filename: string) {
   downloadBlob(blob, filename);
 }
 
-function downloadPDF(data: any, filename: string) {
+function downloadPDF(data: unknown, filename: string) {
   // Simplified PDF generation - in practice you'd use a proper PDF library
   const textContent = `
 Search Results Export
@@ -622,7 +622,7 @@ export const searchMachine = createMachine({
       results: (context, event) => {
         const { sortBy, order = 'desc' } = event;
         const sorted = [...context.results].sort((a, b) => {
-          let aVal: any, bVal: any;
+          let aVal: unknown, bVal: unknown;
           
           switch (sortBy) {
             case 'relevance':
@@ -779,8 +779,8 @@ export const searchActions = {
 
 // Selectors for derived state
 export const searchSelectors = {
-  isIdle: (state: any) => state.matches('idle'),
-  isSearching: (state: any) => state.matches('searching') || state.matches('loading_more'),
+  isIdle: (state: unknown) => state.matches('idle'),
+  isSearching: (state: unknown) => state.matches('searching') || state.matches('loading_more'),
   hasResults: (context: SearchContext) => context.results.length > 0,
   hasSelection: (context: SearchContext) => context.selectedResults.length > 0,
   canLoadMore: (context: SearchContext) => {

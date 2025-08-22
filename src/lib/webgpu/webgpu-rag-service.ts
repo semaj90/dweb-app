@@ -93,11 +93,11 @@ export class WebGPURAGService {
       chunkIndex: number;
       text: string;
       similarity: number;
-      metadata: any;
+      metadata: unknown;
     }>;
     processingTime: number;
     usedGPU: boolean;
-    metrics: any;
+    metrics: unknown;
   }> {
     const startTime = performance.now();
     const { topK = 10, threshold = 0.7, useGPU = true } = options;
@@ -106,7 +106,7 @@ export class WebGPURAGService {
       // Get query embedding (this would typically come from your embedding service)
       const queryEmbedding = await this.generateEmbedding(query);
 
-      let results: any[] = [];
+      let results: unknown[] = [];
       let usedGPU = false;
 
       if (useGPU && this.isInitialized && webgpuManager.isSupported()) {
@@ -147,7 +147,7 @@ export class WebGPURAGService {
   async processDocument(
     documentId: string,
     content: string,
-    metadata: any = {}
+    metadata: unknown = {}
   ): Promise<{
     chunks: number;
     embeddings: number;
@@ -231,7 +231,7 @@ export class WebGPURAGService {
    * GPU-accelerated batch document analysis
    */
   async batchAnalyzeDocuments(
-    documents: Array<{ id: string; content: string; metadata?: any }>
+    documents: Array<{ id: string; content: string; metadata?: unknown }>
   ): Promise<{
     processed: number;
     failed: number;
@@ -282,15 +282,15 @@ export class WebGPURAGService {
 
   private async performGPUSearch(
     queryEmbedding: Float32Array,
-    options: any
-  ): Promise<any[]> {
+    options: unknown
+  ): Promise<unknown[]> {
     const allDocuments = Object.entries(this.embeddingCache);
     const allChunks: Array<{
       documentId: string;
       chunkIndex: number;
       text: string;
       embedding: Float32Array;
-      metadata: any;
+      metadata: unknown;
     }> = [];
 
     // Flatten all chunks
@@ -329,10 +329,10 @@ export class WebGPURAGService {
 
   private async performCPUSearch(
     queryEmbedding: Float32Array,
-    options: any
-  ): Promise<any[]> {
+    options: unknown
+  ): Promise<unknown[]> {
     // Fallback CPU implementation
-    const results: any[] = [];
+    const results: unknown[] = [];
 
     for (const [docId, docData] of Object.entries(this.embeddingCache)) {
       for (let i = 0; i < docData.chunks.length; i++) {
@@ -398,7 +398,7 @@ export class WebGPURAGService {
     return embedding;
   }
 
-  private async generateDocumentEmbedding(chunkEmbeddings: any[]): Promise<Float32Array> {
+  private async generateDocumentEmbedding(chunkEmbeddings: unknown[]): Promise<Float32Array> {
     // Average chunk embeddings to create document embedding
     const dimension = chunkEmbeddings[0].embedding.length;
     const docEmbedding = new Float32Array(dimension);

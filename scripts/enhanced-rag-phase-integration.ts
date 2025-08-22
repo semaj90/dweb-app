@@ -96,9 +96,9 @@ interface RankingFeatures {
 // Enhanced Cache Manager with LokiJS
 class EnhancedCacheManager {
   private db: loki;
-  private documents: any;
-  private embeddings: any;
-  private rankings: any;
+  private documents: unknown;
+  private embeddings: unknown;
+  private rankings: unknown;
   private searchIndex: Fuse<EnhancedDocument>;
 
   constructor() {

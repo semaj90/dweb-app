@@ -5,7 +5,7 @@
     class?: string;
     children?: import('svelte').Snippet;
   }
-  import { createTooltip, melt } from "@melt-ui/svelte";
+  import { createTooltip, melt } from "melt";
   import {
     Download,
     PenLine,

@@ -2,10 +2,9 @@
 // SSR-safe AI store for Gemma3 Q4_K_M GGUF integration
 // Manages LLM state, conversation history, and settings with proper hydration
 import { writable, derived, get } from "svelte/store";
-// Orphaned content: import {
-
+import { browser } from "$app/environment";
 import type { AIResponse, LocalModel } from "$lib/data/types";
-// Orphaned content: import type { ConversationHistory
+import type { ConversationHistory } from "$lib/types";
 
 // Define Gemma3Config interface directly
 export interface Gemma3Config {

@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         message: 'Document indexed successfully'
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Document upload error:', error);
     
     if (error.name === 'ZodError') {
@@ -143,7 +143,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         }
       });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Document search error:', error);
     
     return json({
@@ -209,7 +209,7 @@ export const DELETE: RequestHandler = async ({ request, cookies }) => {
         message: 'Document deleted successfully'
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Document delete error:', error);
     
     return json({

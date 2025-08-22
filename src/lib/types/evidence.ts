@@ -72,7 +72,7 @@ export interface LabAnalysis {
   id?: string;
   technician?: string;
   method?: string;
-  results?: any;
+  results?: unknown;
   confidence?: number;
   timestamp?: Date;
   notes?: string;
@@ -98,7 +98,7 @@ export interface Entity {
   type: EntityType;
   confidence: number;
   position?: { start: number; end: number };
-  metadata?: any;
+  metadata?: unknown;
 }
 
 export type EntityType = 
@@ -119,7 +119,7 @@ export interface Relationship {
   to: string;
   type: RelationshipType;
   confidence: number;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 export type RelationshipType = 
@@ -160,7 +160,7 @@ export interface AuthenticityCheck {
 }
 
 export interface CanvasData {
-  canvas_json: any;
+  canvas_json: unknown;
   evidence_nodes: EvidenceNode[];
   node_relationships: NodeRelationship[];
   case_id?: string;
@@ -175,7 +175,7 @@ export interface NodeRelationship {
   to: string;
   type: RelationshipType;
   confidence?: number;
-  metadata?: any;
+  metadata?: unknown;
   createdAt?: Date;
   createdBy?: string;
 }
@@ -271,7 +271,7 @@ export interface ProcessingResult {
   progress: number;
   step: ProcessingStep;
   stepProgress?: number;
-  results?: any;
+  results?: unknown;
   error?: string;
   startTime: Date;
   endTime?: Date;
@@ -292,7 +292,7 @@ export interface WASMModule {
   name: string;
   loaded: boolean;
   instance?: WebAssembly.Instance;
-  exports?: any;
+  exports?: unknown;
 }
 
 // Real-time Types
@@ -300,7 +300,7 @@ export interface RealtimeUpdate {
   type: 'evidence_update' | 'canvas_update' | 'processing_update';
   caseId: string;
   evidenceId?: string;
-  data: any;
+  data: unknown;
   timestamp: Date;
   userId: string;
 }

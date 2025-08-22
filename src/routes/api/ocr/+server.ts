@@ -233,7 +233,7 @@ async function performAdvancedLegalAnalysis(
       quantization: 'Q4_K_M'
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Legal Analysis] Failed:', error);
     
     // Fallback analysis
@@ -472,7 +472,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     return json(result);
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[OCR] Error:', err);
     return json({
       success: false,
@@ -559,7 +559,7 @@ export const GET: RequestHandler = async () => {
       ]
     });
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('[OCR Health Check] Error:', err);
     return json({
       status: 'unhealthy',

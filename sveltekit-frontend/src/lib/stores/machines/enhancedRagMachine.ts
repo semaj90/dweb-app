@@ -1,8 +1,20 @@
 
-import { createMachine, assign  } from "xstate";
-// Orphaned content: import {
+import { createMachine, assign } from "xstate";
+import { writable } from "svelte/store";
 
-export const enhancedRagMachine = createMachine(
+interface RagContext {
+  query: string;
+  results: any[];
+  error: string | null;
+  loading: boolean;
+}
+
+type RagEvent = 
+  | { type: 'EXECUTE'; query: string }
+  | { type: 'RESET' }
+  | { type: 'RETRY' };
+
+export const enhancedRagMachine = createMachine<RagContext, RagEvent>(
   {
     id: 'enhancedRag',
     initial: 'idle',
@@ -45,8 +57,15 @@ export const enhancedRagMachine = createMachine(
   },
   {
     actions: {
-      setQuery: assign({ query: (_, e: any) => e.query }),
-      reset: assign({ query: '', results: [], error: null, loading: false }),
+      setQuery: assign({
+        query: (_, event) => event.type === 'EXECUTE' ? event.query : ''
+      }),
+      reset: assign({
+        query: '',
+        results: [],
+        error: null,
+        loading: false
+      }),
     },
   }
 );

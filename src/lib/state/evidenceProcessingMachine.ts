@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * XState State Machine for Evidence Processing Workflow
  * Handles the complete lifecycle of evidence from upload to AI analysis
@@ -26,11 +26,11 @@ export interface EvidenceProcessingContext {
 
   // Processing results
   extractedText?: string;
-  chunks?: Array<{ content: string; embedding: number[]; metadata: any }>;
+  chunks?: Array<{ content: string; embedding: number[]; metadata: unknown }>;
   embeddings?: number[][];
   analysis?: {
     summary: string;
-    entities: any[];
+    entities: unknown[];
     sentiment: string;
     classification: string;
     riskAssessment?: string;
@@ -132,7 +132,7 @@ const documentProcessingService = fromPromise(
         // This would be handled by the state machine's progress update
       }
 
-      await new Promise((resolve: any) => setTimeout(resolve, interval));
+      await new Promise((resolve: unknown) => setTimeout(resolve, interval));
       waited += interval;
     }
 
@@ -373,7 +373,7 @@ export const evidenceProcessingMachine = createMachine(
             actions: assign({
               chunks: ({ event }) => event.output.chunks,
               embeddings: ({ event }) =>
-                event.output.chunks?.map((chunk: any) => chunk.embedding) || [],
+                event.output.chunks?.map((chunk: unknown) => chunk.embedding) || [],
               processingTimes: ({ context }) => ({
                 ...context.processingTimes,
                 embeddingGeneration: Date.now() - context.stageStartTime,

@@ -84,7 +84,7 @@ const defaultContext: AppContext = {
 
 // Services for the state machine
 const appServices = {
-  authenticateUser: async (context: AppContext, event: any) => {
+  authenticateUser: async (context: AppContext, event: unknown) => {
     const { email, password } = event.credentials;
     
     try {

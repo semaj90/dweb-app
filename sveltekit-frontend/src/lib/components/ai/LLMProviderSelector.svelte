@@ -4,7 +4,7 @@ https://svelte.dev/e/js_parse_error -->
 <script lang="ts">
   import { $props, $effect } from 'svelte';
 
-	import { createSelect, melt } from '@melt-ui/svelte';
+	import { createSelect, melt } from 'melt';
 	import { Badge } from 'bits-ui';
 	import { Card, CardContent } from 'bits-ui';
 	import { writable, derived, type Writable } from 'svelte/store';

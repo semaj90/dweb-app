@@ -26,13 +26,13 @@ export async function getChannel() {
   return channel;
 }
 
-export async function publishToQueue(queue: string, payload: any) {
+export async function publishToQueue(queue: string, payload: unknown) {
   const ch = await getChannel();
   await ch.assertQueue(queue, { durable: true });
   ch.sendToQueue(queue, Buffer.from(JSON.stringify(payload)), { persistent: true });
 }
 
-export async function consumeFromQueue(queue: string, handler: (msg: any) => Promise<void>) {
+export async function consumeFromQueue(queue: string, handler: (msg: unknown) => Promise<void>) {
   const ch = await getChannel();
   await ch.assertQueue(queue, { durable: true });
   

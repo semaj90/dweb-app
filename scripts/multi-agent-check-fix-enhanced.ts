@@ -507,7 +507,7 @@ class MultiAgentOrchestrator {
     };
   }
 
-  private extractRecommendations(results: any[]): string[] {
+  private extractRecommendations(results: unknown[]): string[] {
     // Extract and deduplicate recommendations from all agents
     const allRecommendations = new Set<string>();
     
@@ -526,7 +526,7 @@ class MultiAgentOrchestrator {
     return Array.from(allRecommendations);
   }
 
-  private findConsensus(results: any[]): any {
+  private findConsensus(results: unknown[]): unknown {
     // Find common patterns across agent responses
     return {
       priorityFiles: this.extractPriorityFiles(results),
@@ -534,7 +534,7 @@ class MultiAgentOrchestrator {
     };
   }
 
-  private extractPriorityFiles(results: any[]): string[] {
+  private extractPriorityFiles(results: unknown[]): string[] {
     // Extract files mentioned by multiple agents
     const fileCounts = new Map<string, number>();
     
@@ -553,12 +553,12 @@ class MultiAgentOrchestrator {
       .map(([file]) => file);
   }
 
-  private extractPatterns(results: any[]): string[] {
+  private extractPatterns(results: unknown[]): string[] {
     // Extract common error patterns
     return ['Type errors in stores', 'Missing imports', 'Svelte 5 migration issues'];
   }
 
-  private async generateActionPlan(synthesis: any, errors: ErrorEntry[]): Promise<any> {
+  private async generateActionPlan(synthesis: unknown, errors: ErrorEntry[]): Promise<any> {
     const errorsByType = errors.reduce((acc, error) => {
       acc[error.type] = (acc[error.type] || 0) + 1;
       return acc;
@@ -705,13 +705,13 @@ async function checkGPUAvailability(): Promise<boolean> {
   try {
     const response = await fetch(`${config.ollamaHost}/api/tags`);
     const data = await response.json();
-    return data?.models?.some((m: any) => m.details?.families?.includes('gpu'));
+    return data?.models?.some((m: unknown) => m.details?.families?.includes('gpu'));
   } catch {
     return false;
   }
 }
 
-function formatMarkdownSummary(results: any, errors: ErrorEntry[]): string {
+function formatMarkdownSummary(results: unknown, errors: ErrorEntry[]): string {
   const errorsByFile = errors.reduce((acc, error) => {
     if (!acc[error.file]) acc[error.file] = [];
     acc[error.file].push(error);

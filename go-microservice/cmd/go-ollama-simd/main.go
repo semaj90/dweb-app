@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"microservice/service"
+	"legal-ai-production/internal/service"
 )
 
 func main() {

@@ -46,15 +46,15 @@ test.describe('Claude Vector Integration CLI Tests', () => {
     let output = '';
     let errorOutput = '';
 
-    cliProcess.stdout.on('data', (data: any) => {
+    cliProcess.stdout.on('data', (data: unknown) => {
       output += data.toString();
     });
 
-    cliProcess.stderr.on('data', (data: any) => {
+    cliProcess.stderr.on('data', (data: unknown) => {
       errorOutput += data.toString();
     });
 
-    await new Promise((resolve: any) => {
+    await new Promise((resolve: unknown) => {
       cliProcess.on('close', resolve);
     });
 
@@ -86,15 +86,15 @@ test.describe('Claude Vector Integration CLI Tests', () => {
     let output = '';
     let errorOutput = '';
 
-    testProcess.stdout.on('data', (data: any) => {
+    testProcess.stdout.on('data', (data: unknown) => {
       output += data.toString();
     });
 
-    testProcess.stderr.on('data', (data: any) => {
+    testProcess.stderr.on('data', (data: unknown) => {
       errorOutput += data.toString();
     });
 
-    const exitCode = await new Promise((resolve: any) => {
+    const exitCode = await new Promise((resolve: unknown) => {
       testProcess.on('close', resolve);
     });
 
@@ -159,15 +159,15 @@ This document tests the embedding and indexing functionality.`;
       let output = '';
       let errorOutput = '';
 
-      embedProcess.stdout.on('data', (data: any) => {
+      embedProcess.stdout.on('data', (data: unknown) => {
         output += data.toString();
       });
 
-      embedProcess.stderr.on('data', (data: any) => {
+      embedProcess.stderr.on('data', (data: unknown) => {
         errorOutput += data.toString();
       });
 
-      const exitCode = await new Promise((resolve: any) => {
+      const exitCode = await new Promise((resolve: unknown) => {
         embedProcess.on('close', resolve);
       });
 
@@ -224,15 +224,15 @@ This document tests the embedding and indexing functionality.`;
     let output = '';
     let errorOutput = '';
 
-    searchProcess.stdout.on('data', (data: any) => {
+    searchProcess.stdout.on('data', (data: unknown) => {
       output += data.toString();
     });
 
-    searchProcess.stderr.on('data', (data: any) => {
+    searchProcess.stderr.on('data', (data: unknown) => {
       errorOutput += data.toString();
     });
 
-    const exitCode = await new Promise((resolve: any) => {
+    const exitCode = await new Promise((resolve: unknown) => {
       searchProcess.on('close', resolve);
     });
 
@@ -320,15 +320,15 @@ This document tests the embedding and indexing functionality.`;
       let output = '';
       let errorOutput = '';
 
-      embedDirProcess.stdout.on('data', (data: any) => {
+      embedDirProcess.stdout.on('data', (data: unknown) => {
         output += data.toString();
       });
 
-      embedDirProcess.stderr.on('data', (data: any) => {
+      embedDirProcess.stderr.on('data', (data: unknown) => {
         errorOutput += data.toString();
       });
 
-      const exitCode = await new Promise((resolve: any) => {
+      const exitCode = await new Promise((resolve: unknown) => {
         embedDirProcess.on('close', resolve);
       });
 
@@ -424,15 +424,15 @@ This document tests the embedding and indexing functionality.`;
     let output = '';
     let errorOutput = '';
 
-    psqlProcess.stdout.on('data', (data: any) => {
+    psqlProcess.stdout.on('data', (data: unknown) => {
       output += data.toString();
     });
 
-    psqlProcess.stderr.on('data', (data: any) => {
+    psqlProcess.stderr.on('data', (data: unknown) => {
       errorOutput += data.toString();
     });
 
-    const exitCode = await new Promise((resolve: any) => {
+    const exitCode = await new Promise((resolve: unknown) => {
       psqlProcess.on('close', resolve);
     });
 

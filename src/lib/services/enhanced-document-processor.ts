@@ -39,7 +39,7 @@ message Entity {
 
 interface DocumentIngestionEvent {
   type: 'upload' | 'process' | 'embed' | 'store' | 'analyze';
-  data: any;
+  data: unknown;
   priority: 'high' | 'medium' | 'low';
   timestamp: number;
   userId?: string;
@@ -58,19 +58,19 @@ export class EnhancedDocumentProcessor {
   private eventQueue: DocumentIngestionEvent[] = [];
   private processing = false;
   private workerPool: Worker[] = [];
-  private quicServer: any;
-  private protobufRoot: any;
+  private quicServer: unknown;
+  private protobufRoot: unknown;
   
   // Database connections
   private pgPool: Pool;
   private qdrantClient: QdrantClient;
-  private neo4jDriver: any;
-  private minioClient: any;
+  private neo4jDriver: unknown;
+  private minioClient: unknown;
   
   // AI Models
-  private embeddingModel: any;
-  private intentModel: any; // Gemma2B ONNX for intent detection
-  private legalBertModel: any;
+  private embeddingModel: unknown;
+  private intentModel: unknown; // Gemma2B ONNX for intent detection
+  private legalBertModel: unknown;
   
   // Service Worker for background processing
   private serviceWorker: ServiceWorker | null = null;
@@ -79,7 +79,7 @@ export class EnhancedDocumentProcessor {
     pgConnectionString: string;
     qdrantUrl: string;
     neo4jUrl: string;
-    minioConfig: any;
+    minioConfig: unknown;
     workerPoolSize?: number;
   }) {
     this.pgPool = new Pool({ connectionString: config.pgConnectionString });
@@ -163,8 +163,8 @@ export class EnhancedDocumentProcessor {
     embeddingId?: string;
     graphNodeId?: string;
     minioObjectId?: string;
-    semanticAnalysis?: any;
-    intentAnalysis?: any;
+    semanticAnalysis?: unknown;
+    intentAnalysis?: unknown;
   }> {
     const startTime = Date.now();
     
@@ -258,7 +258,7 @@ export class EnhancedDocumentProcessor {
   }
 
   // MinIO storage integration
-  private async storeInMinio(document: any): Promise<{ objectId: string }> {
+  private async storeInMinio(document: unknown): Promise<{ objectId: string }> {
     // Store original document in MinIO
     const objectName = `documents/${document.caseId || 'general'}/${document.id}`;
     
@@ -269,7 +269,7 @@ export class EnhancedDocumentProcessor {
   }
 
   // PostgreSQL + pgvector integration
-  private async processForPgVector(document: any, chunks: string[]): Promise<{ embeddingId: string }> {
+  private async processForPgVector(document: unknown, chunks: string[]): Promise<{ embeddingId: string }> {
     try {
       // Generate embeddings for each chunk
       const embeddings = await Promise.all(
@@ -313,7 +313,7 @@ export class EnhancedDocumentProcessor {
   }
 
   // Neo4j graph relations
-  private async createGraphRelations(document: any): Promise<{ nodeId: string }> {
+  private async createGraphRelations(document: unknown): Promise<{ nodeId: string }> {
     const session = this.neo4jDriver.session();
     
     try {
@@ -351,8 +351,8 @@ export class EnhancedDocumentProcessor {
   }
 
   // Semantic analysis with Legal-BERT
-  private async performSemanticAnalysis(document: any): Promise<{
-    entities: any[];
+  private async performSemanticAnalysis(document: unknown): Promise<{
+    entities: unknown[];
     legalCategories: string[];
     sentimentScore: number;
     keyPhrases: string[];
@@ -395,7 +395,7 @@ export class EnhancedDocumentProcessor {
   }
 
   // User intent detection with Gemma2B ONNX
-  private async detectUserIntent(document: any): Promise<{
+  private async detectUserIntent(document: unknown): Promise<{
     primaryIntent: string;
     confidence: number;
     secondaryIntents: string[];
@@ -436,7 +436,7 @@ export class EnhancedDocumentProcessor {
     userIntent?: string;
   }): Promise<{
     response: string;
-    sources: any[];
+    sources: unknown[];
     confidence: number;
     followUpQuestions: string[];
   }> {
@@ -504,7 +504,7 @@ export class EnhancedDocumentProcessor {
     return Array.from(result.data);
   }
 
-  private async extractLegalEntities(text: string): Promise<any[]> {
+  private async extractLegalEntities(text: string): Promise<unknown[]> {
     // Placeholder for actual legal NER
     const legalPatterns = [
       /\b[A-Z][a-z]+ v\. [A-Z][a-z]+\b/g, // Case names
@@ -551,7 +551,7 @@ export class EnhancedDocumentProcessor {
     );
   }
 
-  private mapToLegalIntents(intentResult: any): {
+  private mapToLegalIntents(intentResult: unknown): {
     primaryIntent: string;
     confidence: number;
     secondaryIntents: string[];
@@ -582,7 +582,7 @@ export class EnhancedDocumentProcessor {
     return recommendations[intent] || ['Consult with legal professional'];
   }
 
-  private async retrieveRelevantDocuments(query: string, context: any): Promise<any[]> {
+  private async retrieveRelevantDocuments(query: string, context: unknown): Promise<unknown[]> {
     // Use hybrid search across pgvector and Qdrant
     const queryEmbedding = await this.generateEmbedding(query);
     
@@ -607,7 +607,7 @@ export class EnhancedDocumentProcessor {
     }
   }
 
-  private buildChatPrompt(query: string, docs: any[], context: any): string {
+  private buildChatPrompt(query: string, docs: unknown[], context: unknown): string {
     const docContext = docs.map(doc => doc.content).join('\n\n');
     
     return `You are a legal AI assistant. Answer the user's question based on the provided legal documents.
@@ -622,14 +622,14 @@ Provide a professional legal response, citing relevant documents when appropriat
 Response:`;
   }
 
-  private calculateResponseConfidence(docs: any[], response: string): number {
+  private calculateResponseConfidence(docs: unknown[], response: string): number {
     if (!docs.length) return 0.3;
     
     const avgDistance = docs.reduce((sum, doc) => sum + (doc.distance || 0), 0) / docs.length;
     return Math.max(0.1, 1 - avgDistance);
   }
 
-  private generateFollowUpQuestions(query: string, context: any): string[] {
+  private generateFollowUpQuestions(query: string, context: unknown): string[] {
     // Generate contextual follow-up questions
     const questions = [
       'Would you like me to analyze any specific clauses?',
@@ -669,7 +669,7 @@ Response:`;
     }
   }
 
-  async healthCheck(): Promise<{ status: string; components: any }> {
+  async healthCheck(): Promise<{ status: string; components: unknown }> {
     const checks = await Promise.allSettled([
       this.pgPool.query('SELECT 1'),
       this.qdrantClient.getCollections(),

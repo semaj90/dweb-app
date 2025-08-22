@@ -1,5 +1,5 @@
-// @ts-nocheck
-// @ts-nocheck
+
+
 /**
  * GPU-Accelerated Rapid JSON Parser for VS Code Extensions
  * WebAssembly wrapper with performance optimizations and caching
@@ -78,7 +78,7 @@ interface WasmModule {
 interface RapidJsonParserWasm {
   parseWithCache(json: string, useCache?: boolean): ParseResult;
   parseBatch(jsonArray: string[]): BatchResult;
-  getValue(path: string): any;
+  getValue(path: string): unknown;
   getMetrics(): ParseMetrics;
   stringify(options?: { pretty?: boolean }): StringifyResult;
   validate(schemaJson: string): ValidationResult;

@@ -6,9 +6,7 @@
  */
 
 import { writable, derived, type Writable } from "svelte/store";
-// Orphaned content: import {
-
-// Task coordination types
+// TODO: Fix import - // Orphaned content: import {  // Task coordination types
 export interface TaskMessage {
   id: string;
   type: "LEGAL_ANALYSIS" | "DOCUMENT_PROCESSING" | "AI_INFERENCE" | "VECTOR_SEARCH" | "REPORT_GENERATION";

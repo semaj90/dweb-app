@@ -97,7 +97,7 @@ export class LegalAICacheManager {
     avgResponseTime: 0
   };
 
-  async cacheTokens(key: string, tokens: any[], ttl: number = 3600): Promise<void> {
+  async cacheTokens(key: string, tokens: unknown[], ttl: number = 3600): Promise<void> {
     const startTime = Date.now();
     
     try {
@@ -124,7 +124,7 @@ export class LegalAICacheManager {
     }
   }
 
-  async getCachedTokens(key: string): Promise<any[] | null> {
+  async getCachedTokens(key: string): Promise<unknown[] | null> {
     const startTime = Date.now();
     
     try {
@@ -157,7 +157,7 @@ export class LegalAICacheManager {
     }
   }
 
-  async cacheLegalDocument(documentId: string, analysis: any, ttl: number = 7200): Promise<void> {
+  async cacheLegalDocument(documentId: string, analysis: unknown, ttl: number = 7200): Promise<void> {
     const key = `legal:doc:${documentId}`;
     const data = {
       ...analysis,

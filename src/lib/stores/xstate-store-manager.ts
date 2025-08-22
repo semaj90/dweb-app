@@ -177,7 +177,7 @@ export class XStateStoreManager {
   /**
    * Broadcast user authentication to all machines
    */
-  private broadcastUserAuthenticated(user: any): void {
+  private broadcastUserAuthenticated(user: unknown): void {
     // Update chat machine with user context
     chatService?.send({
       type: 'UPDATE_SETTINGS',
@@ -218,7 +218,7 @@ export class XStateStoreManager {
   /**
    * Broadcast document upload completion
    */
-  private broadcastDocumentsUploaded(documents: any[]): void {
+  private broadcastDocumentsUploaded(documents: unknown[]): void {
     // Add document context to chat machine
     const documentTitles = documents.map(d => d.documentId || d.fileId).join(', ');
     
@@ -238,7 +238,7 @@ export class XStateStoreManager {
   /**
    * Broadcast search results for context enhancement
    */
-  private broadcastSearchResults(query: string, results: any[]): void {
+  private broadcastSearchResults(query: string, results: unknown[]): void {
     // Update chat machine with search context for better responses
     if (results.length > 0) {
       chatService?.send({
@@ -262,14 +262,14 @@ export class XStateStoreManager {
   /**
    * Get service by name
    */
-  getService(name: string): any {
+  getService(name: string): unknown {
     return this.services.get(name);
   }
 
   /**
    * Send event to specific machine
    */
-  sendToMachine(machineName: string, event: any): void {
+  sendToMachine(machineName: string, event: unknown): void {
     const service = this.services.get(machineName);
     if (service) {
       service.send(event);
@@ -281,7 +281,7 @@ export class XStateStoreManager {
   /**
    * Broadcast event to all machines
    */
-  broadcastEvent(event: any): void {
+  broadcastEvent(event: unknown): void {
     this.services.forEach((service, name) => {
       try {
         service.send(event);
@@ -294,8 +294,8 @@ export class XStateStoreManager {
   /**
    * Get current state of all machines
    */
-  getGlobalState(): any {
-    const state: any = {};
+  getGlobalState(): unknown {
+    const state: unknown = {};
     
     this.services.forEach((service, name) => {
       state[name] = {
@@ -338,8 +338,8 @@ export class XStateStoreManager {
   /**
    * Get performance metrics from all machines
    */
-  getPerformanceMetrics(): any {
-    const metrics: any = {
+  getPerformanceMetrics(): unknown {
+    const metrics: unknown = {
       timestamp: Date.now(),
       machines: {}
     };
@@ -360,8 +360,8 @@ export class XStateStoreManager {
   /**
    * Export machine configurations for debugging
    */
-  exportConfigurations(): any {
-    const configs: any = {};
+  exportConfigurations(): unknown {
+    const configs: unknown = {};
     
     this.services.forEach((service, name) => {
       configs[name] = {
@@ -378,8 +378,8 @@ export class XStateStoreManager {
   /**
    * Health check for all machines
    */
-  healthCheck(): any {
-    const health: any = {
+  healthCheck(): unknown {
+    const health: unknown = {
       overall: 'healthy',
       machines: {},
       issues: []
@@ -450,12 +450,12 @@ export const xstateHelpers = {
     appService?.send({ type: 'LOGOUT' });
   },
 
-  addNotification: (notification: any) => {
+  addNotification: (notification: unknown) => {
     appService?.send({ type: 'ADD_NOTIFICATION', notification });
   },
 
   // Chat helpers
-  createChatSession: (title?: string, context?: any) => {
+  createChatSession: (title?: string, context?: unknown) => {
     chatService?.send({ type: 'CREATE_SESSION', title, context });
   },
 
@@ -470,7 +470,7 @@ export const xstateHelpers = {
     searchService?.send({ type: 'SEARCH' });
   },
 
-  applySearchFilters: (filters: any) => {
+  applySearchFilters: (filters: unknown) => {
     searchService?.send({ type: 'APPLY_FILTERS', filters });
   },
 

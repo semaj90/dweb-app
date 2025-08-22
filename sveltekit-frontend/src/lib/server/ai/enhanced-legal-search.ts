@@ -3,12 +3,8 @@
 // Implements RAG pattern with vector similarity search and semantic enhancement
 
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-// Orphaned content: import {
-PGVectorStore, DistanceStrategy
-import { Document } from "@langchain/core/documents";
-// Orphaned content: import {
-
-import { generateEmbedding } from './embeddings-simple.js';
+// TODO: Fix import - // Orphaned content: import { PGVectorStore, DistanceStrategy import { Document } from "@langchain/core/documents";
+// TODO: Fix import - // Orphaned content: import {  import { generateEmbedding } from './embeddings-simple.js';
 // Orphaned content: // import { db
 // { cases, evidence, documents } from "$lib/database/schema";
 // Orphaned content: // import { eq, sql, and, or, desc, asc

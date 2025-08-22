@@ -39,7 +39,7 @@
   // Component state
   let selectedDemo = $state<'capabilities' | 'vector' | 'rag' | 'performance'>('capabilities');
   let isRunning = $state(false);
-  let demoResults = $state<any[]>([]);
+  let demoResults = $state<unknown[]>([]);
   let benchmarkResults = $state<any>(null);
 
   // Test data

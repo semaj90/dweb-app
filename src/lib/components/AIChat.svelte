@@ -1,5 +1,5 @@
 <script lang="ts">
-  // @ts-nocheck
+  
   import { onMount } from "svelte";
   import { writable, type Writable } from "svelte/store";
   const cn = (...classes: Array<string | false | null | undefined>) =>
@@ -15,8 +15,8 @@
   export let maxContextChunks = 5;
 
   // Reactive stores
-  /** @type {Writable<any[]>} */
-  const messages = writable([] as any[]);
+  /** @type {Writable<unknown[]>} */
+  const messages = writable([] as unknown[]);
   const isLoading = writable(false);
   const isStreaming = writable(false);
   const currentInput = writable("");
@@ -24,13 +24,13 @@
     status: "checking",
     message: "Initializing AI system...",
   });
-  /** @type {Writable<any[]>} */
-  const contextSources = writable([] as any[]);
+  /** @type {Writable<unknown[]>} */
+  const contextSources = writable([] as unknown[]);
 
   // Component state
   let messageContainer: HTMLDivElement | undefined;
   let inputElement: HTMLInputElement | undefined;
-  let currentSources: any[] = [];
+  let currentSources: unknown[] = [];
   let chatSession = sessionId;
   let streamingMessage = "";
   let abortController: AbortController | null = null;
@@ -66,7 +66,7 @@
           details: data,
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       systemStatus.set({
         status: "error",
         message: "AI system unavailable",
@@ -147,7 +147,7 @@
           }
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error.name !== "AbortError") {
         console.error("Chat error:", error);
         messages.update((msgs) => [
@@ -169,7 +169,7 @@
     setTimeout(scrollToBottom, 100);
   }
 
-  async function handleStreamingData(data: any, messageId: string) {
+  async function handleStreamingData(data: unknown, messageId: string) {
     switch (data.type) {
       case "status":
         systemStatus.update((status) => ({ ...status, message: data.message }));

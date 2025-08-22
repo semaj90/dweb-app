@@ -173,7 +173,7 @@ export default async function init(inlineConfig: RuntimeOptions = {}): Promise<v
   let inspector: RuntimeInspectorCallback | undefined
 
   let _timer: number | undefined
-  let _resolvers: ((arg?: any) => any)[] = []
+  let _resolvers: ((arg?: unknown) => any)[] = []
   const scheduleUpdate = () => new Promise((resolve) => {
     _resolvers.push(resolve)
     if (_timer != null)

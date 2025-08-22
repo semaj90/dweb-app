@@ -383,12 +383,42 @@
       "Bash(./complete-vector-setup.bat)",
       "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -d legal_ai_db -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\drizzle\\safe-vector-migration.sql\")",
       "Bash(.simple-api-endpoints.exe)",
-      "Bash(./simple-api-endpoints.exe)"
+      "Bash(./simple-api-endpoints.exe)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"CREATE TABLE IF NOT EXISTS users ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), email VARCHAR(255) NOT NULL UNIQUE, hashed_password VARCHAR(255), first_name VARCHAR(100), last_name VARCHAR(100), name VARCHAR(255), role VARCHAR(50) DEFAULT ''prosecutor'' NOT NULL, department VARCHAR(100), badge_number VARCHAR(50), jurisdiction VARCHAR(100), display_name VARCHAR(255), avatar_url TEXT, is_active BOOLEAN DEFAULT true NOT NULL, created_at TIMESTAMP DEFAULT NOW() NOT NULL, updated_at TIMESTAMP DEFAULT NOW() NOT NULL );\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ''public'';\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\sveltekit-frontend\\create-tables.sql\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"DROP TABLE IF EXISTS users CASCADE;\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f create-users.sql)",
+      "Bash(if exist START-LEGAL-AI.bat echo \"Found startup script\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f database-schema.sql)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"ALTER TABLE users ADD COLUMN IF NOT EXISTS department VARCHAR(100);\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -f \"drizzle\\20250821020322_peaceful_rocket_raccoon.sql\")",
+      "Bash(./create-profiles.bat)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(del \"C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\go-microservice\\cmd\\enhanced-rag\\managers.go\")",
+      "Bash(PORT=8101 ./bin/simple-api-endpoints.exe)",
+      "Bash(C:WindowsSystem32taskkill.exe /F /IM node.exe)",
+      "Bash(C:WindowsSystem32tasklist.exe /FI \"PID eq 13776\")",
+      "Bash(vite dev:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"\\d cases\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"ALTER TABLE cases ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE CASCADE;\")",
+      "Bash(claude --resume)",
+      "Bash(claude -c --resume)",
+      "Bash(claude continue)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U postgres -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT version();\")",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe\" -U legal_admin -d legal_ai_db -h localhost -c \"SELECT id, title, case_number, status, created_at FROM cases ORDER BY created_at DESC LIMIT 5;\")"
     ],
     "deny": [],
     "defaultMode": "acceptEdits",
     "additionalDirectories": [
-      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app"
+      "C:\\c\\Users\\james\\Desktop\\deeds-web\\deeds-web-app",
+      "C:\\Users\\james"
     ]
   }
 }

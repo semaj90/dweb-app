@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Performance Benchmark Suite for GPU-Accelerated JSON Parser
  * Tests parsing performance against native JSON.parse and other libraries
@@ -105,7 +105,7 @@ export class JsonParserBenchmark {
     });
 
     // Very large JSON with deep nesting
-    const createDeepObject = (depth: number): any => {
+    const createDeepObject = (depth: number): unknown => {
       if (depth === 0) {
         return {
           value: Math.random(),
@@ -352,7 +352,7 @@ export class JsonParserBenchmark {
   async benchmarkCacheEffectiveness(): Promise<{
     withCache: BenchmarkResult;
     withoutCache: BenchmarkResult;
-    cacheStats: any;
+    cacheStats: unknown;
     speedup: number;
   }> {
     console.log("💾 Benchmarking cache effectiveness...");

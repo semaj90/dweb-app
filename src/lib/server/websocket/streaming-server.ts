@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Advanced WebSocket Streaming Server for Real-Time AI Processing
  * Handles chunked streaming, concurrent processing, and microservice coordination
@@ -28,7 +28,7 @@ interface StreamingSession {
 interface ProcessingChunk {
   id: string;
   type: 'legal-bert' | 'local-llm' | 'enhanced-rag' | 'user-history' | 'semantic-tokens';
-  content: any;
+  content: unknown;
   status: 'pending' | 'processing' | 'complete' | 'error';
   confidence: number;
   processingTime: number;
@@ -134,7 +134,7 @@ export class StreamingAIServer extends EventEmitter {
     }
   }
 
-  private async startStreamingProcessing(session: StreamingSession, payload: any) {
+  private async startStreamingProcessing(session: StreamingSession, payload: unknown) {
     const { content, analysisType, options = {} } = payload;
     
     session.status = 'processing';
@@ -166,7 +166,7 @@ export class StreamingAIServer extends EventEmitter {
   private async initializeProcessingChunks(
     content: string, 
     analysisType: string, 
-    options: any
+    options: unknown
   ): Promise<ProcessingChunk[]> {
     const chunks: ProcessingChunk[] = [];
     
@@ -349,7 +349,7 @@ export class StreamingAIServer extends EventEmitter {
   }
 
   // Individual processing methods (placeholders for actual implementations)
-  private async processLegalBert(content: any) {
+  private async processLegalBert(content: unknown) {
     // Simulate Legal-BERT processing
     await this.sleep(2000);
     return {
@@ -359,7 +359,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processLocalLLM(content: any) {
+  private async processLocalLLM(content: unknown) {
     // Simulate local LLM processing
     await this.sleep(3000);
     return {
@@ -369,7 +369,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processEnhancedRAG(content: any) {
+  private async processEnhancedRAG(content: unknown) {
     // Simulate enhanced RAG processing
     await this.sleep(1500);
     return {
@@ -379,7 +379,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processUserHistory(content: any) {
+  private async processUserHistory(content: unknown) {
     // Simulate user history processing
     await this.sleep(800);
     return {
@@ -389,7 +389,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async processSemanticTokens(content: any) {
+  private async processSemanticTokens(content: unknown) {
     // Simulate semantic tokenization
     await this.sleep(500);
     return {
@@ -399,7 +399,7 @@ export class StreamingAIServer extends EventEmitter {
     };
   }
 
-  private async performExtendedThinking(session: StreamingSession, payload: any) {
+  private async performExtendedThinking(session: StreamingSession, payload: unknown) {
     // Synthesize results from multiple processing chunks
     const { chunks } = payload;
     
@@ -443,7 +443,7 @@ export class StreamingAIServer extends EventEmitter {
     return validChunks.reduce((sum, chunk) => sum + chunk.confidence, 0) / validChunks.length;
   }
 
-  private createResultPreview(result: any): any {
+  private createResultPreview(result: unknown): unknown {
     // Create a preview of the result for streaming
     return {
       summary: typeof result === 'object' ? JSON.stringify(result).substring(0, 200) + '...' : String(result),
@@ -458,7 +458,7 @@ export class StreamingAIServer extends EventEmitter {
     return Math.min(baseTime * analysisMultiplier, 30000); // Max 30 seconds
   }
 
-  private sendMessage(ws: WebSocket, message: any) {
+  private sendMessage(ws: WebSocket, message: unknown) {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(message));
     }
@@ -511,7 +511,7 @@ export class StreamingAIServer extends EventEmitter {
     }
   }
 
-  private handleError(sessionId: string, error: any) {
+  private handleError(sessionId: string, error: unknown) {
     console.error(`❌ WebSocket error for session ${sessionId}:`, error);
     
     const session = this.sessions.get(sessionId);

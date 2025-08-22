@@ -6,9 +6,7 @@
  */
 
 import { writable, derived, type Writable } from "svelte/store";
-// Orphaned content: import {
-
-import { copilotOrchestrator, type OrchestrationOptions } from "$lib/utils/mcp-helpers";
+// TODO: Fix import - // Orphaned content: import {  import { copilotOrchestrator, type OrchestrationOptions } from "$lib/utils/mcp-helpers";
 // Orphaned content: import type { StatelessAPICoordinator, TaskMessage
 
 // Enhanced RAG types with PageRank integration

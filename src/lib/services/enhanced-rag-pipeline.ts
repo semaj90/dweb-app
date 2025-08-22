@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { db } from './unified-database-service.js';
 import { aiService } from './unified-ai-service.js';
 
@@ -8,11 +8,11 @@ import { aiService } from './unified-ai-service.js';
  */
 export class EnhancedRAGPipeline {
   private initialized: boolean = false;
-  private config: any;
+  private config: unknown;
   private cache: Map<string, any> = new Map();
-  private performanceMetrics: any = {};
+  private performanceMetrics: unknown = {};
 
-  constructor(config: any = {}) {
+  constructor(config: unknown = {}) {
     this.config = {
       // Embedding configuration
       embeddingModel: config.embeddingModel || 'nomic-embed-text',
@@ -62,7 +62,7 @@ export class EnhancedRAGPipeline {
   }
 
   // ============ Document Ingestion ============
-  async ingestDocuments(documents: any[]): Promise<any> {
+  async ingestDocuments(documents: unknown[]): Promise<any> {
     const results = {
       processed: 0,
       failed: 0,
@@ -100,7 +100,7 @@ export class EnhancedRAGPipeline {
     return results;
   }
 
-  async createKnowledgeRelationships(document: any): Promise<void> {
+  async createKnowledgeRelationships(document: unknown): Promise<void> {
     // Extract entities and create relationships in Neo4j
     if (document.analysis && document.analysis.entities) {
       // Create document node
@@ -136,7 +136,7 @@ export class EnhancedRAGPipeline {
   }
 
   // ============ Enhanced Query Processing ============
-  async query(query: string, options: any = {}): Promise<any> {
+  async query(query: string, options: unknown = {}): Promise<any> {
     const startTime = performance.now();
     
     // Check cache first
@@ -187,7 +187,7 @@ export class EnhancedRAGPipeline {
     return result;
   }
 
-  private async performRetrievalPhase(query: string, options: any): Promise<any> {
+  private async performRetrievalPhase(query: string, options: unknown): Promise<any> {
     const retrievalMethods = [];
 
     // 1. Semantic vector search
@@ -223,7 +223,7 @@ export class EnhancedRAGPipeline {
     };
   }
 
-  private async performGraphTraversal(query: string, options: any): Promise<any[]> {
+  private async performGraphTraversal(query: string, options: unknown): Promise<unknown[]> {
     try {
       // Extract key terms from query
       const keyTerms = query.toLowerCase().split(/\s+/).filter(term => term.length > 3);
@@ -254,13 +254,13 @@ export class EnhancedRAGPipeline {
     }
   }
 
-  private async performFuzzySearch(query: string, options: any): Promise<any[]> {
+  private async performFuzzySearch(query: string, options: unknown): Promise<unknown[]> {
     // Implement fuzzy string matching for legal terms
     // This would integrate with a legal terminology database
     return [];
   }
 
-  private async performRankingPhase(query: string, retrievalResults: any, options: any): Promise<any[]> {
+  private async performRankingPhase(query: string, retrievalResults: unknown, options: unknown): Promise<unknown[]> {
     const allResults = new Map<string, any>();
     
     // Combine results from all retrieval methods
@@ -280,7 +280,7 @@ export class EnhancedRAGPipeline {
     return diversifiedResults.slice(0, options.topK || this.config.defaultTopK);
   }
 
-  private combineRetrievalResults(map: Map<string, any>, results: any[], source: string): void {
+  private combineRetrievalResults(map: Map<string, any>, results: unknown[], source: string): void {
     results.forEach((result, index) => {
       const id = result.id || result.document?.id || `${source}_${index}`;
       
@@ -299,7 +299,7 @@ export class EnhancedRAGPipeline {
     });
   }
 
-  private normalizeScore(result: any, source: string): number {
+  private normalizeScore(result: unknown, source: string): number {
     switch (source) {
       case 'vector':
         return result.score || 0;
@@ -314,7 +314,7 @@ export class EnhancedRAGPipeline {
     }
   }
 
-  private calculateAdvancedScore(result: any, query: string, queryEmbedding: number[]): any {
+  private calculateAdvancedScore(result: unknown, query: string, queryEmbedding: number[]): unknown {
     const scores = result.scores;
     const weights = {
       vector: this.config.hybridWeight.vector,
@@ -347,7 +347,7 @@ export class EnhancedRAGPipeline {
     };
   }
 
-  private calculateBoostFactors(result: any, query: string): any {
+  private calculateBoostFactors(result: unknown, query: string): unknown {
     const factors = {
       recency: 1.0,
       authority: 1.0,
@@ -380,7 +380,7 @@ export class EnhancedRAGPipeline {
     return factors;
   }
 
-  private applyDiversityFiltering(results: any[], options: any): any[] {
+  private applyDiversityFiltering(results: unknown[], options: unknown): unknown[] {
     const diversityThreshold = options.diversityThreshold || 0.8;
     const filtered = [];
     
@@ -403,7 +403,7 @@ export class EnhancedRAGPipeline {
     return filtered;
   }
 
-  private calculateContentSimilarity(doc1: any, doc2: any): number {
+  private calculateContentSimilarity(doc1: unknown, doc2: unknown): number {
     // Implement content similarity calculation
     // This is a simplified version - in practice you'd use more sophisticated methods
     const content1 = doc1.content || doc1.document?.content || '';
@@ -418,7 +418,7 @@ export class EnhancedRAGPipeline {
     return union.size > 0 ? intersection.size / union.size : 0;
   }
 
-  private async buildOptimizedContext(results: any[], options: any): Promise<any> {
+  private async buildOptimizedContext(results: unknown[], options: unknown): Promise<any> {
     const maxContextLength = options.maxContextLength || 4000;
     let currentLength = 0;
     const contextPieces = [];
@@ -451,7 +451,7 @@ export class EnhancedRAGPipeline {
     };
   }
 
-  private async compressContext(contextPieces: any[], options: any): Promise<any> {
+  private async compressContext(contextPieces: unknown[], options: unknown): Promise<any> {
     // Implement intelligent context compression
     // This could use extractive summarization or key sentence extraction
     
@@ -509,7 +509,7 @@ export class EnhancedRAGPipeline {
     return score;
   }
 
-  private async generateEnhancedResponse(query: string, contextData: any, options: any): Promise<any> {
+  private async generateEnhancedResponse(query: string, contextData: unknown, options: unknown): Promise<any> {
     const enhancedPrompt = this.buildEnhancedPrompt(query, contextData, options);
     
     // Use streaming if requested
@@ -544,7 +544,7 @@ export class EnhancedRAGPipeline {
     };
   }
 
-  private buildEnhancedPrompt(query: string, contextData: any, options: any): string {
+  private buildEnhancedPrompt(query: string, contextData: unknown, options: unknown): string {
     const context = contextData.pieces
       .map((piece, index) => `[${index + 1}] ${piece.title || 'Document'}: ${piece.content}`)
       .join('\n\n');
@@ -572,7 +572,7 @@ ${options.specialInstructions || ''}
 Response:`;
   }
 
-  private async processFeedbackLoop(query: string, response: any, options: any): Promise<void> {
+  private async processFeedbackLoop(query: string, response: unknown, options: unknown): Promise<void> {
     // Implement self-organizing feedback system
     try {
       // Store query-response pair for learning
@@ -614,7 +614,7 @@ Response:`;
     }, 86400 * 7); // Keep for a week
   }
 
-  private async updateQueryPatterns(query: string, response: any): Promise<void> {
+  private async updateQueryPatterns(query: string, response: unknown): Promise<void> {
     // Implement query pattern learning for optimization
     const key = `query_patterns:${this.hashString(query)}`;
     const pattern = {
@@ -629,7 +629,7 @@ Response:`;
   }
 
   // ============ Recommendation Engine ============
-  async getRecommendations(userId: string, context: any = {}): Promise<any[]> {
+  async getRecommendations(userId: string, context: unknown = {}): Promise<unknown[]> {
     try {
       // Get user's query history
       const userHistory = await this.getUserQueryHistory(userId);
@@ -647,14 +647,14 @@ Response:`;
     }
   }
 
-  private async getUserQueryHistory(userId: string): Promise<any[]> {
+  private async getUserQueryHistory(userId: string): Promise<unknown[]> {
     // Get recent queries for the user
     const pattern = `user_query:${userId}:*`;
     // This would need to be implemented based on your user tracking system
     return [];
   }
 
-  private async buildUserProfile(history: any[]): Promise<any> {
+  private async buildUserProfile(history: unknown[]): Promise<any> {
     // Build user interest profile from query history
     return {
       interests: [],
@@ -664,7 +664,7 @@ Response:`;
     };
   }
 
-  private async generateRecommendations(profile: any, context: any): Promise<any[]> {
+  private async generateRecommendations(profile: unknown, context: unknown): Promise<unknown[]> {
     // Generate personalized recommendations
     return [];
   }
@@ -676,7 +676,7 @@ Response:`;
     }, 60000); // Log every minute
   }
 
-  private updateMetrics(operation: string, data?: any): void {
+  private updateMetrics(operation: string, data?: unknown): void {
     if (!this.performanceMetrics[operation]) {
       this.performanceMetrics[operation] = {
         count: 0,
@@ -730,7 +730,7 @@ Response:`;
     }
   }
 
-  private generateCacheKey(query: string, options: any): string {
+  private generateCacheKey(query: string, options: unknown): string {
     const keyData = {
       query: query.toLowerCase().trim(),
       caseId: options.caseId,

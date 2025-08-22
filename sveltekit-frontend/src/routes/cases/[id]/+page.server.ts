@@ -1,9 +1,8 @@
 
+import { redirect } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 import { db, cases } from "$lib/server/db/index";
-// Orphaned content: import {
-
 import { eq } from "drizzle-orm";
-// Orphaned content: import type { Actions, PageServerLoad
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const user = locals.user;
@@ -17,7 +16,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   try {
     const caseDetails = await db.query.cases.findFirst({
       where: eq(cases.id, caseId),
-      with: { evidence: true, leadProsecutor: true, createdBy: true }, // Eager load evidence and user relations
+      with: { evidence: true, createdBy: true }, // Eager load evidence and user relations
     });
 
     if (!caseDetails) {

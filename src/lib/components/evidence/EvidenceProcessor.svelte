@@ -9,8 +9,8 @@
   export let evidenceId: string;
   export let steps: string[] = ['ocr', 'embedding', 'analysis'];
   export let autoStart = false;
-  export let onComplete: ((result: any) => void) | undefined = undefined;
-  export let onError: ((error: any) => void) | undefined = undefined;
+  export let onComplete: ((result: unknown) => void) | undefined = undefined;
+  export let onError: ((error: unknown) => void) | undefined = undefined;
 
   // Machine actor
   let uploadActor = createActor(uploadMachine);
@@ -153,7 +153,7 @@
     }
   }
 
-  function formatFragment(fragment: any): string {
+  function formatFragment(fragment: unknown): string {
     if (!fragment) return '';
     
     if (typeof fragment === 'string') return fragment;

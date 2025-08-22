@@ -78,7 +78,7 @@ export class RagPipelineIntegrator {
       }
 
       return searchResults;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('RAG Pipeline processing error:', error);
       throw new Error(`Failed to process documents: ${error.message}`);
     }
@@ -108,7 +108,7 @@ export class RagPipelineIntegrator {
           model: this.options.embeddingModel
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Document retrieval error:', error);
       throw new Error(`Failed to retrieve documents: ${error.message}`);
     }
@@ -133,13 +133,13 @@ export class RagPipelineIntegrator {
         sources: context,
         confidence: response.confidence || 0.8
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Response generation error:', error);
       throw new Error(`Failed to generate response: ${error.message}`);
     }
   }
 
-  private convertToLegalDocument(doc: any): LegalDocument {
+  private convertToLegalDocument(doc: unknown): LegalDocument {
     return {
       id: doc.id,
       title: doc.title,
@@ -188,7 +188,7 @@ export class RagPipelineIntegrator {
 
       const data = await response.json();
       return data.embedding;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn('Embedding generation failed, using mock embedding:', error);
       // Return mock embedding for development
       return Array.from({ length: 384 }, () => Math.random() - 0.5);
@@ -213,7 +213,7 @@ export class RagPipelineIntegrator {
 
       const data = await response.json();
       return data.results || [];
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn('Vector search failed, using mock results:', error);
       // Return mock results for development
       return this.generateMockResults();
@@ -237,7 +237,7 @@ export class RagPipelineIntegrator {
 
       const data = await response.json();
       return data.rerankedResults || results;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn('Reranking failed, returning original results:', error);
       return results;
     }
@@ -265,7 +265,7 @@ export class RagPipelineIntegrator {
         text: data.response,
         confidence: data.confidence || 0.8
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn('LLM call failed, using fallback response:', error);
       return {
         text: 'I apologize, but I\'m unable to generate a response at this time due to a service error.',

@@ -102,7 +102,7 @@ export class QueueService {
   }
 
   // Publish message to queue
-  async publishMessage(queue: keyof typeof this.queues, message: any): Promise<void> {
+  async publishMessage(queue: keyof typeof this.queues, message: unknown): Promise<void> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -125,7 +125,7 @@ export class QueueService {
   }
 
   // Publish to exchange
-  async publishToExchange(exchange: keyof typeof this.exchanges, routingKey: string, message: any): Promise<void> {
+  async publishToExchange(exchange: keyof typeof this.exchanges, routingKey: string, message: unknown): Promise<void> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -150,7 +150,7 @@ export class QueueService {
   // Consume messages from queue
   async consume(
     queue: keyof typeof this.queues,
-    handler: (message: any) => Promise<void>,
+    handler: (message: unknown) => Promise<void>,
     options: { prefetch?: number } = {}
   ): Promise<void> {
     if (!this.channel) {
@@ -195,7 +195,7 @@ export class QueueService {
   }
 
   // Batch publish messages
-  async batchPublish(messages: Array<{ queue: keyof typeof this.queues; content: any }>): Promise<void> {
+  async batchPublish(messages: Array<{ queue: keyof typeof this.queues; content: unknown }>): Promise<void> {
     if (!this.channel) {
       console.error('RabbitMQ channel not available');
       return;
@@ -211,7 +211,7 @@ export class QueueService {
   // Create delayed message
   async publishDelayedMessage(
     queue: keyof typeof this.queues,
-    message: any,
+    message: unknown,
     delayMs: number
   ): Promise<void> {
     if (!this.channel) {

@@ -2,10 +2,8 @@ import crypto from "crypto";
 
 // Global authentication store with AI assistant integration
 import { writable, derived, get } from "svelte/store";
-// Orphaned content: import {
-
+import { browser } from "$app/environment";
 import { goto } from "$app/navigation";
-// Orphaned content: import type { User
 
 export interface AuthUser {
   id: string;

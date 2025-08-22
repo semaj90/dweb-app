@@ -18,7 +18,7 @@ export const restHandlers = [
   }),
   http.get('https://api.fontsource.org/v1/fonts/:id', ({ params }) => {
     const { id } = params
-    let data: any
+    let data: unknown
     if (id === 'dm-sans') {
       data = variableFontsourceMockDataDmSans
     }

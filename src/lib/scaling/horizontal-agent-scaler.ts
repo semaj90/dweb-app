@@ -151,7 +151,7 @@ export class HorizontalAgentScaler extends EventEmitter {
                 const currentPlacements = this.getCurrentPlacements(agentType);
                 const currentCount = currentPlacements.length;
                 
-                let scalingActions: any[] = [];
+                let scalingActions: unknown[] = [];
                 
                 if (targetCount > currentCount) {
                     // Scale up
@@ -196,8 +196,8 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Scale up agents
      */
-    private async scaleUp(agentType: string, count: number): Promise<any[]> {
-        const actions: any[] = [];
+    private async scaleUp(agentType: string, count: number): Promise<unknown[]> {
+        const actions: unknown[] = [];
         
         for (let i = 0; i < count; i++) {
             const placement = await this.placementEngine.findOptimalPlacement(agentType);
@@ -238,8 +238,8 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Scale down agents
      */
-    private async scaleDown(agentType: string, count: number): Promise<any[]> {
-        const actions: any[] = [];
+    private async scaleDown(agentType: string, count: number): Promise<unknown[]> {
+        const actions: unknown[] = [];
         const currentPlacements = this.getCurrentPlacements(agentType);
         
         // Sort by resource usage or health to remove least optimal agents first
@@ -455,7 +455,7 @@ export class HorizontalAgentScaler extends EventEmitter {
      */
     private async makeScalingDecision(
         agentType: string, 
-        metrics: any, 
+        metrics: unknown, 
         policy: ScalingPolicy
     ): Promise<PlacementDecision> {
         const currentCount = this.getCurrentPlacements(agentType).length;
@@ -604,7 +604,7 @@ export class HorizontalAgentScaler extends EventEmitter {
         return `server-${address.replace(/[:.]/g, '-')}`;
     }
 
-    private getAgentConfiguration(agentType: string): any {
+    private getAgentConfiguration(agentType: string): unknown {
         return {
             type: agentType,
             version: '1.0.0',
@@ -673,7 +673,7 @@ export class HorizontalAgentScaler extends EventEmitter {
         console.log(`📊 Storing scaling metrics: ${JSON.stringify(metrics, null, 2)}`);
     }
 
-    private async storeAgentDeployment(deployment: any): Promise<void> {
+    private async storeAgentDeployment(deployment: unknown): Promise<void> {
         // Store deployment info in JSONB format
         console.log(`🚀 Storing deployment info: ${JSON.stringify(deployment, null, 2)}`);
     }
@@ -681,7 +681,7 @@ export class HorizontalAgentScaler extends EventEmitter {
     /**
      * Public API methods
      */
-    getScalingStatus(): any {
+    getScalingStatus(): unknown {
         const totalAgents = this.agentPlacements.size;
         const agentsByType = {};
         const agentsByServer = {};

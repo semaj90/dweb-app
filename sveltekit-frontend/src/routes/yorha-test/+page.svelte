@@ -1,6 +1,6 @@
 <!-- Advanced YoRHa Testing Suite -->
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, SvelteComponent } from 'svelte';
   import {
     TestTube,
     CheckCircle,
@@ -18,6 +18,7 @@
     Play,
     RotateCcw
   } from 'lucide-svelte';
+  import { state } from 'svelte/reactivity';
 
   interface TestResult {
     name: string;
@@ -35,7 +36,7 @@
   }
 
   // Production-ready test suites
-  let testSuites = $state<TestSuite[]>([
+  let testSuites = state<TestSuite[]>([
     {
       name: 'Frontend Components',
       description: 'SvelteKit and UI component testing',
@@ -87,11 +88,11 @@
   ]);
   // Removed $state and $derived imports
 
-  let isRunning = $state(false);
-  let currentTest = $state<string | null>(null);
-  let overallProgress = $state(0);
-  let startTime = $state<Date | null>(null);
-  let endTime = $state<Date | null>(null);
+  let isRunning = state(false);
+  let currentTest = state<string | null>(null);
+  let overallProgress = state(0);
+  let startTime = state<Date | null>(null);
+  let endTime = state<Date | null>(null);
 
   // Test execution functions
   async function runFrontendTests(suite: TestSuite): Promise<void> {

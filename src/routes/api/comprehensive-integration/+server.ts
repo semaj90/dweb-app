@@ -202,11 +202,11 @@ async function runDetailedDiagnostics(): Promise<any> {
 }
 
 // Full workflow integration test
-async function testFullWorkflow(payload: any): Promise<any> {
+async function testFullWorkflow(payload: unknown): Promise<any> {
   const testResults = {
     workflow: 'document_upload_to_ai_chat',
     startTime: new Date().toISOString(),
-    steps: [] as any[],
+    steps: [] as unknown[],
     success: true,
     totalTime: 0
   };
@@ -275,7 +275,7 @@ async function testFullWorkflow(payload: any): Promise<any> {
 }
 
 // AI pipeline specific test
-async function testAIPipeline(payload: any): Promise<any> {
+async function testAIPipeline(payload: unknown): Promise<any> {
   return {
     test: 'ai_pipeline',
     components_tested: [
@@ -298,7 +298,7 @@ async function testAIPipeline(payload: any): Promise<any> {
 }
 
 // Multi-protocol test
-async function testMultiProtocol(payload: any): Promise<any> {
+async function testMultiProtocol(payload: unknown): Promise<any> {
   return {
     test: 'multi_protocol',
     protocols_tested: {
@@ -324,7 +324,7 @@ async function testMultiProtocol(payload: any): Promise<any> {
 }
 
 // Performance benchmark test
-async function testPerformance(payload: any): Promise<any> {
+async function testPerformance(payload: unknown): Promise<any> {
   return {
     test: 'performance',
     benchmarks: {

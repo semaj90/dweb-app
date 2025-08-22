@@ -32,7 +32,7 @@ function handleRegexMatch(
     onNotMatched(str.slice(lastIndex), lastIndex, str.length)
 }
 
-export function parseAutocomplete(template: string, theme: any = {}, extraShorthands: Record<string, string> = {}): ParsedAutocompleteTemplate {
+export function parseAutocomplete(template: string, theme: unknown = {}, extraShorthands: Record<string, string> = {}): ParsedAutocompleteTemplate {
   const parts: AutocompleteTemplatePart[] = []
 
   const newShorthands = {

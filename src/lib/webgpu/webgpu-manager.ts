@@ -545,7 +545,7 @@ export class WebGPUManager {
     return task;
   }
 
-  private completeTask(task: GPUComputeTask, result: any): void {
+  private completeTask(task: GPUComputeTask, result: unknown): void {
     task.status = 'completed';
     task.endTime = performance.now();
     task.outputSize = result.results || result.chunks || result.similarity || 0;

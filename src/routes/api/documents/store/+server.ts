@@ -118,7 +118,7 @@ export const POST: RequestHandler = async ({ request }) => {
         embeddingsGenerated: generateEmbeddings,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document store error:", error);
     return json(
       { error: "Failed to store document", details: error.message },
@@ -205,7 +205,7 @@ export const GET: RequestHandler = async ({ url }) => {
         hasMore: documents.length === limit,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document retrieval error:", error);
     return json(
       { error: "Failed to retrieve documents", details: error.message },
@@ -301,7 +301,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document update error:", error);
     return json(
       { error: "Failed to update document", details: error.message },
@@ -341,7 +341,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
       documentId,
       embeddingsDeleted: deleteEmbeddings,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document deletion error:", error);
     return json(
       { error: "Failed to delete document", details: error.message },
@@ -366,7 +366,7 @@ async function processDocumentEmbeddings(
   title: string,
   chunkSize: number,
   chunkOverlap: number,
-  chunkMetadata: any
+  chunkMetadata: unknown
 ): Promise<{ chunks: number; embeddings: number; totalDimensions: number }> {
   try {
     // Chunk the document content
@@ -409,7 +409,7 @@ async function processDocumentEmbeddings(
       embeddings: embeddingsCreated,
       totalDimensions,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Embedding processing error:", error);
     return {
       chunks: 0,
@@ -533,7 +533,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
                 error: "Document not found",
               });
             }
-          } catch (error: any) {
+          } catch (error: unknown) {
             results.push({
               documentId: docId,
               success: false,
@@ -583,7 +583,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Batch operation error:", error);
     return json(
       { error: "Batch operation failed", details: error.message },

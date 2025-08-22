@@ -1,0 +1,72 @@
+[
+  {
+    "id": "cache_1755819856291_0",
+    "error": "npm error Missing script: \"check:ultra-fast\"",
+    "category": "svelte",
+    "severity": "high",
+    "suggestions": [
+      "Add proper type annotations",
+      "Check import paths",
+      "Verify component props"
+    ],
+    "webgpuProcessed": true,
+    "rtxOptimized": true,
+    "timestamp": "2025-08-21T23:44:16.291Z"
+  },
+  {
+    "id": "cache_1755819856292_1",
+    "error": "npm error",
+    "category": "svelte",
+    "severity": "high",
+    "suggestions": [
+      "Add proper type annotations",
+      "Check import paths",
+      "Verify component props"
+    ],
+    "webgpuProcessed": true,
+    "rtxOptimized": true,
+    "timestamp": "2025-08-21T23:44:16.292Z"
+  },
+  {
+    "id": "cache_1755819856292_2",
+    "error": "npm error To see a list of scripts, run:",
+    "category": "svelte",
+    "severity": "high",
+    "suggestions": [
+      "Add proper type annotations",
+      "Check import paths",
+      "Verify component props"
+    ],
+    "webgpuProcessed": true,
+    "rtxOptimized": true,
+    "timestamp": "2025-08-21T23:44:16.292Z"
+  },
+  {
+    "id": "cache_1755819856292_3",
+    "error": "npm error   npm run",
+    "category": "svelte",
+    "severity": "high",
+    "suggestions": [
+      "Add proper type annotations",
+      "Check import paths",
+      "Verify component props"
+    ],
+    "webgpuProcessed": true,
+    "rtxOptimized": true,
+    "timestamp": "2025-08-21T23:44:16.292Z"
+  },
+  {
+    "id": "cache_1755819856292_4",
+    "error": "npm error A complete log of this run can be found in: C:\\Users\\james\\AppData\\Local\\npm-cache\\_logs\\2025-08-21T23_44_15_000Z-debug-0.log",
+    "category": "svelte",
+    "severity": "high",
+    "suggestions": [
+      "Add proper type annotations",
+      "Check import paths",
+      "Verify component props"
+    ],
+    "webgpuProcessed": true,
+    "rtxOptimized": true,
+    "timestamp": "2025-08-21T23:44:16.292Z"
+  }
+]

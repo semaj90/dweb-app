@@ -13,7 +13,7 @@ interface LogContext {
   timestamp: string;
   level: string;
   message: string;
-  data?: any;
+  data?: unknown;
   metadata?: {
     service: string;
     version: string;
@@ -46,7 +46,7 @@ export class Logger {
     return level >= this.level;
   }
 
-  private formatMessage(level: LogLevel, message: string, data?: any): string {
+  private formatMessage(level: LogLevel, message: string, data?: unknown): string {
     const context: LogContext = {
       timestamp: new Date().toISOString(),
       level: LogLevel[level],
@@ -65,28 +65,28 @@ export class Logger {
     return JSON.stringify(context, null, 2);
   }
 
-  debug(message: string, data?: any): void {
+  debug(message: string, data?: unknown): void {
     if (!this.shouldLog(LogLevel.DEBUG)) return;
     
     const formatted = this.formatMessage(LogLevel.DEBUG, message, data);
     console.log(`\x1b[36m${formatted}\x1b[0m`); // Cyan
   }
 
-  info(message: string, data?: any): void {
+  info(message: string, data?: unknown): void {
     if (!this.shouldLog(LogLevel.INFO)) return;
     
     const formatted = this.formatMessage(LogLevel.INFO, message, data);
     console.log(`\x1b[32m${formatted}\x1b[0m`); // Green
   }
 
-  warn(message: string, data?: any): void {
+  warn(message: string, data?: unknown): void {
     if (!this.shouldLog(LogLevel.WARN)) return;
     
     const formatted = this.formatMessage(LogLevel.WARN, message, data);
     console.warn(`\x1b[33m${formatted}\x1b[0m`); // Yellow
   }
 
-  error(message: string, error?: any): void {
+  error(message: string, error?: unknown): void {
     if (!this.shouldLog(LogLevel.ERROR)) return;
     
     const errorData = error instanceof Error ? {

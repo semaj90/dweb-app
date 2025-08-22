@@ -33,7 +33,7 @@ export interface SearchQuery {
 
 export interface WorkflowRequest {
   workflowType: 'document_analysis' | 'legal_research' | 'case_preparation' | 'contract_review' | 'evidence_analysis';
-  input: any;
+  input: unknown;
   options?: {
     skipCache?: boolean;
     priority?: 'low' | 'medium' | 'high' | 'critical';
@@ -159,7 +159,7 @@ export class RAGBackendClient {
   /**
    * Chat with AI agent
    */
-  async chatWithAgent(messages: Array<{role: string, content: string}>, options?: any): Promise<any> {
+  async chatWithAgent(messages: Array<{role: string, content: string}>, options?: unknown): Promise<any> {
     try {
       this.outputChannel.appendLine(`Starting AI chat with ${messages.length} messages`);
 
@@ -181,7 +181,7 @@ export class RAGBackendClient {
   /**
    * Analyze text with AI
    */
-  async analyzeText(text: string, analysisType?: string, options?: any): Promise<any> {
+  async analyzeText(text: string, analysisType?: string, options?: unknown): Promise<any> {
     try {
       this.outputChannel.appendLine(`Analyzing text (${analysisType || 'general'}): ${text.substring(0, 100)}...`);
 
@@ -204,7 +204,7 @@ export class RAGBackendClient {
   /**
    * Summarize text
    */
-  async summarizeText(text: string, length?: string, options?: any): Promise<any> {
+  async summarizeText(text: string, length?: string, options?: unknown): Promise<any> {
     try {
       this.outputChannel.appendLine(`Summarizing text (${length || 'medium'}): ${text.substring(0, 100)}...`);
 
@@ -315,7 +315,7 @@ export class RAGBackendClient {
   /**
    * Make HTTP request with retry logic
    */
-  private async makeRequest(endpoint: string, options: any = {}): Promise<any> {
+  private async makeRequest(endpoint: string, options: unknown = {}): Promise<any> {
     const url = `${this.config.baseUrl}${endpoint}`;
     const requestOptions = {
       method: options.method || 'GET',
@@ -333,7 +333,7 @@ export class RAGBackendClient {
       delete requestOptions.headers['Content-Type'];
     }
 
-    let lastError: any;
+    let lastError: unknown;
     
     for (let attempt = 1; attempt <= this.config.retries; attempt++) {
       try {

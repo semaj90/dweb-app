@@ -38,6 +38,6 @@ export class CountableSet<K> extends Set<K> {
   }
 }
 
-export function isCountableSet<T = string>(value: any): value is CountableSet<T> {
+export function isCountableSet<T = string>(value: unknown): value is CountableSet<T> {
   return value instanceof CountableSet
 }

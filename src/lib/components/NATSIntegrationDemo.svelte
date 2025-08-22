@@ -40,8 +40,8 @@
 
   // Component state
   let selectedDemo = $state<'publish' | 'subscribe' | 'chat' | 'analytics' | 'integration'>('publish');
-  let natsService: any = null;
-  let langchainService: any = null;
+  let natsService: unknown = null;
+  let langchainService: unknown = null;
   
   // Publishing demo
   let publishSubject = $state('legal.case.created');
@@ -131,12 +131,12 @@
   function setupNATSEventListeners() {
     if (!natsService) return;
 
-    natsService.on('nats:published', (data: any) => {
+    natsService.on('nats:published', (data: unknown) => {
       console.log('📤 NATS Published:', data);
       updateAnalytics();
     });
 
-    natsService.on('nats:subscribed', (data: any) => {
+    natsService.on('nats:subscribed', (data: unknown) => {
       console.log('📡 NATS Subscribed:', data);
       updateActiveSubscriptions();
     });
@@ -161,7 +161,7 @@
     if (!langchainService || !natsService) return;
 
     // Forward LangChain events to NATS
-    langchainService.on('message:received', async (data: any) => {
+    langchainService.on('message:received', async (data: unknown) => {
       await natsService.publishChatMessage({
         sessionId: data.sessionId,
         message: data.message,
@@ -170,7 +170,7 @@
       }, data.sessionId);
     });
 
-    langchainService.on('tool:executed', async (data: any) => {
+    langchainService.on('tool:executed', async (data: unknown) => {
       await natsService.publishAIAnalysisEvent('completed', {
         toolName: data.toolName,
         input: data.input,
@@ -244,7 +244,7 @@
     isPublishing = true;
     
     try {
-      let data: any;
+      let data: unknown;
       try {
         data = JSON.parse(publishData);
       } catch {

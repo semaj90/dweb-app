@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Advanced User Analytics & History Microservice
  * Tracks user behavior, AI interactions, and generates insights for recommendation engine
@@ -33,7 +33,7 @@ interface UserInteraction {
     modelUsed?: string;
     resultSatisfaction?: number; // 1-5 rating
     tags?: string[];
-    metadata?: any;
+    metadata?: unknown;
   };
   context: {
     userAgent?: string;
@@ -402,9 +402,9 @@ export class AnalyticsService extends EventEmitter {
   // Advanced analytics
   public async generateUserInsights(userId: string): Promise<{
     profile: UserProfile;
-    trends: any;
-    recommendations: any;
-    predictions: any;
+    trends: unknown;
+    recommendations: unknown;
+    predictions: unknown;
   }> {
     const profile = await this.getUserProfile(userId);
     if (!profile) throw new Error('User profile not found');
@@ -429,7 +429,7 @@ export class AnalyticsService extends EventEmitter {
     };
   }
 
-  private async analyzeTrends(interactions: any[]): Promise<any> {
+  private async analyzeTrends(interactions: unknown[]): Promise<any> {
     const last30Days = Date.now() - (30 * 24 * 60 * 60 * 1000);
     const recentInteractions = interactions.filter(i => i.timestamp > last30Days);
 
@@ -443,7 +443,7 @@ export class AnalyticsService extends EventEmitter {
 
   private async generatePersonalizedRecommendations(
     profile: UserProfile, 
-    interactions: any[]
+    interactions: unknown[]
   ): Promise<any> {
     const recommendations = [];
 
@@ -480,7 +480,7 @@ export class AnalyticsService extends EventEmitter {
     return recommendations;
   }
 
-  private async generatePredictions(profile: UserProfile, interactions: any[]): Promise<any> {
+  private async generatePredictions(profile: UserProfile, interactions: unknown[]): Promise<any> {
     return {
       likelyNextAction: this.predictNextAction(interactions),
       churRisk: this.calculateChurnRisk(profile, interactions),
@@ -490,7 +490,7 @@ export class AnalyticsService extends EventEmitter {
   }
 
   // Utility methods for calculations
-  private calculateDailyUsage(interactions: any[]): any {
+  private calculateDailyUsage(interactions: unknown[]): unknown {
     const usage = new Map<string, number>();
     
     interactions.forEach(interaction => {
@@ -501,7 +501,7 @@ export class AnalyticsService extends EventEmitter {
     return Array.from(usage.entries()).map(([date, count]) => ({ date, count }));
   }
 
-  private calculateFeatureAdoption(interactions: any[]): any {
+  private calculateFeatureAdoption(interactions: unknown[]): unknown {
     const features = new Map<string, number>();
     
     interactions.forEach(interaction => {
@@ -512,7 +512,7 @@ export class AnalyticsService extends EventEmitter {
     return Array.from(features.entries()).map(([feature, count]) => ({ feature, count }));
   }
 
-  private calculateSatisfactionTrend(interactions: any[]): any {
+  private calculateSatisfactionTrend(interactions: unknown[]): unknown {
     return interactions
       .filter(i => i.data.data?.resultSatisfaction)
       .map(i => ({
@@ -521,7 +521,7 @@ export class AnalyticsService extends EventEmitter {
       }));
   }
 
-  private calculatePerformanceTrend(interactions: any[]): any {
+  private calculatePerformanceTrend(interactions: unknown[]): unknown {
     return interactions
       .filter(i => i.data.data?.processingTime)
       .map(i => ({
@@ -530,7 +530,7 @@ export class AnalyticsService extends EventEmitter {
       }));
   }
 
-  private predictNextAction(interactions: any[]): string {
+  private predictNextAction(interactions: unknown[]): string {
     // Simple prediction based on recent patterns
     const recentActions = interactions
       .slice(-10)
@@ -547,7 +547,7 @@ export class AnalyticsService extends EventEmitter {
     return mostCommon ? mostCommon[0] : 'ai-analysis';
   }
 
-  private calculateChurnRisk(profile: UserProfile, interactions: any[]): number {
+  private calculateChurnRisk(profile: UserProfile, interactions: unknown[]): number {
     const daysSinceLastInteraction = (Date.now() - profile.lastUpdated) / (24 * 60 * 60 * 1000);
     const satisfactionScore = profile.behavioral.satisfactionScore;
     const usageFrequency = interactions.length / Math.max(1, daysSinceLastInteraction);
@@ -562,7 +562,7 @@ export class AnalyticsService extends EventEmitter {
     return Math.min(risk, 1.0);
   }
 
-  private calculateUserValue(profile: UserProfile, interactions: any[]): number {
+  private calculateUserValue(profile: UserProfile, interactions: unknown[]): number {
     // Value score based on usage, satisfaction, and engagement
     const usageScore = Math.min(profile.usage.totalInteractions / 100, 1.0);
     const satisfactionScore = profile.behavioral.satisfactionScore / 5.0;
@@ -571,7 +571,7 @@ export class AnalyticsService extends EventEmitter {
     return (usageScore + satisfactionScore + engagementScore) / 3;
   }
 
-  private calculateGrowthPotential(profile: UserProfile, interactions: any[]): number {
+  private calculateGrowthPotential(profile: UserProfile, interactions: unknown[]): number {
     // Growth potential based on learning curve and feature adoption
     const featureAdoption = profile.usage.mostUsedFeatures.length / 10; // Assume 10 total features
     const learningCurve = profile.behavioral.learningCurve;
@@ -596,7 +596,7 @@ export class AnalyticsService extends EventEmitter {
   }
 
   // Data management
-  public async getUserHistory(userId: string, limit: number = 100): Promise<any[]> {
+  public async getUserHistory(userId: string, limit: number = 100): Promise<unknown[]> {
     return await this.cache.getAnalytics(userId, undefined, undefined);
   }
 

@@ -15,7 +15,7 @@
   } from '$lib/services/nats-messaging-service';
 
   // Component state
-  let natsService: any = null;
+  let natsService: unknown = null;
   let serviceReady = $state(false);
   let initializationLogs = $state<string[]>([]);
 
@@ -69,7 +69,7 @@
     }
   });
 
-  function setupNATSEventListeners(service: any) {
+  function setupNATSEventListeners(service: unknown) {
     // Connection events
     service.on('nats:connected', () => {
       addLog('🔗 NATS connected to server');
@@ -79,46 +79,46 @@
       addLog('🔌 NATS disconnected from server');
     });
 
-    service.on('nats:error', (data: any) => {
+    service.on('nats:error', (data: unknown) => {
       addLog(`❌ NATS error: ${data.error}`);
     });
 
     // Publishing events
-    service.on('nats:published', (data: any) => {
+    service.on('nats:published', (data: unknown) => {
       addLog(`📤 Published message to ${data.subject}`);
     });
 
-    service.on('nats:publish_failed', (data: any) => {
+    service.on('nats:publish_failed', (data: unknown) => {
       addLog(`❌ Failed to publish to ${data.subject}: ${data.error}`);
     });
 
     // Subscription events
-    service.on('nats:subscribed', (data: any) => {
+    service.on('nats:subscribed', (data: unknown) => {
       addLog(`📡 Subscribed to ${data.subject}`);
     });
 
-    service.on('nats:unsubscribed', (data: any) => {
+    service.on('nats:unsubscribed', (data: unknown) => {
       addLog(`❌ Unsubscribed from ${data.subject}`);
     });
 
     // Legal channel events
-    service.on('message:' + NATS_SUBJECTS.CASE_CREATED, (message: any) => {
+    service.on('message:' + NATS_SUBJECTS.CASE_CREATED, (message: unknown) => {
       addLog(`📋 Case created: ${message.data.title || message.data.caseId}`);
     });
 
-    service.on('message:' + NATS_SUBJECTS.DOCUMENT_UPLOADED, (message: any) => {
+    service.on('message:' + NATS_SUBJECTS.DOCUMENT_UPLOADED, (message: unknown) => {
       addLog(`📄 Document uploaded: ${message.data.name || message.data.documentId}`);
     });
 
-    service.on('message:' + NATS_SUBJECTS.AI_ANALYSIS_COMPLETED, (message: any) => {
+    service.on('message:' + NATS_SUBJECTS.AI_ANALYSIS_COMPLETED, (message: unknown) => {
       addLog(`🧠 AI analysis completed for ${message.data.caseId || 'unknown case'}`);
     });
 
-    service.on('message:' + NATS_SUBJECTS.SEARCH_QUERY, (message: any) => {
+    service.on('message:' + NATS_SUBJECTS.SEARCH_QUERY, (message: unknown) => {
       addLog(`🔍 Search query: ${message.data.query}`);
     });
 
-    service.on('message:' + NATS_SUBJECTS.CHAT_MESSAGE, (message: any) => {
+    service.on('message:' + NATS_SUBJECTS.CHAT_MESSAGE, (message: unknown) => {
       addLog(`💬 Chat message in session ${message.data.sessionId}`);
     });
   }

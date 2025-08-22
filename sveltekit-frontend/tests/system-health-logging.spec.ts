@@ -155,7 +155,7 @@ test.describe('System Health and Logging', () => {
     expect(performance).toHaveProperty('endpoints');
     
     // Check metrics for each endpoint
-    endpoints.forEach(endpoint: unknown => {
+    endpoints.forEach((endpoint: string) => {
       if (performance.endpoints[endpoint]) {
         expect(performance.endpoints[endpoint]).toMatchObject({
           avg_response_time_ms: expect.any(Number),

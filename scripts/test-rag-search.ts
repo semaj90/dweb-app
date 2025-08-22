@@ -74,7 +74,7 @@ async function testSearch(query: string) {
 
 // Test AI analysis function
 async function testAIAnalysis(docId: string) {
-  const doc = demoData.documents.find((d: any) => d.id === docId);
+  const doc = demoData.documents.find((d: unknown) => d.id === docId);
   if (!doc) {
     console.log(`❌ Document ${docId} not found`);
     return;
@@ -115,7 +115,7 @@ async function testAIAnalysis(docId: string) {
 function testVectorSimilarity() {
   console.log('\n🧠 Vector Similarity Analysis');
   
-  const docsWithEmbeddings = demoData.documents.filter((doc: any) => doc.embedding);
+  const docsWithEmbeddings = demoData.documents.filter((doc: unknown) => doc.embedding);
   console.log(`📊 Documents with embeddings: ${docsWithEmbeddings.length}/${demoData.documents.length}`);
   
   if (docsWithEmbeddings.length >= 2) {
@@ -168,7 +168,7 @@ function showAnalytics() {
   console.log(`  Low (<0.5): ${analytics.complexityDistribution.low} documents`);
   
   console.log('\nTop Scoring Documents:');
-  analytics.topScoringDocs.forEach((doc: any, index: number) => {
+  analytics.topScoringDocs.forEach((doc: unknown, index: number) => {
     console.log(`  ${index + 1}. ${doc.label} (${doc.id}) - Score: ${doc.score}`);
   });
 }

@@ -1,9 +1,8 @@
 
-"dotenv/config";
-// Orphaned content: import { drizzle
-import {
-migrate } from "drizzle-orm/node-postgres/migrator";
-// Orphaned content: import { Pool
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { Pool } from "pg";
 
 async function runMigrations() {
   if (!import.meta.env.DATABASE_URL) {

@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 // src/routes/api/evidence/stream/[sessionId]/+server.ts
 import type { RequestHandler } from "@sveltejs/kit";
-registerWsConnection, getMissedMessages
+import { registerWsConnection, getMissedMessages } from "drizzle-orm";
 import WebSocket from "ws";
 
 export const GET: RequestHandler = async ({ request, params, url }) => {

@@ -14,7 +14,7 @@ export interface ClaudeAgentConfig {
 
 export interface ClaudeAgentRequest {
   prompt: string;
-  context?: any;
+  context?: unknown;
   options?: {
     includeContext7?: boolean;
     autoFix?: boolean;

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import pg from 'pg';
 import { createClient } from 'redis';
 import neo4j from 'neo4j-driver';
@@ -10,12 +10,12 @@ import type { QueryResult } from 'pg';
  */
 export class UnifiedDatabaseService {
   private pgPool: pg.Pool | null = null;
-  private redisClient: any = null;
-  private neo4jDriver: any = null;
-  private qdrantConfig: any = {};
+  private redisClient: unknown = null;
+  private neo4jDriver: unknown = null;
+  private qdrantConfig: unknown = {};
   private initialized = false;
 
-  constructor(config: any = {}) {
+  constructor(config: unknown = {}) {
     // PostgreSQL configuration
     this.pgPool = new pg.Pool({
       host: config.pg?.host || process.env.DB_HOST || 'localhost',
@@ -83,7 +83,7 @@ export class UnifiedDatabaseService {
   }
 
   // ============ PostgreSQL Methods ============
-  async query(text: string, params: any[] = []): Promise<QueryResult> {
+  async query(text: string, params: unknown[] = []): Promise<QueryResult> {
     if (!this.pgPool) throw new Error('PostgreSQL not initialized');
     return await this.pgPool.query(text, params);
   }
@@ -106,7 +106,7 @@ export class UnifiedDatabaseService {
   }
 
   // Legal document operations
-  async insertLegalDocument(document: any): Promise<any> {
+  async insertLegalDocument(document: unknown): Promise<any> {
     const query = `
       INSERT INTO legal_documents (id, title, content, metadata, embedding, case_id, created_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -126,7 +126,7 @@ export class UnifiedDatabaseService {
     return await this.query(query, values);
   }
 
-  async searchLegalDocuments(query: string, caseId?: string): Promise<any[]> {
+  async searchLegalDocuments(query: string, caseId?: string): Promise<unknown[]> {
     let sqlQuery = `
       SELECT id, title, content, metadata, case_id, 
              ts_rank(to_tsvector('english', content), plainto_tsquery('english', $1)) as rank
@@ -159,7 +159,7 @@ export class UnifiedDatabaseService {
     }
   }
 
-  async setCached(key: string, value: any, ttl: number = 3600): Promise<boolean> {
+  async setCached(key: string, value: unknown, ttl: number = 3600): Promise<boolean> {
     if (!this.redisClient) return false;
     try {
       const serialized = JSON.stringify(value);
@@ -188,7 +188,7 @@ export class UnifiedDatabaseService {
   }
 
   // ============ Neo4j Methods ============
-  async runCypher(query: string, params: any = {}): Promise<any[]> {
+  async runCypher(query: string, params: unknown = {}): Promise<unknown[]> {
     const session = this.neo4jDriver.session();
     try {
       const result = await session.run(query, params);
@@ -198,14 +198,14 @@ export class UnifiedDatabaseService {
     }
   }
 
-  async createNode(label: string, properties: any): Promise<any> {
+  async createNode(label: string, properties: unknown): Promise<any> {
     return await this.runCypher(
       `CREATE (n:${label} $props) RETURN n`,
       { props: properties }
     );
   }
 
-  async createRelationship(fromId: string, toId: string, type: string, properties: any = {}): Promise<any> {
+  async createRelationship(fromId: string, toId: string, type: string, properties: unknown = {}): Promise<any> {
     return await this.runCypher(
       `
       MATCH (a {id: $fromId})
@@ -218,7 +218,7 @@ export class UnifiedDatabaseService {
   }
 
   // Legal case operations
-  async createLegalCase(caseData: any): Promise<any> {
+  async createLegalCase(caseData: unknown): Promise<any> {
     return await this.createNode('LegalCase', {
       id: caseData.id,
       title: caseData.title,
@@ -250,7 +250,7 @@ export class UnifiedDatabaseService {
   }
 
   // ============ Qdrant Methods ============
-  async vectorSearch(vector: number[], limit: number = 10, filter: any = {}): Promise<any[]> {
+  async vectorSearch(vector: number[], limit: number = 10, filter: unknown = {}): Promise<unknown[]> {
     const response = await fetch(
       `${this.qdrantConfig.baseUrl}/collections/${this.qdrantConfig.collection}/points/search`,
       {
@@ -272,7 +272,7 @@ export class UnifiedDatabaseService {
     return [];
   }
 
-  async upsertVector(id: string, vector: number[], payload: any): Promise<boolean> {
+  async upsertVector(id: string, vector: number[], payload: unknown): Promise<boolean> {
     const response = await fetch(
       `${this.qdrantConfig.baseUrl}/collections/${this.qdrantConfig.collection}/points`,
       {
@@ -286,7 +286,7 @@ export class UnifiedDatabaseService {
     return response.ok;
   }
 
-  async hybridSearch(query: string, vector: number[], caseId?: string): Promise<any[]> {
+  async hybridSearch(query: string, vector: number[], caseId?: string): Promise<unknown[]> {
     // Combine text search with vector similarity
     const [textResults, vectorResults] = await Promise.all([
       this.searchLegalDocuments(query, caseId),

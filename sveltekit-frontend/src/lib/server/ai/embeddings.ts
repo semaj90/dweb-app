@@ -3,12 +3,8 @@
 // Supports local Ollama models with Redis/memory caching for performance
 // Use process.env for server-side environment variables
 import { cases, evidence } from "$lib/server/db/schema-postgres";
-// Orphaned content: import {
-
-import type { EmbeddingOptions } from "../../types/vector.js";
-// Orphaned content: import {
-cacheEmbedding, getCachedEmbedding
-import { db } from '$lib/db/index.js';
+// TODO: Fix import - // Orphaned content: import {  import type { EmbeddingOptions } from "../../types/vector.js";
+// TODO: Fix import - // Orphaned content: import { cacheEmbedding, getCachedEmbedding import { db } from '$lib/db/index.js';
 
 export async function generateEmbedding(
   text: string,

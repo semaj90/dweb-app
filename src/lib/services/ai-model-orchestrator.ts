@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * AI Model Orchestrator with Fallback System
  * Handles intelligent model selection and fallback between gemma3-legal and deeds-web
@@ -513,7 +513,7 @@ Provide thorough, accurate legal guidance across all practice areas.`;
 
       const data = await response.json();
       const models = data.models || [];
-      return models.some((model: any) => model.name.includes(modelName));
+      return models.some((model: unknown) => model.name.includes(modelName));
     } catch {
       return false;
     }

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Comprehensive AI System Integration for Windows Native Stack
  * Seamlessly wires together all advanced components with performance optimizations
@@ -20,8 +20,8 @@ import { ExtendedThinkingPipeline } from '../ai/extended-thinking-pipeline';
 
 // Windows-native performance imports
 const require = createRequire(import.meta.url);
-let ffmpeg: any, sharp: any, nodemailer: any;
-let simdjs: any, mathjs: any, tensorflowjs: any;
+let ffmpeg: unknown, sharp: unknown, nodemailer: unknown;
+let simdjs: unknown, mathjs: unknown, tensorflowjs: unknown;
 
 try {
   // Windows-native SIMD and math libraries
@@ -52,18 +52,18 @@ interface RabbitMQConfig {
 // gRPC Service Definitions
 interface gRPCServices {
   legalAnalysisService: {
-    analyzeDocument: (request: any) => Promise<any>;
-    batchProcess: (request: any) => Promise<any>;
-    getAnalysisStatus: (request: any) => Promise<any>;
+    analyzeDocument: (request: unknown) => Promise<any>;
+    batchProcess: (request: unknown) => Promise<any>;
+    getAnalysisStatus: (request: unknown) => Promise<any>;
   };
   embeddingService: {
-    generateEmbeddings: (request: any) => Promise<any>;
-    similaritySearch: (request: any) => Promise<any>;
-    updateVectorIndex: (request: any) => Promise<any>;
+    generateEmbeddings: (request: unknown) => Promise<any>;
+    similaritySearch: (request: unknown) => Promise<any>;
+    updateVectorIndex: (request: unknown) => Promise<any>;
   };
   cacheService: {
     get: (key: string) => Promise<any>;
-    set: (key: string, value: any, ttl?: number) => Promise<boolean>;
+    set: (key: string, value: unknown, ttl?: number) => Promise<boolean>;
     invalidate: (pattern: string) => Promise<number>;
   };
 }
@@ -105,13 +105,13 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     recommendationEngine: RecommendationEngine;
     semanticSearch: EnhancedSemanticSearch;
     extendedThinking: ExtendedThinkingPipeline;
-    orchestrationMachine: any;
+    orchestrationMachine: unknown;
   };
   
   // Windows-native performance components
   private workers: Map<string, Worker> = new Map();
-  private rabbitMQConnection: any;
-  private grpcServer: any;
+  private rabbitMQConnection: unknown;
+  private grpcServer: unknown;
   private grpcServices: gRPCServices;
   
   // Performance monitoring
@@ -409,11 +409,11 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     }
   }
 
-  private async setupQueueConsumers(channel: any): Promise<void> {
+  private async setupQueueConsumers(channel: unknown): Promise<void> {
     const queues = this.config.rabbitmq.queues;
     
     // Document processing queue
-    await channel.consume(queues.documentProcessing, async (msg: any) => {
+    await channel.consume(queues.documentProcessing, async (msg: unknown) => {
       if (msg) {
         const content = JSON.parse(msg.content.toString());
         try {
@@ -428,7 +428,7 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     }, { noAck: false });
     
     // AI Analysis queue
-    await channel.consume(queues.aiAnalysis, async (msg: any) => {
+    await channel.consume(queues.aiAnalysis, async (msg: unknown) => {
       if (msg) {
         const content = JSON.parse(msg.content.toString());
         try {
@@ -443,7 +443,7 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     }, { noAck: false });
     
     // Vector embedding queue
-    await channel.consume(queues.vectorEmbedding, async (msg: any) => {
+    await channel.consume(queues.vectorEmbedding, async (msg: unknown) => {
       if (msg) {
         const content = JSON.parse(msg.content.toString());
         try {
@@ -520,7 +520,7 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
   public async processDocument(
     documentId: string,
     content: string,
-    options: any = {}
+    options: unknown = {}
   ): Promise<any> {
     const startTime = Date.now();
     
@@ -584,8 +584,8 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
 
   public async performComprehensiveAnalysis(
     sessionId: string,
-    documents: Array<{ id: string; content: string; metadata?: any }>,
-    options: any = {}
+    documents: Array<{ id: string; content: string; metadata?: unknown }>,
+    options: unknown = {}
   ): Promise<any> {
     console.log(`🔍 Starting comprehensive analysis for session ${sessionId}...`);
     
@@ -674,7 +674,7 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     this.performanceMetrics.errorRates.set(operation, currentCount + 1);
   }
 
-  public getSystemHealth(): any {
+  public getSystemHealth(): unknown {
     const memUsage = process.memoryUsage();
     
     return {
@@ -710,11 +710,11 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
   }
 
   // Placeholder implementation methods (would be fully implemented)
-  private async preprocessDocument(content: string, options: any): Promise<any> {
+  private async preprocessDocument(content: string, options: unknown): Promise<any> {
     return { preprocessed: true, content: content.substring(0, 1000) };
   }
 
-  private async generateEmbeddings(content: string): Promise<any[]> {
+  private async generateEmbeddings(content: string): Promise<unknown[]> {
     return Array.from({ length: 384 }, () => Math.random());
   }
 
@@ -722,11 +722,11 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     return { clusters: [], similarity: 0.85 };
   }
 
-  private async runAIOrchestration(documentId: string, content: string, options: any): Promise<any> {
+  private async runAIOrchestration(documentId: string, content: string, options: unknown): Promise<any> {
     return { orchestrationResult: 'completed' };
   }
 
-  private async generateRecommendations(documentId: string, options: any): Promise<any[]> {
+  private async generateRecommendations(documentId: string, options: unknown): Promise<unknown[]> {
     return [{ type: 'optimization', confidence: 0.8 }];
   }
 
@@ -734,45 +734,45 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     // Cache implementation
   }
 
-  private async batchPreprocessDocuments(documents: any[]): Promise<any[]> {
+  private async batchPreprocessDocuments(documents: unknown[]): Promise<unknown[]> {
     return documents;
   }
 
-  private async generateBatchEmbeddings(documents: any[]): Promise<any[]> {
+  private async generateBatchEmbeddings(documents: unknown[]): Promise<unknown[]> {
     return documents.map(() => Array.from({ length: 384 }, () => Math.random()));
   }
 
-  private async performBatchSemanticAnalysis(documents: any[]): Promise<any> {
+  private async performBatchSemanticAnalysis(documents: unknown[]): Promise<any> {
     return { clusters: [], totalSimilarities: documents.length };
   }
 
-  private async generateSystemRecommendations(sessionId: string, data: any): Promise<any[]> {
+  private async generateSystemRecommendations(sessionId: string, data: unknown): Promise<unknown[]> {
     return [{ type: 'system', sessionId, confidence: 0.9 }];
   }
 
-  private calculateOverallConfidence(results: any[]): number {
+  private calculateOverallConfidence(results: unknown[]): number {
     return 0.85; // Placeholder
   }
 
   // Message processing methods
-  private async processDocumentMessage(message: any): Promise<any> {
+  private async processDocumentMessage(message: unknown): Promise<any> {
     return this.processDocument(message.documentId, message.content, message.options);
   }
 
-  private async processAnalysisMessage(message: any): Promise<any> {
+  private async processAnalysisMessage(message: unknown): Promise<any> {
     return { analysisComplete: true };
   }
 
-  private async processEmbeddingMessage(message: any): Promise<any> {
+  private async processEmbeddingMessage(message: unknown): Promise<any> {
     return { embeddingsGenerated: true };
   }
 
-  private async queueDocumentProcessing(data: any): Promise<void> {
+  private async queueDocumentProcessing(data: unknown): Promise<void> {
     // Queue implementation
   }
 
   // gRPC service implementations
-  private async grpcAnalyzeDocument(call: any, callback: any): Promise<void> {
+  private async grpcAnalyzeDocument(call: unknown, callback: unknown): Promise<void> {
     try {
       const result = await this.processDocument(call.request.documentId, call.request.content, call.request.options);
       callback(null, result);
@@ -781,42 +781,42 @@ export class ComprehensiveAISystemIntegration extends EventEmitter {
     }
   }
 
-  private async grpcBatchProcess(call: any, callback: any): Promise<void> {
+  private async grpcBatchProcess(call: unknown, callback: unknown): Promise<void> {
     callback(null, { batchId: 'batch-123', status: 'queued' });
   }
 
-  private async grpcGetAnalysisStatus(call: any, callback: any): Promise<void> {
+  private async grpcGetAnalysisStatus(call: unknown, callback: unknown): Promise<void> {
     callback(null, { status: 'completed', progress: 100 });
   }
 
-  private async grpcGenerateEmbeddings(call: any, callback: any): Promise<void> {
+  private async grpcGenerateEmbeddings(call: unknown, callback: unknown): Promise<void> {
     callback(null, { embeddings: [], dimensions: 384 });
   }
 
-  private async grpcSimilaritySearch(call: any, callback: any): Promise<void> {
+  private async grpcSimilaritySearch(call: unknown, callback: unknown): Promise<void> {
     callback(null, { results: [], total: 0 });
   }
 
-  private async grpcUpdateVectorIndex(call: any, callback: any): Promise<void> {
+  private async grpcUpdateVectorIndex(call: unknown, callback: unknown): Promise<void> {
     callback(null, { updated: true, indexSize: 1000 });
   }
 
-  private async grpcCacheGet(call: any, callback: any): Promise<void> {
+  private async grpcCacheGet(call: unknown, callback: unknown): Promise<void> {
     const result = await this.components.cacheManager.get(call.request.key);
     callback(null, { value: result, found: !!result });
   }
 
-  private async grpcCacheSet(call: any, callback: any): Promise<void> {
+  private async grpcCacheSet(call: unknown, callback: unknown): Promise<void> {
     const success = await this.components.cacheManager.set(call.request.key, call.request.value);
     callback(null, { success });
   }
 
-  private async grpcCacheInvalidate(call: any, callback: any): Promise<void> {
+  private async grpcCacheInvalidate(call: unknown, callback: unknown): Promise<void> {
     const count = await this.components.cacheManager.clear(call.request.pattern);
     callback(null, { invalidated: count });
   }
 
-  private createProtoService(serviceName: string): any {
+  private createProtoService(serviceName: string): unknown {
     // Would return actual protobuf service definition
     return {};
   }

@@ -2,12 +2,13 @@
 // Complete Vector Search Service - Production Ready
 // Combines PostgreSQL pgvector + Qdrant + Local caching + Loki.js + Fuse.js
 import { browser } from "$app/environment";
-// Orphaned content: import {
-db, isPostgreSQL
-import { ollamaService } from "$lib/server/services/OllamaService";
-// Orphaned content: import {
-and, eq, or, sql
-
+// TODO: Fix import - // Orphaned content: import { db, isPostgreSQL import { ollamaService } from "$lib/server/services/OllamaService";
+import {
+  and,
+  eq,
+  or,
+  sql
+} from "drizzle-orm";
 // Import dependencies with fallbacks
 let qdrant: any = null;
 let generateEmbedding: any = null;

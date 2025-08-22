@@ -28,7 +28,7 @@ export async function queryQdrant(vec: number[], limit = 200, temperature = 0.3)
   const j = await r.json();
 
   // Normalize result object
-  const results = (j.result || []).map((p: any) => ({
+  const results = (j.result || []).map((p: unknown) => ({
     id: String(p.id),
     text: p.payload?.text ?? '',
     metadata: p.payload?.metadata ?? {},

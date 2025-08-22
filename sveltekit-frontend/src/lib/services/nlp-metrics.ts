@@ -1,9 +1,7 @@
 // Prometheus-style metrics exposition for NLP embeddings.
 // Integrates with nlpMetrics from sentence-transformer service.
 import { nlpMetrics } from "./sentence-transformer";
-// Orphaned content: import {
-getPipelineHistogram, getDedupeMetrics, getAutosolveMetrics, getQUICMetrics, getAggregateAnomaliesLast5m, getBudgetCounters
-import { getRedisMetrics } from './redis-metrics';
+// TODO: Fix import - // Orphaned content: import { getPipelineHistogram, getDedupeMetrics, getAutosolveMetrics, getQUICMetrics, getAggregateAnomaliesLast5m, getBudgetCounters import { getRedisMetrics } from './redis-metrics';
 
 export function renderNlpMetrics(): string {
   const lines: string[] = [];

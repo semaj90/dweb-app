@@ -269,7 +269,7 @@ https://svelte.dev/e/js_parse_error -->
       loading: false
     };
 }
-  function formatAnalysisForDisplay(analysis: any): string {
+  function formatAnalysisForDisplay(analysis: unknown): string {
     if (!analysis) return "No analysis available";
     
     let display = "";

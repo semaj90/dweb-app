@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { gemma3API } from '$lib/ai/gemma3-api';
@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ request }) => {
       default:
         return json({ error: 'Invalid action' }, { status: 400 });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Gemma3 API error:', error);
     return json({ error: (error as any)?.message || "Unknown error" }, { status: 500 });
   }
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url }) => {
     
     const data = await response.json();
     return json({ response: data.response });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return json({ error: 'Failed to query Gemma3' }, { status: 500 });
   }
 };

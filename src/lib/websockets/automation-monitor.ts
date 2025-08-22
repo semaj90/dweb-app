@@ -162,9 +162,9 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Start WebSocket server
      */
-    async startServer(server?: any): Promise<void> {
+    async startServer(server?: unknown): Promise<void> {
         try {
-            const options: any = {
+            const options: unknown = {
                 port: this.config.port,
                 perMessageDeflate: this.config.enableCompression
             };
@@ -200,7 +200,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Handle new WebSocket connection
      */
-    private handleConnection(ws: WebSocket, request: any): void {
+    private handleConnection(ws: WebSocket, request: unknown): void {
         // Check client limit
         if (this.clients.size >= this.config.maxClients) {
             ws.close(1013, 'Server at capacity');
@@ -263,7 +263,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Handle incoming messages from clients
      */
-    private handleMessage(client: MonitoringClient, data: any): void {
+    private handleMessage(client: MonitoringClient, data: unknown): void {
         try {
             client.lastActivity = new Date();
             
@@ -388,7 +388,7 @@ export class AutomationMonitoringService extends EventEmitter {
      * Send historical data to client
      */
     private sendHistoryData(client: MonitoringClient, channel: string, limit = 50): void {
-        let historyData: any[] = [];
+        let historyData: unknown[] = [];
 
         switch (channel) {
             case 'metrics':
@@ -418,7 +418,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Handle client disconnection
      */
-    private handleDisconnection(client: MonitoringClient, code: number, reason: any): void {
+    private handleDisconnection(client: MonitoringClient, code: number, reason: unknown): void {
         // Remove from all subscription channels
         client.subscriptions.forEach(channel => {
             this.subscriptionChannels.get(channel)?.delete(client.id);
@@ -435,7 +435,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Broadcast message to all clients subscribed to a channel
      */
-    private broadcastToChannel(channel: string, message: any): void {
+    private broadcastToChannel(channel: string, message: unknown): void {
         const clientIds = this.subscriptionChannels.get(channel);
         if (!clientIds || clientIds.size === 0) return;
 
@@ -468,7 +468,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Send message to specific client
      */
-    private sendToClient(client: MonitoringClient, message: any): void {
+    private sendToClient(client: MonitoringClient, message: unknown): void {
         if (client.ws.readyState !== client.ws.OPEN) return;
 
         try {
@@ -528,7 +528,7 @@ export class AutomationMonitoringService extends EventEmitter {
     /**
      * Get server statistics
      */
-    getServerStats(): any {
+    getServerStats(): unknown {
         const channelStats = Object.fromEntries(
             Array.from(this.subscriptionChannels.entries()).map(([channel, clients]) => [
                 channel,

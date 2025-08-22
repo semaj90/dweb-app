@@ -82,88 +82,88 @@
     }
   });
 
-  function setupServiceEventListeners(service: any) {
+  function setupServiceEventListeners(service: unknown) {
     // Service-level events
-    service.on('service:initialized', (data: any) => {
+    service.on('service:initialized', (data: unknown) => {
       addLog('🎉 Service initialized with config');
       console.log('Service initialized:', data);
     });
 
-    service.on('service:error', (data: any) => {
+    service.on('service:error', (data: unknown) => {
       addLog(`❌ Service error: ${data.error}`);
     });
 
     // Session events
-    service.on('session:created', (data: any) => {
+    service.on('session:created', (data: unknown) => {
       addLog(`📝 New session created: ${data.session.title}`);
     });
 
-    service.on('session:deleted', (data: any) => {
+    service.on('session:deleted', (data: unknown) => {
       addLog(`🗑️ Session deleted: ${data.sessionId}`);
     });
 
     // Message events
-    service.on('message:sending', (data: any) => {
+    service.on('message:sending', (data: unknown) => {
       addLog(`📤 Sending message to session ${data.sessionId}`);
     });
 
-    service.on('message:received', (data: any) => {
+    service.on('message:received', (data: unknown) => {
       addLog(`📥 Message processed for session ${data.sessionId}`);
     });
 
-    service.on('message:error', (data: any) => {
+    service.on('message:error', (data: unknown) => {
       addLog(`❌ Message error: ${data.error}`);
     });
 
     // Streaming events
-    service.on('streaming:started', (data: any) => {
+    service.on('streaming:started', (data: unknown) => {
       addLog(`🌊 Streaming started for session ${data.sessionId}`);
     });
 
-    service.on('streaming:chunk', (data: any) => {
+    service.on('streaming:chunk', (data: unknown) => {
       // Don't log every chunk, just track them
     });
 
-    service.on('streaming:completed', (data: any) => {
+    service.on('streaming:completed', (data: unknown) => {
       addLog(`✓ Streaming completed for session ${data.sessionId}`);
     });
 
-    service.on('streaming:cancelled', (data: any) => {
+    service.on('streaming:cancelled', (data: unknown) => {
       addLog(`⏹️ Streaming cancelled for session ${data.sessionId}`);
     });
 
     // Tool events
-    service.on('tool:executing', (data: any) => {
+    service.on('tool:executing', (data: unknown) => {
       addLog(`🔧 Executing tool: ${data.toolName}`);
     });
 
-    service.on('tool:executed', (data: any) => {
+    service.on('tool:executed', (data: unknown) => {
       addLog(`✓ Tool executed: ${data.toolName} (${data.executionTime}ms)`);
     });
 
-    service.on('tool:error', (data: any) => {
+    service.on('tool:error', (data: unknown) => {
       addLog(`❌ Tool error: ${data.toolName} - ${data.error}`);
     });
 
     // Execution events
-    service.on('execution:completed', (data: any) => {
+    service.on('execution:completed', (data: unknown) => {
       addLog(`✅ Execution completed: ${data.execution.type}`);
     });
 
-    service.on('execution:failed', (data: any) => {
+    service.on('execution:failed', (data: unknown) => {
       addLog(`❌ Execution failed: ${data.error}`);
     });
 
     // Memory events
-    service.on('memory:saved', (data: any) => {
+    service.on('memory:saved', (data: unknown) => {
       addLog(`💾 Memory saved: ${data.size} bytes`);
     });
 
-    service.on('memory:loaded', (data: any) => {
+    service.on('memory:loaded', (data: unknown) => {
       addLog(`📂 Memory loaded: ${data.size} bytes`);
     });
 
-    service.on('memory:cleared', (data: any) => {
+    service.on('memory:cleared', (data: unknown) => {
       addLog(`🧹 Memory cleared for session ${data.sessionId}`);
     });
   }

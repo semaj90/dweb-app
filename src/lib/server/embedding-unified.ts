@@ -80,7 +80,7 @@ class UnifiedEmbeddingService {
     }
   }
 
-  private onnxEmbedder: any = null;
+  private onnxEmbedder: unknown = null;
 
   /**
    * Generate embeddings using ONNX (preferred method)

@@ -83,9 +83,9 @@ export class FileMergeSystem {
   private postgresConfig: PostgresConfig;
   private vectorConfig: VectorConfig;
   private ragConfig: RAGConfig;
-  private s3Client: any;
-  private pgClient: any;
-  private qdrantClient: any;
+  private s3Client: unknown;
+  private pgClient: unknown;
+  private qdrantClient: unknown;
 
   constructor(
     s3Config: S3Config,
@@ -636,7 +636,7 @@ export class FileMergeSystem {
       fileIds
     );
 
-    return result.rows.map((row: any) => ({
+    return result.rows.map((row: unknown) => ({
       id: row.id,
       filename: row.filename,
       originalPath: row.original_path,
@@ -718,7 +718,7 @@ export class FileMergeSystem {
 
   private async searchInPgVector(
     queryEmbedding: number[],
-    options: any
+    options: unknown
   ): Promise<Array<FileMetadata & { similarity: number }>> {
     const result = await this.pgClient.query(`
       SELECT
@@ -738,7 +738,7 @@ export class FileMergeSystem {
       options.limit || 10
     ]);
 
-    return result.rows.map((row: any) => ({
+    return result.rows.map((row: unknown) => ({
       id: row.id,
       filename: row.filename,
       originalPath: row.original_path,

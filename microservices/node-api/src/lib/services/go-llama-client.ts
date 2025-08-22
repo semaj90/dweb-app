@@ -1,7 +1,7 @@
 // Go LLM client adapter
 // Calls a hypothetical Go microservice endpoint that processes combined GPU/WASM results.
 
-export async function callGoLLM({ gpuResult, wasmResult }: { gpuResult: any, wasmResult: any }) {
+export async function callGoLLM({ gpuResult, wasmResult }: { gpuResult: unknown, wasmResult: unknown }) {
   const endpoint = process.env.GO_LLAMA_URL || 'http://localhost:8096/process';
   try {
     const res = await fetch(endpoint, {

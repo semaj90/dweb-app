@@ -1,32 +1,23 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "@sveltejs/kit";
 import { z } from "zod";
-import { users, userProfiles } from "$lib/server/db/schema-postgres";
-import { lucia } from "$lib/server/auth";
-import { db } from "$lib/server/db";
-import { eq } from "drizzle-orm";
-import bcrypt from 'bcryptjs';
+import { authService } from "$lib/server/auth";
+import { embeddingService } from "$lib/server/embedding-service";
+import { isValidEmail } from "$lib/utils";
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  role: z.enum(["prosecutor", "investigator", "admin", "analyst"]).default("prosecutor"),
-  department: z.string().optional(),
-  badgeNumber: z.string().optional(),
-  jurisdiction: z.string().optional()
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  displayName: z.string().optional(),
+  legalSpecialties: z.array(z.string()).optional()
 });
 
-export const POST: RequestHandler = async ({ request, getClientAddress, cookies }) => {
-  const startTime = Date.now();
-  const ipAddress = getClientAddress();
-  const userAgent = request.headers.get("user-agent") || "";
-
+export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
     const body = await request.json();
-    console.log("📝 Registration attempt:", { email: body.email, role: body.role });
+    console.log("📝 Registration attempt:", { email: body.email });
 
     // Validate input
     const validationResult = registerSchema.safeParse(body);
@@ -38,142 +29,85 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
       }, { status: 400 });
     }
 
-    const { email, password, firstName, lastName, role, department, badgeNumber, jurisdiction } = validationResult.data;
+    const { email, password, firstName, lastName, displayName, legalSpecialties } = validationResult.data;
 
-    // Check if user already exists
-    const existingUsers = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email.toLowerCase()))
-      .limit(1);
-
-    if (existingUsers.length > 0) {
+    // Additional email validation
+    if (!isValidEmail(email)) {
       return json({
         success: false,
-        error: "User with this email already exists"
-      }, { status: 409 });
+        error: "Invalid email format"
+      }, { status: 400 });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Register user using our auth service
+    const user = await authService.register({
+      email: email.toLowerCase().trim(),
+      password,
+      firstName: firstName?.trim(),
+      lastName: lastName?.trim(),
+      displayName: displayName?.trim(),
+      legalSpecialties: legalSpecialties || []
+    });
 
-    // Create user in database
-    const [newUser] = await db
-      .insert(users)
-      .values({
-        email: email.toLowerCase(),
-        hashedPassword,
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
-        role,
-        isActive: true,
-      })
-      .returning();
-
-    // Create user profile with default values and permissions
-    const defaultPermissions = getDefaultPermissions(role);
+    // Generate embeddings for RAG functionality
     try {
-      await db
-        .insert(userProfiles)
-        .values({
-          userId: newUser.id,
-          permissions: defaultPermissions,
-          experienceLevel: 'junior',
-          preferences: {
-            theme: 'light',
-            notifications: true,
-            autoSave: true,
-          },
-          workPatterns: {
-            mostActiveHours: [],
-            documentsPerWeek: 0,
-            casesHandled: 0,
-          },
-          specializations: [],
-          certifications: [],
-          metadata: {},
-        });
-    } catch (profileError) {
-      console.log("⚠️ User profile creation failed, continuing without profile:", profileError.message);
+      await Promise.all([
+        embeddingService.generateUserProfileEmbedding(user.id),
+        embeddingService.generateUserPreferenceEmbedding(user.id)
+      ]);
+    } catch (embeddingError) {
+      console.warn('Failed to generate user embeddings:', embeddingError);
+      // Don't fail registration if embeddings fail
     }
+
+    // Create session
+    const session = await authService.createSession(user.id);
+
+    // Set session cookie
+    cookies.set('session', session.id, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24 * 30 // 30 days
+    });
 
     console.log("✅ User registered successfully:", {
-      id: newUser.id,
-      email: newUser.email,
-      role: newUser.role,
-      processingTime: Date.now() - startTime
+      id: user.id,
+      email: user.email
     });
-
-    // Create session for new user
-    const session = await lucia.createSession(newUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-
-    // Set the session cookie
-    cookies.set(sessionCookie.name, sessionCookie.value, {
-      path: ".",
-      ...sessionCookie.attributes,
-    });
-
-    // Return user info (excluding password)
-    const { hashedPassword: _, ...userInfo } = newUser;
 
     return json({
       success: true,
       message: "User registered successfully",
       user: {
-        ...userInfo,
-        avatarUrl: userInfo.avatarUrl || "/images/default-avatar.svg",
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        legalSpecialties: user.legalSpecialties,
+        createdAt: user.createdAt
       }
     }, { status: 201 });
 
   } catch (error) {
     console.error("❌ Registration error:", error);
 
+    // Handle specific errors
+    if (error instanceof Error) {
+      if (error.message === 'User already exists') {
+        return json({
+          success: false,
+          error: "An account with this email already exists"
+        }, { status: 409 });
+      }
+    }
+
     return json({
       success: false,
-      error: "Internal server error during registration"
+      error: "Registration failed. Please try again."
     }, { status: 500 });
   }
 };
-
-// Helper function for default permissions
-function getDefaultPermissions(role: string): string[] {
-  const permissions = {
-    prosecutor: [
-      "cases:read",
-      "cases:create", 
-      "cases:update",
-      "evidence:read",
-      "evidence:create",
-      "criminals:read",
-      "ai:analyze"
-    ],
-    investigator: [
-      "cases:read",
-      "evidence:read",
-      "evidence:create",
-      "evidence:update",
-      "criminals:read",
-      "criminals:create",
-      "criminals:update"
-    ],
-    analyst: [
-      "cases:read",
-      "evidence:read",
-      "criminals:read",
-      "ai:analyze",
-      "reports:create"
-    ],
-    admin: [
-      "cases:*",
-      "evidence:*", 
-      "criminals:*",
-      "users:*",
-      "system:*",
-      "ai:*"
-    ]
-  };
-
-  return permissions[role as keyof typeof permissions] || permissions.prosecutor;
-}

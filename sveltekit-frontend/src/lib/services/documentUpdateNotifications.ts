@@ -3,9 +3,7 @@
 // WebSocket-based notifications for document re-embedding and re-ranking progress
 
 import { writable } from "svelte/store";
-// Orphaned content: import {
-
-// ============================================================================
+// TODO: Fix import - // Orphaned content: import {  // ============================================================================
 // TYPES
 // ============================================================================
 

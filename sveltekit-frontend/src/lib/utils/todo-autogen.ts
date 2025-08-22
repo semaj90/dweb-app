@@ -6,9 +6,7 @@ import { getLocalOllamaUrl } from "$lib/constants/local-llm-config";
  */
 
 import { writeFile, mkdir } from "fs/promises";
-// Orphaned content: import {
-
-export interface TodoEntry {
+// TODO: Fix import - // Orphaned content: import {  export interface TodoEntry {
   id: string;
   timestamp: string;
   category: 'llm-misfire' | 'typescript' | 'runtime' | 'performance' | 'memory';

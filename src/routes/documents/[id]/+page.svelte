@@ -132,7 +132,7 @@
       if (data.success) {
         // Filter out the current document
         similarDocuments = data.results
-          .filter((doc: any) => doc.id !== document?.id)
+          .filter((doc: unknown) => doc.id !== document?.id)
           .slice(0, 4);
       }
     } catch (err) {

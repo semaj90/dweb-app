@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request }) => {
       success: true,
       result: synthesizedResult,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AI synthesis error:", error);
     return json(
       { error: "AI synthesis failed", details: error.message },
@@ -99,7 +99,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Metrics retrieval error:", error);
     return json(
       { error: "Failed to retrieve metrics", details: error.message },
@@ -144,7 +144,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AI synthesizer management error:", error);
     return json(
       { error: "Management operation failed", details: error.message },

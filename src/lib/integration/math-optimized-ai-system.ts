@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Math-Optimized AI System - Integration Layer
  * Extends ComprehensiveAISystemIntegration with mathematical optimizations
@@ -31,10 +31,10 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   private performanceMonitor: PerformanceMonitor;
   private qualityController: AdaptiveQualityController;
   private optimizationConfig: OptimizationConfig;
-  private gpuContext: any = null;
-  private workerPool: any = null;
+  private gpuContext: unknown = null;
+  private workerPool: unknown = null;
 
-  constructor(config: any) {
+  constructor(config: unknown) {
     super(config);
     
     this.optimizationConfig = {
@@ -157,7 +157,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   async processDocumentOptimized(
     documentId: string, 
     content: string, 
-    options: any = {}
+    options: unknown = {}
   ): Promise<any> {
     const startTime = performance.now();
     
@@ -195,7 +195,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   private async processDocumentGPU(
     documentId: string, 
     content: string, 
-    options: any
+    options: unknown
   ): Promise<any> {
     console.log(`🎮 GPU processing document ${documentId}...`);
     
@@ -225,7 +225,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   private async processDocumentSIMD(
     documentId: string, 
     content: string, 
-    options: any
+    options: unknown
   ): Promise<any> {
     console.log(`🔢 SIMD processing document ${documentId}...`);
     
@@ -260,8 +260,8 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   // Advanced batch processing with mathematical optimizations
   async processDocumentBatch(
     documents: Array<{ id: string; content: string }>,
-    options: any = {}
-  ): Promise<any[]> {
+    options: unknown = {}
+  ): Promise<unknown[]> {
     console.log(`📊 Batch processing ${documents.length} documents with optimizations...`);
     
     const startTime = performance.now();
@@ -330,8 +330,8 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
 
   private async processBatchParallel(
     batch: Array<{ id: string; content: string }>,
-    options: any
-  ): Promise<any[]> {
+    options: unknown
+  ): Promise<unknown[]> {
     // Process documents in parallel using Promise.all
     const promises = batch.map(doc => 
       this.processDocumentOptimized(doc.id, doc.content, options)
@@ -386,7 +386,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     return dotProduct / (magnitudeA * magnitudeB);
   }
 
-  private performKMeansClustering(data: number[][], k: number): any {
+  private performKMeansClustering(data: number[][], k: number): unknown {
     // Simplified K-means implementation
     const centroids = data.slice(0, k); // Use first k points as initial centroids
     const clusters = Array.from({ length: k }, () => []);
@@ -405,7 +405,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
     };
   }
 
-  private performPCA(data: number[][], targetDimensions: number): any {
+  private performPCA(data: number[][], targetDimensions: number): unknown {
     // Mock PCA - in production would use actual linear algebra
     return {
       reducedData: data.map(vector => vector.slice(0, targetDimensions)),
@@ -418,7 +418,7 @@ export class MathOptimizedAISystem extends ComprehensiveAISystemIntegration {
   }
 
   // System health and performance monitoring
-  getSystemHealth(): any {
+  getSystemHealth(): unknown {
     const baseHealth = super.getSystemHealth();
     
     return {
@@ -491,7 +491,7 @@ class PerformanceMonitor {
     return Math.random() * 100; // Mock CPU load percentage
   }
 
-  updateMetrics(metrics: any): void {
+  updateMetrics(metrics: unknown): void {
     console.log('📊 Performance metrics updated:', metrics);
   }
 }
@@ -499,7 +499,7 @@ class PerformanceMonitor {
 class AdaptiveQualityController {
   currentQuality: string = 'standard';
 
-  adjustQuality(metrics: any): string {
+  adjustQuality(metrics: unknown): string {
     if (metrics.cpuUsage > 85 || metrics.memoryUsage > 1500) {
       this.currentQuality = 'low';
     } else if (metrics.cpuUsage < 50 && metrics.memoryUsage < 1000) {

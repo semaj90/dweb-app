@@ -5,9 +5,7 @@
  */
 
 // { redisVectorService } from "../../../services/redis-vector-service";
-// Orphaned content: import {
-
-// Temporary stub for redis vector service
+// TODO: Fix import - // Orphaned content: import {  // Temporary stub for redis vector service
 const redisVectorService = {
   async healthCheck() {
     return false;

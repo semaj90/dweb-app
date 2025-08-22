@@ -19,6 +19,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// LegalAIService represents the legal AI service
+type LegalAIService struct {
+	initialized bool
+	config      map[string]interface{}
+}
+
+// Constructor for LegalAIService
+func NewLegalAIService() *LegalAIService {
+	return &LegalAIService{
+		initialized: true,
+		config:      make(map[string]interface{}),
+	}
+}
+
+// Helper methods for LegalAIService
+func (s *LegalAIService) generateEmbedding(text string) []float32 {
+	// Mock embedding generation
+	return []float32{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8}
+}
+
 // QUIC Server Configuration
 type QUICConfig struct {
 	Address     string
@@ -339,4 +359,41 @@ func startQUICServer(config *Config, ginRouter *gin.Engine) {
 
 	log.Printf("✅ QUIC/HTTP3 server started on :8443")
 	log.Printf("🔗 Try: https://localhost:8443/quic/stream-analysis")
+}
+
+// Missing types
+type Config struct {
+	Port string
+}
+
+type SearchResult struct {
+	DocumentID string  `json:"document_id"`
+	Content    string  `json:"content"`
+	Score      float64 `json:"score"`
+}
+
+func main() {
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Recovery())
+	
+	// Add health check
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"service": "QUIC Legal AI Server",
+			"status":  "healthy",
+			"timestamp": time.Now(),
+		})
+	})
+	
+	// Initialize Legal AI service
+	legalAI := NewLegalAIService()
+	legalAI.addQUICRoutes(router)
+	
+	// Start QUIC server
+	config := &Config{Port: "8443"}
+	startQUICServer(config, router)
+	
+	// Keep main thread alive
+	select {}
 }

@@ -1,6 +1,8 @@
-//go:build legacy
-// +build legacy
+//go:build loadbalancer
+// +build loadbalancer
 
+// Build with: go build -tags loadbalancer -o bin/load-balancer.exe ./go-microservice/load-balancer.go
+// This tag isolates the load balancer from other 'main' entrypoints in the module to prevent redeclaration.
 package main
 
 import (
@@ -11,6 +13,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -529,6 +532,21 @@ func main() {
 		if err := srv.Shutdown(ctxShutdown); err != nil { log.Printf("Graceful shutdown error: %v", err) }
 	}()
 
+	// Optional singleton guard: if LB_SINGLETON=1 (default) we perform a proactive listen to avoid restart loops
+	singleton := firstNonEmpty(os.Getenv("LB_SINGLETON"))
+	if singleton == "" { singleton = "1" }
+	var ln net.Listener
+	var err error
+	if singleton == "1" {
+		ln, err = net.Listen("tcp", ":"+port)
+		if err != nil {
+			log.Printf("❌ Port %s already in use – another load-balancer instance is running. (Set LB_SINGLETON=0 to disable guard)", port)
+			// Exit cleanly so supervisors don't keep respawning
+			return
+		}
+	} else {
+		log.Printf("⚠️  LB_SINGLETON disabled – relying on ListenAndServe error handling")
+	}
 	log.Printf("🚀 Go Load Balancer starting on port %s", port)
 	log.Printf("🔄 Strategy: %s", strategy)
 	log.Printf("🎯 Upstream servers: %d", len(lb.servers))
@@ -540,8 +558,14 @@ func main() {
 		log.Printf("⚡ CUDA acceleration enabled")
 		log.Printf("🔧 GPU memory limit: %s", os.Getenv("GPU_MEMORY_LIMIT"))
 	}
-	if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-		log.Fatalf("server error: %v", err)
+	if ln != nil { // we already bound the port
+		if serveErr := srv.Serve(ln); serveErr != nil && !errors.Is(serveErr, http.ErrServerClosed) {
+			log.Fatalf("server error: %v", serveErr)
+		}
+	} else { // fallback legacy path
+		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("server error: %v", err)
+		}
 	}
 	log.Printf("Shutdown complete")
 }

@@ -132,7 +132,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Handler Functions
  */
 
-async function processMetrics(metricsData: any) {
+async function processMetrics(metricsData: unknown) {
     const startTime = performance.now();
     
     // Validate metrics data
@@ -163,7 +163,7 @@ async function processMetrics(metricsData: any) {
     });
 }
 
-async function registerTrigger(triggerData: any) {
+async function registerTrigger(triggerData: unknown) {
     // Validate trigger data
     if (!triggerData || !triggerData.id || !triggerData.conditions) {
         return error(400, 'Invalid trigger configuration');
@@ -193,7 +193,7 @@ async function registerTrigger(triggerData: any) {
     });
 }
 
-async function executeTrigger(triggerData: any) {
+async function executeTrigger(triggerData: unknown) {
     const { triggerId, forceExecute = false, testMode = false } = triggerData;
     
     if (!triggerId) {
@@ -214,7 +214,7 @@ async function executeTrigger(triggerData: any) {
     });
 }
 
-async function sendAlert(alertData: any) {
+async function sendAlert(alertData: unknown) {
     const alert: SystemAlert = {
         id: `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         ...alertData,
@@ -382,7 +382,7 @@ async function executeManualTrigger(triggerId: string, forceExecute: boolean, te
     };
 }
 
-async function updateTrigger(triggerId: string, updates: any) {
+async function updateTrigger(triggerId: string, updates: unknown) {
     // This would update the trigger configuration in the automation engine
     console.log(`🔧 Updating trigger: ${triggerId}`, updates);
     
@@ -405,7 +405,7 @@ async function removeTrigger(triggerId: string) {
     };
 }
 
-function calculateSystemHealth(stats: any, metrics: any) {
+function calculateSystemHealth(stats: unknown, metrics: unknown) {
     const triggerHealth = stats.totalTriggers > 0 
         ? (stats.activeTriggers / stats.totalTriggers) * 100 
         : 100;

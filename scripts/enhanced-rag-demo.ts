@@ -182,7 +182,7 @@ class SearchAnalyticsService {
     console.log(`🔍 Fuse.js search initialized with ${documents.length} documents`);
   }
   
-  search(query: string, limit: number = 5): Array<{ document: DemoDocument, score: number, matches: any[] }> {
+  search(query: string, limit: number = 5): Array<{ document: DemoDocument, score: number, matches: unknown[] }> {
     const results = this.fuseSearch.search(query, { limit });
     
     return results.map(result => ({
@@ -232,7 +232,7 @@ class SearchAnalyticsService {
 
 // VS Code Integration
 class VSCodeIntegration {
-  generateSummaryFile(documents: DemoDocument[], analytics: any, searchResults: any[]) {
+  generateSummaryFile(documents: DemoDocument[], analytics: unknown, searchResults: unknown[]) {
     const summaryContent = `# Enhanced RAG Demo Results
 
 ## 📊 Analytics Dashboard
@@ -253,7 +253,7 @@ ${Object.entries(analytics.labelDistribution).map(([label, count]) =>
 - **Low Complexity (<0.5)**: ${analytics.complexityDistribution.low} documents
 
 ### Top Scoring Documents
-${analytics.topScoringDocs.map((doc: any, index: number) => 
+${analytics.topScoringDocs.map((doc: unknown, index: number) => 
   `${index + 1}. **${doc.label}** (ID: ${doc.id}) - Score: ${doc.score}`
 ).join('\n')}
 
@@ -303,7 +303,7 @@ ${documents.map(doc =>
     return summaryPath;
   }
   
-  generateDiagnosticsFile(documents: DemoDocument[], analytics: any) {
+  generateDiagnosticsFile(documents: DemoDocument[], analytics: unknown) {
     const diagnostics = {
       timestamp: new Date().toISOString(),
       system: {

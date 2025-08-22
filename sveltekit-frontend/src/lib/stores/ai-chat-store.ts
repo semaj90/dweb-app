@@ -4,9 +4,7 @@
  */
 
 import { writable, derived, get } from "svelte/store";
-// Orphaned content: import {
-
-// Types
+// TODO: Fix import - // Orphaned content: import {  // Types
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';

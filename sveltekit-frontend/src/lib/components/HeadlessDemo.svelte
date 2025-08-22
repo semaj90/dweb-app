@@ -8,7 +8,7 @@
     items = ['Active Cases', 'Pending Cases', 'Closed Cases']
   }: Props = $props();
 
-  import { createDialog, createSelect } from '@melt-ui/svelte';
+  import { createDialog, createSelect } from 'melt';
   import { fade } from 'svelte/transition';
   
   export const title = 'Legal Case Manager';

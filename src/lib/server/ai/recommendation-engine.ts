@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Advanced Recommendation Engine with Self-Organizing Maps (SOM)
  * Uses Kohonen networks for pattern recognition and intelligent clustering
@@ -45,7 +45,7 @@ interface RecommendationResult {
   expectedImprovement: number; // 0-1 scale
   category: string;
   tags: string[];
-  metadata: any;
+  metadata: unknown;
 }
 
 interface UserContext {
@@ -53,7 +53,7 @@ interface UserContext {
   role: string;
   experience: string;
   recentPatterns: RecommendationPattern[];
-  preferences: any;
+  preferences: unknown;
   behavioralSignals: {
     averageSessionTime: number;
     preferredComplexity: number;
@@ -144,8 +144,8 @@ export class RecommendationEngine extends EventEmitter {
   // Main recommendation generation
   public async generateRecommendations(
     userId: string,
-    sessionChunks: any[],
-    userHistory: any[]
+    sessionChunks: unknown[],
+    userHistory: unknown[]
   ): Promise<RecommendationResult[]> {
     console.log(`🎯 Generating recommendations for user ${userId}`);
 
@@ -177,7 +177,7 @@ export class RecommendationEngine extends EventEmitter {
   }
 
   // Pattern extraction and feature engineering
-  private extractPatternFromSession(userId: string, sessionChunks: any[]): RecommendationPattern {
+  private extractPatternFromSession(userId: string, sessionChunks: unknown[]): RecommendationPattern {
     const features = new Array(this.config.featureDimensions).fill(0);
 
     // Feature engineering from session chunks
@@ -233,7 +233,7 @@ export class RecommendationEngine extends EventEmitter {
     };
   }
 
-  private async buildUserContext(userId: string, userHistory: any[]): Promise<UserContext> {
+  private async buildUserContext(userId: string, userHistory: unknown[]): Promise<UserContext> {
     const existingContext = this.userContexts.get(userId);
     
     const context: UserContext = {
@@ -637,7 +637,7 @@ export class RecommendationEngine extends EventEmitter {
   }
 
   // Analytics calculations
-  private calculateAverageSessionTime(userHistory: any[]): number {
+  private calculateAverageSessionTime(userHistory: unknown[]): number {
     const sessionTimes = userHistory
       .filter(h => h.eventType === 'session-complete')
       .map(h => h.data.duration || 0);
@@ -647,7 +647,7 @@ export class RecommendationEngine extends EventEmitter {
       : 15 * 60 * 1000; // Default 15 minutes
   }
 
-  private calculatePreferredComplexity(userHistory: any[]): number {
+  private calculatePreferredComplexity(userHistory: unknown[]): number {
     // Analyze user's tendency toward simple vs complex analyses
     const complexityScores = userHistory
       .filter(h => h.data.analysisType)
@@ -666,7 +666,7 @@ export class RecommendationEngine extends EventEmitter {
       : 0.5;
   }
 
-  private calculateModelPreference(userHistory: any[]): string {
+  private calculateModelPreference(userHistory: unknown[]): string {
     const modelUsage = new Map<string, number>();
     
     userHistory
@@ -682,7 +682,7 @@ export class RecommendationEngine extends EventEmitter {
       .sort(([,a], [,b]) => b - a)[0][0];
   }
 
-  private calculateSatisfactionTrend(userHistory: any[]): number {
+  private calculateSatisfactionTrend(userHistory: unknown[]): number {
     const satisfactionScores = userHistory
       .filter(h => h.data.resultSatisfaction)
       .map(h => h.data.resultSatisfaction)
@@ -693,7 +693,7 @@ export class RecommendationEngine extends EventEmitter {
       : 3.0; // Default neutral
   }
 
-  private calculateFeatureUsage(userHistory: any[]): Map<string, number> {
+  private calculateFeatureUsage(userHistory: unknown[]): Map<string, number> {
     const usage = new Map<string, number>();
     
     userHistory.forEach(h => {
@@ -723,7 +723,7 @@ export class RecommendationEngine extends EventEmitter {
   }
 
   // Public methods for external updates
-  public async updateFromSession(session: any, synthesizedResult: any): Promise<void> {
+  public async updateFromSession(session: unknown, synthesizedResult: unknown): Promise<void> {
     const pattern = this.extractPatternFromSession(session.userId, session.chunks);
     
     // Update pattern with results
@@ -744,7 +744,7 @@ export class RecommendationEngine extends EventEmitter {
     }));
   }
 
-  public getSOMVisualization(): any {
+  public getSOMVisualization(): unknown {
     // Return SOM state for visualization
     return {
       dimensions: { width: this.config.somWidth, height: this.config.somHeight },
@@ -758,7 +758,7 @@ export class RecommendationEngine extends EventEmitter {
     };
   }
 
-  public getRecommendationStats(): any {
+  public getRecommendationStats(): unknown {
     return {
       totalPatterns: this.patterns.size,
       activeNodes: this.som.flat().filter(node => node.patterns.length > 0).length,

@@ -11,11 +11,11 @@
     id?: string;
     name?: string;
     required?: boolean;
-    min?: any;
-    max?: any;
-    step?: any;
-    pattern?: any;
-    autocomplete?: any;
+    min?: unknown;
+    max?: unknown;
+    step?: unknown;
+    pattern?: unknown;
+    autocomplete?: unknown;
   }
   
   export let type: string = 'text';
@@ -27,11 +27,11 @@
   export let id: string = '';
   export let name: string = '';
   export let required: boolean = false;
-  export let min: any = undefined;
-  export let max: any = undefined;
-  export let step: any = undefined;
-  export let pattern: any = undefined;
-  export let autocomplete: any = undefined;
+  export let min: unknown = undefined;
+  export let max: unknown = undefined;
+  export let step: unknown = undefined;
+  export let pattern: unknown = undefined;
+  export let autocomplete: unknown = undefined;
 </script>
 
 <input

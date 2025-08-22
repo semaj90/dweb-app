@@ -1,9 +1,7 @@
-
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
-import { vscodeErrorLogger } from './src/lib/vite/vscode-error-logger.js';
 
 // Smart port discovery utility
 async function findAvailablePort(startPort: number, maxAttempts: number = 10): Promise<number> {
@@ -36,11 +34,11 @@ async function loadDynamicPorts(): Promise<Record<string, number>> {
   try {
     const fs = await import('fs/promises');
     const path = await import('path');
-    
+
     const configPath = path.resolve('../.vscode/dynamic-ports.json');
     const data = await fs.readFile(configPath, 'utf8');
     const config = JSON.parse(data);
-    
+
     console.log('📡 Loaded dynamic port configuration:', config.ports);
     return config.ports || {};
   } catch (error) {
@@ -69,18 +67,7 @@ export default defineConfig(async ({ mode }) => {
 
   return {
   plugins: [
-    UnoCSS(),
-    vscodeErrorLogger({
-      enabled: mode === 'development',
-      logFile: resolve('.vscode/vite-errors.json'),
-      maxEntries: 500,
-      includeWarnings: true,
-      includeSourceMaps: true,
-      autoOpenProblems: false,
-      notificationLevel: 'errors-only',
-      integrateTasks: true,
-      generateDiagnostics: true
-    }),
+      UnoCSS(),
     sveltekit()
   ],
 
@@ -197,6 +184,17 @@ export default defineConfig(async ({ mode }) => {
     }
   },
 
+    // CSS processing optimizations
+    css: {
+      postcss: {
+        plugins: [
+          require('tailwindcss'),
+          require('autoprefixer'),
+        ],
+      },
+      devSourcemap: mode === 'development',
+    },
+
   preview: {
     port: availablePort + 1000, // Use different port for preview
     host: "0.0.0.0",
@@ -231,7 +229,7 @@ export default defineConfig(async ({ mode }) => {
         manualChunks: {
           // Vendor chunks
           'vendor-svelte': ['svelte', '@sveltejs/kit'],
-          'vendor-ui': ['@melt-ui/svelte', '@melt-ui/pp'],
+          'vendor-ui': ['melt', 'bits-ui'],
           'vendor-db': ['drizzle-orm', 'postgres'],
           'vendor-cache': ['ioredis'],
           'vendor-ai': ['@langchain/community', '@langchain/core'],
@@ -266,8 +264,8 @@ export default defineConfig(async ({ mode }) => {
     include: [
       'svelte',
       '@sveltejs/kit',
-      '@melt-ui/svelte',
-      '@melt-ui/pp'
+      'melt',
+      'bits-ui'
     ],
     exclude: [
       '@langchain/community',
@@ -296,19 +294,6 @@ export default defineConfig(async ({ mode }) => {
   '@shared': resolve('../shared'),
   '@text': resolve('../shared/text')
     }
-  },
-
-  // CSS processing optimizations
-  css: {
-    devSourcemap: mode === 'development',
-    postcss: mode === 'production' ? {
-      plugins: [
-        require('autoprefixer'),
-        require('cssnano')({
-          preset: 'default'
-        })
-      ]
-    } : undefined
   },
 
   // ESBuild configuration for optimal transpilation

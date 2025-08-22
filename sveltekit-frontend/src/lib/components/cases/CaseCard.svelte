@@ -8,7 +8,7 @@
     children?: import('svelte').Snippet;
   }
   import type { Props } from "$lib/types/global";
-  import { createContextMenu, melt } from '@melt-ui/svelte'
+  import { createContextMenu, melt } from 'melt'
   import { fly, scale } from 'svelte/transition'
 import {
     FileText,

@@ -70,7 +70,7 @@
       const modelResponse = await fetch('http://localhost:11434/api/tags');
       if (modelResponse.ok) {
         const modelData = await modelResponse.json();
-        const hasLegalAI = modelData.models?.some((model: any) =>
+        const hasLegalAI = modelData.models?.some((model: unknown) =>
           model.name.includes('legal-ai')
         );
 

@@ -3,7 +3,7 @@
   import { ollama, MODELS } from '$lib/ai/ollama';
 
   // Svelte 5 runes
-  let messages = $state<any[]>([]);
+  let messages = $state<unknown[]>([]);
   let input = $state('');
   let isLoading = $state(false);
   let isStreaming = $state(false);

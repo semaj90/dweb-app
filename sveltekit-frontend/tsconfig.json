@@ -25,31 +25,21 @@
     "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": false,
     "assumeChangesOnlyAffectDirectDependencies": true,
-  "downlevelIteration": true
+    "downlevelIteration": true,
+    "types": ["vitest/globals"]
   },
   "include": [
     "ambient.d.ts",
     "src/**/*.ts",
     "src/**/*.svelte",
     "src/types/**/*.d.ts",
-    "../shared/**/*.ts"
+    "../shared/**/*.ts",
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules/**",
     "build/**",
     "dist/**",
-    ".svelte-kit/**",
-    "tests/**",
-    "playwright-report/**",
-    "test-results/**",
-    "*.config.*",
-    "scripts/**",
-    "js_tests/**",
-    "enhanced-package-setup.mjs",
-    "../vscode-llm-extension/**",
-    "../rag/**",
-    "node_modules/drizzle-orm/mysql-core/**",
-    "node_modules/drizzle-orm/sqlite-core/**",
-    "node_modules/drizzle-orm/singlestore-core/**"
+    ".svelte-kit/**"
   ]
 }

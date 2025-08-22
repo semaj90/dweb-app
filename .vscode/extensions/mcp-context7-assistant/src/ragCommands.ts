@@ -500,10 +500,10 @@ export class RAGCommandProvider {
 
   // Helper methods for displaying results
 
-  private async showSearchResults(results: any, query: string): Promise<void> {
+  private async showSearchResults(results: unknown, query: string): Promise<void> {
     const content = `# Search Results: "${query}"\n\n` +
       `Found **${results.results?.length || 0}** results in **${results.metadata?.processingTime || 0}ms**\n\n` +
-      (results.results || []).map((result: any, index: number) => 
+      (results.results || []).map((result: unknown, index: number) => 
         `## ${index + 1}. ${result.title || 'Untitled'}\n\n` +
         `**Type:** ${result.document_type || 'general'}  \n` +
         `**Similarity:** ${(result.similarity_score * 100).toFixed(1)}%  \n` +
@@ -520,7 +520,7 @@ export class RAGCommandProvider {
     await vscode.window.showTextDocument(doc);
   }
 
-  private async showAnalysisResults(analysis: any, fileName: string): Promise<void> {
+  private async showAnalysisResults(analysis: unknown, fileName: string): Promise<void> {
     const content = `# AI Analysis: ${fileName}\n\n` +
       `**Analysis Type:** ${analysis.analysis?.analysisType || 'general'}  \n` +
       `**Processing Time:** ${analysis.analysis?.processingTime || 0}ms  \n` +
@@ -535,7 +535,7 @@ export class RAGCommandProvider {
     await vscode.window.showTextDocument(doc);
   }
 
-  private async showSummaryResults(summary: any, originalLength: number): Promise<void> {
+  private async showSummaryResults(summary: unknown, originalLength: number): Promise<void> {
     const content = `# Text Summary\n\n` +
       `**Original Length:** ${originalLength.toLocaleString()} characters  \n` +
       `**Summary Length:** ${summary.summary?.summaryLength || 0} characters  \n` +
@@ -551,7 +551,7 @@ export class RAGCommandProvider {
     await vscode.window.showTextDocument(doc);
   }
 
-  private async showWorkflowResults(result: any, workflowName: string): Promise<void> {
+  private async showWorkflowResults(result: unknown, workflowName: string): Promise<void> {
     const workflow = result.result;
     const content = `# ${workflowName} Results\n\n` +
       `**Processing Time:** ${workflow.metadata?.processingTime || 0}ms  \n` +
@@ -568,7 +568,7 @@ export class RAGCommandProvider {
     await vscode.window.showTextDocument(doc);
   }
 
-  private formatSystemStatus(isHealthy: boolean, metrics: any): string {
+  private formatSystemStatus(isHealthy: boolean, metrics: unknown): string {
     return `# Enhanced RAG System Status\n\n` +
       `**Overall Status:** ${isHealthy ? '✅ Healthy' : '❌ Unhealthy'}  \n` +
       `**Last Check:** ${new Date().toISOString()}  \n\n` +
@@ -583,7 +583,7 @@ export class RAGCommandProvider {
       `- **Node Version:** ${metrics.health?.components?.system?.details?.nodeVersion || 'unknown'}\n`;
   }
 
-  private formatRAGStats(stats: any): string {
+  private formatRAGStats(stats: unknown): string {
     return `# RAG System Statistics\n\n` +
       `## Documents\n\n` +
       `- **Total Documents:** ${stats.stats?.documents?.total || 0}\n` +

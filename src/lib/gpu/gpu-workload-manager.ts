@@ -335,7 +335,7 @@ export class GPUWorkloadManager extends EventEmitter {
     /**
      * Get workload status
      */
-    getWorkloadStatus(workloadId: string): any {
+    getWorkloadStatus(workloadId: string): unknown {
         // Check active workloads
         if (this.activeWorkloads.has(workloadId)) {
             return {
@@ -550,7 +550,7 @@ export class GPUWorkloadManager extends EventEmitter {
     /**
      * Execute batch optimized
      */
-    private async executeBatchOptimized(workloads: GPUWorkload[]): Promise<any[]> {
+    private async executeBatchOptimized(workloads: GPUWorkload[]): Promise<unknown[]> {
         // Group workloads by type for optimal batching
         const groupedWorkloads = this.batchProcessor.groupWorkloadsByType(workloads);
 
@@ -566,7 +566,7 @@ export class GPUWorkloadManager extends EventEmitter {
     /**
      * Process execution results
      */
-    private processExecutionResults(workloads: GPUWorkload[], results: any[]): void {
+    private processExecutionResults(workloads: GPUWorkload[], results: unknown[]): void {
         results.forEach((result, index) => {
             const workload = workloads[index];
 
@@ -582,7 +582,7 @@ export class GPUWorkloadManager extends EventEmitter {
     /**
      * Handle workload success
      */
-    private handleWorkloadSuccess(workload: GPUWorkload, result: any): void {
+    private handleWorkloadSuccess(workload: GPUWorkload, result: unknown): void {
         // Move to completed
         this.activeWorkloads.delete(workload.id);
         this.completedWorkloads.set(workload.id, {
@@ -613,7 +613,7 @@ export class GPUWorkloadManager extends EventEmitter {
     /**
      * Handle workload failure
      */
-    private handleWorkloadFailure(workload: GPUWorkload, error: any): void {
+    private handleWorkloadFailure(workload: GPUWorkload, error: unknown): void {
         // Move to failed
         this.activeWorkloads.delete(workload.id);
         this.failedWorkloads.set(workload.id, {
@@ -786,7 +786,7 @@ export class GPUWorkloadManager extends EventEmitter {
         await advancedCacheManager.set(cacheKey, workload, { ttl: 3600 }); // 1 hour TTL
     }
 
-    private async cacheWorkloadResult(workload: GPUWorkload, result: any): Promise<void> {
+    private async cacheWorkloadResult(workload: GPUWorkload, result: unknown): Promise<void> {
         const cacheKey = this.generateWorkloadCacheKey(workload);
         await advancedCacheManager.set(`${cacheKey}:result`, result, { ttl: 7200 }); // 2 hour TTL
     }
@@ -800,7 +800,7 @@ export class GPUWorkloadManager extends EventEmitter {
         return `gpu:workload:${this.hashObject(keyData)}`;
     }
 
-    private hashObject(obj: any): string {
+    private hashObject(obj: unknown): string {
         return Buffer.from(JSON.stringify(obj)).toString('base64').substr(0, 16);
     }
 
@@ -832,7 +832,7 @@ export class GPUWorkloadManager extends EventEmitter {
     /**
      * Get manager status
      */
-    getStatus(): any {
+    getStatus(): unknown {
         return {
             isRunning: this.isRunning,
             config: this.config,
@@ -909,7 +909,7 @@ class BatchProcessor {
         }, {} as Record<string, GPUWorkload[]>);
     }
 
-    getEfficiencyMetrics(): any {
+    getEfficiencyMetrics(): unknown {
         return {
             averageBatchSize: this.config.maxBatchSize * 0.7,
             batchUtilization: 0.85,
@@ -936,7 +936,7 @@ class GPUResourceAllocator {
         console.log('🛑 GPU resource allocator stopped');
     }
 
-    getUsageMetrics(): any {
+    getUsageMetrics(): unknown {
         return {
             peakMemoryUsage: 0.85,
             averageMemoryUsage: 0.65,
@@ -968,7 +968,7 @@ class WorkloadPerformanceTracker {
         // Track submission
     }
 
-    trackWorkloadCompletion(workload: GPUWorkload, result: any): void {
+    trackWorkloadCompletion(workload: GPUWorkload, result: unknown): void {
         const type = workload.type;
         const times = this.executionTimes.get(type) || [];
         times.push(result.executionTime);
@@ -981,7 +981,7 @@ class WorkloadPerformanceTracker {
         this.executionTimes.set(type, times);
     }
 
-    trackWorkloadFailure(workload: GPUWorkload, error: any): void {
+    trackWorkloadFailure(workload: GPUWorkload, error: unknown): void {
         // Track failure
     }
 
@@ -996,7 +996,7 @@ class WorkloadPerformanceTracker {
         return allTimes.length > 0 ? allTimes.reduce((sum, time) => sum + time, 0) / allTimes.length : 1000;
     }
 
-    getTrends(): any {
+    getTrends(): unknown {
         return {
             throughputTrend: 'stable',
             latencyTrend: 'stable',

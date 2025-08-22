@@ -50,7 +50,7 @@
     role: 'user' | 'assistant' | 'system';
     content: string;
     timestamp: number;
-    metadata?: any;
+    metadata?: unknown;
   }>>([]);
   let streamingContent = $state('');
 
@@ -76,7 +76,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
   let metrics = $state($langchainMetrics);
 
   // LangChain service instance
-  let langchainService: any = null;
+  let langchainService: unknown = null;
 
   // Subscribe to store updates
   langchainServiceStatus.subscribe(status => serviceStatus = status);
@@ -121,7 +121,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
   function setupEventListeners() {
     if (!langchainService) return;
 
-    langchainService.on('message:received', (data: any) => {
+    langchainService.on('message:received', (data: unknown) => {
       console.log('💬 Message received:', data);
       updateSessionsList();
     });
@@ -130,7 +130,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
       streamingContent += response.chunk;
     });
 
-    langchainService.on('streaming:completed', (data: any) => {
+    langchainService.on('streaming:completed', (data: unknown) => {
       console.log('✓ Streaming completed');
       isStreaming = false;
       
@@ -146,7 +146,7 @@ HOLDING: The court holds that property owners have a duty to maintain their prem
       }
     });
 
-    langchainService.on('tool:executed', (data: any) => {
+    langchainService.on('tool:executed', (data: unknown) => {
       console.log('🔧 Tool executed:', data);
     });
   }

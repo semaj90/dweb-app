@@ -92,9 +92,9 @@ export interface DocumentMetadata {
 
 export class IntegratedStorageService {
   private config: IntegrationConfig;
-  private minioClient: any; // Would be S3 client or MinIO client
-  private neo4jDriver: any; // Would be Neo4j driver
-  private pgPool: any;      // Would be PostgreSQL connection pool
+  private minioClient: unknown; // Would be S3 client or MinIO client
+  private neo4jDriver: unknown; // Would be Neo4j driver
+  private pgPool: unknown;      // Would be PostgreSQL connection pool
 
   constructor(config: Partial<IntegrationConfig> = {}) {
     this.config = { ...defaultConfig, ...config };
@@ -105,7 +105,7 @@ export class IntegratedStorageService {
     // Initialize MinIO client
     this.minioClient = {
       // Mock MinIO client - would be actual MinIO SDK
-      putObject: async (bucket: string, key: string, data: ArrayBuffer, metadata: any) => {
+      putObject: async (bucket: string, key: string, data: ArrayBuffer, metadata: unknown) => {
         console.log(`Storing object ${key} in bucket ${bucket}`);
         return { etag: 'mock-etag', versionId: 'mock-version' };
       },
@@ -123,7 +123,7 @@ export class IntegratedStorageService {
     this.neo4jDriver = {
       // Mock Neo4j driver - would be actual Neo4j driver
       session: () => ({
-        run: async (query: string, params: any) => {
+        run: async (query: string, params: unknown) => {
           console.log(`Neo4j query: ${query}`, params);
           return { records: [] };
         },
@@ -135,7 +135,7 @@ export class IntegratedStorageService {
     // Initialize PostgreSQL pool
     this.pgPool = {
       // Mock PostgreSQL pool - would be actual pg pool
-      query: async (text: string, params: any[]) => {
+      query: async (text: string, params: unknown[]) => {
         console.log(`PostgreSQL query: ${text}`, params);
         return { rows: [] };
       }
@@ -359,7 +359,7 @@ export class IntegratedStorageService {
     return 'Mock OCR extracted text';
   }
 
-  private async extractLegalEntities(text: string): Promise<any[]> {
+  private async extractLegalEntities(text: string): Promise<unknown[]> {
     // Legal entity extraction (would use NER models)
     return [
       { name: 'Contract', type: 'LEGAL_DOCUMENT', confidence: 0.95 },
@@ -395,7 +395,7 @@ export class IntegratedStorageService {
     };
   }
 
-  private async chunkText(text: string): Promise<Array<{ id: string; content: string; metadata: any }>> {
+  private async chunkText(text: string): Promise<Array<{ id: string; content: string; metadata: unknown }>> {
     const chunks = [];
     const chunkSize = 512;
     const overlap = 64;
@@ -537,7 +537,7 @@ export class IntegratedStorageService {
     }
   }
 
-  private async createDocumentNode(session: any, workflow: DocumentWorkflow): Promise<void> {
+  private async createDocumentNode(session: unknown, workflow: DocumentWorkflow): Promise<void> {
     const query = `
       CREATE (d:Document {
         id: $documentId,
@@ -570,7 +570,7 @@ export class IntegratedStorageService {
     });
   }
 
-  private async createCaseRelationship(session: any, workflow: DocumentWorkflow): Promise<void> {
+  private async createCaseRelationship(session: unknown, workflow: DocumentWorkflow): Promise<void> {
     const query = `
       MATCH (c:Case {id: $caseId})
       MATCH (d:Document {id: $documentId})
@@ -583,7 +583,7 @@ export class IntegratedStorageService {
     });
   }
 
-  private async createEntityGraph(session: any, workflow: DocumentWorkflow): Promise<void> {
+  private async createEntityGraph(session: unknown, workflow: DocumentWorkflow): Promise<void> {
     const entities = workflow.stages[1].metadata.legalEntities;
 
     for (const entity of entities) {
@@ -615,7 +615,7 @@ export class IntegratedStorageService {
     }
   }
 
-  private async createUserRelationship(session: any, workflow: DocumentWorkflow): Promise<void> {
+  private async createUserRelationship(session: unknown, workflow: DocumentWorkflow): Promise<void> {
     const query = `
       MATCH (u:User {id: $userId})
       MATCH (d:Document {id: $documentId})
@@ -629,7 +629,7 @@ export class IntegratedStorageService {
     });
   }
 
-  private async createTemporalRelationships(session: any, workflow: DocumentWorkflow): Promise<void> {
+  private async createTemporalRelationships(session: unknown, workflow: DocumentWorkflow): Promise<void> {
     // Create relationships based on temporal proximity of uploads
     const query = `
       MATCH (d1:Document {id: $documentId})
@@ -726,8 +726,8 @@ export class IntegratedStorageService {
   async retrieveDocument(documentId: string): Promise<{
     content: ArrayBuffer;
     metadata: DocumentMetadata;
-    graphData: any;
-    vectorData: any;
+    graphData: unknown;
+    vectorData: unknown;
   } | null> {
     // Get document metadata from PostgreSQL
     const docQuery = `
@@ -791,12 +791,12 @@ export class IntegratedStorageService {
       threshold?: number;
       filters?: Record<string, any>;
     } = {}
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const topK = options.topK || 10;
     const threshold = options.threshold || 0.7;
 
     let whereClause = `embedding <=> $1 < $2`;
-    const params: any[] = [`[${queryVector.join(',')}]`, 1 - threshold];
+    const params: unknown[] = [`[${queryVector.join(',')}]`, 1 - threshold];
     let paramIndex = 3;
 
     if (options.caseId) {

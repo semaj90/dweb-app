@@ -21,7 +21,7 @@ interface WebLlamaResponse {
 }
 
 class WebAssemblyLlamaService {
-  private module: any = null;
+  private module: unknown = null;
   private modelLoaded = false;
   private currentModel: string | null = null;
   private config: WebLlamaConfig;
@@ -387,7 +387,7 @@ class WebAssemblyLlamaService {
     };
   }
 
-  private async generateWithWorker(prompt: string, options: any): Promise<WebLlamaResponse> {
+  private async generateWithWorker(prompt: string, options: unknown): Promise<WebLlamaResponse> {
     return new Promise((resolve, reject) => {
       if (!this.worker) {
         reject(new Error('Worker not available'));
@@ -424,7 +424,7 @@ class WebAssemblyLlamaService {
     });
   }
 
-  private async generateDirect(prompt: string, options: any): Promise<WebLlamaResponse> {
+  private async generateDirect(prompt: string, options: unknown): Promise<WebLlamaResponse> {
     // Direct WASM function calls
     const maxTokens = options.maxTokens || 1024;
     const temperature = options.temperature || this.config.temperature;
@@ -494,7 +494,7 @@ Provide analysis in structured format:
 <|assistant|>`;
   }
 
-  private parseLegalAnalysisResponse(response: string): any {
+  private parseLegalAnalysisResponse(response: string): unknown {
     // Similar parsing logic as in the server-side version
     const analysis = {
       summary: '',
@@ -556,12 +556,12 @@ Provide analysis in structured format:
     return analysis;
   }
 
-  private getCacheKey(prompt: string, options: any): string {
+  private getCacheKey(prompt: string, options: unknown): string {
     const optionsStr = JSON.stringify(options);
     return `${prompt.substring(0, 100)}:${optionsStr}`;
   }
 
-  private addToCache(prompt: string, options: any, result: WebLlamaResponse): void {
+  private addToCache(prompt: string, options: unknown, result: WebLlamaResponse): void {
     const key = this.getCacheKey(prompt, options);
     
     // LFU cache implementation

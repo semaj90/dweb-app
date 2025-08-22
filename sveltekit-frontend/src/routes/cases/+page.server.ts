@@ -1,11 +1,8 @@
 
+import { fail } from "@sveltejs/kit";
+import type { Actions, PageServerLoad } from "./$types";
 import { db, cases, evidence } from "$lib/server/db/index";
-// Orphaned content: import {
-
 import { eq } from "drizzle-orm";
-// Orphaned content: import type { Actions, PageServerLoad
-import {
-URL } from "url";
 
 export const load: PageServerLoad = async ({ url, parent }) => {
   // Wait for layout data (ensures user is authenticated)

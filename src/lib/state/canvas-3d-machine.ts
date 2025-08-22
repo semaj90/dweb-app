@@ -14,7 +14,7 @@ type Canvas3DEvents =
   | { type: 'RESET_VIEW' }
   | { type: 'SET_CAMERA_MODE'; mode: 'orbit' | 'fly' | 'fixed' }
   | { type: 'GPU_PROCESSING_START' }
-  | { type: 'GPU_PROCESSING_COMPLETE'; result: any }
+  | { type: 'GPU_PROCESSING_COMPLETE'; result: unknown }
   | { type: 'GPU_PROCESSING_ERROR'; error: string }
   | { type: 'INTERACTION_RECORDED'; interaction: UserInteraction };
 

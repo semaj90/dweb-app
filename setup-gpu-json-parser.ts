@@ -268,7 +268,7 @@ Object.defineProperty(navigator, 'gpu', {
 
         try {
             const dockerComposePath = join(this.projectRoot, 'docker-compose.yml');
-            let dockerCompose: any = {};
+            let dockerCompose: unknown = {};
 
             // Read existing docker-compose if it exists
             try {

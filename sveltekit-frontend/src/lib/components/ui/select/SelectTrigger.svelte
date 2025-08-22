@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { melt } from '@melt-ui/svelte';
+  import { melt } from 'melt';
   import { $props } from 'svelte';
   
   interface Props {

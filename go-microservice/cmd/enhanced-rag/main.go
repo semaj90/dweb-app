@@ -353,7 +353,7 @@ func (gpu *GPUManager) UpdateVertexBuffer(id string, data []float32) error {
 
 func (gpu *GPUManager) ExecuteComputeShader(shaderID string, inputs map[string]interface{}) (map[string]interface{}, error) {
 	gpu.mutex.RLock()
-	shader, exists := gpu.computeShaders[shaderID]
+	_, exists := gpu.computeShaders[shaderID]
 	gpu.mutex.RUnlock()
 
 	if !exists {
@@ -398,6 +398,46 @@ func (gpu *GPUManager) computeEmbeddings(inputs map[string]interface{}) []float3
 		embedding[i] = float32(i) * 0.001
 	}
 	return embedding
+}
+
+// ProcessRequest processes GPU computation requests
+func (gpu *GPUManager) ProcessRequest(request map[string]interface{}) (map[string]interface{}, error) {
+	if !gpu.enabled {
+		return nil, fmt.Errorf("GPU processing is disabled")
+	}
+
+	gpu.mutex.RLock()
+	defer gpu.mutex.RUnlock()
+
+	requestType, ok := request["type"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid request type")
+	}
+
+	results := make(map[string]interface{})
+	results["gpu_enabled"] = gpu.enabled
+	results["device_id"] = gpu.deviceID
+	results["request_type"] = requestType
+
+	switch requestType {
+	case "vector_similarity":
+		results["similarity"] = gpu.computeVectorSimilarity(request)
+	case "k_means":
+		results["clusters"] = gpu.executeKMeans(request)
+	case "embeddings":
+		results["embeddings"] = gpu.computeEmbeddings(request)
+	default:
+		return nil, fmt.Errorf("unsupported request type: %s", requestType)
+	}
+
+	return results, nil
+}
+
+// IsAvailable checks if GPU processing is available
+func (gpu *GPUManager) IsAvailable() bool {
+	gpu.mutex.RLock()
+	defer gpu.mutex.RUnlock()
+	return gpu.enabled
 }
 
 func (pool *GPUMemoryPool) Allocate(allocation *MemoryAllocation) bool {
@@ -622,6 +662,75 @@ func (som *SelfOrganizingMap) updateNeuronWeights(neuron *SOMNeuron, input []flo
 	neuron.Hits++
 }
 
+// TrainWithRequest trains the SOM with a request object and returns results
+func (som *SelfOrganizingMap) TrainWithRequest(request map[string]interface{}) map[string]interface{} {
+	// Extract input vectors from request
+	inputData, ok := request["input_vectors"].([]interface{})
+	if !ok {
+		return map[string]interface{}{
+			"error": "invalid input_vectors format",
+		}
+	}
+
+	// Convert to [][]float64
+	var inputVectors [][]float64
+	for _, vecInterface := range inputData {
+		if vecSlice, ok := vecInterface.([]interface{}); ok {
+			var vec []float64
+			for _, val := range vecSlice {
+				if floatVal, ok := val.(float64); ok {
+					vec = append(vec, floatVal)
+				}
+			}
+			if len(vec) > 0 {
+				inputVectors = append(inputVectors, vec)
+			}
+		}
+	}
+
+	if len(inputVectors) == 0 {
+		return map[string]interface{}{
+			"error": "no valid input vectors found",
+		}
+	}
+
+	// Train the SOM
+	som.Train(inputVectors)
+
+	// Return training results
+	return map[string]interface{}{
+		"status":           "training_completed",
+		"input_count":      len(inputVectors),
+		"iterations":       som.Iterations,
+		"learning_rate":    som.LearningRate,
+		"clusters":         som.GetClusters(),
+		"map_dimensions":   map[string]int{"width": som.Width, "height": som.Height},
+	}
+}
+
+// GetClusters returns the current cluster information from the SOM
+func (som *SelfOrganizingMap) GetClusters() []map[string]interface{} {
+	som.mutex.RLock()
+	defer som.mutex.RUnlock()
+
+	var clusters []map[string]interface{}
+
+	for y := 0; y < som.Height; y++ {
+		for x := 0; x < som.Width; x++ {
+			neuron := som.Neurons[y][x]
+			cluster := map[string]interface{}{
+				"id":       fmt.Sprintf("cluster_%d_%d", y, x),
+				"position": map[string]int{"x": x, "y": y},
+				"weights":  neuron.Weights,
+				"hits":     neuron.Hits,
+			}
+			clusters = append(clusters, cluster)
+		}
+	}
+
+	return clusters
+}
+
 // ============================================================================
 // XSTATE MANAGER
 // ============================================================================
@@ -787,6 +896,36 @@ func (xsm *XStateManager) executeAction(machine *StateMachine, action string, da
 		// Notify WebSocket clients
 		log.Printf("Notifying clients about state change in %s", machine.ID)
 	}
+}
+
+// ProcessEvent processes a state event and returns any error
+func (xsm *XStateManager) ProcessEvent(event *StateEvent) error {
+	if event == nil {
+		return fmt.Errorf("event cannot be nil")
+	}
+
+	// Validate the event
+	if event.MachineID == "" {
+		return fmt.Errorf("machine ID is required")
+	}
+
+	if event.Type == "" {
+		return fmt.Errorf("event type is required")
+	}
+
+	// Check if machine exists
+	xsm.mutex.RLock()
+	_, exists := xsm.machines[event.MachineID]
+	xsm.mutex.RUnlock()
+
+	if !exists {
+		return fmt.Errorf("machine %s not found", event.MachineID)
+	}
+
+	// Process the event synchronously
+	xsm.handleEvent(event)
+
+	return nil
 }
 
 // ============================================================================
@@ -958,15 +1097,15 @@ func (service *EnhancedLegalAIService) handleWebSocketMessage(conn *WSConnection
 
 	case "gpu_compute":
 		// Process GPU computation request
-		go service.handleGPUComputeRequest(conn, message)
+		go service.handleGPUComputeRequestWS(conn, message)
 
 	case "som_training":
 		// Process SOM training request
-		go service.handleSOMTrainingRequest(conn, message)
+		go service.handleSOMTrainingRequestWS(conn, message)
 
 	case "xstate_event":
 		// Process XState event
-		service.handleXStateEvent(conn, message)
+		service.handleXStateEventWS(conn, message)
 	}
 }
 
@@ -1170,6 +1309,79 @@ func main() {
 
 	if err := service.Start(); err != nil {
 		log.Fatalf("Failed to start service: %v", err)
+	}
+}
+
+// ============================================================================
+// HTTP API HANDLERS
+// ============================================================================
+
+// healthCheck provides health status endpoint
+func (service *EnhancedLegalAIService) healthCheck(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "healthy",
+		"service": "enhanced-rag",
+		"port":    service.config.HTTPPort,
+		"time":    time.Now(),
+	})
+}
+
+// handleGPUCompute handles GPU computation requests
+func (service *EnhancedLegalAIService) handleGPUCompute(c *gin.Context) {
+	var request map[string]interface{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Process GPU request through GPU manager
+	if service.gpuManager != nil {
+		result, err := service.gpuManager.ProcessRequest(request)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"result": result})
+	} else {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "GPU not available"})
+	}
+}
+
+// handleSOMTrain handles SOM training requests
+func (service *EnhancedLegalAIService) handleSOMTrain(c *gin.Context) {
+	var request map[string]interface{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Process SOM training
+	if service.som != nil {
+		result := service.som.TrainWithRequest(request)
+		c.JSON(http.StatusOK, gin.H{"result": result})
+	} else {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "SOM not available"})
+	}
+}
+
+// handleXStateEventHTTP handles XState events via HTTP
+func (service *EnhancedLegalAIService) handleXStateEventHTTP(c *gin.Context) {
+	var event StateEvent
+	if err := c.ShouldBindJSON(&event); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Process XState event
+	if service.stateManager != nil {
+		err := service.stateManager.ProcessEvent(&event)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "event processed"})
+	} else {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "XState manager not available"})
 	}
 }
 

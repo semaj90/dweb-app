@@ -24,12 +24,12 @@ export default createRule({
     }
 
     const templateBodyVisitor: RuleListener = {
-      VStartTag(node: any) {
-        const valueless = node.attributes.filter((i: any) => typeof i.key?.name === 'string' && !IGNORE_ATTRIBUTES.includes(i.key?.name?.toLowerCase()) && i.value == null)
+      VStartTag(node: unknown) {
+        const valueless = node.attributes.filter((i: unknown) => typeof i.key?.name === 'string' && !IGNORE_ATTRIBUTES.includes(i.key?.name?.toLowerCase()) && i.value == null)
         if (!valueless.length)
           return
 
-        const input = valueless.map((i: any) => i.key.name).join(' ').trim()
+        const input = valueless.map((i: unknown) => i.key.name).join(' ').trim()
         const sorted = syncAction(
           context.settings.unocss?.configPath,
           'sort',
@@ -48,7 +48,7 @@ export default createRule({
 
               const sortedNodes = valueless
                 .map((i: TSESTree.Node) => [i.range[0] - offset, i.range[1] - offset] as const)
-                .sort((a: any, b: any) => b[0] - a[0])
+                .sort((a: unknown, b: unknown) => b[0] - a[0])
 
               for (const [start, end] of sortedNodes.slice(1))
                 s.remove(start, end)

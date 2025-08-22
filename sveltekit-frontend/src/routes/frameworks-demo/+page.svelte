@@ -3,7 +3,7 @@
   import AskAI from "$lib/components/ai/AskAI.svelte";
   import LegalDocumentEditor from "$lib/components/editor/LegalDocumentEditor.svelte";
   import WysiwygEditor from "$lib/components/editor/WysiwygEditor.svelte";
-  import { createTabs, melt } from "@melt-ui/svelte";
+  import { createTabs, melt } from "melt";
   import {
     BookOpen,
     Brain,

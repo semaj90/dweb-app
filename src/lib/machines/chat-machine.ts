@@ -16,7 +16,7 @@ export interface ChatMessage {
     model?: string;
     protocol?: string;
     processingTime?: number;
-    sources?: any[];
+    sources?: unknown[];
     tokens?: number;
   };
 }
@@ -62,14 +62,14 @@ export interface ChatContext {
 
 // Chat events
 export type ChatEvent =
-  | { type: 'CREATE_SESSION'; title?: string; context?: any }
+  | { type: 'CREATE_SESSION'; title?: string; context?: unknown }
   | { type: 'LOAD_SESSION'; sessionId: string }
   | { type: 'DELETE_SESSION'; sessionId: string }
   | { type: 'UPDATE_MESSAGE'; message: string }
   | { type: 'SEND_MESSAGE' }
   | { type: 'CANCEL_MESSAGE' }
   | { type: 'RETRY_MESSAGE'; messageId: string }
-  | { type: 'MESSAGE_DELIVERED'; messageId: string; response: any }
+  | { type: 'MESSAGE_DELIVERED'; messageId: string; response: unknown }
   | { type: 'MESSAGE_ERROR'; messageId: string; error: string }
   | { type: 'START_TYPING' }
   | { type: 'STOP_TYPING' }
@@ -107,7 +107,7 @@ const defaultContext: ChatContext = {
 
 // Services for chat machine
 const chatServices = {
-  sendMessage: async (context: ChatContext, event: any) => {
+  sendMessage: async (context: ChatContext, event: unknown) => {
     const { currentSession, currentMessage, settings } = context;
     if (!currentSession || !currentMessage.trim()) {
       throw new Error('No active session or empty message');
@@ -172,7 +172,7 @@ const chatServices = {
     }
   },
 
-  loadSession: async (context: ChatContext, event: any) => {
+  loadSession: async (context: ChatContext, event: unknown) => {
     try {
       // Load session from storage (localStorage, IndexedDB, or API)
       const sessionData = localStorage.getItem(`chat_session_${event.sessionId}`);
@@ -577,7 +577,7 @@ export type ChatService = InterpreterFrom<typeof chatMachine>;
 
 // Helper functions for common operations
 export const chatActions = {
-  createSession: (title?: string, context?: any) => ({
+  createSession: (title?: string, context?: unknown) => ({
     type: 'CREATE_SESSION' as const,
     title,
     context
@@ -619,10 +619,10 @@ export const chatActions = {
 
 // Selectors for derived state
 export const chatSelectors = {
-  isIdle: (state: any) => state.matches('idle'),
-  isActive: (state: any) => state.matches('active'),
-  isSending: (state: any) => state.matches('active.sending'),
-  isReady: (state: any) => state.matches('active.ready'),
+  isIdle: (state: unknown) => state.matches('idle'),
+  isActive: (state: unknown) => state.matches('active'),
+  isSending: (state: unknown) => state.matches('active.sending'),
+  isReady: (state: unknown) => state.matches('active.ready'),
   
   canSendMessage: (context: ChatContext) => 
     context.currentMessage.trim().length > 0 && context.isConnected,

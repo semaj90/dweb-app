@@ -1,5 +1,5 @@
 <script lang="ts">
-  // @ts-nocheck
+  
   import { Button } from 'bits-ui';
   import { Card } from 'bits-ui';
   import { Badge } from 'bits-ui';
@@ -300,8 +300,8 @@
   function calculateConfidenceScore(
     summary: string,
     keyPoints: string[],
-    entities: any[],
-    risks: any[]
+    entities: unknown[],
+    risks: unknown[]
   ): number {
     let score = 0.5; // Base score
 
@@ -314,7 +314,7 @@
   }
 
   // New pgai-specific helper functions
-  function calculatePgaiConfidence(pgaiData: any): number {
+  function calculatePgaiConfidence(pgaiData: unknown): number {
     let score = 0.6; // Higher base score for pgai
 
     if (pgaiData.summary?.summary && pgaiData.summary.summary.length > 100) score += 0.1;
@@ -326,7 +326,7 @@
     return Math.min(score, 1.0);
   }
 
-  function formatEntitiesFromPgai(entities: any): any[] {
+  function formatEntitiesFromPgai(entities: unknown): unknown[] {
     const formatted = [];
     
     if (entities.persons && Array.isArray(entities.persons)) {
@@ -356,7 +356,7 @@
     return formatted;
   }
 
-  function formatRisksFromPgai(legalIssues: string[]): any[] {
+  function formatRisksFromPgai(legalIssues: string[]): unknown[] {
     return legalIssues.map(issue => ({
       type: 'legal',
       severity: 'medium', // Default severity, could be enhanced

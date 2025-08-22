@@ -1,4 +1,3 @@
-
 import {
   defineConfig,
   presetUno,
@@ -99,16 +98,8 @@ export default defineConfig({
       "yorha-error": "#f87171",
     },
     fontFamily: {
-      // Use system fonts as fallbacks to prevent timeout issues
-      sans: [
-        "system-ui",
-        "-apple-system",
-        "BlinkMacSystemFont",
-        "Segoe UI",
-        "Roboto",
-        "sans-serif",
-      ],
-      mono: ["Consolas", "Monaco", "Courier New", "monospace"],
+      sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+      mono: ['Fira Code', 'monospace'],
     },
     borderRadius: {
       none: "0",

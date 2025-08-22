@@ -13,7 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
     await publishMessage(subject, payload);
     return json({ status: 'ok', subject, payload });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('NATS publish error:', err);
     return json({ error: 'Internal server error' }, { status: 500 });
   }

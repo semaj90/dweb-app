@@ -1,6 +1,6 @@
 <script>
   interface Props {
-    value?: any;
+    value?: unknown;
     placeholder?: string;
     disabled?: boolean;
     readonly?: boolean;
@@ -9,10 +9,10 @@
     name?: string;
     required?: boolean;
     rows?: number;
-    cols?: any;
-    maxlength?: any;
-    minlength?: any;
-    wrap?: any;
+    cols?: unknown;
+    maxlength?: unknown;
+    minlength?: unknown;
+    wrap?: unknown;
     resize?: boolean;
   }
   
@@ -33,7 +33,7 @@
     resize = true
   }: Props = $props();
   
-  function handleInput(event: any) {
+  function handleInput(event: unknown) {
     value = event.target.value;
   }
   

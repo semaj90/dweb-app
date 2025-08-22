@@ -9,11 +9,12 @@ import {
   type RAGQuery,
   type RAGResponse,
 } from './enhanced-rag-semantic-analyzer';
-// Orphaned content: import { webGPUAccelerator, type WebGPUCapabilities
-import {
+// TODO: Fix import - // Orphaned content: import { webGPUAccelerator, type WebGPUCapabilities import {
 realtimeComm, type RealtimeMessage } from "./realtime-communication";
-// Orphaned content: import { writable, type Writable
-
+import {
+  writable,
+  type Writable
+} from "svelte/store";
 export interface SystemStatus {
   enhancedRAG: {
     status: 'online' | 'offline' | 'degraded';

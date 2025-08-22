@@ -5,27 +5,27 @@ import { StatusBarManager } from "./statusBarManager";
 
 // Enhanced RAG System Integration
 interface EnhancedRAGService {
-  query(request: any): Promise<any>;
-  batchQuery(queries: any[]): Promise<any[]>;
-  uploadDocument(filePath: string, options?: any): Promise<any>;
-  getEnhancedStats(): any;
+  query(request: unknown): Promise<any>;
+  batchQuery(queries: unknown[]): Promise<unknown[]>;
+  uploadDocument(filePath: string, options?: unknown): Promise<any>;
+  getEnhancedStats(): unknown;
 }
 
 interface ClusterManager {
-  executeTask(task: any): Promise<any>;
-  getClusterStats(): any;
+  executeTask(task: unknown): Promise<any>;
+  getClusterStats(): unknown;
   initialize(): Promise<void>;
 }
 
 interface OllamaGemmaCache {
   getEmbedding(text: string, context?: string): Promise<number[]>;
-  querySimilar(query: any): Promise<any>;
-  getCacheStats(): any;
+  querySimilar(query: unknown): Promise<any>;
+  getCacheStats(): unknown;
   initialize(): Promise<void>;
 }
 
 interface MCPMemoryGraph {
-  createRelations(entities: any[]): Promise<any>;
+  createRelations(entities: unknown[]): Promise<any>;
   readGraph(query?: string): Promise<any>;
   searchNodes(query: string): Promise<any>;
 }
@@ -57,7 +57,7 @@ export class MCPServerManager {
   // Caching and Performance
   private toolCallCache = new Map<
     string,
-    { result: any; timestamp: number; ttl: number }
+    { result: unknown; timestamp: number; ttl: number }
   >();
   private activeAgentTasks = new Map<string, Promise<any>>();
   private performanceMetrics = {
@@ -389,7 +389,7 @@ export class MCPServerManager {
   /**
    * Memory Graph Tool Handlers
    */
-  private async handleMemoryCreateRelations(args: any): Promise<MCPToolResult> {
+  private async handleMemoryCreateRelations(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.memoryGraph?.createRelations(
         args.entities || []
@@ -413,7 +413,7 @@ export class MCPServerManager {
     }
   }
 
-  private async handleMemoryReadGraph(args: any): Promise<MCPToolResult> {
+  private async handleMemoryReadGraph(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.memoryGraph?.readGraph(args.query);
       return {
@@ -436,7 +436,7 @@ export class MCPServerManager {
     }
   }
 
-  private async handleMemorySearchNodes(args: any): Promise<MCPToolResult> {
+  private async handleMemorySearchNodes(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.memoryGraph?.searchNodes(args.query);
       return {
@@ -461,7 +461,7 @@ export class MCPServerManager {
   /**
    * Context7 Documentation Tool Handlers
    */
-  private async handleGetLibraryDocs(args: any): Promise<MCPToolResult> {
+  private async handleGetLibraryDocs(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.context7Tools?.getLibraryDocs(
         args.libraryId,
@@ -486,7 +486,7 @@ export class MCPServerManager {
     }
   }
 
-  private async handleResolveLibraryId(args: any): Promise<MCPToolResult> {
+  private async handleResolveLibraryId(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.context7Tools?.resolveLibraryId(
         args.libraryName
@@ -513,7 +513,7 @@ export class MCPServerManager {
   /**
    * Enhanced RAG Tool Handlers
    */
-  private async handleEnhancedRAGQuery(args: any): Promise<MCPToolResult> {
+  private async handleEnhancedRAGQuery(args: unknown): Promise<MCPToolResult> {
     try {
       if (!this.enhancedRAGService) {
         throw new Error("Enhanced RAG Service not available");
@@ -551,7 +551,7 @@ export class MCPServerManager {
     }
   }
 
-  private async handleEnhancedRAGBatchQuery(args: any): Promise<MCPToolResult> {
+  private async handleEnhancedRAGBatchQuery(args: unknown): Promise<MCPToolResult> {
     try {
       if (!this.enhancedRAGService) {
         throw new Error("Enhanced RAG Service not available");
@@ -579,7 +579,7 @@ export class MCPServerManager {
     }
   }
 
-  private async handleEnhancedRAGUpload(args: any): Promise<MCPToolResult> {
+  private async handleEnhancedRAGUpload(args: unknown): Promise<MCPToolResult> {
     try {
       if (!this.enhancedRAGService) {
         throw new Error("Enhanced RAG Service not available");
@@ -618,7 +618,7 @@ export class MCPServerManager {
    * Agent Orchestration Tool Handlers
    */
   private async handleClaudeAgentOrchestration(
-    args: any
+    args: unknown
   ): Promise<MCPToolResult> {
     try {
       const taskId = `claude_${Date.now()}`;
@@ -658,7 +658,7 @@ export class MCPServerManager {
   }
 
   private async handleCrewAIAgentOrchestration(
-    args: any
+    args: unknown
   ): Promise<MCPToolResult> {
     try {
       const taskId = `crewai_${Date.now()}`;
@@ -690,7 +690,7 @@ export class MCPServerManager {
   }
 
   private async handleAutoGenAgentOrchestration(
-    args: any
+    args: unknown
   ): Promise<MCPToolResult> {
     try {
       const taskId = `autogen_${Date.now()}`;
@@ -724,7 +724,7 @@ export class MCPServerManager {
   /**
    * Context7 MCP Tool Handlers
    */
-  private async handleAnalyzeStack(args: any): Promise<MCPToolResult> {
+  private async handleAnalyzeStack(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.context7Tools?.analyzeTechStack(
         args.component,
@@ -749,7 +749,7 @@ export class MCPServerManager {
     }
   }
 
-  private async handleGenerateBestPractices(args: any): Promise<MCPToolResult> {
+  private async handleGenerateBestPractices(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.context7Tools?.generateBestPractices(args.area);
       return {
@@ -770,7 +770,7 @@ export class MCPServerManager {
     }
   }
 
-  private async handleSuggestIntegration(args: any): Promise<MCPToolResult> {
+  private async handleSuggestIntegration(args: unknown): Promise<MCPToolResult> {
     try {
       const result = await this.context7Tools?.suggestIntegration(
         args.feature,
@@ -798,7 +798,7 @@ export class MCPServerManager {
   /**
    * Sequential Thinking Handler
    */
-  private async handleSequentialThinking(args: any): Promise<MCPToolResult> {
+  private async handleSequentialThinking(args: unknown): Promise<MCPToolResult> {
     try {
       const steps = args.steps || [];
       const context = args.context || "";
@@ -837,7 +837,7 @@ export class MCPServerManager {
   /**
    * Command Execution Handler
    */
-  private async handleRunCommands(args: any): Promise<MCPToolResult> {
+  private async handleRunCommands(args: unknown): Promise<MCPToolResult> {
     try {
       const commands = args.commands || [];
       const results = [];
@@ -889,7 +889,7 @@ export class MCPServerManager {
   /**
    * Cache management
    */
-  private getFromCache(key: string): any {
+  private getFromCache(key: string): unknown {
     const cached = this.toolCallCache.get(key);
     if (cached && Date.now() - cached.timestamp < cached.ttl) {
       return cached;
@@ -898,7 +898,7 @@ export class MCPServerManager {
     return null;
   }
 
-  private cacheResult(key: string, result: any, ttl: number): void {
+  private cacheResult(key: string, result: unknown, ttl: number): void {
     this.toolCallCache.set(key, {
       result,
       timestamp: Date.now(),
@@ -936,7 +936,7 @@ export class MCPServerManager {
 
   private createMockRAGService(): EnhancedRAGService {
     return {
-      async query(request: any) {
+      async query(request: unknown) {
         return {
           output: `Mock RAG response for: ${request.query}`,
           score: 0.8,
@@ -955,10 +955,10 @@ export class MCPServerManager {
           },
         };
       },
-      async batchQuery(queries: any[]) {
+      async batchQuery(queries: unknown[]) {
         return queries.map((q) => this.createMockRAGService().query(q));
       },
-      async uploadDocument(filePath: string, options?: any) {
+      async uploadDocument(filePath: string, options?: unknown) {
         return {
           success: true,
           documentId: `mock_doc_${Date.now()}`,
@@ -976,7 +976,7 @@ export class MCPServerManager {
 
   private createMockClusterManager(): ClusterManager {
     return {
-      async executeTask(task: any) {
+      async executeTask(task: unknown) {
         return {
           success: true,
           result: `Mock cluster execution: ${task.type}`,
@@ -1004,7 +1004,7 @@ export class MCPServerManager {
           .fill(0)
           .map(() => Math.random());
       },
-      async querySimilar(query: any) {
+      async querySimilar(query: unknown) {
         return {
           found: false,
           similar: [],
@@ -1026,7 +1026,7 @@ export class MCPServerManager {
 
   private createMemoryGraphAdapter(): MCPMemoryGraph {
     return {
-      async createRelations(entities: any[]) {
+      async createRelations(entities: unknown[]) {
         return {
           relations_created: entities.length,
           entities: entities,
@@ -1101,7 +1101,7 @@ export class MCPServerManager {
   /**
    * Agent execution methods
    */
-  private async executeClaudeAgent(args: any): Promise<any> {
+  private async executeClaudeAgent(args: unknown): Promise<any> {
     try {
       const claudeModule = await import("../../../agents/claude-agent.js");
       const result = await claudeModule.claudeAgent.execute({
@@ -1127,7 +1127,7 @@ export class MCPServerManager {
     }
   }
 
-  private async executeCrewAIAgent(args: any): Promise<any> {
+  private async executeCrewAIAgent(args: unknown): Promise<any> {
     try {
       const crewModule = await import("../../../agents/crewai-agent.js");
       const result = await crewModule.crewAIAgent.execute({
@@ -1155,7 +1155,7 @@ export class MCPServerManager {
     }
   }
 
-  private async executeAutoGenAgent(args: any): Promise<any> {
+  private async executeAutoGenAgent(args: unknown): Promise<any> {
     try {
       const autoGenModule = await import("../../../agents/autogen-agent.js");
       const result = await autoGenModule.autoGenAgent.execute({

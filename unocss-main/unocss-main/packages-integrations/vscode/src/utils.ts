@@ -9,9 +9,9 @@ const matchCssVarNameRE = /var\((?<cssVarName>--[^,|)]+)(?:,(?<fallback>[^)]+))?
 const cssColorRE = /(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:(?:rgb|hsl)a?|oklch)?\(.*\)/g
 const varFnRE = /var\((--[^,|)]+)(?:,([^)]+))?\)/
 
-export function throttle<T extends ((...args: any) => any)>(func: T, timeFrame: number): T {
+export function throttle<T extends ((...args: unknown) => any)>(func: T, timeFrame: number): T {
   let lastTime = 0
-  let timer: any
+  let timer: unknown
   return function (...args) {
     const now = Date.now()
     clearTimeout(timer)

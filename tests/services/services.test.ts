@@ -352,7 +352,7 @@ describe('Service Layer Tests', () => {
       });
 
       // Mock fetch for Qdrant API calls
-      global.fetch = vi.fn().mockImplementation((url: string, options?: any) => {
+      global.fetch = vi.fn().mockImplementation((url: string, options?: unknown) => {
         if (url.includes('/collections')) {
           return Promise.resolve(testUtils.createMockResponse({ status: 'ok' }));
         }

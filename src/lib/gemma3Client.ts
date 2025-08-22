@@ -351,10 +351,10 @@ export function createGemma3Store() {
   }
 
   let client = new Gemma3Client();
-  let serverInfo: any = null;
+  let serverInfo: unknown = null;
 
   return {
-    subscribe: (callback: (info: any) => void) => {
+    subscribe: (callback: (info: unknown) => void) => {
       callback(serverInfo);
       return () => {};
     },

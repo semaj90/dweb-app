@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net"
+	stdlog "log"
 	"sync"
 	"time"
 
@@ -298,7 +298,7 @@ func (qc *QUICCoordinator) handleDocumentProcessing(ctx context.Context, stream 
 			"document_type": "contract",
 			"risk_level":   "medium",
 			"confidence":   0.85,
-			"processing_time": time.Since(time.Now()).Milliseconds(),
+			"processing_time": 0, // Processing time would be calculated with a start time
 		},
 		"timestamp": time.Now(),
 		"processed_by": "quic-coordinator",
@@ -346,7 +346,7 @@ func (qc *QUICCoordinator) handleVectorSearch(ctx context.Context, stream quic.S
 			},
 		},
 		"total_results": 2,
-		"search_time": time.Since(time.Now()).Milliseconds(),
+		"search_time": 0, // Search time would be calculated with a start time
 		"timestamp": time.Now(),
 	}
 
@@ -389,7 +389,7 @@ func (qc *QUICCoordinator) handleRealtimeAnalysis(ctx context.Context, stream qu
 				"Clarify termination conditions",
 			},
 		},
-		"processing_time": time.Since(time.Now()).Milliseconds(),
+		"processing_time": 0, // Processing time would be calculated with a start time
 		"timestamp": time.Now(),
 	}
 
@@ -512,7 +512,7 @@ func (qc *QUICCoordinator) handleHealthCheck(ctx context.Context, stream quic.St
 	health := map[string]interface{}{
 		"status":       "healthy",
 		"connections":  qc.getConnectionCount(),
-		"uptime":      time.Since(time.Now()).Seconds(),
+		"uptime":      0, // Uptime would be calculated with server start time
 		"version":     "1.0.0",
 		"timestamp":   time.Now(),
 	}

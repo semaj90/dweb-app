@@ -1,5 +1,5 @@
-// @ts-nocheck
-// @ts-nocheck
+
+
 import { json } from '@sveltejs/kit';
 import { legalOrchestrator, type OrchestrationRequest } from '$lib/agents/orchestrator.js';
 import { cacheManager } from '$lib/database/redis.js';
@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request }) => {
     } else {
       return handleStandardResponse(orchestrationRequest);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('AI chat API error:', error);
     return json(
       { error: 'Internal server error', details: error?.message || 'Unknown error' },
@@ -64,14 +64,14 @@ async function handleStandardResponse(request: OrchestrationRequest) {
         processingTime: result.totalProcessingTime,
         tokenUsage: result.primaryResponse.tokenUsage,
         recommendations: result.recommendations,
-        collaborativeAnalysis: result.collaborativeAnalysis?.map((a: any) => ({
+        collaborativeAnalysis: result.collaborativeAnalysis?.map((a: unknown) => ({
           agent: a.agentName,
           confidence: a.confidence,
           specialization: a.metadata.specialization
         }))
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     throw new Error(`Standard response failed: ${error?.message || 'Unknown error'}`);
   }
 }
@@ -161,7 +161,7 @@ async function handleStreamingResponse(request: OrchestrationRequest) {
         );
 
         controller.close();
-      } catch (error: any) {
+      } catch (error: unknown) {
         controller.enqueue(
           encoder.encode(`data: ${JSON.stringify({
             type: 'error',
@@ -212,7 +212,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json({
       query,
-      results: results.map((r: any) => ({
+      results: results.map((r: unknown) => ({
         id: r.id,
         score: r.score,
         title: r.payload.title,
@@ -222,7 +222,7 @@ export const GET: RequestHandler = async ({ url }) => {
         metadata: r.payload.metadata
       }))
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Vector search error:', error);
     return json(
       { error: 'Search failed', details: (error as any)?.message || 'Unknown error' },

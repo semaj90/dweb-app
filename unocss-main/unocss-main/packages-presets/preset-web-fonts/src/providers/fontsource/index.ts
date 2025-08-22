@@ -177,7 +177,7 @@ function generateFontFace(font: FontObject) {
   return `${result}\n}`
 };
 
-function getVariableWght(axes?: any) {
+function getVariableWght(axes?: unknown) {
   if (!axes)
     return '400'
 

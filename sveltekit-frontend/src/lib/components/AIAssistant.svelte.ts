@@ -1,6 +1,5 @@
 
 import { writable } from "svelte/store";
-// Orphaned content: import {
 
 export class AIAssistant {
   private isLoading = writable(false);

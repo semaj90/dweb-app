@@ -41,7 +41,7 @@
   import { onMount, tick } from 'svelte';
   import { writable } from 'svelte/store';
   import { createMachine, interpret } from 'xstate';
-  import { createDialog, createTabs, createResizable } from '@melt-ui/svelte';
+  import { createDialog, createTabs, createResizable } from 'melt';
   import { Button } from '$lib/components/ui/button/index.js';
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge/index.js';

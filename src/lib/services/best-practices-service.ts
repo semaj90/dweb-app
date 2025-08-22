@@ -6,11 +6,11 @@
 import { aiService } from "./unified-ai-service.js";
 // Mock redis vector service for now
 const redisVectorService = {
-  async storeDocument(doc: any) {
+  async storeDocument(doc: unknown) {
     console.log('Storing document (mock):', doc.id);
     return { success: true };
   },
-  async searchSimilar(embedding: number[], options: any) {
+  async searchSimilar(embedding: number[], options: unknown) {
     console.log('Searching similar (mock)');
     return [];
   }
@@ -339,7 +339,7 @@ Make recommendations specific, actionable, and prioritized by impact vs effort.
       });
 
       const result = JSON.parse(response);
-      return result.best_practices.map((practice: any, index: number) => ({
+      return result.best_practices.map((practice: unknown, index: number) => ({
         id: `bp_${Date.now()}_${index}`,
         ...practice,
       }));

@@ -515,7 +515,7 @@ class ProductionErrorMonitor {
       
       return {
         status: 'healthy',
-        models: data.models?.map((m: any) => m.name) || [],
+        models: data.models?.map((m: unknown) => m.name) || [],
         responseTime
       };
     } catch (error) {
@@ -722,7 +722,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // SvelteKit error handler hook
-export function handleError({ error, event }: { error: Error; event: any }) {
+export function handleError({ error, event }: { error: Error; event: unknown }) {
   errorMonitor.logApiError(
     error,
     event.url?.pathname || 'unknown',

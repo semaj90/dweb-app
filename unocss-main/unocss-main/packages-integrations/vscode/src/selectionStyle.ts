@@ -95,7 +95,7 @@ export async function registerSelectionStyle(loader: ContextLoader) {
         editor.textEditor.setDecorations(integrationDecoration, [])
       }
     }
-    catch (e: any) {
+    catch (e: unknown) {
       log.appendLine('⚠️ Error on selectionStyle')
       log.appendLine(String(e.stack ?? e))
     }

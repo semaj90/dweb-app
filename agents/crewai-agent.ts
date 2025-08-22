@@ -14,7 +14,7 @@ export interface CrewAIAgentConfig {
 
 export interface CrewAIAgentRequest {
   prompt: string;
-  context?: any;
+  context?: unknown;
   options?: {
     crewType?: 'legal_research' | 'case_analysis' | 'document_review' | 'evidence_processing';
     roleDistribution?: {
@@ -126,7 +126,7 @@ Auto-Fix Report:
     }
   }
 
-  private async simulateCrewExecution(prompt: string, options?: any): Promise<{
+  private async simulateCrewExecution(prompt: string, options?: unknown): Promise<{
     finalOutput: string;
     crewSize: number;
     tasksCompleted: number;
@@ -220,7 +220,7 @@ Auto-Fix Report:
     }
   }
 
-  private calculateScore(result: any, processingTime: number): number {
+  private calculateScore(result: unknown, processingTime: number): number {
     let score = 0.5; // Base score
 
     // Efficiency bonus

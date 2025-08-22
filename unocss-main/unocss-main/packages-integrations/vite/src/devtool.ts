@@ -44,7 +44,7 @@ export function createDevtoolsPlugin(ctx: UnocssPluginContext, pluginConfig: Vit
   let config: ResolvedConfig
   let server: ViteDevServer | undefined
   let clientCode = ''
-  let devtoolTimer: any
+  let devtoolTimer: unknown
   let lastUpdate = Date.now()
   let postPath = BASE_POST_PATH
 

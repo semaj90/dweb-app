@@ -376,7 +376,7 @@ export class YoRHaUserTracker {
     await this.syncToBackend(fullActivity);
   }
 
-  async trackDocumentUpload(documentId: string, metadata: any): Promise<void> {
+  async trackDocumentUpload(documentId: string, metadata: unknown): Promise<void> {
     await this.trackActivity({
       type: 'document_upload',
       entityId: documentId,
@@ -454,7 +454,7 @@ export class YoRHaUserTracker {
     });
   }
 
-  async trackCaseActivity(caseId: string, activityType: string, metadata: any): Promise<void> {
+  async trackCaseActivity(caseId: string, activityType: string, metadata: unknown): Promise<void> {
     await this.trackActivity({
       type: 'case_created',
       entityId: caseId,
@@ -595,7 +595,7 @@ function calculateEfficiency(activities: UserActivity[]): number {
 function calculatePerformanceMetrics(
   activities: UserActivity[], 
   session: SessionData | null
-): any {
+): unknown {
   if (!session) return null;
 
   const avgResponseTime = session.performance.responseTimes.length > 0

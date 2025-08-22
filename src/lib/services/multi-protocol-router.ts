@@ -183,7 +183,7 @@ export class MultiProtocolRouter {
     this.healthCheckIntervals.set(protocol, intervalId as any);
   }
 
-  private async executeHealthCheck(protocol: string): Promise<{ ok: boolean; data?: any }> {
+  private async executeHealthCheck(protocol: string): Promise<{ ok: boolean; data?: unknown }> {
     const worker = this.workers.get(protocol);
     if (!worker) {
       throw new Error(`Worker for ${protocol} not available`);
@@ -269,7 +269,7 @@ export class MultiProtocolRouter {
   }
 
   public async route<T>(
-    request: any,
+    request: unknown,
     options: {
       preferredProtocol?: string;
       timeout?: number;
@@ -397,9 +397,9 @@ export class MultiProtocolRouter {
 
   private async executeRequest<T>(
     protocol: string,
-    request: any,
+    request: unknown,
     requestId: string,
-    options: any
+    options: unknown
   ): Promise<T> {
     const worker = this.workers.get(protocol);
     if (!worker) {
@@ -476,12 +476,12 @@ export class MultiProtocolRouter {
     });
   }
 
-  private handleRequestComplete(protocol: string, data: any, requestId: string): void {
+  private handleRequestComplete(protocol: string, data: unknown, requestId: string): void {
     // Handle successful request completion
     this.updateProtocolStatus(protocol, 'healthy');
   }
 
-  private handleRequestError(protocol: string, error: any, requestId: string): void {
+  private handleRequestError(protocol: string, error: unknown, requestId: string): void {
     // Handle request error
     this.updateProtocolStatus(protocol, 'error');
   }
@@ -575,7 +575,7 @@ export const multiProtocolRouter = new MultiProtocolRouter();
 
 // Helper functions for common operations
 export const routerHelpers = {
-  async ragQuery(query: string, options: any = {}) {
+  async ragQuery(query: string, options: unknown = {}) {
     return multiProtocolRouter.route({
       type: 'rag_query',
       query,
@@ -586,7 +586,7 @@ export const routerHelpers = {
     });
   },
 
-  async documentUpload(document: any, options: any = {}) {
+  async documentUpload(document: unknown, options: unknown = {}) {
     return multiProtocolRouter.route({
       type: 'document_upload',
       document,
@@ -597,7 +597,7 @@ export const routerHelpers = {
     });
   },
 
-  async semanticSearch(query: string, filters: any = {}) {
+  async semanticSearch(query: string, filters: unknown = {}) {
     return multiProtocolRouter.route({
       type: 'semantic_search',
       query,
@@ -620,7 +620,7 @@ export const routerHelpers = {
     return Object.fromEntries(results.map(r => [r.protocol, r.healthy]));
   },
 
-  async search(options: any = {}) {
+  async search(options: unknown = {}) {
     return multiProtocolRouter.route({
       type: 'search',
       ...options
@@ -630,7 +630,7 @@ export const routerHelpers = {
     });
   },
 
-  async getSuggestions(query: string, options: any = {}) {
+  async getSuggestions(query: string, options: unknown = {}) {
     return multiProtocolRouter.route({
       type: 'suggestions',
       query,

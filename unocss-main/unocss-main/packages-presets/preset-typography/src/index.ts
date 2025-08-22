@@ -123,7 +123,7 @@ export const presetTypography = definePreset((options?: TypographyOptions): Pres
             'invert-bg-soft': 800,
           }
 
-          const result: any = {}
+          const result: unknown = {}
 
           for (const key in TagColorMap) {
             const value = TagColorMap[key as keyof typeof TagColorMap]

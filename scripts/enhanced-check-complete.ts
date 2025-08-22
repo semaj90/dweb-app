@@ -73,9 +73,9 @@ enum ErrorType {
 // LokiJS RAG Cache Manager
 class RAGCacheManager {
   private db: loki;
-  private errors: any;
-  private solutions: any;
-  private analytics: any;
+  private errors: unknown;
+  private solutions: unknown;
+  private analytics: unknown;
   private searchIndex: Fuse<EnhancedError>;
 
   constructor() {
@@ -153,14 +153,14 @@ class RAGCacheManager {
     });
   }
 
-  getSolution(errorHash: string): any {
+  getSolution(errorHash: string): unknown {
     return this.solutions.findOne({ errorHash });
   }
 
-  getErrorStats(): any {
+  getErrorStats(): unknown {
     const totalErrors = this.errors.count();
     const errorsByType = this.errors.mapReduce(
-      (obj: any) => obj.type,
+      (obj: unknown) => obj.type,
       (array: string[]) => array.reduce((acc, type) => {
         acc[type] = (acc[type] || 0) + 1;
         return acc;
@@ -417,7 +417,7 @@ class EnhancedReporting {
     console.log('📄 Reports generated in .vscode/ directory');
   }
 
-  private async generateVSCodeSummary(errors: EnhancedError[], stats: any, duration: number): Promise<void> {
+  private async generateVSCodeSummary(errors: EnhancedError[], stats: unknown, duration: number): Promise<void> {
     const errorsByType = errors.reduce((acc, error) => {
       acc[error.type] = (acc[error.type] || 0) + 1;
       return acc;
@@ -492,7 +492,7 @@ ${criticalErrors.slice(0, 5).map((error, index) => `
     fs.writeFileSync(path.join(vscodeDir, 'enhanced-check-summary.md'), summary);
   }
 
-  private async generateDiagnostics(errors: EnhancedError[], stats: any): Promise<void> {
+  private async generateDiagnostics(errors: EnhancedError[], stats: unknown): Promise<void> {
     const diagnostics = {
       timestamp: new Date().toISOString(),
       buildStatus: errors.length === 0 ? 'clean' : 'errors',

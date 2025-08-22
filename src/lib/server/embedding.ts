@@ -236,7 +236,7 @@ class EmbeddingService {
       }
 
       const data = await response.json();
-      const hasEmbeddingModel = data.models?.some((model: any) =>
+      const hasEmbeddingModel = data.models?.some((model: unknown) =>
         model.name.includes(this.embeddingModel)
       );
 

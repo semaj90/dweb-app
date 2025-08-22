@@ -192,9 +192,9 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Start WebSocket server for cache monitoring
      */
-    async startServer(server?: any): Promise<void> {
+    async startServer(server?: unknown): Promise<void> {
         try {
-            const options: any = {
+            const options: unknown = {
                 port: this.config.port,
                 perMessageDeflate: this.config.enableCompression
             };
@@ -235,7 +235,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle new WebSocket connection
      */
-    private handleConnection(ws: WebSocket, request: any): void {
+    private handleConnection(ws: WebSocket, request: unknown): void {
         // Check client limit
         if (this.clients.size >= this.config.maxClients) {
             ws.close(1013, 'Server at capacity');
@@ -302,7 +302,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle incoming messages from clients
      */
-    private handleMessage(client: CacheMonitoringClient, data: any): void {
+    private handleMessage(client: CacheMonitoringClient, data: unknown): void {
         try {
             client.lastActivity = new Date();
             
@@ -373,7 +373,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle client subscription to channels
      */
-    private handleSubscription(client: CacheMonitoringClient, channels: string[], filters?: any): void {
+    private handleSubscription(client: CacheMonitoringClient, channels: string[], filters?: unknown): void {
         const subscribedChannels: string[] = [];
         const invalidChannels: string[] = [];
 
@@ -560,7 +560,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Update client filters
      */
-    private updateClientFilters(client: CacheMonitoringClient, filters: any): void {
+    private updateClientFilters(client: CacheMonitoringClient, filters: unknown): void {
         client.filters = { ...client.filters, ...filters };
         
         this.sendToClient(client, {
@@ -575,7 +575,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Trigger cache operation for testing
      */
-    private async triggerCacheOperation(client: CacheMonitoringClient, operation: any): Promise<void> {
+    private async triggerCacheOperation(client: CacheMonitoringClient, operation: unknown): Promise<void> {
         try {
             const { type, key, value, options } = operation;
             let result;
@@ -614,7 +614,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle client disconnection
      */
-    private handleDisconnection(client: CacheMonitoringClient, code: number, reason: any): void {
+    private handleDisconnection(client: CacheMonitoringClient, code: number, reason: unknown): void {
         // Remove from all subscription channels
         client.subscriptions.forEach(channel => {
             this.subscriptionChannels.get(channel)?.delete(client.id);
@@ -631,7 +631,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Broadcast message to all clients subscribed to a channel
      */
-    private broadcastToChannel(channel: string, message: any): void {
+    private broadcastToChannel(channel: string, message: unknown): void {
         const clientIds = this.subscriptionChannels.get(channel);
         if (!clientIds || clientIds.size === 0) return;
 
@@ -667,7 +667,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Check if message passes client filters
      */
-    private messagePassesFilters(message: any, filters: any): boolean {
+    private messagePassesFilters(message: unknown, filters: unknown): boolean {
         // Apply layer filters
         if (filters.layers && filters.layers.length > 0 && message.data?.layer) {
             if (!filters.layers.includes(message.data.layer)) {
@@ -698,7 +698,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Send message to specific client
      */
-    private sendToClient(client: CacheMonitoringClient, message: any): void {
+    private sendToClient(client: CacheMonitoringClient, message: unknown): void {
         if (client.ws.readyState !== client.ws.OPEN) return;
 
         try {
@@ -781,7 +781,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle metrics updates from cache manager
      */
-    private handleMetricsUpdate(metrics: any): void {
+    private handleMetricsUpdate(metrics: unknown): void {
         this.broadcastToChannel('performance-metrics', {
             type: 'metrics-update',
             data: metrics,
@@ -792,7 +792,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Handle analytics updates from cache manager
      */
-    private handleAnalyticsUpdate(analytics: any): void {
+    private handleAnalyticsUpdate(analytics: unknown): void {
         // Add to analytics buffer
         this.analyticsBuffer.push({
             ...analytics,
@@ -820,7 +820,7 @@ export class CacheMonitoringService extends EventEmitter {
     /**
      * Get server statistics
      */
-    getServerStats(): any {
+    getServerStats(): unknown {
         const channelStats = Object.fromEntries(
             Array.from(this.subscriptionChannels.entries()).map(([channel, clients]) => [
                 channel,

@@ -33,8 +33,8 @@ export interface AgentCallLog {
     | "orchestrator"
     | "evaluation";
     operation: string;
-    input: any;
-    output: any;
+    input: unknown;
+    output: unknown;
     duration: number;
     success: boolean;
     error?: string;

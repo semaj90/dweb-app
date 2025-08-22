@@ -6,7 +6,7 @@
 // Type definitions for Context7 Multicore integration
 type Context7Response = {
 	success: boolean;
-	data?: any;
+	data?: unknown;
 	error?: string;
 	processingTime: number;
 	workerId?: number;
@@ -37,7 +37,7 @@ type TensorData = {
 type ProcessingJob = {
 	id: string;
 	operation: string;
-	data: any;
+	data: unknown;
 	priority: 'high' | 'normal' | 'low';
 	timeout: number;
 	useGPU: boolean;
@@ -291,7 +291,7 @@ export class Context7MulticoreService {
 
 	async processWithContext7(
 		operation: string,
-		data: any,
+		data: unknown,
 		options?: {
 			priority?: 'high' | 'normal' | 'low';
 			timeout?: number;
@@ -325,7 +325,7 @@ export class Context7MulticoreService {
 			worker.activeJobs++;
 
 			// Process based on operation type
-			let result: any;
+			let result: unknown;
 			switch (operation) {
 				case 'memory-graph':
 					result = await this.processMemoryGraph(worker, data);
@@ -398,7 +398,7 @@ export class Context7MulticoreService {
 		return availableWorkers.length > 0 ? availableWorkers[0] : null;
 	}
 
-	private async processMemoryGraph(worker: WorkerStatus, data: any): Promise<any> {
+	private async processMemoryGraph(worker: WorkerStatus, data: unknown): Promise<any> {
 		const response = await fetch(`http://localhost:${worker.port}/mcp/memory/create-relations`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -412,7 +412,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processSemanticSearch(worker: WorkerStatus, data: any): Promise<any> {
+	private async processSemanticSearch(worker: WorkerStatus, data: unknown): Promise<any> {
 		const response = await fetch(`http://localhost:${worker.port}/mcp/memory/read-graph`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -426,7 +426,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processErrorAnalysis(worker: WorkerStatus, data: any): Promise<any> {
+	private async processErrorAnalysis(worker: WorkerStatus, data: unknown): Promise<any> {
 		const response = await fetch(`http://localhost:${worker.port}/mcp/error-analysis/index`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -460,7 +460,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processLlamaChat(data: any): Promise<any> {
+	private async processLlamaChat(data: unknown): Promise<any> {
 		const llamaService = this.config.goServices.find(s => s.type === 'llama');
 		if (!llamaService || !llamaService.enabled) {
 			throw new Error('Go-Llama service not available');
@@ -479,7 +479,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processEnhancedRAG(data: any): Promise<any> {
+	private async processEnhancedRAG(data: unknown): Promise<any> {
 		const ragService = this.config.goServices.find(s => s.type === 'rag');
 		if (!ragService || !ragService.enabled) {
 			throw new Error('Enhanced RAG service not available');
@@ -498,7 +498,7 @@ export class Context7MulticoreService {
 		return response.json();
 	}
 
-	private async processGeneric(worker: WorkerStatus, operation: string, data: any): Promise<any> {
+	private async processGeneric(worker: WorkerStatus, operation: string, data: unknown): Promise<any> {
 		// Route through load balancer for generic operations
 		const response = await fetch(`${this.loadBalancerUrl}/api/process`, {
 			method: 'POST',
@@ -534,7 +534,7 @@ export class Context7MulticoreService {
 		status: string;
 		workers: WorkerStatus[];
 		metrics: MulticoreMetrics;
-		services: any[];
+		services: unknown[];
 		timestamp: string;
 	}> {
 		// Update GPU utilization if available

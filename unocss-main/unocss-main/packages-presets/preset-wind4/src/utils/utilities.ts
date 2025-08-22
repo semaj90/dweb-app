@@ -247,7 +247,7 @@ export function parseThemeColor(theme: Theme, keys: string[]) {
 
 export function getThemeByKey(theme: Theme, themeKey: keyof Theme, keys: string[]) {
   const obj = theme[themeKey]
-  function deepGet(current: any, path: string[]): any {
+  function deepGet(current: unknown, path: string[]): unknown {
     if (!current || typeof current !== 'object')
       return undefined
     if (path.length === 0)

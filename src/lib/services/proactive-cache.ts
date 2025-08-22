@@ -10,7 +10,7 @@ import type { UserInteraction, InteractionPattern } from './interaction-tracker'
 
 interface CacheEntry {
   key: string;
-  data: any;
+  data: unknown;
   timestamp: number;
   accessCount: number;
   lastAccessed: number;
@@ -52,7 +52,7 @@ class ProactiveCacheService {
   });
 
   private isInitialized = false;
-  private redisClient: any = null;
+  private redisClient: unknown = null;
   private prefetchQueue = new Set<string>();
   private warmupTimer: NodeJS.Timeout | null = null;
 
@@ -163,7 +163,7 @@ class ProactiveCacheService {
     return entry?.data;
   }
 
-  async set(key: string, data: any, options: { 
+  async set(key: string, data: unknown, options: { 
     ttl?: number; 
     importance?: number; 
     metadata?: Record<string, any> 
@@ -496,7 +496,7 @@ class ProactiveCacheService {
     return (now - entry.timestamp) < entry.ttl;
   }
 
-  private estimateSize(data: any): number {
+  private estimateSize(data: unknown): number {
     // Rough estimation of object size in bytes
     return JSON.stringify(data).length * 2; // Assume 2 bytes per character
   }

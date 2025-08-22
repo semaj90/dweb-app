@@ -179,7 +179,7 @@
     searchQuery = sampleQueries[Math.floor(Math.random() * sampleQueries.length)];
   }
 
-  async function explainVector(doc: any) {
+  async function explainVector(doc: unknown) {
     // Simulate vector explanation
     const explanation = {
       document: doc.title,

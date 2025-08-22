@@ -18,7 +18,7 @@ interface TestResult {
   success: boolean;
   duration: number;
   error?: string;
-  details?: any;
+  details?: unknown;
 }
 
 interface TestSuite {

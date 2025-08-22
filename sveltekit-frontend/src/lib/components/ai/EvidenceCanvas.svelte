@@ -1,8 +1,8 @@
 <script lang="ts">
   import { $state } from 'svelte';
-
-  import { apiFetch } from "$lib/api/clients/api-client";
   import { onMount } from "svelte";
+  import { apiFetch } from "$lib/api/clients/api-client";
+  import { concurrencyOrchestrator } from '$lib/services/concurrency-orchestrator';
   let canvasEl: HTMLCanvasElement = $state();
   let fabricCanvas: any;
 
@@ -27,6 +27,11 @@
   onMount(async () => {
     const { fabric } = await import("fabric");
     fabricCanvas = new fabric.Canvas(canvasEl);
+    
+    // Register canvas with concurrency orchestrator
+    const canvasId = `evidence-canvas-${Date.now()}`;
+    concurrencyOrchestrator.createCanvas(canvasId, canvasEl);
+    
     // Example: Add a rectangle
     fabricCanvas.add(
       new fabric.Rect({
@@ -35,6 +40,17 @@
         fill: "red",
         width: 60,
         height: 60,
+      })
+    );
+    
+    // Example: Add evidence annotation text
+    fabricCanvas.add(
+      new fabric.Text('Evidence Item #1', {
+        left: 120,
+        top: 80,
+        fontFamily: 'Arial',
+        fontSize: 12,
+        fill: '#333'
       })
     );
   });
@@ -54,42 +70,59 @@
     analyzing = true;
     error = null;
     result = null;
+    
     try {
-      const payload = {
-        task: "evidence_canvas_analysis",
-        prompt:
-          "Analyze the key evidence items and summarize relevant facts and entities.",
-        context: [
-          {
-            canvas_json: {},
-            objects: collectObjects(),
-            canvas_size: { width: canvasEl.width, height: canvasEl.height },
-          },
-        ],
-        instructions: "Provide concise legal-relevant insights.",
-        options,
-      };
-      const resp = await apiFetch<{
-        analysis: string;
-        summary: string;
-        confidence: number;
-        processing_time_ms: number;
-        status: string;
-        error?: string;
-      }>("http://localhost:8081/api/evidence-canvas/analyze", "POST", {
-        body: payload,
-        retry: {
-          attempts: 3,
-          backoffMs: 400,
-          maxBackoffMs: 2500,
-          timeoutMs: 20000,
+      // Use concurrency orchestrator for analysis
+      const analysisTaskId = await concurrencyOrchestrator.submitAnalysisTask(
+        {
+          canvas_json: fabricCanvas?.toJSON() || {},
+          objects: collectObjects(),
+          canvas_size: { width: canvasEl.width, height: canvasEl.height },
+          options
         },
+        'legal'
+      );
+      
+      // Subscribe to task completion
+      const unsubscribe = concurrencyOrchestrator.subscribe((snapshot: any) => {
+        const completedResult = snapshot.context.results.find(
+          (r: any) => r.taskId === analysisTaskId && r.success
+        );
+        
+        if (completedResult) {
+          result = {
+            analysis: completedResult.data.response || completedResult.data.analysis || 'Analysis completed',
+            summary: completedResult.data.summary || 'Summary generated',
+            confidence: completedResult.data.confidence || 0.85,
+            processing_time_ms: completedResult.duration,
+            status: 'success'
+          };
+          unsubscribe();
+          analyzing = false;
+        }
+        
+        const failedResult = snapshot.context.results.find(
+          (r: any) => r.taskId === analysisTaskId && !r.success
+        );
+        
+        if (failedResult) {
+          error = failedResult.error || 'Analysis failed';
+          unsubscribe();
+          analyzing = false;
+        }
       });
-      result = resp;
-      if (resp.error) error = resp.error;
+      
+      // Fallback timeout
+      setTimeout(() => {
+        if (analyzing) {
+          error = 'Analysis timed out';
+          analyzing = false;
+          unsubscribe();
+        }
+      }, 30000);
+      
     } catch (e: any) {
       error = e instanceof Error ? e.message : String(e);
-    } finally {
       analyzing = false;
     }
   }

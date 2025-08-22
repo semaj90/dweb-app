@@ -212,7 +212,7 @@ async function main() {
           
           // Copy to clipboard on Windows
           const { exec } = require('child_process');
-          exec(`echo ${JSON.stringify(claudePrompt)} | clip`, (err: any) => {
+          exec(`echo ${JSON.stringify(claudePrompt)} | clip`, (err: unknown) => {
             if (!err) {
               console.log('\n✅ Copied to clipboard!');
             }

@@ -97,7 +97,7 @@ async function cleanupTestServices() {
 
 // Global test utilities
 global.testUtils = {
-  createMockRequest: (body: any, method = 'POST') => ({
+  createMockRequest: (body: unknown, method = 'POST') => ({
     json: vi.fn().mockResolvedValue(body),
     formData: vi.fn().mockResolvedValue(new FormData()),
     text: vi.fn().mockResolvedValue(JSON.stringify(body)),
@@ -106,7 +106,7 @@ global.testUtils = {
     url: 'http://localhost:3000/test'
   }),
 
-  createMockRequestEvent: (body: any, method = 'POST') => ({
+  createMockRequestEvent: (body: unknown, method = 'POST') => ({
     request: {
       json: vi.fn().mockResolvedValue(body),
       formData: vi.fn().mockResolvedValue(new FormData()),
@@ -133,7 +133,7 @@ global.testUtils = {
     isSubRequest: false
   }),
   
-  createMockResponse: (data: any, status = 200) => ({
+  createMockResponse: (data: unknown, status = 200) => ({
     ok: status >= 200 && status < 300,
     status,
     json: vi.fn().mockResolvedValue(data),
@@ -161,9 +161,9 @@ global.testUtils = {
 // Type declarations for global test utilities
 declare global {
   var testUtils: {
-    createMockRequest: (body: any, method?: string) => any;
-    createMockRequestEvent: (body: any, method?: string) => any;
-    createMockResponse: (data: any, status?: number) => any;
+    createMockRequest: (body: unknown, method?: string) => any;
+    createMockRequestEvent: (body: unknown, method?: string) => any;
+    createMockResponse: (data: unknown, status?: number) => any;
     delay: (ms: number) => Promise<void>;
     generateMockEmbedding: (dimensions?: number) => number[];
     generateMockDocument: () => any;

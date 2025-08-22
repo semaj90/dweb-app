@@ -10,7 +10,7 @@
 
 
 
-  import { melt } from "@melt-ui/svelte";
+  import { melt } from "melt";
   import { getContext } from "svelte";
   import { fly } from "svelte/transition";
 

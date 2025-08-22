@@ -164,7 +164,7 @@ function registerCommands(context: vscode.ExtensionContext) {
           // Enhanced suggestions with RAG insights
           if (ragResult.success && ragResult.data.sources.length > 0) {
             const ragSuggestions = ragResult.data.sources.map(
-              (source: any, index: number) => ({
+              (source: unknown, index: number) => ({
                 tool: "enhanced-rag-insight",
                 reasoning: `RAG-enhanced suggestion: ${source.content.substring(0, 100)}...`,
                 confidence: source.similarity || 0.8,
@@ -799,7 +799,7 @@ function generateStackReport(
   return report;
 }
 
-async function showResultPanel(title: string, result: any) {
+async function showResultPanel(title: string, result: unknown) {
   const panel = vscode.window.createWebviewPanel(
     "mcpResult",
     title,

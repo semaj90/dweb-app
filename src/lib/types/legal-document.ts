@@ -17,7 +17,7 @@ export interface LegalDocument {
   tags?: string[];
   metadata?: Record<string, any>;
   processingStatus: 'pending' | 'processing' | 'completed' | 'failed';
-  analysisResults?: any;
+  analysisResults?: unknown;
   contentEmbedding?: number[];
   titleEmbedding?: number[];
   fileHash?: string;
@@ -44,7 +44,7 @@ export interface NewLegalDocument {
   tags?: string[];
   metadata?: Record<string, any>;
   processingStatus?: 'pending' | 'processing' | 'completed' | 'failed';
-  analysisResults?: any;
+  analysisResults?: unknown;
   contentEmbedding?: number[];
   titleEmbedding?: number[];
   fileHash?: string;
@@ -88,7 +88,7 @@ export interface ContentEmbedding {
   contentType: string;
   textContent: string;
   embedding?: string; // JSON stringified number[]
-  metadata?: any;
+  metadata?: unknown;
   createdAt?: Date;
   documentId?: string;
   model?: string;

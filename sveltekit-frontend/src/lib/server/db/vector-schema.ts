@@ -10,8 +10,7 @@ import {
   integer,
   real,
 } from "drizzle-orm/pg-core";
-// Orphaned content: import { vector
-import {
+// TODO: Fix import - // Orphaned content: import { vector import {
 relations } from "drizzle-orm";
 
 // Document embeddings for semantic search

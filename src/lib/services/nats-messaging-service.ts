@@ -40,7 +40,7 @@ export interface NATSConfig {
  */
 export interface NATSMessage {
   subject: string;
-  data: any;
+  data: unknown;
   timestamp: number;
   messageId: string;
   correlationId?: string;
@@ -128,7 +128,7 @@ export interface NATSStatus {
  */
 export class NATSMessagingService extends EventEmitter {
   private config: NATSConfig;
-  private connection: any = null;
+  private connection: unknown = null;
   private subscriptions = new Map<string, any>();
   private status: NATSStatus = {
     connected: false,
@@ -287,7 +287,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Publish a message to a NATS subject
    */
-  async publish(subject: string, data: any, options: {
+  async publish(subject: string, data: unknown, options: {
     correlationId?: string;
     replyTo?: string;
     headers?: Record<string, string>;
@@ -351,7 +351,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Publish legal case event
    */
-  async publishCaseEvent(eventType: 'created' | 'updated' | 'closed', caseData: any): Promise<void> {
+  async publishCaseEvent(eventType: 'created' | 'updated' | 'closed', caseData: unknown): Promise<void> {
     const subjects = {
       created: NATS_SUBJECTS.CASE_CREATED,
       updated: NATS_SUBJECTS.CASE_UPDATED,
@@ -370,7 +370,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Publish document processing event
    */
-  async publishDocumentEvent(eventType: 'uploaded' | 'processed' | 'analyzed' | 'indexed', documentData: any): Promise<void> {
+  async publishDocumentEvent(eventType: 'uploaded' | 'processed' | 'analyzed' | 'indexed', documentData: unknown): Promise<void> {
     const subjects = {
       uploaded: NATS_SUBJECTS.DOCUMENT_UPLOADED,
       processed: NATS_SUBJECTS.DOCUMENT_PROCESSED,
@@ -390,7 +390,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Publish AI analysis event
    */
-  async publishAIAnalysisEvent(eventType: 'started' | 'completed' | 'failed', analysisData: any): Promise<void> {
+  async publishAIAnalysisEvent(eventType: 'started' | 'completed' | 'failed', analysisData: unknown): Promise<void> {
     const subjects = {
       started: NATS_SUBJECTS.AI_ANALYSIS_STARTED,
       completed: NATS_SUBJECTS.AI_ANALYSIS_COMPLETED,
@@ -409,7 +409,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Publish chat message
    */
-  async publishChatMessage(messageData: any, sessionId: string): Promise<void> {
+  async publishChatMessage(messageData: unknown, sessionId: string): Promise<void> {
     await this.publish(NATS_SUBJECTS.CHAT_MESSAGE, messageData, {
       metadata: {
         source: 'chat-interface',
@@ -422,7 +422,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Publish search query
    */
-  async publishSearchQuery(queryData: any): Promise<void> {
+  async publishSearchQuery(queryData: unknown): Promise<void> {
     await this.publish(NATS_SUBJECTS.SEARCH_QUERY, queryData, {
       metadata: {
         source: 'search-interface',
@@ -503,7 +503,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Request-reply pattern for synchronous communication
    */
-  async request(subject: string, data: any, timeout: number = 5000): Promise<NATSMessage> {
+  async request(subject: string, data: unknown, timeout: number = 5000): Promise<NATSMessage> {
     return new Promise(async (resolve, reject) => {
       const replySubject = this.generateReplySubject();
       const correlationId = this.generateMessageId();
@@ -533,7 +533,7 @@ export class NATSMessagingService extends EventEmitter {
   /**
    * Reply to a request
    */
-  async reply(originalMessage: NATSMessage, responseData: any): Promise<void> {
+  async reply(originalMessage: NATSMessage, responseData: unknown): Promise<void> {
     if (!originalMessage.replyTo) {
       throw new Error('Cannot reply to message without replyTo subject');
     }
@@ -553,14 +553,14 @@ export class NATSMessagingService extends EventEmitter {
    * Create a stream for document processing
    */
   async createDocumentStream(caseId: string): Promise<{
-    publish: (data: any) => Promise<void>;
-    subscribe: (callback: (data: any) => void) => Promise<string>;
+    publish: (data: unknown) => Promise<void>;
+    subscribe: (callback: (data: unknown) => void) => Promise<string>;
     close: () => Promise<void>;
   }> {
     const streamSubject = `${NATS_SUBJECTS.DOCUMENT_PROCESSED}.stream.${caseId}`;
     
     return {
-      publish: async (data: any) => {
+      publish: async (data: unknown) => {
         await this.publish(streamSubject, data, {
           metadata: {
             source: 'document-stream',
@@ -570,7 +570,7 @@ export class NATSMessagingService extends EventEmitter {
         });
       },
       
-      subscribe: async (callback: (data: any) => void) => {
+      subscribe: async (callback: (data: unknown) => void) => {
         return await this.subscribe(streamSubject, (message) => {
           callback(message.data);
         });
@@ -613,7 +613,7 @@ export class NATSMessagingService extends EventEmitter {
     }
   }
 
-  private getMemoryUsage(): any {
+  private getMemoryUsage(): unknown {
     if (typeof window !== 'undefined' && (window as any).performance?.memory) {
       const memory = (window as any).performance.memory;
       return {

@@ -33,7 +33,7 @@ class EnhancedQdrantManager {
   private baseUrl: string;
   private collection: string;
   private connected = false;
-  private client: any;
+  private client: unknown;
 
   constructor(options: {
     baseUrl?: string;
@@ -523,7 +523,7 @@ class EnhancedQdrantManager {
         collectionStatus: info?.status || 'unknown'
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         connected: false,
         collection: this.collection,
@@ -560,7 +560,7 @@ class EnhancedQdrantManager {
             results.failed += batch.length;
             results.errors.push(`Batch ${i / batchSize + 1} failed`);
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           results.failed += batch.length;
           results.errors.push(`Batch ${i / batchSize + 1}: ${error.message}`);
         }
@@ -569,7 +569,7 @@ class EnhancedQdrantManager {
       console.log(`Batch upsert completed: ${results.success} success, ${results.failed} failed`);
       return results;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       results.errors.push(`Batch operation failed: ${error.message}`);
       return results;
     }
@@ -602,7 +602,7 @@ class EnhancedQdrantManager {
         // Wait before retrying (exponential backoff)
         await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
 
-      } catch (error: any) {
+      } catch (error: unknown) {
         lastError = error;
         if (attempt === maxRetries) {
           throw error;

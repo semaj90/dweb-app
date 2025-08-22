@@ -98,7 +98,7 @@ export function createPlugin(options: UnoPostcssPluginOptions) {
         }
       }
     }
-    catch (error: any) {
+    catch (error: unknown) {
       throw new Error (`UnoCSS config not found: ${error.message}`)
     }
 

@@ -32,7 +32,7 @@ interface ChatRequest {
 
 interface ChatResponse {
   response: string;
-  intent: any;
+  intent: unknown;
   confidence: number;
   sources: string[];
   followUpQuestions: string[];
@@ -72,7 +72,7 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     // 2. Retrieve relevant documents using RAG
-    let relevantDocuments: any[] = [];
+    let relevantDocuments: unknown[] = [];
     if (chatRequest.options?.enableRAG !== false) {
       relevantDocuments = await retrieveRelevantDocuments(
         chatRequest.message,
@@ -125,12 +125,12 @@ export const POST: RequestHandler = async ({ request }) => {
 // RAG document retrieval
 async function retrieveRelevantDocuments(
   query: string,
-  context: any
-): Promise<any[]> {
+  context: unknown
+): Promise<unknown[]> {
   try {
     // Use existing RAG streaming client for document retrieval
-    const ragResult = await new Promise<any[]>((resolve, reject) => {
-      const documents: any[] = [];
+    const ragResult = await new Promise<unknown[]>((resolve, reject) => {
+      const documents: unknown[] = [];
       
       streamRag({
         query,
@@ -162,8 +162,8 @@ async function retrieveRelevantDocuments(
 // Track chat interactions for analytics
 async function trackChatInteraction(
   request: ChatRequest,
-  intent: any,
-  response: any
+  intent: unknown,
+  response: unknown
 ): Promise<void> {
   try {
     // This would integrate with your user activity tracking

@@ -117,7 +117,7 @@ export interface NextAction {
 
 export interface AgentResult {
     agentType: AgentType;
-    result: any;
+    result: unknown;
     confidence: number;
     processingTime: number;
     memoryUsage: number;
@@ -722,16 +722,16 @@ export class EnhancedSelfPromptingEngine extends EventEmitter {
 
 // Supporting Classes (simplified implementations)
 class MultiAgentOrchestrator extends EventEmitter {
-    constructor(private options: any) {
+    constructor(private options: unknown) {
         super();
     }
     
-    async executeParallel(tasks: any[]): Promise<AgentResult[]> {
+    async executeParallel(tasks: unknown[]): Promise<AgentResult[]> {
         const promises = tasks.map(task => this.executeAgent(task));
         return Promise.all(promises);
     }
     
-    async executeSequential(tasks: any[]): Promise<AgentResult[]> {
+    async executeSequential(tasks: unknown[]): Promise<AgentResult[]> {
         const results: AgentResult[] = [];
         for (const task of tasks) {
             results.push(await this.executeAgent(task));
@@ -739,7 +739,7 @@ class MultiAgentOrchestrator extends EventEmitter {
         return results;
     }
     
-    private async executeAgent(task: any): Promise<AgentResult> {
+    private async executeAgent(task: unknown): Promise<AgentResult> {
         const startTime = performance.now();
         
         // Simulate agent processing
@@ -757,7 +757,7 @@ class MultiAgentOrchestrator extends EventEmitter {
         };
     }
     
-    getMetrics(): any {
+    getMetrics(): unknown {
         return {
             totalAgentsExecuted: 0,
             averageExecutionTime: 0,
@@ -767,7 +767,7 @@ class MultiAgentOrchestrator extends EventEmitter {
 }
 
 class ContextProcessor {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
     async analyzeContext(prompt: string, options: SelfPromptOptions): Promise<PromptContext> {
         // Simulate context analysis
@@ -817,7 +817,7 @@ class ContextProcessor {
 }
 
 class PromptEnhancer {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
     async enhance(prompt: string, context: PromptContext, agentTypes: AgentType[]): Promise<string> {
         const enhancements = [];
@@ -836,7 +836,7 @@ class PromptEnhancer {
 }
 
 class SynthesisEngine extends EventEmitter {
-    constructor(private options: any) {
+    constructor(private options: unknown) {
         super();
     }
     
@@ -860,7 +860,7 @@ class SynthesisEngine extends EventEmitter {
         return result;
     }
     
-    getMetrics(): any {
+    getMetrics(): unknown {
         return {
             totalSyntheses: 0,
             averageConfidence: 0.85,
@@ -871,33 +871,33 @@ class SynthesisEngine extends EventEmitter {
 
 // Additional supporting classes would be implemented similarly...
 class GPUManager {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
     isAvailable(): boolean { return true; }
     isCUDAAvailable(): boolean { return true; }
-    getStats(): any { return { gpuUtilization: 45, memoryUsage: '2GB' }; }
+    getStats(): unknown { return { gpuUtilization: 45, memoryUsage: '2GB' }; }
 }
 
 class DistributedProcessor {
-    constructor(private options: any) {}
-    getMetrics(): any { return { nodeCount: 1, loadBalance: 0.8 }; }
+    constructor(private options: unknown) {}
+    getMetrics(): unknown { return { nodeCount: 1, loadBalance: 0.8 }; }
 }
 
 class CacheManager {
     private cache = new Map();
     private hitCount = 0;
     
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
-    get(key: string): any { return this.cache.get(key); }
-    set(key: string, value: any): void { this.cache.set(key, value); }
+    get(key: string): unknown { return this.cache.get(key); }
+    set(key: string, value: unknown): void { this.cache.set(key, value); }
     getHitCount(): number { return this.hitCount; }
-    getStats(): any { return { size: this.cache.size, hitRate: 0.75 }; }
+    getStats(): unknown { return { size: this.cache.size, hitRate: 0.75 }; }
 }
 
 class PromptMetricsCollector {
     recordPrompt(result: SelfPromptResult): void {}
-    getProcessingMetrics(): any { return { totalPrompts: 0, averageTime: 0 }; }
+    getProcessingMetrics(): unknown { return { totalPrompts: 0, averageTime: 0 }; }
 }
 
 // Additional type definitions
@@ -945,26 +945,26 @@ interface ContextChanges {
 }
 
 interface SelfPromptEngineMetrics {
-    processing: any;
-    agents: any;
-    gpu: any;
-    cache: any;
-    synthesis: any;
-    distributed: any;
+    processing: unknown;
+    agents: unknown;
+    gpu: unknown;
+    cache: unknown;
+    synthesis: unknown;
+    distributed: unknown;
 }
 
 // Placeholder interfaces for missing types
 interface FileChange { file: string; type: string; timestamp: string; }
-interface MemoryEntity { id: string; type: string; data: any; }
+interface MemoryEntity { id: string; type: string; data: unknown; }
 interface MemoryRelationship { from: string; to: string; type: string; }
 interface RecentQuery { query: string; timestamp: string; }
-interface KnowledgeGraph { nodes: any[]; edges: any[]; }
-interface VectorEmbedding { vector: number[]; metadata: any; }
+interface KnowledgeGraph { nodes: unknown[]; edges: unknown[]; }
+interface VectorEmbedding { vector: number[]; metadata: unknown; }
 interface SimilarQuery { query: string; similarity: number; }
 interface ConceptCluster { concepts: string[]; centroid: number[]; }
 interface ComplianceRule { id: string; description: string; }
 interface LegalPrecedent { case: string; ruling: string; }
-interface ErrorPattern { id: string; type: string; severity: string; suggestedFixes: any[]; mlConfidence: number; }
+interface ErrorPattern { id: string; type: string; severity: string; suggestedFixes: unknown[]; mlConfidence: number; }
 interface ErrorTrend { pattern: string; frequency: number; }
 interface FixHistory { fix: string; success: boolean; }
 interface SystemMetrics { cpuUsage: number; memoryUsage: number; diskUsage: number; }

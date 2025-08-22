@@ -1,8 +1,9 @@
 import { EventEmitter } from "events";
 // src/lib/machines/uploadMachine.ts
 import type { ProgressMsg } from "$lib/types/progress";
-// Orphaned content: import {
-assign, createMachine, fromCallback
+import {
+  assign, createMachine, fromCallback
+} from "xstate";
 
 interface UploadContext {
   files: Record<string, {

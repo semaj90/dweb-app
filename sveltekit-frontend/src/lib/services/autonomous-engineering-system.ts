@@ -7,9 +7,7 @@ import crypto from "crypto";
  */
 
 import { autoGenService } from "./autogen-service.js";
-// Orphaned content: import {
-
-import { aiWorkerManager } from "./ai-worker-manager.js";
+// TODO: Fix import - // Orphaned content: import {  import { aiWorkerManager } from "./ai-worker-manager.js";
 // Orphaned content: import type { AITask, AIResponse
 
 export interface EngineringProblem {

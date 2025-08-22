@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props, $derived } from 'svelte';
   import { Card } from "bits-ui";
-  import { createTooltip, melt } from "@melt-ui/svelte";
+  import { createTooltip, melt } from "melt";
   
   interface Props {
     title?: string;

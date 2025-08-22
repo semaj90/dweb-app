@@ -91,7 +91,7 @@ test.describe('Quick System Validation', () => {
       
       // Check for required models
       const requiredModels = ['llama3.2', 'nomic-embed-text'];
-      requiredModels.forEach(modelName: unknown => {
+      requiredModels.forEach((modelName: string) => {
         const hasModel = models.models?.some((m: unknown) => m.name.includes(modelName));
         console.log(`${modelName}: ${hasModel ? '✅' : '❌'}`);
       });

@@ -324,7 +324,7 @@ class PerformanceMonitor extends EventEmitter {
   /**
    * Generate performance report
    */
-  generateReport(): any {
+  generateReport(): unknown {
     const now = new Date();
     const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
@@ -531,13 +531,13 @@ class PerformanceMonitor extends EventEmitter {
     }
   }
 
-  private getRecentAlerts(): any[] {
+  private getRecentAlerts(): unknown[] {
     // Return recent alerts (would be stored in database in production)
     return [];
   }
 
-  private calculatePerformanceStats(): any {
-    const stats: any = {};
+  private calculatePerformanceStats(): unknown {
+    const stats: unknown = {};
 
     // Calculate stats for each metric type
     for (const [name, metrics] of this.metrics) {
@@ -592,7 +592,7 @@ class PerformanceMonitor extends EventEmitter {
 
 // Express middleware for automatic API monitoring
 export function createPerformanceMiddleware(monitor: PerformanceMonitor) {
-  return (req: any, res: any, next: any) => {
+  return (req: unknown, res: unknown, next: unknown) => {
     const start = Date.now();
     
     res.on('finish', () => {

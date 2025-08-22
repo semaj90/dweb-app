@@ -172,7 +172,7 @@ Respond only with valid JSON.`);
       const processingTime = Date.now() - startTime;
 
       // Parse JSON response
-      let analysis: any;
+      let analysis: unknown;
       try {
         analysis = JSON.parse(result);
       } catch (parseError) {
@@ -355,7 +355,7 @@ Respond only with valid JSON.`);
         searchResults: formattedResults.substring(0, 6000), // Limit for token management
       });
 
-      let synthesis: any;
+      let synthesis: unknown;
       try {
         synthesis = JSON.parse(synthesisResult);
       } catch (parseError) {
@@ -402,7 +402,7 @@ Respond only with valid JSON.`);
   ): Promise<{
     answer: string;
     confidence: number;
-    sources: Array<{ content: string; metadata: any; relevance: number }>;
+    sources: Array<{ content: string; metadata: unknown; relevance: number }>;
     processingTime: number;
   }> {
     const startTime = Date.now();
@@ -445,7 +445,7 @@ Respond only with valid JSON.`);
         context: contextText.substring(0, 6000), // Limit for token management
       });
 
-      let parsed: any;
+      let parsed: unknown;
       try {
         parsed = JSON.parse(result);
       } catch (parseError) {
@@ -579,7 +579,7 @@ Respond only with valid JSON.`);
 
   // Private helper methods
 
-  private parseNonJsonResponse(response: string): any {
+  private parseNonJsonResponse(response: string): unknown {
     // Fallback parser for non-JSON responses
     return {
       summary: response.substring(0, 200) + "...",

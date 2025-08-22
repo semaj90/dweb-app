@@ -137,7 +137,7 @@ export const GET: RequestHandler = async () => {
 };
 
 // Helper functions
-function calculateHealthScore(status: any, messageStats: any): number {
+function calculateHealthScore(status: unknown, messageStats: unknown): number {
   let score = 0;
   
   // Connection status (40 points)
@@ -179,7 +179,7 @@ function calculateReliability(reconnects: number, uptime: number): number {
   return Math.max(0, 100 - (reconnectsPerHour * 10));
 }
 
-function calculateEfficiency(messageStats: any, totalBytes: number): number {
+function calculateEfficiency(messageStats: unknown, totalBytes: number): number {
   const totalMessages = messageStats.published + messageStats.received;
   if (totalMessages === 0) return 100;
   
@@ -193,7 +193,7 @@ function calculateEfficiency(messageStats: any, totalBytes: number): number {
   return 20;
 }
 
-function getSubjectBreakdown(subscriptions: any[]): Record<string, number> {
+function getSubjectBreakdown(subscriptions: unknown[]): Record<string, number> {
   const breakdown: Record<string, number> = {};
   
   subscriptions.forEach(sub => {

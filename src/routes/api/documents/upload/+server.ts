@@ -138,7 +138,7 @@ export const POST: RequestHandler = async ({ request }) => {
       processingInBackground: uploadData.includeEmbeddings || uploadData.generateAnalysis,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document upload error:", error);
 
     if (error instanceof z.ZodError) {
@@ -206,7 +206,7 @@ async function extractPdfText(buffer: ArrayBuffer): Promise<string> {
       const page = await pdf.getPage(i);
       const textContent = await page.getTextContent();
       const pageText = textContent.items
-        .map((item: any) => item.str)
+        .map((item: unknown) => item.str)
         .join(' ');
       fullText += pageText + '\n';
     }
@@ -256,7 +256,7 @@ async function processDocumentAsync(
   options: { includeEmbeddings: boolean; generateAnalysis: boolean }
 ): Promise<void> {
   try {
-    const updates: any = {};
+    const updates: unknown = {};
 
     if (options.includeEmbeddings) {
       // Generate embeddings using your embedding service
@@ -368,7 +368,7 @@ export const GET: RequestHandler = async ({ url }) => {
         analysisResults: !document.isConfidential ? document.analysisResults : null,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document status check error:", error);
 
     return json({
@@ -412,7 +412,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
       deletedId: documentId,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document deletion error:", error);
 
     return json({

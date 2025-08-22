@@ -3,10 +3,7 @@ import crypto from "crypto";
 // Moved out of +server.ts to keep the active endpoint lean and focused.
 
 import { librarySyncService } from "$lib/services/library-sync-service";
-// Orphaned content: import {
-error, json
-
-// Local copy of backend config and forwarder to keep this module self-contained
+// TODO: Fix import - // Orphaned content: import { error, json  // Local copy of backend config and forwarder to keep this module self-contained
 const RAG_BACKEND_URL = import.meta.env.RAG_BACKEND_URL || "http://localhost:8000";
 const RAG_TIMEOUT = 30000;
 

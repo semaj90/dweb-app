@@ -28,7 +28,7 @@ export async function evaluateUserConfig<U = UserConfig>(
   // bypass vite interop
   // eslint-disable-next-line no-new-func
   const _import = new Function('a', 'return import(a);')
-  const __import = (name: string): any => {
+  const __import = (name: string): unknown => {
     if (!modulesCache.has(name)) {
       modulesCache.set(
         name,

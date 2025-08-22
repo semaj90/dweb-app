@@ -3,7 +3,7 @@
 type EventsMap = Record<string, any>
 
 interface DefaultEvents extends EventsMap {
-  [event: string]: (...args: any) => void
+  [event: string]: (...args: unknown) => void
 }
 
 export interface Unsubscribe {
@@ -80,12 +80,12 @@ export function createNanoEvents<Events extends EventsMap = DefaultEvents>(): Em
   return {
     events: {},
     emit(event, ...args) {
-      (this.events[event] || [] as any).forEach((i: any) => i(...args))
+      (this.events[event] || [] as any).forEach((i: unknown) => i(...args))
     },
     on(event, cb) {
       (this.events[event] = this.events[event] || [] as any).push(cb)
       return () =>
-        (this.events[event] = (this.events[event] || [] as any).filter((i: any) => i !== cb))
+        (this.events[event] = (this.events[event] || [] as any).filter((i: unknown) => i !== cb))
     },
   }
 }

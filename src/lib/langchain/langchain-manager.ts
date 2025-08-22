@@ -7,8 +7,8 @@ import { browser } from '$app/environment';
 
 // LangChain-like interfaces (simplified for this implementation)
 export interface BaseLLM {
-  call(prompt: string, options?: any): Promise<string>;
-  stream(prompt: string, options?: any): AsyncGenerator<string, void, unknown>;
+  call(prompt: string, options?: unknown): Promise<string>;
+  stream(prompt: string, options?: unknown): AsyncGenerator<string, void, unknown>;
 }
 
 export interface BaseMemory {
@@ -22,8 +22,8 @@ export interface BaseMemory {
 export interface BaseTool {
   name: string;
   description: string;
-  schema?: any;
-  call(input: string, options?: any): Promise<string>;
+  schema?: unknown;
+  call(input: string, options?: unknown): Promise<string>;
 }
 
 export interface LangChainConfig {
@@ -51,8 +51,8 @@ export interface LangChainConfig {
 export interface ChainExecution {
   id: string;
   type: string;
-  input: any;
-  output: any;
+  input: unknown;
+  output: unknown;
   status: 'pending' | 'running' | 'completed' | 'failed';
   startTime: number;
   endTime?: number;
@@ -151,7 +151,7 @@ export class LangChainManager extends EventEmitter {
     input: string,
     options: {
       chainType?: 'simple' | 'conversation' | 'tool' | 'rag';
-      context?: any;
+      context?: unknown;
       tools?: string[];
       memory?: boolean;
       stream?: boolean;
@@ -226,7 +226,7 @@ export class LangChainManager extends EventEmitter {
    */
   async *executeStreamingChain(
     input: string,
-    options: any = {}
+    options: unknown = {}
   ): AsyncGenerator<{ chunk: string; execution: ChainExecution }, void, unknown> {
     const executionId = this.generateExecutionId();
     const execution: ChainExecution = {
@@ -305,7 +305,7 @@ export class LangChainManager extends EventEmitter {
 
   // ============ Chain Implementation Methods ============
 
-  private async executeSimpleChain(input: string, options: any): Promise<string> {
+  private async executeSimpleChain(input: string, options: unknown): Promise<string> {
     const prompt = await this.buildPrompt(input, options);
     
     this.emit('chain:simple:started', { input, prompt });
@@ -319,7 +319,7 @@ export class LangChainManager extends EventEmitter {
     return result;
   }
 
-  private async executeConversationChain(input: string, options: any): Promise<string> {
+  private async executeConversationChain(input: string, options: unknown): Promise<string> {
     if (!this.memory) {
       throw new Error('Memory not initialized for conversation chain');
     }
@@ -350,7 +350,7 @@ export class LangChainManager extends EventEmitter {
     return result;
   }
 
-  private async executeToolChain(input: string, options: any): Promise<string> {
+  private async executeToolChain(input: string, options: unknown): Promise<string> {
     const availableTools = options.tools || Array.from(this.tools.keys());
     
     this.emit('chain:tool:started', { input, availableTools });
@@ -387,7 +387,7 @@ export class LangChainManager extends EventEmitter {
     return finalResult;
   }
 
-  private async executeRAGChain(input: string, options: any): Promise<string> {
+  private async executeRAGChain(input: string, options: unknown): Promise<string> {
     this.emit('chain:rag:started', { input });
 
     // Use search tool if available
@@ -497,7 +497,7 @@ export class LangChainManager extends EventEmitter {
     }
   }
 
-  private async buildPrompt(input: string, options: any): Promise<string> {
+  private async buildPrompt(input: string, options: unknown): Promise<string> {
     let prompt = input;
 
     // Add system context if provided
@@ -513,7 +513,7 @@ export class LangChainManager extends EventEmitter {
     return prompt;
   }
 
-  private buildConversationPrompt(messages: any[], options: any): string {
+  private buildConversationPrompt(messages: unknown[], options: unknown): string {
     const conversationHistory = messages
       .slice(-this.config.memory.returnMessages)
       .map(msg => `${msg.role}: ${msg.content}`)
@@ -522,7 +522,7 @@ export class LangChainManager extends EventEmitter {
     return `Conversation History:\n${conversationHistory}\n\nPlease respond as the assistant:`;
   }
 
-  private buildRAGPrompt(query: string, searchResults: any, options: any): string {
+  private buildRAGPrompt(query: string, searchResults: unknown, options: unknown): string {
     const context = typeof searchResults === 'string' 
       ? searchResults 
       : JSON.stringify(searchResults);
@@ -530,7 +530,7 @@ export class LangChainManager extends EventEmitter {
     return `Context from search results:\n${context}\n\nBased on the above context, please answer the following question:\n${query}`;
   }
 
-  private buildToolResultPrompt(originalInput: string, toolName: string, toolResult: any, options: any): string {
+  private buildToolResultPrompt(originalInput: string, toolName: string, toolResult: unknown, options: unknown): string {
     return `Original question: ${originalInput}\n\nTool used: ${toolName}\nTool result: ${toolResult}\n\nPlease provide a comprehensive answer based on the tool result:`;
   }
 
@@ -633,9 +633,9 @@ export class LangChainManager extends EventEmitter {
 // ============ LLM Implementations ============
 
 class OllamaLLM implements BaseLLM {
-  constructor(private config: any) {}
+  constructor(private config: unknown) {}
 
-  async call(prompt: string, options: any = {}): Promise<string> {
+  async call(prompt: string, options: unknown = {}): Promise<string> {
     const response = await fetch(`${this.config.baseUrl || 'http://localhost:11434'}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -654,7 +654,7 @@ class OllamaLLM implements BaseLLM {
     return data.response || '';
   }
 
-  async *stream(prompt: string, options: any = {}): AsyncGenerator<string, void, unknown> {
+  async *stream(prompt: string, options: unknown = {}): AsyncGenerator<string, void, unknown> {
     const response = await fetch(`${this.config.baseUrl || 'http://localhost:11434'}/api/generate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -694,14 +694,14 @@ class OllamaLLM implements BaseLLM {
 }
 
 class OpenAILLM implements BaseLLM {
-  constructor(private config: any) {}
+  constructor(private config: unknown) {}
 
-  async call(prompt: string, options: any = {}): Promise<string> {
+  async call(prompt: string, options: unknown = {}): Promise<string> {
     // Placeholder for OpenAI implementation
     return `OpenAI response to: ${prompt}`;
   }
 
-  async *stream(prompt: string, options: any = {}): AsyncGenerator<string, void, unknown> {
+  async *stream(prompt: string, options: unknown = {}): AsyncGenerator<string, void, unknown> {
     // Placeholder for OpenAI streaming
     const words = `OpenAI streaming response to: ${prompt}`.split(' ');
     for (const word of words) {
@@ -712,14 +712,14 @@ class OpenAILLM implements BaseLLM {
 }
 
 class LocalLLM implements BaseLLM {
-  constructor(private config: any) {}
+  constructor(private config: unknown) {}
 
-  async call(prompt: string, options: any = {}): Promise<string> {
+  async call(prompt: string, options: unknown = {}): Promise<string> {
     // Simple local processing
     return `Local AI response: Based on your query "${prompt}", here is a simulated response.`;
   }
 
-  async *stream(prompt: string, options: any = {}): AsyncGenerator<string, void, unknown> {
+  async *stream(prompt: string, options: unknown = {}): AsyncGenerator<string, void, unknown> {
     const response = await this.call(prompt, options);
     const words = response.split(' ');
     for (const word of words) {
@@ -734,7 +734,7 @@ class LocalLLM implements BaseLLM {
 class BufferMemory implements BaseMemory {
   protected messages: Array<{ role: string; content: string; timestamp: number }> = [];
 
-  constructor(private config: any) {}
+  constructor(private config: unknown) {}
 
   addMessage(message: { role: string; content: string }): void {
     this.messages.push({

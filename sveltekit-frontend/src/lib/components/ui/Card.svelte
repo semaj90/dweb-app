@@ -1,62 +1,40 @@
-<!-- Replace the Card component file -->
 <script lang="ts">
-  // Do not import Svelte runes; they are provided by the compiler/runtime.
-  import type { HTMLAttributes } from 'svelte/elements';
+	import { cn } from '$lib/utils';
+	
+	interface Props {
+		variant?: 'default' | 'interactive' | 'outline';
+		padding?: 'none' | 'sm' | 'md' | 'lg';
+		class?: string;
+	}
 
-  interface Props extends HTMLAttributes<HTMLDivElement> {
-    variant?: 'default' | 'interactive' | 'outline';
-    padding?: 'none' | 'sm' | 'md' | 'lg';
-    class?: string;
-  }
+	let {
+		variant = 'default',
+		padding = 'md',
+		class: className = '',
+		...restProps
+	}: Props = $props();
 
-  let {
-    variant = 'default',
-    padding = 'md',
-    class: className = '',
-    ...restProps
-  }: Props = $props();
+	const baseClasses = 'rounded-lg border bg-card text-card-foreground shadow-sm transition-all';
+	const variantClasses = {
+		default: '',
+		interactive: 'hover:shadow-md hover:-translate-y-0.5 cursor-pointer',
+		outline: 'border-2 bg-transparent'
+	};
+	const paddingClasses = {
+		none: '',
+		sm: 'p-3',
+		md: 'p-4',
+		lg: 'p-6'
+	};
 
-  $: classes = [
-    'nier-card',
-    `nier-card-${variant}`,
-    padding !== 'none' && `nier-card-padding-${padding}`,
-    className
-  ].filter(Boolean).join(' ');
+	let cardClass = $derived(cn(
+		baseClasses,
+		variantClasses[variant],
+		paddingClasses[padding],
+		className
+	));
 </script>
 
-<div class={classes} data-card-root {...restProps}>
-  <slot />
+<div class={cardClass} {...restProps}>
+	<slot />
 </div>
-
-<style>
-  :global([data-card-root]) {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-    border: 1px solid #404040;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-  }
-
-  :global(.nier-card-interactive:hover) {
-    border-color: #f59e0b;
-    box-shadow: 0 8px 25px -8px rgba(245, 158, 11, 0.3);
-    transform: translateY(-2px);
-  }
-
-  :global(.nier-card-outline) {
-    background: transparent;
-    border: 2px solid #404040;
-  }
-
-  :global(.nier-card-padding-sm) {
-    padding: 0.75rem;
-  }
-
-  :global(.nier-card-padding-md) {
-    padding: 1rem;
-  }
-
-  :global(.nier-card-padding-lg) {
-    padding: 1.5rem;
-  }
-</style>

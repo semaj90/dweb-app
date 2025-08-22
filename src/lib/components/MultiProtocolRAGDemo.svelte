@@ -20,11 +20,11 @@
   // Component state
   let query = $state('');
   let isProcessing = $state(false);
-  let responses = $state<any[]>([]);
+  let responses = $state<unknown[]>([]);
   let selectedProtocol = $state<'auto' | 'quic' | 'grpc' | 'rest'>('auto');
   
   // Protocol status
-  let protocolStatuses = $state<any[]>([]);
+  let protocolStatuses = $state<unknown[]>([]);
   let metrics = $state<any>({});
 
   // Sample queries for testing

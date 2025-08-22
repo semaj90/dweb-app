@@ -14,7 +14,7 @@ wss.on('connection', (ws) => {
   ws.on('close', () => clients.delete(ws));
 });
 
-function broadcast(obj: any){
+function broadcast(obj: unknown){
   const payload = JSON.stringify(obj);
   for (const ws of clients){
     try { ws.send(payload); } catch {}

@@ -1,8 +1,8 @@
 
 import type { User } from "./user";
-// Orphaned content: import type { InferInsertModel, InferSelectModel
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import {
-cases,
+  cases,
   criminals,
   evidence,
   users,

@@ -562,7 +562,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Calculate overall system health
      */
-    private calculateOverallHealth(): { status: string; score: number; details: any } {
+    private calculateOverallHealth(): { status: string; score: number; details: unknown } {
         const services = Array.from(this.serviceHealthCache.values());
         
         if (services.length === 0) {
@@ -814,7 +814,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Calculate trends between metrics
      */
-    private calculateTrends(previous: PerformanceMetrics, current: PerformanceMetrics): any {
+    private calculateTrends(previous: PerformanceMetrics, current: PerformanceMetrics): unknown {
         const errorRateChange = ((current.errorRate - previous.errorRate) / previous.errorRate) * 100;
         const responseTimeChange = ((current.responseTime - previous.responseTime) / previous.responseTime) * 100;
         
@@ -845,7 +845,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Event handlers
      */
-    private handleTriggerExecution(data: any): void {
+    private handleTriggerExecution(data: unknown): void {
         console.log(`⚡ Trigger executed: ${data.triggerId} - ${data.trigger.name}`);
         
         // Log to monitoring system
@@ -867,7 +867,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleSystemError(error: any): void {
+    private handleSystemError(error: unknown): void {
         console.error('❌ System error in automation engine:', error);
         
         // Create critical alert
@@ -883,7 +883,7 @@ export class AutomationIntegrationService extends EventEmitter {
         automatedWorkflowEngine.emit('alert', criticalAlert);
     }
 
-    private handleHealthStatusChange(healthData: any): void {
+    private handleHealthStatusChange(healthData: unknown): void {
         console.log(`🏥 Health status changed: ${healthData.overall.status} (${healthData.overall.score}%)`);
         
         // Broadcast to monitoring clients
@@ -896,7 +896,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handlePerformanceAnalysis(data: any): void {
+    private handlePerformanceAnalysis(data: unknown): void {
         console.log(`📊 Performance analysis completed: Health Score ${data.analysis.healthScore}`);
         
         // Forward to monitoring clients
@@ -923,7 +923,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleOptimizationCompleted(data: any): void {
+    private handleOptimizationCompleted(data: unknown): void {
         console.log(`✅ Optimization completed: ${data.recommendation.title} - Duration: ${data.duration}ms`);
         
         // Broadcast to monitoring clients
@@ -942,7 +942,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleOptimizationFailed(data: any): void {
+    private handleOptimizationFailed(data: unknown): void {
         console.error(`❌ Optimization failed: ${data.recommendation.title} - ${data.error.message}`);
         
         // Create critical alert for failed optimization
@@ -975,7 +975,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Cache event handlers
      */
-    private handleCacheMetrics(metrics: any): void {
+    private handleCacheMetrics(metrics: unknown): void {
         console.log('📊 Cache metrics received:', {
             hitRate: (metrics.hitRate * 100).toFixed(1) + '%',
             avgResponseTime: metrics.averageOperationTime?.toFixed(2) + 'ms'
@@ -1012,7 +1012,7 @@ export class AutomationIntegrationService extends EventEmitter {
         }
     }
 
-    private handleCacheAnalytics(analytics: any): void {
+    private handleCacheAnalytics(analytics: unknown): void {
         console.log('📈 Cache analytics generated:', {
             hotKeys: analytics.hotKeys?.length || 0,
             coldKeys: analytics.coldKeys?.length || 0,
@@ -1063,7 +1063,7 @@ export class AutomationIntegrationService extends EventEmitter {
     /**
      * Get current service status
      */
-    getStatus(): any {
+    getStatus(): unknown {
         const baseStatus = {
             isRunning: this.isRunning,
             config: this.config,

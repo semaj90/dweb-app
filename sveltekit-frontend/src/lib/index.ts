@@ -8,8 +8,40 @@
 // ===== CORE UI COMPONENTS =====
 export { default as Button } from './components/ui/Button.svelte';
 export { default as Card } from './components/ui/Card.svelte';
-// Essential exports only
-export { cn } from './utils';
+
+// ===== UTILITIES & TYPES =====
+export { 
+  cn,
+  formatFileSize,
+  formatDate,
+  generateId,
+  debounce,
+  throttle,
+  getConfidenceLevel,
+  getCaseStatusStyling,
+  getEvidenceTypeStyling,
+  formatProcessingTime,
+  getInitials,
+  isValidEmail,
+  copyToClipboard,
+  downloadFile,
+  isBrowser,
+  storage,
+  theme
+} from './utils';
+
+// Export type helpers for Svelte 5 compatibility
+export type {
+  WithoutChild,
+  WithoutChildren,
+  WithoutChildrenOrChild,
+  WithElementRef
+} from './utils';
+
+// ===== SERVER SERVICES (Server-side only) =====
+// Note: These should only be imported on the server side
+export type { AuthService } from './server/auth';
+export type { EmbeddingService, EmbeddingOptions } from './server/embedding-service';
 
 // ===== VERSION INFO =====
 export const VERSION = '2.0.0';

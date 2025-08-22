@@ -11,7 +11,7 @@ function bgGradientToValue(cssColor: CSSColorValue | undefined) {
   return 'rgb(255 255 255 / 0)'
 }
 
-function bgGradientColorValue(mode: string, cssColor: CSSColorValue | undefined, color: string, alpha: any) {
+function bgGradientColorValue(mode: string, cssColor: CSSColorValue | undefined, color: string, alpha: unknown) {
   if (cssColor) {
     if (alpha != null)
       return colorToString(cssColor, alpha)

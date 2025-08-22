@@ -27,7 +27,7 @@
   let documentMeshes = new Map<string, THREE.Mesh>();
   let animationFrameId = 0;
 
-  let yoRhaInstance: any = null;
+  let yoRhaInstance: unknown = null;
 
   // XState actor for canvas state management
   const canvas3DActor = createActor(createCanvas3DMachine());
@@ -37,7 +37,7 @@
   const emptyPixel = new Uint8Array([0, 0, 0, 255]);
   let somTexture: THREE.DataTexture = new THREE.DataTexture(emptyPixel, 1, 1);
   somTexture.needsUpdate = true;
-  let gpuComputeBuffer: any = null;
+  let gpuComputeBuffer: unknown = null;
 
   // Helper to build form fields reflecting current state
   function buildFormFields() {
@@ -246,7 +246,7 @@
   }
 
   // Best-effort helper to push canvas context to MCP / local API (non-blocking)
-  async function updateMCPContext(context: any) {
+  async function updateMCPContext(context: unknown) {
     try {
       await fetch('/api/mcp/context72/update-context', {
         method: 'POST',

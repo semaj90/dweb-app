@@ -13,8 +13,8 @@ declare function $props<T>(): T;
 declare namespace svelteHTML {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface HTMLAttributes<T> {
-    onclick?: any;
-    onchange?: any;
+    onclick?: unknown;
+    onchange?: unknown;
   }
 }
 
@@ -22,28 +22,28 @@ declare namespace svelteHTML {
 declare module '*.svelte' {
   // Minimal shape; real components will have better generated types.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const Component: any;
+  const Component: unknown;
   export default Component;
 }
 
 // bits-ui partial exports (silence: Module has no exported member 'Card' / 'Badge')
 declare module 'bits-ui' {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const Card: any;
+  export const Card: unknown;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const Badge: any;
+  export const Badge: unknown;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const Button: any;
+  export const Button: unknown;
 }
 
 // Playwright test shim (avoid missing devDependency noise during UI refactor)
 declare module '@playwright/test' {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const test: any;
+  export const test: unknown;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const expect: any;
+  export const expect: unknown;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const chromium: any;
+  export const chromium: unknown;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export type Page = any;
 }
@@ -52,11 +52,11 @@ declare module '@playwright/test' {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare module '@testing-library/svelte' {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const render: any;
+  export const render: unknown;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const fireEvent: any;
+  export const fireEvent: unknown;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export const cleanup: any;
+  export const cleanup: unknown;
 }
 
 // Global utility fallbacks (rare missing lib cases)

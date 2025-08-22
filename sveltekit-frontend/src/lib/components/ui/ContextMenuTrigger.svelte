@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { createContextMenu, melt } from "@melt-ui/svelte";
+  import { createContextMenu, melt } from "melt";
   import { $props } from 'svelte';
   import { setContext } from "svelte";
   interface Props {

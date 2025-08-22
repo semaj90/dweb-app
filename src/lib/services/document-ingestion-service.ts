@@ -21,7 +21,7 @@ export interface DocumentChunk {
         page?: number;
         chunk_index: number;
         timestamp: string;
-        [key: string]: any;
+        [key: string]: unknown;
     };
 }
 

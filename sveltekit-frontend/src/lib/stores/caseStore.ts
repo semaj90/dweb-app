@@ -1,10 +1,8 @@
 
 // Global case management store with real data integration
 import { writable, derived, get } from "svelte/store";
-// Orphaned content: import {
-
 import { authStore } from "./authStore";
-// Orphaned content: import type { Case, Evidence, Report
+import type { Case, Evidence, Report } from '$lib/server/db/schema';
 
 // Extended case type with relations
 export interface CaseWithRelations extends Case {

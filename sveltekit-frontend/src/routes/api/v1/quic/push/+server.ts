@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
-updateQUICMetrics, getQUICMetrics, getAggregateAnomaliesLast5m, noteQuicP99Breach, notePipelineAnomalySpike
+import { updateQUICMetrics, getQUICMetrics, getAggregateAnomaliesLast5m, noteQuicP99Breach, notePipelineAnomalySpike } from "drizzle-orm";
 import { routeAlerts, maybeTriggerAutosolve, getSustainedP99Info } from '$lib/services/alert-center';
 
 // Simple in-memory rate limit: 60 requests per minute per IP

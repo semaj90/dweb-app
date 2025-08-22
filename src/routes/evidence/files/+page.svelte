@@ -31,8 +31,8 @@
   export let caseId: string = "";
 
   // State
-  let evidenceFiles: any[] = [];
-  let filteredFiles: any[] = [];
+  let evidenceFiles: unknown[] = [];
+  let filteredFiles: unknown[] = [];
   let loading = false;
   let error: string | null = null;
   let uploadProgress = 0;
@@ -347,7 +347,7 @@
     }
   }
 
-  function getFileUrl(file: any): string {
+  function getFileUrl(file: unknown): string {
     return file.fileUrl || `/uploads/${caseId}/${file.fileName}`;
   }
 

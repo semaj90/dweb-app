@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request }) => {
       suggestions: generateResearchSuggestions(query, enhancedResults)
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Legal research error:', error);
     return json(
       { error: 'Legal research failed', details: error.message },
@@ -100,7 +100,7 @@ export const GET: RequestHandler = async ({ url }) => {
     const stats = await getResearchStatistics();
     return json(stats);
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Legal research retrieval error:', error);
     return json(
       { error: 'Failed to retrieve research data', details: error.message },
@@ -181,7 +181,7 @@ async function performLegalSearch(
       }
     }));
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Database search error:', error);
     return [];
   }
@@ -208,7 +208,7 @@ async function rerankLegalResults(query: string, results: SearchResult[]): Promi
       method: 'legal-cross-encoder'
     };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.warn('Reranking failed, returning original results:', error);
     return {
       rerankedResults: results, // Return as rerankedResults
@@ -233,7 +233,7 @@ async function enhanceWithLegalContext(results: SearchResult[], query: string): 
 
 // Utility functions
 
-function calculateRelevanceScore(query: string, document: any): number {
+function calculateRelevanceScore(query: string, document: unknown): number {
   const queryTerms = query.toLowerCase().split(/\s+/);
   const documentText = (document.title + ' ' + document.content).toLowerCase();
   
@@ -300,7 +300,7 @@ function extractRelevantExcerpt(query: string, content: string): string {
   return bestSentence.substring(0, 200) + (bestSentence.length > 200 ? '...' : '');
 }
 
-function extractLegalContext(content: string): any {
+function extractLegalContext(content: string): unknown {
   return {
     statutes: extractStatutes(content),
     cases: extractCases(content),
@@ -384,7 +384,7 @@ function generateResearchSuggestions(query: string, results: SearchResult[]): st
   return suggestions;
 }
 
-async function getRecentResearchQueries(limit: number): Promise<any[]> {
+async function getRecentResearchQueries(limit: number): Promise<unknown[]> {
   // This would typically query a research_history table
   return [
     {

@@ -154,7 +154,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Task Routing Operations
  */
 
-async function routeTask(taskData: any) {
+async function routeTask(taskData: unknown) {
     const { task } = taskData;
     
     if (!task || !task.type) {
@@ -197,7 +197,7 @@ async function routeTask(taskData: any) {
     }
 }
 
-async function executeTask(executionData: any) {
+async function executeTask(executionData: unknown) {
     const { task, decision } = executionData;
     
     if (!task || !decision) {
@@ -237,7 +237,7 @@ async function executeTask(executionData: any) {
     }
 }
 
-async function routeAndExecuteTask(taskData: any) {
+async function routeAndExecuteTask(taskData: unknown) {
     const { task } = taskData;
     
     if (!task || !task.type) {
@@ -293,7 +293,7 @@ async function routeAndExecuteTask(taskData: any) {
     }
 }
 
-async function routeStreamingTask(taskData: any) {
+async function routeStreamingTask(taskData: unknown) {
     const { task } = taskData;
     
     if (!task || !task.type) {
@@ -340,7 +340,7 @@ async function routeStreamingTask(taskData: any) {
     }
 }
 
-async function batchRouteTask(batchData: any) {
+async function batchRouteTask(batchData: unknown) {
     const { tasks } = batchData;
     
     if (!Array.isArray(tasks) || tasks.length === 0) {
@@ -740,7 +740,7 @@ function getRoutingHistory() {
  * Configuration and Management Operations
  */
 
-async function updateRoutingConfig(config: any) {
+async function updateRoutingConfig(config: unknown) {
     console.log('🔧 Updating routing configuration:', config);
     
     return json({
@@ -752,7 +752,7 @@ async function updateRoutingConfig(config: any) {
     });
 }
 
-async function updateServiceConfig(serviceConfig: any) {
+async function updateServiceConfig(serviceConfig: unknown) {
     console.log('🔧 Updating service configuration:', serviceConfig);
     
     return json({
@@ -763,7 +763,7 @@ async function updateServiceConfig(serviceConfig: any) {
     });
 }
 
-async function updateModelConfig(modelConfig: any) {
+async function updateModelConfig(modelConfig: unknown) {
     console.log('🧠 Updating model configuration:', modelConfig);
     
     return json({
@@ -775,7 +775,7 @@ async function updateModelConfig(modelConfig: any) {
     });
 }
 
-async function trainModels(trainingData: any) {
+async function trainModels(trainingData: unknown) {
     const { modelIds = [], options = {} } = trainingData;
     
     try {
@@ -804,7 +804,7 @@ async function trainModels(trainingData: any) {
     }
 }
 
-async function updateService(serviceData: any) {
+async function updateService(serviceData: unknown) {
     const { serviceId, updates } = serviceData;
     
     if (!serviceId || !updates) {
@@ -921,7 +921,7 @@ function getRoutingDashboard() {
  * Helper Functions
  */
 
-function generateAnalyticsRecommendations(analytics: any, services: Map<string, ServiceEndpointConfig>): any[] {
+function generateAnalyticsRecommendations(analytics: unknown, services: Map<string, ServiceEndpointConfig>): unknown[] {
     const recommendations = [];
     
     // Service capacity recommendations
@@ -963,7 +963,7 @@ function generateAnalyticsRecommendations(analytics: any, services: Map<string, 
     return recommendations;
 }
 
-function generateHealthAlerts(services: Map<string, ServiceEndpointConfig>, analytics: any): any[] {
+function generateHealthAlerts(services: Map<string, ServiceEndpointConfig>, analytics: unknown): unknown[] {
     const alerts = [];
     
     // Service health alerts

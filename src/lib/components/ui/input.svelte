@@ -1,6 +1,6 @@
 <script>
   interface Props {
-    value?: any;
+    value?: unknown;
     type?: string;
     placeholder?: string;
     disabled?: boolean;
@@ -9,11 +9,11 @@
     id?: string;
     name?: string;
     required?: boolean;
-    min?: any;
-    max?: any;
-    step?: any;
-    pattern?: any;
-    autocomplete?: any;
+    min?: unknown;
+    max?: unknown;
+    step?: unknown;
+    pattern?: unknown;
+    autocomplete?: unknown;
   }
   
   let {

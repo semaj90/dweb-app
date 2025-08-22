@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ request }) => {
           tableOfContents: generateTableOfContents(ocrData.text || '')
         },
         vectorization: {
-          embeddings: await generateEmbeddingIds(ocrData.text || ''),
+          embeddings: generateEmbeddingIds(ocrData.text || ''),
           chunks: chunkTextForEmbedding(ocrData.text || ''),
           semanticSections: identifySemanticSections(ocrData.text || '')
         },
@@ -262,7 +262,7 @@ function determineHeadingLevel(heading: string): number {
   return 2; // Default subsection
 }
 
-async function generateEmbeddingIds(text: string): Promise<string[]> {
+function generateEmbeddingIds(text: string): string[] {
   // Generate placeholder embedding IDs for vector database
   const chunks = chunkTextForEmbedding(text);
   return chunks.map((_, index) => `embedding_${Date.now()}_${index}`);

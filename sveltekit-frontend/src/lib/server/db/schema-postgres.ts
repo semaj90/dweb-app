@@ -17,9 +17,7 @@ import {
   jsonb,
   decimal
 } from 'drizzle-orm/pg-core';
-// import { vector } from 'drizzle-orm/pg-vector'; // Temporarily disabled - pgvector import issue
-// Using custom vector type for now
-const vector = (name: string, config: { dimensions: number }) => text(name); // Temporary fallback
+import { vector } from 'pgvector/drizzle-orm';
 import { relations } from 'drizzle-orm';
 
 // --- Foundational tables (must precede references) ---

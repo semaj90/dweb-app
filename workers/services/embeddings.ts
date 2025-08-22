@@ -48,7 +48,7 @@ export async function findSimilarEvidences(
   queryVector: number[], 
   limit: number = 5,
   threshold: number = 0.7
-): Promise<Array<{ evidenceId: string; score: number; metadata: any }>> {
+): Promise<Array<{ evidenceId: string; score: number; metadata: unknown }>> {
   try {
     const collectionName = process.env.QDRANT_COLLECTION || 'evidence_embeddings';
     
@@ -75,7 +75,7 @@ export async function searchByText(
   queryText: string,
   limit: number = 5,
   threshold: number = 0.7
-): Promise<Array<{ evidenceId: string; score: number; metadata: any }>> {
+): Promise<Array<{ evidenceId: string; score: number; metadata: unknown }>> {
   try {
     // Generate embedding for query text
     const queryEmbedding = await generateEmbeddings({

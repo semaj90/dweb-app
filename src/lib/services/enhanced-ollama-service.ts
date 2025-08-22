@@ -105,7 +105,7 @@ class EnhancedOllamaService {
 
       const data = await response.json();
       return (
-        data.models?.map((model: any) => ({
+        data.models?.map((model: unknown) => ({
           name: model.name,
           size: this.formatSize(model.size),
           modified: new Date(model.modified_at),
@@ -430,7 +430,7 @@ class EnhancedOllamaService {
   }
 
   // Update configuration
-  updateConfig(config: any) {
+  updateConfig(config: unknown) {
     if (config.name) this.currentModel = config.name;
     if (config.fallback) this.fallbackModel = config.fallback;
     if (config.endpoint) this.baseUrl = config.endpoint;

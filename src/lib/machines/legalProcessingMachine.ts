@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { createMachine, assign, interpret, type InterpreterFrom } from 'xstate';
 
 // Define event types
@@ -126,13 +126,13 @@ export const legalProcessingMachine = createMachine({
 }, {
   actions: {
     setQuery: assign({
-      query: (_, event: any) => {
+      query: (_, event: unknown) => {
         if (event?.type === 'SUBMIT_QUERY') {
           return event.query;
         }
         return '';
       },
-      userId: (_, event: any) => {
+      userId: (_, event: unknown) => {
         if (event?.type === 'SUBMIT_QUERY') {
           return event.userId || null;
         }
@@ -140,27 +140,27 @@ export const legalProcessingMachine = createMachine({
       }
     }),
     setDidYouMean: assign({
-      didYouMean: (_, event: any) => {
+      didYouMean: (_, event: unknown) => {
         const data = event.data as PreprocessResponse;
         return data.suggestions || [];
       }
     }),
     setResults: assign({
-      results: (_, event: any) => {
+      results: (_, event: unknown) => {
         const data = event.data as ProcessResponse;
         return data.results || [];
       },
-      synthesizedAnswer: (_, event: any) => {
+      synthesizedAnswer: (_, event: unknown) => {
         const data = event.data as ProcessResponse;
         return data.synthesizedAnswer || '';
       },
-      recommendations: (_, event: any) => {
+      recommendations: (_, event: unknown) => {
         const data = event.data as ProcessResponse;
         return data.recommendations || [];
       }
     }),
     setError: assign({
-      errors: (ctx: any, event: any) => [...(ctx.errors || []), event.data]
+      errors: (ctx: unknown, event: unknown) => [...(ctx.errors || []), event.data]
     }),
     clearErrors: assign({ errors: [] }),
     resetContext: assign({
@@ -174,7 +174,7 @@ export const legalProcessingMachine = createMachine({
       synthesizedAnswer: ''
     }),
     updateQuery: assign({
-      query: (_, event: any) => {
+      query: (_, event: unknown) => {
         if (event?.type === 'REFINE') {
           return event.query;
         }
@@ -184,7 +184,7 @@ export const legalProcessingMachine = createMachine({
     setHistory: assign({
       // Handle history data if needed
     }),
-    recordActivity: (args: any) => {
+    recordActivity: (args: unknown) => {
       const context = args.context as LegalProcessingContext;
       if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(reg =>

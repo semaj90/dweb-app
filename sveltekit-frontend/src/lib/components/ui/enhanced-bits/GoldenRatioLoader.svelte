@@ -3,7 +3,7 @@
 	import { tweened } from 'svelte/motion';
   import { $props, $state, $derived, $effect } from 'svelte';
 	import { cubicInOut, elasticOut } from 'svelte/easing';
-	import { createProgress } from '@melt-ui/svelte';
+	import { createProgress } from 'melt';
 	import { onMount } from 'svelte';
 
 	// Props

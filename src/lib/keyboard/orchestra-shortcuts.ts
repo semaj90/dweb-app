@@ -11,7 +11,7 @@ export interface ServiceCommand {
   description: string;
   endpoint?: string;
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  payload?: any;
+  payload?: unknown;
   category: 'system' | 'service' | 'monitoring' | 'encoding' | 'gpu' | 'database';
 }
 
@@ -499,7 +499,7 @@ export class OrchestraKeyboardController {
   /**
    * Show success message
    */
-  private showSuccess(commandName: string, result: any): void {
+  private showSuccess(commandName: string, result: unknown): void {
     if (this.statusDisplay) {
       this.statusDisplay.innerHTML = `
         <div style="color: #4CAF50;">✓ ${commandName} - Success</div>

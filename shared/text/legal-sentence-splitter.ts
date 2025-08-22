@@ -30,7 +30,7 @@ const defaultHeadingPatterns: RegExp[] = [
 const defaultExtraAbbreviations = ['Sec.', 'Art.', 'Exh.', 'Sched.', 'Recital'];
 
 // Lazy singleton instance (can be reset for tests)
-let sharedInstance: any | null = null;
+let sharedInstance: unknown | null = null;
 
 export function createLegalSentenceSplitter(config: LegalSentenceSplitterConfig = {}) {
   const { headingPatterns, extraAbbreviations, ...rest } = config;

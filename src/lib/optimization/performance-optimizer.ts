@@ -550,7 +550,7 @@ export class PerformanceOptimizer extends EventEmitter {
     /**
      * Public API methods
      */
-    getOptimizationStatus(): any {
+    getOptimizationStatus(): unknown {
         return {
             activeOptimizations: Array.from(this.activeOptimizations.values()),
             recentOptimizations: this.optimizationHistory.slice(-10),
@@ -560,7 +560,7 @@ export class PerformanceOptimizer extends EventEmitter {
         };
     }
 
-    getPerformanceInsights(): any {
+    getPerformanceInsights(): unknown {
         return this.analysisEngine.getInsights(this.metricsHistory);
     }
 
@@ -605,7 +605,7 @@ class PerformanceAnalysisEngine {
         return analysis;
     }
 
-    private analyzeTrends(history: MetricsHistory[]): any {
+    private analyzeTrends(history: MetricsHistory[]): unknown {
         if (history.length < 2) return {};
         
         const recent = history.slice(-10);
@@ -619,7 +619,7 @@ class PerformanceAnalysisEngine {
         };
     }
 
-    private calculateTrend(older: any[], recent: any[], metric: string): any {
+    private calculateTrend(older: unknown[], recent: unknown[], metric: string): unknown {
         if (older.length === 0 || recent.length === 0) return null;
         
         const olderAvg = older.reduce((sum, item) => sum + (item[metric] || 0), 0) / older.length;
@@ -694,7 +694,7 @@ class PerformanceAnalysisEngine {
         return Math.max(0, Math.round(score));
     }
 
-    getInsights(history: MetricsHistory[]): any {
+    getInsights(history: MetricsHistory[]): unknown {
         return {
             totalDataPoints: history.length,
             timespan: history.length > 0 ? 
@@ -704,7 +704,7 @@ class PerformanceAnalysisEngine {
         };
     }
 
-    private identifyPatterns(history: MetricsHistory[]): any {
+    private identifyPatterns(history: MetricsHistory[]): unknown {
         // Simple pattern identification
         return {
             peakHours: this.identifyPeakHours(history),
@@ -713,17 +713,17 @@ class PerformanceAnalysisEngine {
         };
     }
 
-    private identifyPeakHours(history: MetricsHistory[]): any {
+    private identifyPeakHours(history: MetricsHistory[]): unknown {
         // Implement peak hour analysis
         return { message: 'Peak hour analysis not yet implemented' };
     }
 
-    private identifyCycles(history: MetricsHistory[]): any {
+    private identifyCycles(history: MetricsHistory[]): unknown {
         // Implement cyclical pattern analysis
         return { message: 'Cyclical pattern analysis not yet implemented' };
     }
 
-    private identifyAnomalies(history: MetricsHistory[]): any {
+    private identifyAnomalies(history: MetricsHistory[]): unknown {
         // Implement anomaly detection
         return { message: 'Anomaly detection not yet implemented' };
     }
@@ -912,7 +912,7 @@ class MLPerformancePredictor {
         return predictions;
     }
 
-    private predictNextPeriod(history: MetricsHistory[], periodMs: number): any {
+    private predictNextPeriod(history: MetricsHistory[], periodMs: number): unknown {
         const recent = history.slice(-20);
         
         // Simple average-based prediction
@@ -928,7 +928,7 @@ class MLPerformancePredictor {
         };
     }
 
-    private predictTrend(history: MetricsHistory[]): any {
+    private predictTrend(history: MetricsHistory[]): unknown {
         const recent = history.slice(-10);
         const older = history.slice(-20, -10);
         

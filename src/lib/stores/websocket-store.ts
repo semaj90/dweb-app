@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * WebSocket Store for Real-time AI System Communication
  * Handles real-time updates for system health, metrics, and recommendations
@@ -12,7 +12,7 @@ interface WebSocketState {
   connected: boolean;
   connecting: boolean;
   error: string | null;
-  lastMessage: any;
+  lastMessage: unknown;
   reconnectAttempts: number;
   maxReconnectAttempts: number;
   reconnectDelay: number;
@@ -20,7 +20,7 @@ interface WebSocketState {
 
 interface WebSocketMessage {
   type: string;
-  data: any;
+  data: unknown;
   timestamp: number;
   id?: string;
 }
@@ -28,7 +28,7 @@ interface WebSocketMessage {
 class WebSocketStore {
   private socket: WebSocket | null = null;
   private connectionState: Writable<WebSocketState>;
-  private eventListeners: Map<string, ((data: any) => void)[]> = new Map();
+  private eventListeners: Map<string, ((data: unknown) => void)[]> = new Map();
   private reconnectTimer: NodeJS.Timeout | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private url: string = '';
@@ -217,7 +217,7 @@ class WebSocketStore {
     }
   }
 
-  private handleHeartbeat(data: any) {
+  private handleHeartbeat(data: unknown) {
     // Respond to heartbeat from server
     this.send('heartbeat-response', { 
       timestamp: Date.now(),
@@ -253,7 +253,7 @@ class WebSocketStore {
   }
 
   // Public API methods
-  send(type: string, data: any = {}) {
+  send(type: string, data: unknown = {}) {
     if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
       console.warn('Cannot send message: WebSocket not connected');
       return false;
@@ -276,7 +276,7 @@ class WebSocketStore {
   }
 
   // Event system
-  on(eventType: string, callback: (data: any) => void) {
+  on(eventType: string, callback: (data: unknown) => void) {
     if (!this.eventListeners.has(eventType)) {
       this.eventListeners.set(eventType, []);
     }
@@ -295,7 +295,7 @@ class WebSocketStore {
     };
   }
 
-  private emit(eventType: string, data: any) {
+  private emit(eventType: string, data: unknown) {
     const listeners = this.eventListeners.get(eventType);
     if (listeners) {
       listeners.forEach(callback => {
@@ -321,15 +321,15 @@ class WebSocketStore {
     return this.send('request-recommendations', { userId });
   }
 
-  startDocumentProcessing(documentId: string, options: any = {}) {
+  startDocumentProcessing(documentId: string, options: unknown = {}) {
     return this.send('start-document-processing', { documentId, options });
   }
 
-  startAnalysisSession(sessionId: string, documents: any[], options: any = {}) {
+  startAnalysisSession(sessionId: string, documents: unknown[], options: unknown = {}) {
     return this.send('start-analysis-session', { sessionId, documents, options });
   }
 
-  updateUserPreferences(preferences: any) {
+  updateUserPreferences(preferences: unknown) {
     return this.send('update-user-preferences', preferences);
   }
 

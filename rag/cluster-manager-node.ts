@@ -19,7 +19,7 @@ export interface ClusterConfig {
 export interface WorkerTask {
   id: string;
   type: 'rag-query' | 'agent-orchestrate' | 'embed-cache' | 'auto-fix';
-  data: any;
+  data: unknown;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   timeout?: number;
 }
@@ -27,7 +27,7 @@ export interface WorkerTask {
 export interface WorkerResponse {
   taskId: string;
   success: boolean;
-  result?: any;
+  result?: unknown;
   error?: string;
   processingTime: number;
   workerId: number;
@@ -108,7 +108,7 @@ export class NodeClusterManager extends EventEmitter {
    */
   private async setupWorker(): Promise<void> {
     // Set up message handler for tasks
-    process.on('message', async (message: any) => {
+    process.on('message', async (message: unknown) => {
       if (message.type === 'task') {
         await this.executeWorkerTask(message.task);
       } else if (message.type === 'stats-request') {
@@ -169,7 +169,7 @@ export class NodeClusterManager extends EventEmitter {
       }
 
       // Set up response handler
-      const responseHandler = (message: any) => {
+      const responseHandler = (message: unknown) => {
         if (message.type === 'task-complete' && message.taskId === task.id) {
           clearTimeout(timeoutId);
           worker.off('message', responseHandler);
@@ -250,7 +250,7 @@ export class NodeClusterManager extends EventEmitter {
    */
   private async executeWorkerTask(task: WorkerTask): Promise<void> {
     const startTime = Date.now();
-    let result: any;
+    let result: unknown;
     let success = true;
     let error: string | undefined;
 
@@ -365,7 +365,7 @@ export class NodeClusterManager extends EventEmitter {
   /**
    * Handle worker messages
    */
-  private handleWorkerMessage(worker: Worker, message: any): void {
+  private handleWorkerMessage(worker: Worker, message: unknown): void {
     switch (message.type) {
       case 'worker-ready':
         console.log(`Worker ${worker.id} is ready`);

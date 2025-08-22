@@ -15,7 +15,7 @@ export interface AutoGenAgentConfig {
 
 export interface AutoGenAgentRequest {
   prompt: string;
-  context?: any;
+  context?: unknown;
   options?: {
     analysisType?: 'case_review' | 'evidence_analysis' | 'legal_research' | 'prosecution_strategy';
     priority?: 'low' | 'medium' | 'high' | 'urgent';
@@ -132,7 +132,7 @@ export class AutoGenAgent {
     }
   }
 
-  private calculateScore(result: any): number {
+  private calculateScore(result: unknown): number {
     let score = 0.5; // Base score
 
     // Confidence-based scoring
@@ -146,7 +146,7 @@ export class AutoGenAgent {
     return Math.min(1.0, score);
   }
 
-  private extractAgentCount(conversations: any[]): number { // TODO-AUTO: Replace any[] with proper Conversation interface - create type { agent: string, message: string, timestamp: Date }
+  private extractAgentCount(conversations: unknown[]): number { // TODO-AUTO: Replace unknown[] with proper Conversation interface - create type { agent: string, message: string, timestamp: Date }
     const agents = new Set();
     conversations.forEach(conv => {
       if (conv.agent) agents.add(conv.agent);

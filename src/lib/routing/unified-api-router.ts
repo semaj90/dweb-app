@@ -20,9 +20,9 @@ export interface RouteConfig {
 
 export interface ProxyResponse {
   status: number;
-  data: any;
+  data: unknown;
   encoding: EncodingFormat;
-  metrics?: any;
+  metrics?: unknown;
 }
 
 export class UnifiedAPIRouter {

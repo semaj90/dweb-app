@@ -126,7 +126,7 @@
     }
   }
 
-  function handleWebSocketMessage(data: any) {
+  function handleWebSocketMessage(data: unknown) {
     if (data.type === 'response') {
       isLoading.set(false);
       

@@ -1,0 +1,42 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": false,
+    "allowJs": true
+  },
+  "include": [
+    "src/lib/components/ui/index.ts",
+    "src/lib/components/ui/enhanced-bits/index.ts", 
+    "src/lib/components/ui/modern/index.ts",
+    "src/lib/components/ui/select/types.ts",
+    "src/lib/components/ui/slider/index.ts",
+    "src/lib/components/ui/switch/index.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*three*/**",
+    "**/*yorha*/**", 
+    "**/*webgpu*/**",
+    "**/*wasm*/**",
+    "**/*gpu*/**",
+    "**/*worker*/**",
+    "**/*test*/**",
+    "**/*spec*/**",
+    "../**",
+    "src/lib/ai/**",
+    "src/lib/server/**",
+    "src/lib/services/**",
+    "src/lib/machines/**",
+    "src/lib/state/**",
+    "src/routes/api/**"
+  ]
+}

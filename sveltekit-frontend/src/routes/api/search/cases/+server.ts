@@ -3,7 +3,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 // Optimized case search API endpoint
 // Supports multiple search strategies with automatic fallbacks
 import { json } from "@sveltejs/kit";
-and, desc, ilike, or, sql
+import { and, desc, ilike, or, sql } from "drizzle-orm";
 import { db, isPostgreSQL } from "$lib/server/db/index";
 
 import type { RequestHandler } from "./$types.js";

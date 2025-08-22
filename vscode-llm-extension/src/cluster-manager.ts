@@ -20,7 +20,7 @@ export interface ClusterConfig {
 export interface WorkerTask {
   id: string;
   type: 'mcp-analyze' | 'agent-orchestrate' | 'rag-query' | 'auto-fix' | 'embed-cache';
-  data: any;
+  data: unknown;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   timeout?: number;
 }
@@ -28,7 +28,7 @@ export interface WorkerTask {
 export interface WorkerResponse {
   taskId: string;
   success: boolean;
-  result?: any;
+  result?: unknown;
   error?: string;
   processingTime: number;
   workerId: number;
@@ -119,7 +119,7 @@ export class ExtensionClusterManager extends EventEmitter {
     const { runAutoFix } = await import('../../sveltekit-frontend/js_tests/sveltekit-best-practices-fix.mjs');
 
     // Set up message handler for tasks
-    process.on('message', async (message: any) => {
+    process.on('message', async (message: unknown) => {
       if (message.type === 'task') {
         await this.executeWorkerTask(message.task, {
           claudeAgent,
@@ -189,7 +189,7 @@ export class ExtensionClusterManager extends EventEmitter {
       }
 
       // Set up response handler
-      const responseHandler = (message: any) => {
+      const responseHandler = (message: unknown) => {
         if (message.type === 'task-complete' && message.taskId === task.id) {
           clearTimeout(timeoutId);
           worker.off('message', responseHandler);
@@ -268,9 +268,9 @@ export class ExtensionClusterManager extends EventEmitter {
   /**
    * Execute a task in worker process
    */
-  private async executeWorkerTask(task: WorkerTask, services: any): Promise<void> {
+  private async executeWorkerTask(task: WorkerTask, services: unknown): Promise<void> {
     const startTime = Date.now();
-    let result: any;
+    let result: unknown;
     let success = true;
     let error: string | undefined;
 
@@ -346,7 +346,7 @@ export class ExtensionClusterManager extends EventEmitter {
   /**
    * Handle embedding cache operations
    */
-  private async handleEmbeddingCache(data: any, services: any): Promise<any> {
+  private async handleEmbeddingCache(data: unknown, services: unknown): Promise<any> {
     // This would integrate with Ollama Gemma for embeddings
     const cacheKey = `embed_${this.hashString(data.text)}`;
 
@@ -385,7 +385,7 @@ export class ExtensionClusterManager extends EventEmitter {
   /**
    * Handle worker messages
    */
-  private handleWorkerMessage(worker: cluster.Worker, message: any): void {
+  private handleWorkerMessage(worker: cluster.Worker, message: unknown): void {
     switch (message.type) {
       case 'worker-ready':
         console.log(`Worker ${worker.id} is ready`);

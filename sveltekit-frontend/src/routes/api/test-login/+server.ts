@@ -2,7 +2,7 @@
 import { json } from "@sveltejs/kit";
 
 import { users } from "$lib/server/db/schema-postgres";
-verifyPassword, createUserSession, setSessionCookie
+import { verifyPassword, createUserSession, setSessionCookie } from "drizzle-orm";
 import { eq } from 'drizzle-orm';
 
 export async function POST({ request }) {

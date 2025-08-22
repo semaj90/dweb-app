@@ -26,7 +26,7 @@
   let activeTab = $state<"dashboard" | "chat" | "analysis" | "search" | "monitor" | "evidence">("dashboard");
   let systemHealth = $state<any>({});
   let performanceMetrics = $state<any>({});
-  let aiRecommendations = $state<any[]>([]);
+  let aiRecommendations = $state<unknown[]>([]);
   let isSystemInitialized = $state(false);
   let showFindModal = $state(false);
   let webSocketConnection = $state<WebSocket | null>(null);
@@ -72,15 +72,15 @@
         await webSocketStore.connect('ws://localhost:8080/ws');
         webSocketConnection = webSocketStore.socket;
 
-        webSocketStore.on('system-health', (data: any) => {
+        webSocketStore.on('system-health', (data: unknown) => {
           systemHealth = data;
         });
 
-        webSocketStore.on('performance-metrics', (data: any) => {
+        webSocketStore.on('performance-metrics', (data: unknown) => {
           performanceMetrics = data;
         });
 
-        webSocketStore.on('ai-recommendations', (data: any) => {
+        webSocketStore.on('ai-recommendations', (data: unknown) => {
           aiRecommendations = data;
         });
 
@@ -130,14 +130,14 @@
   }
 
   // Event handlers
-  function handleAnalysisComplete(result: any) {
+  function handleAnalysisComplete(result: unknown) {
     console.log("Analysis complete:", result);
     if (aiSystemStore) {
       aiSystemStore.logAnalysis(result);
     }
   }
 
-  function handleChatMessage(message: any) {
+  function handleChatMessage(message: unknown) {
     console.log("New message:", message);
     if (aiSystemStore) {
       aiSystemStore.logInteraction(message);

@@ -291,7 +291,7 @@ test.describe('PostgreSQL and pgvector Operations', () => {
     const results = await Promise.all(promises);
     
     // All operations should succeed
-    results.forEach(response: unknown => {
+    results.forEach((response: any) => {
       expect([200, 201]).toContain(response.status());
     });
   });

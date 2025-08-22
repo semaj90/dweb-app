@@ -1,9 +1,7 @@
 import { URL } from "url";
 
 import type { PageServerLoad } from "./$types.js";
-// Orphaned content: import {
-
-export const load: PageServerLoad = async ({ url }) => {
+// TODO: Fix import - // Orphaned content: import {  export const load: PageServerLoad = async ({ url }) => {
   const initialQuery = url.searchParams.get("q") || "";
   let initialResults = [];
   if (initialQuery) {

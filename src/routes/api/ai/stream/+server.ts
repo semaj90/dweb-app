@@ -1,5 +1,5 @@
-// @ts-nocheck
-// @ts-nocheck
+
+
 import { legalOrchestrator } from '$lib/agents/orchestrator.js';
 import { cacheManager } from '$lib/database/redis.js';
 import type { RequestHandler } from './$types';
@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
       enableSIMD
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Streaming API error:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: (error as any)?.message || "Unknown error" }),
@@ -194,7 +194,7 @@ async function createOptimizedStream(
         }
 
         controller.close();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Stream error:', error);
         controller.enqueue(encoder.encode(JSON.stringify({
           type: 'error',

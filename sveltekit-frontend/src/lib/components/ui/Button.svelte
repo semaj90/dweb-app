@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { $props, $derived, $effect } from 'svelte';
-	// Using standard button element instead of melt-ui Button
+	import type { ComponentProps } from 'svelte';
 	import { cva, type VariantProps } from 'class-variance-authority';
-	import { cn } from '$lib/utils/cn';
-	import { createButton } from '@melt-ui/svelte/builders';
+	import { cn } from '$lib/utils';
+	import { createButton, melt } from 'melt';
 	
 	const buttonVariants = cva(
 		'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
@@ -44,7 +43,6 @@
 		target?: string;
 		loading?: boolean;
 		loadingText?: string;
-		onclick?: (e: MouseEvent) => void;
 		class?: string;
 	}
 	
@@ -53,27 +51,22 @@
 		size = 'default',
 		disabled = false,
 		type = 'button',
-		href = undefined,
-		target = undefined,
+		href,
+		target,
 		loading = false,
 		loadingText = 'Loading...',
-		onclick = undefined,
-		class: className = ''
+		class: className = '',
+		...restProps
 	}: Props = $props();
 	
 	let isDisabled = $derived(disabled || loading);
 	let buttonClass = $derived(cn(buttonVariants({ variant, size }), className));
-
-	// Create melt-ui button
+	
+	// Create melt-ui button for enhanced accessibility and interactions
 	const {
-		elements: { root: MeltButton },
-		options: { disabled: disabledStore }
+		elements: { root: meltButton }
 	} = createButton({
 		disabled: isDisabled
-	});
-
-	$effect(() => {
-		disabledStore.set(isDisabled);
 	});
 </script>
 
@@ -86,13 +79,7 @@
 		tabindex="0"
 		aria-disabled={isDisabled}
 		data-testid="button"
-		onclick
-		onkeydown={(e) => {
-			if (e.key === 'Enter' || e.key === ' ') {
-				e.preventDefault();
-				e.currentTarget.click();
-			}
-		}}
+		{...restProps}
 	>
 		{#if loading}
 			<svg 
@@ -123,12 +110,12 @@
 	</a>
 {:else}
 	<button
-		use:MeltButton
+		use:melt={$meltButton}
 		{type}
 		disabled={isDisabled}
 		class={buttonClass}
 		data-testid="button"
-		onclick
+		{...restProps}
 	>
 		{#if loading}
 			<svg 

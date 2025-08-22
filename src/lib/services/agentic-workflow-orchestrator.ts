@@ -5,7 +5,7 @@ export class AgenticWorkflowOrchestrator {
         // Initialize orchestrator state here
     }
 
-    async orchestrateWorkflow(input: any): Promise<any> {
+    async orchestrateWorkflow(input: unknown): Promise<any> {
         // Implement workflow orchestration logic here
         return { status: "success", input };
     }

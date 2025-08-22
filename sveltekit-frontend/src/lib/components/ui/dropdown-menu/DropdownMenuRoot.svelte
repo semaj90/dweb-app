@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  import { createDropdownMenu } from '@melt-ui/svelte';
+  import { createDropdownMenu } from 'melt';
   import { $props } from 'svelte';
   interface Props {
     children?: import('svelte').Snippet<[any]>;

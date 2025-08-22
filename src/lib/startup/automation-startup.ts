@@ -332,7 +332,7 @@ export async function shutdownAutomationSystem(): Promise<void> {
 /**
  * Get system status
  */
-export function getAutomationSystemStatus(): any {
+export function getAutomationSystemStatus(): unknown {
     if (!isInitialized) {
         return {
             initialized: false,
@@ -438,7 +438,7 @@ export async function executeDemoTrigger(triggerId: string): Promise<any> {
 /**
  * Create synthetic metrics to trigger specific demo triggers
  */
-function createSyntheticMetrics(triggerId: string): any {
+function createSyntheticMetrics(triggerId: string): unknown {
     const baseMetrics = {
         timestamp: Date.now(),
         source: 'demo-trigger-synthetic'

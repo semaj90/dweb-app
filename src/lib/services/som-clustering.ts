@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Self-Organizing Map (SOM) Implementation for Legal Document Clustering
  * Unsupervised learning for document similarity and topic discovery
@@ -182,7 +182,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
   /**
    * Analyze legal document clusters on the SOM
    */
-  async analyzeLegalClusters(documents: Array<{ id: string; embedding: number[]; metadata: any }>): Promise<{
+  async analyzeLegalClusters(documents: Array<{ id: string; embedding: number[]; metadata: unknown }>): Promise<{
     clusters: Array<{
       position: { x: number; y: number };
       documents: string[];
@@ -190,7 +190,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
       coherence: number;
     }>;
   }> {
-    const clusterMap = new Map<string, Array<{ id: string; metadata: any }>>();
+    const clusterMap = new Map<string, Array<{ id: string; metadata: unknown }>>();
     
     // Map documents to SOM positions
     for (const doc of documents) {
@@ -228,7 +228,7 @@ export class LegalDocumentSOM implements SelfOrganizingMap {
   /**
    * Extract legal topics from document metadata
    */
-  private extractLegalTopics(metadataArray: any[]): string[] {
+  private extractLegalTopics(metadataArray: unknown[]): string[] {
     const topicCounts = new Map<string, number>();
     
     for (const metadata of metadataArray) {

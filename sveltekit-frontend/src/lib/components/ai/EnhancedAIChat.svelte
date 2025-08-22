@@ -6,7 +6,7 @@ https://svelte.dev/e/props_duplicate -->
   import { onMount, onDestroy, tick } from 'svelte';
   import { browser } from '$app/environment';
   import { writable, derived } from 'svelte/store';
-  import { createDialog, melt } from '@melt-ui/svelte';
+  import { createDialog, melt } from 'melt';
   import { ChatBubbleIcon, PaperPlaneIcon, MagnifyingGlassIcon, DocumentTextIcon } from '@radix-icons/svelte';
   import * as Dialog from '$lib/components/ui/dialog';
   import * as Card from '$lib/components/ui/card';

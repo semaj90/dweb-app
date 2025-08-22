@@ -7,7 +7,7 @@
 
   const dispatch = createEventDispatcher();
   let sending = false;
-  let lastResp: any = null;
+  let lastResp: unknown = null;
 
   async function sendFeedback(reward: number) {
     sending = true;

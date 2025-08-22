@@ -9,7 +9,7 @@ export const fontVariantNumericBase = {
   '--un-numeric-fraction': varEmpty,
 }
 const custom = { preflightKeys: Object.keys(fontVariantNumericBase) }
-function toEntries(entry: any) {
+function toEntries(entry: unknown) {
   return {
     ...entry,
     'font-variant-numeric': 'var(--un-ordinal) var(--un-slashed-zero) var(--un-numeric-figure) var(--un-numeric-spacing) var(--un-numeric-fraction)',

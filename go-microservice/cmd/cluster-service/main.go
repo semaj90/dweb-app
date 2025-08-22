@@ -10,14 +10,77 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-
-	"microservice/clustering"
 )
+
+// Clustering types and interfaces
+type Params struct {
+	K    int   `json:"k"`
+	Seed int64 `json:"seed,omitempty"`
+}
+
+type Algorithm interface {
+	Name() string
+	Cluster(data [][]float64, params Params) (assignments []int, centroids [][]float64, err error)
+}
+
+type KMeansCPU struct{}
+
+func (k KMeansCPU) Name() string {
+	return "kmeans-cpu"
+}
+
+func (k KMeansCPU) Cluster(data [][]float64, params Params) ([]int, [][]float64, error) {
+	// Simple K-means implementation
+	if len(data) == 0 {
+		return nil, nil, nil
+	}
+	
+	n := len(data)
+	dim := len(data[0])
+	k := params.K
+	
+	if k > n {
+		k = n
+	}
+	
+	assignments := make([]int, n)
+	centroids := make([][]float64, k)
+	
+	// Initialize centroids randomly
+	for i := 0; i < k; i++ {
+		centroids[i] = make([]float64, dim)
+		idx := rand.Intn(n)
+		copy(centroids[i], data[idx])
+	}
+	
+	// Simple assignment (assign each point to nearest centroid)
+	for i, point := range data {
+		bestDist := -1.0
+		bestCluster := 0
+		
+		for j, centroid := range centroids {
+			dist := 0.0
+			for d := 0; d < dim; d++ {
+				diff := point[d] - centroid[d]
+				dist += diff * diff
+			}
+			
+			if bestDist < 0 || dist < bestDist {
+				bestDist = dist
+				bestCluster = j
+			}
+		}
+		
+		assignments[i] = bestCluster
+	}
+	
+	return assignments, centroids, nil
+}
 
 // request/response DTOs
 type ClusterRequest struct {
 	Algorithm string            `json:"algorithm"`
-	Params    clustering.Params `json:"params"`
+	Params    Params `json:"params"`
 	Data      [][]float64       `json:"data"`
 }
 type ClusterResponse struct {
@@ -72,8 +135,8 @@ func main() {
 	if useGPU {
 		log.Println("[cluster] GPU mode requested — using CPU implementation until GPU backend is available")
 	}
-	algos := map[string]clustering.Algorithm{
-		"kmeans": clustering.KMeansCPU{},
+	algos := map[string]Algorithm{
+		"kmeans": KMeansCPU{},
 	}
 
 	// Already evaluated CLUSTER_MODE; avoid duplicate env checks here.

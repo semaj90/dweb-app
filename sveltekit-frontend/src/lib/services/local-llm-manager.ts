@@ -3,9 +3,7 @@
 // This file manages local model downloads, setup, and integration
 
 import { dev } from "$app/environment";
-// Orphaned content: import {
-
-// Optional Tauri imports - fallback for web environments
+// TODO: Fix import - // Orphaned content: import {  // Optional Tauri imports - fallback for web environments
 let createDir: any, writeTextFile: any, readTextFile: any, exists: any, join: any, appLocalDataDir: any;
 
 async function initializeTauriAPI() {

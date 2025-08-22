@@ -196,7 +196,7 @@ export const GET: RequestHandler = async ({ url }) => {
         importance: assoc.importance,
       });
       return acc;
-    }, {} as Record<string, any[]>);
+    }, {} as Record<string, unknown[]>);
 
     // Format response
     const formattedDocuments = documents.map(doc => ({
@@ -253,7 +253,7 @@ export const GET: RequestHandler = async ({ url }) => {
       },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Documents list error:", error);
 
     if (error instanceof z.ZodError) {
@@ -322,7 +322,7 @@ export const POST: RequestHandler = async ({ request }) => {
       processingInBackground: documentData.generateEmbeddings || documentData.generateAnalysis,
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document creation error:", error);
 
     if (error instanceof z.ZodError) {
@@ -369,7 +369,7 @@ export const PUT: RequestHandler = async ({ request }) => {
       }, { status: 400 });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document analytics error:", error);
 
     return json({
@@ -515,7 +515,7 @@ async function processDocumentAsync(
   generateAnalysis: boolean
 ): Promise<void> {
   try {
-    const updates: any = {};
+    const updates: unknown = {};
 
     if (generateEmbeddings) {
       // Generate embeddings

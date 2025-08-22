@@ -2,7 +2,7 @@
 
   import { goto } from "$app/navigation";
   import { citationStore } from "$lib/stores/citations";
-  import { createPopover, melt } from "@melt-ui/svelte";
+  import { createPopover, melt } from "melt";
   import {
     Calendar,
     FileText,

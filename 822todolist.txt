@@ -1,0 +1,24 @@
+822 TODO List — created 2025-08-21
+
+Context: frontend hardening sweep for SvelteKit/TypeScript (remove illegal rune imports/declare statements, normalize $derived, reduce svelte-check noise). Keep small, test-driven batches.
+
+Priority 1 — unblock runtime 500s
+- [ ] Sweep and remove `import { $props, $state, $derived, $effect } from 'svelte'` from instance <script> blocks in affected .svelte files (move types to module or convert to local `type`).
+- [ ] Patch top files used by `/all-routes` (RoutesList.svelte, Routes-related UI atoms) and re-request /all-routes on dev server (http://localhost:5177/).
+- [ ] After batch of 3–5 edits, check dev-server logs for remaining "illegal-declaration" errors.
+
+Priority 2 — reduce diagnostic noise
+- [ ] Replace incorrect `$derived(...)` usages with `$: ` reactive statements or proper `$derived(() => ...)` where appropriate.
+- [ ] Re-run `svelte-check` (or fast local check) after a coherent batch to measure error reduction.
+
+Priority 3 — followups
+- [ ] Address Zod / superValidate typing mismatches (create small type adapters where safe).
+- [ ] Add brief CONTRIBUTING note describing rune rules for Svelte v5 (no imports in instance scripts; move to module script or ambient.d.ts).
+- [ ] Backup / commit changes in small commits and keep a changelog of modified files.
+
+Quick notes
+- Work in small batches (3–5 files), verify runtime pages after each batch.
+- If a file must export TS modifiers in instance script, move them to `<script context="module">` instead.
+- Use this todo as the working queue for the hardening sweep.
+
+Created by assistant — augment as needed.

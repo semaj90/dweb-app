@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"sync"
 	"time"
 )
@@ -132,7 +130,7 @@ func processFilesHandler(w http.ResponseWriter, r *http.Request) {
 func processSingleFile(filePath string) (ProcessedFile, error) {
 	log.Printf("Processing file: %s", filePath)
 
-	contentBytes, err := ioutil.ReadFile(filePath)
+	contentBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return ProcessedFile{}, fmt.Errorf("error reading file %s: %v", filePath, err)
 	}
@@ -190,7 +188,7 @@ func getOllamaEmbedding(text string) ([]float64, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		bodyBytes, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("ollama embedding API returned non-OK status %d: %s", resp.StatusCode, string(bodyBytes))
 	}
 
@@ -217,7 +215,7 @@ func getOllamaSummary(text string) (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		bodyBytes, _ := io.ReadAll(resp.Body)
 		return "", fmt.Errorf("ollama summary API returned non-OK status %d: %s", resp.StatusCode, string(bodyBytes))
 	}
 
@@ -251,7 +249,7 @@ func sendToSvelteKitStorage(processedFiles []ProcessedFile) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		bodyBytes, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("svelteKit storage API returned non-OK status %d: %s", resp.StatusCode, string(bodyBytes))
 	}
 

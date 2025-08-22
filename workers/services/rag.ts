@@ -69,7 +69,7 @@ export async function runRag(request: RagRequest): Promise<RagResult> {
   }
 }
 
-async function getEvidenceContent(evidenceId: string): Promise<{ text: string; metadata?: any } | null> {
+async function getEvidenceContent(evidenceId: string): Promise<{ text: string; metadata?: unknown } | null> {
   try {
     const db = await import('../../sveltekit-frontend/src/lib/server/db.js');
     
@@ -103,7 +103,7 @@ async function findRelevantEvidences(queryText: string, topK: number): Promise<A
   evidenceId: string;
   score: number;
   text?: string;
-  metadata?: any;
+  metadata?: unknown;
 }>> {
   try {
     // Use vector similarity search
@@ -132,8 +132,8 @@ async function findRelevantEvidences(queryText: string, topK: number): Promise<A
 async function getRelatedEntities(evidenceId: string): Promise<Array<{
   type: string;
   name: string;
-  properties: any; // TODO-AUTO: Create EntityProperties interface with specific property types
-  relationships: any[]; // TODO-AUTO: Define Relationship interface - type { type: string, target: string, properties?: Record<string, unknown> }
+  properties: unknown; // TODO-AUTO: Create EntityProperties interface with specific property types
+  relationships: unknown[]; // TODO-AUTO: Define Relationship interface - type { type: string, target: string, properties?: Record<string, unknown> }
 }>> {
   const session = neo4jDriver.session();
   
@@ -161,9 +161,9 @@ async function getRelatedEntities(evidenceId: string): Promise<Array<{
 }
 
 async function buildRagContext(
-  currentEvidence: { text: string; metadata?: any },
+  currentEvidence: { text: string; metadata?: unknown },
   similarEvidences: Array<{ evidenceId: string; score: number; text?: string }>,
-  relatedEntities: Array<{ type: string; name: string; properties: any }>,
+  relatedEntities: Array<{ type: string; name: string; properties: unknown }>,
   maxTokens: number
 ): Promise<string> {
   let context = '';
@@ -227,7 +227,7 @@ async function generateLlmAnalysis(
   summary: string;
   keyPoints: string[];
   confidence: number;
-  entities: Array<{ type: string; name: string; properties: any }>;
+  entities: Array<{ type: string; name: string; properties: unknown }>;
 }> {
   try {
     const ollamaUrl = process.env.OLLAMA_URL || 'http://localhost:11434';
@@ -320,7 +320,7 @@ function extractKeyPoints(text: string): string[] {
 
 async function extractAndStoreEntities(
   evidenceId: string,
-  analysis: { entities: Array<{ type: string; name: string; properties: any }> }
+  analysis: { entities: Array<{ type: string; name: string; properties: unknown }> }
 ): Promise<void> {
   if (!analysis.entities || analysis.entities.length === 0) {
     return;

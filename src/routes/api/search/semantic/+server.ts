@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { aiPipeline } from "$lib/ai/processing-pipeline";
@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Process results based on options
     const processedResults = filteredResults.map((result) => {
-      const processedResult: any = {
+      const processedResult: unknown = {
         id: result.id,
         title: result.title,
         documentType: result.documentType,
@@ -153,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
         cached: useCache,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Semantic search error:", error);
 
     return json(
@@ -182,7 +182,7 @@ export const GET: RequestHandler = async ({ url }) => {
       return json({ error: "Query parameter required" }, { status: 400 });
     }
 
-    const searchOptions: any = { limit, useCache: true };
+    const searchOptions: unknown = { limit, useCache: true };
 
     if (documentType) searchOptions.documentType = documentType;
     if (practiceArea) searchOptions.practiceArea = practiceArea;
@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ url }) => {
       results: simplifiedResults,
       count: results.length,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("GET search error:", error);
 
     return json(

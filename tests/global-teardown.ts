@@ -63,7 +63,7 @@ async function globalTeardown() {
   }
 }
 
-async function generateTestSummary(page: any) {
+async function generateTestSummary(page: unknown) {
   try {
     const summaryResponse = await page.request.get(
       "http://localhost:5173/api/test/summary"

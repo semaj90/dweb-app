@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { autoPrefixer, decodeHtml } from '../src/utils'
 
 function mockElementWithStyle() {
-  const store: any = {}
+  const store: unknown = {}
   return {
     style: {
       WebkitFilter: '',

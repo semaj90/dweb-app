@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * XState Machine for Concurrent AI Orchestration
  * Manages parallel processing, data flow, and state synchronization
@@ -19,24 +19,24 @@ interface AIOrchestrationContext {
   
   // AI Processing State
   processors: {
-    legalBert: any;
-    localLLM: any;
-    enhancedRAG: any;
-    userHistory: any;
-    semanticTokens: any;
+    legalBert: unknown;
+    localLLM: unknown;
+    enhancedRAG: unknown;
+    userHistory: unknown;
+    semanticTokens: unknown;
   };
   
   // Results from different processors
   results: {
-    legalBertResult?: any;
-    localLLMResult?: any;
-    enhancedRAGResult?: any;
-    userHistoryResult?: any;
-    semanticTokensResult?: any;
+    legalBertResult?: unknown;
+    localLLMResult?: unknown;
+    enhancedRAGResult?: unknown;
+    userHistoryResult?: unknown;
+    semanticTokensResult?: unknown;
   };
   
   // Synthesized output
-  synthesizedResult?: any;
+  synthesizedResult?: unknown;
   
   // Processing metadata
   startTime: number;
@@ -70,14 +70,14 @@ interface AIOrchestrationContext {
 }
 
 type AIOrchestrationEvent =
-  | { type: 'START_PROCESSING'; payload: { content: string; options: any } }
-  | { type: 'PROCESSOR_COMPLETE'; processor: string; result: any; processingTime: number }
+  | { type: 'START_PROCESSING'; payload: { content: string; options: unknown } }
+  | { type: 'PROCESSOR_COMPLETE'; processor: string; result: unknown; processingTime: number }
   | { type: 'PROCESSOR_ERROR'; processor: string; error: Error }
-  | { type: 'SYNTHESIS_COMPLETE'; result: any }
-  | { type: 'CACHE_HIT'; key: string; data: any }
+  | { type: 'SYNTHESIS_COMPLETE'; result: unknown }
+  | { type: 'CACHE_HIT'; key: string; data: unknown }
   | { type: 'PAUSE_PROCESSING' }
   | { type: 'RESUME_PROCESSING' }
-  | { type: 'UPDATE_PREFERENCES'; preferences: any }
+  | { type: 'UPDATE_PREFERENCES'; preferences: unknown }
   | { type: 'WEBSOCKET_CONNECTED'; connection: WebSocket }
   | { type: 'WEBSOCKET_DISCONNECTED' }
   | { type: 'PROGRESS_UPDATE'; processor: string; progress: number }
@@ -85,7 +85,7 @@ type AIOrchestrationEvent =
   | { type: 'ABORT_PROCESSING' };
 
 // Legal-BERT processor actor
-const legalBertProcessor = fromPromise(async ({ input }: { input: any }) => {
+const legalBertProcessor = fromPromise(async ({ input }: { input: unknown }) => {
   const { content, options } = input;
   
   console.log('🏛️ Starting Legal-BERT processing...');
@@ -111,7 +111,7 @@ const legalBertProcessor = fromPromise(async ({ input }: { input: any }) => {
 });
 
 // Local LLM processor actor  
-const localLLMProcessor = fromPromise(async ({ input }: { input: any }) => {
+const localLLMProcessor = fromPromise(async ({ input }: { input: unknown }) => {
   const { content, model = 'gemma3-legal', options } = input;
   
   console.log(`🤖 Starting Local LLM processing with ${model}...`);
@@ -140,7 +140,7 @@ const localLLMProcessor = fromPromise(async ({ input }: { input: any }) => {
 });
 
 // Enhanced RAG processor actor
-const enhancedRAGProcessor = fromPromise(async ({ input }: { input: any }) => {
+const enhancedRAGProcessor = fromPromise(async ({ input }: { input: unknown }) => {
   const { content, options } = input;
   
   console.log('📚 Starting Enhanced RAG processing...');
@@ -166,7 +166,7 @@ const enhancedRAGProcessor = fromPromise(async ({ input }: { input: any }) => {
 });
 
 // User history processor actor
-const userHistoryProcessor = fromPromise(async ({ input }: { input: any }) => {
+const userHistoryProcessor = fromPromise(async ({ input }: { input: unknown }) => {
   const { userId, content, options } = input;
   
   console.log('👤 Starting User History processing...');
@@ -194,7 +194,7 @@ const userHistoryProcessor = fromPromise(async ({ input }: { input: any }) => {
 });
 
 // Semantic tokens processor actor
-const semanticTokensProcessor = fromPromise(async ({ input }: { input: any }) => {
+const semanticTokensProcessor = fromPromise(async ({ input }: { input: unknown }) => {
   const { content, tokenizer = 'legal-tokens', options } = input;
   
   console.log('🔤 Starting Semantic Tokens processing...');
@@ -222,7 +222,7 @@ const semanticTokensProcessor = fromPromise(async ({ input }: { input: any }) =>
 });
 
 // Extended thinking synthesis actor
-const extendedThinkingProcessor = fromPromise(async ({ input }: { input: any }) => {
+const extendedThinkingProcessor = fromPromise(async ({ input }: { input: unknown }) => {
   const { results, context, options } = input;
   
   console.log('🧠 Starting Extended Thinking synthesis...');
@@ -231,7 +231,7 @@ const extendedThinkingProcessor = fromPromise(async ({ input }: { input: any }) 
   await new Promise(resolve => setTimeout(resolve, 2500 + Math.random() * 1000));
   
   // Analyze all results for synthesis
-  const confidenceScores = Object.values(results).map((r: any) => r?.confidence || 0);
+  const confidenceScores = Object.values(results).map((r: unknown) => r?.confidence || 0);
   const averageConfidence = confidenceScores.reduce((sum, conf) => sum + conf, 0) / confidenceScores.length;
   
   // Cross-reference insights from different processors
@@ -270,7 +270,7 @@ const extendedThinkingProcessor = fromPromise(async ({ input }: { input: any }) 
     qualityScore: averageConfidence * 0.8 + (crossReferences.length > 0 ? 0.2 : 0),
     processingMetrics: {
       totalProcessors: Object.keys(results).length,
-      averageProcessingTime: Object.values(results).reduce((sum: number, r: any) => sum + (r?.processingTime || 0), 0) / Object.keys(results).length,
+      averageProcessingTime: Object.values(results).reduce((sum: number, r: unknown) => sum + (r?.processingTime || 0), 0) / Object.keys(results).length,
       synthesisTime: 2800
     }
   };

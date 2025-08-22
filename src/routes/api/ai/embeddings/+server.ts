@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ request }) => {
       dimensions: embedding.length,
       model: model,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Embedding generation error:", error);
     return json(
       { error: "Failed to generate embedding", details: error.message },
@@ -127,7 +127,7 @@ export const GET: RequestHandler = async ({ url }) => {
         dimensions: 384, // Default dimension count for nomic-embed-text
       })),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Embedding retrieval error:", error);
     return json(
       { error: "Failed to retrieve embeddings", details: error.message },
@@ -171,7 +171,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
       { error: "Either embeddingId or contentId is required" },
       { status: 400 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Embedding deletion error:", error);
     return json(
       { error: "Failed to delete embedding", details: error.message },
@@ -294,7 +294,7 @@ export const PUT: RequestHandler = async ({ request }) => {
           { status: 400 }
         );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Embedding operation error:", error);
     return json(
       { error: "Operation failed", details: error.message },

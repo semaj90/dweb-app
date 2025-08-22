@@ -375,7 +375,7 @@ async function checkModelLoaded(model: string): Promise<boolean> {
     if (!response.ok) return false;
     
     const data = await response.json();
-    return data.models?.some((m: any) => m.name.includes(model));
+    return data.models?.some((m: unknown) => m.name.includes(model));
   } catch {
     return false;
   }
@@ -385,13 +385,13 @@ async function checkGPUAvailability(): Promise<boolean> {
   try {
     const response = await fetch(`${config.ollamaHost}/api/tags`);
     const data = await response.json();
-    return data?.models?.some((m: any) => m.details?.families?.includes('gpu'));
+    return data?.models?.some((m: unknown) => m.details?.families?.includes('gpu'));
   } catch {
     return false;
   }
 }
 
-function generateActionPlan(errors: ErrorEntry[], llmResults: any): any {
+function generateActionPlan(errors: ErrorEntry[], llmResults: unknown): unknown {
   const errorsByType = errors.reduce((acc, error) => {
     acc[error.type] = (acc[error.type] || 0) + 1;
     return acc;
@@ -442,7 +442,7 @@ function generateActionPlan(errors: ErrorEntry[], llmResults: any): any {
   return plan;
 }
 
-function formatMarkdownSummary(results: any): string {
+function formatMarkdownSummary(results: unknown): string {
   const { summary, llmAnalysis, actionPlan, systemInfo } = results;
 
   return `# Enhanced Build Fix Summary - ${config.timestamp}

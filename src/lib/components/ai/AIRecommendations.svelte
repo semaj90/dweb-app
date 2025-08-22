@@ -58,15 +58,15 @@
     }
   }
   
-  function handleAccept(recommendation: any) {
+  function handleAccept(recommendation: unknown) {
     dispatch('accept-recommendation', recommendation);
   }
   
-  function handleDismiss(recommendation: any) {
+  function handleDismiss(recommendation: unknown) {
     dispatch('dismiss-recommendation', recommendation);
   }
   
-  function handleViewDetails(recommendation: any) {
+  function handleViewDetails(recommendation: unknown) {
     dispatch('view-details', recommendation);
   }
 </script>

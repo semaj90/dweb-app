@@ -43,7 +43,7 @@ export class BinaryEncodingService {
   /**
    * Detect optimal encoding format based on data characteristics
    */
-  detectOptimalFormat(data: any): EncodingFormat {
+  detectOptimalFormat(data: unknown): EncodingFormat {
     const jsonStr = JSON.stringify(data);
     const size = new TextEncoder().encode(jsonStr).length;
     
@@ -64,7 +64,7 @@ export class BinaryEncodingService {
   /**
    * Encode data using specified format
    */
-  async encode(data: any, format?: EncodingFormat): Promise<{
+  async encode(data: unknown, format?: EncodingFormat): Promise<{
     encoded: ArrayBuffer | string;
     format: EncodingFormat;
     metrics: EncodingMetrics;
@@ -124,11 +124,11 @@ export class BinaryEncodingService {
    * Decode data using specified format
    */
   async decode(data: ArrayBuffer | string, format: EncodingFormat): Promise<{
-    decoded: any;
+    decoded: unknown;
     metrics: EncodingMetrics;
   }> {
     const startTime = performance.now();
-    let decoded: any;
+    let decoded: unknown;
 
     try {
       switch (format) {
@@ -258,7 +258,7 @@ export class BinaryEncodingService {
   /**
    * Check if data contains binary content
    */
-  private hasBinaryData(data: any): boolean {
+  private hasBinaryData(data: unknown): boolean {
     return this.traverseObject(data, (value) => {
       return value instanceof ArrayBuffer || 
              value instanceof Uint8Array || 
@@ -269,7 +269,7 @@ export class BinaryEncodingService {
   /**
    * Check if data is structured (objects/arrays)
    */
-  private isStructuredData(data: any): boolean {
+  private isStructuredData(data: unknown): boolean {
     return typeof data === 'object' && data !== null && 
            (Array.isArray(data) || Object.keys(data).length > 3);
   }
@@ -277,7 +277,7 @@ export class BinaryEncodingService {
   /**
    * Traverse object and test condition
    */
-  private traverseObject(obj: any, condition: (value: any) => boolean): boolean {
+  private traverseObject(obj: unknown, condition: (value: unknown) => boolean): boolean {
     if (condition(obj)) return true;
     
     if (typeof obj === 'object' && obj !== null) {
@@ -294,12 +294,12 @@ export class BinaryEncodingService {
 export const binaryEncoder = new BinaryEncodingService();
 
 // Helper functions for direct use
-export async function encodeCBOR(data: any): Promise<ArrayBuffer> {
+export async function encodeCBOR(data: unknown): Promise<ArrayBuffer> {
   const { encoded } = await binaryEncoder.encode(data, 'cbor');
   return encoded as ArrayBuffer;
 }
 
-export async function encodeMessagePack(data: any): Promise<ArrayBuffer> {
+export async function encodeMessagePack(data: unknown): Promise<ArrayBuffer> {
   const { encoded } = await binaryEncoder.encode(data, 'msgpack');
   return encoded as ArrayBuffer;
 }

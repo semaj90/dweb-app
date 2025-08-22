@@ -1,0 +1,17 @@
+CREATE TABLE user_profiles (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL UNIQUE,
+    bio TEXT,
+    phone VARCHAR(20),
+    address TEXT,
+    preferences JSONB DEFAULT '{}' NOT NULL,
+    permissions JSONB DEFAULT '[]' NOT NULL,
+    specializations JSONB DEFAULT '[]' NOT NULL,
+    certifications JSONB DEFAULT '[]' NOT NULL,
+    experience_level VARCHAR(20) DEFAULT 'junior',
+    work_patterns JSONB DEFAULT '{}' NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

@@ -83,7 +83,7 @@ async function actionBlocklist(configPath: string | undefined, classes: string, 
 
 export function runAsync(configPath: string | undefined, action: 'sort', classes: string): Promise<string>
 export function runAsync(configPath: string | undefined, action: 'blocklist', classes: string, id?: string): Promise<[string, BlocklistMeta | undefined][]>
-export async function runAsync(configPath: string | undefined, action: string, ...args: any[]): Promise<any> {
+export async function runAsync(configPath: string | undefined, action: string, ...args: unknown[]): Promise<any> {
   switch (action) {
     case 'sort':
       // @ts-expect-error cast
@@ -96,7 +96,7 @@ export async function runAsync(configPath: string | undefined, action: string, .
 
 export function run(configPath: string | undefined, action: 'sort', classes: string): string
 export function run(configPath: string | undefined, action: 'blocklist', classes: string, id?: string): [string, BlocklistMeta | undefined][]
-export function run(configPath: string | undefined, action: string, ...args: any[]): any {
+export function run(configPath: string | undefined, action: string, ...args: unknown[]): unknown {
   // @ts-expect-error cast
   return runAsync(configPath, action, ...args)
 }

@@ -6,8 +6,7 @@ import { reports } from "$lib/server/db/schema";
 import { db } from "$lib/server/db/index";
 // import { citationPoints
 import type { RequestHandler } from "@sveltejs/kit";
-and, eq
-
+import { and, eq } from "drizzle-orm";
 export const GET: RequestHandler = async ({ url, locals }) => {
   try {
     if (!locals.user) {

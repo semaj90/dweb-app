@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ request }) => {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return new Response(JSON.stringify({ 
       ok: false, 
       error: String(err),

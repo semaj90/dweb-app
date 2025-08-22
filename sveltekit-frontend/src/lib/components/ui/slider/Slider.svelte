@@ -1,7 +1,7 @@
 <script lang="ts">
   import { $props } from 'svelte';
 
-  import type { Props } from "$lib/types/global";
+  import type { Props } from "$lib/types/global";
   let {
     value = $bindable([0.5]),
     min = 0,

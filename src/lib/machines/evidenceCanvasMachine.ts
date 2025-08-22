@@ -12,7 +12,7 @@ import type {
 
 export interface EvidenceCanvasContext {
   // Canvas state
-  canvas: any | null;
+  canvas: unknown | null;
   evidenceNodes: EvidenceNode[];
   selectedNodes: string[];
   clipboard: EvidenceNode[];
@@ -52,7 +52,7 @@ export interface EvidenceCanvasContext {
 
 export type EvidenceCanvasEvent = 
   // Canvas operations
-  | { type: 'INITIALIZE_CANVAS'; canvas: any; caseId?: string; userId?: string }
+  | { type: 'INITIALIZE_CANVAS'; canvas: unknown; caseId?: string; userId?: string }
   | { type: 'ADD_EVIDENCE_NODE'; evidenceData: EvidenceData; position: { x: number; y: number } }
   | { type: 'SELECT_NODE'; nodeId: string; multiSelect?: boolean }
   | { type: 'DESELECT_ALL' }
@@ -80,7 +80,7 @@ export type EvidenceCanvasEvent =
   | { type: 'WS_CONNECT' }
   | { type: 'WS_CONNECTED' }
   | { type: 'WS_DISCONNECTED'; reason?: string }
-  | { type: 'WS_MESSAGE'; data: any }
+  | { type: 'WS_MESSAGE'; data: unknown }
   | { type: 'WS_ERROR'; error: string }
   | { type: 'WS_RETRY_CONNECTION' }
   

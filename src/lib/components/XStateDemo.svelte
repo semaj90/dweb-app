@@ -165,7 +165,7 @@
     return 'text-green-500';
   }
 
-  function formatStateValue(value: any): string {
+  function formatStateValue(value: unknown): string {
     if (typeof value === 'object') {
       return JSON.stringify(value, null, 2);
     }

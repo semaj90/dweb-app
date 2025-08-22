@@ -1,8 +1,6 @@
 
 import type { Case } from "$lib/types";
-// Orphaned content: import {
-
-export interface CaseStoreData {
+// TODO: Fix import - // Orphaned content: import {  export interface CaseStoreData {
   cases: any[];
   stats: any[];
   filters: {

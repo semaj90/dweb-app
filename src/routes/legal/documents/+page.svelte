@@ -10,7 +10,7 @@
   // Component state
   let uploadedFiles: File[] = [];
   let processingFiles: Map<string, { progress: number; status: string }> = new Map();
-  let analyzedDocuments: any[] = [];
+  let analyzedDocuments: unknown[] = [];
   let searchQuery = '';
   let filterType = 'all';
   let sortBy = 'date';
@@ -201,12 +201,12 @@
       }
     });
 
-  function downloadDocument(doc: any) {
+  function downloadDocument(doc: unknown) {
     // Mock download functionality
     console.log('Downloading document:', doc.name);
   }
 
-  function viewDocument(doc: any) {
+  function viewDocument(doc: unknown) {
     // Mock view functionality
     console.log('Viewing document:', doc.name);
   }

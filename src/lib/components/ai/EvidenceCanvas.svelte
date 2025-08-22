@@ -1,5 +1,5 @@
 <script lang="ts">
-  // @ts-nocheck
+  
   import { onMount, onDestroy } from 'svelte';
   import { createActor } from 'xstate';
   import { evidenceCanvasMachine } from '$lib/machines/evidenceCanvasMachine';
@@ -7,8 +7,8 @@
   
   // Canvas and WebGPU integration
   let canvasEl: HTMLCanvasElement;
-  let fabricCanvas: any;
-  let webgpuContext: any;
+  let fabricCanvas: unknown;
+  let webgpuContext: unknown;
   let gpuDevice: GPUDevice | null = null;
   let pdfLoading = false;
   let userPrompt = '';
@@ -86,11 +86,11 @@
     fabricCanvas.on('path:created', handleConnectionCreated);
   }
   
-  function handleSelection(e: any) {
-    selectedNodes = e.selected.map((obj: any) => obj.evidenceId).filter(Boolean);
+  function handleSelection(e: unknown) {
+    selectedNodes = e.selected.map((obj: unknown) => obj.evidenceId).filter(Boolean);
   }
   
-  function handleNodeMovement(e: any) {
+  function handleNodeMovement(e: unknown) {
     const node = e.target;
     if (node.evidenceId) {
       // Update node position in real-time
@@ -98,7 +98,7 @@
     }
   }
   
-  function handleNodeModification(e: any) {
+  function handleNodeModification(e: unknown) {
     const node = e.target;
     if (node.evidenceId) {
       // Save node changes
@@ -106,7 +106,7 @@
     }
   }
   
-  function handleConnectionCreated(e: any) {
+  function handleConnectionCreated(e: unknown) {
     // Handle relationship creation between nodes
     if (selectedNodes.length === 2) {
       createNodeRelationship(selectedNodes[0], selectedNodes[1]);
@@ -238,7 +238,7 @@
     }
   }
   
-  async function fallbackToGoLlama(canvasData: any) {
+  async function fallbackToGoLlama(canvasData: unknown) {
     console.log('🔄 Falling back to go-llama service');
     const response = await fetch('http://localhost:8081/api/evidence-canvas/analyze', {
       method: 'POST',
@@ -260,7 +260,7 @@
       const response = await fetch(`/api/evidence?caseId=${caseId}`);
       const data = await response.json();
       
-      evidenceNodes = data.evidence.map((ev: any) => ({
+      evidenceNodes = data.evidence.map((ev: unknown) => ({
         id: ev.id,
         title: ev.title,
         type: ev.evidenceType,
@@ -340,7 +340,7 @@
     }
   }
   
-  async function saveNodeChanges(evidenceId: string, node: any) {
+  async function saveNodeChanges(evidenceId: string, node: unknown) {
     try {
       await fetch(`/api/evidence/save-node`, {
         method: 'POST',
@@ -383,8 +383,8 @@
   }
   
   function drawConnection(fromId: string, toId: string, type: string) {
-    const fromNode = fabricCanvas.getObjects().find((obj: any) => obj.evidenceId === fromId);
-    const toNode = fabricCanvas.getObjects().find((obj: any) => obj.evidenceId === toId);
+    const fromNode = fabricCanvas.getObjects().find((obj: unknown) => obj.evidenceId === fromId);
+    const toNode = fabricCanvas.getObjects().find((obj: unknown) => obj.evidenceId === toId);
     
     if (fromNode && toNode) {
       const line = new fabric.Line([
@@ -436,9 +436,9 @@
     }
   }
   
-  function handleRealtimeEvidenceUpdate(data: any) {
+  function handleRealtimeEvidenceUpdate(data: unknown) {
     // Update canvas in real-time when evidence is modified
-    const existingNode = fabricCanvas.getObjects().find((obj: any) => obj.evidenceId === data.evidenceId);
+    const existingNode = fabricCanvas.getObjects().find((obj: unknown) => obj.evidenceId === data.evidenceId);
     if (existingNode) {
       // Update existing node
       existingNode.set(data.updates);
@@ -456,7 +456,7 @@
     }
   }
   
-  async function displayEnhancedAnalysisResults(result: any) {
+  async function displayEnhancedAnalysisResults(result: unknown) {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
     modal.innerHTML = `
@@ -478,12 +478,12 @@
           <div>
             <h4 class="font-semibold mb-2">🔍 Entities Found</h4>
             <ul class="list-disc list-inside text-sm text-gray-700">
-              ${(result.entities || []).map((entity: any) => `<li>${entity.text} (${entity.type})</li>`).join('')}
+              ${(result.entities || []).map((entity: unknown) => `<li>${entity.text} (${entity.type})</li>`).join('')}
             </ul>
             
             <h4 class="font-semibold mt-4 mb-2">🔗 Suggested Connections</h4>
             <ul class="list-disc list-inside text-sm text-gray-700">
-              ${(result.suggested_connections || []).map((conn: any) => `<li>${conn.from} → ${conn.to} (${conn.type})</li>`).join('')}
+              ${(result.suggested_connections || []).map((conn: unknown) => `<li>${conn.from} → ${conn.to} (${conn.type})</li>`).join('')}
             </ul>
           </div>
         </div>
@@ -505,11 +505,11 @@
     document.body.appendChild(modal);
   }
   
-  async function displayBasicAnalysisResults(result: any) {
+  async function displayBasicAnalysisResults(result: unknown) {
     alert(`Analysis Complete!\\n\\nSummary: ${result.summary}\\n\\nConfidence: ${(result.confidence * 100).toFixed(1)}%\\n\\nEntities found: ${result.entities?.length || 0}`);
   }
   
-  async function applySuggestedConnections(suggestions: any[]) {
+  async function applySuggestedConnections(suggestions: unknown[]) {
     for (const suggestion of suggestions) {
       if (confirm(`Create connection: ${suggestion.from} → ${suggestion.to} (${suggestion.type})?`)) {
         await createNodeRelationship(suggestion.from, suggestion.to);

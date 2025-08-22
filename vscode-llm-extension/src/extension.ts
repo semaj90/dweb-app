@@ -661,7 +661,7 @@ async function refreshModelsCommand(): Promise<void> {
     const response = await fetch("http://localhost:11434/api/tags");
     if (response.ok) {
       const data = await response.json();
-      const models = data.models?.map((m: any) => m.name) || [];
+      const models = data.models?.map((m: unknown) => m.name) || [];
 
       vscode.window.showInformationMessage(
         `Found ${models.length} models: ${models.slice(0, 3).join(", ")}${models.length > 3 ? "..." : ""}`
@@ -862,8 +862,8 @@ function detectComponent(text: string, fileName: string): string {
  * Generate analysis webview content
  */
 function generateAnalysisWebviewContent(
-  analysisResult: any,
-  similarContexts: any,
+  analysisResult: unknown,
+  similarContexts: unknown,
   fileName: string
 ): string {
   return `
@@ -912,7 +912,7 @@ function generateAnalysisWebviewContent(
         <h2>Similar Contexts (${similarContexts.similar.length})</h2>
         ${similarContexts.similar
           .map(
-            (item: any) => `
+            (item: unknown) => `
           <div class="similarity-item">
             <strong>Similarity:</strong> ${(item.similarity * 100).toFixed(1)}% |
             <strong>Context:</strong> ${item.metadata.context} |
@@ -943,7 +943,7 @@ function generateAnalysisWebviewContent(
 /**
  * Generate auto-fix webview content
  */
-function generateAutoFixWebviewContent(result: any): string {
+function generateAutoFixWebviewContent(result: unknown): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -963,9 +963,9 @@ function generateAutoFixWebviewContent(result: any): string {
         .map(
           ([area, fixes]: [string, any]) => `
         <h3>${area.charAt(0).toUpperCase() + area.slice(1)} (${fixes.length} fixes)</h3>
-        ${(fixes as any[])
+        ${(fixes as unknown[])
           .map(
-            (fix: any) => `
+            (fix: unknown) => `
           <p><strong>${fix.file}:</strong></p>
           <ul>${fix.changes.map((change: string) => `<li>${change}</li>`).join("")}</ul>
         `
@@ -989,7 +989,7 @@ function generateAutoFixWebviewContent(result: any): string {
  */
 function generateSearchResultsWebviewContent(
   query: string,
-  results: any
+  results: unknown
 ): string {
   return `
     <!DOCTYPE html>
@@ -1009,7 +1009,7 @@ function generateSearchResultsWebviewContent(
 
       ${results.similar
         .map(
-          (item: any) => `
+          (item: unknown) => `
         <div class="result">
           <div class="similarity">Similarity: ${(item.similarity * 100).toFixed(1)}%</div>
           <p><strong>Context:</strong> ${item.metadata.context}</p>
@@ -1027,7 +1027,7 @@ function generateSearchResultsWebviewContent(
 /**
  * Generate orchestration webview content
  */
-function generateOrchestrationWebviewContent(result: any): string {
+function generateOrchestrationWebviewContent(result: unknown): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -1044,7 +1044,7 @@ function generateOrchestrationWebviewContent(result: any): string {
       <h2>Individual Agent Results</h2>
       ${result.results
         .map(
-          (agentResult: any) => `
+          (agentResult: unknown) => `
         <h3>${agentResult.agent.toUpperCase()} (Score: ${agentResult.score})</h3>
         <p>${agentResult.output}</p>
         ${agentResult.error ? `<p style="color: red;">Error: ${agentResult.error}</p>` : ""}
@@ -1064,7 +1064,7 @@ function generateOrchestrationWebviewContent(result: any): string {
 /**
  * Generate cluster status webview content
  */
-function generateClusterStatusWebviewContent(stats: any): string {
+function generateClusterStatusWebviewContent(stats: unknown): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -1081,7 +1081,7 @@ function generateClusterStatusWebviewContent(stats: any): string {
       <h2>Worker Details</h2>
       ${stats.workerStats
         .map(
-          (worker: any) => `
+          (worker: unknown) => `
         <h3>Worker ${worker.workerId}</h3>
         <ul>
           <li>Status: ${worker.status}</li>
@@ -1101,7 +1101,7 @@ function generateClusterStatusWebviewContent(stats: any): string {
 /**
  * Generate cache stats webview content
  */
-function generateCacheStatsWebviewContent(stats: any): string {
+function generateCacheStatsWebviewContent(stats: unknown): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -1129,7 +1129,7 @@ function generateCacheStatsWebviewContent(stats: any): string {
 /**
  * Generate memory stats webview content
  */
-function generateMemoryStatsWebviewContent(stats: any): string {
+function generateMemoryStatsWebviewContent(stats: unknown): string {
   return `
     <!DOCTYPE html>
     <html>

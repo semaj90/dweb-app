@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/database/postgres.js';
 import { legalDocuments, type NewLegalDocument } from '$lib/database/schema/legal-documents.js';
@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Check if document already exists
     const existingDoc = await db.query.legalDocuments.findFirst({
-      where: (documents: any, { eq }: any) => eq(documents.fileHash, fileHash)
+      where: (documents: unknown, { eq }: unknown) => eq(documents.fileHash, fileHash)
     });
 
     if (existingDoc) {
@@ -120,7 +120,7 @@ export const POST: RequestHandler = async ({ request }) => {
       }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Document analysis error:', error);
     return json(
       { error: 'Document analysis failed', details: (error as any)?.message || "Unknown error" },
@@ -188,7 +188,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
     return json({ documents });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Document retrieval error:', error);
     return json(
       { error: 'Failed to retrieve documents', details: (error as any)?.message || "Unknown error" },
@@ -284,7 +284,7 @@ async function analyzeDocumentWithAI(
       processingTime: result.totalProcessingTime,
       agentUsed: result.primaryResponse.agentName
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('AI analysis failed:', error);
     return {
       entities: [],

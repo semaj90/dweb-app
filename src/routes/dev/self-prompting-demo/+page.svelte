@@ -125,7 +125,7 @@
     return baseResponses[iteration] || baseResponses[4];
   }
 
-  function generateRefinedPrompt(previousResponse: any, goal: string, focus: string): string {
+  function generateRefinedPrompt(previousResponse: unknown, goal: string, focus: string): string {
     const refinementSuggestions = {
       accuracy: 'be more factually precise and cite specific legal standards',
       depth: 'provide more detailed analysis and explore edge cases',

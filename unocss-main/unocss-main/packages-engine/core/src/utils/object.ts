@@ -42,7 +42,7 @@ export function entriesToCss(arr?: CSSEntries) {
     .join('')
 }
 
-export function isObject(item: any): item is Record<string, any> {
+export function isObject(item: unknown): item is Record<string, any> {
   return (item && typeof item === 'object' && !Array.isArray(item))
 }
 
@@ -73,7 +73,7 @@ export function mergeDeep<T>(original: T, patch: DeepPartial<T>, mergeArray = fa
 }
 
 export function clone<T>(val: T): T {
-  let k: any, out: any, tmp: any
+  let k: unknown, out: unknown, tmp: unknown
 
   if (Array.isArray(val)) {
     out = Array.from({ length: k = val.length })

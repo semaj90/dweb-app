@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * K-Means Clustering Implementation for Legal Document Analysis
  * Optimized for high-dimensional embedding spaces with legal document context
@@ -7,7 +7,7 @@
 import type { KMeansConfig, KMeansClusterer, ClusterResult, DocumentCluster } from '$lib/api/enhanced-rest-architecture';
 import { Redis } from 'ioredis';
 
-// @ts-nocheck - Legacy clustering service
+// Legacy clustering service
 export class LegalKMeansClusterer {
   private config: KMeansConfig;
   private redis: Redis;

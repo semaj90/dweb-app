@@ -10,13 +10,13 @@ import { performance } from 'node:perf_hooks';
 interface WorkerTask {
   id: string;
   type: keyof typeof taskProcessors;
-  payload: any;
+  payload: unknown;
 }
 
 interface WorkerResult {
   taskId: string;
   success: boolean;
-  result?: any;
+  result?: unknown;
   error?: string;
   processingTime: number;
   workerId: string;
@@ -48,7 +48,7 @@ interface AIInferencePayload {
 
 interface DataProcessingPayload {
   operation: string;
-  data: any;
+  data: unknown;
 }
 
 interface LegalEntity {

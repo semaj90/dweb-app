@@ -1,9 +1,9 @@
 import type { RequestHandler } from '@sveltejs/kit';
 
 import { db } from "$lib/server/db/index";
-cases, evidence
+import { cases, evidence } from "drizzle-orm";
 import { json } from "@sveltejs/kit";
-count, desc, sql, inArray, gte, lte, and
+import { count, desc, sql, inArray, gte, lte, and } from "drizzle-orm";
 import { z } from 'zod';
 
 // Export request schema

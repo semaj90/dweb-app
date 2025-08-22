@@ -355,7 +355,7 @@ export class ReinforcementLearningService {
   }
 
   // Active learning - identify areas needing improvement
-  async identifyLearningOpportunities(): Promise<any[]> {
+  async identifyLearningOpportunities(): Promise<unknown[]> {
     // Find queries with low confidence or poor feedback
     const opportunities = await db.execute(sql`
       SELECT 
@@ -410,7 +410,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract response patterns for learning
-  private extractResponsePatterns(responses: any[]): any[] {
+  private extractResponsePatterns(responses: unknown[]): unknown[] {
     const patterns = [];
     
     for (const response of responses) {
@@ -426,7 +426,7 @@ export class ReinforcementLearningService {
   }
 
   // Calculate policy gradients for updates
-  private async calculatePolicyGradients(interactions: any[]): Promise<any> {
+  private async calculatePolicyGradients(interactions: unknown[]): Promise<any> {
     const gradients = {
       retrieval: {},
       generation: {},
@@ -459,7 +459,7 @@ export class ReinforcementLearningService {
   }
 
   // Update retrieval weights based on learning
-  private async updateRetrievalWeights(gradients: any): Promise<void> {
+  private async updateRetrievalWeights(gradients: unknown): Promise<void> {
     for (const [strategy, gradient] of Object.entries(gradients.retrieval)) {
       await db.execute(sql`
         UPDATE retrieval_strategies
@@ -470,7 +470,7 @@ export class ReinforcementLearningService {
   }
 
   // Update generation parameters
-  private async updateGenerationParameters(gradients: any): Promise<void> {
+  private async updateGenerationParameters(gradients: unknown): Promise<void> {
     for (const [param, gradient] of Object.entries(gradients.generation)) {
       await db.execute(sql`
         UPDATE generation_params
@@ -514,7 +514,7 @@ export class ReinforcementLearningService {
   }
 
   // Get Q-value for state-action pair
-  private async getQValue(state: any, action: any): Promise<number> {
+  private async getQValue(state: unknown, action: unknown): Promise<number> {
     const result = await db.execute(sql`
       SELECT q_value
       FROM q_values
@@ -526,7 +526,7 @@ export class ReinforcementLearningService {
   }
 
   // Store Q-value
-  private async storeQValue(state: any, action: any, value: number): Promise<void> {
+  private async storeQValue(state: unknown, action: unknown, value: number): Promise<void> {
     await db.execute(sql`
       INSERT INTO q_values (state_hash, action_hash, q_value, state, action, updated_at)
       VALUES (
@@ -545,7 +545,7 @@ export class ReinforcementLearningService {
   }
 
   // Get maximum future Q-value
-  private async getMaxFutureQValue(state: any): Promise<number> {
+  private async getMaxFutureQValue(state: unknown): Promise<number> {
     const result = await db.execute(sql`
       SELECT MAX(q_value) as max_q
       FROM q_values
@@ -556,7 +556,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract state features
-  private extractStateFeatures(interaction: any): any {
+  private extractStateFeatures(interaction: unknown): unknown {
     return {
       queryLength: interaction.messages[0]?.content.length || 0,
       queryType: this.classifyQuery(interaction.messages[0]?.content),
@@ -567,7 +567,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract action features
-  private extractActionFeatures(interaction: any): any {
+  private extractActionFeatures(interaction: unknown): unknown {
     return {
       retrievalStrategy: interaction.metadata?.retrievalStrategy || 'hybrid',
       numSources: interaction.metadata?.sources?.length || 0,
@@ -587,7 +587,7 @@ export class ReinforcementLearningService {
   }
 
   // Hash state for storage
-  private hashState(state: any): string {
+  private hashState(state: unknown): string {
     return require('crypto')
       .createHash('md5')
       .update(JSON.stringify(state))
@@ -595,7 +595,7 @@ export class ReinforcementLearningService {
   }
 
   // Hash action for storage
-  private hashAction(action: any): string {
+  private hashAction(action: unknown): string {
     return require('crypto')
       .createHash('md5')
       .update(JSON.stringify(action))
@@ -636,7 +636,7 @@ export class ReinforcementLearningService {
   }
 
   // Analyze response structure
-  private analyzeStructure(response: string): any {
+  private analyzeStructure(response: string): unknown {
     return {
       paragraphs: response.split('\n\n').length,
       sentences: response.split(/[.!?]/).length,
@@ -647,7 +647,7 @@ export class ReinforcementLearningService {
   }
 
   // Analyze source usage
-  private analyzeSourceUsage(sources: any[]): any {
+  private analyzeSourceUsage(sources: unknown[]): unknown {
     return {
       count: sources.length,
       diversity: new Set(sources.map(s => s.source)).size,
@@ -657,7 +657,7 @@ export class ReinforcementLearningService {
   }
 
   // Extract top sources
-  private extractTopSources(responses: any[]): any[] {
+  private extractTopSources(responses: unknown[]): unknown[] {
     const sourceFrequency = new Map();
     
     for (const response of responses) {
@@ -674,7 +674,7 @@ export class ReinforcementLearningService {
   }
 
   // Calculate confidence
-  private calculateConfidence(patterns: any[]): number {
+  private calculateConfidence(patterns: unknown[]): number {
     if (patterns.length === 0) return 0;
     
     const avgRating = patterns.reduce((acc, p) => acc + p.rating, 0) / patterns.length;

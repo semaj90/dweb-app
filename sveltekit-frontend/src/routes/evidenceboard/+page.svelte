@@ -3,7 +3,7 @@
   import { $state, $derived, $effect } from 'svelte';
   import { writable } from 'svelte/store';
   import { page } from "$app/state";
-  import { createDialog } from '@melt-ui/svelte';
+  import { createDialog } from 'melt';
   // Dropzone and Superforms fallback for SvelteKit 2/Svelte 5
   // If Bits UI and Superforms are unavailable, use SvelteKit's built-in file input and Zod validation
   import { z } from 'zod';

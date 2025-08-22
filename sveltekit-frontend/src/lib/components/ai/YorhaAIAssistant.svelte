@@ -6,7 +6,7 @@
 
 	import { onMount, tick } from 'svelte';
 	import { browser } from '$app/environment';
-	import { createDialog } from '@melt-ui/svelte';
+	import { createDialog } from 'melt';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Button from '$lib/components/ui/button';
 	import * as Input from '$lib/components/ui/input';

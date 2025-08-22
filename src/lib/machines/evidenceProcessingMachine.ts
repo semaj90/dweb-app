@@ -95,9 +95,9 @@ export const evidenceProcessingMachine = createMachine({
       uploadProgress?: number;
       currentStep?: string;
       stepProgress?: number;
-      fragment?: any;
-      result?: any;
-      error?: { message: string; code?: string; meta?: any };
+      fragment?: unknown;
+      result?: unknown;
+      error?: { message: string; code?: string; meta?: unknown };
     }>,
     steps: [] as string[],
     error: null as any
@@ -295,9 +295,9 @@ export const evidenceProcessingMachine = createMachine({
       | { type: 'START_PROCESSING'; sessionId: string; evidenceId: string; steps?: string[] }
       | { type: 'WS_CONNECTED' }
       | { type: 'UPLOAD_PROGRESS'; fileId: string; progress: number }
-      | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress: number; fragment?: any }
-      | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: any }
-      | { type: 'ERROR'; fileId?: string; error: { message: string; code?: string; meta?: any } }
+      | { type: 'PROCESSING_STEP'; fileId: string; step: string; progress: number; fragment?: unknown }
+      | { type: 'PROCESSING_COMPLETE'; fileId: string; result?: unknown }
+      | { type: 'ERROR'; fileId?: string; error: { message: string; code?: string; meta?: unknown } }
       | { type: 'WS_CLOSED'; code?: number; reason?: string }
       | { type: 'CANCEL_PROCESSING' }
       | { type: 'RETRY_PROCESSING' }
@@ -335,14 +335,14 @@ export async function startEvidenceProcessing(evidenceId: string, steps: string[
 
 // Selectors for easy state access
 export const evidenceProcessingSelectors = {
-  getFileStatus: (state: any, fileId: string) => state.context.files[fileId]?.status,
-  getFileProgress: (state: any, fileId: string) => state.context.files[fileId]?.stepProgress || 0,
-  getCurrentStep: (state: any, fileId: string) => state.context.files[fileId]?.currentStep,
-  getFileResult: (state: any, fileId: string) => state.context.files[fileId]?.result,
-  getFileError: (state: any, fileId: string) => state.context.files[fileId]?.error,
-  isProcessing: (state: any) => state.matches('processing'),
-  isCompleted: (state: any) => state.matches('completed'),
-  isFailed: (state: any) => state.matches('failed'),
-  isDisconnected: (state: any) => state.matches('disconnected'),
-  canRetry: (state: any) => state.matches('failed') || state.matches('disconnected')
+  getFileStatus: (state: unknown, fileId: string) => state.context.files[fileId]?.status,
+  getFileProgress: (state: unknown, fileId: string) => state.context.files[fileId]?.stepProgress || 0,
+  getCurrentStep: (state: unknown, fileId: string) => state.context.files[fileId]?.currentStep,
+  getFileResult: (state: unknown, fileId: string) => state.context.files[fileId]?.result,
+  getFileError: (state: unknown, fileId: string) => state.context.files[fileId]?.error,
+  isProcessing: (state: unknown) => state.matches('processing'),
+  isCompleted: (state: unknown) => state.matches('completed'),
+  isFailed: (state: unknown) => state.matches('failed'),
+  isDisconnected: (state: unknown) => state.matches('disconnected'),
+  canRetry: (state: unknown) => state.matches('failed') || state.matches('disconnected')
 };

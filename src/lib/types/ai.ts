@@ -242,7 +242,7 @@ export interface AIError extends Error {
     | "UNKNOWN";
   model?: string;
   endpoint?: string;
-  details?: any;
+  details?: unknown;
   retryable: boolean;
 }
 
@@ -250,7 +250,7 @@ export interface AIError extends Error {
 export interface ChatEvent {
   type: "message" | "typing" | "error" | "model_changed" | "session_created";
   sessionId: string;
-  data: any;
+  data: unknown;
   timestamp: Date | number;
 }
 

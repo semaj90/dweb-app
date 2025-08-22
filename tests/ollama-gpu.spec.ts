@@ -210,7 +210,7 @@ test.describe("Ollama GPU Acceleration Tests", () => {
       const modelsData = await modelsResponse.json();
 
       if (
-        !modelsData.models.some((m: any) =>
+        !modelsData.models.some((m: unknown) =>
           m.name.includes(model.split(":")[0])
         )
       ) {
@@ -242,7 +242,7 @@ test.describe("Ollama GPU Acceleration Tests", () => {
 
     // Log benchmark results
     console.log("GPU Benchmark Results:");
-    benchmarkResults.forEach((result: any) => {
+    benchmarkResults.forEach((result: unknown) => {
       console.log(
         `${result.model}: ${result.tokens_per_second} tokens/s, ${result.vram_usage}MB VRAM`
       );

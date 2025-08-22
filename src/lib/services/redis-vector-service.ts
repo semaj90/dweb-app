@@ -15,7 +15,7 @@ export interface VectorDocument {
         type?: "pdf" | "web" | "code" | "chat";
         timestamp?: string;
         chunk_index?: number;
-        [key: string]: any;
+        [key: string]: unknown;
     };
     content: string;
     ttl?: number;
@@ -30,7 +30,7 @@ export interface SearchResult {
 
 export interface SemanticCacheEntry {
     query: string;
-    result: any;
+    result: unknown;
     timestamp: number;
     ttl: number;
 }
@@ -222,7 +222,7 @@ export class RedisVectorService {
         });
 
         return results.documents
-            .map((doc: any) => ({
+            .map((doc: unknown) => ({
                 id: doc.value["$.id"],
                 score: parseFloat(doc.value.score),
                 metadata: JSON.parse(doc.value["$.metadata"] || "{}"),
@@ -254,7 +254,7 @@ export class RedisVectorService {
      */
     async setCachedResult(
         queryHash: string,
-        result: any,
+        result: unknown,
         ttl: number = 3600
     ): Promise<void> {
         await this.connect();

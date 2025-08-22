@@ -2,8 +2,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "./$types";
 // Document storage API endpoint
 import { db, documents, embeddings } from "$lib/server/database";
-error, json
-
+import { error, json } from "drizzle-orm";
 export const POST: RequestHandler = async ({ request }) => {
   try {
     console.log('[Storage] Processing document storage request...');

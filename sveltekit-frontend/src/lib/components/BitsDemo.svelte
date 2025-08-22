@@ -3,7 +3,7 @@
 
   import { Dialog, Button, Select, AlertDialog } from 'bits-ui';
   import { fade } from 'svelte/transition';
-  import { createToaster, melt } from '@melt-ui/svelte';
+  import { createToaster, melt } from 'melt';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
   

@@ -2,7 +2,7 @@
   import { $state } from 'svelte';
 
   import { Button } from 'bits-ui'
-  import { createDialog, melt } from '@melt-ui/svelte'
+  import { createDialog, melt } from 'melt'
   import { fly, fade } from 'svelte/transition'
   import { writable } from 'svelte/store'
   

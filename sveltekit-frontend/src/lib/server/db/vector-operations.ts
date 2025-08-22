@@ -1,9 +1,7 @@
 
 // Vector operations helper for pgvector integration
 import { db } from "./index.js";
-// Orphaned content: import {
-legalDocuments, userAiQueries, embeddingCache
-import { sql } from 'drizzle-orm';
+// TODO: Fix import - // Orphaned content: import { legalDocuments, userAiQueries, embeddingCache import { sql } from 'drizzle-orm';
 
 // Interface for vector similarity search results
 interface SimilarityResult {

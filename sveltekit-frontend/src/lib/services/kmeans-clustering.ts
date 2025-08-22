@@ -10,7 +10,8 @@ import {
   type ClusterResult,
   type DocumentCluster,
 } from "$lib/api/enhanced-rest-architecture";
-// Orphaned content: import { Redis
+
+import type { Redis } from "redis";
 
 export class LegalKMeansClusterer extends KMeansClusterer {
   private redis: Redis;

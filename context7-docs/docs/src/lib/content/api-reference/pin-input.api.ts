@@ -52,7 +52,7 @@ const root = defineComponentApiSchema<PinInputRootPropsWithoutHTML>({
 		onComplete: defineFunctionProp({
 			description: "A callback function that is called when the input is completely filled.",
 			definition: PinInputRootOnCompleteProp,
-			stringDefinition: "(...args: any[]) => void",
+			stringDefinition: "(...args: unknown[]) => void",
 		}),
 		pasteTransformer: defineFunctionProp({
 			description:

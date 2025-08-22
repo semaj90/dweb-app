@@ -91,7 +91,7 @@ class EnhancedLegalOrchestrator {
       const primaryResponse = await this.executeAgent(primaryAgent, request);
 
       // Execute secondary agents if multi-agent is enabled
-      let secondaryResponses: any[] = [];
+      let secondaryResponses: unknown[] = [];
       if (request.requiresMultiAgent && selectedAgents.length > 1) {
         const secondaryPromises = selectedAgents.slice(1).map(agent => 
           this.executeAgent(agent, request)
@@ -149,7 +149,7 @@ class EnhancedLegalOrchestrator {
 
       return response;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Orchestration error:', error);
       throw new Error(`Orchestration failed: ${error.message}`);
     } finally {
@@ -189,7 +189,7 @@ class EnhancedLegalOrchestrator {
 
       return analysis;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Document analysis error:', error);
       throw new Error(`Analysis failed: ${error.message}`);
     }
@@ -247,7 +247,7 @@ class EnhancedLegalOrchestrator {
 
       return mockResults.slice(0, options.limit || 10);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Precedent search error:', error);
       return [];
     }
@@ -281,7 +281,7 @@ class EnhancedLegalOrchestrator {
 
       return generator.call(this, params);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Document generation error:', error);
       throw new Error(`Document generation failed: ${error.message}`);
     }
@@ -315,7 +315,7 @@ class EnhancedLegalOrchestrator {
     });
   }
 
-  private selectAgents(request: OrchestrationRequest): any[] {
+  private selectAgents(request: OrchestrationRequest): unknown[] {
     const allAgents = Array.from(this.agents.values());
     
     // Simple selection logic - in real implementation this would be more sophisticated
@@ -328,7 +328,7 @@ class EnhancedLegalOrchestrator {
     return allAgents.slice(0, request.requiresMultiAgent ? 2 : 1);
   }
 
-  private async executeAgent(agent: any, request: OrchestrationRequest): Promise<any> {
+  private async executeAgent(agent: unknown, request: OrchestrationRequest): Promise<any> {
     // Mock agent execution
     await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200));
 
@@ -347,8 +347,8 @@ class EnhancedLegalOrchestrator {
   }
 
   private synthesizeResponses(
-    primary: any, 
-    secondary: any[], 
+    primary: unknown, 
+    secondary: unknown[], 
     request: OrchestrationRequest
   ): string {
     let synthesis = `Based on comprehensive legal analysis of your query: "${request.query}"\n\n`;
@@ -368,7 +368,7 @@ class EnhancedLegalOrchestrator {
     return synthesis;
   }
 
-  private calculateConfidence(primary: any, secondary: any[]): number {
+  private calculateConfidence(primary: unknown, secondary: unknown[]): number {
     let totalConfidence = primary.confidence;
     let count = 1;
 
@@ -591,7 +591,7 @@ ${params.recommendation || '[RECOMMENDATION]'}
 
   // Public utility methods
 
-  getSession(sessionId: string): any {
+  getSession(sessionId: string): unknown {
     return this.sessions.get(sessionId) || null;
   }
 

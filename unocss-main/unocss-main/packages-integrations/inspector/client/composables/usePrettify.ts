@@ -24,7 +24,7 @@ export function usePrettify(content: MaybeRefOrGetter<string | undefined>, toggl
         semi: false,
       })
     }
-    catch (e: any) {
+    catch (e: unknown) {
       console.error(e)
       return `/* Error on prettifying: ${e.message} */\n${toValue(content) || ''}`
     }

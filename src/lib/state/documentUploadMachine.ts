@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * XState State Machine for Document Upload Workflow
  * Handles file upload, validation, processing, and search indexing
@@ -32,7 +32,7 @@ export interface DocumentUploadContext {
   evidenceId?: string;
   
   // Child machine state
-  evidenceProcessingState?: any;
+  evidenceProcessingState?: unknown;
   
   // Timestamps and metrics
   uploadStartTime: number;
@@ -105,7 +105,7 @@ const validateFileService = fromPromise(async ({ input }: { input: DocumentUploa
   
   // Additional security checks
   const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.com', '.pif'];
-  const hassuspicious = suspiciousExtensions.some((ext: any) => input.filename.toLowerCase().endsWith(ext)
+  const hassuspicious = suspiciousExtensions.some((ext: unknown) => input.filename.toLowerCase().endsWith(ext)
   );
   
   if (hassuspicious) {
@@ -126,7 +126,7 @@ const calculateFileHashService = fromPromise(async ({ input }: { input: Document
   const buffer = await input.file.arrayBuffer();
   const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b: any) => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray.map((b: unknown) => b.toString(16).padStart(2, '0')).join('');
   
   return hashHex;
 });
@@ -594,32 +594,32 @@ export const createDocumentUploadActor = () => {
   return documentUploadMachine;
 };
 
-export const isUploading = (state: any): boolean => {
+export const isUploading = (state: unknown): boolean => {
   return ['uploading', 'processing'].includes(state.value);
 };
 
-export const isValidating = (state: any): boolean => {
+export const isValidating = (state: unknown): boolean => {
   return ['validating', 'calculatingHash', 'extractingText'].includes(state.value);
 };
 
-export const hasValidationErrors = (state: any): boolean => {
+export const hasValidationErrors = (state: unknown): boolean => {
   return state.context.validationErrors && state.context.validationErrors.length > 0;
 };
 
-export const getValidationErrors = (state: any): string[] => {
+export const getValidationErrors = (state: unknown): string[] => {
   return state.context.validationErrors || [];
 };
 
-export const getUploadProgress = (state: any): number => {
+export const getUploadProgress = (state: unknown): number => {
   return state.context.uploadProgress || 0;
 };
 
-export const canRetryUpload = (state: any): boolean => {
+export const canRetryUpload = (state: unknown): boolean => {
   return ['uploadError', 'processingError'].includes(state.value) && 
          state.context.retryCount < state.context.maxRetries;
 };
 
-export const getUploadMetrics = (state: any) => {
+export const getUploadMetrics = (state: unknown) => {
   const context = state.context;
   return {
     uploadTime: context.uploadEndTime ? context.uploadEndTime - context.uploadStartTime : 0,
@@ -643,16 +643,16 @@ export type DocumentUploadStateValue =
   | 'uploadFailed'
   | 'validationError';
 
-export const getStateValue = (state: any): DocumentUploadStateValue => {
+export const getStateValue = (state: unknown): DocumentUploadStateValue => {
   return state.value as DocumentUploadStateValue;
 };
 
-export const isInErrorState = (state: any): boolean => {
+export const isInErrorState = (state: unknown): boolean => {
   const value = getStateValue(state);
   return value === 'uploadError' || value === 'uploadFailed' || value === 'validationError';
 };
 
-export const isInProcessingState = (state: any): boolean => {
+export const isInProcessingState = (state: unknown): boolean => {
   const value = getStateValue(state);
   return value === 'uploading' || value === 'processing' || value === 'extractingText';
 };

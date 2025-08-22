@@ -55,7 +55,7 @@ export interface WorkerTask {
     type: TaskType;
     agentType: AgentType;
     priority: TaskPriority;
-    data: any;
+    data: unknown;
     requirements: TaskRequirements;
     constraints: TaskConstraints;
     metadata: TaskMetadata;
@@ -65,7 +65,7 @@ export interface WorkerResult {
     taskId: string;
     workerId: string;
     agentType: AgentType;
-    result: any;
+    result: unknown;
     performance: TaskPerformance;
     metadata: ResultMetadata;
     errors: WorkerError[];
@@ -783,7 +783,7 @@ export class SpecializedWorkerPool extends EventEmitter {
         this.emit('task-completed', result);
     }
     
-    private handleTaskFailure(error: any): void {
+    private handleTaskFailure(error: unknown): void {
         this.stats.totalTasksFailed++;
         this.emit('task-failed', error);
     }
@@ -1112,7 +1112,7 @@ export class SpecializedWorker extends EventEmitter {
                 this.handleTaskTimeout(task);
             }, task.constraints?.timeoutMs || 30000);
             
-            const messageHandler = (result: any) => {
+            const messageHandler = (result: unknown) => {
                 clearTimeout(timeout);
                 this.worker?.off('message', messageHandler);
                 
@@ -1158,7 +1158,7 @@ export class SpecializedWorker extends EventEmitter {
         });
     }
     
-    private handleWorkerMessage(message: any): void {
+    private handleWorkerMessage(message: unknown): void {
         switch (message.type) {
             case 'health-check-response':
                 this.emit('health-check-response', message.data);
@@ -1207,7 +1207,7 @@ export class SpecializedWorker extends EventEmitter {
         }
     }
     
-    private updatePerformanceScores(data: any): void {
+    private updatePerformanceScores(data: unknown): void {
         if (data.cpuEfficiency) {
             this.performanceScore = (this.performanceScore + data.cpuEfficiency) / 2;
         }
@@ -1277,7 +1277,7 @@ export class SpecializedWorker extends EventEmitter {
 
 // Supporting Classes (simplified implementations)
 class GlobalTaskScheduler {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
     async scheduleTask(task: WorkerTask, pools: Map<AgentType, SpecializedWorkerPool>): Promise<SchedulingDecision> {
         // Simple scheduling - return original agent type for now
@@ -1288,7 +1288,7 @@ class GlobalTaskScheduler {
         };
     }
     
-    getMetrics(): any {
+    getMetrics(): unknown {
         return {
             totalScheduledTasks: 0,
             averageSchedulingTime: 0,
@@ -1304,11 +1304,11 @@ class GlobalTaskScheduler {
 }
 
 class AdvancedResourceManager {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
-    async allocateResources(options: any): Promise<void> {}
+    async allocateResources(options: unknown): Promise<void> {}
     
-    getUtilization(): any {
+    getUtilization(): unknown {
         return {
             cpu: 0.65,
             memory: 0.70,
@@ -1325,9 +1325,9 @@ class AdvancedResourceManager {
 }
 
 class PoolPerformanceMonitor {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
-    getGlobalMetrics(): any {
+    getGlobalMetrics(): unknown {
         return {
             totalThroughput: 150,
             averageLatency: 1200,
@@ -1339,9 +1339,9 @@ class PoolPerformanceMonitor {
 }
 
 class FaultToleranceManager {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     
-    getMetrics(): any {
+    getMetrics(): unknown {
         return {
             totalFailures: 5,
             recoveryRate: 0.95,
@@ -1395,7 +1395,7 @@ interface ResourceRequirements {
 interface OptimizationSetting {
     name: string;
     enabled: boolean;
-    parameters?: any;
+    parameters?: unknown;
 }
 
 interface CPUAllocation {
@@ -1550,11 +1550,11 @@ interface PoolMetrics {
         totalWorkers: number;
         activeTasks: number;
         queuedTasks: number;
-        resourceUtilization: any;
-        performanceMetrics: any;
+        resourceUtilization: unknown;
+        performanceMetrics: unknown;
     };
-    scheduler: any;
-    faultTolerance: any;
+    scheduler: unknown;
+    faultTolerance: unknown;
 }
 
 interface PoolOptimization {
@@ -1566,8 +1566,8 @@ interface PoolOptimization {
 
 interface OptimizationResult {
     optimizations: Map<AgentType, PoolOptimization>;
-    globalOptimization: any;
-    resourceOptimization: any;
+    globalOptimization: unknown;
+    resourceOptimization: unknown;
     timestamp: string;
 }
 
@@ -1600,7 +1600,7 @@ if (!isMainThread && workerData) {
         const startTime = performance.now();
         
         // Specialized execution based on agent type
-        let result: any;
+        let result: unknown;
         
         switch (agentType) {
             case 'context7':

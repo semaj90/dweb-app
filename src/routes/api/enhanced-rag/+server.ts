@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/services/unified-database-service.js';
 import { aiService } from '$lib/services/unified-ai-service.js';
@@ -154,14 +154,14 @@ export const GET: RequestHandler = async ({ url }) => {
 
 // ============ Action Handlers ============
 
-async function handleDocumentIngestion(data: any) {
+async function handleDocumentIngestion(data: unknown) {
   const { documents, options = {} } = data;
   if (!documents || !Array.isArray(documents)) {
     return json({ error: 'Documents array is required', success: false }, { status: 400 });
   }
 
   try {
-    const enriched: any[] = [];
+    const enriched: unknown[] = [];
 
     for (const doc of documents) {
       // If raw path to PDF provided, parse + chunk
@@ -219,7 +219,7 @@ async function handleDocumentIngestion(data: any) {
   }
 }
 
-function spawnChunkingWorker(documents: any[]) {
+function spawnChunkingWorker(documents: unknown[]) {
   try {
     const workerPath = path.resolve('src/lib/workers/chunking-worker.js');
     const worker = new Worker(workerPath, { workerData: { workerId: `chunker-${Date.now()}` } });
@@ -233,7 +233,7 @@ function spawnChunkingWorker(documents: any[]) {
   }
 }
 
-async function handleEnhancedQuery(data: any) {
+async function handleEnhancedQuery(data: unknown) {
   const {
     query,
     caseId,
@@ -281,7 +281,7 @@ async function handleEnhancedQuery(data: any) {
 
 // (Removed legacy JSON streaming handler; replaced with SSE implementation below)
 
-async function handleStreamingQuery(data: any) {
+async function handleStreamingQuery(data: unknown) {
   const { query, caseId, userId, options = {}, enableSSE = true } = data;
   if (!query) return json({ error: 'Query is required', success: false }, { status: 400 });
 
@@ -294,7 +294,7 @@ async function handleStreamingQuery(data: any) {
   const stream = new ReadableStream({
     async start(controller) {
       const enc = new TextEncoder();
-      const send = (obj: any) => controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
+      const send = (obj: unknown) => controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
       try {
         send({ type: 'status', message: 'Initializing streaming RAG query', progress: 0 });
         let partial = '';
@@ -326,7 +326,7 @@ async function handleStreamingQuery(data: any) {
   });
 }
 
-async function handleRecommendations(data: any) {
+async function handleRecommendations(data: unknown) {
   const { userId, context = {}, limit = 10 } = data || {};
   if (!userId) {
     return json(
@@ -342,7 +342,7 @@ async function handleRecommendations(data: any) {
       recommendations: recommendations.slice(0, limit),
       count: recommendations.length
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return json(
       { error: 'Recommendations failed', message: error.message, success: false },
       { status: 500 }
@@ -350,7 +350,7 @@ async function handleRecommendations(data: any) {
   }
 }
 
-async function handleDocumentAnalysis(data: any) {
+async function handleDocumentAnalysis(data: unknown) {
   const { document, operations = ['analyze', 'summarize'] } = data || {};
   if (!document) {
     return json(
@@ -371,7 +371,7 @@ async function handleDocumentAnalysis(data: any) {
         embeddings: result.embeddings?.length || 0
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return json(
       { error: 'Document analysis failed', message: error.message, success: false },
       { status: 500 }
@@ -414,7 +414,7 @@ async function handleHealthCheck() {
   }
 }
 
-async function handleHybridSearch(data: any) {
+async function handleHybridSearch(data: unknown) {
   const { query, caseId, limit = 10, filters = {} } = data;
 
   if (!query) {
@@ -450,7 +450,7 @@ async function handleHybridSearch(data: any) {
   }
 }
 
-async function handleEmbedding(data: any) {
+async function handleEmbedding(data: unknown) {
   const { texts, model } = data;
 
   if (!texts || !Array.isArray(texts)) {

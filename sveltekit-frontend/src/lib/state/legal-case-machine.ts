@@ -4,10 +4,10 @@
  * Comprehensive XState machine for managing legal case workflows
  */
 import { createMachine, assign, fromPromise } from 'xstate';
-// Orphaned content: import type { Case, Evidence, NewCase, NewEvidence
+import type { Case, Evidence, NewCase, NewEvidence } from '$lib/server/db/schema';
 import {
-aiSummarizationService } from "$lib/services/ai-summarization-service";
-// Orphaned content: import { vectorSearchService
+  aiSummarizationService } from "$lib/services/ai-summarization-service";
+import { vectorSearchService } from '$lib/services/vector-search-service';
 
 // Context types
 export interface LegalCaseContext {

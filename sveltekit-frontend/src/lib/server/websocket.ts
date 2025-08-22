@@ -2,9 +2,7 @@
 import { WebSocketServer } from "ws";
 // Orphaned content: import type { IncomingMessage
 import type { Socket } from "net";
-// Orphaned content: import {
-
-// Store active connections per case
+// TODO: Fix import - // Orphaned content: import {  // Store active connections per case
 const caseConnections = new Map<string, Set<any>>();
 
 // Mock active users per case

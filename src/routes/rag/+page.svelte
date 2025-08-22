@@ -36,7 +36,7 @@
 
 	// Component references
 	let fileInput: HTMLInputElement;
-	let chatComponent: any;
+	let chatComponent: unknown;
 
 	onMount(async () => {
 		await checkSystemStatus();

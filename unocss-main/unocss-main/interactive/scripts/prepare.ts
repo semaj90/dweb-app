@@ -14,7 +14,7 @@ const code = genArrayFromRaw(
     .map((file) => {
       const ext = parse(file).ext
       const yml = `${file.slice(0, -ext.length)}.yml`
-      const data: any = fs.existsSync(yml)
+      const data: unknown = fs.existsSync(yml)
         ? YAML.load(fs.readFileSync(yml, 'utf-8'))
         : {}
       return genObjectFromRaw({

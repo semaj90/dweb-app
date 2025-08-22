@@ -160,7 +160,7 @@ async function rootRegister(
     registerUnocss()
     ext.subscriptions.push(window.onDidChangeActiveTextEditor(() => registerUnocss()))
   }
-  catch (e: any) {
+  catch (e: unknown) {
     log.appendLine(String(e.stack ?? e))
   }
 

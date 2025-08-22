@@ -148,10 +148,10 @@ export function GlobalModeDevPlugin(ctx: UnocssPluginContext): Plugin[] {
           tasks.push(extract(code, filename))
         },
         // eslint-disable-next-line ts/ban-ts-comment
-        // @ts-ignore Compatibility with Legacy Vite
+         Compatibility with Legacy Vite
         enforce: 'pre',
         // eslint-disable-next-line ts/ban-ts-comment
-        // @ts-ignore Compatibility with Legacy Vite
+         Compatibility with Legacy Vite
         transform(code, { filename }) {
           setWarnTimer()
           tasks.push(extract(code, filename))

@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Enhanced Semantic Search Engine with Fuse.js
  * Provides fuzzy search, semantic matching, and intelligent ranking
@@ -815,7 +815,7 @@ export class EnhancedSemanticSearch extends EventEmitter {
     return Array.from(suggestions).slice(0, limit);
   }
 
-  public getStatistics(): any {
+  public getStatistics(): unknown {
     const overallStats = {
       totalIndices: this.indices.size,
       totalDocuments: 0,

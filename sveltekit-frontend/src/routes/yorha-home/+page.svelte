@@ -20,9 +20,10 @@
   // tsserver sometimes reports Svelte components as having no default export — silence for now
   // @ts-ignore: Svelte component typing mismatch
   import YoRHaTable from '$lib/components/yorha/YoRHaTable.svelte';
+  import { state } from 'svelte/reactivity';
 
   // System data for command center (use any to avoid strict prop typing noise in quick pass)
-  let systemData: any = {
+  let systemData = state({
     activeCases: 12,
     evidenceItems: 234,
     personsOfInterest: 8,
@@ -31,13 +32,13 @@
     gpuUtilization: 78,
     memoryUsage: 62,
     networkLatency: 23
-  };
+  });
 
   // API response states
-  let ragResult: any = null;
-  let searchResults: any[] = [];
-  let isLoading: boolean = false;
-  let activeSection: string = 'dashboard';
+  let ragResult = state<any>(null);
+  let searchResults = state<any[]>([]);
+  let isLoading = state<boolean>(false);
+  let activeSection = state<string>('dashboard');
 
   // Table configuration for results
   const tableColumns = [
@@ -55,8 +56,8 @@
 
   // API integration functions
   async function performRAGQuery(query: string = "Legal case precedent analysis") {
-    isLoading = true;
-    ragResult = null;
+    isLoading.value = true;
+    ragResult.value = null;
 
     try {
       const response = await fetch('/api/yorha/enhanced-rag', {
@@ -66,20 +67,20 @@
       });
 
       if (response.ok) {
-        ragResult = await response.json();
-        systemData.aiQueries += 1;
-        activeSection = 'rag-results';
+        ragResult.value = await response.json();
+        systemData.value.aiQueries += 1;
+        activeSection.value = 'rag-results';
       }
     } catch (error) {
       console.error('RAG query failed:', error);
     } finally {
-      isLoading = false;
+      isLoading.value = false;
     }
   }
 
   async function performSemanticSearch(searchTerm: string = "contract liability") {
-    isLoading = true;
-    searchResults = [];
+    isLoading.value = true;
+    searchResults.value = [];
 
     try {
       const response = await fetch(`/api/yorha/legal-data?search=${encodeURIComponent(searchTerm)}&limit=10`);
@@ -87,7 +88,7 @@
       if (response.ok) {
         const data = await response.json();
         const results = Array.isArray(data?.results) ? data.results : [];
-        searchResults = results.map((item: any, index: number) => ({
+        searchResults.value = results.map((item: any, index: number) => ({
           id: (item && (item.id ?? item._id)) || index + 1,
           title: (item && (item.title ?? item.name)) || `Document ${index + 1}`,
           type: (item && item.type) || 'Legal Document',
@@ -95,42 +96,13 @@
           status: (item && item.status) || 'active',
           metadata: item
         }));
-        activeSection = 'search-results';
+        activeSection.value = 'search-results';
       }
     } catch (error) {
-      console.error('Search failed:', error);
+      console.error('Semantic search failed:', error);
     } finally {
-      isLoading = false;
+      isLoading.value = false;
     }
-  }
-
-  async function checkClusterHealth() {
-    isLoading = true;
-
-    try {
-      const response = await fetch('/api/v1/cluster/health');
-      if (response.ok) {
-        const healthData = await response.json();
-        console.log('Cluster health:', healthData);
-        // Update system data based on health response
-        if (healthData.services) {
-          systemData.systemLoad = healthData.cpu_usage || systemData.systemLoad;
-          systemData.memoryUsage = healthData.memory_usage || systemData.memoryUsage;
-        }
-        activeSection = 'system-health';
-      }
-    } catch (error) {
-      console.error('Health check failed:', error);
-    } finally {
-      isLoading = false;
-    }
-  }
-
-  function handleTableAction({ row }: { row: any }) {
-    console.log('Table action for:', row);
-    // Navigate to detailed view or perform action (safe id extraction)
-    const id = (row && (row.id ?? row._id)) ?? 'unknown';
-    goto(`/evidence/${id}`);
   }
 </script>
 
@@ -139,259 +111,105 @@
   <meta name="description" content="YoRHa-themed interface for Legal AI system access and demonstrations." />
 </svelte:head>
 
-<div class="yorha-interface">
-  <!-- Header -->
-  <section class="yorha-header">
-    <div class="yorha-header-content">
-      <div class="yorha-nav">
-        <button
-          class="yorha-nav-btn"
-          onclick={() => navigateTo('/')}
-        >
-          <Home size={16} />
-          MAIN SYSTEM
-        </button>
-      </div>
-
-      <div class="yorha-title-section">
-        <h1 class="yorha-main-title">
-          <Terminal size={48} class="yorha-title-icon" />
-          YoRHa INTERFACE
-        </h1>
-        <div class="yorha-subtitle">LEGAL AI COMMAND CENTER</div>
-        <div class="yorha-status">
-          <Activity size={16} />
-          SYSTEM OPERATIONAL
-        </div>
-      </div>
+<div class="yorha-home-grid">
+  <header class="yorha-header">
+    <div class="header-left">
+      <Home class="header-icon" />
+      <h1>YoRHa Command Interface</h1>
     </div>
-  </section>
-
-  <!-- API Integration Controls -->
-  <section class="yorha-api-section">
-    <div class="yorha-api-controls">
-      <h2 class="yorha-section-title">
-        <Bot size={24} />
-        LIVE API INTEGRATION
-      </h2>
-
-      <!-- API Action Buttons -->
-      <div class="yorha-api-grid">
-        <button
-          class="yorha-api-btn yorha-api-rag"
-          onclick={() => performRAGQuery()}
-          disabled={isLoading}
-        >
-          <Cpu size={20} />
-          RAG QUERY
-          {#if isLoading && activeSection === 'rag-results'}
-            <div class="yorha-spinner"></div>
-          {/if}
-        </button>
-
-        <button
-          class="yorha-api-btn yorha-api-search"
-          onclick={() => performSemanticSearch()}
-          disabled={isLoading}
-        >
-          <Search size={20} />
-          SEMANTIC SEARCH
-          {#if isLoading && activeSection === 'search-results'}
-            <div class="yorha-spinner"></div>
-          {/if}
-        </button>
-
-        <button
-          class="yorha-api-btn yorha-api-health"
-          onclick={() => checkClusterHealth()}
-          disabled={isLoading}
-        >
-          <Monitor size={20} />
-          CLUSTER HEALTH
-          {#if isLoading && activeSection === 'system-health'}
-            <div class="yorha-spinner"></div>
-          {/if}
-        </button>
-
-        <button
-          class="yorha-api-btn yorha-api-database"
-          onclick={() => performSemanticSearch('database evidence')}
-          disabled={isLoading}
-        >
-          <Database size={20} />
-          DATABASE QUERY
-        </button>
-      </div>
-
-      <!-- Live API Results Display -->
-      {#if ragResult}
-        <div class="yorha-results-section">
-          <h3 class="yorha-results-title">RAG QUERY RESULTS</h3>
-          <div class="yorha-results-content">
-            <pre class="yorha-json-display">{JSON.stringify(ragResult, null, 2)}</pre>
-          </div>
-        </div>
-      {/if}
-
-      {#if searchResults.length > 0}
-        <div class="yorha-results-section">
-          <h3 class="yorha-results-title">SEARCH RESULTS ({searchResults.length})</h3>
-          <div class="yorha-table-wrapper">
-            <YoRHaTable
-              columns={tableColumns}
-              data={searchResults}
-              selectable={true}
-              pagination={true}
-              pageSize={5}
-              glitchEffect={true}
-            >
-              <svelte:fragment slot="actions" let:row>
-                <button class="yorha-action-btn-sm" onclick={() => handleTableAction({ row })}>
-                  VIEW
-                </button>
-                <button class="yorha-action-btn-sm" onclick={() => console.log('Edit:', row)}>
-                  EDIT
-                </button>
-              </svelte:fragment>
-            </YoRHaTable>
-          </div>
-        </div>
-      {/if}
+    <div class="header-right">
+      <button class="yorha-btn-icon" on:click={() => navigateTo('/settings')}>
+        <Settings />
+      </button>
+      <button class="yorha-btn-icon" on:click={() => navigateTo('/profile')}>
+        <Gamepad2 />
+      </button>
     </div>
-  </section>
+  </header>
 
-  <!-- YoRHa Command Center Integration -->
-  {#if activeSection === 'dashboard' || activeSection === 'system-health'}
-    <section class="yorha-dashboard-section">
-      <YoRHaCommandCenter {systemData} />
-    </section>
-  {/if}
+  <aside class="yorha-sidebar">
+    <nav>
+      <ul>
+        <li>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'dashboard'} on:click={() => activeSection.value = 'dashboard'}>
+            <Monitor />
+            <span>Dashboard</span>
+          </button>
+        </li>
+        <li>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'rag-results'} on:click={() => performRAGQuery()}>
+            <Bot />
+            <span>RAG Analysis</span>
+          </button>
+        </li>
+        <li>
+          <button class="yorha-btn-sidebar" class:active={activeSection === 'search-results'} on:click={() => performSemanticSearch()}>
+            <Search />
+            <span>Semantic Search</span>
+          </button>
+        </li>
+        <li>
+          <button class="yorha-btn-sidebar" on:click={() => navigateTo('/documents')}>
+            <FileText />
+            <span>Documents</span>
+          </button>
+        </li>
+        <li>
+          <button class="yorha-btn-sidebar" on:click={() => navigateTo('/yorha-terminal')}>
+            <Terminal />
+            <span>Terminal</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
 
-  <!-- Main Interface Options -->
-  <section class="yorha-main-section">
-    <div class="yorha-interface-grid">
-      <!-- YoRHa Interface -->
-      <div class="yorha-interface-card yorha-card-primary" onclick={() => navigateTo('/yorha')}>
-        <h2 class="yorha-card-title">YORHA INTERFACE</h2>
-        <p class="yorha-card-description">
-          Complete YoRHa-themed interface with 3D components, dashboard, and API testing suite
-        </p>
-        <!-- removed per-file $state/$derived imports; runes provided globally -->
+  <main class="yorha-main-content">
+    {#if isLoading.value}
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Processing...</p>
       </div>
-        <div class="yorha-card-stats">
-          <span>3D UI COMPONENTS</span>
-          <span>LIVE MONITORING</span>
-        </div>
-        <div class="yorha-card-footer">
-          <span class="yorha-card-path">/yorha</span>
-          <ChevronRight size={20} class="yorha-card-arrow" />
-        </div>
-      </div>
+    {/if}
 
-      <!-- Demo Center -->
-      <div class="yorha-interface-card" onclick={() => navigateTo('/demos')}>
-        <div class="yorha-card-header">
-          <Gamepad2 size={32} class="yorha-card-icon" />
-          <h2 class="yorha-card-title">DEMO CENTER</h2>
-        </div>
-        <p class="yorha-card-description">
-          Access comprehensive interactive demonstrations of all Legal AI system capabilities
-        </p>
-        <div class="yorha-card-stats">
-          <span>27+ INTERACTIVE DEMOS</span>
-          <span>8 CATEGORIES</span>
-        </div>
-        <div class="yorha-card-footer">
-          <span class="yorha-card-path">/demos</span>
-          <ChevronRight size={20} class="yorha-card-arrow" />
-        </div>
-      </div>
+    {#if activeSection.value === 'dashboard'}
+      <section id="dashboard">
+        <h2 class="section-title">System Dashboard</h2>
+        <YoRHaCommandCenter bind:systemData={systemData.value} />
+      </section>
+    {/if}
 
-      <!-- Live RAG API -->
-      <div class="yorha-interface-card yorha-api-live" onclick={() => performRAGQuery('Live legal analysis')}>
-        <div class="yorha-card-header">
-          <Cpu size={32} class="yorha-card-icon" />
-          <h2 class="yorha-card-title">LIVE RAG API</h2>
+    {#if activeSection.value === 'rag-results' && ragResult.value}
+      <section id="rag-results">
+        <h2 class="section-title">RAG Analysis Results</h2>
+        <div class="rag-summary">
+          <h3>Summary</h3>
+          <p>{ragResult.value.summary}</p>
         </div>
-        <p class="yorha-card-description">
-          Real-time RAG queries to your Enhanced AI service running on port 8094
-        </p>
-        <div class="yorha-card-stats">
-          <span>REAL-TIME AI</span>
-          <span>GPU ACCELERATED</span>
+        <div class="rag-details">
+          <h3>Key Points</h3>
+          <ul>
+            {#each ragResult.value.keyPoints as point}
+              <li>{point}</li>
+            {/each}
+          </ul>
         </div>
-        <div class="yorha-card-footer">
-          <span class="yorha-card-path">/api/yorha/enhanced-rag</span>
-          <ChevronRight size={20} class="yorha-card-arrow" />
-        </div>
-      </div>
+        <YoRHaTable title="Cited Sources" columns={tableColumns} data={ragResult.value.sources} />
+      </section>
+    {/if}
 
-      <!-- YoRHa Dashboard -->
-      <div class="yorha-interface-card" onclick={() => {activeSection = 'dashboard'; systemData = {...systemData, aiQueries: systemData.aiQueries + 1};}}>
-        <div class="yorha-card-header">
-          <Monitor size={32} class="yorha-card-icon" />
-          <h2 class="yorha-card-title">COMMAND CENTER</h2>
-        </div>
-        <p class="yorha-card-description">
-          YoRHa command center with live system metrics and health monitoring
-        </p>
-        <div class="yorha-card-stats">
-          <span>SYSTEM MONITORING</span>
-          <span>REAL-TIME DATA</span>
-        </div>
-        <div class="yorha-card-footer">
-          <span class="yorha-card-path">INTEGRATED</span>
-          <ChevronRight size={20} class="yorha-card-arrow" />
-        </div>
-      </div>
-
-      <!-- Live Database API -->
-      <div class="yorha-interface-card yorha-api-db" onclick={() => performSemanticSearch('legal precedents')}>
-        <div class="yorha-card-header">
-          <Database size={32} class="yorha-card-icon" />
-          <h2 class="yorha-card-title">DATABASE API</h2>
-        </div>
-        <p class="yorha-card-description">
-          Query legal database with semantic search and vector similarity
-        </p>
-        <div class="yorha-card-stats">
-          <span>VECTOR SEARCH</span>
-          <span>PGVECTOR</span>
-        </div>
-        <div class="yorha-card-footer">
-          <span class="yorha-card-path">/api/yorha/legal-data</span>
-          <ChevronRight size={20} class="yorha-card-arrow" />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer Info -->
-  <section class="yorha-footer">
-    <div class="yorha-footer-content">
-      <div class="yorha-system-info">
-        <h3>SYSTEM INFORMATION</h3>
-        <div class="yorha-info-grid">
-          <div class="yorha-info-item">
-            <strong>Frontend:</strong> SvelteKit 2 + Svelte 5
-          </div>
-          <div class="yorha-info-item">
-            <strong>UI Framework:</strong> bits-ui + melt-ui + shadcn-svelte
-          </div>
-          <div class="yorha-info-item">
-            <strong>Theme:</strong> YoRHa Cyberpunk Interface
-          </div>
-          <div class="yorha-info-item">
-            <strong>Status:</strong> Production Ready
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    {#if activeSection.value === 'search-results' && searchResults.value.length > 0}
+      <section id="search-results">
+        <h2 class="section-title">Semantic Search Results</h2>
+        <YoRHaTable title="Found Documents" columns={tableColumns} bind:data={searchResults.value} />
+      </section>
+    {/if}
+  </main>
 </div>
 
 <style>
-  .yorha-interface {
+/* ... existing styles ... */
+.yorha-home-grid {
     @apply min-h-screen bg-black text-amber-400 font-mono;
     font-family: 'Courier New', monospace;
     background-image:
@@ -627,4 +445,10 @@
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
+
+  .yorha-btn-sidebar.active {
+  background-color: var(--yorha-accent);
+  color: var(--yorha-bg-primary);
+  box-shadow: 0 0 15px var(--yorha-accent);
+}
 </style>

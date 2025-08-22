@@ -1,6 +1,6 @@
 
 import { error, json } from "@sveltejs/kit";
-appendFile, mkdir
+import { appendFile, mkdir } from "drizzle-orm";
 import { tmpdir } from "os";
 
 const UPLOAD_DIR = join(tmpdir(), "chunked-uploads");

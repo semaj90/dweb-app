@@ -250,7 +250,7 @@ export class SemanticAnalysisPipeline {
     id: string;
     content: string;
     title?: string;
-    metadata?: any;
+    metadata?: unknown;
   }): Promise<SemanticAnalysisResult> {
     if (!this.initialized) {
       await this.initialize();
@@ -607,7 +607,7 @@ export class SemanticAnalysisPipeline {
     return 'informal';
   }
 
-  private calculateSentimentDistribution(result: any): { positive: number; neutral: number; negative: number } {
+  private calculateSentimentDistribution(result: unknown): { positive: number; neutral: number; negative: number } {
     // Simplified distribution calculation
     const positive = result[0].label === 'POSITIVE' ? result[0].score : 1 - result[0].score;
     const negative = 1 - positive;
@@ -810,7 +810,7 @@ export class SemanticAnalysisPipeline {
     return issues;
   }
 
-  private calculateOverallRisk(riskFactors: any[]): 'low' | 'medium' | 'high' {
+  private calculateOverallRisk(riskFactors: unknown[]): 'low' | 'medium' | 'high' {
     if (riskFactors.length === 0) return 'low';
     
     const maxSeverity = Math.max(...riskFactors.map(rf => rf.severity));
@@ -820,7 +820,7 @@ export class SemanticAnalysisPipeline {
     return 'low';
   }
 
-  private generateRiskRecommendations(riskFactors: any[], complianceIssues: string[]): string[] {
+  private generateRiskRecommendations(riskFactors: unknown[], complianceIssues: string[]): string[] {
     const recommendations = [];
     
     if (riskFactors.length > 0) {
@@ -839,7 +839,7 @@ export class SemanticAnalysisPipeline {
   }
 
   // Default values for failed analyses
-  private getDefaultSentiment(): any {
+  private getDefaultSentiment(): unknown {
     return {
       overall: 0,
       confidence: 0,
@@ -848,7 +848,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultClassification(): any {
+  private getDefaultClassification(): unknown {
     return {
       primaryCategory: 'General Legal',
       confidence: 0,
@@ -857,7 +857,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultRiskAssessment(): any {
+  private getDefaultRiskAssessment(): unknown {
     return {
       overallRisk: 'medium',
       riskFactors: [],
@@ -866,7 +866,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultStructuralAnalysis(): any {
+  private getDefaultStructuralAnalysis(): unknown {
     return {
       sections: [],
       citations: [],
@@ -874,7 +874,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private getDefaultUserIntent(): any {
+  private getDefaultUserIntent(): unknown {
     return {
       primaryIntent: 'document_review',
       confidence: 0,
@@ -884,7 +884,7 @@ export class SemanticAnalysisPipeline {
     };
   }
 
-  private processAnalysisResult(summary: any, classification: any, content: string): any {
+  private processAnalysisResult(summary: unknown, classification: unknown, content: string): unknown {
     const summaryText = summary.status === 'fulfilled' ? summary.value : 'Unable to generate summary';
     const classificationData = classification.status === 'fulfilled' ? classification.value : this.getDefaultClassification();
     
@@ -942,7 +942,7 @@ export class SemanticAnalysisPipeline {
     return warnings;
   }
 
-  async healthCheck(): Promise<{ status: string; details: any }> {
+  async healthCheck(): Promise<{ status: string; details: unknown }> {
     return {
       status: this.initialized ? 'healthy' : 'not initialized',
       details: {

@@ -50,12 +50,12 @@ Combines all advanced services: input synthesis, LegalBERT analysis, RAG pipelin
     role: 'user' | 'assistant' | 'system';
     content: string;
     timestamp: number;
-    synthesizedInput?: any;
-    legalAnalysis?: any;
-    ragResults?: any;
+    synthesizedInput?: unknown;
+    legalAnalysis?: unknown;
+    ragResults?: unknown;
     confidence?: number;
     processingTime?: number;
-    metadata?: any;
+    metadata?: unknown;
   }
 
   // State management
@@ -219,7 +219,7 @@ How can I assist with your legal work today?`);
   }
 
   // Enhanced AI query processing using direct Ollama
-  async function processAIQuery(query: string, context: any) {
+  async function processAIQuery(query: string, context: unknown) {
     const startTime = Date.now();
     
     // Enhanced legal prompt for better responses

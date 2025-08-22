@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 import { db } from './unified-database-service.js';
 
 /**
@@ -11,7 +11,7 @@ export class UnifiedAIService {
   private chatModel: string;
   private initialized: boolean = false;
 
-  constructor(config: any = {}) {
+  constructor(config: unknown = {}) {
     this.ollamaUrl = config.ollamaUrl || process.env.OLLAMA_URL || 'http://localhost:11434';
     this.embeddingModel = config.embeddingModel || 'nomic-embed-text';
     this.chatModel = config.chatModel || 'gemma2:9b';
@@ -34,16 +34,16 @@ export class UnifiedAIService {
   }
 
   // ============ Core AI Methods ============
-  async generateText(prompt: string, options: any = {}): Promise<string> {
+  async generateText(prompt: string, options: unknown = {}): Promise<string> {
     const result = await this.generateCompletion(prompt, options);
     return result.response;
   }
 
-  async generateEmbedding(text: string, options: any = {}): Promise<number[]> {
+  async generateEmbedding(text: string, options: unknown = {}): Promise<number[]> {
     return await this.embedSingle(text);
   }
 
-  async generateCompletion(prompt: string, options: any = {}): Promise<any> {
+  async generateCompletion(prompt: string, options: unknown = {}): Promise<any> {
     const requestBody = {
       model: options.model || this.chatModel,
       prompt,
@@ -69,7 +69,7 @@ export class UnifiedAIService {
     return await response.json();
   }
 
-  async chat(message: string, context: any[] = [], options: any = {}): Promise<any> {
+  async chat(message: string, context: unknown[] = [], options: unknown = {}): Promise<any> {
     const messages = [
       ...context,
       { role: 'user', content: message }
@@ -100,7 +100,7 @@ export class UnifiedAIService {
     return await response.json();
   }
 
-  async *streamChat(message: string, context: any[] = [], options: any = {}): AsyncGenerator<any> {
+  async *streamChat(message: string, context: unknown[] = [], options: unknown = {}): AsyncGenerator<any> {
     const messages = [
       ...context,
       { role: 'user', content: message }
@@ -191,7 +191,7 @@ export class UnifiedAIService {
   }
 
   // ============ Document Processing ============
-  async processDocument(document: any, options: any = {}): Promise<any> {
+  async processDocument(document: unknown, options: unknown = {}): Promise<any> {
     const operations = options.operations || [
       'extract',
       'chunk',
@@ -237,7 +237,7 @@ export class UnifiedAIService {
     return result;
   }
 
-  async extractText(document: any): Promise<string> {
+  async extractText(document: unknown): Promise<string> {
     if (document.type === 'text/plain' || document.content) {
       return document.content;
     }
@@ -246,7 +246,7 @@ export class UnifiedAIService {
     return 'Extracted text (placeholder)';
   }
 
-  async chunkText(text: string, options: any = {}): Promise<string[]> {
+  async chunkText(text: string, options: unknown = {}): Promise<string[]> {
     const maxSize = options.maxSize || 500;
     const overlap = options.overlap || 50;
     const chunks: string[] = [];
@@ -277,7 +277,7 @@ export class UnifiedAIService {
     return chunks;
   }
 
-  async analyzeDocument(document: any): Promise<any> {
+  async analyzeDocument(document: unknown): Promise<any> {
     const prompt = `
       Analyze the following legal document and provide:
       1. Document type (contract, evidence, motion, etc.)
@@ -301,7 +301,7 @@ export class UnifiedAIService {
     }
   }
 
-  async summarizeDocument(document: any): Promise<string> {
+  async summarizeDocument(document: unknown): Promise<string> {
     const prompt = `
       Provide a concise professional summary of this legal document:
       
@@ -321,7 +321,7 @@ export class UnifiedAIService {
     return response.response;
   }
 
-  async storeDocument(document: any): Promise<any> {
+  async storeDocument(document: unknown): Promise<any> {
     // Store document and embeddings in unified database
     const stored = await db.insertLegalDocument({
       id: document.id || this.generateId(document.content),
@@ -357,7 +357,7 @@ export class UnifiedAIService {
   }
 
   // ============ RAG Methods ============
-  async ragQuery(query: string, options: any = {}): Promise<any> {
+  async ragQuery(query: string, options: unknown = {}): Promise<any> {
     const startTime = Date.now();
     
     // Generate query embedding
@@ -420,7 +420,7 @@ export class UnifiedAIService {
     };
   }
 
-  async *ragStream(query: string, options: any = {}): AsyncGenerator<any> {
+  async *ragStream(query: string, options: unknown = {}): AsyncGenerator<any> {
     // Get context first
     const queryEmbedding = await this.embedSingle(query);
     const relevantDocs = await db.hybridSearch(
@@ -470,7 +470,7 @@ export class UnifiedAIService {
   }
 
   // ============ Model Management ============
-  async getAvailableModels(): Promise<any[]> {
+  async getAvailableModels(): Promise<unknown[]> {
     try {
       const response = await fetch(`${this.ollamaUrl}/api/tags`);
       if (response.ok) {

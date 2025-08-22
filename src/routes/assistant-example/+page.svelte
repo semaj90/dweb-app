@@ -8,7 +8,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
 
-  let assistantEvents: Array<{ type: string; data: any; timestamp: number }> = [];
+  let assistantEvents: Array<{ type: string; data: unknown; timestamp: number }> = [];
   let showEventLog = false;
 
   function handleAssistantEvent(event: CustomEvent) {

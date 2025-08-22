@@ -1,8 +1,9 @@
 // Enhanced Vector Service with Nomic Embeddings
 import { QdrantClient } from '@qdrant/js-client-rest';
 import { db } from '../db';
-import { units, userActivity, documents, documentChunks } from '../db/schema';
-import { eq, sql, and, or, ilike } from 'drizzle-orm';
+import { units, documents, documentChunks } from '../db/schema';
+import { eq, sql } from 'drizzle-orm';
+import fetch from 'node-fetch';
 import { env } from '$env/dynamic/private';
 
 const QDRANT_URL = env.QDRANT_URL || 'http://localhost:6333';
@@ -15,7 +16,7 @@ const NOMIC_MODEL = 'nomic-embed-text-v1.5';
 
 export class EnhancedVectorService {
   private qdrantClient: QdrantClient;
-  
+
   // Collection names with updated dimensions
   private collections = {
     users: 'yorha_users_v2',
@@ -86,7 +87,7 @@ export class EnhancedVectorService {
 
         // Create payload indexes for hybrid search
         await this.createPayloadIndexes(name);
-        
+
         console.log(`Created collection: ${name} with dimension ${vectorSize}`);
       }
     } catch (error) {
@@ -97,7 +98,7 @@ export class EnhancedVectorService {
   // Create payload indexes for better filtering
   private async createPayloadIndexes(collectionName: string): Promise<void> {
     const indexFields = ['userId', 'type', 'category', 'timestamp', 'source', 'metadata.keywords'];
-    
+
     for (const field of indexFields) {
       try {
         // Use createPayloadIndex instead of createFieldIndex
@@ -170,10 +171,10 @@ export class EnhancedVectorService {
   }
 
   // Enhanced text chunking for RAG
-  chunkText(text: string, metadata: any = {}): Array<{text: string, metadata: any}> {
-    const chunks: Array<{text: string, metadata: any}> = [];
+  chunkText(text: string, metadata: unknown = {}): Array<{ text: string, metadata: unknown }> {
+    const chunks: Array<{ text: string, metadata: unknown }> = [];
     const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-    
+
     let currentChunk = '';
     let chunkIndex = 0;
 
@@ -191,7 +192,7 @@ export class EnhancedVectorService {
             }
           });
           chunkIndex++;
-          
+
           // Add overlap
           const words = currentChunk.split(' ');
           const overlapWords = Math.floor(words.length * 0.2);
@@ -230,17 +231,17 @@ export class EnhancedVectorService {
   async storeDocument(
     documentId: string,
     content: string,
-    metadata: any = {},
+    metadata: unknown = {},
     collectionName?: string
   ): Promise<void> {
     try {
       const collection = collectionName || this.collections.documents;
       const chunks = this.chunkText(content, { documentId, ...metadata });
-      
+
       // Generate embeddings for all chunks
       const texts = chunks.map(c => c.text);
       const embeddings = await this.generateBatchEmbeddings(texts, 'search_document');
-      
+
       // Prepare points for Qdrant
       const points = chunks.map((chunk, index) => ({
         id: `${documentId}_chunk_${index}`,
@@ -274,9 +275,9 @@ export class EnhancedVectorService {
   private async storeDocumentInPostgres(
     documentId: string,
     fullContent: string,
-    chunks: any[],
+    chunks: unknown[],
     embeddings: number[][],
-    metadata: any
+    metadata: unknown
   ): Promise<void> {
     try {
       // Store main document
@@ -321,13 +322,13 @@ export class EnhancedVectorService {
     options: {
       collection?: string;
       limit?: number;
-      filter?: any;
+      filter?: unknown;
       scoreThreshold?: number;
       rerank?: boolean;
       includeMetadata?: boolean;
       searchType?: 'vector' | 'keyword' | 'hybrid';
     } = {}
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const {
       collection = this.collections.documents,
       limit = 10,
@@ -339,7 +340,7 @@ export class EnhancedVectorService {
     } = options;
 
     try {
-      const results: any[] = [];
+      const results: unknown[] = [];
 
       // Vector search
       if (searchType === 'vector' || searchType === 'hybrid') {
@@ -376,15 +377,15 @@ export class EnhancedVectorService {
   }
 
   // Keyword search using PostgreSQL full-text search
-  private async keywordSearch(query: string, filter: any, limit: number): Promise<any[]> {
+  private async keywordSearch(query: string, filter: unknown, limit: number): Promise<unknown[]> {
     try {
       // Use PostgreSQL's full-text search
       const results = await db.execute(sql`
-        SELECT 
+        SELECT
           dc.*,
           ts_rank(to_tsvector('english', dc.content), plainto_tsquery('english', ${query})) as rank,
           dc.embedding <=> (
-            SELECT embedding FROM document_chunks 
+            SELECT embedding FROM document_chunks
             WHERE to_tsvector('english', content) @@ plainto_tsquery('english', ${query})
             LIMIT 1
           ) as vector_distance
@@ -395,7 +396,7 @@ export class EnhancedVectorService {
         LIMIT ${limit}
       `);
 
-      return (results as any[]).map(row => ({
+      return (results as unknown[]).map(row => ({
         id: row.id,
         score: row.rank,
         payload: {
@@ -411,7 +412,7 @@ export class EnhancedVectorService {
   }
 
   // Combine and deduplicate search results
-  private combineSearchResults(results: any[]): any[] {
+  private combineSearchResults(results: unknown[]): unknown[] {
     const seen = new Set();
     const combined = [];
 
@@ -428,12 +429,12 @@ export class EnhancedVectorService {
   }
 
   // Rerank results using cross-encoder or additional scoring
-  private async rerankResults(query: string, results: any[], limit: number): Promise<any[]> {
+  private async rerankResults(query: string, results: unknown[], limit: number): Promise<unknown[]> {
     try {
       // Calculate additional relevance scores
       const rerankedResults = await Promise.all(results.map(async (result) => {
         const text = result.payload?.chunkText || result.payload?.content || '';
-        
+
         // Calculate various relevance scores
         const scores = {
           vectorScore: result.score || 0,
@@ -444,7 +445,7 @@ export class EnhancedVectorService {
         };
 
         // Weighted combination of scores
-        const finalScore = 
+        const finalScore =
           scores.vectorScore * 0.4 +
           scores.keywordScore * 0.2 +
           scores.contextScore * 0.2 +
@@ -473,12 +474,12 @@ export class EnhancedVectorService {
     const queryTokens = query.toLowerCase().split(/\s+/);
     const textTokens = text.toLowerCase().split(/\s+/);
     const textSet = new Set(textTokens);
-    
+
     let matches = 0;
     for (const token of queryTokens) {
       if (textSet.has(token)) matches++;
     }
-    
+
     return matches / queryTokens.length;
   }
 
@@ -486,7 +487,7 @@ export class EnhancedVectorService {
   private calculateLengthScore(text: string): number {
     const length = text.length;
     const ideal = 300;
-    
+
     if (length < ideal / 2) return length / (ideal / 2);
     if (length > ideal * 2) return Math.max(0, 1 - (length - ideal * 2) / ideal);
     return 1;
@@ -495,10 +496,10 @@ export class EnhancedVectorService {
   // Calculate recency score
   private calculateRecencyScore(timestamp?: string): number {
     if (!timestamp) return 0.5;
-    
+
     const age = Date.now() - new Date(timestamp).getTime();
     const dayInMs = 24 * 60 * 60 * 1000;
-    
+
     if (age < dayInMs) return 1;
     if (age < 7 * dayInMs) return 0.8;
     if (age < 30 * dayInMs) return 0.6;
@@ -511,7 +512,7 @@ export class EnhancedVectorService {
       // Extract key concepts from query
       const concepts = this.extractConcepts(query);
       const textConcepts = this.extractConcepts(text);
-      
+
       // Calculate concept overlap
       const overlap = concepts.filter(c => textConcepts.includes(c)).length;
       return overlap / Math.max(concepts.length, 1);
@@ -561,7 +562,7 @@ export class EnhancedVectorService {
 
       // Store in pgvector (disabled until schema enables embedding field)
       // await db.update(units)
-      //   .set({ 
+      //   .set({
       //     embedding: sql`${embedding}::vector(${EMBEDDING_DIMENSION})`
       //   })
       //   .where(eq(units.id, userId));
@@ -598,8 +599,8 @@ export class EnhancedVectorService {
   async findSimilarUsers(userId: string, options: {
     limit?: number;
     minSimilarity?: number;
-    filters?: any;
-  } = {}): Promise<any[]> {
+    filters?: unknown;
+  } = {}): Promise<unknown[]> {
     const { limit = 10, minSimilarity = 0.7, filters = {} } = options;
 
     try {
@@ -631,7 +632,7 @@ export class EnhancedVectorService {
 
       // Search in pgvector for comparison (disabled until embedding field available)
       // const pgResults = await db.execute(sql`
-      //   SELECT 
+      //   SELECT
       //     u.*,
       //     1 - (u.embedding <=> ${user.embedding}::vector(${EMBEDDING_DIMENSION})) as similarity
       //   FROM units u
@@ -644,7 +645,7 @@ export class EnhancedVectorService {
 
       // Combine and rank results (using only Qdrant for now)
       const combined = this.combineUserResults(qdrantResults, []);
-      
+
       return combined;
     } catch (error) {
       console.error('Failed to find similar users:', error);
@@ -653,7 +654,7 @@ export class EnhancedVectorService {
   }
 
   // Combine user search results from multiple sources
-  private combineUserResults(qdrantResults: any[], pgResults: any[]): any[] {
+  private combineUserResults(qdrantResults: unknown[], pgResults: unknown[]): unknown[] {
     const resultMap = new Map();
 
     // Add Qdrant results
@@ -698,9 +699,9 @@ export class EnhancedVectorService {
     options: {
       limit?: number;
       expandQuery?: boolean;
-      filters?: any;
+      filters?: unknown;
     } = {}
-  ): Promise<any[]> {
+  ): Promise<unknown[]> {
     const { limit = 20, expandQuery = true, filters = {} } = options;
 
     try {
@@ -744,10 +745,10 @@ export class EnhancedVectorService {
       if (!query.includes('?')) {
         expanded.push(`What is ${query}?`);
       }
-      
+
       // Add context
       expanded.push(`Information about ${query}`);
-      
+
       // Add action form
       if (!query.startsWith('How')) {
         expanded.push(`How to ${query}`);
@@ -761,7 +762,7 @@ export class EnhancedVectorService {
   async storeConversation(
     conversationId: string,
     messages: Array<{ role: string; content: string }>,
-    metadata: any = {}
+    metadata: unknown = {}
   ): Promise<void> {
     try {
       // Create conversation summary

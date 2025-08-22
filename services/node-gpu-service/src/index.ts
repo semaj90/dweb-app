@@ -105,7 +105,7 @@ class NodeGPUService {
     }
   }
 
-  private getGPUDevice(): any {
+  private getGPUDevice(): unknown {
     const devices = gpu.getDevices();
     return devices[0]; // Use first available device
   }
@@ -167,7 +167,7 @@ class NodeGPUService {
     }, 30000); // Report every 30 seconds
   }
 
-  private async getHealthStatus(call: any, callback: any): Promise<void> {
+  private async getHealthStatus(call: unknown, callback: unknown): Promise<void> {
     try {
       const metrics = this.config.enableMetrics ? this.metricsCollector.getMetrics() : null;
       

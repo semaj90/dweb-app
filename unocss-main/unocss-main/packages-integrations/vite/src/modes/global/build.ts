@@ -78,10 +78,10 @@ export function GlobalModeBuildPlugin(ctx: UnocssPluginContext<VitePluginConfig>
           tasks.push(extract(code, filename))
         },
         // eslint-disable-next-line ts/ban-ts-comment
-        // @ts-ignore Compatibility with Legacy Vite
+         Compatibility with Legacy Vite
         enforce: 'pre',
         // eslint-disable-next-line ts/ban-ts-comment
-        // @ts-ignore Compatibility with Legacy Vite
+         Compatibility with Legacy Vite
         transform(code, { filename }) {
           tasks.push(extract(code, filename))
         },

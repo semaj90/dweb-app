@@ -293,7 +293,7 @@ export class VectorSearchService {
     // Use transaction for batch updates
     await queryClient.begin(async (sql) => {
       for (const update of updates) {
-        const setClause: any = {};
+        const setClause: unknown = {};
         
         if (update.contentEmbedding) {
           setClause.contentEmbedding = JSON.stringify(update.contentEmbedding);

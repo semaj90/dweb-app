@@ -250,7 +250,7 @@ export class QdrantManager {
     } = {},
     options: SearchOptions = {}
   ): Promise<SearchResult[]> {
-    const filter: any = {
+    const filter: unknown = {
       must: [],
     };
 
@@ -348,7 +348,7 @@ export class QdrantManager {
   ): Promise<SearchResult[]> {
     const { documentTypes, jurisdiction, ...searchOptions } = options;
 
-    const filters: any = {};
+    const filters: unknown = {};
     if (documentTypes?.length) {
       filters.documentTypes = documentTypes;
     }
@@ -368,7 +368,7 @@ export class QdrantManager {
     pointsCount: number;
     segmentsCount: number;
     status: string;
-    optimizerStatus: any;
+    optimizerStatus: unknown;
   }> {
     try {
       const info = await this.client.getCollection(this.collectionName);
@@ -471,7 +471,7 @@ export class QdrantManager {
     return `qdrant:search:${hash}`;
   }
 
-  private hashObject(obj: any): string {
+  private hashObject(obj: unknown): string {
     const str = JSON.stringify(obj);
     let hash = 0;
     for (let i = 0; i < str.length; i++) {

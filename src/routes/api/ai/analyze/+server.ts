@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
     // Check if document already exists
     const existingDoc = await db.query.legalDocuments.findFirst({
-      where: (documents: any, { eq }: any) => eq(documents.fileHash, fileHash),
+      where: (documents: unknown, { eq }: unknown) => eq(documents.fileHash, fileHash),
     });
 
     if (existingDoc) {
@@ -159,7 +159,7 @@ export const POST: RequestHandler = async ({ request }) => {
         processingTime: Date.now() - new Date(insertedDoc.createdAt).getTime(),
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document analysis error:", error);
     return json(
       {
@@ -226,7 +226,7 @@ export const GET: RequestHandler = async ({ url }) => {
       })
       .from(legalDocuments);
 
-    const filters: any[] = [];
+    const filters: unknown[] = [];
     if (status)
       filters.push(eq(legalDocuments.processingStatus, status as any));
     if (documentType)
@@ -246,7 +246,7 @@ export const GET: RequestHandler = async ({ url }) => {
       .limit(limit);
 
     return json({ documents });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Document retrieval error:", error);
     return json(
       {
@@ -355,7 +355,7 @@ async function analyzeDocumentWithAI(
       processingTime: result.totalProcessingTime,
       agentUsed: result.primaryResponse.agentName,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AI analysis failed:", error);
     return {
       entities: [],

@@ -20,7 +20,7 @@ export interface ClusterConfig {
 export interface WorkerTask {
   id: string;
   type: 'document_analysis' | 'vector_search' | 'ai_inference' | 'data_processing';
-  payload: any;
+  payload: unknown;
   priority: 'low' | 'medium' | 'high' | 'critical';
   timeout?: number;
 }
@@ -28,7 +28,7 @@ export interface WorkerTask {
 export interface WorkerResult {
   taskId: string;
   success: boolean;
-  result?: any;
+  result?: unknown;
   error?: string;
   processingTime: number;
   workerId: number;
@@ -122,7 +122,7 @@ export class LegalAIClusterManager {
     console.log(`✅ Worker thread pool initialized with ${this.config.workerPoolSize} threads`);
   }
 
-  private setupWorkerEventHandlers(worker: any): void {
+  private setupWorkerEventHandlers(worker: unknown): void {
     worker.on('exit', (code: number | null, signal: string | null) => {
       console.log(`⚠️ Worker ${worker.process.pid} died (${signal || code}). Restarting...`);
       
@@ -139,7 +139,7 @@ export class LegalAIClusterManager {
       console.error(`❌ Worker ${worker.process.pid} error:`, error);
     });
 
-    worker.on('message', (message: any) => {
+    worker.on('message', (message: unknown) => {
       this.handleWorkerMessage(worker, message);
     });
   }
@@ -289,7 +289,7 @@ export class LegalAIClusterManager {
     }
   }
 
-  private handleWorkerMessage(worker: any, message: any): void {
+  private handleWorkerMessage(worker: unknown, message: unknown): void {
     // Handle inter-process communication between primary and worker processes
     switch (message.type) {
       case 'health_check':

@@ -49,7 +49,7 @@ export default createRule({
             checkLiteral(node.value)
         }
       },
-      SvelteAttribute(node: any) {
+      SvelteAttribute(node: unknown) {
         if (node.key.name === 'class') {
           if (node.value?.[0].type === 'SvelteLiteral')
             checkLiteral(node.value[0])
@@ -58,15 +58,15 @@ export default createRule({
     }
 
     const templateBodyVisitor: RuleListener = {
-      VAttribute(node: any) {
+      VAttribute(node: unknown) {
         if (node.key.name === 'class') {
           if (node.value.type === 'VLiteral')
             checkLiteral(node.value)
         }
       },
       // Attributify
-      VStartTag(node: any) {
-        const valueless = node.attributes.filter((i: any) => typeof i.key?.name === 'string' && !IGNORE_ATTRIBUTES.includes(i.key?.name?.toLowerCase()) && i.value == null)
+      VStartTag(node: unknown) {
+        const valueless = node.attributes.filter((i: unknown) => typeof i.key?.name === 'string' && !IGNORE_ATTRIBUTES.includes(i.key?.name?.toLowerCase()) && i.value == null)
         if (!valueless.length)
           return
 

@@ -23,7 +23,7 @@
     "legal-ai-orchestrator": {
       "type": "http",
       "url": "http://localhost:8094",
-      "enabled": true,
+      "enabled": false,
       "env": {
         "ORCHESTRATOR_MODE": "gpu-accelerated",
         "MODEL_CONSTRAINTS": "gemma3-legal-gguf-only",
@@ -42,7 +42,7 @@
     "gpu-error-processor": {
       "type": "http", 
       "url": "http://localhost:8095",
-      "enabled": true,
+      "enabled": false,
       "env": {
         "GPU_DEVICE": "RTX3060Ti",
         "FLASHATTENTION_VERSION": "2",

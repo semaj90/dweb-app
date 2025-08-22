@@ -1,7 +1,5 @@
 import type { PageLoad } from "./$types";
-// Orphaned content: import {
-
-export const load: PageLoad = async ({ fetch, url, depends }) => {
+// TODO: Fix import - // Orphaned content: import {  export const load: PageLoad = async ({ fetch, url, depends }) => {
   // Dependency tracking for cache invalidation
   depends('laws:quicklinks');
   depends('laws:search');

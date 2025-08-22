@@ -1,7 +1,5 @@
 import { describe, it, expect } from "vitest";
-// Orphaned content: import {
-
-const MAX_MS_PER_DOC = parseFloat(import.meta.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
+// TODO: Fix import - // Orphaned content: import {  const MAX_MS_PER_DOC = parseFloat(import.meta.env.SPLITTER_MAX_MS_PER_DOC || '3.5');
 
 describe('LegalSentenceSplitter Performance', () => {
   it('stays within performance budget', () => {

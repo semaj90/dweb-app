@@ -48,7 +48,7 @@ async function callGoSimdService(request: ProcessingRequest): Promise<any> {
   };
 }
 
-async function callNodeGpuService(documentId: string, data: any): Promise<any> {
+async function callNodeGpuService(documentId: string, data: unknown): Promise<any> {
   // Simulate Node.js GPU service call
   await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 800));
   

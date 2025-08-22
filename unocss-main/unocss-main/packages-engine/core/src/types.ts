@@ -7,7 +7,7 @@ export type Awaitable<T> = T | Promise<T>
 export type Arrayable<T> = T | T[]
 export type ToArray<T> = T extends (infer U)[] ? U[] : T[]
 export type ArgumentType<T> = T extends ((...args: infer A) => any) ? A : never
-export type Shift<T> = T extends [_: any, ...args: infer A] ? A : never
+export type Shift<T> = T extends [_: unknown, ...args: infer A] ? A : never
 export type RestArgs<T> = Shift<ArgumentType<T>>
 export type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> }
 export type FlatObjectTuple<T> = { [K in keyof T]: T[K] }
@@ -625,7 +625,7 @@ export interface Preset<Theme extends object = object> extends ConfigBase<Theme>
   /**
    * Custom API endpoint for cross-preset communication
    */
-  api?: any
+  api?: unknown
   /**
    * Custom metadata for the preset
    */

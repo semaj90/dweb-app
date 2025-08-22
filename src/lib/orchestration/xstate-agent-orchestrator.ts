@@ -55,7 +55,7 @@ export interface AgentState {
 export interface AgentResult {
     agentId: string;
     agentType: AgentType;
-    data: any;
+    data: unknown;
     confidence: number;
     processingTime: number;
     memoryUsage: number;
@@ -68,7 +68,7 @@ export interface AgentResult {
 
 export interface SynthesisResult {
     summary: string;
-    combinedResults: any;
+    combinedResults: unknown;
     conflicts: ConflictResult[];
     consensus: ConsensusResult[];
     recommendations: SynthesisRecommendation[];
@@ -145,7 +145,7 @@ export type OrchestrationEvent =
     | { type: 'ALL_AGENTS_COMPLETED' }
     | { type: 'SYNTHESIS_COMPLETED'; synthesis: SynthesisResult }
     | { type: 'VALIDATION_COMPLETED'; valid: boolean }
-    | { type: 'OPTIMIZATION_COMPLETED'; optimized: any }
+    | { type: 'OPTIMIZATION_COMPLETED'; optimized: unknown }
     | { type: 'RETRY_AGENT'; agentId: string }
     | { type: 'CANCEL_ORCHESTRATION' }
     | { type: 'TIMEOUT' }
@@ -1101,12 +1101,12 @@ export class XStateAgentOrchestrator extends EventEmitter {
 
 // Supporting Classes (simplified implementations)
 class AgentPool {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     async initialize(): Promise<void> {}
 }
 
 class ResourceManager {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     async allocateResources(options: OrchestrationOptions): Promise<void> {}
     async allocateAgentResource(agentType: AgentType, options: OrchestrationOptions): Promise<AgentResource> {
         return { type: 'cpu', allocation: '1 core' };
@@ -1115,7 +1115,7 @@ class ResourceManager {
 }
 
 class PerformanceMonitor {
-    constructor(private options: any) {}
+    constructor(private options: unknown) {}
     startMonitoring(requestId: string): void {}
 }
 
@@ -1137,7 +1137,7 @@ interface XStateOrchestratorOptions {
 }
 
 interface OrchestrationSession {
-    actor: any;
+    actor: unknown;
     startTime: number;
     prompt: string;
     options: OrchestrationOptions;
@@ -1191,36 +1191,36 @@ interface CodebaseContext {
     files: string[];
     languages: string[];
     frameworks: string[];
-    recentChanges: any[];
+    recentChanges: unknown[];
 }
 
 interface MemoryContext {
-    entities: any[];
-    relationships: any[];
-    recentQueries: any[];
+    entities: unknown[];
+    relationships: unknown[];
+    recentQueries: unknown[];
 }
 
 interface ErrorContext {
-    recentErrors: any[];
-    patterns: any[];
-    trends: any[];
+    recentErrors: unknown[];
+    patterns: unknown[];
+    trends: unknown[];
 }
 
 interface PerformanceContext {
-    metrics: any;
-    bottlenecks: any[];
-    opportunities: any[];
+    metrics: unknown;
+    bottlenecks: unknown[];
+    opportunities: unknown[];
 }
 
 interface LegalContext {
-    cases: any[];
-    regulations: any[];
-    precedents: any[];
+    cases: unknown[];
+    regulations: unknown[];
+    precedents: unknown[];
 }
 
 interface UserContext {
-    preferences: any;
-    history: any[];
+    preferences: unknown;
+    history: unknown[];
     expertise: string;
 }
 

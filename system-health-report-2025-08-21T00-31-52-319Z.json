@@ -1,0 +1,76 @@
+{
+  "timestamp": "2025-08-21T00:31:52.319Z",
+  "services": {
+    "frontend": {
+      "port": 5180,
+      "status": "closed",
+      "lastCheck": "2025-08-21T00:31:51.388Z"
+    },
+    "uploadService": {
+      "port": 8093,
+      "status": "listening",
+      "lastCheck": "2025-08-21T00:31:51.393Z"
+    },
+    "ragService": {
+      "port": 8094,
+      "status": "listening",
+      "lastCheck": "2025-08-21T00:31:51.398Z"
+    },
+    "quicGateway": {
+      "port": 8447,
+      "status": "closed",
+      "lastCheck": "2025-08-21T00:31:51.401Z"
+    },
+    "postgres": {
+      "port": 5432,
+      "status": "error",
+      "lastCheck": "2025-08-21T00:31:51.434Z"
+    },
+    "redis": {
+      "port": 6379,
+      "status": "closed",
+      "lastCheck": "2025-08-21T00:31:51.436Z"
+    }
+  },
+  "testResults": [
+    {
+      "service": "frontend",
+      "port": 5180,
+      "status": "closed",
+      "error": "ECONNREFUSED",
+      "timestamp": "2025-08-21T00:31:51.389Z"
+    },
+    {
+      "service": "quicGateway",
+      "port": 8447,
+      "status": "closed",
+      "error": "ECONNREFUSED",
+      "timestamp": "2025-08-21T00:31:51.401Z"
+    },
+    {
+      "service": "postgres",
+      "port": 5432,
+      "status": "error",
+      "error": "read ECONNRESET",
+      "timestamp": "2025-08-21T00:31:51.434Z"
+    },
+    {
+      "service": "redis",
+      "port": 6379,
+      "status": "closed",
+      "error": "ECONNREFUSED",
+      "timestamp": "2025-08-21T00:31:51.436Z"
+    },
+    {
+      "test": "typescript",
+      "status": "failed",
+      "error": "Command failed: cd sveltekit-frontend && npx tsc --noEmit --skipLibCheck\nnode:internal/modules/cjs/loader:1404\r\n  throw err;\r\n  ^\r\n\r\nError: Cannot find module 'C:\\Users\\james\\Desktop\\deeds-web\\deeds-web-app\\node_modules\\typescript\\bin\\tsc'\r\n    at Function._resolveFilename (node:internal/modules/cjs/loader:1401:15)\r\n    at defaultResolveImpl (node:internal/modules/cjs/loader:1057:19)\r\n    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1062:22)\r\n    at Function._load (node:internal/modules/cjs/loader:1211:37)\r\n    at TracingChannel.traceSync (node:diagnostics_channel:322:14)\r\n    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)\r\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)\r\n    at node:internal/main/run_main_module:36:49 {\r\n  code: 'MODULE_NOT_FOUND',\r\n  requireStack: []\r\n}\r\n\r\nNode.js v22.17.1\r\n",
+      "timestamp": "2025-08-21T00:31:52.317Z"
+    }
+  ],
+  "summary": {
+    "operationalServices": 2,
+    "totalServices": 6,
+    "issuesFound": 5
+  }
+}

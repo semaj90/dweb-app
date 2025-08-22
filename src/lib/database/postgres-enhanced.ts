@@ -125,7 +125,7 @@ class DatabaseManager {
         connected: true,
         responseTime
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         connected: false,
         error: error.message
@@ -160,7 +160,7 @@ export const dbUtils = {
   /**
    * Execute raw SQL query
    */
-  async executeRaw<T = any>(query: string, params: any[] = []): Promise<T[]> {
+  async executeRaw<T = any>(query: string, params: unknown[] = []): Promise<T[]> {
     try {
       const result = await queryClient.unsafe(query, params);
       // Safe type conversion - convert result to array if it isn't already

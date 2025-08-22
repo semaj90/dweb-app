@@ -2,7 +2,7 @@
 
   import { onMount } from 'svelte'
   import { $props, $derived, $effect } from 'svelte';
-  import { createSelect, melt } from '@melt-ui/svelte'
+  import { createSelect, melt } from 'melt'
   import { fade, fly } from 'svelte/transition'
   import { 
     ChevronDown, 

@@ -135,7 +135,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
  * Handler Functions
  */
 
-async function scaleAgents(scaleData: any) {
+async function scaleAgents(scaleData: unknown) {
     const { agentType, targetCount, force = false } = scaleData;
     
     if (!agentType || typeof targetCount !== 'number') {
@@ -172,7 +172,7 @@ async function scaleAgents(scaleData: any) {
     }
 }
 
-async function deployAgent(deployData: any) {
+async function deployAgent(deployData: unknown) {
     const { agentType, serverId, configuration = {} } = deployData;
     
     if (!agentType) {
@@ -216,7 +216,7 @@ async function deployAgent(deployData: any) {
     }
 }
 
-async function migrateAgents(migrationData: any) {
+async function migrateAgents(migrationData: unknown) {
     const { fromServerId, toServerId, agentIds = [] } = migrationData;
     
     if (!fromServerId || !toServerId) {
@@ -224,7 +224,7 @@ async function migrateAgents(migrationData: any) {
     }
 
     try {
-        const migrations: any[] = [];
+        const migrations: unknown[] = [];
         
         // Get current placements
         const placements = await horizontalAgentScaler.getAgentPlacements();
@@ -277,7 +277,7 @@ async function migrateAgents(migrationData: any) {
     }
 }
 
-async function registerServer(serverData: any) {
+async function registerServer(serverData: unknown) {
     const { serverAddress, capabilities = [], resources = {} } = serverData;
     
     if (!serverAddress) {
@@ -315,7 +315,7 @@ async function registerServer(serverData: any) {
     }
 }
 
-async function startScalingSystem(configData: any) {
+async function startScalingSystem(configData: unknown) {
     try {
         await horizontalAgentScaler.start();
         
@@ -572,7 +572,7 @@ async function updateAgentPlacement(placement: AgentPlacement) {
     };
 }
 
-async function updateScalingPolicy(policy: any) {
+async function updateScalingPolicy(policy: unknown) {
     console.log('🔧 Updating scaling policy:', policy);
     
     return {

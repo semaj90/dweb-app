@@ -322,7 +322,7 @@ test.describe('SvelteKit Development Server Endpoints', () => {
       
       // Check console for any errors or warnings
       const consoleMessages: string[] = [];
-      page.on('console', (msg: any) => {
+      page.on('console', (msg: unknown) => {
         if (msg.type() === 'error' || msg.type() === 'warning') {
           consoleMessages.push(`${msg.type()}: ${msg.text()}`);
         }

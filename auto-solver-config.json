@@ -1,0 +1,71 @@
+{
+  "auto_solver": {
+    "enabled": true,
+    "model": "gemma3-legal:latest",
+    "ollama_url": "http://localhost:11434",
+    "max_workers": 15,
+    "gpu_enabled": false,
+    "temperature": 0.3,
+    "max_tokens": 2048,
+    "timeout_ms": 30000
+  },
+  "typescript_error_solver": {
+    "target_errors": 2828,
+    "target_files": 327,
+    "batch_size": 50,
+    "strategy": "parse_errors_first",
+    "priority_patterns": [
+      "event_handlers",
+      "state_management", 
+      "slots",
+      "component_props",
+      "type_definitions",
+      "import_exports"
+    ],
+    "expected_duration_minutes": 75,
+    "target_remaining_errors": 100
+  },
+  "go_llama_integration": {
+    "use_go_llama": true,
+    "gguf_model_path": "gemma3-legal.gguf",
+    "context_length": 4096,
+    "threads": 8,
+    "gpu_layers": 35,
+    "mmap": true,
+    "mlock": false,
+    "numa": false
+  },
+  "error_analysis_prompts": {
+    "typescript_error": "You are an expert TypeScript and Svelte 5 developer. Analyze this TypeScript error and provide a precise fix:\n\nError: {error}\nFile: {file}\nLine: {line}\nCode Context: {context}\n\nProvide ONLY the corrected code, no explanations.",
+    "svelte_component": "Fix this Svelte 5 component error. Focus on proper runes, event handlers, and type safety:\n\nError: {error}\nComponent: {component}\nCode: {code}\n\nReturn the corrected component code only.",
+    "import_export": "Fix this import/export error in TypeScript. Ensure proper module resolution:\n\nError: {error}\nFile: {file}\nImports: {imports}\n\nReturn the corrected import statements only."
+  },
+  "batch_processing": {
+    "concurrent_fixes": 15,
+    "error_grouping": true,
+    "similar_error_batching": true,
+    "file_based_grouping": true,
+    "dependency_resolution": true
+  },
+  "quality_control": {
+    "validate_fixes": true,
+    "run_type_check_after_batch": true,
+    "rollback_on_increased_errors": true,
+    "backup_files_before_fix": true,
+    "max_attempts_per_error": 3
+  },
+  "reporting": {
+    "progress_updates": true,
+    "update_interval_seconds": 30,
+    "detailed_logs": true,
+    "error_categorization": true,
+    "success_metrics": true
+  },
+  "fallback_strategies": {
+    "use_simple_fixes": true,
+    "add_type_assertions": true,
+    "add_eslint_disable": false,
+    "add_ts_ignore": false,
+    "skip_complex_errors": true
+  }
+}

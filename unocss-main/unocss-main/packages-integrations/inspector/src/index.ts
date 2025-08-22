@@ -138,8 +138,8 @@ export default function UnocssInspector(ctx: UnocssPluginContext): Plugin {
 }
 
 function getCircularReplacer() {
-  const ancestors: any = []
-  return function (this: any, key: any, value: any) {
+  const ancestors: unknown = []
+  return function (this: unknown, key: unknown, value: unknown) {
     if (typeof value !== 'object' || value === null)
       return value
 

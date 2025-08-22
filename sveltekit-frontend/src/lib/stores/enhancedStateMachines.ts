@@ -11,7 +11,10 @@ import {
   fromPromise,
   createActor,
 } from "xstate";
-// Orphaned content: import { writable, derived
+import {
+  writable,
+  derived
+} from "svelte/store";
 import {
 browser } from "$app/environment";
 // Orphaned content: import type { Database, Evidence

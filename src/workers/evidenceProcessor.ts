@@ -54,7 +54,7 @@ async function runRag(params: { evidenceId: string; topK?: number }) {
   };
 }
 
-async function processEvidenceJob(payload: any) {
+async function processEvidenceJob(payload: unknown) {
   const { sessionId, evidenceId, steps, userId } = payload;
   const fileId = evidenceId; // alias for consistency
 

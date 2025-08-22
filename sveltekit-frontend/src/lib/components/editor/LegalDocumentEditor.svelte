@@ -7,7 +7,7 @@
     createDropdownMenu,
     createTooltip,
     melt,
-  } from "@melt-ui/svelte";
+  } from "melt";
   import {
     AlertCircle,
     BookOpen,

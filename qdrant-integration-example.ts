@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 const QDRANT_URL = process.env.QDRANT_URL || 'http://localhost:6333';
 
 // Example: Upsert a vector for a case document
-export async function upsertCaseVector(caseId: string, embedding: number[], payload: any) {
+export async function upsertCaseVector(caseId: string, embedding: number[], payload: unknown) {
   const response = await fetch(`${QDRANT_URL}/collections/cases/points`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },

@@ -2,7 +2,7 @@
 // Manages vector storage and similarity search
 
 export class VectorDB {
-  private vectors: Map<string, { vector: number[]; metadata: any }>;
+  private vectors: Map<string, { vector: number[]; metadata: unknown }>;
   private dimension: number;
 
   constructor(dimension: number = 384) {
@@ -13,7 +13,7 @@ export class VectorDB {
   /**
    * Add vector to database
    */
-  async add(id: string, vector: number[], metadata: any = {}): Promise<void> {
+  async add(id: string, vector: number[], metadata: unknown = {}): Promise<void> {
     if (vector.length !== this.dimension) {
       throw new Error(`Vector dimension mismatch. Expected ${this.dimension}, got ${vector.length}`);
     }
@@ -27,13 +27,13 @@ export class VectorDB {
   async search(queryVector: number[], topK: number = 5): Promise<Array<{
     id: string;
     score: number;
-    metadata: any;
+    metadata: unknown;
   }>> {
     if (queryVector.length !== this.dimension) {
       throw new Error(`Query vector dimension mismatch. Expected ${this.dimension}, got ${queryVector.length}`);
     }
 
-    const results: Array<{ id: string; score: number; metadata: any }> = [];
+    const results: Array<{ id: string; score: number; metadata: unknown }> = [];
 
     // Calculate cosine similarity with all vectors
     for (const [id, { vector, metadata }] of this.vectors.entries()) {
@@ -68,7 +68,7 @@ export class VectorDB {
   /**
    * Get vector by ID
    */
-  async get(id: string): Promise<{ vector: number[]; metadata: any } | null> {
+  async get(id: string): Promise<{ vector: number[]; metadata: unknown } | null> {
     return this.vectors.get(id) || null;
   }
 

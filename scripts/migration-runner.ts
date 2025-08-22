@@ -31,7 +31,7 @@ interface ValidationResult {
 class DatabaseMigrationRunner {
   private connectionString: string;
   private client: postgres.Sql;
-  private db: any;
+  private db: unknown;
 
   constructor() {
     this.connectionString = process.env.DATABASE_URL || 
@@ -76,7 +76,7 @@ class DatabaseMigrationRunner {
       result.migrationsRun = 1; // Placeholder - in real implementation, count actual migrations
       console.log('✅ Database migrations completed successfully');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Migration failed:', error);
       result.errors.push(error.message);
     } finally {
@@ -124,7 +124,7 @@ class DatabaseMigrationRunner {
         console.log('⚠️ Database validation failed');
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Database validation error:', error);
       result.errors.push(error.message);
     }
@@ -146,7 +146,7 @@ class DatabaseMigrationRunner {
       try {
         await adminClient`CREATE DATABASE ${adminClient(dbName)}`;
         console.log(`✅ Database ${dbName} created successfully`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error.message.includes('already exists')) {
           console.log(`ℹ️ Database ${dbName} already exists`);
         } else {
@@ -157,7 +157,7 @@ class DatabaseMigrationRunner {
       await adminClient.end();
       return true;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Failed to create database:', error);
       return false;
     }
@@ -180,7 +180,7 @@ class DatabaseMigrationRunner {
       try {
         await adminClient`DROP DATABASE IF EXISTS ${adminClient(testDbName)}`;
         await adminClient`CREATE DATABASE ${adminClient(testDbName)}`;
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.warn('⚠️ Test database setup warning:', error.message);
       }
 
@@ -198,7 +198,7 @@ class DatabaseMigrationRunner {
       console.log('✅ Test database setup completed');
       return true;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Test database setup failed:', error);
       return false;
     }
@@ -223,7 +223,7 @@ class DatabaseMigrationRunner {
         try {
           await this.client`DROP TABLE IF EXISTS ${this.client(table)} CASCADE`;
           console.log(`🗑️ Dropped table: ${table}`);
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.warn(`⚠️ Warning dropping table ${table}:`, error.message);
         }
       }
@@ -239,7 +239,7 @@ class DatabaseMigrationRunner {
         return false;
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Database reset failed:', error);
       return false;
     }
@@ -282,7 +282,7 @@ class DatabaseMigrationRunner {
       console.log(`✅ Backup completed: ${backupFile}`);
       return backupName;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Backup failed:', error);
       return null;
     }
@@ -323,7 +323,7 @@ class DatabaseMigrationRunner {
         generated_at: new Date().toISOString()
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Failed to get database stats:', error);
       return null;
     }
@@ -335,7 +335,7 @@ class DatabaseMigrationRunner {
     try {
       await this.client`SELECT 1`;
       console.log('✅ Database connection validated');
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(`Database connection failed: ${error.message}`);
     }
   }
@@ -354,7 +354,7 @@ class DatabaseMigrationRunner {
         await this.client.unsafe(sql);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn('⚠️ Custom migrations warning:', error.message);
     }
   }
@@ -386,7 +386,7 @@ class DatabaseMigrationRunner {
       console.log('✅ All required tables exist');
       return true;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Table validation error:', error);
       return false;
     }
@@ -418,7 +418,7 @@ class DatabaseMigrationRunner {
       console.log('✅ Index validation completed');
       return true;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Index validation error:', error);
       return false;
     }
@@ -446,7 +446,7 @@ class DatabaseMigrationRunner {
       console.log('✅ Extension validation completed');
       return true; // Don't fail for missing extensions
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Extension validation error:', error);
       return false;
     }
@@ -464,7 +464,7 @@ class DatabaseMigrationRunner {
       console.log('✅ Data integrity validation completed');
       return true;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ Data integrity validation error:', error);
       return false;
     }

@@ -61,7 +61,7 @@ export type DocumentUploadEvent =
   | { type: 'UPDATE_SETTINGS'; settings: Partial<DocumentUploadContext['settings']> }
   | { type: 'CLEAR_RESULTS' }
   | { type: 'STAGE_PROGRESS'; progress: number }
-  | { type: 'STAGE_COMPLETE'; result: any }
+  | { type: 'STAGE_COMPLETE'; result: unknown }
   | { type: 'STAGE_ERROR'; error: string };
 
 // Default processing stages
@@ -99,7 +99,7 @@ const defaultContext: DocumentUploadContext = {
 
 // Services for document upload
 const documentUploadServices = {
-  validateFile: async (context: DocumentUploadContext, event: any) => {
+  validateFile: async (context: DocumentUploadContext, event: unknown) => {
     const { file } = context.currentFile!;
     
     // Check file size
@@ -121,7 +121,7 @@ const documentUploadServices = {
     return { valid: true, fileType: extension };
   },
 
-  uploadDocument: async (context: DocumentUploadContext, event: any) => {
+  uploadDocument: async (context: DocumentUploadContext, event: unknown) => {
     const { file } = context.currentFile!;
     
     const uploadData = {
@@ -148,7 +148,7 @@ const documentUploadServices = {
     return result;
   },
 
-  processStage: async (context: DocumentUploadContext, event: any) => {
+  processStage: async (context: DocumentUploadContext, event: unknown) => {
     const currentStage = context.stages[context.currentStageIndex];
     
     // Simulate stage processing with realistic timing
@@ -582,10 +582,10 @@ export const documentUploadActions = {
 
 // Selectors for derived state
 export const documentUploadSelectors = {
-  isIdle: (state: any) => state.matches('idle'),
-  isUploading: (state: any) => state.matches('uploading'),
-  isCompleted: (state: any) => state.matches('completed'),
-  hasError: (state: any) => state.matches('error'),
+  isIdle: (state: unknown) => state.matches('idle'),
+  isUploading: (state: unknown) => state.matches('uploading'),
+  isCompleted: (state: unknown) => state.matches('completed'),
+  hasError: (state: unknown) => state.matches('error'),
   
   currentProgress: (context: DocumentUploadContext) => {
     if (!context.currentFile) return 0;

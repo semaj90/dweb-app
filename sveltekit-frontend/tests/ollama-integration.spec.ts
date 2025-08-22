@@ -136,12 +136,12 @@ test.describe('Ollama Integration', () => {
     const responses = await Promise.all(promises);
     
     // Verify all responses are successful
-    responses.forEach(response: unknown => {
+    responses.forEach((response: any) => {
       expect(response.status()).toBe(200);
     });
     
     // Check response content
-    const results = await Promise.all(responses.map(r: unknown => r.json()));
+    const results = await Promise.all(responses.map((r: any) => r.json()));
     results.forEach((result, index) => {
       expect(result).toHaveProperty('response');
       expect(result.response).toBeTruthy();

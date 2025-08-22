@@ -7,10 +7,7 @@ import crypto from "crypto";
 // Lightweight re-exports of key result interfaces for external type-only imports
 export type { LegalAnalysisResult, LegalEmbeddingResult };
 import { generateEmbedding } from "./embeddings-simple.js";
-// Orphaned content: import {
-withRetry, withTimeout, metrics
-
-// LegalBERT model configurations
+// TODO: Fix import - // Orphaned content: import { withRetry, withTimeout, metrics  // LegalBERT model configurations
 const LEGALBERT_MODELS = {
   // Local Ollama models
   local: {

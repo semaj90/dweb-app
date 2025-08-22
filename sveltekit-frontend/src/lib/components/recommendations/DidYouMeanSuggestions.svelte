@@ -1,7 +1,7 @@
 <!-- "Did You Mean?" Suggestions Component - SSR compatible with Bits-UI v2 -->
 <script lang="ts">
   import { $props, $state, $effect } from 'svelte';
-  import { createCombobox, melt } from '@melt-ui/svelte';
+  import { createCombobox, melt } from 'melt';
   import { Check, ChevronDown, Search, FileText, User, Folder, Tag } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
   

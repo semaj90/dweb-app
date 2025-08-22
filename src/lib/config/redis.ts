@@ -99,7 +99,7 @@ export async function healthCheck(timeoutMs = 500): Promise<{
         ]);
         const latency = performance.now() - start;
         return { ok: pong === 'PONG', latencyMs: latency };
-    } catch (e: any) {
+    } catch (e: unknown) {
         return { ok: false, error: e?.message || 'unknown' };
     }
 }
@@ -110,7 +110,7 @@ export async function publish(channel: string, payload: unknown) {
     return client.publish(channel, JSON.stringify(payload));
 }
 
-export type SubscriptionHandler = (message: any) => void;
+export type SubscriptionHandler = (message: unknown) => void;
 
 export async function subscribe(
     channel: string,

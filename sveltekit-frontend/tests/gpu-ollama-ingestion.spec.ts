@@ -44,7 +44,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     const models = await modelsResponse.json();
     
     const requiredModels = ['llama3.2', 'nomic-embed-text'];
-    requiredModels.forEach(modelName: unknown => {
+    requiredModels.forEach((modelName: string) => {
       const model = models.models.find((m: unknown) => m.name.includes(modelName));
       expect(model).toBeDefined();
       if (model && model.details) {
@@ -76,7 +76,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
           const newFiles = [...currentFiles, file];
           
           const newDataTransfer = new DataTransfer();
-          newFiles.forEach(f: unknown => newDataTransfer.items.add(f));
+          newFiles.forEach((f: any) => newDataTransfer.items.add(f));
           input.files = newDataTransfer.files;
           input.dispatchEvent(new Event('change', { bubbles: true }));
         }
@@ -325,7 +325,7 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     }
     
     // Analyze memory usage
-    const maxMemoryUsed = Math.max(...memoryReadings.map(r: unknown => r.used_mb));
+    const maxMemoryUsed = Math.max(...memoryReadings.map((r: any) => r.used_mb));
     const avgMemoryUsed = memoryReadings.reduce((sum, r) => sum + r.used_mb, 0) / memoryReadings.length;
     const memoryIncrease = maxMemoryUsed - baseline.used_mb;
     
@@ -445,8 +445,8 @@ test.describe('GPU-Enabled Ollama Ingestion Pipeline', () => {
     });
     
     // Test similarity between related queries
-    const contractEmbedding = embeddings.find(e: unknown => e.query.includes('contract'))?.embedding;
-    const tortEmbedding = embeddings.find(e: unknown => e.query.includes('tort'))?.embedding;
+    const contractEmbedding = embeddings.find((e: any) => e.query.includes('contract'))?.embedding;
+    const tortEmbedding = embeddings.find((e: any) => e.query.includes('tort'))?.embedding;
     
     if (contractEmbedding && tortEmbedding) {
       const similarity = cosineSimilarity(contractEmbedding, tortEmbedding);

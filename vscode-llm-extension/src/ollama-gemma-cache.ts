@@ -3,7 +3,7 @@
  * Provides intelligent caching with semantic embeddings for Context7 MCP operations
  */
 
-// @ts-ignore - VSCode types handled at runtime
+// VSCode types handled at runtime
 const vscode = typeof require !== 'undefined' ? require('vscode') : null;
 import * as crypto from 'crypto';
 import * as fs from 'fs/promises';
@@ -184,7 +184,7 @@ export class OllamaGemmaCacheManager {
   /**
    * Enhanced Context7 integration - cache analysis results
    */
-  async cacheContext7Analysis(component: string, context: string, analysis: any): Promise<void> {
+  async cacheContext7Analysis(component: string, context: string, analysis: unknown): Promise<void> {
     const cacheKey = `context7_${component}_${context}`;
     const text = `Context7 analysis for ${component} in ${context}: ${JSON.stringify(analysis)}`;
     
@@ -429,11 +429,11 @@ export class OllamaGemmaCacheManager {
       }
 
       const data = await response.json();
-      const hasEmbeddingModel = data.models?.some((m: any) => m.name === this.config.embeddingModel);
+      const hasEmbeddingModel = data.models?.some((m: unknown) => m.name === this.config.embeddingModel);
       
       if (!hasEmbeddingModel) {
         console.warn(`Embedding model ${this.config.embeddingModel} not found. Available models:`, 
-          data.models?.map((m: any) => m.name));
+          data.models?.map((m: unknown) => m.name));
       }
 
     } catch (error) {

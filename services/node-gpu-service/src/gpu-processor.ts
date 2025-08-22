@@ -9,7 +9,7 @@ import { Logger } from './logger';
 const gpu = require('kmamal/gpu');
 
 interface GPUProcessorConfig {
-  gpu: any;
+  gpu: unknown;
   shaderManager: ShaderManager;
   maxBatchSize: number;
   logger: Logger;
@@ -29,25 +29,25 @@ interface ProcessingResult {
 }
 
 export class GPUProcessor {
-  private gpu: any;
-  private device: any;
-  private queue: any;
+  private gpu: unknown;
+  private device: unknown;
+  private queue: unknown;
   private shaderManager: ShaderManager;
   private logger: Logger;
   private config: GPUProcessorConfig;
   
-  private embeddingComputePipeline: any;
-  private clusteringComputePipeline: any;
-  private similarityComputePipeline: any;
-  private boostTransformPipeline: any;
+  private embeddingComputePipeline: unknown;
+  private clusteringComputePipeline: unknown;
+  private similarityComputePipeline: unknown;
+  private boostTransformPipeline: unknown;
   
   private processingQueue: EmbeddingBatch[] = [];
   private isProcessing: boolean = false;
   
   // Buffer pools for efficient memory management
-  private inputBufferPool: any[] = [];
-  private outputBufferPool: any[] = [];
-  private uniformBufferPool: any[] = [];
+  private inputBufferPool: unknown[] = [];
+  private outputBufferPool: unknown[] = [];
+  private uniformBufferPool: unknown[] = [];
 
   constructor(config: GPUProcessorConfig) {
     this.config = config;
@@ -171,12 +171,12 @@ export class GPUProcessor {
     }, 10); // Check every 10ms
   }
 
-  async processEmbeddings(call: any, callback: any): Promise<void> {
+  async processEmbeddings(call: unknown, callback: unknown): Promise<void> {
     const startTime = Date.now();
 
     try {
       const request = call.request;
-      const texts = request.requests.map((req: any) => req.text);
+      const texts = request.requests.map((req: unknown) => req.text);
       
       this.logger.debug(`📦 Processing embedding batch: ${texts.length} texts`);
 
@@ -197,12 +197,12 @@ export class GPUProcessor {
     }
   }
 
-  async performClustering(call: any, callback: any): Promise<void> {
+  async performClustering(call: unknown, callback: unknown): Promise<void> {
     const startTime = Date.now();
 
     try {
       const request = call.request;
-      const embeddings = request.embeddings.map((emb: any) => new Float32Array(emb.values));
+      const embeddings = request.embeddings.map((emb: unknown) => new Float32Array(emb.values));
       const numClusters = request.numClusters || 8;
 
       this.logger.debug(`🎯 Performing clustering: ${embeddings.length} embeddings, ${numClusters} clusters`);
@@ -224,13 +224,13 @@ export class GPUProcessor {
     }
   }
 
-  async computeSimilarity(call: any, callback: any): Promise<void> {
+  async computeSimilarity(call: unknown, callback: unknown): Promise<void> {
     const startTime = Date.now();
 
     try {
       const request = call.request;
-      const embeddingsA = request.embeddingsA.map((emb: any) => new Float32Array(emb.values));
-      const embeddingsB = request.embeddingsB.map((emb: any) => new Float32Array(emb.values));
+      const embeddingsA = request.embeddingsA.map((emb: unknown) => new Float32Array(emb.values));
+      const embeddingsB = request.embeddingsB.map((emb: unknown) => new Float32Array(emb.values));
 
       this.logger.debug(`📊 Computing similarity: ${embeddingsA.length}x${embeddingsB.length} comparisons`);
 
@@ -249,12 +249,12 @@ export class GPUProcessor {
     }
   }
 
-  async applyBoostTransform(call: any, callback: any): Promise<void> {
+  async applyBoostTransform(call: unknown, callback: unknown): Promise<void> {
     const startTime = Date.now();
 
     try {
       const request = call.request;
-      const embeddings = request.embeddings.map((emb: any) => new Float32Array(emb.values));
+      const embeddings = request.embeddings.map((emb: unknown) => new Float32Array(emb.values));
       const boostFactors = new Float32Array(request.boostFactors);
 
       this.logger.debug(`🚀 Applying boost transform: ${embeddings.length} embeddings`);
@@ -274,16 +274,16 @@ export class GPUProcessor {
     }
   }
 
-  async processDocument(call: any, callback: any): Promise<void> {
+  async processDocument(call: unknown, callback: unknown): Promise<void> {
     // Delegate to embedding processing for now
     await this.processEmbeddings(call, callback);
   }
 
-  async streamDocuments(call: any): Promise<void> {
+  async streamDocuments(call: unknown): Promise<void> {
     // Implement streaming processing
-    call.on('data', async (request: any) => {
+    call.on('data', async (request: unknown) => {
       try {
-        const result = await this.processEmbeddings({ request }, (err: any, response: any) => {
+        const result = await this.processEmbeddings({ request }, (err: unknown, response: unknown) => {
           if (err) {
             call.emit('error', err);
           } else {
@@ -495,20 +495,20 @@ export class GPUProcessor {
     return text.split('').map(char => char.charCodeAt(0)).slice(0, 512);
   }
 
-  private getBuffer(pool: any[]): any {
+  private getBuffer(pool: unknown[]): unknown {
     return pool.pop() || this.device.createBuffer({
       size: 64 * 1024 * 1024,
       usage: gpu.BufferUsage.STORAGE | gpu.BufferUsage.COPY_DST | gpu.BufferUsage.COPY_SRC
     });
   }
 
-  private returnBuffer(pool: any[], buffer: any): void {
+  private returnBuffer(pool: unknown[], buffer: unknown): void {
     if (pool.length < 10) {
       pool.push(buffer);
     }
   }
 
-  private async readBufferAsync(buffer: any, size: number): Promise<Float32Array> {
+  private async readBufferAsync(buffer: unknown, size: number): Promise<Float32Array> {
     // Create staging buffer for readback
     const stagingBuffer = this.device.createBuffer({
       size,

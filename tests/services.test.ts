@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 // Legal AI System - Service Tests
 // Tests for individual service components
 
@@ -36,7 +36,7 @@ const results = {
 };
 
 // Helper function
-function logTest(name: any, status: any, error: any = null) {
+function logTest(name: unknown, status: unknown, error: unknown = null) {
   const result = {
     name,
     status,
@@ -66,7 +66,7 @@ async function testQdrantService() {
     const health = await client.api("GET", "/health");
     assert(health.status === "ok", "Qdrant health check failed");
     logTest("Qdrant Connection", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Qdrant Connection", "FAIL", error);
     return; // Skip other tests if connection fails
   }
@@ -82,12 +82,12 @@ async function testQdrantService() {
 
     for (const expected of expectedCollections) {
       const exists = collections.collections.some(
-        (c: any) => c.name === expected
+        (c: unknown) => c.name === expected
       );
       assert(exists, `Collection ${expected} does not exist`);
     }
     logTest("Qdrant Collections", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Qdrant Collections", "FAIL", error);
   }
 
@@ -126,7 +126,7 @@ async function testQdrantService() {
     });
 
     logTest("Qdrant Vector Operations", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Qdrant Vector Operations", "FAIL", error);
   }
 
@@ -150,7 +150,7 @@ async function testQdrantService() {
 
     // Batch retrieve
     const retrieved = await client.retrieve("legal_documents", {
-      ids: batchPoints.map((p: any) => p.id),
+      ids: batchPoints.map((p: unknown) => p.id),
       with_payload: true,
     });
 
@@ -158,11 +158,11 @@ async function testQdrantService() {
 
     // Batch delete
     await client.delete("legal_documents", {
-      points: batchPoints.map((p: any) => p.id),
+      points: batchPoints.map((p: unknown) => p.id),
     });
 
     logTest("Qdrant Batch Operations", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Qdrant Batch Operations", "FAIL", error);
   }
 }
@@ -176,7 +176,7 @@ async function testRedisService() {
   try {
     await redis.connect();
     logTest("Redis Connection", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Redis Connection", "FAIL", error);
     return;
   }
@@ -199,7 +199,7 @@ async function testRedisService() {
     await redis.del(testKey);
 
     logTest("Redis Basic Operations", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Redis Basic Operations", "FAIL", error);
   }
 
@@ -221,7 +221,7 @@ async function testRedisService() {
     assert(cached === cacheValue, "Cached value mismatch");
 
     logTest("Redis Cache Operations", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Redis Cache Operations", "FAIL", error);
   }
 
@@ -249,7 +249,7 @@ async function testRedisService() {
     await redis.del(hashKey);
 
     logTest("Redis Hash Operations", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Redis Hash Operations", "FAIL", error);
   }
 
@@ -267,7 +267,7 @@ async function testPostgresService() {
     const result = await sql`SELECT NOW() as timestamp`;
     assert(result.length > 0, "PostgreSQL query failed");
     logTest("PostgreSQL Connection", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("PostgreSQL Connection", "FAIL", error);
     return;
   }
@@ -281,14 +281,14 @@ async function testPostgresService() {
         `;
 
     const required = ["uuid-ossp", "vector", "pg_trgm"];
-    const installed = extensions.map((e: any) => e.extname);
+    const installed = extensions.map((e: unknown) => e.extname);
 
     for (const ext of required) {
       assert(installed.includes(ext), `Extension ${ext} not installed`);
     }
 
     logTest("PostgreSQL Extensions", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("PostgreSQL Extensions", "FAIL", error);
   }
 
@@ -329,14 +329,14 @@ async function testPostgresService() {
     assert(similar[0].similarity > 0.99, "Vector similarity too low");
 
     logTest("PostgreSQL Vector Operations", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("PostgreSQL Vector Operations", "FAIL", error);
   }
 
   // Test 4: Transactions
   try {
     await sql
-      .begin(async (sql: any) => {
+      .begin(async (sql: unknown) => {
         // Create test record
         const testCase = await sql`
                 INSERT INTO cases (title, description, status)
@@ -363,7 +363,7 @@ async function testPostgresService() {
         // Rollback
         throw new Error("Intentional rollback");
       })
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         if (err.message === "Intentional rollback") {
           // Expected
         } else {
@@ -372,7 +372,7 @@ async function testPostgresService() {
       });
 
     logTest("PostgreSQL Transactions", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("PostgreSQL Transactions", "FAIL", error);
   }
 
@@ -388,7 +388,7 @@ async function testOllamaService() {
     const response = await fetch(`${config.ollama.url}/api/tags`);
     assert(response.ok, "Ollama API not accessible");
     logTest("Ollama Connection", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Ollama Connection", "FAIL", error);
     return;
   }
@@ -399,15 +399,15 @@ async function testOllamaService() {
     const data = await response.json();
 
     const requiredModels = ["nomic-embed-text"];
-    const availableModels = data.models.map((m: any) => m.name);
+    const availableModels = data.models.map((m: unknown) => m.name);
 
     for (const model of requiredModels) {
-      const exists = availableModels.some((m: any) => m.includes(model));
+      const exists = availableModels.some((m: unknown) => m.includes(model));
       assert(exists, `Model ${model} not available`);
     }
 
     logTest("Ollama Models", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Ollama Models", "FAIL", error);
   }
 
@@ -430,7 +430,7 @@ async function testOllamaService() {
     );
 
     logTest("Ollama Embeddings", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Ollama Embeddings", "FAIL", error);
   }
 
@@ -455,7 +455,7 @@ async function testOllamaService() {
     assert(data.response.length > 10, "Response too short");
 
     logTest("Ollama Generation", "PASS");
-  } catch (error: any) {
+  } catch (error: unknown) {
     logTest("Ollama Generation", "FAIL", error);
   }
 }
@@ -472,7 +472,7 @@ async function runTests() {
     await testRedisService();
     await testPostgresService();
     await testOllamaService();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Test suite error:", error);
   }
 

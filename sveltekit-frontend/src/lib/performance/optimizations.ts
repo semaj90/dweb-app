@@ -3,9 +3,7 @@
 // #get-library-docs sveltekit2 #memory #create_entities
 
 import { db } from "$lib/server/db";
-// Orphaned content: import {
-
-import Redis from "ioredis";
+// TODO: Fix import - // Orphaned content: import {  import Redis from "ioredis";
 
 // 1. Database Query Optimization
 export class OptimizedQueries {

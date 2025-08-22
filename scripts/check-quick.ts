@@ -29,7 +29,7 @@ console.log(`🚀 Quick Enhanced Check Starting
 // Quick RAG Cache with LokiJS
 class QuickRAGCache {
   private db: loki;
-  private errors: any;
+  private errors: unknown;
   private searchIndex: Fuse<any>;
 
   constructor() {
@@ -47,7 +47,7 @@ class QuickRAGCache {
     });
   }
 
-  storeError(error: any) {
+  storeError(error: unknown) {
     this.errors.insert(error);
     this.updateSearch();
   }
@@ -64,11 +64,11 @@ class QuickRAGCache {
     const all = this.errors.find({});
     return {
       total: all.length,
-      byType: all.reduce((acc: any, e: any) => {
+      byType: all.reduce((acc: unknown, e: unknown) => {
         acc[e.type] = (acc[e.type] || 0) + 1;
         return acc;
       }, {}),
-      bySeverity: all.reduce((acc: any, e: any) => {
+      bySeverity: all.reduce((acc: unknown, e: unknown) => {
         acc[e.severity] = (acc[e.severity] || 0) + 1;
         return acc;
       }, {})
@@ -122,8 +122,8 @@ async function runQuickCheck() {
 `);
 }
 
-function parseErrors(log: string): any[] {
-  const errors: any[] = [];
+function parseErrors(log: string): unknown[] {
+  const errors: unknown[] = [];
   const lines = log.split('\n');
   
   for (let i = 0; i < lines.length; i++) {
@@ -211,7 +211,7 @@ async function updateVSCodeGPU() {
   }
 }
 
-async function generateQuickReport(errors: any[], stats: any, duration: number, buildLog: string) {
+async function generateQuickReport(errors: unknown[], stats: unknown, duration: number, buildLog: string) {
   const criticalErrors = errors.filter(e => e.severity === 'error');
   const warnings = errors.filter(e => e.severity === 'warning');
   

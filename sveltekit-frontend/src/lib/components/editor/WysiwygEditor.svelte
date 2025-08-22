@@ -22,7 +22,7 @@
   }: Props = $props();
 
   import { onMount, createEventDispatcher } from 'svelte';
-  import { createDialog, melt } from '@melt-ui/svelte';
+  import { createDialog, melt } from 'melt';
   import { writable } from 'svelte/store';
   import type { Writable } from 'svelte/store';
 

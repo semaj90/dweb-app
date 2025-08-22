@@ -1,7 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { RequestHandler } from "@sveltejs/kit";
-getPipelineHistogram, getDedupeMetrics
-
+import { getPipelineHistogram, getDedupeMetrics } from "drizzle-orm";
 export const GET: RequestHandler = async () => {
   const hist = getPipelineHistogram();
   const dedupe = getDedupeMetrics();

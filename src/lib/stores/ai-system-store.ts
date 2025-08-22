@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 /**
  * Comprehensive AI System Store
  * Manages the entire AI system lifecycle with Windows-native optimizations
@@ -27,8 +27,8 @@ interface SystemConfig {
 
 interface SystemState {
   initialized: boolean;
-  health: any;
-  performance: any;
+  health: unknown;
+  performance: unknown;
   components: Record<string, 'active' | 'inactive' | 'error'>;
   metrics: {
     cpuUsage: number;
@@ -38,8 +38,8 @@ interface SystemState {
     activeConnections: number;
     processingQueue: number;
   };
-  recommendations: any[];
-  errors: any[];
+  recommendations: unknown[];
+  errors: unknown[];
 }
 
 class AISystemStore {
@@ -192,7 +192,7 @@ class AISystemStore {
     }, 2000); // Every 2 seconds
   }
 
-  private calculateCacheHitRate(health: any): number {
+  private calculateCacheHitRate(health: unknown): number {
     // Calculate cache hit rate from system health data
     const cacheStats = health.performance?.cacheStats;
     if (!cacheStats) return 0;
@@ -204,12 +204,12 @@ class AISystemStore {
   }
 
   // Public API methods
-  async processDocument(documentId: string, content: string, options: any = {}) {
+  async processDocument(documentId: string, content: string, options: unknown = {}) {
     if (!this.system) throw new Error('System not initialized');
     return this.system.processDocumentOptimized(documentId, content, options);
   }
 
-  async performAnalysis(sessionId: string, documents: any[], options: any = {}) {
+  async performAnalysis(sessionId: string, documents: unknown[], options: unknown = {}) {
     if (!this.system) throw new Error('System not initialized');
     return this.system.performComprehensiveAnalysis(sessionId, documents, options);
   }
@@ -290,7 +290,7 @@ class AISystemStore {
     return recommendations;
   }
 
-  logAnalysis(result: any) {
+  logAnalysis(result: unknown) {
     console.log('📊 Analysis logged:', result);
     
     // Update analytics through the system
@@ -299,7 +299,7 @@ class AISystemStore {
     }
   }
 
-  logInteraction(interaction: any) {
+  logInteraction(interaction: unknown) {
     console.log('👤 Interaction logged:', interaction);
     
     // Update user behavior tracking

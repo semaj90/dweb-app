@@ -16,8 +16,9 @@ import {
   customType,
   serial
 } from 'drizzle-orm/pg-core';
-// Orphaned content: import { sql
-
+import {
+  sql
+} from "drizzle-orm";
 // Custom vector type for pgvector
 const vector = customType<{ data: number[]; driverData: string }>({
   dataType() {
